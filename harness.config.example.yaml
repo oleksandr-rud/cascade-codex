@@ -1,0 +1,143 @@
+# Portable harness adapter variables.
+# Copy to harness.config.yaml after installing the harness in a target project.
+
+project:
+  name: "<PROJECT_NAME>"
+  kind: "<PROJECT_KIND>"
+  primary_users:
+    - "<PRIMARY_USER>"
+  stack:
+    backend:
+      language: "<BACKEND_LANGUAGE_OR_NONE>"
+      framework: "<BACKEND_FRAMEWORK_OR_NONE>"
+      package_manager: "<BACKEND_PACKAGE_MANAGER_OR_NONE>"
+      runtime:
+        - "<BACKEND_RUNTIME_OR_NONE>"
+    frontend:
+      language: "<FRONTEND_LANGUAGE_OR_NONE>"
+      framework: "<FRONTEND_FRAMEWORK_OR_NONE>"
+      build_tool: "<FRONTEND_BUILD_TOOL_OR_NONE>"
+      package_manager: "<FRONTEND_PACKAGE_MANAGER_OR_NONE>"
+    data:
+      database: "<DATABASE_OR_NONE>"
+      cache: "<CACHE_OR_NONE>"
+      storage: "<STORAGE_OR_NONE>"
+    integrations:
+      - "<INTEGRATION_OR_NONE>"
+    test:
+      unit: "<UNIT_TEST_RUNNER_OR_NONE>"
+      functional: "<FUNCTIONAL_TEST_RUNNER_OR_NONE>"
+      e2e: "<E2E_TEST_RUNNER_OR_NONE>"
+
+paths:
+  source_roots:
+    - "<SRC_ROOT>"
+  test_roots:
+    - "<TEST_ROOT>"
+  app_entrypoints:
+    - "<APP_ENTRYPOINT>"
+  public_contracts:
+    - "<API_OR_SCHEMA_OR_UI_CONTRACT>"
+  docs_root: "docs"
+  structure: "docs/structure.md"
+  glossary: "docs/glossary.md"
+  backlog: "docs/backlog/_index.md"
+  product_index: "docs/product/_index.md"
+  product_scenarios: "docs/product/scenarios.md"
+  personas_index: "docs/product/personas/_index.md"
+  design_index: "docs/design/_index.md"
+  brand_index: "docs/brand/_index.md"
+  specs_index: "docs/specs/_index.md"
+  specs_incoming: "docs/specs/incoming"
+  specs_transformed: "docs/specs/transformed"
+  work_index: "docs/work/_index.md"
+  active_work: "docs/work/active.md"
+  work_lane_template: "docs/work/lane-template.md"
+  work_lanes: "docs/work/lanes"
+  work_reports: "docs/work/reports"
+  patterns: "docs/patterns"
+
+validation_commands:
+  install:
+    - "<INSTALL_COMMAND>"
+  targeted:
+    - "<TARGETED_TEST_COMMAND>"
+  unit:
+    - "<UNIT_TEST_COMMAND>"
+  lint:
+    - "<LINT_COMMAND>"
+  typecheck:
+    - "<TYPECHECK_COMMAND>"
+  build:
+    - "<BUILD_COMMAND>"
+  functional:
+    - "<FUNCTIONAL_TEST_COMMAND>"
+  e2e:
+    - "<E2E_COMMAND>"
+
+routing:
+  new_task_path:
+    - "context"
+    - "ingest-spec or discover when source material or missing intent exists"
+    - "orchestrate-work"
+    - "plan-change"
+    - "functional-qa"
+    - "implement-change"
+    - "review-change"
+    - "validate-change"
+    - "test-autorepair only if automated tests are stale"
+    - "closeout"
+  issue_intake: "explicit issue-body or tracker-ticket exception path"
+  human_review: "explicit open-question or exception path only"
+  stale_test_policy: "test-autorepair preserves semantic coverage; product bugs route to implement-change"
+
+vocabulary:
+  prefer_codebase_terms: true
+  term_sources:
+    - "docs/glossary.md"
+    - "<PROJECT_SPEC_PATH>"
+  forbidden_generic_framing:
+    - "generic domain layer"
+    - "abstract business object"
+
+functional_acceptance:
+  primary_gate: true
+  browser_or_e2e_runner: "<PLAYWRIGHT_OR_OTHER_RUNNER>"
+  api_check_runner: "<API_CHECK_RUNNER>"
+  visual_check_runner: "<VISUAL_CHECK_RUNNER_OR_NONE>"
+  source_blind_product_checks: true
+  scenario_sources:
+    - "docs/product/scenarios.md"
+    - "docs/work/active.md"
+    - "docs/work/lanes"
+
+memory:
+  active_work: "docs/work/active.md"
+  lane_packets: "docs/work/lanes"
+  work_reports: "docs/work/reports"
+  product_facts:
+    - "docs/product"
+    - "docs/design"
+    - "docs/brand"
+    - "docs/specs"
+  durable_lessons:
+    - ".codex/skills"
+    - ".codex/agents"
+    - "docs/patterns"
+  write_reports_when:
+    - "requested"
+    - "work_spans_turns"
+    - "durable_decision"
+    - "blocked_handoff"
+
+issue_tracker:
+  provider: "<NONE_OR_TRACKER>"
+  project_key: "<PROJECT_KEY>"
+  default_project_or_team: "<TRACKER_PROJECT_OR_TEAM>"
+  file_when_requested_only: true
+
+patterns:
+  workflow: "docs/patterns/workflow.md"
+  boundaries: "docs/patterns/boundaries.md"
+  testing: "docs/patterns/testing.md"
+  context_memory: "docs/patterns/context-memory.md"

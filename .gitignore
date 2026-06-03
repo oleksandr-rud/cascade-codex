@@ -1,0 +1,26 @@
+# macOS
+.DS_Store
+
+# Editor and local tooling
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Environment and secrets
+.env
+.env.*
+!.env.example
+
+# Python caches
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# JavaScript dependencies, if local tooling is added
+node_modules/
+
+# Logs
+*.log
