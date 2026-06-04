@@ -70,9 +70,10 @@ the user explicitly redirects the work through `implement-change`.
   Codex registry values. Do not place user-only provider, credential,
   notification, profile, or telemetry settings here.
 - Skill: reusable workflow with trigger, anti-trigger, source order, outputs,
-  artifacts, templates, checklists, and validation rules. Official Codex
-  repository skill discovery uses `.agents/skills`; Cascade Codex currently
-  keeps harness role skills in `.codex/skills/` as a compatibility layout.
+  artifacts, templates, checklists, and validation rules. In Cascade Codex,
+  document and maintain skills under `.codex/skills/`. Treat native Codex
+  repo-skill or plugin layouts as packaging targets, not the primary harness
+  documentation surface.
 - Agent role contract: local Cascade role behavior in
   `.codex/agents/{name}/AGENT.md`, with TOML identity/wiring and `skills.yaml`.
 - Codex custom subagent: standalone TOML intended for spawned sessions; require
@@ -174,9 +175,9 @@ behavior and surface choice:
 - Skills: keep each skill focused, make the description trigger-focused for
   implicit invocation, use `SKILL.md` as the primary contract, keep optional
   `agents/openai.yaml` metadata aligned when present, and add scripts only when
-  deterministic tooling is needed. Native repo skill discovery is
-  `.agents/skills`; `.codex/skills/` is this harness's current compatibility
-  storage.
+  deterministic tooling is needed. Cascade Codex documents harness skills under
+  `.codex/skills/`; if a skill must be mirrored into native Codex repo-skill or
+  plugin packaging, record that as a packaging/migration decision.
 - `AGENTS.md`: keep durable repo guidance concise, practical, and scoped by
   directory precedence. Codex loads global and project instructions once per
   run/session, closest files override broader files, and large instruction
@@ -204,9 +205,9 @@ behavior and surface choice:
 
 Compatibility invariant: maintain the current Cascade Codex `.codex/skills/`
 and `.codex/agents/` harness layout unless the user explicitly requests a
-layout migration. When building a Codex-native repo skill, distributable
-plugin, or spawnable custom subagent package, document the target Codex layout
-separately instead of silently moving the current harness.
+layout migration. When building a distributable plugin, native Codex skill
+mirror, or spawnable custom subagent package, keep `.codex/skills/` as the
+documented source unless the requested output is explicitly a layout migration.
 
 ## Maintenance Checklist
 
@@ -220,8 +221,10 @@ separately instead of silently moving the current harness.
    - verify `name` and `description` frontmatter;
    - keep the description trigger-focused for implicit invocation;
    - define source order, scope, anti-scope, outputs, artifacts, and validation;
-   - distinguish Cascade `.codex/skills/` storage from native Codex
-     `.agents/skills` discovery or plugin-packaged `skills/`;
+   - document skill instructions, templates, checklists, references, and
+     scripts under `.codex/skills/{skill}/`;
+   - when a skill must also be packaged elsewhere, document the package mapping
+     instead of moving the source skill docs;
    - add templates, checklists, references, or scripts only when they prevent a
      real missed step;
    - wire the skill into the owning agent's `skills.yaml`;

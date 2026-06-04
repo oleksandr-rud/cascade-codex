@@ -21,9 +21,9 @@ Use before closing a non-trivial Codex best-practices audit or design decision.
 - [ ] Repeated workflows are skills before they become agents.
 - [ ] Distributed integrations are plugins only when packaging, bundled MCP,
       hooks, or app integration requires it.
-- [ ] Native Codex layout and Cascade compatibility layout are not conflated:
-      `.agents/skills` for Codex repo-skill discovery, `.codex/skills/` for
-      current Cascade harness skills, `.codex-plugin/plugin.json` for plugins.
+- [ ] Cascade skill documentation lives under `.codex/skills/{skill}/`; any
+      native Codex skill mirror or plugin-packaged copy is documented as a
+      packaging target, not treated as the source skill docs.
 - [ ] Project `.codex/config.toml` contains only trusted project-safe settings;
       provider credentials/routing, profiles, notification commands, and
       telemetry remain in user or system config.

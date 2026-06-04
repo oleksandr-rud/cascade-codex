@@ -24,8 +24,10 @@ templates.
       permissions, memory, observability, evals, subagents, hooks, MCP/tools,
       plugins, or handoff structure.
 - [ ] `AGENTS.md` remains a thin durable repo convention file.
-- [ ] Native Codex skill/plugin/subagent layout is not confused with Cascade
-      compatibility layout.
+- [ ] Skill instructions, templates, checklists, references, and scripts are
+      documented under `.codex/skills/{skill}/`.
+- [ ] Native Codex skill mirrors, plugin packages, or subagent packages are
+      treated as packaging targets rather than primary harness documentation.
 - [ ] Project `.codex/config.toml` does not contain user-only provider,
       profile, notification, credential-routing, or telemetry settings.
 - [ ] Skill changes are not disguised as agent changes.

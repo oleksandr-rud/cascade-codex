@@ -31,8 +31,8 @@ Date: YYYY-MM-DD
 | Instructions | `AGENTS.md` | `<ok-gap>` |
 | Runtime bridge | `CODEX.md` | `<ok-gap>` |
 | Project config | `.codex/config.toml`; trusted project-safe keys only | `<ok-gap>` |
-| Native repo skills | `.agents/skills/<skill>/SKILL.md` when Codex discovery is required | `<ok-gap>` |
-| Cascade harness skills | `.codex/skills/<skill>/SKILL.md` and owning `skills.yaml` | `<ok-gap>` |
+| Cascade harness skills | `.codex/skills/<skill>/SKILL.md`, bundled resources, and owning `skills.yaml` | `<ok-gap>` |
+| Skill package mapping | native Codex mirror or plugin-packaged copy, only when explicitly required | `<ok-gap>` |
 | Skill app metadata | `agents/openai.yaml` when UI metadata, invocation policy, or tool dependency declaration is needed | `<ok-gap>` |
 | Cascade agents | `.codex/agents/{name}.toml`, `AGENT.md`, `skills.yaml` | `<ok-gap>` |
 | Spawnable custom agents | top-level `name`, `description`, `developer_instructions` | `<ok-gap>` |
