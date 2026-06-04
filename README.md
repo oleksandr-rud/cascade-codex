@@ -49,6 +49,18 @@ Use `issue-intake` only for issue bodies or tracker tickets. Use
 `test-autorepair` only when automated tests are stale, flaky, or failing while
 the product behavior still matches the intended contract.
 
+Broad work is split by `orchestrate-work` into lanes with independent source
+inputs, file ownership, acceptance checks, and merge evidence. Each lane keeps
+its Feature Impact Matrix risk-scoped to directly touched behavior and plausible
+adjacent regressions, so the matrix remains a blast-radius check rather than a
+product inventory.
+
+At closeout, the shared Doc Routing Decision Matrix records whether durable
+product, design, brand, spec, architecture, stack, glossary, or backlog facts
+were updated, already aligned, deferred, blocked, missing context, or did not
+need documentation. The matrix uses the narrowest owner target and a bloat
+check so future agents get useful sourced deltas instead of broad doc rewrites.
+
 For discovery-heavy work, use:
 
 ```text
@@ -81,6 +93,12 @@ Keep project-specific facts in:
 - `docs/brand/`
 - `docs/specs/`
 - `docs/work/`
+
+Use the Doc Routing Decision Matrix in `docs/patterns/workflow.md` when a
+source, discovery artifact, validated diff, or closeout may need durable docs.
+Append thin sourced deltas to the narrowest owner file; route larger discovery,
+ambiguous context, or sibling-doc effects through the relevant skill instead of
+expanding `AGENTS.md` or creating generic note dumps.
 
 Keep reusable agentic engineering rules in:
 
