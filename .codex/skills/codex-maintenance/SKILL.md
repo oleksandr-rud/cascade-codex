@@ -134,6 +134,10 @@ Apply these rules before approving a harness design or file change:
 - Require source paths for product-sensitive work. Skills that benefit from
   product specs must name the relevant `docs/specs/`, `docs/product/`,
   `docs/design/`, `docs/brand/`, `docs/work/`, and backlog sources.
+- Use the shared Doc Routing Decision Matrix in `docs/patterns/workflow.md`
+  when a harness change creates, changes, validates, or closes out durable
+  facts across product, design, brand, specs, backlog, glossary, patterns,
+  skills, agents, config, or validator wiring.
 - Add planning loops only when objective, budget, checkpoint cadence, and done
   condition are clear.
 - Prefer direct replacement of stale names, paths, and routes unless a live
@@ -163,6 +167,8 @@ Apply these rules before approving a harness design or file change:
   in `docs/brand/`, normalized specs in `docs/specs/transformed/`, raw sources
   in `docs/specs/incoming/`, execution state in `docs/work/`, and candidates
   in `docs/backlog/_index.md`.
+- Shared doc routing decisions live in `docs/patterns/workflow.md`; reusable
+  closeout matrices use `.codex/skills/closeout/templates/doc-routing-decision.md`.
 
 ## Codex Documentation Basis
 

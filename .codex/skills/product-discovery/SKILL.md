@@ -27,6 +27,7 @@ product/runtime code and does not replace `plan-change`.
    workflows when available and relevant.
 5. `docs/glossary.md`, `docs/structure.md`, and active work state under
    `docs/work/`.
+6. `docs/patterns/workflow.md` for the shared Doc Routing Decision Matrix.
 
 Separate observed facts, user-provided facts, assumptions, and open questions.
 Ask only blocker questions after inspecting available sources.
@@ -80,9 +81,11 @@ intent is the blocker.
    them. Mark weak assumptions instead of inventing product facts.
 6. Preserve traceability:
    `source -> product artifact -> scenario IDs -> functional evidence -> work lane`.
-7. Use `docs-impact-map` after creating or changing product docs when sibling
+7. Record Doc Routing Decision Matrix rows for product artifacts created,
+   updated, deferred, blocked, or intentionally unchanged.
+8. Use `docs-impact-map` after creating or changing product docs when sibling
    brand, design, spec, backlog, glossary, or pattern docs may be affected.
-8. Route plan-ready work to `plan-change`; route acceptance evidence to
+9. Route plan-ready work to `plan-change`; route acceptance evidence to
    `functional-qa`; route large missing context back to `discover`.
 
 ## Write Targets
@@ -107,6 +110,7 @@ intent is the blocker.
 - artifact type and source identity;
 - observed facts, assumptions, open questions, and non-goals;
 - product docs created, updated, proposed, or intentionally unchanged;
+- doc routing decisions;
 - scenario IDs, requirement IDs, or journey IDs affected;
 - impact-map status;
 - next route: `docs-impact-map`, `plan-change`, `functional-qa`, `discover`,

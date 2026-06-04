@@ -12,7 +12,7 @@ Use when work is done, blocked, or ready for handoff.
 1. Latest user request.
 2. Current diff and validation evidence.
 3. Current work lanes and behavior examples.
-4. `docs/patterns/workflow.md`.
+4. `docs/patterns/workflow.md`, especially the Doc Routing Decision Matrix.
 5. Existing product, design, brand, spec, architecture, and glossary docs:
    - `docs/product/`
    - `docs/design/`
@@ -33,6 +33,8 @@ Use when work is done, blocked, or ready for handoff.
    - identify whether the diff introduced or changed durable product behavior,
      design/brand constraints, normalized spec acceptance criteria,
      architecture/boundary rules, stack/runtime facts, or codebase vocabulary;
+   - fill a Doc Routing Decision Matrix row for each detected durable fact, or
+     one `NO_DOC_NEEDED` row when no durable doc fact exists;
    - use `docs-impact-map` when a durable product/design/brand/spec fact may
      affect sibling owner docs before appending a thin doc diff;
    - compare detected facts against existing docs before writing;
@@ -98,6 +100,7 @@ Every thin doc diff must include:
 - Product/spec facts: `docs/product/`, `docs/design/`, `docs/brand/`, and
   `docs/specs/`
 - Folder/write-target rules: `docs/structure.md`
+- Doc routing decision template: `templates/doc-routing-decision.md`
 - Thin doc diff template: `templates/thin-doc-diff.md`
 
 Never write stack inventories, product specs, role inventories, historical
@@ -108,6 +111,7 @@ decisions, or learned lessons into `AGENTS.md`.
 - outcome and lane status;
 - files changed;
 - validation evidence;
+- doc routing decisions;
 - thin doc diffs written or why none were needed;
 - unresolved risks or blocked checks;
 - memory written.

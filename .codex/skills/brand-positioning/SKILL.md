@@ -25,6 +25,7 @@ design tokens directly, or replace `product-discovery`.
    support workflows.
 6. Current `docs-impact-map` report when a sibling doc change triggered the
    brand review.
+7. `docs/patterns/workflow.md` for the shared Doc Routing Decision Matrix.
 
 Separate explicit source facts from assumptions. Do not invent market claims,
 competitors, proof points, or research conclusions.
@@ -78,9 +79,11 @@ intent is the blocker.
    owner.
 7. Update `docs/glossary.md` when brand terminology affects future planning,
    UI copy, public contracts, or specs.
-8. Use `docs-impact-map` after brand updates to re-check product, design, spec,
+8. Record Doc Routing Decision Matrix rows for brand/content facts created,
+   updated, deferred, blocked, or intentionally unchanged.
+9. Use `docs-impact-map` after brand updates to re-check product, design, spec,
    backlog, glossary, and pattern effects.
-9. Route plan-ready behavior changes to `plan-change`; route copy evidence to
+10. Route plan-ready behavior changes to `plan-change`; route copy evidence to
    `functional-qa` when visible text must be verified.
 
 ## Write Targets
@@ -104,6 +107,7 @@ intent is the blocker.
 - brand artifact type and source identity;
 - positioning, audience, promise, proof, tone, and naming decisions;
 - assumptions and open questions;
+- doc routing decisions;
 - affected product/design/spec/glossary docs;
 - impact-map status;
 - next route: `docs-impact-map`, `product-discovery`, `plan-change`,

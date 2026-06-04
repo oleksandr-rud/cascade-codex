@@ -30,7 +30,8 @@ creates a durable doc fact. It does not patch product/runtime code.
 4. Active work state: `docs/work/active.md`, relevant `docs/work/lanes/`, and
    recent `docs/work/reports/`.
 5. `docs/structure.md` for write targets and owner docs.
-6. Current code, UI copy, tests, public contracts, and validation commands only
+6. `docs/patterns/workflow.md` for the shared Doc Routing Decision Matrix.
+7. Current code, UI copy, tests, public contracts, and validation commands only
    when docs conflict or a referenced behavior needs grounding.
 
 If current code and docs conflict, follow code for implementation planning and
@@ -77,24 +78,26 @@ Use these dependency checks before deciding that one doc update is complete:
 
 1. Name the changed fact, source identity, owner doc, and status:
    `proposed`, `validated`, `blocked`, or `superseded`.
-2. Build an impact matrix with one row per affected target.
-3. Mark each affected target:
+2. Build or update the shared Doc Routing Decision Matrix for the changed fact
+   before writing owner docs.
+3. Build an impact matrix with one row per affected target.
+4. Mark each affected target:
    - `UPDATED` when the owner doc was changed;
    - `NO_CHANGE` when checked and already aligned;
    - `DEFERRED` when the update is real follow-up work with owner or backlog;
    - `BLOCKED` when a blocker prevents safe routing;
    - `GAP` when the source material lacks enough product/design/brand/spec
      context.
-4. Route `GAP` to `discover` or `ingest-spec` before `plan-change`.
-5. Route missing acceptance or scenario coverage to `functional-qa` or
+5. Route `GAP` to `discover` or `ingest-spec` before `plan-change`.
+6. Route missing acceptance or scenario coverage to `functional-qa` or
    `plan-change` depending on whether expected behavior is already clear.
-6. Route reusable harness rule changes to `codex-maintenance` and validator
+7. Route reusable harness rule changes to `codex-maintenance` and validator
    updates.
-7. Update the smallest owner docs only when the source fact is explicit enough
+8. Update the smallest owner docs only when the source fact is explicit enough
    and the target doc has a clear owner.
-8. Create backlog candidates only for real follow-up work with acceptance
+9. Create backlog candidates only for real follow-up work with acceptance
    criteria.
-9. Keep the report compact; do not rewrite broad product, brand, design, or
+10. Keep the report compact; do not rewrite broad product, brand, design, or
    spec docs.
 
 ## Write Policy
@@ -110,6 +113,7 @@ Use these dependency checks before deciding that one doc update is complete:
 ## Output
 
 - changed source fact and owner doc;
+- Doc Routing Decision Matrix status;
 - impact matrix with target docs, required checks, status, and next gate;
 - docs updated, deferred, blocked, or intentionally unchanged;
 - next route: `discover`, `ingest-spec`, `orchestrate-work`, `plan-change`,

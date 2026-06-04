@@ -20,6 +20,7 @@ patch product/runtime code.
 4. Existing behavior examples and scenario ledgers.
 5. `harness.config.yaml` paths when available.
 6. `docs/structure.md` for write targets.
+7. `docs/patterns/workflow.md` for the shared Doc Routing Decision Matrix.
 
 ## Classification
 
@@ -66,7 +67,9 @@ Classify incoming material as one or more:
      tracker settings, and memory paths;
    - `.codex/skills/`, `.codex/agents/`, or `docs/patterns/` only for
      repeated workflow or architecture rules.
-8. Hand off to `discover` when source material lacks enough product/design
+8. Record Doc Routing Decision Matrix rows for durable facts, explicit
+   `NO_DOC_NEEDED` decisions, gaps, and deferred owner updates.
+9. Hand off to `discover` when source material lacks enough product/design
    context. Hand off to `product-discovery` when product facts need PRD,
    persona, requirement, journey, scenario, non-goal, or success-metric
    structure. Hand off to `brand-positioning` when brand, naming, tone,
@@ -101,6 +104,7 @@ Do not store these packets in `AGENTS.md`.
 ## Output
 
 - source material classified;
+- doc routing decisions;
 - transformed docs written or proposed;
 - behavior examples;
 - acceptance checks;

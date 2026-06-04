@@ -65,6 +65,53 @@ before `plan-change`. Route missing acceptance or scenario coverage to
 `functional-qa` or `plan-change` depending on whether expected behavior is
 already clear.
 
+## Doc Routing Decision Matrix
+
+Use this shared matrix whenever a skill creates, changes, normalizes, validates,
+or closes out durable facts that may belong in project docs. The matrix makes
+the routing decision explicit even when no document update is needed.
+
+| Fact | Source | Owner Target | Action | Bloat Check | Evidence | Next Gate |
+|---|---|---|---|---|---|---|
+| `<DURABLE_FACT_OR_NONE>` | `<REQUEST_SPEC_DIFF_LANE>` | `<DOC_OR_FOLDER_OR_NONE>` | `<UPDATED_NO_CHANGE_DEFERRED_BLOCKED_GAP_NO_DOC_NEEDED>` | `<SMALLEST_USEFUL_DELTA_OR_REASON>` | `<VALIDATION_OR_SOURCE>` | `<SKILL_OR_DONE>` |
+
+Actions:
+
+- `UPDATED`: owner doc was changed with the smallest useful sourced delta.
+- `NO_CHANGE`: owner doc was checked and already matches the durable fact.
+- `DEFERRED`: real follow-up exists and has an owner or backlog route.
+- `BLOCKED`: required evidence or owner context is unavailable.
+- `GAP`: source material lacks enough product, design, brand, spec, glossary,
+  or architecture context for safe routing.
+- `NO_DOC_NEEDED`: change is mechanical, test-only, refactor-only, already
+  documented, or not useful for future planning or validation.
+
+Rules:
+
+- `Source`: use the strongest available identity: request or issue ID,
+  spec/transformed-spec path, work lane ID, product artifact ID, changed file,
+  or prior report.
+- `Owner Target`: name the exact existing owner file when known; use a folder
+  only when owner selection is pending; use `none` only for `NO_DOC_NEEDED`.
+- `Evidence`: cite the proof or blocker: command result, functional check,
+  scenario evidence, code diff, docs-impact status, source-only basis, or
+  blocked reason.
+- `Bloat Check`: state why the row is the smallest useful durable delta, or why
+  no doc update is needed.
+- Prefer the existing owner doc or folder named in `docs/structure.md`.
+- Use `docs-impact-map` when one durable product, design, brand, spec,
+  backlog, glossary, or pattern fact may affect sibling docs.
+- Append thin sourced deltas; do not rewrite broad docs or create generic note
+  dumps.
+- Store raw source material only when `ingest-spec` decides preservation helps
+  traceability or future re-normalization.
+- Route `GAP` to `discover`, `product-discovery`, `brand-positioning`,
+  `design-system`, or `ingest-spec` according to the missing context.
+- Route durable follow-up work to `docs/backlog/_index.md` only with acceptance
+  criteria.
+- Use `.codex/skills/closeout/templates/doc-routing-decision.md` when a formal
+  reusable matrix is useful.
+
 ## Closeout Drift Scan
 
 Run at task finishing after validation evidence exists. Compare the final diff

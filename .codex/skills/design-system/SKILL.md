@@ -26,6 +26,7 @@ decide product intent, or create brand positioning.
    screenshots, browser evidence, or visual regression artifacts when available.
 5. `docs/glossary.md`, active work state, and current `docs-impact-map`
    reports.
+6. `docs/patterns/workflow.md` for the shared Doc Routing Decision Matrix.
 
 Follow existing code and design-system implementation when docs conflict, then
 report the drift.
@@ -78,9 +79,11 @@ blocker.
    behavior, accessibility, and functional or visual checks.
 6. Route brand visual intent gaps to `brand-positioning`.
 7. Route product behavior gaps to `product-discovery` or `plan-change`.
-8. Use `docs-impact-map` after design updates to re-check product, brand, spec,
+8. Record Doc Routing Decision Matrix rows for design facts created, updated,
+   deferred, blocked, or intentionally unchanged.
+9. Use `docs-impact-map` after design updates to re-check product, brand, spec,
    backlog, glossary, and pattern effects.
-9. Route visible UI checks to `functional-qa` and implementation slices to
+10. Route visible UI checks to `functional-qa` and implementation slices to
    `plan-change`.
 
 ## Write Targets
@@ -105,6 +108,7 @@ blocker.
 - design artifact type and source identity;
 - token/component/interaction/accessibility decisions;
 - assumptions, gaps, and open questions;
+- doc routing decisions;
 - affected product/brand/spec/glossary docs;
 - required browser, visual, accessibility, or functional evidence;
 - impact-map status;

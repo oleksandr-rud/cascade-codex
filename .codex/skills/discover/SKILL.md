@@ -24,7 +24,8 @@ idea. Do not make discovery mandatory for ordinary implementation planning.
 2. Current codebase vocabulary, UI copy, public contracts, and existing tests.
 3. Existing `docs/product/`, `docs/design/`, `docs/brand/`, and `docs/specs/`.
 4. `docs/glossary.md`.
-5. External research only when the user requests it or the runtime has an
+5. `docs/patterns/workflow.md` for the shared Doc Routing Decision Matrix.
+6. External research only when the user requests it or the runtime has an
    approved source/tool.
 
 ## Flow
@@ -51,7 +52,9 @@ idea. Do not make discovery mandatory for ordinary implementation planning.
    acceptance criteria.
 10. Impact: use `docs-impact-map` when created or updated artifacts may affect
     sibling product/design/brand/spec/backlog/glossary/pattern docs.
-11. Handoff: route plan-ready work to `product-discovery`,
+11. Routing: record Doc Routing Decision Matrix rows for artifacts created,
+    updated, deferred, blocked, or intentionally unchanged.
+12. Handoff: route plan-ready work to `product-discovery`,
     `brand-positioning`, `design-system`, `ingest-spec`, `docs-impact-map`,
     `orchestrate-work`, or `plan-change`.
 
@@ -74,6 +77,7 @@ idea. Do not make discovery mandatory for ordinary implementation planning.
 
 - mode used;
 - artifacts created or updated;
+- doc routing decisions;
 - behavior examples or scenario IDs;
 - unresolved questions;
 - suggested next workflow step.

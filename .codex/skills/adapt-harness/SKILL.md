@@ -22,7 +22,8 @@ questions.
    tests, and docs.
 4. `docs/structure.md`, `harness.config.example.yaml`, and existing
    `harness.config.yaml` if present.
-5. `scripts/validate_cascade_codex.py`.
+5. `docs/patterns/workflow.md` for the shared Doc Routing Decision Matrix.
+6. `scripts/validate_cascade_codex.py`.
 
 ## Adaptation Checklist
 
@@ -49,7 +50,9 @@ questions.
    - `docs/glossary.md` for codebase terms;
    - `docs/patterns/boundaries.md` only for reusable boundary rules;
    - `docs/work/active.md` for active adaptation follow-up lanes.
-10. Move bulky existing `AGENTS.md` content to the narrowest owner:
+10. Record Doc Routing Decision Matrix rows for migrated, deferred, blocked,
+    or intentionally unchanged project facts.
+11. Move bulky existing `AGENTS.md` content to the narrowest owner:
     - full stack/dependency maps -> `harness.config.yaml`;
     - source/test/docs roots and commands -> `harness.config.yaml`;
     - product/spec/brand/design facts -> `docs/product/`, `docs/design/`,
@@ -58,11 +61,11 @@ questions.
     - reusable workflow or boundary rules -> `.codex/skills/`,
       `.codex/agents/`, or `docs/patterns/`;
     - active state or handoff memory -> `docs/work/`.
-11. Refuse to leave placeholder values, stale cascade lines, or standalone
+12. Refuse to leave placeholder values, stale cascade lines, or standalone
     review/triage routes in active harness docs; fix them or report a blocker.
-12. Run the Cascade Codex validator.
-13. Run target-repo syntax/path checks when available.
-14. Report files written, skipped, merged, or requiring user review.
+13. Run the Cascade Codex validator.
+14. Run target-repo syntax/path checks when available.
+15. Report files written, skipped, merged, or requiring user review.
 
 ## Replacement Rules
 
@@ -80,6 +83,7 @@ questions.
 - target repo inspected;
 - detected stack and codebase vocabulary;
 - harness files copied, merged, or skipped;
+- doc routing decisions;
 - validation commands run;
 - unresolved placeholders or blocker questions;
 - next recommended skill.
