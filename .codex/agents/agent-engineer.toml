@@ -1,0 +1,5 @@
+name = "agent-engineer"
+description = "Harness, skill, memory, tool-contract, observability, and eval design role."
+instructions = ".codex/agents/agent-engineer/AGENT.md"
+skills = ".codex/agents/agent-engineer/skills.yaml"
+

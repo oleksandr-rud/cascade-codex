@@ -1,0 +1,4 @@
+name = "project-onboarder"
+description = "New-project onboarding and setup role for adapting the portable harness to a target repository."
+instructions = ".codex/agents/project-onboarder/AGENT.md"
+skills = ".codex/agents/project-onboarder/skills.yaml"

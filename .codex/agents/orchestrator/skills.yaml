@@ -1,0 +1,27 @@
+skills:
+  - name: context
+    source: .codex/skills/context/SKILL.md
+  - name: orchestrate-work
+    source: .codex/skills/orchestrate-work/SKILL.md
+  - name: plan-change
+    source: .codex/skills/plan-change/SKILL.md
+  - name: functional-qa
+    source: .codex/skills/functional-qa/SKILL.md
+  - name: implement-change
+    source: .codex/skills/implement-change/SKILL.md
+  - name: review-change
+    source: .codex/skills/review-change/SKILL.md
+  - name: validate-change
+    source: .codex/skills/validate-change/SKILL.md
+  - name: test-autorepair
+    source: .codex/skills/test-autorepair/SKILL.md
+  - name: issue-intake
+    source: .codex/skills/issue-intake/SKILL.md
+  - name: closeout
+    source: .codex/skills/closeout/SKILL.md
+  - name: architecture-review
+    source: .codex/skills/architecture-review/SKILL.md
+  - name: discover
+    source: .codex/skills/discover/SKILL.md
+  - name: ingest-spec
+    source: .codex/skills/ingest-spec/SKILL.md

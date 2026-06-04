@@ -1,0 +1,4 @@
+name = "orchestrator"
+description = "Portable orchestrator role for the Codex workflow cascade."
+instructions = ".codex/agents/orchestrator/AGENT.md"
+skills = ".codex/agents/orchestrator/skills.yaml"

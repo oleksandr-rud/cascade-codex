@@ -1,0 +1,10 @@
+skills:
+  - name: agents-best-practices
+    source: .codex/skills/agents-best-practices/SKILL.md
+  - name: develop-skill
+    source: .codex/skills/develop-skill/SKILL.md
+  - name: adapt-harness
+    source: .codex/skills/adapt-harness/SKILL.md
+  - name: ingest-spec
+    source: .codex/skills/ingest-spec/SKILL.md
+

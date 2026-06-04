@@ -1,0 +1,17 @@
+skills:
+  - name: context
+    source: .codex/skills/context/SKILL.md
+  - name: adapt-harness
+    source: .codex/skills/adapt-harness/SKILL.md
+  - name: ingest-spec
+    source: .codex/skills/ingest-spec/SKILL.md
+  - name: discover
+    source: .codex/skills/discover/SKILL.md
+  - name: validate-change
+    source: .codex/skills/validate-change/SKILL.md
+  - name: closeout
+    source: .codex/skills/closeout/SKILL.md
+  - name: agents-best-practices
+    source: .codex/skills/agents-best-practices/SKILL.md
+  - name: develop-skill
+    source: .codex/skills/develop-skill/SKILL.md

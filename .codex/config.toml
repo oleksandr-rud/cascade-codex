@@ -1,0 +1,35 @@
+[harness]
+name = "portable-codex-harness"
+version = "1.0.0"
+bridge = "codex.md"
+config_template = "harness.config.example.yaml"
+
+[cascade]
+default = [
+  "context",
+  "ingest-spec",
+  "orchestrate-work",
+  "plan-change",
+  "functional-qa",
+  "implement-change",
+  "review-change",
+  "validate-change",
+  "test-autorepair",
+  "closeout",
+]
+conditional_discovery = "discover"
+test_autorepair_condition = "only if stale tests"
+exception_paths = ["issue-intake"]
+
+[memory]
+glossary = "docs/glossary.md"
+work = "docs/work"
+product = "docs/product"
+specs = "docs/specs"
+patterns = "docs/patterns"
+backlog = "docs/backlog"
+
+[agents]
+default_orchestrator = "orchestrator"
+onboarding = "project-onboarder"
+harness_design = "agent-engineer"
