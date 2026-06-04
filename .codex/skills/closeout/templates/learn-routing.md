@@ -9,6 +9,7 @@ memory.
 | Role behavior | Relevant `.codex/agents/{name}/AGENT.md` |
 | Reusable implementation pattern | `docs/patterns/workflow.md`, `docs/patterns/boundaries.md`, `docs/patterns/testing.md`, or `docs/patterns/context-memory.md` plus `docs/patterns/_index.md` |
 | Product behavior | Product spec, product scenario, task scenario, or regression test |
+| Product/spec/design/brand/architecture change found at closeout | Existing owner doc via `templates/thin-doc-diff.md` |
 | New codebase term | `docs/glossary.md` |
 | Durable rejected scope | Existing backlog note, pattern, decision, or work report |
 | Historical note only | `docs/work/reports/YYYY-MM-DD-{slug}.md` |

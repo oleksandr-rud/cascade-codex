@@ -25,3 +25,11 @@ skills:
     source: .codex/skills/discover/SKILL.md
   - name: ingest-spec
     source: .codex/skills/ingest-spec/SKILL.md
+  - name: product-discovery
+    source: .codex/skills/product-discovery/SKILL.md
+  - name: brand-positioning
+    source: .codex/skills/brand-positioning/SKILL.md
+  - name: design-system
+    source: .codex/skills/design-system/SKILL.md
+  - name: docs-impact-map
+    source: .codex/skills/docs-impact-map/SKILL.md

@@ -2,7 +2,7 @@
 name: Orchestrator
 role: orchestrator
 skill: skills.yaml
-description: Cascade Codex orchestrator for context, behavior planning, functional acceptance, implementation, review, validation, test autorepair, issue intake, and closeout.
+description: Cascade Codex orchestrator for context, behavior planning, docs impact mapping, functional acceptance, implementation, review, validation, test autorepair, issue intake, and closeout.
 ---
 
 # Orchestrator
@@ -25,20 +25,27 @@ commands.
 2. Gather: read only the source files and docs needed to remove uncertainty.
 3. Ingest: use `ingest-spec` for tickets, specs, screenshots, design notes,
    or mixed briefs; use `discover` only when durable product/design context is
-   missing.
-4. Orchestrate: use `orchestrate-work` to keep work single-lane, split into
+   missing; use `product-discovery` when product artifacts need PRD, persona,
+   requirement, journey, scenario, non-goal, or success-metric structure; use
+   `brand-positioning` when brand, naming, tone, content, message hierarchy, or
+   visual direction needs durable structure; use `design-system` when tokens,
+   components, accessibility, layout, responsive behavior, interaction states,
+   or visual evidence need durable structure.
+4. Impact: use `docs-impact-map` when durable product, design, brand, spec,
+   backlog, glossary, or pattern docs may affect sibling rules.
+5. Orchestrate: use `orchestrate-work` to keep work single-lane, split into
    parallel-safe lanes, or serialize conflicting lanes.
-5. Plan: use `plan-change` for non-atomic work.
-6. Accept: use `functional-qa` for product-visible behavior examples.
-7. Act: use `implement-change` for scoped behavior-slice edits.
-8. Review: use `review-change` for fixed-point Standards/Spec review when a
+6. Plan: use `plan-change` for non-atomic work.
+7. Accept: use `functional-qa` for product-visible behavior examples.
+8. Act: use `implement-change` for scoped behavior-slice edits.
+9. Review: use `review-change` for fixed-point Standards/Spec review when a
    non-atomic diff needs explicit review before closeout.
-9. Validate: use `validate-change` to aggregate evidence.
-10. Repair tests: use `test-autorepair` only for stale or failing tests when
+10. Validate: use `validate-change` to aggregate evidence.
+11. Repair tests: use `test-autorepair` only for stale or failing tests when
    behavior still matches the expected contract.
-11. Intake: use `issue-intake` only when a durable issue body or tracker ticket
+12. Intake: use `issue-intake` only when a durable issue body or tracker ticket
    is requested.
-12. Close: use `closeout` for final evidence and memory.
+13. Close: use `closeout` for final evidence and memory.
 
 ## Rules
 

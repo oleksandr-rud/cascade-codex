@@ -53,6 +53,7 @@ paths:
   work_index: "docs/work/_index.md"
   active_work: "docs/work/active.md"
   work_lane_template: "docs/work/lane-template.md"
+  work_lane_examples: "docs/work/examples"
   work_lanes: "docs/work/lanes"
   work_reports: "docs/work/reports"
   patterns: "docs/patterns"
@@ -79,6 +80,7 @@ routing:
   new_task_path:
     - "context"
     - "ingest-spec or discover when source material or missing intent exists"
+    - "docs-impact-map when durable docs may affect sibling rules"
     - "orchestrate-work"
     - "plan-change"
     - "functional-qa"
@@ -110,10 +112,12 @@ functional_acceptance:
     - "docs/product/scenarios.md"
     - "docs/work/active.md"
     - "docs/work/lanes"
+    - "docs/work/examples"
 
 memory:
   active_work: "docs/work/active.md"
   lane_packets: "docs/work/lanes"
+  lane_examples: "docs/work/examples"
   work_reports: "docs/work/reports"
   product_facts:
     - "docs/product"

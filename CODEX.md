@@ -19,7 +19,7 @@ If docs and code disagree, follow current code and report the drift.
 
 Use this cascade for non-atomic work:
 
-`context -> ingest-spec/discover if needed -> orchestrate-work -> plan-change -> functional-qa -> implement-change -> review-change -> validate-change -> test-autorepair only if stale tests -> closeout`
+`context -> ingest-spec/discover if needed -> docs-impact-map when durable docs may affect sibling rules -> orchestrate-work -> plan-change -> functional-qa -> implement-change -> review-change -> validate-change -> test-autorepair only if stale tests -> closeout`
 
 - `context`: re-orient to branch, active work lanes, recent handoff state, and
   backlog.
@@ -27,6 +27,18 @@ Use this cascade for non-atomic work:
   notes, or mixed briefs into durable write targets and behavior examples.
 - `discover`: create durable product/design/brand/persona/journey artifacts
   only when planning cannot resolve missing context.
+- `product-discovery`: create or update durable PRDs, personas, product
+  requirements, journeys, scenarios, non-goals, success metrics, and
+  acceptance criteria when product intent needs deeper structure.
+- `brand-positioning`: create or update durable brand positioning, audience,
+  promise, proof, naming, tone, message hierarchy, copy rules, and visual
+  direction.
+- `design-system`: create or update durable design token, component, UX,
+  accessibility, layout, responsive, interaction-state, and visual evidence
+  rules.
+- `docs-impact-map`: proactively check cross-folder product, design, brand,
+  spec, backlog, glossary, and pattern dependencies before planning or
+  closeout.
 - `orchestrate-work`: split, serialize, track, or merge work lanes when the
   work can run in parallel or needs dependency management.
 - `plan-change`: capture product/design intent, codebase vocabulary, behavior
@@ -41,7 +53,8 @@ Use this cascade for non-atomic work:
 - `test-autorepair`: repair stale, flaky, or failing tests only when product
   behavior still matches the expected contract.
 - `closeout`: persist validation evidence, work memory, reusable lessons,
-  and final handoff.
+  thin product/spec/architecture doc diffs when the final diff changed durable
+  facts, and final handoff.
 
 `issue-intake` is an explicit exception path for issue bodies or tracker
 tickets. Human review is an explicit open-question or exception path, not a
@@ -54,7 +67,16 @@ standalone workflow router.
   and Spec findings should be kept separate from command evidence.
 - `discover`: use for durable product/design discovery, personas, journeys,
   scenarios, and specs when `plan-change` cannot resolve missing context.
+- `product-discovery`: use when durable product artifacts need PRD, persona,
+  requirement, journey, scenario, non-goal, or success-metric structure.
+- `brand-positioning`: use when brand, naming, tone, content, message
+  hierarchy, or visual direction needs durable structure.
+- `design-system`: use when design tokens, components, UX rules,
+  accessibility, layout, responsive behavior, interaction states, or visual
+  evidence need durable structure.
 - `ingest-spec`: use to convert source specs into the project docs structure.
+- `docs-impact-map`: use when one product/design/brand/spec/backlog/glossary
+  doc update may require sibling doc checks or follow-up routing.
 - `adapt-harness`: use when wiring this harness into a new repository.
 - `project-onboarder`: use for new-project setup, harness installation,
   onboarding, or migration of existing instructions into the Cascade Codex
@@ -96,10 +118,13 @@ Create a lane packet only when a row is not enough:
 - `docs/work/_index.md`
 - `docs/work/active.md`
 - `docs/work/lane-template.md`
+- `docs/work/examples/`
 - `docs/work/lanes/*.md`
 - `docs/work/reports/`
 
-Completed or unrelated work lanes are historical context.
+Completed or unrelated work lanes are historical context. Example lanes are
+copyable guidance only and are not active work unless copied into
+`docs/work/lanes/` and registered in `docs/work/active.md`.
 
 ## Write Targets
 
@@ -129,11 +154,21 @@ Use product/spec docs only when they are current enough to guide behavior:
 - `docs/specs/_index.md`
 
 Use `discover` to create durable product/design artifacts. Use
-`ingest-spec` to normalize incoming tickets, documents, screenshots, or
-design notes into plan-ready docs.
+`product-discovery` when product artifacts need PRD, persona, requirement,
+journey, scenario, non-goal, or success-metric structure. Use
+`brand-positioning` when brand positioning, naming, tone, content hierarchy, or
+visual direction needs durable structure. Use `design-system` when design
+tokens, components, accessibility, responsive rules, interaction states, or
+visual evidence need durable structure. Use `ingest-spec` to normalize incoming
+tickets, documents, screenshots, or design notes into plan-ready docs. Use
+`docs-impact-map` when those docs create or change a fact that may affect
+sibling product, design, brand, spec, backlog, glossary, or pattern rules.
 
 ## Evidence And Memory
 
 Use `docs/patterns/workflow.md` for scoped coverage from current work-lane
-criteria to changed code and validation. Persist only reusable
-lessons or required handoff state; avoid decorative documentation churn.
+criteria to changed code and validation. At closeout, scan the final diff for
+durable product, design, brand, spec, architecture, stack/runtime, or glossary
+changes and append only thin sourced doc diffs to the existing owner docs.
+Persist only reusable lessons, required handoff state, or required thin diffs;
+avoid decorative documentation churn.

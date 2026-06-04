@@ -34,18 +34,26 @@ idea. Do not make discovery mandatory for ordinary implementation planning.
    open questions.
 3. Personas: create or update `docs/product/personas/` when user roles drive
    behavior.
-4. Brand/content: update `docs/brand/` when tone, naming, or visual direction
-   affects product behavior.
-5. Product spec: write durable specs under `docs/product/` or normalized specs
-   under `docs/specs/transformed/`.
+4. Brand/content: use `brand-positioning` when positioning, naming, tone,
+   message hierarchy, copy rules, or visual direction need durable structure;
+   otherwise update `docs/brand/` when tone, naming, or visual direction affects
+   product behavior.
+5. Product spec: use `product-discovery` when PRD, persona, requirement,
+   journey, scenario, non-goal, or success-metric structure is needed; otherwise
+   write compact durable specs under `docs/product/` or normalized specs under
+   `docs/specs/transformed/`.
 6. Scenarios: add product scenario rows to `docs/product/scenarios.md`.
 7. Journeys: write cross-feature journeys when state carries across steps.
-8. Design gaps: record missing screens, tokens, components, accessibility, or
-   copy decisions in `docs/design/`.
+8. Design gaps: use `design-system` when tokens, components, accessibility,
+   layout, responsive behavior, interaction states, or visual evidence need
+   durable structure; otherwise record compact design gaps in `docs/design/`.
 9. Backlog: create backlog candidates only for real follow-up work with
    acceptance criteria.
-10. Handoff: route plan-ready work to `ingest-spec`, `orchestrate-work`,
-    or `plan-change`.
+10. Impact: use `docs-impact-map` when created or updated artifacts may affect
+    sibling product/design/brand/spec/backlog/glossary/pattern docs.
+11. Handoff: route plan-ready work to `product-discovery`,
+    `brand-positioning`, `design-system`, `ingest-spec`, `docs-impact-map`,
+    `orchestrate-work`, or `plan-change`.
 
 ## Rules
 

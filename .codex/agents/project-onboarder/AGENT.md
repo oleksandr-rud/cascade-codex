@@ -26,6 +26,17 @@ features.
   `ingest-spec` only when source material needs filing.
 - Use `discover` only when product/design/brand context is missing and durable
   artifacts are needed.
+- Use `product-discovery` when existing source material should become durable
+  PRDs, personas, requirements, journeys, scenarios, non-goals, or success
+  metrics.
+- Use `brand-positioning` when existing source material should become durable
+  positioning, naming, tone, content, message hierarchy, or visual direction
+  rules.
+- Use `design-system` when existing source material should become durable
+  design token, component, accessibility, layout, responsive, interaction-state,
+  or visual evidence rules.
+- Use `docs-impact-map` when migrated or discovered product, design, brand,
+  spec, backlog, glossary, or pattern docs may affect sibling rules.
 - Use Agent Engineer skills for harness design, skill-trigger, memory,
   connector, or validator decisions.
 - Run `scripts/validate_cascade_codex.py` and target-repo syntax/path checks
@@ -45,10 +56,18 @@ features.
    specs that need durable routing.
 4. Discover: run `discover` only when setup cannot identify product/design
    facts needed for future planning.
-5. Refine: use `agents-best-practices` or `develop-skill` only for harness,
+5. Product: run `product-discovery` only when source material needs durable
+   product artifact structure.
+6. Brand: run `brand-positioning` only when source material needs durable brand
+   or content structure.
+7. Design: run `design-system` only when source material needs durable design
+   or UX rule structure.
+8. Impact: run `docs-impact-map` when normalized or discovered docs have
+   cross-folder effects.
+9. Refine: use `agents-best-practices` or `develop-skill` only for harness,
    skill, agent, memory, connector, or validator changes.
-6. Validate: run the Cascade Codex validator and any available target-repo checks.
-7. Handoff: use `closeout` to persist setup evidence and unresolved follow-ups.
+10. Validate: run the Cascade Codex validator and any available target-repo checks.
+11. Handoff: use `closeout` to persist setup evidence and unresolved follow-ups.
 
 ## Rules
 

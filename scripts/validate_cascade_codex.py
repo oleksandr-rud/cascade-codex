@@ -37,6 +37,9 @@ REQUIRED_FILES = [
     "docs/work/_index.md",
     "docs/work/active.md",
     "docs/work/lane-template.md",
+    "docs/work/examples/_index.md",
+    "docs/work/examples/W-101-adapt-harness-doc-surface.md",
+    "docs/work/examples/W-102-parallel-implementation-validation.md",
     "docs/work/lanes/.gitkeep",
     "docs/work/reports/_index.md",
     "docs/patterns/workflow.md",
@@ -46,12 +49,20 @@ REQUIRED_FILES = [
     ".codex/skills/discover/templates/product-spec.md",
     ".codex/skills/discover/templates/journey.md",
     ".codex/skills/discover/templates/brand-spec.md",
+    ".codex/skills/product-discovery/templates/product-prd.md",
+    ".codex/skills/product-discovery/templates/persona.md",
+    ".codex/skills/brand-positioning/templates/brand-positioning.md",
+    ".codex/skills/brand-positioning/templates/message-map.md",
+    ".codex/skills/design-system/templates/design-rule.md",
+    ".codex/skills/design-system/templates/component-rule.md",
     ".codex/skills/functional-qa/checklists/functional-test-quality.md",
     ".codex/skills/functional-qa/templates/functional-test-plan.md",
     ".codex/skills/test-autorepair/checklists/semantic-repair-checklist.md",
     ".codex/skills/test-autorepair/templates/repair-report.md",
     ".codex/skills/context/templates/snapshot.md",
     ".codex/skills/closeout/templates/learn-routing.md",
+    ".codex/skills/closeout/templates/thin-doc-diff.md",
+    ".codex/skills/docs-impact-map/templates/impact-map.md",
     ".codex/skills/architecture-review/checklists/deep-module-review.md",
     ".codex/skills/ingest-spec/templates/transformed-spec.md",
     ".codex/skills/ingest-spec/templates/scenario-row.md",
@@ -74,6 +85,10 @@ SKILLS = [
     "plan-change",
     "architecture-review",
     "discover",
+    "product-discovery",
+    "brand-positioning",
+    "design-system",
+    "docs-impact-map",
     "implement-change",
     "functional-qa",
     "review-change",
@@ -117,6 +132,7 @@ REQUIRED_FOLDERS = [
     "docs/design",
     "docs/brand",
     "docs/work",
+    "docs/work/examples",
     "docs/work/lanes",
     "docs/work/reports",
 ]
@@ -125,6 +141,7 @@ CANONICAL_CASCADE_TOKENS = [
     "context",
     "ingest-spec",
     "discover",
+    "docs-impact-map",
     "orchestrate-work",
     "plan-change",
     "functional-qa",
@@ -147,6 +164,7 @@ REQUIRED_WIRING_SKILLS = {
     "functional-qa",
     "test-autorepair",
     "ingest-spec",
+    "docs-impact-map",
 }
 
 REQUIRED_HARNESS_AGENTS = {
@@ -217,6 +235,22 @@ SKILL_TRIGGER_REQUIREMENTS = {
     "discover": [
         r"missing context|missing.*product|missing.*design",
     ],
+    "product-discovery": [
+        r"product|PRD|persona|journey|scenario",
+        r"requirements|success metrics|acceptance",
+    ],
+    "brand-positioning": [
+        r"brand|tone|naming|message|content",
+        r"positioning|visual direction|copy",
+    ],
+    "design-system": [
+        r"design|UX|tokens|components|accessibility",
+        r"responsive|interaction|visual",
+    ],
+    "docs-impact-map": [
+        r"product|design|brand|spec",
+        r"impact|dependenc|cross-folder",
+    ],
     "orchestrate-work": [
         r"split|schedule|track|merge",
         r"serialized|dependencies|conflicts",
@@ -224,6 +258,10 @@ SKILL_TRIGGER_REQUIREMENTS = {
     "plan-change": [
         r"non-atomic",
         r"behavior examples|validation plan",
+    ],
+    "closeout": [
+        r"Finish|task|handoff|closeout",
+        r"validation evidence|memory|thin.*diff",
     ],
     "codex-maintenance": [
         r"Codex|Cascade Codex|harness",
@@ -245,6 +283,103 @@ REQUIRED_SKILL_SURFACES = {
         "docs/glossary.md",
         "docs/patterns/boundaries.md",
         "harness.config.yaml",
+    ],
+    "docs-impact-map": [
+        "docs/product/",
+        "docs/design/",
+        "docs/brand/",
+        "docs/specs/",
+        "docs/backlog/_index.md",
+        "docs/glossary.md",
+        "docs/patterns/",
+        "docs/work/active.md",
+        "docs/work/lanes/",
+        "docs/work/reports/",
+        "docs/structure.md",
+        "templates/impact-map.md",
+        "discover",
+        "ingest-spec",
+        "plan-change",
+        "functional-qa",
+        "closeout",
+    ],
+    "product-discovery": [
+        "docs/product/_index.md",
+        "docs/product/requirements.md",
+        "docs/product/journeys.md",
+        "docs/product/scenarios.md",
+        "docs/product/personas/",
+        "docs/specs/",
+        "docs/design/",
+        "docs/brand/",
+        "docs/backlog/",
+        "docs/glossary.md",
+        "docs-impact-map",
+        "plan-change",
+        "functional-qa",
+        "templates/product-prd.md",
+        "templates/persona.md",
+    ],
+    "brand-positioning": [
+        "docs/brand/",
+        "docs/product/",
+        "docs/design/",
+        "docs/specs/",
+        "docs/backlog/_index.md",
+        "docs/glossary.md",
+        "docs-impact-map",
+        "product-discovery",
+        "plan-change",
+        "functional-qa",
+        "templates/brand-positioning.md",
+        "templates/message-map.md",
+    ],
+    "design-system": [
+        "docs/design/_index.md",
+        "docs/design/interaction-model.md",
+        "docs/design/tokens.md",
+        "docs/product/",
+        "docs/brand/",
+        "docs/specs/",
+        "docs/backlog/_index.md",
+        "docs/glossary.md",
+        "docs-impact-map",
+        "brand-positioning",
+        "product-discovery",
+        "plan-change",
+        "functional-qa",
+        "templates/design-rule.md",
+        "templates/component-rule.md",
+    ],
+    "orchestrate-work": [
+        "docs/work/active.md",
+        "docs/work/lanes/",
+        "docs/work/examples/",
+        "source inputs",
+        "file ownership",
+        "MCP",
+        "Tool And MCP Context",
+        "merge owner",
+        "merge evidence",
+        "parallel-safe",
+    ],
+    "closeout": [
+        "Current diff",
+        "validation evidence",
+        "docs/work/active.md",
+        "docs/work/lanes/",
+        "docs/work/reports/",
+        "docs/product/",
+        "docs/design/",
+        "docs/brand/",
+        "docs/specs/",
+        "docs/patterns/boundaries.md",
+        "docs/glossary.md",
+        "thin doc diff",
+        "templates/thin-doc-diff.md",
+        "no durable doc diff needed",
+        "discover",
+        "ingest-spec",
     ],
     "codex-maintenance": [
         "AGENTS.md",
@@ -311,6 +446,13 @@ STANDALONE_QA = re.compile(
     re.IGNORECASE,
 )
 ALLOWED_QA_PATH_PARTS = {"functional-" + LEGACY_REVIEW_ALIAS}
+
+PLACEHOLDER = re.compile(r"<[^>]+>")
+PERSONA_ID = re.compile(r"\bP-\d{3}\b")
+SCENARIO_ID = re.compile(r"\bPS-\d{3}\b")
+JOURNEY_ID = re.compile(r"\bJ-\d{3}\b")
+REQUIREMENT_ID = re.compile(r"\bPR-\d{3}\b")
+BRAND_DOC_REF = re.compile(r"docs/brand/[A-Za-z0-9_.-]+\.md")
 
 
 def rel(path: Path) -> str:
@@ -585,6 +727,92 @@ def check_no_project_leakage(errors: list[str]) -> None:
                     errors.append(f"disallowed legacy review path part in {rel(path)}")
 
 
+def _is_placeholder(value: str) -> bool:
+    return bool(PLACEHOLDER.search(value))
+
+
+def _collect_ids(path: Path, pattern: re.Pattern[str], label: str, errors: list[str]) -> set[str]:
+    if not path.is_file():
+        return set()
+    seen: set[str] = set()
+    duplicates: set[str] = set()
+    for match in pattern.findall(read_text(path)):
+        if _is_placeholder(match):
+            continue
+        if match in seen:
+            duplicates.add(match)
+        seen.add(match)
+    for duplicate in sorted(duplicates):
+        errors.append(f"duplicate {label} id {duplicate} in {rel(path)}")
+    return seen
+
+
+def _check_refs(
+    path: Path,
+    refs: set[str],
+    known: set[str],
+    label: str,
+    errors: list[str],
+) -> None:
+    for item in sorted(refs):
+        if _is_placeholder(item):
+            continue
+        if item not in known:
+            errors.append(f"unknown {label} reference {item} in {rel(path)}")
+
+
+def check_traceability_contracts(errors: list[str]) -> None:
+    product_root = ROOT / "docs" / "product"
+    persona_ids = _collect_ids(
+        product_root / "personas" / "_index.md", PERSONA_ID, "persona", errors
+    )
+    scenario_ids = _collect_ids(
+        product_root / "scenarios.md", SCENARIO_ID, "scenario", errors
+    )
+    journey_ids = _collect_ids(
+        product_root / "journeys.md", JOURNEY_ID, "journey", errors
+    )
+    requirement_ids = _collect_ids(
+        product_root / "requirements.md", REQUIREMENT_ID, "requirement", errors
+    )
+
+    for path in product_root.rglob("*.md"):
+        if path.name == "_index.md":
+            continue
+        text = read_text(path)
+        _check_refs(path, set(PERSONA_ID.findall(text)), persona_ids, "persona", errors)
+        _check_refs(path, set(SCENARIO_ID.findall(text)), scenario_ids, "scenario", errors)
+        _check_refs(path, set(JOURNEY_ID.findall(text)), journey_ids, "journey", errors)
+        _check_refs(path, set(REQUIREMENT_ID.findall(text)), requirement_ids, "requirement", errors)
+        for ref in sorted(set(BRAND_DOC_REF.findall(text))):
+            if _is_placeholder(ref):
+                continue
+            if not (ROOT / ref).is_file():
+                errors.append(f"missing brand doc reference {ref} in {rel(path)}")
+
+    tokens_path = ROOT / "docs" / "design" / "tokens.md"
+    if tokens_path.is_file():
+        token_text = read_text(tokens_path)
+        if "Status" not in token_text:
+            errors.append("docs/design/tokens.md missing token status field")
+
+    transformed_root = ROOT / "docs" / "specs" / "transformed"
+    for path in transformed_root.glob("*.md"):
+        text = read_text(path).strip()
+        if not text:
+            continue
+        required_headings = [
+            "## Source",
+            "## Classification",
+            "## Behavior Examples",
+            "## Functional Acceptance Checks",
+            "## Handoff",
+        ]
+        for heading in required_headings:
+            if heading not in text:
+                errors.append(f"transformed spec {rel(path)} missing heading: {heading}")
+
+
 def main() -> int:
     errors: list[str] = []
     check_required_files(errors)
@@ -599,6 +827,7 @@ def main() -> int:
     check_thin_agents(errors)
     check_pattern_shape(errors)
     check_no_project_leakage(errors)
+    check_traceability_contracts(errors)
 
     if errors:
         for error in errors:

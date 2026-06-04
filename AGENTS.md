@@ -62,7 +62,7 @@ product-visible behavior change should start with a short plan before edits:
 
 Use the new-task route for non-atomic work:
 
-`context -> ingest-spec/discover if needed -> orchestrate-work -> plan-change -> functional-qa -> implement-change -> review-change -> validate-change -> test-autorepair only if stale tests -> closeout`
+`context -> ingest-spec/discover if needed -> docs-impact-map when durable docs may affect sibling rules -> orchestrate-work -> plan-change -> functional-qa -> implement-change -> review-change -> validate-change -> test-autorepair only if stale tests -> closeout`
 
 `issue-intake` is an explicit exception path for issue bodies or tracker
 tickets. Human review is an explicit open-question or exception path, not a

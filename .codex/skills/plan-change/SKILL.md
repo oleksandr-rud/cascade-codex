@@ -21,7 +21,7 @@ easier to navigate.
 3. `AGENTS.md`, `CODEX.md`, and relevant skills or role contracts.
 4. Current work/spec docs under `docs/work/` or `docs/specs/`.
 5. Product/design context under `docs/product/`, `docs/design/`, and
-   `docs/brand/`.
+   `docs/brand/`, plus any `docs-impact-map` report for current source docs.
 6. `docs/glossary.md` and durable patterns.
 7. `docs/structure.md` and `docs/patterns/workflow.md` when the plan changes
    active work lanes or write targets.
@@ -35,7 +35,15 @@ If code and docs disagree, follow code and report the drift.
   public contract, or has unclear hidden consumers.
 - Use `discover` when product/design context is too thin to safely define
   behavior examples.
+- Use `product-discovery` when PRD, persona, requirement, journey, scenario,
+  non-goal, or success-metric structure is missing for product intent.
+- Use `brand-positioning` when naming, tone, content hierarchy, visual
+  direction, or copy rules are missing for product-visible behavior.
+- Use `design-system` when token, component, accessibility, layout, responsive,
+  interaction-state, or visual evidence rules are missing.
 - Use `ingest-spec` when incoming specs must be normalized before planning.
+- Use `docs-impact-map` when source docs changed and sibling product, design,
+  brand, spec, backlog, glossary, or pattern effects have not been checked.
 - Use `orchestrate-work` when the work may split into parallel lanes or needs
   dependency/conflict tracking.
 - Prefer replacement and cleanup for stale or duplicate paths unless the user

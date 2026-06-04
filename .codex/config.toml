@@ -8,6 +8,7 @@ config_template = "harness.config.example.yaml"
 default = [
   "context",
   "ingest-spec",
+  "docs-impact-map",
   "orchestrate-work",
   "plan-change",
   "functional-qa",

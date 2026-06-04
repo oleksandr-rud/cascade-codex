@@ -7,12 +7,12 @@ config; keep reusable workflow rules in skills, agents, and patterns.
 
 | Folder | Purpose | Written By |
 |---|---|---|
-| `docs/work/` | Active work lanes, lane packets, reports, handoffs | `orchestrate-work`, `plan-change`, `validate-change`, `closeout` |
-| `docs/specs/` | Incoming and transformed specs | `ingest-spec`, `discover`, `adapt-harness` |
-| `docs/product/` | Product intent, requirements, journeys, personas, scenarios | `discover`, `ingest-spec` |
-| `docs/design/` | Interaction model, tokens, components, design constraints | `discover`, `ingest-spec` |
-| `docs/brand/` | Naming, tone, content, visual direction | `discover`, `ingest-spec` |
-| `docs/backlog/` | Follow-up candidates with acceptance criteria | `discover`, `issue-intake`, `closeout` |
+| `docs/work/` | Active work lanes, copyable lane examples, lane packets, reports, handoffs | `orchestrate-work`, `plan-change`, `validate-change`, `closeout` |
+| `docs/specs/` | Incoming and transformed specs | `ingest-spec`, `discover`, `docs-impact-map`, `adapt-harness` |
+| `docs/product/` | Product intent, requirements, journeys, personas, scenarios | `discover`, `product-discovery`, `ingest-spec`, `docs-impact-map` |
+| `docs/design/` | Interaction model, tokens, components, design constraints | `discover`, `design-system`, `ingest-spec`, `docs-impact-map` |
+| `docs/brand/` | Naming, tone, content, visual direction | `discover`, `brand-positioning`, `ingest-spec`, `docs-impact-map` |
+| `docs/backlog/` | Follow-up candidates with acceptance criteria | `discover`, `docs-impact-map`, `issue-intake`, `closeout` |
 | `docs/patterns/` | Reusable workflow, boundary, testing, context rules | `closeout`, `adapt-harness`, Agent Engineer skills |
 | `.codex/skills/` | Reusable workflow skills | `develop-skill`, Agent Engineer skills |
 | `.codex/agents/` | Role contracts and skill maps | Agent Engineer skills |
@@ -21,6 +21,7 @@ config; keep reusable workflow rules in skills, agents, and patterns.
 
 - Active registry: `docs/work/active.md`
 - Lane template: `docs/work/lane-template.md`
+- Lane examples: `docs/work/examples/`
 - Lane packets: `docs/work/lanes/W-XXX-slug.md`
 - Durable reports: `docs/work/reports/YYYY-MM-DD-slug.md`
 
@@ -39,6 +40,13 @@ config; keep reusable workflow rules in skills, agents, and patterns.
 - Active work lane: `docs/work/active.md` or `docs/work/lanes/W-XXX-slug.md`
 - Codebase vocabulary: `docs/glossary.md`
 
+## Cross-Folder Impact Paths
+
+Use `docs-impact-map` when a durable product, design, brand, spec, backlog,
+glossary, or pattern fact may affect sibling docs. Store compact impact reports
+under `docs/work/reports/` only when requested, multi-turn, blocked, or
+decision-heavy; otherwise update the smallest existing owner docs.
+
 ## Architecture Translation Paths
 
 - Repo boot contract and hard guardrails: `AGENTS.md`
@@ -50,6 +58,23 @@ config; keep reusable workflow rules in skills, agents, and patterns.
   and memory locations: `harness.config.yaml`
 - Project-specific architecture facts: `harness.config.yaml`,
   `docs/patterns/boundaries.md`, or `docs/glossary.md`
+
+## Closeout Thin Diffs
+
+At task finishing, `closeout` may append small sourced deltas to existing owner
+docs when the final diff changed durable facts:
+
+- product/spec/design/brand facts: `docs/product/`, `docs/design/`,
+  `docs/brand/`, or `docs/specs/`
+- architecture, public contract, adapter, state-machine, or runtime invariant:
+  `docs/patterns/boundaries.md`
+- stack, command, source root, runner, tracker, or memory path:
+  `harness.config.yaml` in target repositories
+- codebase vocabulary: `docs/glossary.md`
+
+If no existing doc owns the delta, write a concise report under
+`docs/work/reports/` and route larger discovery or spec normalization through
+`discover` or `ingest-spec`.
 
 ## Thin Entrypoint Policy
 

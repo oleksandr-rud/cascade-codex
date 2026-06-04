@@ -6,7 +6,8 @@ and work references.
 
 ## Core Areas
 
-- `docs/work/`: active work lanes, lane packets, reports, and handoffs.
+- `docs/work/`: active work lanes, lane examples, lane packets, reports, and
+  handoffs.
 - `docs/specs/`: source and transformed specs.
 - `docs/product/`: product intent, journeys, personas, scenarios, requirements.
 - `docs/design/`: interaction model, design references, tokens, components.

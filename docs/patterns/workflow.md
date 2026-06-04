@@ -7,6 +7,8 @@ work-to-source coverage, refactoring, and durable handoff memory.
 
 Use `docs/work/active.md` as the single active registry. Use
 `docs/work/lanes/W-XXX-slug.md` only when a row is not enough.
+Use `docs/work/examples/` only as copyable reference material for first-time
+lane adaptation; example lanes are not active state.
 
 Create a lane packet when the workstream needs its own:
 
@@ -14,6 +16,9 @@ Create a lane packet when the workstream needs its own:
 - behavior examples;
 - dependency/conflict tracking;
 - validation commands;
+- source inputs and freshness;
+- file ownership and merge owner;
+- MCP/tool context policy;
 - blocked/deferred handoff.
 
 ## Parallel Rules
@@ -24,6 +29,8 @@ Parallel lanes are allowed only when:
 - they do not depend on each other's unfinished output;
 - they do not share unresolved product/design decisions;
 - each lane has independent validation;
+- each lane records any MCP/tool context it loaded and how results were
+  summarized;
 - evidence can be merged deterministically.
 
 Serialize lanes when file ownership, public contracts, state machines, or
@@ -45,6 +52,39 @@ Rules:
   blocked.
 - Mark missing required preconditions as `BLOCKED`.
 - Mark optional or out-of-scope checks as `NOT_RUN` with a reason.
+
+## Cross-Folder Impact Scan
+
+Run `docs-impact-map` before planning or closeout when a durable product,
+design, brand, spec, backlog, glossary, or pattern fact changes and may affect
+sibling docs.
+
+Use the scan to classify affected owner docs as `UPDATED`, `NO_CHANGE`,
+`DEFERRED`, `BLOCKED`, or `GAP`. Route `GAP` to `discover` or `ingest-spec`
+before `plan-change`. Route missing acceptance or scenario coverage to
+`functional-qa` or `plan-change` depending on whether expected behavior is
+already clear.
+
+## Closeout Drift Scan
+
+Run at task finishing after validation evidence exists. Compare the final diff
+and work-lane criteria against existing docs before writing memory.
+
+Append a thin sourced doc diff only when the change creates or changes a
+durable:
+
+- product behavior, requirement, journey, persona, or scenario;
+- design interaction, accessibility, component, token, or state constraint;
+- brand, naming, tone, content, or visual direction;
+- normalized spec acceptance criterion or implementation constraint;
+- architecture boundary, public contract, adapter, state-machine, or runtime
+  invariant;
+- stack/runtime command, runner, source root, tracker, or memory path fact;
+- codebase term that affects future planning or validation.
+
+Do not rewrite broad docs at closeout. If no existing doc owns the fact, write a
+short work report and route substantive discovery to `discover` or source
+normalization to `ingest-spec`.
 
 ## Refactoring
 
@@ -71,7 +111,9 @@ Guardrails:
 |---|---|---|
 | Active work registry | `docs/work/active.md` | A lane opens, changes status, blocks, or closes |
 | Lane packet | `docs/work/lanes/W-XXX-slug.md` | A row needs criteria, examples, dependencies, or validation detail |
+| Lane examples | `docs/work/examples/` | First-time adaptation needs copyable non-active lane examples |
 | Durable report | `docs/work/reports/` | Requested, multi-turn, durable decision, blocked handoff, or complex merge |
+| Thin product/spec/architecture diff | Existing owner doc in `docs/product/`, `docs/design/`, `docs/brand/`, `docs/specs/`, `docs/patterns/boundaries.md`, `harness.config.yaml`, or `docs/glossary.md` | Closeout detects a validated durable fact not already documented |
 | Durable skill rule | `.codex/skills/` | Repeated workflow lesson |
 | Durable role rule | `.codex/agents/` | Delegation or role-boundary lesson |
 | Durable pattern | `docs/patterns/` | Reusable implementation/testing/process rule |

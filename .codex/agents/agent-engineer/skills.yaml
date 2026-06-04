@@ -9,3 +9,5 @@ skills:
     source: .codex/skills/adapt-harness/SKILL.md
   - name: ingest-spec
     source: .codex/skills/ingest-spec/SKILL.md
+  - name: docs-impact-map
+    source: .codex/skills/docs-impact-map/SKILL.md

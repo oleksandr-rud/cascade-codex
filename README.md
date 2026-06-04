@@ -23,7 +23,7 @@ a durable documentation skeleton:
 | `harness.config.example.yaml` | Project adapter template for stack details, paths, validation commands, routing, memory, and tracker settings. Copy it to `harness.config.yaml` in a target project. |
 | `docs/structure.md` | Folder map for where specs, product facts, design facts, active work, patterns, and architecture notes belong. |
 | `docs/_index.md` | Top-level documentation index and source-of-truth rule. |
-| `docs/work/` | Active work registry, lane template, lane packets, reports, and handoffs. |
+| `docs/work/` | Active work registry, lane template, copyable lane examples, lane packets, reports, and handoffs. |
 | `docs/specs/` | Incoming source material and transformed plan-ready specs. |
 | `docs/product/` | Product requirements, journeys, personas, and scenario examples. |
 | `docs/design/` | Interaction model, tokens, components, accessibility, and design constraints. |
@@ -42,7 +42,7 @@ reusable workflow skills and role contracts in a complete release package.
 Cascade Codex routes non-atomic engineering work through this path:
 
 ```text
-context -> ingest-spec/discover if needed -> orchestrate-work -> plan-change -> functional-qa -> implement-change -> review-change -> validate-change -> test-autorepair only if stale tests -> closeout
+context -> ingest-spec/discover if needed -> docs-impact-map when durable docs may affect sibling rules -> orchestrate-work -> plan-change -> functional-qa -> implement-change -> review-change -> validate-change -> test-autorepair only if stale tests -> closeout
 ```
 
 Use `issue-intake` only for issue bodies or tracker tickets. Use
@@ -52,7 +52,7 @@ the product behavior still matches the intended contract.
 For discovery-heavy work, use:
 
 ```text
-discover -> ingest-spec -> plan-change -> functional-qa
+discover -> ingest-spec -> docs-impact-map -> plan-change -> functional-qa
 ```
 
 ## Install In A Target Repository

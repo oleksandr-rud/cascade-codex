@@ -5,7 +5,10 @@ only while they are useful for handoff; move durable details into reports.
 
 | Lane | Status | Request | Owner | Next Gate | Files/Areas | Dependencies | Evidence |
 |---|---|---|---|---|---|---|---|
-| W-001 | `<OPEN | IN_PROGRESS | BLOCKED | READY_TO_MERGE | COMPLETE>` | `<REQUEST>` | `<PULSE | ROLE | USER>` | `<SKILL_OR_COMMAND>` | `<FILES_OR_AREAS>` | `<LANE_OR_DECISION>` | `<COMMAND_OR_REPORT>` |
+| W-001 | `<OPEN | IN_PROGRESS | BLOCKED | READY_TO_MERGE | COMPLETE>` | `<REQUEST>` | `<ORCHESTRATOR | ROLE | USER>` | `<SKILL_OR_COMMAND>` | `<FILES_OR_AREAS>` | `<LANE_OR_DECISION>` | `<COMMAND_OR_REPORT>` |
+
+For first-time examples, read `docs/work/examples/`. Example lanes are not
+active work unless copied into `docs/work/lanes/` and registered above.
 
 ## Parallel Safety
 
@@ -14,4 +17,3 @@ only while they are useful for handoff; move durable details into reports.
   `COMPLETE`.
 - Conflicting file writes require one owner or serialization.
 - Shared product/design uncertainty blocks all lanes that depend on it.
-

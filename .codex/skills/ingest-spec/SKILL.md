@@ -67,8 +67,16 @@ Classify incoming material as one or more:
    - `.codex/skills/`, `.codex/agents/`, or `docs/patterns/` only for
      repeated workflow or architecture rules.
 8. Hand off to `discover` when source material lacks enough product/design
-   context, otherwise hand off to `plan-change` with behavior examples and
-   validation plan.
+   context. Hand off to `product-discovery` when product facts need PRD,
+   persona, requirement, journey, scenario, non-goal, or success-metric
+   structure. Hand off to `brand-positioning` when brand, naming, tone,
+   content, message hierarchy, or visual direction needs durable structure.
+   Hand off to `design-system` when design tokens, components, accessibility,
+   layout, responsive behavior, interaction states, or visual evidence need
+   durable structure. Hand off to `docs-impact-map` when normalized facts may
+   affect sibling product/design/brand/spec/backlog/glossary/pattern docs.
+   Otherwise hand off to `plan-change` with behavior examples and validation
+   plan.
 
 ## Required Packet Shape
 
