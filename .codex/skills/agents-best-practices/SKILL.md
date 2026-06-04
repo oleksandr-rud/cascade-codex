@@ -25,7 +25,11 @@ Use when designing, auditing, adapting, or explaining the harness itself.
 7. Prefer direct replacement of stale harness paths unless the target project
    has a proven live contract requiring temporary compatibility.
 
-## Portable Patterns
+## Cascade Codex Patterns
+
+Use `codex-maintenance` when the question is specifically about Codex
+surfaces, files, permissions, hooks, MCP/tools, plugins, subagents, handoffs,
+or validator wiring.
 
 Load these when the harness question touches the relevant area:
 

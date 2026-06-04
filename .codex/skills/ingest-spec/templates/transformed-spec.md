@@ -16,8 +16,14 @@
 | design constraint | `<detail>` | `docs/design/` |
 | brand/content constraint | `<detail>` | `docs/brand/` |
 | implementation constraint | `<detail>` | `docs/specs/transformed/` |
+| architecture/boundary constraint | `<detail>` | `docs/patterns/boundaries.md` or `architecture-review` |
+| stack/runtime/config fact | `<detail>` | `harness.config.yaml` |
+| validation command or runner | `<detail>` | `harness.config.yaml` |
 | acceptance criterion | `<detail>` | `docs/work/` or scenario row |
+| active execution criterion | `<detail>` | `docs/work/active.md` or `docs/work/lanes/` |
+| backlog candidate | `<detail>` | `docs/backlog/_index.md` |
 | codebase vocabulary | `<term>` | `docs/glossary.md` |
+| durable workflow rule | `<detail>` | `.codex/skills/`, `.codex/agents/`, or `docs/patterns/` |
 | open question | `<question>` | handoff |
 
 ## Behavior Examples

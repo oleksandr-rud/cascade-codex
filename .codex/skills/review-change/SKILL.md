@@ -28,7 +28,7 @@ Run this locally unless the user explicitly authorizes parallel agents.
      note;
    - current work packet only when directly relevant and not historical.
 4. Standards sources:
-   - `AGENTS.md`, `codex.md`, and relevant `.codex/skills/*`;
+   - `AGENTS.md`, `CODEX.md`, and relevant `.codex/skills/*`;
    - relevant `.codex/agents/*` role contracts;
    - relevant `docs/patterns/*`;
    - lint/type/test configs only as standards inventory, not as a substitute

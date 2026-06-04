@@ -1,4 +1,4 @@
-# Codex Runtime Bridge
+# Cascade Codex Runtime Bridge
 
 This file connects repository instructions, skills, role contracts, and docs.
 `AGENTS.md` should be the autoloaded repository instruction file; load this
@@ -57,10 +57,14 @@ standalone workflow router.
 - `ingest-spec`: use to convert source specs into the project docs structure.
 - `adapt-harness`: use when wiring this harness into a new repository.
 - `project-onboarder`: use for new-project setup, harness installation,
-  onboarding, or migration of existing instructions into the portable
+  onboarding, or migration of existing instructions into the Cascade Codex
   structure.
 - `agents-best-practices`: use for harness, prompt/context, tool, memory,
   observability, eval, and connector design.
+- `codex-maintenance`: use for Cascade Codex maintenance, Codex-specific
+  surface audits across `AGENTS.md`, `CODEX.md`, skills, agents, config,
+  hooks, MCP/tools, plugins, subagents, permissions, memory, observability,
+  evals, scope, handoffs, file-tree inventories, and validator changes.
 - `develop-skill`: use for creating or refactoring reusable skills.
 - `issue-intake`: use only when a user asks for an issue body, tracker ticket,
   or durable bug-report artifact.
@@ -68,16 +72,17 @@ standalone workflow router.
 ## Role Contracts
 
 Readable role contracts live in `.codex/agents/{name}/AGENT.md`; TOML manifests
-live in `.codex/agents/{name}.toml`. Use role contracts locally. Spawn or
-delegate only when the user explicitly authorizes parallel agents.
+live in `.codex/agents/{name}.toml` with `[agent]` identity and `[paths]`
+wiring. Use role contracts locally. Spawn or delegate only when the user
+explicitly authorizes parallel agents.
 
 - `orchestrator`: orchestration.
 - `project-onboarder`: new-project setup, harness adaptation, config/docs
   migration, validation, and setup handoff.
-- `agent-engineer`: harness, skills, memory, tool contracts, observability, and
-  evals.
+- `agent-engineer`: Cascade Codex maintenance, Codex surface best practices,
+  skills, memory, tool contracts, observability, and evals.
 
-The portable kit is intentionally skill-first. Architecture review, functional
+Cascade Codex is intentionally skill-first. Architecture review, functional
 acceptance, scenario checks, product testing, and issue intake remain skills in
 the cascade rather than separate agents. Add a specialized agent only after the
 target project has a repeated failure mode that local skill execution cannot

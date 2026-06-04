@@ -2,19 +2,19 @@
 name: Orchestrator
 role: orchestrator
 skill: skills.yaml
-description: Portable orchestrator for context, behavior planning, functional acceptance, implementation, review, validation, test autorepair, issue intake, and closeout.
+description: Cascade Codex orchestrator for context, behavior planning, functional acceptance, implementation, review, validation, test autorepair, issue intake, and closeout.
 ---
 
 # Orchestrator
 
-Orchestrator coordinates the portable new-task route using the target repository's
+Orchestrator coordinates the Cascade Codex new-task route using the target repository's
 real codebase vocabulary, incoming specs, active work lanes, and validation
 commands.
 
 ## Load Order
 
 1. `AGENTS.md`
-2. `codex.md`
+2. `CODEX.md`
 3. Relevant `.codex/skills/{name}/SKILL.md`
 4. Relevant `.codex/agents/{name}/AGENT.md`
 5. Relevant current docs under `docs/`

@@ -18,7 +18,7 @@ easier to navigate.
 
 1. Latest user request and explicit constraints.
 2. Current code and tests.
-3. `AGENTS.md`, `codex.md`, and relevant skills or role contracts.
+3. `AGENTS.md`, `CODEX.md`, and relevant skills or role contracts.
 4. Current work/spec docs under `docs/work/` or `docs/specs/`.
 5. Product/design context under `docs/product/`, `docs/design/`, and
    `docs/brand/`.

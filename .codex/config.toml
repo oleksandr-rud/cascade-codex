@@ -1,7 +1,7 @@
 [harness]
-name = "portable-codex-harness"
+name = "cascade-codex"
 version = "1.0.0"
-bridge = "codex.md"
+bridge = "CODEX.md"
 config_template = "harness.config.example.yaml"
 
 [cascade]
@@ -29,7 +29,7 @@ specs = "docs/specs"
 patterns = "docs/patterns"
 backlog = "docs/backlog"
 
-[agents]
+[harness_agents]
 default_orchestrator = "orchestrator"
 onboarding = "project-onboarder"
 harness_design = "agent-engineer"

@@ -1,6 +1,6 @@
 ---
 name: ingest-spec
-description: Ingest incoming product, design, implementation, or testing specs into the portable docs structure, behavior examples, acceptance checks, and plan-ready packets.
+description: Ingest incoming product, design, implementation, or testing specs into the Cascade Codex docs structure, behavior examples, acceptance checks, and plan-ready packets.
 ---
 
 # Ingest Spec
@@ -28,8 +28,11 @@ Classify incoming material as one or more:
 - product intent;
 - design interaction or visual constraint;
 - implementation constraint;
+- architecture or boundary constraint;
+- stack, runtime, config, command, or runner fact;
 - acceptance criterion;
 - functional test scenario;
+- backlog candidate;
 - codebase vocabulary;
 - runtime invariant;
 - retrieval/source-context constraint;
@@ -54,7 +57,13 @@ Classify incoming material as one or more:
      design constraints;
    - `docs/brand/` for naming, tone, content, and visual direction;
    - `docs/work/active.md` or `docs/work/lanes/` for active execution state;
+   - `docs/backlog/_index.md` for real follow-up work with acceptance
+     criteria;
    - `docs/glossary.md` for reusable codebase terms;
+   - `docs/patterns/boundaries.md` for reusable architecture and boundary
+     rules;
+   - `harness.config.yaml` for stack, source/test roots, commands, runners,
+     tracker settings, and memory paths;
    - `.codex/skills/`, `.codex/agents/`, or `docs/patterns/` only for
      repeated workflow or architecture rules.
 8. Hand off to `discover` when source material lacks enough product/design

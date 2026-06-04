@@ -1,7 +1,7 @@
 # Harness Structure And Write Targets
 
-Use this file as the portable folder map. Keep project facts in docs and config;
-keep reusable workflow rules in skills, agents, and patterns.
+Use this file as the Cascade Codex folder map. Keep project facts in docs and
+config; keep reusable workflow rules in skills, agents, and patterns.
 
 ## Core Folders
 

@@ -1,5 +1,23 @@
+[agent]
 name = "agent-engineer"
-description = "Harness, skill, memory, tool-contract, observability, and eval design role."
+display_name = "Agent Engineer"
+description = "Owns Cascade Codex maintenance, Codex surface best practices, skill, memory, tool-contract, observability, and eval design."
+category = "harness-design"
+
+[paths]
 instructions = ".codex/agents/agent-engineer/AGENT.md"
 skills = ".codex/agents/agent-engineer/skills.yaml"
 
+[delegation]
+mode = "local-role-contract"
+requires_user_authorization = true
+
+[scope]
+use_for = [
+  "Cascade Codex maintenance, Codex surface best practices, skill packages, memory patterns, tool contracts, connectors, observability, and evals.",
+  "Provider-neutral improvements to Cascade Codex itself.",
+]
+avoid_for = [
+  "Product intent decisions when specs are missing.",
+  "Product or runtime code patches unless the user explicitly redirects into implementation.",
+]

@@ -1,4 +1,4 @@
-# Portable harness adapter variables.
+# Cascade Codex adapter variables.
 # Copy to harness.config.yaml after installing the harness in a target project.
 
 project:

@@ -1,4 +1,23 @@
+[agent]
 name = "orchestrator"
-description = "Portable orchestrator role for the Codex workflow cascade."
+display_name = "Orchestrator"
+description = "Coordinates the Cascade Codex workflow."
+category = "workflow-coordination"
+
+[paths]
 instructions = ".codex/agents/orchestrator/AGENT.md"
 skills = ".codex/agents/orchestrator/skills.yaml"
+
+[delegation]
+mode = "local-role-contract"
+requires_user_authorization = true
+
+[scope]
+use_for = [
+  "Context, planning, functional acceptance, implementation, review, validation, and closeout routing.",
+  "Work-lane coordination when dependencies, serialization, or parallel safety matter.",
+]
+avoid_for = [
+  "New-project setup or harness installation; use project-onboarder.",
+  "Harness, skill, memory, connector, observability, or eval design; use agent-engineer.",
+]

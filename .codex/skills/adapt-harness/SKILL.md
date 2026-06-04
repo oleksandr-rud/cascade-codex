@@ -1,11 +1,11 @@
 ---
 name: adapt-harness
-description: Use for new-project onboarding or setup after copying the portable harness into a target repository; inspects the codebase, fills project variables, adapts docs, migrates bulky AGENTS.md facts, and validates agent/skill references.
+description: Use for new-project onboarding or setup after copying Cascade Codex into a target repository; inspects the codebase, fills project variables, adapts docs, migrates bulky AGENTS.md facts, and validates agent/skill references.
 ---
 
 # Adapt Harness
 
-Use after copying this portable harness into a new repository, or when a user
+Use after copying Cascade Codex into a new repository, or when a user
 asks for onboarding, setup, install harness, wire harness, migrate existing
 instructions, or adapt the harness to a different project.
 
@@ -16,20 +16,20 @@ questions.
 ## Source Order
 
 1. Latest user request and target repository root.
-2. Existing `AGENTS.md`, `codex.md`, `.codex/`, docs, package files, build
+2. Existing `AGENTS.md`, `CODEX.md`, `.codex/`, docs, package files, build
    files, test config, route/entry files, and README files.
 3. Current codebase vocabulary from folder names, public APIs, UI copy, schemas,
    tests, and docs.
 4. `docs/structure.md`, `harness.config.example.yaml`, and existing
    `harness.config.yaml` if present.
-5. `scripts/validate_portable_harness.py`.
+5. `scripts/validate_cascade_codex.py`.
 
 ## Adaptation Checklist
 
 1. Inventory existing harness files before writing.
 2. Decide whether to merge, replace, or leave existing instructions untouched.
    Ask before overwriting unrelated user-authored instructions.
-3. Fill project variables in `AGENTS.md`, `codex.md`, `harness.config.yaml`,
+3. Fill project variables in `AGENTS.md`, `CODEX.md`, `harness.config.yaml`,
    `docs/glossary.md`, and validation commands.
 4. Map real source roots, test roots, docs roots, app entry points, public
    contracts, and functional test runners.
@@ -60,7 +60,7 @@ questions.
     - active state or handoff memory -> `docs/work/`.
 11. Refuse to leave placeholder values, stale cascade lines, or standalone
     review/triage routes in active harness docs; fix them or report a blocker.
-12. Run the portable validator.
+12. Run the Cascade Codex validator.
 13. Run target-repo syntax/path checks when available.
 14. Report files written, skipped, merged, or requiring user review.
 

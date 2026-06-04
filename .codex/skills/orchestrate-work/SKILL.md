@@ -16,7 +16,7 @@ This skill coordinates work; it does not patch product/runtime code by itself.
 1. Latest user request and active goal.
 2. `docs/work/active.md` and any relevant `docs/work/lanes/*.md`.
 3. Current code, tests, changed files, and planned validation commands.
-4. `codex.md`, `AGENTS.md`, `harness.config.yaml`, and relevant workflow
+4. `CODEX.md`, `AGENTS.md`, `harness.config.yaml`, and relevant workflow
    skills.
 5. `docs/patterns/workflow.md`.
 6. `docs/structure.md` for lane/report write targets.

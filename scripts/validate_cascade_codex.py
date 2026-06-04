@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Validate portable harness wiring and project-agnostic content."""
+"""Validate Cascade Codex wiring and project-agnostic content."""
 
 from __future__ import annotations
 
@@ -55,6 +55,11 @@ REQUIRED_FILES = [
     ".codex/skills/architecture-review/checklists/deep-module-review.md",
     ".codex/skills/ingest-spec/templates/transformed-spec.md",
     ".codex/skills/ingest-spec/templates/scenario-row.md",
+    ".codex/skills/codex-maintenance/checklists/harness-maintenance.md",
+    ".codex/skills/codex-maintenance/checklists/codex-surface-quality.md",
+    ".codex/skills/codex-maintenance/templates/reference-inventory.md",
+    ".codex/skills/codex-maintenance/templates/codex-practice-audit.md",
+    ".codex/skills/codex-maintenance/templates/maintenance-handoff.md",
 ]
 
 AGENTS = [
@@ -77,6 +82,7 @@ SKILLS = [
     "issue-intake",
     "closeout",
     "agents-best-practices",
+    "codex-maintenance",
     "develop-skill",
     "adapt-harness",
     "ingest-spec",
@@ -143,6 +149,21 @@ REQUIRED_WIRING_SKILLS = {
     "ingest-spec",
 }
 
+REQUIRED_HARNESS_AGENTS = {
+    "default_orchestrator": "orchestrator",
+    "onboarding": "project-onboarder",
+    "harness_design": "agent-engineer",
+}
+
+SKIP_LEAKAGE_PATH_PARTS = {
+    ".git",
+    "__pycache__",
+}
+
+SKIP_LEAKAGE_FILENAMES = {
+    ".DS_Store",
+}
+
 AGENTS_BLOAT_PATTERNS = [
     r"(?im)^#+\s*agent\s+system\b",
     r"(?im)^#+\s*key\s+.+terms\b",
@@ -153,6 +174,15 @@ AGENTS_BLOAT_PATTERNS = [
 ]
 
 STALE_TEXT_PATTERNS = [
+    r"\bportable-codex-harness\b",
+    r"\bportable harness\b",
+    r"\bportable kit\b",
+    r"\bportable package\b",
+    r"\bportable validator\b",
+    r"\bvalidate_portable_harness\.py\b",
+    r"\bportable_harness_status\b",
+    r"(?m)^# Codex Harness Wiring\b",
+    r"(?m)^# Codex Runtime Bridge\b",
     r"\bpulse-orchestrate\b",
     r"\bharness-onboarder\b",
     r"\bharness-adapt\b",
@@ -194,6 +224,68 @@ SKILL_TRIGGER_REQUIREMENTS = {
     "plan-change": [
         r"non-atomic",
         r"behavior examples|validation plan",
+    ],
+    "codex-maintenance": [
+        r"Codex|Cascade Codex|harness",
+        r"skill|agent|AGENTS|config|file.?tree|reference",
+        r"permission|memory|observability|eval|handoff|scope",
+    ],
+}
+
+REQUIRED_SKILL_SURFACES = {
+    "ingest-spec": [
+        "docs/specs/incoming/",
+        "docs/specs/transformed/",
+        "docs/product/",
+        "docs/design/",
+        "docs/brand/",
+        "docs/work/active.md",
+        "docs/work/lanes/",
+        "docs/backlog/_index.md",
+        "docs/glossary.md",
+        "docs/patterns/boundaries.md",
+        "harness.config.yaml",
+    ],
+    "codex-maintenance": [
+        "AGENTS.md",
+        "CODEX.md",
+        ".codex/config.toml",
+        ".codex/skills/",
+        ".codex/agents/",
+        "docs/structure.md",
+        "docs/patterns/",
+        "docs/work/active.md",
+        "docs/specs/",
+        "docs/product/",
+        "docs/design/",
+        "docs/brand/",
+        "docs/backlog/_index.md",
+        "scripts/validate_cascade_codex.py",
+        "rg --files",
+        "git status",
+        "reference inventory",
+        "MCP",
+        "hooks",
+        "plugins",
+        "subagents",
+        ".agents/skills",
+        "agents/openai.yaml",
+        ".codex-plugin/plugin.json",
+        ".agents/plugins/marketplace.json",
+        "hooks.json",
+        "rules/*.rules",
+        "developer_instructions",
+        "trusted project",
+        "project_doc_max_bytes",
+        "tool contracts",
+        "permission",
+        "memory",
+        "compaction",
+        "observability",
+        "evals",
+        "handoff",
+        "scope",
+        "validator",
     ],
 }
 
@@ -260,6 +352,59 @@ def check_toml(errors: list[str]) -> None:
             errors.append(f"toml parse error in {rel(path)}: {exc}")
 
 
+def check_harness_agent_registry(errors: list[str]) -> None:
+    config_path = ROOT / ".codex" / "config.toml"
+    if not config_path.is_file():
+        return
+    try:
+        config = tomllib.loads(read_text(config_path))
+    except tomllib.TOMLDecodeError:
+        return
+    registry = config.get("harness_agents")
+    if not isinstance(registry, dict):
+        errors.append(".codex/config.toml missing [harness_agents] registry")
+        return
+    harness = config.get("harness")
+    if not isinstance(harness, dict):
+        errors.append(".codex/config.toml missing [harness] settings")
+    else:
+        bridge = harness.get("bridge")
+        if not isinstance(bridge, str) or not (ROOT / bridge).is_file():
+            errors.append(".codex/config.toml harness.bridge does not point to a file")
+        template = harness.get("config_template")
+        if not isinstance(template, str) or not (ROOT / template).is_file():
+            errors.append(".codex/config.toml harness.config_template does not point to a file")
+    for key, agent in REQUIRED_HARNESS_AGENTS.items():
+        if registry.get(key) != agent:
+            errors.append(f"harness agent registry mismatch for {key}: expected {agent}")
+    for agent in AGENTS:
+        manifest_path = ROOT / ".codex" / "agents" / f"{agent}.toml"
+        if not manifest_path.is_file():
+            continue
+        try:
+            manifest = tomllib.loads(read_text(manifest_path))
+        except tomllib.TOMLDecodeError:
+            continue
+        agent_section = manifest.get("agent")
+        paths_section = manifest.get("paths")
+        if not isinstance(agent_section, dict):
+            errors.append(f"agent manifest missing [agent] table in {rel(manifest_path)}")
+            agent_section = {}
+        if not isinstance(paths_section, dict):
+            errors.append(f"agent manifest missing [paths] table in {rel(manifest_path)}")
+            paths_section = {}
+        if agent_section.get("name") != agent:
+            errors.append(f"agent manifest name mismatch in {rel(manifest_path)}")
+        if not isinstance(agent_section.get("description"), str):
+            errors.append(f"agent manifest description missing in {rel(manifest_path)}")
+        instructions = paths_section.get("instructions")
+        if not isinstance(instructions, str) or not (ROOT / instructions).is_file():
+            errors.append(f"agent manifest instructions path invalid in {rel(manifest_path)}")
+        skills = paths_section.get("skills")
+        if not isinstance(skills, str) or not (ROOT / skills).is_file():
+            errors.append(f"agent manifest skills path invalid in {rel(manifest_path)}")
+
+
 def parse_frontmatter(text: str) -> dict[str, str]:
     if not text.startswith("---\n"):
         return {}
@@ -308,6 +453,17 @@ def check_skill_trigger_descriptions(errors: list[str]) -> None:
                 errors.append(
                     f"skill description for {skill} does not advertise trigger pattern: {pattern}"
                 )
+
+
+def check_skill_surface_contracts(errors: list[str]) -> None:
+    for skill, surfaces in REQUIRED_SKILL_SURFACES.items():
+        path = ROOT / ".codex" / "skills" / skill / "SKILL.md"
+        if not path.is_file():
+            continue
+        text = read_text(path)
+        for surface in surfaces:
+            if surface not in text:
+                errors.append(f"skill surface contract for {skill} missing: {surface}")
 
 
 def iter_skill_sources(text: str) -> list[str]:
@@ -399,10 +555,15 @@ def check_no_project_leakage(errors: list[str]) -> None:
     for path in ROOT.rglob("*"):
         if path.is_dir():
             continue
-        if "__pycache__" in path.parts or path.suffix == ".pyc":
+        if path.name in SKIP_LEAKAGE_FILENAMES:
             continue
-        text = read_text(path)
-        if path != ROOT / "scripts" / "validate_portable_harness.py":
+        if SKIP_LEAKAGE_PATH_PARTS.intersection(path.parts) or path.suffix == ".pyc":
+            continue
+        try:
+            text = read_text(path)
+        except UnicodeDecodeError:
+            continue
+        if path != ROOT / "scripts" / "validate_cascade_codex.py":
             for pattern in STALE_TEXT_PATTERNS:
                 if re.search(pattern, text, re.IGNORECASE):
                     errors.append(f"stale text pattern {pattern!r} in {rel(path)}")
@@ -428,8 +589,10 @@ def main() -> int:
     check_required_files(errors)
     check_required_folders(errors)
     check_toml(errors)
+    check_harness_agent_registry(errors)
     check_skill_frontmatter(errors)
     check_skill_trigger_descriptions(errors)
+    check_skill_surface_contracts(errors)
     check_agent_skill_sources(errors)
     check_cascade_consistency(errors)
     check_thin_agents(errors)
@@ -439,10 +602,10 @@ def main() -> int:
     if errors:
         for error in errors:
             print(f"ERROR: {error}")
-        print(f"portable_harness_status=FAIL errors={len(errors)}")
+        print(f"cascade_codex_status=FAIL errors={len(errors)}")
         return 1
 
-    print("portable_harness_status=PASS")
+    print("cascade_codex_status=PASS")
     print(f"agents={len(AGENTS)}")
     print(f"skills={len(SKILLS)}")
     print("project_specific_leakage=0")

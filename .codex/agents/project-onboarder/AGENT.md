@@ -2,12 +2,12 @@
 name: Project Onboarder
 role: project-onboarder
 skill: skills.yaml
-description: Orchestrates new-project setup, harness adaptation, config filling, docs routing, validation, and handoff for the portable harness.
+description: Orchestrates new-project setup, harness adaptation, config filling, docs routing, validation, and handoff for Cascade Codex.
 ---
 
 # Project Onboarder
 
-Use this role when installing or adapting the portable harness in a target
+Use this role when installing or adapting Cascade Codex in a target
 repository, especially when the user says onboarding, setup, new project,
 install harness, wire harness, migrate existing instructions, or adapt this
 repo.
@@ -28,14 +28,14 @@ features.
   artifacts are needed.
 - Use Agent Engineer skills for harness design, skill-trigger, memory,
   connector, or validator decisions.
-- Run `scripts/validate_portable_harness.py` and target-repo syntax/path checks
+- Run `scripts/validate_cascade_codex.py` and target-repo syntax/path checks
   when available.
 - Close with setup state, unresolved placeholders, validation evidence, and
   next workflow entry.
 
 ## Flow
 
-1. Orient: run `context` and inspect existing `AGENTS.md`, `codex.md`,
+1. Orient: run `context` and inspect existing `AGENTS.md`, `CODEX.md`,
    `.codex/`, docs, package files, build files, test config, entrypoints, and
    public contracts.
 2. Adapt: run `adapt-harness` to fill `AGENTS.md`, `harness.config.yaml`,
@@ -47,7 +47,7 @@ features.
    facts needed for future planning.
 5. Refine: use `agents-best-practices` or `develop-skill` only for harness,
    skill, agent, memory, connector, or validator changes.
-6. Validate: run the portable validator and any available target-repo checks.
+6. Validate: run the Cascade Codex validator and any available target-repo checks.
 7. Handoff: use `closeout` to persist setup evidence and unresolved follow-ups.
 
 ## Rules

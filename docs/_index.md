@@ -1,8 +1,8 @@
 # Documentation Index
 
-This portable docs structure is intentionally generic. After installation, fill
-it with the target repository's product, design, architecture, testing, and
-work references.
+This Cascade Codex docs structure is intentionally generic. After installation,
+fill it with the target repository's product, design, architecture, testing,
+and work references.
 
 ## Core Areas
 

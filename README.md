@@ -1,15 +1,15 @@
-# Cascade
+# Cascade Codex
 
-Cascade is a standalone harness for agentic engineering. It gives coding agents
-a reusable operating structure for real software work: orient to the repository,
-translate fuzzy requests into behavior slices, plan before editing, validate
-product-visible outcomes, repair stale tests only when behavior is still
-correct, and leave useful handoff memory behind.
+Cascade Codex is a standalone harness for agentic engineering. It gives coding
+agents a reusable operating structure for real software work: orient to the
+repository, translate fuzzy requests into behavior slices, plan before editing,
+validate product-visible outcomes, repair stale tests only when behavior is
+still correct, and leave useful handoff memory behind.
 
-Use Cascade when a repository needs more than a single prompt file. The harness
-combines agent instructions, route maps, adapter configuration, documentation
-write targets, functional acceptance patterns, work-lane tracking, and release
-validation into one portable package.
+Use Cascade Codex when a repository needs more than a single prompt file. The
+harness combines agent instructions, route maps, adapter configuration,
+documentation write targets, functional acceptance patterns, work-lane tracking,
+and release validation into one reusable package.
 
 ## Repository Shape
 
@@ -31,7 +31,7 @@ a durable documentation skeleton:
 | `docs/backlog/` | Follow-up candidates with acceptance criteria. |
 | `docs/glossary.md` | Codebase vocabulary and project terms. |
 | `docs/patterns/` | Reusable workflow, boundary, testing, and context-memory rules. |
-| `scripts/validate_portable_harness.py` | Packaging and consistency validator for a complete Cascade distribution. |
+| `scripts/validate_cascade_codex.py` | Packaging and consistency validator for a complete Cascade Codex distribution. |
 
 `CODEX.md`, `docs/structure.md`, `docs/patterns/`, and the validator also
 reserve `.codex/skills/` and `.codex/agents/` as the canonical locations for
@@ -39,7 +39,7 @@ reusable workflow skills and role contracts in a complete release package.
 
 ## Core Workflow
 
-Cascade routes non-atomic engineering work through this path:
+Cascade Codex routes non-atomic engineering work through this path:
 
 ```text
 context -> ingest-spec/discover if needed -> orchestrate-work -> plan-change -> functional-qa -> implement-change -> review-change -> validate-change -> test-autorepair only if stale tests -> closeout
@@ -57,7 +57,7 @@ discover -> ingest-spec -> plan-change -> functional-qa
 
 ## Install In A Target Repository
 
-1. Copy the Cascade files into the target repository root.
+1. Copy the Cascade Codex files into the target repository root.
 2. Copy `harness.config.example.yaml` to `harness.config.yaml`.
 3. Fill in the target project's stack, source roots, test roots, public
    contracts, validation commands, tracker settings, and memory paths.
@@ -65,8 +65,8 @@ discover -> ingest-spec -> plan-change -> functional-qa
    `docs/patterns/boundaries.md`, and any product/design/spec docs that should
    guide future work.
 5. Add the release-bundle `.codex/skills/` and `.codex/agents/` assets when the
-   target runtime should load reusable Cascade skills or role contracts.
-6. Run `python3 scripts/validate_portable_harness.py` from the repository root
+   target runtime should load reusable Cascade Codex skills or role contracts.
+6. Run `python3 scripts/validate_cascade_codex.py` from the repository root
    after the full package is present.
 
 ## Where Content Belongs
@@ -92,10 +92,10 @@ Keep reusable agentic engineering rules in:
 
 The validator checks for required harness files, expected skill and role assets,
 canonical route tokens, TOML validity, stale naming, and project-specific
-leakage. A complete Cascade release should pass:
+leakage. A complete Cascade Codex release should pass:
 
 ```bash
-python3 scripts/validate_portable_harness.py
+python3 scripts/validate_cascade_codex.py
 ```
 
 Run repository-specific install, test, typecheck, lint, build, functional, and
