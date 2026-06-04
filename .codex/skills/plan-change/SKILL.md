@@ -22,8 +22,9 @@ easier to navigate.
 4. Current work/spec docs under `docs/work/` or `docs/specs/`.
 5. Product/design context under `docs/product/`, `docs/design/`, and
    `docs/brand/`, plus any `docs-impact-map` report for current source docs.
-6. `docs/glossary.md` and durable patterns.
-7. `docs/structure.md` and `docs/patterns/workflow.md` when the plan changes
+6. Feature Impact Matrix rows from the current work lane when present.
+7. `docs/glossary.md` and durable patterns.
+8. `docs/structure.md` and `docs/patterns/workflow.md` when the plan changes
    active work lanes or write targets.
 
 If code and docs disagree, follow code and report the drift.
@@ -55,26 +56,31 @@ If code and docs disagree, follow code and report the drift.
    non-goals.
 2. Map codebase context: entry points, modules, state, data, adapters,
    generated clients, tests, and user paths.
-3. Write behavior examples in plain language or Given/When/Then form.
-4. Include negative, stale-state, permission, follow-up, or adjacent-mode
+3. Identify affected and protected feature contracts: the directly changed
+   feature or flow, source docs/spec IDs, touched code/public contracts,
+   adjacent behavior to preserve, required checks, and route for gaps or
+   failures.
+4. Write behavior examples in plain language or Given/When/Then form.
+5. Include negative, stale-state, permission, follow-up, or adjacent-mode
    examples when touched behavior makes them likely.
-5. Ask one blocker question at a time, include a recommended answer, and
+6. Ask one blocker question at a time, include a recommended answer, and
    inspect code/docs instead of asking when available evidence can answer it.
-6. Compare implementation approaches only when credible alternatives exist.
-7. Name the highest useful test seam: the public/product boundary where a check
+7. Compare implementation approaches only when credible alternatives exist.
+8. Name the highest useful test seam: the public/product boundary where a check
    can prove behavior without coupling to private helper shape.
-8. Choose the smallest vertical slice that satisfies the examples.
-9. Map regressions across touched boundaries.
-10. Name functional and automated validation before editing.
-11. Persist durable decisions only when they are hard to reverse, surprising
+9. Choose the smallest vertical slice that satisfies the examples.
+10. Map regressions across touched boundaries and Feature Impact Matrix rows.
+11. Name functional and automated validation before editing.
+12. Persist durable decisions only when they are hard to reverse, surprising
     without context, and the result of a real trade-off.
-12. Update `docs/work/active.md` or a lane packet only when the plan changes
+13. Update `docs/work/active.md` or a lane packet only when the plan changes
    active work state.
 
 ## Output
 
 - intended behavior and assumptions;
 - behavior examples;
+- affected and protected feature contracts;
 - codebase context and slice boundary;
 - chosen approach and rejected alternatives when relevant;
 - risks and deferred items;

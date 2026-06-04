@@ -45,6 +45,26 @@ Out:
 |---|---|---|---|
 | S-001 | Given `<state>`, when `<action>`, then `<outcome>`. | `<CHECK>` | `<OPEN>` |
 
+## Feature Impact Matrix
+
+Use this matrix to make the requested feature change aware of adjacent product
+contracts before validation or test repair. Include the directly changed
+feature or flow, plus protected neighboring behavior that shares code, public
+contracts, state, data, permissions, or user paths with the slice.
+
+| Feature / Flow | Source Docs Or Spec IDs | Code Areas / Public Contracts | Touched Directly? | Protected Adjacent Behavior | Required Check | Status | Route |
+|---|---|---|---|---|---|---|---|
+| `<FEATURE_OR_FLOW>` | `<PR_OR_PS_OR_SPEC_OR_REQUEST>` | `<FILE_OR_CONTRACT>` | `<yes/no>` | `<BEHAVIOR_TO_PRESERVE>` | `<COMMAND_OR_FUNCTIONAL_CHECK>` | `<PASS/FAIL/BLOCKED/NOT_RUN/GAP>` | `<implement-change/test-autorepair/functional-qa/plan-change>` |
+
+Routing rules:
+
+- Documented expected behavior broken by the change routes to
+  `implement-change`.
+- Stale test expectations for still-correct product behavior route to
+  `test-autorepair`.
+- Missing or ambiguous feature contracts route to `plan-change`.
+- Missing required checks for relevant feature impact route to `functional-qa`.
+
 ## File Ownership
 
 | Path Or Area | Owner | Access | Notes |

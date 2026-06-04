@@ -75,6 +75,33 @@ Parallel lanes are allowed only when:
 Serialize lanes when file ownership, public contracts, state-machine behavior,
 or product intent overlaps.
 
+## Lane Boundary Detection
+
+Split lanes by the smallest independently valid behavior slice. A lane boundary
+is usually present when the work crosses one of these:
+
+- separate user goals, scenario rows, journeys, or acceptance criteria;
+- separate source roots, feature folders, test roots, or generated artifacts;
+- public contract ownership such as API, schema, shared component, CLI, or
+  tool interface;
+- shared state, store, persistence, permission, tenant, account, or async
+  runtime boundaries;
+- external adapter, provider, queue, or integration boundaries;
+- independent validation seams that can produce evidence without depending on
+  another lane's unfinished implementation.
+
+Do not split lanes only to make work look parallel. Keep or serialize lanes
+when they depend on the same unresolved product/design decision, edit the same
+public contract without one merge owner, share state-machine behavior, or cannot
+produce independent validation evidence.
+
+Feature Impact Matrix rows are risk-scoped per lane. Each lane matrix should
+cover directly touched behavior and plausible adjacent regressions for that
+slice, not a product-wide inventory. If the matrix needs many unrelated
+features, or the impact is too broad or unknown to scope confidently, route
+back to `orchestrate-work` for another split or to `architecture-review` before
+planning implementation.
+
 ## MCP And Tool Rules
 
 - Load MCP/tool definitions on demand for the lane instead of exposing every
@@ -101,15 +128,17 @@ or product intent overlaps.
 3. Create lane packets only for lanes that need more detail than a row.
 4. Use `docs/work/examples/` when a first-time lane needs a populated model.
 5. Assign each lane a next gate from the task routing table.
-6. Track dependencies, file ownership, source inputs, and MCP/tool context
+6. Apply lane boundary detection before authoring Feature Impact Matrix rows.
+7. Track dependencies, file ownership, source inputs, and MCP/tool context
    before starting edits.
-7. Merge evidence into `docs/work/active.md` before closeout.
-8. Write a report under `docs/work/reports/` only when requested, multi-turn,
+8. Merge evidence into `docs/work/active.md` before closeout.
+9. Write a report under `docs/work/reports/` only when requested, multi-turn,
    blocked, or decision-heavy.
 
 ## Output
 
 - lane model selected;
+- lane boundary rationale and Feature Impact Matrix scope;
 - active lanes and dependencies;
 - parallel-safe lanes;
 - serialized lanes and reason;

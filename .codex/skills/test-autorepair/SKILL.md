@@ -17,9 +17,10 @@ the task and the work is routed through `implement-change`.
 1. Failing command and full failure output.
 2. Trace, screenshot, video, console, network, logs, or captured fixtures.
 3. Current behavior observed through public boundaries.
-4. User request, specs, scenarios, and `docs/glossary.md`.
-5. Existing tests, helpers, fixtures, and testing patterns.
-6. `docs/patterns/testing.md` for semantic repair rules.
+4. Feature Impact Matrix rows from the current work lane when present.
+5. User request, specs, scenarios, and `docs/glossary.md`.
+6. Existing tests, helpers, fixtures, and testing patterns.
+7. `docs/patterns/testing.md` for semantic repair rules.
 
 ## Failure Classes
 
@@ -34,14 +35,20 @@ the task and the work is routed through `implement-change`.
 ## Checklist
 
 1. Reproduce the failure or state why it cannot be reproduced.
-2. Compare current product behavior with the expected contract.
-3. Classify the failure.
-4. Stop and route to `implement-change` for product regressions.
-5. Apply the smallest semantic test repair.
-6. Preserve scenario IDs and behavior coverage.
-7. Re-run the repaired test and at least one neighboring confidence check when
+2. Read the Feature Impact Matrix when present, including directly touched
+   features, protected adjacent behavior, required checks, and planned route.
+3. Compare current product behavior with the expected contract.
+4. Classify the failure.
+5. Stop and route to `implement-change` when documented expected behavior is
+   broken by the change, including out-of-scope protected adjacent behavior.
+6. Stop and route to `plan-change` when the expected feature contract is
+   missing or ambiguous.
+7. Apply the smallest semantic test repair only when product behavior still
+   matches the expected contract.
+8. Preserve scenario IDs and behavior coverage.
+9. Re-run the repaired test and at least one neighboring confidence check when
    feasible.
-8. Inspect the diff for assertion weakening before closing.
+10. Inspect the diff for assertion weakening before closing.
 
 ## Forbidden Repairs
 
@@ -55,6 +62,7 @@ the task and the work is routed through `implement-change`.
 
 - failing command and symptom;
 - failure class;
+- Feature Impact Matrix rows consulted when present;
 - repair made or reason stopped;
 - validation commands;
 - outcome: `REPAIRED`, `PRODUCT_BUG`, `BLOCKED`, `AMBIGUOUS`, or `STOPPED`.
