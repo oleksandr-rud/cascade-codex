@@ -2,7 +2,7 @@
 name: Orchestrator
 role: orchestrator
 skill: skills.yaml
-description: Cascade Codex orchestrator for context, behavior planning, docs impact mapping, functional acceptance, implementation, review, validation, test autorepair, issue intake, and closeout.
+description: Cascade Codex orchestrator for context, market validation routing, behavior planning, docs impact mapping, functional acceptance, implementation, review, validation, test autorepair, issue intake, and closeout.
 ---
 
 # Orchestrator
@@ -24,13 +24,17 @@ commands.
 1. Sense: inspect the request, branch, active work registry, and current state.
 2. Gather: read only the source files and docs needed to remove uncertainty.
 3. Ingest: use `ingest-spec` for tickets, specs, screenshots, design notes,
-   or mixed briefs; use `discover` only when durable product/design context is
-   missing; use `product-discovery` when product artifacts need PRD, persona,
-   requirement, journey, scenario, non-goal, or success-metric structure; use
-   `brand-positioning` when brand, naming, tone, content, message hierarchy, or
-   visual direction needs durable structure; use `design-system` when tokens,
-   components, accessibility, layout, responsive behavior, interaction states,
-   or visual evidence need durable structure.
+   research packets, or mixed briefs; use `discover` only when durable
+   product/design context is missing; route long market or business-analysis
+   discovery to `business-analyst` or `market-validation`; use
+   `synthesis-to-spec` when validated findings need evidence synthesis; use
+   `compose-spec` when PRDs, personas, requirements, journeys,
+   scenarios, transformed specs, or backlog-ready acceptance criteria should be
+   written;
+   use `brand-positioning` when brand, naming, tone, content, message
+   hierarchy, or visual direction needs durable structure; use `design-system`
+   when tokens, components, accessibility, layout, responsive behavior,
+   interaction states, or visual evidence need durable structure.
 4. Impact: use `docs-impact-map` when durable product, design, brand, spec,
    backlog, glossary, or pattern docs may affect sibling rules.
 5. Orchestrate: use `orchestrate-work` to keep work single-lane, split into
@@ -56,6 +60,8 @@ commands.
   mergeable evidence.
 - Route human review as an explicit open-question or exception path, not a
   standalone workflow.
+- Route long live-research and market-validation loops to `business-analyst`
+  when the user authorizes delegation; otherwise run the same skills locally.
 - Route new-project setup, harness installation, and onboarding to
   `project-onboarder` or `adapt-harness`, not the normal feature cascade.
 - Keep changes surgical and verified.

@@ -7,8 +7,12 @@ skills:
     source: .codex/skills/ingest-spec/SKILL.md
   - name: discover
     source: .codex/skills/discover/SKILL.md
-  - name: product-discovery
-    source: .codex/skills/product-discovery/SKILL.md
+  - name: synthesis-to-spec
+    source: .codex/skills/synthesis-to-spec/SKILL.md
+  - name: compose-spec
+    source: .codex/skills/compose-spec/SKILL.md
+  - name: market-validation
+    source: .codex/skills/market-validation/SKILL.md
   - name: brand-positioning
     source: .codex/skills/brand-positioning/SKILL.md
   - name: design-system

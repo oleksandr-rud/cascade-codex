@@ -36,8 +36,14 @@ If code and docs disagree, follow code and report the drift.
   public contract, or has unclear hidden consumers.
 - Use `discover` when product/design context is too thin to safely define
   behavior examples.
-- Use `product-discovery` when PRD, persona, requirement, journey, scenario,
-  non-goal, or success-metric structure is missing for product intent.
+- Use `market-validation` when product intent depends on long market,
+  competitor, pain, economics, segment, or experiment research.
+- Use `synthesis-to-spec` when PRD, persona, requirement, journey, scenario,
+  non-goal, success-metric, transformed-spec, or backlog synthesis is missing
+  for evidence-backed product intent.
+- Use `compose-spec` when product/spec synthesis exists but durable
+  PRD, persona, requirement, journey, scenario, transformed-spec, or backlog
+  artifacts have not been written.
 - Use `brand-positioning` when naming, tone, content hierarchy, visual
   direction, or copy rules are missing for product-visible behavior.
 - Use `design-system` when token, component, accessibility, layout, responsive,
@@ -54,26 +60,30 @@ If code and docs disagree, follow code and report the drift.
 
 1. State customer pain, intended behavior, assumptions, success criteria, and
    non-goals.
-2. Map codebase context: entry points, modules, state, data, adapters,
+2. For each problem, requirement, or gap, run several trajectory passes per
+   `docs/patterns/workflow.md#trajectory-coverage`; every trajectory must cover
+   a real problem, requirement, or gap, and the final plan must synthesize those
+   trajectories losslessly without omitting major or minor inspected details.
+3. Map codebase context: entry points, modules, state, data, adapters,
    generated clients, tests, and user paths.
-3. Identify affected and protected feature contracts: the directly changed
+4. Identify affected and protected feature contracts: the directly changed
    feature or flow, source docs/spec IDs, touched code/public contracts,
    adjacent behavior to preserve, required checks, and route for gaps or
    failures.
-4. Write behavior examples in plain language or Given/When/Then form.
-5. Include negative, stale-state, permission, follow-up, or adjacent-mode
+5. Write behavior examples in plain language or Given/When/Then form.
+6. Include negative, stale-state, permission, follow-up, or adjacent-mode
    examples when touched behavior makes them likely.
-6. Ask one blocker question at a time, include a recommended answer, and
+7. Ask one blocker question at a time, include a recommended answer, and
    inspect code/docs instead of asking when available evidence can answer it.
-7. Compare implementation approaches only when credible alternatives exist.
-8. Name the highest useful test seam: the public/product boundary where a check
+8. Compare implementation approaches only when credible alternatives exist.
+9. Name the highest useful test seam: the public/product boundary where a check
    can prove behavior without coupling to private helper shape.
-9. Choose the smallest vertical slice that satisfies the examples.
-10. Map regressions across touched boundaries and Feature Impact Matrix rows.
-11. Name functional and automated validation before editing.
-12. Persist durable decisions only when they are hard to reverse, surprising
+10. Choose the smallest vertical slice that satisfies the examples.
+11. Map regressions across touched boundaries and Feature Impact Matrix rows.
+12. Name functional and automated validation before editing.
+13. Persist durable decisions only when they are hard to reverse, surprising
     without context, and the result of a real trade-off.
-13. Update `docs/work/active.md` or a lane packet only when the plan changes
+14. Update `docs/work/active.md` or a lane packet only when the plan changes
    active work state.
 
 ## Output

@@ -41,4 +41,4 @@ Use `docs/patterns/workflow.md` for the shared Doc Routing Decision Matrix.
 
 ## Next Route
 
-- `<discover | ingest-spec | orchestrate-work | plan-change | functional-qa | closeout | codex-maintenance>`
+- `<discover | market-validation | synthesis-to-spec | compose-spec | ingest-spec | orchestrate-work | plan-change | functional-qa | closeout | codex-maintenance>`

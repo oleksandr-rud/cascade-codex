@@ -26,9 +26,13 @@ features.
   `ingest-spec` only when source material needs filing.
 - Use `discover` only when product/design/brand context is missing and durable
   artifacts are needed.
-- Use `product-discovery` when existing source material should become durable
-  PRDs, personas, requirements, journeys, scenarios, non-goals, or success
-  metrics.
+- Use `synthesis-to-spec` when existing source material needs evidence
+  synthesis before product docs are written.
+- Use `compose-spec` when existing source material should become
+  durable PRDs, personas, requirements, journeys, scenarios, non-goals, success
+  metrics, transformed specs, or backlog candidates.
+- Use `market-validation` only when onboarding uncovers a real market research
+  packet or long business-analysis loop that must be preserved.
 - Use `brand-positioning` when existing source material should become durable
   positioning, naming, tone, content, message hierarchy, or visual direction
   rules.
@@ -56,8 +60,9 @@ features.
    specs that need durable routing.
 4. Discover: run `discover` only when setup cannot identify product/design
    facts needed for future planning.
-5. Product: run `product-discovery` only when source material needs durable
-   product artifact structure.
+5. Product: run `synthesis-to-spec` only when source material needs synthesis;
+   run `compose-spec` when it needs durable product artifact
+   structure.
 6. Brand: run `brand-positioning` only when source material needs durable brand
    or content structure.
 7. Design: run `design-system` only when source material needs durable design

@@ -42,7 +42,7 @@ reusable workflow skills and role contracts in a complete release package.
 Cascade Codex routes non-atomic engineering work through this path:
 
 ```text
-context -> ingest-spec/discover if needed -> docs-impact-map when durable docs may affect sibling rules -> orchestrate-work -> plan-change -> functional-qa -> implement-change -> review-change -> validate-change -> test-autorepair only if stale tests -> closeout
+context -> ingest-spec/discover/market-validation/synthesis-to-spec/compose-spec if needed -> docs-impact-map when durable docs may affect sibling rules -> orchestrate-work -> plan-change -> functional-qa -> implement-change -> review-change -> validate-change -> test-autorepair only if stale tests -> closeout
 ```
 
 Use `issue-intake` only for issue bodies or tracker tickets. Use
@@ -64,8 +64,16 @@ check so future agents get useful sourced deltas instead of broad doc rewrites.
 For discovery-heavy work, use:
 
 ```text
-discover -> ingest-spec -> docs-impact-map -> plan-change -> functional-qa
+discover or market-validation -> ingest-spec or synthesis-to-spec -> compose-spec -> docs-impact-map -> plan-change -> functional-qa
 ```
+
+Use `business-analyst` for long market validation, live research, non-obvious
+impact discovery, and evidence-backed synthesis. Use `compose-spec`
+after synthesis to produce PRDs, personas, product specs, requirements,
+journeys, scenarios, transformed specs, and backlog candidates. The
+market-validation flow splits broad research into lanes for competitor mapping,
+pain mining, economics, geography or segment selection, constraints, validation
+experiments, hypothesis scoring, and adversarial critique.
 
 ## Install In A Target Repository
 
@@ -105,6 +113,12 @@ Keep reusable agentic engineering rules in:
 - `.codex/skills/`
 - `.codex/agents/`
 - `docs/patterns/`
+
+`synthesis-to-spec` is the evidence synthesis gate. `compose-spec`
+is the product/spec document production gate for PRDs, personas, requirements,
+journeys, scenarios, transformed specs, and backlog. Use `market-validation`
+before them when the missing context requires long business analysis or live
+research.
 
 ## Validation
 

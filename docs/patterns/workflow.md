@@ -65,6 +65,25 @@ before `plan-change`. Route missing acceptance or scenario coverage to
 `functional-qa` or `plan-change` depending on whether expected behavior is
 already clear.
 
+## Trajectory Coverage
+
+Use this rule in planning and product-grooming skills whenever a problem,
+requirement, or gap is being turned into product/spec/design/brand docs,
+behavior examples, impact maps, validation routes, or implementation plans.
+
+For each problem, requirement, or gap, run several trajectory passes before the
+final plan or groomed artifact. Trajectories may vary by user path, persona,
+lifecycle state, boundary, risk, failure mode, evidence source, implementation
+approach, or validation route, but every trajectory must cover a real problem,
+requirement, or gap from the request, code, docs, evidence, or explicit
+analysis. Do not invent decorative alternatives.
+
+After the trajectories are generated, synthesize them losslessly: keep the
+result loose enough to preserve every major and minor detail inspected or
+analyzed by the trajectories, including edge cases, contradictions, rejected
+paths, open questions, and follow-up gaps. Mark uncertain details instead of
+omitting them.
+
 ## Doc Routing Decision Matrix
 
 Use this shared matrix whenever a skill creates, changes, normalizes, validates,
@@ -105,8 +124,9 @@ Rules:
   dumps.
 - Store raw source material only when `ingest-spec` decides preservation helps
   traceability or future re-normalization.
-- Route `GAP` to `discover`, `product-discovery`, `brand-positioning`,
-  `design-system`, or `ingest-spec` according to the missing context.
+- Route `GAP` to `discover`, `market-validation`, `synthesis-to-spec`,
+  `compose-spec`, `brand-positioning`, `design-system`, or
+  `ingest-spec` according to the missing context and evidence maturity.
 - Route durable follow-up work to `docs/backlog/_index.md` only with acceptance
   criteria.
 - Use `.codex/skills/closeout/templates/doc-routing-decision.md` when a formal

@@ -10,7 +10,7 @@ direction, or brand intent needs durable rules before product planning, design,
 or implementation.
 
 This skill owns brand and content decisions. It does not implement UI, create
-design tokens directly, or replace `product-discovery`.
+design tokens directly, or replace `synthesis-to-spec`.
 
 ## Source Order
 
@@ -58,32 +58,36 @@ intent is the blocker.
    - tone and copy rules;
    - visual direction;
    - content risk or avoid list.
-2. Identify the affected audience or persona. If user roles affect product
-   behavior, route to `product-discovery`.
-3. Write positioning in this shape:
+2. For each brand/content problem, requirement, or gap, run several trajectory
+   passes per `docs/patterns/workflow.md#trajectory-coverage`; every trajectory
+   must cover a real problem, requirement, or gap, and final positioning or
+   message-map synthesis must preserve major and minor inspected details.
+3. Identify the affected audience or persona. If user roles affect product
+   behavior, route to `synthesis-to-spec`.
+4. Write positioning in this shape:
    `For <audience>, <product/category> helps <job> by <promise>, proven by <proof>.`
-4. Define message hierarchy:
+5. Define message hierarchy:
    - primary promise;
    - secondary value props;
    - proof points;
    - trust or safety language;
    - terms to use and avoid.
-5. Define tone and copy rules:
+6. Define tone and copy rules:
    - register;
    - personality;
    - directness;
    - error and empty-state behavior;
    - prohibited phrasing.
-6. Record visual direction only as brand intent. Route token, component,
+7. Record visual direction only as brand intent. Route token, component,
    accessibility, or interaction effects to `docs-impact-map` and the design
    owner.
-7. Update `docs/glossary.md` when brand terminology affects future planning,
+8. Update `docs/glossary.md` when brand terminology affects future planning,
    UI copy, public contracts, or specs.
-8. Record Doc Routing Decision Matrix rows for brand/content facts created,
+9. Record Doc Routing Decision Matrix rows for brand/content facts created,
    updated, deferred, blocked, or intentionally unchanged.
-9. Use `docs-impact-map` after brand updates to re-check product, design, spec,
+10. Use `docs-impact-map` after brand updates to re-check product, design, spec,
    backlog, glossary, and pattern effects.
-10. Route plan-ready behavior changes to `plan-change`; route copy evidence to
+11. Route plan-ready behavior changes to `plan-change`; route copy evidence to
    `functional-qa` when visible text must be verified.
 
 ## Write Targets
@@ -110,5 +114,5 @@ intent is the blocker.
 - doc routing decisions;
 - affected product/design/spec/glossary docs;
 - impact-map status;
-- next route: `docs-impact-map`, `product-discovery`, `plan-change`,
+- next route: `docs-impact-map`, `synthesis-to-spec`, `plan-change`,
   `functional-qa`, `discover`, or `ingest-spec`.

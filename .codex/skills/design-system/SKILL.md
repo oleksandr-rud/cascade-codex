@@ -60,30 +60,35 @@ blocker.
    - accessibility;
    - visual evidence;
    - design gap.
-2. Identify the source of truth:
+2. For each design/UX problem, requirement, or gap, run several trajectory
+   passes per `docs/patterns/workflow.md#trajectory-coverage`; every trajectory
+   must cover a real problem, requirement, or gap, and final design-rule
+   synthesis must preserve major and minor inspected details.
+3. Identify the source of truth:
    - existing code token or component;
    - design doc;
    - brand visual direction;
    - product scenario or journey;
    - source spec or screenshot.
-3. Write UX rules in observable terms:
+4. Write UX rules in observable terms:
    - what users see;
    - what controls mean;
    - allowed states and transitions;
    - responsive constraints;
    - accessibility expectations;
    - validation evidence.
-4. For tokens, define name, purpose, allowed values, mode/theme behavior,
+5. For tokens, define name, purpose, allowed values, mode/theme behavior,
    consuming components, accessibility constraints, and migration notes.
-5. For components, define anatomy, variants, states, content rules, responsive
+6. For components, define anatomy, variants, states, content rules, responsive
    behavior, accessibility, and functional or visual checks.
-6. Route brand visual intent gaps to `brand-positioning`.
-7. Route product behavior gaps to `product-discovery` or `plan-change`.
-8. Record Doc Routing Decision Matrix rows for design facts created, updated,
+7. Route brand visual intent gaps to `brand-positioning`.
+8. Route product behavior gaps to `synthesis-to-spec`, `market-validation`, or
+   `plan-change`.
+9. Record Doc Routing Decision Matrix rows for design facts created, updated,
    deferred, blocked, or intentionally unchanged.
-9. Use `docs-impact-map` after design updates to re-check product, brand, spec,
+10. Use `docs-impact-map` after design updates to re-check product, brand, spec,
    backlog, glossary, and pattern effects.
-10. Route visible UI checks to `functional-qa` and implementation slices to
+11. Route visible UI checks to `functional-qa` and implementation slices to
    `plan-change`.
 
 ## Write Targets
@@ -112,5 +117,6 @@ blocker.
 - affected product/brand/spec/glossary docs;
 - required browser, visual, accessibility, or functional evidence;
 - impact-map status;
-- next route: `docs-impact-map`, `brand-positioning`, `product-discovery`,
-  `plan-change`, `functional-qa`, `discover`, or `ingest-spec`.
+- next route: `docs-impact-map`, `brand-positioning`, `synthesis-to-spec`,
+  `market-validation`, `plan-change`, `functional-qa`, `discover`, or
+  `ingest-spec`.

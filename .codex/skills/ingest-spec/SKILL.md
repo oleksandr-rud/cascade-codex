@@ -44,11 +44,16 @@ Classify incoming material as one or more:
 
 1. Preserve explicit user constraints and source links.
 2. Replace vague language with codebase-specific terms after inspecting source.
-3. Extract behavior examples in plain language or Given/When/Then form.
-4. Separate visible outcomes from implementation constraints.
-5. Identify functional acceptance checks and likely automated test layer.
-6. Identify open questions and ask only blockers.
-7. Write or update the smallest relevant docs using these exact targets:
+3. For each source problem, requirement, or gap, run several trajectory passes
+   per `docs/patterns/workflow.md#trajectory-coverage`; every trajectory must
+   cover a real problem, requirement, or gap, and the transformed packet must
+   synthesize trajectories losslessly without omitting major or minor inspected
+   details.
+4. Extract behavior examples in plain language or Given/When/Then form.
+5. Separate visible outcomes from implementation constraints.
+6. Identify functional acceptance checks and likely automated test layer.
+7. Identify open questions and ask only blockers.
+8. Write or update the smallest relevant docs using these exact targets:
    - `docs/specs/incoming/` for raw imported specs only when a preserved copy
      is useful;
    - `docs/specs/transformed/` for normalized plan-ready packets;
@@ -67,13 +72,18 @@ Classify incoming material as one or more:
      tracker settings, and memory paths;
    - `.codex/skills/`, `.codex/agents/`, or `docs/patterns/` only for
      repeated workflow or architecture rules.
-8. Record Doc Routing Decision Matrix rows for durable facts, explicit
+9. Record Doc Routing Decision Matrix rows for durable facts, explicit
    `NO_DOC_NEEDED` decisions, gaps, and deferred owner updates.
-9. Hand off to `discover` when source material lacks enough product/design
-   context. Hand off to `product-discovery` when product facts need PRD,
-   persona, requirement, journey, scenario, non-goal, or success-metric
-   structure. Hand off to `brand-positioning` when brand, naming, tone,
-   content, message hierarchy, or visual direction needs durable structure.
+10. Hand off to `discover` when source material lacks enough product/design
+   context. Hand off to `market-validation` when product facts require long
+   business-analysis research before synthesis. Hand off to
+   `synthesis-to-spec` when product facts need PRD, persona, requirement,
+   journey, scenario, non-goal, success-metric, transformed-spec, or backlog
+   synthesis. Hand off to `compose-spec` when source material is
+   ready to become PRDs, personas, requirements, journeys, scenarios,
+   transformed specs, or backlog-ready acceptance criteria. Hand off to
+   `brand-positioning` when brand, naming, tone, content, message hierarchy, or
+   visual direction needs durable structure.
    Hand off to `design-system` when design tokens, components, accessibility,
    layout, responsive behavior, interaction states, or visual evidence need
    durable structure. Hand off to `docs-impact-map` when normalized facts may

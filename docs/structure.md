@@ -7,12 +7,12 @@ config; keep reusable workflow rules in skills, agents, and patterns.
 
 | Folder | Purpose | Written By |
 |---|---|---|
-| `docs/work/` | Active work lanes, copyable lane examples, lane packets, reports, handoffs | `orchestrate-work`, `plan-change`, `validate-change`, `closeout` |
-| `docs/specs/` | Incoming and transformed specs | `ingest-spec`, `discover`, `docs-impact-map`, `adapt-harness` |
-| `docs/product/` | Product intent, requirements, journeys, personas, scenarios | `discover`, `product-discovery`, `ingest-spec`, `docs-impact-map` |
+| `docs/work/` | Active work lanes, copyable lane examples, lane packets, reports, handoffs | `orchestrate-work`, `market-validation`, `plan-change`, `validate-change`, `closeout` |
+| `docs/specs/` | Incoming and transformed specs | `ingest-spec`, `synthesis-to-spec`, `compose-spec`, `discover`, `docs-impact-map`, `adapt-harness` |
+| `docs/product/` | Product intent, requirements, journeys, personas, scenarios | `discover`, `market-validation`, `synthesis-to-spec`, `compose-spec`, `ingest-spec`, `docs-impact-map` |
 | `docs/design/` | Interaction model, tokens, components, design constraints | `discover`, `design-system`, `ingest-spec`, `docs-impact-map` |
 | `docs/brand/` | Naming, tone, content, visual direction | `discover`, `brand-positioning`, `ingest-spec`, `docs-impact-map` |
-| `docs/backlog/` | Follow-up candidates with acceptance criteria | `discover`, `docs-impact-map`, `issue-intake`, `closeout` |
+| `docs/backlog/` | Follow-up candidates with acceptance criteria | `discover`, `synthesis-to-spec`, `compose-spec`, `validation-experiments`, `docs-impact-map`, `issue-intake`, `closeout` |
 | `docs/patterns/` | Reusable workflow, boundary, testing, context rules | `closeout`, `adapt-harness`, Agent Engineer skills |
 | `.codex/skills/` | Reusable workflow skills | `develop-skill`, Agent Engineer skills |
 | `.codex/agents/` | Role contracts and skill maps | Agent Engineer skills |
@@ -39,6 +39,18 @@ config; keep reusable workflow rules in skills, agents, and patterns.
 - Naming, tone, content, and visual direction: `docs/brand/`
 - Active work lane: `docs/work/active.md` or `docs/work/lanes/W-XXX-slug.md`
 - Codebase vocabulary: `docs/glossary.md`
+
+## Business Analysis Paths
+
+- Market validation reports and research lane outputs: `docs/work/reports/`
+  when requested, multi-turn, blocked, or decision-heavy.
+- Plan-ready product synthesis and authoring: existing owner docs under
+  `docs/product/`, `docs/specs/transformed/`, and `docs/backlog/_index.md`.
+- Source preservation: `docs/specs/incoming/` only when `ingest-spec` decides a
+  raw research or source packet should be preserved.
+- Doc routing: use the shared Doc Routing Decision Matrix before appending
+  durable market, product, spec, design, brand, backlog, glossary, or pattern
+  facts.
 
 ## Cross-Folder Impact Paths
 

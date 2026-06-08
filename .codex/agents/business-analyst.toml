@@ -1,0 +1,23 @@
+[agent]
+name = "business-analyst"
+display_name = "Business Analyst"
+description = "Runs long product and market discovery loops, evidence-backed market validation, and synthesis into product specs."
+category = "business-analysis"
+
+[paths]
+instructions = ".codex/agents/business-analyst/AGENT.md"
+skills = ".codex/agents/business-analyst/skills.yaml"
+
+[delegation]
+mode = "local-role-contract"
+requires_user_authorization = true
+
+[scope]
+use_for = [
+  "Long market validation, business analysis, live research, competitor, pain, economics, segment, constraint, experiment, and synthesis work.",
+  "Non-obvious product impact discovery before planning or implementation.",
+]
+avoid_for = [
+  "Direct product/runtime code implementation.",
+  "Automated test repair, final code validation, or release closeout without source evidence.",
+]

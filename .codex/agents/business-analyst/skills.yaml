@@ -1,0 +1,29 @@
+skills:
+  - name: context
+    source: .codex/skills/context/SKILL.md
+  - name: market-validation
+    source: .codex/skills/market-validation/SKILL.md
+  - name: orchestrate-work
+    source: .codex/skills/orchestrate-work/SKILL.md
+  - name: pain-mining
+    source: .codex/skills/pain-mining/SKILL.md
+  - name: competitive-map
+    source: .codex/skills/competitive-map/SKILL.md
+  - name: market-economics
+    source: .codex/skills/market-economics/SKILL.md
+  - name: hypothesis-scoring
+    source: .codex/skills/hypothesis-scoring/SKILL.md
+  - name: validation-experiments
+    source: .codex/skills/validation-experiments/SKILL.md
+  - name: adversarial-critic
+    source: .codex/skills/adversarial-critic/SKILL.md
+  - name: docs-impact-map
+    source: .codex/skills/docs-impact-map/SKILL.md
+  - name: ingest-spec
+    source: .codex/skills/ingest-spec/SKILL.md
+  - name: synthesis-to-spec
+    source: .codex/skills/synthesis-to-spec/SKILL.md
+  - name: compose-spec
+    source: .codex/skills/compose-spec/SKILL.md
+  - name: closeout
+    source: .codex/skills/closeout/SKILL.md

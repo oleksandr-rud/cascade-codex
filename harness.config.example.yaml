@@ -79,7 +79,7 @@ validation_commands:
 routing:
   new_task_path:
     - "context"
-    - "ingest-spec or discover when source material or missing intent exists"
+    - "ingest-spec, discover, market-validation, synthesis-to-spec, or compose-spec when source material, missing intent, long business-analysis research, evidence synthesis, or product/spec authoring exists"
     - "docs-impact-map when durable docs may affect sibling rules"
     - "orchestrate-work"
     - "plan-change"
@@ -92,6 +92,7 @@ routing:
   issue_intake: "explicit issue-body or tracker-ticket exception path"
   human_review: "explicit open-question or exception path only"
   stale_test_policy: "test-autorepair preserves semantic coverage; product bugs route to implement-change"
+  business_analysis: "business-analyst uses market-validation lanes, synthesis-to-spec for evidence synthesis, and compose-spec for PRDs/personas/spec artifacts"
 
 vocabulary:
   prefer_codebase_terms: true

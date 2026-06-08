@@ -19,6 +19,8 @@ default = [
   "closeout",
 ]
 conditional_discovery = "discover"
+conditional_business_analysis = "market-validation"
+conditional_spec_composition = "compose-spec"
 test_autorepair_condition = "only if stale tests"
 exception_paths = ["issue-intake"]
 
@@ -30,7 +32,13 @@ specs = "docs/specs"
 patterns = "docs/patterns"
 backlog = "docs/backlog"
 
+[mcp_servers.context7]
+command = "npx"
+args = ["-y", "@upstash/context7-mcp"]
+startup_timeout_sec = 20
+
 [harness_agents]
 default_orchestrator = "orchestrator"
 onboarding = "project-onboarder"
 harness_design = "agent-engineer"
+business_analysis = "business-analyst"

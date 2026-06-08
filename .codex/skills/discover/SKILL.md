@@ -33,30 +33,38 @@ idea. Do not make discovery mandatory for ordinary implementation planning.
 1. Orient: read current product/design/spec indexes and any related code.
 2. Evidence: separate observed facts, user-provided facts, assumptions, and
    open questions.
-3. Personas: create or update `docs/product/personas/` when user roles drive
+3. Trajectories: for each product/design problem, requirement, or gap, run
+   several trajectory passes per `docs/patterns/workflow.md#trajectory-coverage`;
+   each trajectory must cover a real problem, requirement, or gap, and discovery
+   synthesis must preserve major and minor details from every pass.
+4. Personas: create or update `docs/product/personas/` when user roles drive
    behavior.
-4. Brand/content: use `brand-positioning` when positioning, naming, tone,
+5. Brand/content: use `brand-positioning` when positioning, naming, tone,
    message hierarchy, copy rules, or visual direction need durable structure;
    otherwise update `docs/brand/` when tone, naming, or visual direction affects
    product behavior.
-5. Product spec: use `product-discovery` when PRD, persona, requirement,
-   journey, scenario, non-goal, or success-metric structure is needed; otherwise
-   write compact durable specs under `docs/product/` or normalized specs under
-   `docs/specs/transformed/`.
-6. Scenarios: add product scenario rows to `docs/product/scenarios.md`.
-7. Journeys: write cross-feature journeys when state carries across steps.
-8. Design gaps: use `design-system` when tokens, components, accessibility,
+6. Product spec: use `synthesis-to-spec` when evidence needs synthesis before
+   product docs are written; use `compose-spec` when PRD, persona,
+   requirement, journey, scenario, non-goal, success-metric, transformed-spec,
+   or backlog structure is ready to author; use `market-validation` when the
+   missing product context requires long market, competitor, pain, economics,
+   segment, or experiment research; otherwise write compact durable specs under
+   `docs/product/` or normalized specs under `docs/specs/transformed/`.
+7. Scenarios: add product scenario rows to `docs/product/scenarios.md`.
+8. Journeys: write cross-feature journeys when state carries across steps.
+9. Design gaps: use `design-system` when tokens, components, accessibility,
    layout, responsive behavior, interaction states, or visual evidence need
    durable structure; otherwise record compact design gaps in `docs/design/`.
-9. Backlog: create backlog candidates only for real follow-up work with
+10. Backlog: create backlog candidates only for real follow-up work with
    acceptance criteria.
-10. Impact: use `docs-impact-map` when created or updated artifacts may affect
+11. Impact: use `docs-impact-map` when created or updated artifacts may affect
     sibling product/design/brand/spec/backlog/glossary/pattern docs.
-11. Routing: record Doc Routing Decision Matrix rows for artifacts created,
+12. Routing: record Doc Routing Decision Matrix rows for artifacts created,
     updated, deferred, blocked, or intentionally unchanged.
-12. Handoff: route plan-ready work to `product-discovery`,
-    `brand-positioning`, `design-system`, `ingest-spec`, `docs-impact-map`,
-    `orchestrate-work`, or `plan-change`.
+13. Handoff: route plan-ready work to `synthesis-to-spec`,
+    `compose-spec`, `market-validation`, `brand-positioning`,
+    `design-system`, `ingest-spec`, `docs-impact-map`, `orchestrate-work`, or
+    `plan-change`.
 
 ## Rules
 

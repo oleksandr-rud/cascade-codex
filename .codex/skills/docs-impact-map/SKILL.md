@@ -9,9 +9,10 @@ Use when product, design, brand, spec, backlog, glossary, or pattern material is
 created, changed, normalized, or used as planning input and the change may
 affect sibling docs.
 
-This skill is the proactive dependency check between `ingest-spec` or
-`discover` and `plan-change`. It also supports `closeout` when a validated diff
-creates a durable doc fact. It does not patch product/runtime code.
+This skill is the proactive dependency check between `ingest-spec`, `discover`,
+`market-validation`, `synthesis-to-spec`, `compose-spec`, and
+`plan-change`. It also supports `closeout` when a validated diff creates a
+durable doc fact. It does not patch product/runtime code.
 
 ## Source Order
 
@@ -80,24 +81,31 @@ Use these dependency checks before deciding that one doc update is complete:
    `proposed`, `validated`, `blocked`, or `superseded`.
 2. Build or update the shared Doc Routing Decision Matrix for the changed fact
    before writing owner docs.
-3. Build an impact matrix with one row per affected target.
-4. Mark each affected target:
+3. For each changed problem, requirement, or gap, run several trajectory passes
+   per `docs/patterns/workflow.md#trajectory-coverage`; every trajectory must
+   cover a real problem, requirement, or gap, and the impact synthesis must
+   preserve every major and minor detail inspected across affected targets.
+4. Build an impact matrix with one row per affected target.
+5. Mark each affected target:
    - `UPDATED` when the owner doc was changed;
    - `NO_CHANGE` when checked and already aligned;
    - `DEFERRED` when the update is real follow-up work with owner or backlog;
    - `BLOCKED` when a blocker prevents safe routing;
    - `GAP` when the source material lacks enough product/design/brand/spec
      context.
-5. Route `GAP` to `discover` or `ingest-spec` before `plan-change`.
-6. Route missing acceptance or scenario coverage to `functional-qa` or
+6. Route research-heavy product `GAP` rows to `market-validation`, evidence
+   synthesis gaps to `synthesis-to-spec`, spec composition gaps to
+   `compose-spec`, and source-normalization gaps to `discover` or
+   `ingest-spec` before `plan-change`.
+7. Route missing acceptance or scenario coverage to `functional-qa` or
    `plan-change` depending on whether expected behavior is already clear.
-7. Route reusable harness rule changes to `codex-maintenance` and validator
+8. Route reusable harness rule changes to `codex-maintenance` and validator
    updates.
-8. Update the smallest owner docs only when the source fact is explicit enough
+9. Update the smallest owner docs only when the source fact is explicit enough
    and the target doc has a clear owner.
-9. Create backlog candidates only for real follow-up work with acceptance
+10. Create backlog candidates only for real follow-up work with acceptance
    criteria.
-10. Keep the report compact; do not rewrite broad product, brand, design, or
+11. Keep the report compact; do not rewrite broad product, brand, design, or
    spec docs.
 
 ## Write Policy
@@ -116,7 +124,8 @@ Use these dependency checks before deciding that one doc update is complete:
 - Doc Routing Decision Matrix status;
 - impact matrix with target docs, required checks, status, and next gate;
 - docs updated, deferred, blocked, or intentionally unchanged;
-- next route: `discover`, `ingest-spec`, `orchestrate-work`, `plan-change`,
+- next route: `discover`, `market-validation`, `synthesis-to-spec`,
+  `compose-spec`, `ingest-spec`, `orchestrate-work`, `plan-change`,
   `functional-qa`, `closeout`, or `codex-maintenance`.
 
 ## Templates
