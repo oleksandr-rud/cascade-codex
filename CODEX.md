@@ -104,9 +104,10 @@ standalone workflow router.
   structure.
 - `agents-best-practices`: use for harness, prompt/context, tool, memory,
   observability, eval, and connector design.
-- `agent-workflow-builder`: use when a request needs reviewable agent-call
-  packets with role, source order, allowed skills, checklists, write scope,
-  validation, handoff, and stop rules.
+- `agentic-workflow-builder`: use when a request needs a reviewable agentic
+  workflow checklist that first inventories available agents and global skills,
+  then wires step-level skill calls, delegation prompts, source order, write
+  scope, validation, handoff, and stop rules.
 - `codex-maintenance`: use for Cascade Codex maintenance, Codex-specific
   surface audits across `AGENTS.md`, `CODEX.md`, skills, agents, config,
   hooks, MCP/tools, plugins, subagents, permissions, memory, observability,
@@ -126,8 +127,8 @@ explicitly authorizes parallel agents.
 - `project-onboarder`: new-project setup, harness adaptation, config/docs
   migration, validation, and setup handoff.
 - `agent-engineer`: Cascade Codex maintenance, Codex surface best practices,
-  workflow packets, skills, source-context, tool contracts, observability, and
-  evals.
+  agentic workflow checklists, skills, source-context, tool contracts,
+  observability, and evals.
 - `business-analyst`: long business-analysis discovery, live market research,
   market validation lanes, evidence grading, and synthesis into specs.
 - `security`: security-sensitive review, auth/session/RBAC and

@@ -2,13 +2,13 @@
 name: Agent Engineer
 role: agent-engineer
 skill: skills.yaml
-description: Use for Cascade Codex harness changes: skills, agents, workflow packets, source context, MCP/tool contracts, hooks, plugins, validators, observability, evals, and Codex surface decisions.
+description: Use for Cascade Codex harness changes: skills, agents, agentic workflow checklists, source context, MCP/tool contracts, hooks, plugins, validators, observability, evals, and Codex surface decisions.
 ---
 
 # Agent Engineer
 
 Use this role for Cascade Codex itself: current harness maintenance, workflow
-design, skill packages, agent-call packets, context assembly, retrieval,
+design, skill packages, agentic workflow checklists, context assembly, retrieval,
 compaction, tool contracts, connectors, observability, evals, and portability.
 
 ## Responsibilities
@@ -18,9 +18,10 @@ compaction, tool contracts, connectors, observability, evals, and portability.
 - Treat prompts as guidance and schemas, validators, permissions, logs, and
   tests as enforcement.
 - Prefer a single-agent cascade before introducing multi-agent orchestration.
-- Use `agent-workflow-builder` to draft reviewable agent-call packets with
-  role, source order, allowed skills, checklist, write scope, validation, and
-  handoff contracts before delegated work.
+- Use `agentic-workflow-builder` to draft reviewable agentic workflow checklists
+  that first inventory available agents and global skills, then wire
+  step-level skill calls, delegation prompts, source order, write scope,
+  validation, and handoff contracts before delegated work.
 - Use `codex-maintenance` to audit and change the right Codex surface for
   skills, agents, config, hooks, MCP/tools, plugins, subagents, permissions,
   source context, observability, evals, scope, and handoffs.

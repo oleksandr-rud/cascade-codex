@@ -2,7 +2,7 @@
 
 Date: 2026-06-17
 Status: draft workflow
-Owner route: `agent-engineer -> agent-workflow-builder -> codex-maintenance`
+Owner route: `agent-engineer -> agentic-workflow-builder -> codex-maintenance`
 Source: user request to prepare an agentic workflow for auditing all skills,
 all docs folders, real-world templates, wiring consistency, trigger quality,
 and a full learning lifecycle for consolidated reusable memory.
@@ -92,7 +92,7 @@ evidence-backed update plan with exact owner files and packet prompts.
 |---|---|---|---|---|
 | INV-01 Surface inventory | agent-engineer | `codex-maintenance` | first | canonical inventory |
 | SKILL-01 Skill trigger and rule audit | agent-engineer | `develop-skill` | yes | skill quality matrix |
-| AGENT-01 Agent wiring and segment audit | agent-engineer | `agent-workflow-builder` | yes | agent-skill segment matrix |
+| AGENT-01 Agent wiring and segment audit | agent-engineer | `agentic-workflow-builder` | yes | agent-skill segment matrix |
 | DOC-01 Docs folder and write-target audit | agent-engineer + business-analyst | `docs-impact-map` | yes | docs structure matrix |
 | TMPL-01 Template/checklist usability audit | agent-engineer | `develop-skill` | yes | template quality matrix |
 | LEARN-01 Learning lifecycle audit | agent-engineer | `agents-best-practices` | yes | durable learning route matrix |
@@ -168,10 +168,10 @@ Matrix:
 Prompt:
 
 ```text
-You are the Agent Engineer using agent-workflow-builder. Audit each agent's TOML,
+You are the Agent Engineer using agentic-workflow-builder. Audit each agent's TOML,
 AGENT.md, skills.yaml, role checklists, use scope, avoid scope, and segment
 ownership. Verify every skill mapped to the agent matches the agent's role and
-that no role needs a skill it lacks. Produce an agent-call packet for each
+that no role needs a skill it lacks. Produce an agentic workflow packet for each
 correction lane. Do not spawn agents.
 ```
 
@@ -359,7 +359,7 @@ Prompt:
 ```text
 You are the Orchestrator. Merge the audit lane outputs into a prioritized,
 implementation-ready plan. Group findings into safe atomic changes, serialized
-changes, and deferred design decisions. Create agent-call packets for each
+changes, and deferred design decisions. Create agentic workflow packets for each
 implementation lane. Do not implement until the plan is reviewed.
 ```
 

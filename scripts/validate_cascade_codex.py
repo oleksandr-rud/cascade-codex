@@ -57,8 +57,8 @@ REQUIRED_FILES = [
     ".codex/skills/validation-experiments/templates/validation-experiment-plan.md",
     ".codex/skills/adversarial-critic/templates/critic-report.md",
     ".codex/skills/agents-best-practices/references/harness-checklists.md",
-    ".codex/skills/agent-workflow-builder/checklists/workflow-packet-quality.md",
-    ".codex/skills/agent-workflow-builder/templates/agent-call-packet.md",
+    ".codex/skills/agentic-workflow-builder/checklists/workflow-packet-quality.md",
+    ".codex/skills/agentic-workflow-builder/templates/agentic-workflow-packet.md",
     ".codex/skills/synthesis-to-spec/templates/spec-synthesis-packet.md",
     ".codex/skills/compose-spec/templates/product-prd.md",
     ".codex/skills/compose-spec/templates/persona.md",
@@ -120,7 +120,7 @@ AGENTS = [
 
 SKILLS = [
     "context",
-    "agent-workflow-builder",
+    "agentic-workflow-builder",
     "orchestrate-work",
     "plan-change",
     "architecture-review",
@@ -299,8 +299,8 @@ SKILL_TRIGGER_REQUIREMENTS = {
         r"Create|port|rename|refactor|validate",
         r"trigger contracts|source order|outputs|guardrails|quality gates",
     ],
-    "agent-workflow-builder": [
-        r"agent-call|workflow packets|prompts",
+    "agentic-workflow-builder": [
+        r"agentic workflow|workflow packets|prompts",
         r"source order|write scope|validation|handoff",
     ],
     "market-validation": [
@@ -437,7 +437,7 @@ REQUIRED_SKILL_SURFACES = {
         "trigger-focused `description`",
         "forward-testing",
     ],
-    "agent-workflow-builder": [
+    "agentic-workflow-builder": [
         "AGENTS.md",
         "CODEX.md",
         ".codex/config.toml",
@@ -449,7 +449,7 @@ REQUIRED_SKILL_SURFACES = {
         "docs/patterns/workflow.md",
         "docs/patterns/boundaries.md",
         "docs/patterns/testing.md",
-        "templates/agent-call-packet.md",
+        "templates/agentic-workflow-packet.md",
         "checklists/workflow-packet-quality.md",
         "plan-change",
         "functional-qa",

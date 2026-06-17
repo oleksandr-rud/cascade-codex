@@ -1,10 +1,10 @@
-# Agent Workflow Builder Skill Research
+# Agentic Workflow Builder Skill Research
 
 Date: 2026-06-17
 Status: draft
 Owner route: `agent-engineer -> develop-skill -> codex-maintenance`
 Source: user request to audit skill wiring and research skills for building
-agent-call workflows from specific prompts, checklists, tasks, and agent skill
+agentic workflows from specific prompts, checklists, tasks, and agent skill
 sets.
 
 ## Wiring Audit
@@ -52,7 +52,7 @@ scenario runner commands.
 
 ## Proposed Skill
 
-Name candidate: `agent-workflow-builder`
+Name candidate: `agentic-workflow-builder`
 
 Owning role: `agent-engineer`
 
@@ -66,7 +66,7 @@ authorizes delegation.
 
 Use when the user asks to:
 
-- build a workflow from agent calls;
+- build a workflow from existing agent or subagent routes;
 - create prompts for multiple agents or specialist roles;
 - define a role-call sequence with checklists and tasks;
 - prepare subagent/delegation packets;
@@ -98,7 +98,7 @@ Do not use when:
 
 ## Workflow Packet Shape
 
-Each agent-call packet should include:
+Each agentic workflow packet should include:
 
 ```yaml
 agent: "<agent-name>"
@@ -153,19 +153,19 @@ Before returning packets, the skill should verify:
 
 | Artifact | Decision | Reason |
 |---|---|---|
-| `SKILL.md` | create later | Distinct repeated workflow: composing agent-call packets. |
-| `templates/agent-call-packet.md` | create later | Prevents missing role, prompt, checklist, validation, and handoff fields. |
+| `SKILL.md` | create later | Distinct repeated workflow: composing agentic workflow packets. |
+| `templates/agentic-workflow-packet.md` | create later | Prevents missing role, prompt, checklist, validation, and handoff fields. |
 | `checklists/workflow-packet-quality.md` | create later | Reusable review gate for packet correctness. |
-| `references/agent-call-patterns.md` | optional | Use only if detailed examples become bulky. |
+| `references/agentic-workflow-patterns.md` | optional | Use only if detailed examples become bulky. |
 | `scripts/validate_agent_workflow_packets.py` | optional | Useful if workflow packets become durable files. |
 | validator | update when created | Register skill, template, checklist, and owning agent wiring. |
 
 ## Recommended Next Implementation
 
-Create `agent-workflow-builder` as an `agent-engineer` skill with:
+Create `agentic-workflow-builder` as an `agent-engineer` skill with:
 
 - concise `SKILL.md`;
-- `templates/agent-call-packet.md`;
+- `templates/agentic-workflow-packet.md`;
 - `checklists/workflow-packet-quality.md`;
 - wiring in `.codex/agents/agent-engineer/skills.yaml`;
 - docs mention in `.codex/README.md` and `CODEX.md` optional escalations;

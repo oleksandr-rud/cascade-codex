@@ -31,7 +31,7 @@ answer:
   agents as standalone TOML files, so placing reusable `SKILL.md` files inside
   `.codex/agents/{agent}/` needs compatibility proof before migration.
 - The first implementation-ready skill from this workflow is
-  `agent-workflow-builder`.
+  `agentic-workflow-builder`.
 
 ## External Evidence Snapshot
 
@@ -68,7 +68,7 @@ implementation lane after compatibility evidence and validator changes exist.
 
 ## Global Acceptance Criteria
 
-- Every proposed agent-call packet names a real agent, role contract, skill
+- Every proposed agentic workflow packet names a real agent, role contract, skill
   route, source order, write scope, validation, and stop condition.
 - Every skill-topology option records discovery behavior, context cost,
   validator impact, migration risk, rollback path, and packaging impact.
@@ -125,7 +125,7 @@ Expected decision:
 
 - Keep reusable workflow skills central until a compatibility proof shows that
   an agent-local skill root is both discoverable and less confusing.
-- Keep role-specific checklists and agent-call packet examples inside agent
+- Keep role-specific checklists and agentic workflow packet examples inside agent
   folders when they are role-specific.
 - Use a mirror/package layer only when distribution or Codex-native skill
   discovery requires it.
@@ -260,7 +260,7 @@ Skill decisions:
 
 | Skill | Owner | Decision | Purpose |
 |---|---|---|---|
-| `agent-workflow-builder` | agent-engineer | create | compose agent-call packets from goals, prompts, skills, checklists, validation, and handoff rules |
+| `agentic-workflow-builder` | agent-engineer | create | compose agentic workflow packets from goals, prompts, skills, checklists, validation, and handoff rules |
 | `synthesis-to-spec` | business-analyst | update | synthesize source-context and research evidence into plan-ready packets |
 | `compose-spec` | business-analyst/designer/project-onboarder | update | author durable specs from approved trajectory-backed source material |
 | `docs-impact-map` | shared | keep/update as needed | run cross-folder dependency and trajectory coverage checks |
@@ -346,8 +346,8 @@ shape is:
 
 - central reusable skills remain under `.codex/skills/`;
 - per-agent folders own role contracts, skill maps, role checklists, and
-  role-specific agent-call packet examples;
-- `agent-workflow-builder` owns workflow packet composition;
+  role-specific agentic workflow packet examples;
+- `agentic-workflow-builder` owns workflow packet composition;
 - existing `synthesis-to-spec`, `compose-spec`, and `docs-impact-map` own
   docs/spec trajectory analysis and durable source promotion;
 - a later compatibility lane may create a Codex-native mirror/package layout if
