@@ -123,18 +123,78 @@ docs folders, stale active skill references, unwired skills, invalid TOML,
 overgrown `AGENTS.md`, stale naming, project-specific leakage, and broken
 traceability IDs.
 
-## Install In A Target Repository
+## Setup In A Target Repository
 
-1. Copy the Cascade files into the target repository root.
-2. Copy `harness.config.example.yaml` to `harness.config.yaml`.
-3. Fill in the target project's stack, source roots, test roots, public
-   contracts, validation commands, tracker settings, and memory paths.
-4. Replace placeholders in `AGENTS.md`, `docs/glossary.md`,
+Start from a clean Cascade checkout or release bundle, then copy the harness
+into the target repository root. Review collisions first if the target already
+has `AGENTS.md`, `CODEX.md`, `.codex/`, `docs/`, or `scripts/`.
+
+```bash
+export CASCADE_SRC=/path/to/cascade
+export TARGET_REPO=/path/to/target-repo
+
+rsync -a --backup --suffix=.pre-cascade \
+  --exclude '.git/' \
+  --exclude '.DS_Store' \
+  "$CASCADE_SRC"/AGENTS.md \
+  "$CASCADE_SRC"/CODEX.md \
+  "$CASCADE_SRC"/harness.config.example.yaml \
+  "$CASCADE_SRC"/.codex \
+  "$CASCADE_SRC"/docs \
+  "$CASCADE_SRC"/scripts \
+  "$TARGET_REPO"/
+
+cd "$TARGET_REPO"
+cp harness.config.example.yaml harness.config.yaml
+python3 scripts/validate_cascade_codex.py
+```
+
+Keep the target project's existing `README.md` unless you intentionally want
+to replace it. This README is the Cascade package guide; the target project
+README should usually stay product-facing.
+
+After copying, ask Codex to adapt the harness from the target repository root.
+For a normal setup pass:
+
+```text
+/goal Adapt Cascade to this repository. Inspect the current code, docs,
+AGENTS.md, CODEX.md, .codex/, package files, build files, test config,
+entrypoints, public contracts, and README files before writing. Use
+project-onboarder with adapt-harness to fill AGENTS.md, CODEX.md,
+harness.config.yaml, docs/structure.md, docs/glossary.md, validation commands,
+and doc routing. Preserve user-authored instructions unless replacement is
+required. Keep AGENTS.md thin, route project facts to the narrowest owner docs,
+run python3 scripts/validate_cascade_codex.py, run available target checks, and
+close with files changed, skipped, blockers, and next routes.
+```
+
+For a deeper onboarding pass that builds future planning context:
+
+```text
+/goal Run deep Cascade onboarding for this repository. Use project-onboarder
+with adapt-harness and the project onboarding workflow. Inventory stack,
+source roots, test roots, docs roots, app entrypoints, public contracts,
+commands, and runners. Build project-part specs only for meaningful backend,
+frontend, shared, data, integration, runtime, security, or tooling areas.
+Catalog product features from routes, UI surfaces, APIs, tests, specs, docs,
+and user-facing copy. Use visual-qa when the UI can run or screenshots/design
+evidence exists. Route product, design, brand, spec, security, architecture,
+testing, glossary, and context-memory facts to the narrowest existing owner
+docs. Do not create broad dump folders. Validate and close out with evidence,
+blocked checks, and follow-up routes.
+```
+
+Manual setup still works when an agent is unavailable:
+
+1. Fill in the target project's stack, source roots, test roots, public
+   contracts, validation commands, tracker settings, and memory paths in
+   `harness.config.yaml`.
+2. Replace placeholders in `AGENTS.md`, `docs/glossary.md`,
    `docs/patterns/boundaries.md`, and any product/design/spec docs that should
    guide future work.
-5. Add the release-bundle `.codex/skills/` and `.codex/agents/` assets when the
+3. Add the release-bundle `.codex/skills/` and `.codex/agents/` assets when the
    target runtime should load reusable Cascade skills or role contracts.
-6. Run `python3 scripts/validate_cascade_codex.py` from the repository root
+4. Run `python3 scripts/validate_cascade_codex.py` from the repository root
    after the full package is present.
 
 ## Validation

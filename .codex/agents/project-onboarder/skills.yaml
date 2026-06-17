@@ -1,8 +1,20 @@
 skills:
   - name: context
     source: .codex/skills/context/SKILL.md
+  - name: agentic-workflow-builder
+    source: .codex/skills/agentic-workflow-builder/SKILL.md
+  - name: orchestrate-work
+    source: .codex/skills/orchestrate-work/SKILL.md
   - name: adapt-harness
     source: .codex/skills/adapt-harness/SKILL.md
+  - name: architecture-review
+    source: .codex/skills/architecture-review/SKILL.md
+  - name: codebase-audit
+    source: .codex/skills/codebase-audit/SKILL.md
+  - name: auth-analysis
+    source: .codex/skills/auth-analysis/SKILL.md
+  - name: secure-design
+    source: .codex/skills/secure-design/SKILL.md
   - name: ingest-spec
     source: .codex/skills/ingest-spec/SKILL.md
   - name: discover
@@ -15,8 +27,14 @@ skills:
     source: .codex/skills/market-validation/SKILL.md
   - name: brand-positioning
     source: .codex/skills/brand-positioning/SKILL.md
+  - name: visual-qa
+    source: .codex/skills/visual-qa/SKILL.md
+  - name: ux-flow-review
+    source: .codex/skills/ux-flow-review/SKILL.md
   - name: design-system
     source: .codex/skills/design-system/SKILL.md
+  - name: functional-qa
+    source: .codex/skills/functional-qa/SKILL.md
   - name: docs-impact-map
     source: .codex/skills/docs-impact-map/SKILL.md
   - name: validate-change
@@ -25,5 +43,7 @@ skills:
     source: .codex/skills/closeout/SKILL.md
   - name: agents-best-practices
     source: .codex/skills/agents-best-practices/SKILL.md
+  - name: codex-maintenance
+    source: .codex/skills/codex-maintenance/SKILL.md
   - name: develop-skill
     source: .codex/skills/develop-skill/SKILL.md
