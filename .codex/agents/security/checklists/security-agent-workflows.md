@@ -11,6 +11,9 @@ findings into the rest of the Cascade workflow.
       services, configuration, and tests relevant to the requested boundary.
 - [ ] Generate or update focused audit trajectories rather than one broad
       undifferentiated report.
+- [ ] Use helper scripts only when the target repo explicitly provides a
+      read-only helper with safe defaults; otherwise inspect files and existing
+      commands directly.
 - [ ] Escalate auth, session, role, permission, and tenant-boundary concerns to
       `auth-analysis`.
 - [ ] Escalate proposed feature, workflow, architecture, agent/tool, external
@@ -38,6 +41,8 @@ findings into the rest of the Cascade workflow.
 - [ ] Map data flow and decision flow.
 - [ ] List abuse cases, secure defaults, least privilege, revocation,
       auditability, privacy, data minimization, and failure behavior.
+- [ ] Keep credentials, tokens, private customer data, regulated sensitive
+      data, raw logs, and sensitive screenshots out of durable findings.
 - [ ] Route product ambiguity to `discover` or `compose-spec`.
 - [ ] Route architecture risk to `architecture-review`.
 - [ ] Route behavior proof to `functional-qa` or `validate-change`.

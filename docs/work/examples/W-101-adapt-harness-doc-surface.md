@@ -8,7 +8,7 @@ Next Gate: `validate-change`
 
 ## Request
 
-Adapt Cascade Codex to a target repository by filling project identity,
+Adapt Cascade to a target repository by filling project identity,
 validation commands, source roots, and docs routing without changing runtime
 code.
 

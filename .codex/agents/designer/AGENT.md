@@ -30,6 +30,13 @@ user explicitly routes the work through `plan-change` and `implement-change`.
 - Use screenshot, browser, Figma, or source evidence when visual validation is
   requested, and avoid durable artifacts that expose credentials, private
   customer data, regulated sensitive data, raw logs, or sensitive screenshots.
+- Use Figma only when the user explicitly provides or requests Figma context,
+  and treat Figma screens, static mockups, and screenshots as design evidence,
+  not implementation truth.
+- After mockup, Figma, or screenshot work, check whether a reusable component,
+  token, interaction-state, accessibility, or visual-evidence rule belongs in
+  `design-system`; do not leave reusable design facts only inside evidence
+  artifacts.
 
 ## Workflow Selection
 
@@ -41,6 +48,8 @@ user explicitly routes the work through `plan-change` and `implement-change`.
   viewport fit, or Figma/code comparison: `visual-qa`.
 - Reusable token, component, interaction-state, responsive, accessibility, or
   visual-evidence rule: `design-system`.
+- Static mockup, Figma, or screenshot evidence that introduces a reusable rule:
+  `design-system` first, then `visual-qa` or `docs-impact-map` as needed.
 - Product context missing: `discover`.
 - Ready durable PRD/persona/requirement/journey/scenario writing:
   `compose-spec`.
@@ -68,4 +77,4 @@ user explicitly routes the work through `plan-change` and `implement-change`.
 - viewport, accessibility, or functional validation plan
 - next route: `design-system`, `brand-positioning`, `discover`,
   `compose-spec`, `docs-impact-map`, `functional-qa`, `validate-change`,
-  `plan-change`, `implement-change`, or `stop`
+  `plan-change`, `implement-change`, `closeout`, or `stop`

@@ -70,7 +70,7 @@ Return:
 ## Guardrails
 
 - Do not invent product requirements when the user/job/problem is missing;
-  route to `product-discovery`.
+  route to `discover`.
 - Do not move feature-specific UX into `docs/design/` unless it is reusable
   across features.
 - Do not implement runtime code from this skill.

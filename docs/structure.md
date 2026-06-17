@@ -1,6 +1,6 @@
 # Harness Structure And Write Targets
 
-Use this file as the Cascade Codex folder map. Keep project facts in docs and
+Use this file as the Cascade folder map. Keep project facts in docs and
 config; keep reusable workflow rules in skills, agents, and patterns.
 
 ## Core Folders
@@ -34,6 +34,9 @@ config; keep reusable workflow rules in skills, agents, and patterns.
   questions.
 - Product scenarios: `docs/product/scenarios.md`
 - Product intent, requirements, journeys, and personas: `docs/product/`
+- Domain-owned product folders under `docs/product/<domain>/` are allowed only
+  when the target repo already uses or explicitly defines that catalog shape;
+  otherwise use the flat required owner docs.
 - Interaction, accessibility, component, token, and design constraints:
   `docs/design/`
 - Naming, tone, content, and visual direction: `docs/brand/`

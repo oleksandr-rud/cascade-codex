@@ -1,4 +1,4 @@
-# Cascade Codex Wiring
+# Cascade Wiring
 
 This directory contains reusable workflow skills and role contracts.
 
@@ -42,7 +42,7 @@ Supporting skills:
 - `orchestrator`: orchestrates the cascade.
 - `project-onboarder`: orchestrates new-project setup, harness adaptation,
   config/docs migration, validation, and setup handoff.
-- `agent-engineer`: owns Cascade Codex maintenance, Codex surface best
+- `agent-engineer`: owns Cascade maintenance, Codex surface best
   practices, agentic workflow checklists, source-context, skill, and
   observability guidance.
 - `business-analyst`: owns long market validation, live research,
@@ -57,7 +57,7 @@ Supporting skills:
 Agent TOML manifests use `[agent]` for identity, `[paths]` for role-contract
 files, `[delegation]` for spawn policy, and `[scope]` for use/avoid boundaries.
 
-Cascade Codex is intentionally skill-first except for repeated long-running or
+Cascade is intentionally skill-first except for repeated long-running or
 specialist review boundaries such as business analysis, security review, and
 design review. Keep architecture review, functional acceptance, test repair,
 and issue intake as skills unless the target project proves it needs a

@@ -66,6 +66,16 @@ Source: `<REQUEST_OR_REPORT_OR_EXISTING_SKILL>`
 | `agents/openai.yaml` | `<create-update-no-change>` | `<reason>` |
 | validator | `<create-update-no-change>` | `<reason>` |
 
+## Stage Gates
+
+| Stage | Result | Issues | Repair Or Limitation |
+|---|---|---|---|
+| intent | `<PASS|REVISE|STOP_WITH_LIMITATION>` | `<issue-or-none>` | `<action>` |
+| contract | `<PASS|REVISE|STOP_WITH_LIMITATION>` | `<issue-or-none>` | `<action>` |
+| challenge | `<PASS|REVISE|STOP_WITH_LIMITATION>` | `<issue-or-none>` | `<action>` |
+| artifact map | `<PASS|REVISE|STOP_WITH_LIMITATION>` | `<issue-or-none>` | `<action>` |
+| validation | `<PASS|REVISE|STOP_WITH_LIMITATION>` | `<issue-or-none>` | `<action>` |
+
 ## Validation
 
 - Frontmatter:

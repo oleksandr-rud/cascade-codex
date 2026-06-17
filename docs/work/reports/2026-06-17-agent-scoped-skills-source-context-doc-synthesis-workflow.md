@@ -99,7 +99,7 @@ implementation lane after compatibility evidence and validator changes exist.
 Prompt:
 
 ```text
-You are the Agent Engineer. Research whether Cascade Codex should keep reusable
+You are the Agent Engineer. Research whether Cascade should keep reusable
 skills central, move agent-scoped skills under agent folders, or create a
 mirrored packaging layer. Read AGENTS.md, CODEX.md, .codex/config.toml,
 .codex/agents/*/AGENT.md, .codex/agents/*/skills.yaml, .codex/skills/*/SKILL.md,
@@ -115,7 +115,7 @@ Checklist:
 - [ ] Mark shared skills used by more than one agent.
 - [ ] Mark role-specific checklists already living under agent folders.
 - [ ] Test whether the proposed destination is Codex-discoverable or
-      Cascade-only.
+      Cascade-specific.
 - [ ] Distinguish source layout from package/mirror layout.
 - [ ] Identify stale path, duplicate trigger, and context-list risks.
 - [ ] Define validator changes before any move.

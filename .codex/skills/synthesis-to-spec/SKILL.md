@@ -73,6 +73,8 @@ repair.
    - `compose-spec` for PRDs, personas, compact product specs,
      requirement rows, journey rows, scenario rows, transformed specs, and
      backlog-ready acceptance criteria;
+   - existing domain-owned product folders when the target repo already uses
+     them for the affected capability;
    - `docs/product/requirements.md` for stable requirement rows;
    - `docs/product/scenarios.md` for functional behavior examples;
    - `docs/product/journeys.md` when state carries across steps;
@@ -81,16 +83,19 @@ repair.
    - `docs/backlog/_index.md` for follow-up work with acceptance criteria.
 5. Preserve traceability:
    `source -> finding -> requirement or scenario -> functional check -> work lane`.
-6. Use `docs-impact-map` before writing when the fact may affect sibling
+6. Preserve the target repo's current catalog shape: use domain-specific specs,
+   scenario files, or journey files only when already defined by the repo's
+   product docs or `docs/structure.md`; otherwise use the flat required ledgers.
+7. Use `docs-impact-map` before writing when the fact may affect sibling
    product, design, brand, spec, backlog, glossary, or pattern docs.
-7. Write only thin sourced deltas. Do not create broad product essays or dump
+8. Write only thin sourced deltas. Do not create broad product essays or dump
    all research into product docs.
-8. Use `ingest-spec` when incoming material needs normalization before
+9. Use `ingest-spec` when incoming material needs normalization before
    synthesis.
-9. Route product/spec document production to `compose-spec`.
-10. Route implementation-ready behavior to `plan-change` and product-visible
+10. Route product/spec document production to `compose-spec`.
+11. Route implementation-ready behavior to `plan-change` and product-visible
    acceptance to `functional-qa`.
-11. Record Doc Routing Decision Matrix rows for every durable fact, gap,
+12. Record Doc Routing Decision Matrix rows for every durable fact, gap,
    deferred item, blocked fact, and explicit `NO_DOC_NEEDED` decision.
 
 ## Templates

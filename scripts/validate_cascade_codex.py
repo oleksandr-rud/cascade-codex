@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Validate Cascade Codex wiring and project-agnostic content."""
+"""Validate Cascade wiring and project-agnostic content."""
 
 from __future__ import annotations
 
@@ -191,6 +191,23 @@ REQUIRED_FOLDERS = [
     "docs/work/reports",
 ]
 
+ALLOWED_DOC_FOLDERS = {
+    "docs",
+    "docs/backlog",
+    "docs/brand",
+    "docs/design",
+    "docs/patterns",
+    "docs/product",
+    "docs/product/personas",
+    "docs/specs",
+    "docs/specs/incoming",
+    "docs/specs/transformed",
+    "docs/work",
+    "docs/work/examples",
+    "docs/work/lanes",
+    "docs/work/reports",
+}
+
 CANONICAL_CASCADE_TOKENS = [
     "context",
     "ingest-spec",
@@ -241,6 +258,26 @@ SKIP_LEAKAGE_PATH_PARTS = {
 SKIP_LEAKAGE_FILENAMES = {
     ".DS_Store",
 }
+
+ACTIVE_STALE_SKILL_REFERENCES = [
+    "architecture-decision",
+    "product-discovery",
+    "skills-docs-learning-lifecycle-audit",
+    "source-branch-extraction",
+]
+
+ACTIVE_SKILL_REFERENCE_ROOTS = [
+    ".codex/skills",
+    ".codex/agents",
+]
+
+ACTIVE_SKILL_REFERENCE_FILES = [
+    "AGENTS.md",
+    "CODEX.md",
+    "README.md",
+    ".codex/README.md",
+    ".codex/config.toml",
+]
 
 AGENTS_BLOAT_PATTERNS = [
     r"(?im)^#+\s*agent\s+system\b",
@@ -300,7 +337,7 @@ SKILL_TRIGGER_REQUIREMENTS = {
         r"trigger contracts|source order|outputs|guardrails|quality gates",
     ],
     "agentic-workflow-builder": [
-        r"agentic workflow|workflow packets|prompts",
+        r"agent/skill workflow artifact|agentic workflow|workflow checklist|workflow packet|delegation workflow|multi-agent workflow",
         r"source order|write scope|validation|handoff",
     ],
     "market-validation": [
@@ -360,7 +397,7 @@ SKILL_TRIGGER_REQUIREMENTS = {
         r"insecure|abuse|secure-by-design",
     ],
     "ux-flow-review": [
-        r"UX review|workflow|screen|dashboard",
+        r"UX review|session workflow|screen|dashboard",
         r"mockups|implementation|validation",
     ],
     "accessibility-review": [
@@ -383,12 +420,24 @@ SKILL_TRIGGER_REQUIREMENTS = {
         r"non-atomic",
         r"behavior examples|validation plan",
     ],
+    "implement-change": [
+        r"clear request|approved plan",
+        r"scoped code or doc changes|implementation|bug fixing",
+    ],
+    "review-change": [
+        r"branch|PR|work-in-progress diff|fixed-point change",
+        r"standards|spec/request|findings only",
+    ],
+    "validate-change": [
+        r"after or during a change|aggregate",
+        r"command|test|type|diff|functional acceptance|review evidence",
+    ],
     "closeout": [
         r"Finish|task|handoff|closeout",
         r"validation evidence|memory|thin.*diff",
     ],
     "codex-maintenance": [
-        r"Codex|Cascade Codex|harness",
+        r"Codex|Cascade|harness",
         r"skill|agent|AGENTS|config|file.?tree|reference",
         r"permission|memory|observability|eval|handoff|scope",
     ],
@@ -772,6 +821,14 @@ def check_required_folders(errors: list[str]) -> None:
     for item in REQUIRED_FOLDERS:
         if not (ROOT / item).is_dir():
             errors.append(f"missing required folder: {item}")
+    docs_root = ROOT / "docs"
+    if docs_root.is_dir():
+        for path in docs_root.rglob("*"):
+            if not path.is_dir():
+                continue
+            relative = rel(path)
+            if relative not in ALLOWED_DOC_FOLDERS:
+                errors.append(f"unexpected docs folder outside structure map: {relative}")
 
 
 def check_toml(errors: list[str]) -> None:
@@ -855,7 +912,14 @@ def check_skill_frontmatter(errors: list[str]) -> None:
         path.parent.name
         for path in (ROOT / ".codex" / "skills").glob("*/SKILL.md")
     }
+    actual_skill_dirs = {
+        path.name
+        for path in (ROOT / ".codex" / "skills").iterdir()
+        if path.is_dir()
+    }
     expected_skills = set(SKILLS)
+    for skill in sorted(actual_skill_dirs - expected_skills):
+        errors.append(f"skill directory exists but is not registered in validator: {skill}")
     for skill in sorted(actual_skills - expected_skills):
         errors.append(f"skill exists but is not registered in validator: {skill}")
     for skill in sorted(expected_skills - actual_skills):
@@ -917,6 +981,26 @@ def check_agent_skill_sources(errors: list[str]) -> None:
         errors.append(f"registered skill is not wired to any agent skills.yaml: {skill}")
     for skill in sorted(REQUIRED_WIRING_SKILLS - wired_skills):
         errors.append(f"required routing skill is not wired: {skill}")
+
+
+def check_active_stale_skill_references(errors: list[str]) -> None:
+    paths: list[Path] = []
+    for root in ACTIVE_SKILL_REFERENCE_ROOTS:
+        base = ROOT / root
+        if base.is_dir():
+            paths.extend(path for path in base.rglob("*") if path.is_file())
+    for item in ACTIVE_SKILL_REFERENCE_FILES:
+        path = ROOT / item
+        if path.is_file():
+            paths.append(path)
+    for path in sorted(set(paths)):
+        try:
+            text = read_text(path)
+        except UnicodeDecodeError:
+            continue
+        for skill in ACTIVE_STALE_SKILL_REFERENCES:
+            if re.search(rf"(?<![A-Za-z0-9_-]){re.escape(skill)}(?![A-Za-z0-9_-])", text):
+                errors.append(f"stale active skill reference {skill!r} in {rel(path)}")
 
 
 def check_cascade_consistency(errors: list[str]) -> None:
@@ -1110,6 +1194,7 @@ def main() -> int:
     check_skill_trigger_descriptions(errors)
     check_skill_surface_contracts(errors)
     check_agent_skill_sources(errors)
+    check_active_stale_skill_references(errors)
     check_cascade_consistency(errors)
     check_thin_agents(errors)
     check_pattern_shape(errors)

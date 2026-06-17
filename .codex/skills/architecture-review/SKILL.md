@@ -37,6 +37,9 @@ behavior, or crosses integration boundaries.
 8. Prefer existing codebase vocabulary and helper APIs.
 9. Recommend smallest safe slice and validation gates.
 10. Call out stale or duplicate paths that should be removed.
+11. For stale, duplicate, replaced, or legacy pathways, prefer direct
+    migration, replacement, deletion, and validation before recommending
+    feature flags, dual paths, compatibility shims, or fallback branches.
 
 ## Output
 

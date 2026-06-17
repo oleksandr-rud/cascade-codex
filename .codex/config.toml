@@ -1,5 +1,5 @@
 [harness]
-name = "cascade-codex"
+name = "cascade"
 version = "1.0.0"
 bridge = "CODEX.md"
 config_template = "harness.config.example.yaml"

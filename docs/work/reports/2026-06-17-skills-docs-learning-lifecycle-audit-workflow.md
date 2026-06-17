@@ -1,7 +1,7 @@
 # Skills, Docs, And Learning Lifecycle Audit Workflow
 
 Date: 2026-06-17
-Status: draft workflow
+Status: implemented workflow packet
 Owner route: `agent-engineer -> agentic-workflow-builder -> codex-maintenance`
 Source: user request to prepare an agentic workflow for auditing all skills,
 all docs folders, real-world templates, wiring consistency, trigger quality,
@@ -58,6 +58,161 @@ Audit seed risks to verify:
   a nested memory-pattern folder under `docs/patterns/` is blocked unless the
   validator and structure docs are intentionally migrated.
 
+## Agentic Workflow Builder Packet
+
+Status: ready
+Created: 2026-06-17
+Workflow: `skills-docs-learning-lifecycle-audit`
+
+This packet uses `.codex/skills/agentic-workflow-builder/SKILL.md`. It does not
+create a new skill. It prepares a report-only audit and the later
+implementation packets for approved changes.
+
+### Agent And Global Skill Inventory
+
+Available agents:
+
+| Agent Or Route | Manifest | Role Contract | Skill Map | Use In Workflow |
+|---|---|---|---|---|
+| `agent-engineer` | `.codex/agents/agent-engineer.toml` | `.codex/agents/agent-engineer/AGENT.md` | `.codex/agents/agent-engineer/skills.yaml` | Selected for inventory, skill, agent, validator, and learning-route audit. |
+| `business-analyst` | `.codex/agents/business-analyst.toml` | `.codex/agents/business-analyst/AGENT.md` | `.codex/agents/business-analyst/skills.yaml` | Selected for docs/spec trajectory and synthesis checks. |
+| `orchestrator` | `.codex/agents/orchestrator.toml` | `.codex/agents/orchestrator/AGENT.md` | `.codex/agents/orchestrator/skills.yaml` | Selected for final merge and implementation packet sequencing. |
+| `designer` | `.codex/agents/designer.toml` | `.codex/agents/designer/AGENT.md` | `.codex/agents/designer/skills.yaml` | Support only if design docs or UX templates materially affect findings. |
+| `security` | `.codex/agents/security.toml` | `.codex/agents/security/AGENT.md` | `.codex/agents/security/skills.yaml` | Support only if audit finds security-review routing or permission-surface gaps. |
+| `project-onboarder` | `.codex/agents/project-onboarder.toml` | `.codex/agents/project-onboarder/AGENT.md` | `.codex/agents/project-onboarder/skills.yaml` | Rejected for this audit unless findings become onboarding-specific. |
+
+Relevant global skills:
+
+| Skill | Source | Trigger Reason | Planned Step Calls |
+|---|---|---|---|
+| `agentic-workflow-builder` | `.codex/skills/agentic-workflow-builder/SKILL.md` | Build this reviewable workflow packet from an audit request. | AWB-00, AWB-01, AWB-02, AWB-07 |
+| `codex-maintenance` | `.codex/skills/codex-maintenance/SKILL.md` | Audit and update harness surfaces, validator, routing docs, and stale references. | AWB-00, AWB-01, AWB-06 |
+| `develop-skill` | `.codex/skills/develop-skill/SKILL.md` | Audit skill triggers, source order, artifacts, and reusable templates. | AWB-03 |
+| `docs-impact-map` | `.codex/skills/docs-impact-map/SKILL.md` | Check docs folder ownership and cross-doc write targets. | AWB-04, AWB-05 |
+| `agents-best-practices` | `.codex/skills/agents-best-practices/SKILL.md` | Evaluate context, memory, connector, lifecycle, and harness design patterns. | AWB-04 |
+| `synthesis-to-spec` | `.codex/skills/synthesis-to-spec/SKILL.md` | Analyze docs/spec trajectory and evidence-to-spec handoff. | AWB-05 |
+| `compose-spec` | `.codex/skills/compose-spec/SKILL.md` | Check durable product/spec template coverage and route gaps. | AWB-05 |
+| `orchestrate-work` | `.codex/skills/orchestrate-work/SKILL.md` | Merge lane outputs, serialize conflicting edits, and create update packets. | AWB-07 |
+| `validate-change` | `.codex/skills/validate-change/SKILL.md` | Aggregate validator, diff, and evidence checks after approved edits. | AWB-08 |
+| `closeout` | `.codex/skills/closeout/SKILL.md` | Preserve final evidence and thin durable lessons after implementation. | AWB-09 |
+
+Preflight status:
+
+| Check | Evidence | Required Decision |
+|---|---|---|
+| Harness validation currently passes. | `python3 scripts/validate_cascade_codex.py` reports `cascade_codex_status=PASS`, `agents=6`, `skills=36`. | Re-run before and after any implementation packet; if drift appears, classify it as `UPDATE`, `REGISTER`, `DELETE`, `DEFER`, or `NO_CHANGE`. |
+
+### Workflow Checklist
+
+| Step | Status | Owner Route | Skill Calls | Source Order | Delegation Prompt | Output | Validation | Handoff |
+|---|---|---|---|---|---|---|---|---|
+| AWB-00 | ready | agent-engineer | `agentic-workflow-builder`, `codex-maintenance` | current diff, validator output, active skill/agent/docs surfaces | P-00 | preflight drift decision | validator and dirty-tree state classified | AWB-01 |
+| AWB-01 | ready | agent-engineer | `codex-maintenance` | `.codex/skills/`, `.codex/agents/`, docs folders, validator | P-01 | canonical surface inventory | missing/extra/stale surfaces listed | AWB-02 |
+| AWB-02 | ready | agent-engineer | `agentic-workflow-builder` | inventory output, agent TOML, role contracts, skill maps | P-02 | finalized lane packet map | every lane has owner, skill calls, source order, output, stop rule | AWB-03/AWB-04/AWB-05 |
+| AWB-03 | ready | agent-engineer | `develop-skill` | all active `SKILL.md`, templates, checklists, references | P-03 | skill and artifact quality matrix | trigger/source/output/artifact gaps classified | AWB-07 |
+| AWB-04 | ready | agent-engineer | `docs-impact-map`, `agents-best-practices` | `docs/structure.md`, `docs/patterns/`, docs folders, routing docs | P-04 | docs and learning owner matrix | every memory/learning route has narrow owner | AWB-07 |
+| AWB-05 | ready | business-analyst | `synthesis-to-spec`, `compose-spec`, `docs-impact-map` | `docs/product/`, `docs/design/`, `docs/brand/`, `docs/specs/`, `docs/work/reports/` | P-05 | docs/spec trajectory matrix | current/superseded/contradictory evidence classified | AWB-07 |
+| AWB-06 | ready | agent-engineer | `codex-maintenance` | lane findings, validator source, routing docs | P-06 | enforcement backlog | validator candidates limited to mechanical invariants | AWB-07 |
+| AWB-07 | ready | orchestrator | `orchestrate-work`, `agentic-workflow-builder` | all lane outputs | P-07 | prioritized implementation packets | conflicts serialized and merge owner named | approval gate |
+| AWB-08 | blocked until approved | agent-engineer | `codex-maintenance`, `validate-change` | approved packets only | P-08 | patched owner files and validation evidence | `git diff --check` and validator run or blocker | AWB-09 |
+| AWB-09 | blocked until implementation | agent-engineer | `closeout` | final diff and validation evidence | P-09 | closeout summary and durable lesson routes | no decorative docs churn | done |
+
+### Global Orchestration Skill Calls
+
+| Gate | Skill | When To Call | Required Output |
+|---|---|---|---|
+| context | `context` | If the audit resumes after branch changes or compaction. | short snapshot or skip reason |
+| routing | `orchestrate-work` | After lane outputs exist or edits need sequencing. | lane model and merge owner |
+| impact | `docs-impact-map` | For docs folder, spec, product, design, brand, and glossary impacts. | impact matrix |
+| planning | `agentic-workflow-builder` | Before any delegated or multi-lane audit work. | packet with prompts and stop rules |
+| validation | `validate-change` | After approved file edits. | validation summary |
+| closeout | `closeout` | After final validation or blocked handoff. | handoff and durable learn-routing |
+
+### Delegation Prompt Bank
+
+P-00: Agent Engineer preflight
+
+```text
+You are the Agent Engineer using agentic-workflow-builder and codex-maintenance.
+Classify the current dirty-tree and validator state before the full lifecycle
+audit proceeds. Read current diff, validator output, agent-engineer skills.yaml,
+CODEX.md, .codex/README.md, active skill directories, and untracked files. Do
+not patch files. Return each drift item as UPDATE, REGISTER, DELETE, DEFER, or
+NO_CHANGE, with exact owner files and validation impact.
+```
+
+P-01: Agent Engineer inventory
+
+```text
+You are the Agent Engineer using codex-maintenance. Build a complete inventory
+of Cascade surfaces: skills, templates, checklists, references, agents,
+docs folders, routing docs, config, and validator. Compare filesystem,
+validator registration, agent wiring, and docs references. Produce extra,
+missing, stale, empty, and unregistered surfaces. Do not patch files.
+```
+
+P-03: Skill and artifact audit
+
+```text
+You are the Agent Engineer using develop-skill. Audit every active skill and
+artifact for trigger-focused description, source order, scope, anti-scope,
+output contract, validation guidance, and real-world template/checklist
+usability. Classify actions as UPDATE, REGISTER, DELETE, DEFER, or NO_CHANGE.
+Do not rewrite skills.
+```
+
+P-04: Docs and learning lifecycle audit
+
+```text
+You are the Agent Engineer using docs-impact-map and agents-best-practices.
+Audit docs folders, write targets, context-memory routing, durable learning
+promotion, and validator candidates. Keep docs/patterns/context-memory.md as
+the default source-context owner unless evidence justifies a coordinated
+structure and validator migration. Do not create new folders.
+```
+
+P-05: Docs/spec trajectory audit
+
+```text
+You are the Business Analyst using synthesis-to-spec, compose-spec, and
+docs-impact-map. Audit product, design, brand, specs, backlog, glossary, and
+work reports for source identity, relationships, evidence maturity,
+current/superseded status, contradictions, acceptance, and implementation
+handoff coverage. Do not author product specs.
+```
+
+P-07: Merge and implementation packets
+
+```text
+You are the Orchestrator using orchestrate-work and agentic-workflow-builder.
+Merge all lane outputs into prioritized implementation packets. Group safe
+atomic changes, serialized changes, deferred decisions, and validator backlog.
+Do not implement until the packet is approved.
+```
+
+### Write Scope
+
+Allowed during report-only preparation:
+
+- `docs/work/reports/2026-06-17-skills-docs-learning-lifecycle-audit-workflow.md`
+
+Forbidden until implementation is approved:
+
+- rewriting all `.codex/skills/*/SKILL.md`;
+- moving skill packages into agent folders;
+- creating a new lifecycle-audit skill;
+- creating nested memory-pattern folders under `docs/patterns/`;
+- registering placeholder skills without completing their quality gates.
+
+### Stop Rules
+
+- Stop if inventory cannot distinguish current source facts from stale docs.
+- Stop if validator failure is unrelated to the packet and needs owner
+  approval.
+- Stop before edits when a finding affects shared routing, validator rules, or
+  skill ownership.
+- Stop after producing implementation packets for approval.
+
 ## Lane Model
 
 Use `sequential-pipeline` with parallel audit lanes after inventory:
@@ -105,7 +260,7 @@ evidence-backed update plan with exact owner files and packet prompts.
 Prompt:
 
 ```text
-You are the Agent Engineer. Build a complete inventory of Cascade Codex surfaces:
+You are the Agent Engineer. Build a complete inventory of Cascade surfaces:
 all .codex/skills/*/SKILL.md, skill templates/checklists/references, all
 .codex/agents manifests/contracts/skills.yaml/checklists, all docs folders,
 CODEX.md, AGENTS.md, .codex/README.md, harness.config.example.yaml, and
@@ -254,7 +409,7 @@ Prompt:
 
 ```text
 You are the Agent Engineer using agents-best-practices and codex-maintenance.
-Design the full learning lifecycle for Cascade Codex. Audit how lessons are
+Design the full learning lifecycle for Cascade. Audit how lessons are
 captured from validation, closeout, reviews, failed workflows, stale references,
 template gaps, routing mistakes, and docs/spec trajectories. Route consolidated
 learning to the narrowest durable owner. Treat docs/patterns/context-memory.md
@@ -373,6 +528,60 @@ Merge output:
 - learning lifecycle owner matrix;
 - validator/hook/eval backlog;
 - implementation lane packets with owners and validation.
+
+## Implementation Run: 2026-06-17
+
+Status: implemented clear mechanical packets; deeper qualitative skill rewrites
+deferred to follow-up packets.
+
+### Evidence Snapshot
+
+| Check | Result | Evidence |
+|---|---|---|
+| Skill registration | PASS | 36 validator skills, 36 active `SKILL.md` files, 36 wired skills |
+| Agent registry | PASS | 6 agents with TOML, `AGENT.md`, and `skills.yaml` |
+| Agent wiring counts | PASS | `agent-engineer`: 7, `business-analyst`: 14, `designer`: 11, `orchestrator`: 19, `project-onboarder`: 14, `security`: 8 |
+| Skill artifacts | PASS | 43 skill templates, 12 skill checklists, 2 agent checklists, 4 references |
+| Docs folders | PASS | Only documented folders remain: `docs/backlog`, `docs/brand`, `docs/design`, `docs/patterns`, `docs/product`, `docs/product/personas`, `docs/specs`, `docs/specs/incoming`, `docs/specs/transformed`, `docs/work`, `docs/work/examples`, `docs/work/lanes`, `docs/work/reports` |
+| Removed memory/tool refs | PASS | No active references to Graphiti, GraphRAG, codebase-memory, or graphify |
+| Active stale skill refs | PASS | No active `.codex`, `CODEX.md`, `AGENTS.md`, `.codex/README.md`, or validator references to removed `product-discovery`, source-branch extraction, lifecycle-audit, or architecture-decision skill packages |
+
+### Implemented Packets
+
+| Packet | Owner File(s) | Action | Validation |
+|---|---|---|---|
+| VAL-01 docs folder enforcement | `scripts/validate_cascade_codex.py` | Added `ALLOWED_DOC_FOLDERS` and validator failure for docs folders outside `docs/structure.md`. | `python3 scripts/validate_cascade_codex.py` PASS |
+| VAL-02 orphan skill directory enforcement | `scripts/validate_cascade_codex.py` | Validator now fails when a `.codex/skills/*` directory exists without registration, even if no `SKILL.md` is present. | `python3 scripts/validate_cascade_codex.py` PASS |
+| VAL-03 active stale skill reference enforcement | `scripts/validate_cascade_codex.py` | Validator now fails when active skill, agent, bridge, or README surfaces reference retired skill package names. Historical work reports remain source history. | `python3 scripts/validate_cascade_codex.py` PASS |
+| DOC-01 empty docs folder cleanup | workspace directories | Removed empty untracked `docs/engineering/`, `docs/specs/archive/`, `docs/specs/memory-systems/`, and `docs/specs/source/` directories. | `find docs -type d -maxdepth 4` matches structure map |
+| SKILL-01 stale active route cleanup | `.codex/skills/secure-design/SKILL.md`, `.codex/skills/ux-flow-review/SKILL.md` | Replaced active references to removed `product-discovery` with the current `discover` route. | Active stale skill reference scan PASS |
+| INV-01 orphan skill folder cleanup | workspace directories | Removed empty untracked orphan skill-package directories for discarded skill ideas. | validator skill-dir check PASS |
+
+### Deferred Packets
+
+| Packet | Reason Deferred | Next Owner |
+|---|---|---|
+| Full qualitative rewrite of every skill with heading-normalization | The first pass found many skills use local structures instead of uniform `## Scope`/`## Workflow` headings. Validator and trigger contracts already pass, so rewriting all skills would be broad churn without a per-skill owner decision. | `agent-engineer -> develop-skill` |
+| Historical report cleanup for old proposed skill names | Historical reports may mention superseded proposals as source history. Active routing surfaces are clean; history cleanup should happen only if a report is promoted back into active guidance. | `agent-engineer -> codex-maintenance` |
+| Nested memory-pattern folder migration | No evidence yet that `docs/patterns/context-memory.md` is too large or ambiguous. | defer |
+
+### Validation Evidence
+
+```bash
+python3 -m py_compile scripts/validate_cascade_codex.py
+git diff --check
+python3 scripts/validate_cascade_codex.py
+```
+
+Expected validator result after this run:
+
+```text
+cascade_codex_status=PASS
+agents=6
+skills=36
+project_specific_leakage=0
+standalone_qa_refs=0
+```
 
 ## Initial Recommendation
 

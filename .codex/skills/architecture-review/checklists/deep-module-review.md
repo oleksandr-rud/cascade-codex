@@ -55,6 +55,8 @@ abstractions, state-machine changes, or major refactors.
 - [ ] A new seam has a real variation today.
 - [ ] Existing codebase seams are reused first.
 - [ ] Public contracts and generated artifacts are inventoried.
+- [ ] Stale, duplicate, replaced, or legacy paths use direct migration,
+      replacement, deletion, and validation before flags, shims, or dual paths.
 
 ## Recommendation Quality
 

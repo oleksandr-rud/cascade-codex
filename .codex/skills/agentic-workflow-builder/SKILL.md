@@ -1,13 +1,14 @@
 ---
 name: agentic-workflow-builder
-description: Use to build checklist-style agentic workflow packets from a request, plan, or prompt by first inventorying available agents and global skills, then wiring steps, delegation prompts, skill calls, source order, write scope, validation, and handoff rules.
+description: Use when the user explicitly asks to build, prepare, audit, or refine an agent/skill workflow artifact such as an agentic workflow, workflow checklist, workflow packet, delegation workflow, or multi-agent workflow that inventories available agents and global skills before wiring step-level prompts, skill calls, source order, write scope, validation, handoff, and stop rules.
 ---
 
 # Agentic Workflow Builder
 
-Use when a user asks to build, audit, or refine a workflow made of one or more
-agent role calls, specialist prompts, checklists, tasks, or subagent/delegation
-packets.
+Use when a user explicitly asks to build, prepare, audit, or refine an
+agent/skill workflow artifact, such as an agentic workflow, workflow checklist,
+workflow packet, delegation workflow, or multi-agent workflow made of one or
+more agent role calls, specialist prompts, lane tasks, or subagent routes.
 
 This skill produces reviewable workflow packets that use existing agents,
 subagents when available and authorized, and global skills to get a request or
@@ -44,6 +45,9 @@ for agents and skills selected for the workflow.
 Use this skill for:
 
 - workflows assembled from existing agents, subagents, and global skill calls;
+- implementation-oriented workflow packets only when the user asks for a
+  workflow artifact; route planning, implementation, acceptance, validation,
+  and closeout work to their owning skills;
 - checklist-style execution plans where each step names owner, skill route,
   prompt, source inputs, output, validation, and handoff;
 - prompts for specialist roles;
@@ -52,6 +56,11 @@ Use this skill for:
   handoff contracts;
 - audits of whether agent prompts, checklists, and skills are correctly formed.
 
+Do not use this skill just because the task involves implementation, planning,
+execution, validation, or delegation; use it only when the requested artifact is
+an agent/skill workflow, workflow checklist, or workflow packet. Do not use it
+for product, UX, security, market, or experiment workflows unless the requested
+output is an agent/skill workflow artifact that coordinates those owning skills.
 Do not use this skill when a normal single-agent implementation plan is enough;
 use `plan-change`. Do not use it for issue bodies; use `issue-intake`. Do not
 use it to fill missing product intent; route to `discover`,

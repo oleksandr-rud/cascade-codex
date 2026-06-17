@@ -8,6 +8,10 @@ Source: `<app URL | file path | screenshot | Figma | code>`
 
 - Surface:
 - Expected source:
+- Product/spec source:
+- UX/layout source:
+- Brand source:
+- Design-system source:
 - States:
 - Viewports:
 - Non-goals:
@@ -26,9 +30,13 @@ Source: `<app URL | file path | screenshot | Figma | code>`
 
 ## Routing
 
-- Design-system:
+- Product/spec docs:
 - UX flow:
+- Design-system/docs:
+- Brand docs:
 - Accessibility:
 - Functional evidence:
 - Implementation:
+- Memory or reusable workflow lesson:
+- Docs-impact-map:
 - Residual risk:

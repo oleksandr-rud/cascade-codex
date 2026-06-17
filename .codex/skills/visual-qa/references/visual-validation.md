@@ -46,7 +46,21 @@ State set:
 
 - Layout: overlap, overflow, unstable dimensions, bad responsive collapse.
 - Hierarchy: unclear primary action, poor scan path, cramped metadata.
+- UX flow: visible state, carried context, task priority, or recovery path does
+  not match the owning product scenario or journey.
+- Brand/content: naming, tone, trust copy, visual direction, or message
+  hierarchy conflicts with the owning brand docs.
 - Token drift: hardcoded colors or states that conflict with docs.
 - State gap: missing empty/error/loading/disabled visual treatment.
 - Accessibility-adjacent: focus not visible, color-only state, target too small.
 - Figma/code drift: implementation no longer matches approved design source.
+
+## Durable Routing
+
+| Finding | Route |
+| --- | --- |
+| Feature-specific UX, IA, copy, visible state, or scenario mismatch | `ux-flow-review`, `compose-spec`, or `docs-impact-map` for `docs/product/` or `docs/specs/` |
+| Reusable layout, component, token, visual evidence, or design-system rule | `design-system` for `docs/design/` |
+| Brand naming, tone, trust copy, message hierarchy, or visual direction | `brand-positioning` for `docs/brand/` |
+| Behavior failure visible in the UI | `functional-qa` or implementation route |
+| Repeated visual-validation workflow lesson | `closeout` or `codex-maintenance` for the narrowest memory owner |

@@ -3,6 +3,23 @@
 Use this file for active work lanes, autonomous Orchestrator orchestration, current
 work-to-source coverage, refactoring, and durable handoff memory.
 
+## Workflow Prompt Routing
+
+When a user says "workflow", classify the requested output before selecting a
+skill. Do not load `agentic-workflow-builder` just because a task has planning,
+implementation, validation, review, delegation, or product-flow steps.
+
+| Requested output | Route |
+|---|---|
+| Agent/skill workflow packet, workflow checklist, prompt bank, delegation workflow, or multi-agent workflow | `agentic-workflow-builder` |
+| Active work lanes, dependencies, scheduling, serialization, merge owner, or validation gates | `orchestrate-work` |
+| Normal implementation plan, behavior examples, risks, or validation plan | `plan-change` |
+| Code or doc edits for a clear task | `implement-change` |
+| Product UX flow, wizard, screen, dashboard, or UI state coverage | `ux-flow-review` |
+| Security review of a feature, workflow, architecture, or agent/tool plan | `secure-design` |
+| Market/product validation workflow or experiments | `market-validation` plus focused lane skills |
+| Final evidence, status, or handoff | `validate-change` or `closeout` |
+
 ## Active Work
 
 Use `docs/work/active.md` as the single active registry. Use

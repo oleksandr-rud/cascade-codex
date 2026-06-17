@@ -1,6 +1,6 @@
 # Work Lane Examples
 
-These examples are copyable reference packets for first-time Cascade Codex
+These examples are copyable reference packets for first-time Cascade
 adaptation. They are not active work and should not be merged into
 `docs/work/active.md` unless copied into a real lane under `docs/work/lanes/`.
 

@@ -49,16 +49,22 @@ If expected behavior is missing, report `GAP` and route to `plan-change` or
    - source-blind browser proof: operate the running app as a user would and
      verify only observable outcomes; read source only if the user asks for
      diagnosis or owner mapping.
-6. Use stable public locators or contracts rather than private selectors.
-7. Mock only true system boundaries or unstable services unless full-stack
+6. When product scenario rows are present, build a per-scenario ledger before
+   running checks: scenario ID or source, preconditions, action path, expected
+   visible outcome, validation mode, and evidence target.
+7. Use stable public locators or contracts rather than private selectors.
+8. Mock only true system boundaries or unstable services unless full-stack
    behavior is the point.
-8. Do not mock the behavior being tested.
-9. Classify every check as `PASS`, `FAIL`, `BLOCKED`, `NOT_RUN`, or `GAP`.
+9. Do not mock the behavior being tested.
+10. Classify every check and every scenario row as `PASS`, `FAIL`, `BLOCKED`,
+   `NOT_RUN`, or `GAP`.
    Skipped or environment-gated checks are not `PASS`.
-10. Route product failures to `implement-change`.
-11. Route stale failing tests to `test-autorepair` only when evidence shows
+11. Separate product/runtime failures, stale test failures, missing product
+   intent, and infrastructure blockers before choosing the next route.
+12. Route product failures to `implement-change`.
+13. Route stale failing tests to `test-autorepair` only when evidence shows
     product behavior still matches the expected contract.
-12. Escalate to human review only for subjective judgment that executable
+14. Escalate to human review only for subjective judgment that executable
    evidence cannot decide.
 
 ## Output
@@ -66,6 +72,7 @@ If expected behavior is missing, report `GAP` and route to `plan-change` or
 - flow under test;
 - behavior examples covered;
 - test layer and reason;
+- scenario ledger with per-scenario outcomes when scenario rows were used;
 - commands or visible checks run;
 - evidence and outcome;
 - gaps and next owner.

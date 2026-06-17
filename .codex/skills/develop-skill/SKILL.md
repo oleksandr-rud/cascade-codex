@@ -120,6 +120,24 @@ Choose the smallest useful artifact set:
 | `agents/openai.yaml` | Native Codex packaging or UI metadata is required | Cascade-local skill docs are enough |
 | validator rule | Mechanical invariant must always hold | The rule is judgment-only |
 
+## Stage Gate Discipline
+
+For complex skill builds, ports from a source repository, broad rewrites, or
+ambiguous trigger ownership, record lightweight stage gates instead of pushing
+straight to file edits:
+
+| Stage | Gate |
+|---|---|
+| intent | purpose, owner, users, output, and write scope are known |
+| contract | trigger, anti-trigger, source order, required behavior, forbidden behavior, and failure handling are explicit |
+| challenge | name, route collisions, source order, artifact plan, tool use, and validation are stress-tested |
+| artifact map | each file, template, checklist, reference, script, or validator rule maps to a required behavior |
+| validation | frontmatter, path references, wiring, sample prompts, validator, and whitespace are checked |
+
+Use `PASS`, `REVISE`, or `STOP WITH LIMITATION` for each stage when the work is
+large enough that a missed stage would cause wrong skill routing or decorative
+artifacts. Small edits to existing skills can record the affected gate only.
+
 ## Skill Quality Gates
 
 - Frontmatter has only `name` and a trigger-focused `description`.
@@ -149,8 +167,8 @@ Choose the smallest useful artifact set:
    only for first-pass approach and best-practice discovery.
 4. Extract trigger, anti-trigger, source order, required behavior, forbidden
    behavior, output contract, artifact requirements, and validation gates.
-5. Challenge the proposed skill name and trigger against existing skills and
-   ambiguous prompts.
+5. Challenge the proposed skill name, route, source order, artifact plan, tool
+   use, and trigger against existing skills and ambiguous prompts.
 6. Choose the smallest useful structure with the Artifact Decision Matrix:
    `SKILL.md` first, optional templates, checklists, references, scripts,
    assets, metadata, or validator checks only when needed.
@@ -175,6 +193,7 @@ Choose the smallest useful artifact set:
 - trigger, anti-trigger, and collision decisions;
 - contract decisions and assumptions;
 - artifact decision matrix summary;
+- stage gate status for complex, imported, or broad skill work;
 - files written;
 - validation commands and results;
 - forward-test status or skip reason;

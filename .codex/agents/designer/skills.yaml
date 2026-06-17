@@ -21,3 +21,5 @@ skills:
     source: .codex/skills/validate-change/SKILL.md
   - name: plan-change
     source: .codex/skills/plan-change/SKILL.md
+  - name: closeout
+    source: .codex/skills/closeout/SKILL.md

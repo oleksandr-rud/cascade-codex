@@ -1,4 +1,4 @@
-# Cascade Codex Runtime Bridge
+# Cascade Runtime Bridge
 
 This file connects repository instructions, skills, role contracts, and docs.
 `AGENTS.md` should be the autoloaded repository instruction file; load this
@@ -100,7 +100,7 @@ standalone workflow router.
   doc update may require sibling doc checks or follow-up routing.
 - `adapt-harness`: use when wiring this harness into a new repository.
 - `project-onboarder`: use for new-project setup, harness installation,
-  onboarding, or migration of existing instructions into the Cascade Codex
+  onboarding, or migration of existing instructions into the Cascade
   structure.
 - `agents-best-practices`: use for harness, prompt/context, tool, memory,
   observability, eval, and connector design.
@@ -108,7 +108,7 @@ standalone workflow router.
   workflow checklist that first inventories available agents and global skills,
   then wires step-level skill calls, delegation prompts, source order, write
   scope, validation, handoff, and stop rules.
-- `codex-maintenance`: use for Cascade Codex maintenance, Codex-specific
+- `codex-maintenance`: use for Cascade maintenance, Codex-specific
   surface audits across `AGENTS.md`, `CODEX.md`, skills, agents, config,
   hooks, MCP/tools, plugins, subagents, permissions, memory, observability,
   evals, scope, handoffs, file-tree inventories, and validator changes.
@@ -126,7 +126,7 @@ explicitly authorizes parallel agents.
 - `orchestrator`: orchestration.
 - `project-onboarder`: new-project setup, harness adaptation, config/docs
   migration, validation, and setup handoff.
-- `agent-engineer`: Cascade Codex maintenance, Codex surface best practices,
+- `agent-engineer`: Cascade maintenance, Codex surface best practices,
   agentic workflow checklists, skills, source-context, tool contracts,
   observability, and evals.
 - `business-analyst`: long business-analysis discovery, live market research,
@@ -137,7 +137,7 @@ explicitly authorizes parallel agents.
 - `designer`: UX flow review, reusable design-system routing, accessibility
   review, screenshot-backed visual validation, and design handoff planning.
 
-Cascade Codex is intentionally skill-first except where a repeated long-running
+Cascade is intentionally skill-first except where a repeated long-running
 workflow or specialist review lane needs a durable role boundary. Architecture
 review, functional acceptance, scenario checks, product testing, and issue
 intake remain skills in the cascade rather than separate agents.

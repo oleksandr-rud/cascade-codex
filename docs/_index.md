@@ -1,6 +1,6 @@
 # Documentation Index
 
-This Cascade Codex docs structure is intentionally generic. After installation,
+This Cascade docs structure is intentionally generic. After installation,
 fill it with the target repository's product, design, architecture, testing,
 and work references.
 

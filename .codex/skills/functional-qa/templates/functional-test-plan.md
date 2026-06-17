@@ -23,11 +23,20 @@
 - Layer:
 - Reason:
 - Command:
+- Validation mode:
+  - executable proof:
+  - source-blind browser proof:
+  - manual visible evidence:
 
 ## Coverage
 
 | ID | Scenario | Preconditions | Actions | Expected Result | Evidence |
 |---|---|---|---|---|---|
+
+## Scenario Outcome Ledger
+
+| Scenario ID Or Source | Mode | Result | Evidence | Next Owner |
+|---|---|---|---|---|
 
 ## Artifacts
 
@@ -41,4 +50,3 @@
 |---|---|---|---|
 
 ## Gaps
-

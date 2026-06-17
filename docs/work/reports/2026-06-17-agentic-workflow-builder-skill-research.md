@@ -9,7 +9,7 @@ sets.
 
 ## Wiring Audit
 
-Current Cascade Codex layout is intentionally central-skill, role-wired:
+Current Cascade layout is intentionally central-skill, role-wired:
 
 - reusable skills live under `.codex/skills/{skill}/SKILL.md`;
 - agent folders live under `.codex/agents/{agent}/`;

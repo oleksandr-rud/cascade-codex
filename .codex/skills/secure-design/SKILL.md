@@ -64,7 +64,7 @@ Do not use this skill when:
    and CISA Secure by Design only where relevant.
 6. Produce the review using `templates/secure-design-review.md`.
 7. Route outcomes:
-   - product ambiguity -> `product-discovery` or `discover`;
+   - product ambiguity -> `discover`;
    - architecture boundary risk -> `architecture-review`;
    - auth implementation risk -> `auth-analysis`;
    - user-visible behavior checks -> `functional-qa`;

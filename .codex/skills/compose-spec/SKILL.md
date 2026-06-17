@@ -76,6 +76,9 @@ implementation, or test autorepair.
 3. Allocate names and IDs before writing. Check existing docs first and choose
    the next stable ID or path:
    - PRD or product spec path: `docs/product/<capability-slug>.md`;
+   - domain-owned product spec path:
+     `docs/product/<domain-slug>/<capability-slug>.md` only when the target
+     repo already uses or explicitly defines domain-owned product folders;
    - persona file: `docs/product/personas/<persona-slug>.md`;
    - transformed spec path:
      `docs/specs/transformed/<source-or-capability-slug>.md`;
@@ -87,7 +90,14 @@ implementation, or test autorepair.
    source spec title, capability name, persona role, or market-validation lane.
    Do not use generic names such as `product-spec.md`, `new-feature.md`,
    `persona.md`, or `notes.md` for durable artifacts.
-5. Compose artifacts in dependency order:
+5. Match the target repo's product catalog shape before authoring:
+   - use existing domain folders and paired scenario/journey files when they
+     are already the active owner pattern;
+   - use the flat required ledgers when no domain owner exists;
+   - do not create a new domain folder just because the source material had
+     one;
+   - update the owning index or registry when the target structure requires it.
+6. Compose artifacts in dependency order:
    - source identity and transformed spec;
    - source-context trajectory and contradiction summary when provided;
    - personas;
@@ -97,26 +107,26 @@ implementation, or test autorepair.
    - scenarios;
    - backlog candidates;
    - Doc Routing Decision Matrix rows.
-6. Preserve traceability:
+7. Preserve traceability:
    `source -> artifact -> requirement/scenario IDs -> functional evidence -> work lane`.
-7. Use exact IDs and paths in references. Do not reference placeholder IDs in
+8. Use exact IDs and paths in references. Do not reference placeholder IDs in
    final docs. If an ID cannot be allocated safely, mark the row `GAP` or
    `BLOCKED` and route to `docs-impact-map`.
-8. Update indexes and row ledgers together:
+9. Update indexes and row ledgers together:
    - persona files require `docs/product/personas/_index.md`;
    - PRDs should cite affected requirement, journey, and scenario IDs;
    - requirements should cite scenario IDs when known;
    - journeys should cite scenario IDs and carried state;
    - scenarios should cite source and functional evidence.
-9. Use the Doc Routing Decision Matrix for every durable fact, gap, deferred
+10. Use the Doc Routing Decision Matrix for every durable fact, gap, deferred
    item, blocked item, or explicit `NO_DOC_NEEDED` decision.
-10. Preserve current/superseded status and contradiction owner when source
+11. Preserve current/superseded status and contradiction owner when source
    material includes evolving decisions or conflicting evidence.
-11. Run `docs-impact-map` when the authored fact may affect sibling product,
+12. Run `docs-impact-map` when the authored fact may affect sibling product,
    design, brand, spec, backlog, glossary, or pattern docs.
-12. Keep doc changes thin. Add the minimum durable artifact or row needed for
+13. Keep doc changes thin. Add the minimum durable artifact or row needed for
    future planning and validation.
-13. Route implementation-ready behavior to `plan-change` and product-visible
+14. Route implementation-ready behavior to `plan-change` and product-visible
    checks to `functional-qa`.
 
 ## Naming And Reference Rules
@@ -138,6 +148,8 @@ implementation, or test autorepair.
 ## Write Targets
 
 - PRDs or product specs: `docs/product/<slug>.md`
+- Domain-owned product specs: `docs/product/<domain>/<slug>.md` when that
+  owner structure already exists or `docs/structure.md` defines it
 - Personas: `docs/product/personas/<slug>.md` and
   `docs/product/personas/_index.md`
 - Requirements: `docs/product/requirements.md`

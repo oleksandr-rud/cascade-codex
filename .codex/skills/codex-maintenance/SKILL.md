@@ -1,11 +1,11 @@
 ---
 name: codex-maintenance
-description: Use when changing or auditing Cascade Codex surfaces such as skills, agents, AGENTS.md, CODEX.md, .codex/config.toml, hooks, MCP/tool guidance, memory, observability, evals, handoffs, file trees, or validators.
+description: Use when changing or auditing Cascade surfaces such as skills, agents, AGENTS.md, CODEX.md, .codex/config.toml, hooks, MCP/tool guidance, memory, observability, evals, handoffs, file trees, or validators.
 ---
 
 # Codex Maintenance
 
-Use this skill when maintaining Cascade Codex itself, auditing Codex surface
+Use this skill when maintaining Cascade itself, auditing Codex surface
 choices, or changing Codex-specific surfaces: `AGENTS.md`, `CODEX.md`,
 `.codex/config.toml`, `.codex/skills/`, `.codex/agents/`, hooks, MCP/tool
 guidance, plugin guidance, permissions, memory, observability, evals, scope,
@@ -13,7 +13,7 @@ validator wiring, or docs that define how Codex agents gather context and hand
 off work.
 
 This skill keeps harness maintenance grounded in current Codex behavior while
-preserving Cascade Codex's local role contracts, templates, rules, invariants,
+preserving Cascade's local role contracts, templates, rules, invariants,
 checklists, and validation gates. It does not patch product/runtime code unless
 the user explicitly redirects the work through `implement-change`.
 
@@ -26,7 +26,7 @@ the user explicitly redirects the work through `implement-change`.
    - `git status --short`
    - targeted `rg -n` searches for each skill, agent, path, command, or stale
      reference being changed.
-4. Current Cascade Codex surfaces:
+4. Current Cascade surfaces:
    - `AGENTS.md`
    - `CODEX.md`
    - `.codex/README.md`
@@ -70,7 +70,7 @@ the user explicitly redirects the work through `implement-change`.
   Codex registry values. Do not place user-only provider, credential,
   notification, profile, or telemetry settings here.
 - Skill: reusable workflow with trigger, anti-trigger, source order, outputs,
-  artifacts, templates, checklists, and validation rules. In Cascade Codex,
+  artifacts, templates, checklists, and validation rules. In Cascade,
   document and maintain skills under `.codex/skills/`. Treat native Codex
   repo-skill or plugin layouts as packaging targets, not the primary harness
   documentation surface.
@@ -181,7 +181,7 @@ behavior and surface choice:
 - Skills: keep each skill focused, make the description trigger-focused for
   implicit invocation, use `SKILL.md` as the primary contract, keep optional
   `agents/openai.yaml` metadata aligned when present, and add scripts only when
-  deterministic tooling is needed. Cascade Codex documents harness skills under
+  deterministic tooling is needed. Cascade documents harness skills under
   `.codex/skills/`; if a skill must be mirrored into native Codex repo-skill or
   plugin packaging, record that as a packaging/migration decision.
 - `AGENTS.md`: keep durable repo guidance concise, practical, and scoped by
@@ -209,7 +209,7 @@ behavior and surface choice:
   Spawnable custom agent TOML uses top-level `name`, `description`, and
   `developer_instructions`.
 
-Compatibility invariant: maintain the current Cascade Codex `.codex/skills/`
+Compatibility invariant: maintain the current Cascade `.codex/skills/`
 and `.codex/agents/` harness layout unless the user explicitly requests a
 layout migration. When building a distributable plugin, native Codex skill
 mirror, or spawnable custom subagent package, keep `.codex/skills/` as the
@@ -254,7 +254,7 @@ documented source unless the requested output is explicitly a layout migration.
 8. Record handoff artifacts only when useful: reference inventory, surface
    decision, changed files, validation evidence, unresolved risks, and next
    workflow entry.
-9. Validate with the Cascade Codex validator, path/reference searches, TOML
+9. Validate with the Cascade validator, path/reference searches, TOML
    parsing, and `git diff --check`.
 
 ## Required Artifacts

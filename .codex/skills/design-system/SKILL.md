@@ -15,7 +15,7 @@ decide product intent, or create brand positioning.
 ## Source Order
 
 1. Latest user brief, source spec, screenshot, design note, visual review
-   finding, or UI change request.
+   finding, Figma context, static mockup, or UI change request.
 2. Existing design docs:
    - `docs/design/_index.md`
    - `docs/design/interaction-model.md`
@@ -39,6 +39,8 @@ Use this skill for:
   density, and state;
 - component behavior, variants, disabled/loading/error/empty states, and
   control semantics;
+- component or pattern lifecycle decisions from screenshots, Figma, or static
+  mockups when the rule should be reusable beyond one feature;
 - layout, responsive behavior, density, and scanability rules;
 - accessibility expectations such as keyboard flow, focus, contrast, labels,
   target size, and reduced motion;
@@ -59,6 +61,7 @@ blocker.
    - layout or responsive behavior;
    - accessibility;
    - visual evidence;
+   - static mockup or Figma evidence;
    - design gap.
 2. For each design/UX problem, requirement, or gap, run several trajectory
    passes per `docs/patterns/workflow.md#trajectory-coverage`; every trajectory
@@ -81,15 +84,43 @@ blocker.
    consuming components, accessibility constraints, and migration notes.
 6. For components, define anatomy, variants, states, content rules, responsive
    behavior, accessibility, and functional or visual checks.
-7. Route brand visual intent gaps to `brand-positioning`.
-8. Route product behavior gaps to `synthesis-to-spec`, `market-validation`, or
+7. For mockups, Figma screens, or screenshots, decide whether the artifact is:
+   - evidence only;
+   - a reusable component or interaction rule;
+   - a durable token rule;
+   - a feature-specific UX delta;
+   - a product/spec/brand gap.
+8. Use dummy or synthetic data in design evidence. Do not preserve
+   credentials, tokens, private customer data, regulated sensitive data, raw
+   logs, or sensitive screenshots in durable docs.
+9. Route brand visual intent gaps to `brand-positioning`.
+10. Route product behavior gaps to `synthesis-to-spec`, `market-validation`, or
    `plan-change`.
-9. Record Doc Routing Decision Matrix rows for design facts created, updated,
+11. Record Doc Routing Decision Matrix rows for design facts created, updated,
    deferred, blocked, or intentionally unchanged.
-10. Use `docs-impact-map` after design updates to re-check product, brand, spec,
+12. Use `docs-impact-map` after design updates to re-check product, brand, spec,
    backlog, glossary, and pattern effects.
-11. Route visible UI checks to `functional-qa` and implementation slices to
+13. Route visible UI checks to `functional-qa` and implementation slices to
    `plan-change`.
+
+## Artifact Lifecycle
+
+Use this lifecycle when design evidence creates durable rules:
+
+```text
+source request / screenshot / Figma / current UI
+  -> ux-flow-review when feature flow or IA is in scope
+  -> design-system for reusable component, token, state, or evidence rules
+  -> component-rule template when a reusable pattern appears
+  -> docs/design/tokens.md only for durable semantic token changes
+  -> docs-impact-map for sibling product/brand/spec effects
+  -> plan-change / implement-change only when runtime code is requested
+```
+
+Mockups and Figma screens are evidence, not implementation truth. Component
+rules are reusable design rules, not feature product specs. Feature-specific UX
+remains in the owning product/spec artifact unless the rule is reusable across
+features.
 
 ## Write Targets
 
@@ -112,6 +143,8 @@ blocker.
 
 - design artifact type and source identity;
 - token/component/interaction/accessibility decisions;
+- evidence-only, reusable-rule, token-rule, feature-UX, or product/spec/brand
+  routing decision for mockup, Figma, or screenshot inputs;
 - assumptions, gaps, and open questions;
 - doc routing decisions;
 - affected product/brand/spec/glossary docs;

@@ -1,7 +1,7 @@
 # Project AI Instructions
 
 This file is the repository instruction entrypoint for coding agents. Keep it
-  as a thin boot contract after copying Cascade Codex. Detailed stack
+  as a thin boot contract after copying Cascade. Detailed stack
   maps, source roots, commands, workflow policy, learned rules, product specs,
   and active work state belong in `harness.config.yaml`, `docs/structure.md`,
   `CODEX.md`, `.codex/skills/`, `.codex/agents/`, and the relevant docs.

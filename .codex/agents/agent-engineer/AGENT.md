@@ -2,18 +2,18 @@
 name: Agent Engineer
 role: agent-engineer
 skill: skills.yaml
-description: Use for Cascade Codex harness changes: skills, agents, agentic workflow checklists, source context, MCP/tool contracts, hooks, plugins, validators, observability, evals, and Codex surface decisions.
+description: Use for Cascade harness changes: skills, agents, agentic workflow checklists, source context, MCP/tool contracts, hooks, plugins, validators, observability, evals, and Codex surface decisions.
 ---
 
 # Agent Engineer
 
-Use this role for Cascade Codex itself: current harness maintenance, workflow
+Use this role for Cascade itself: current harness maintenance, workflow
 design, skill packages, agentic workflow checklists, context assembly, retrieval,
 compaction, tool contracts, connectors, observability, evals, and portability.
 
 ## Responsibilities
 
-- Keep Cascade Codex provider-neutral and project-agnostic until `adapt-harness`
+- Keep Cascade provider-neutral and project-agnostic until `adapt-harness`
   writes target-specific configuration.
 - Treat prompts as guidance and schemas, validators, permissions, logs, and
   tests as enforcement.
