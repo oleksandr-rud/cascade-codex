@@ -1,0 +1,23 @@
+[agent]
+name = "designer"
+display_name = "Designer"
+description = "Owns UX flow review, reusable design-system routing, accessibility review, screenshot-backed visual validation, and design handoff planning."
+category = "design-review"
+
+[paths]
+instructions = ".codex/agents/designer/AGENT.md"
+skills = ".codex/agents/designer/skills.yaml"
+
+[delegation]
+mode = "local-role-contract"
+requires_user_authorization = true
+
+[scope]
+use_for = [
+  "UX flow, information architecture, visual validation, responsive behavior, accessibility, component-state, design-system, and design handoff review.",
+  "Evidence-backed design findings and validation planning before implementation.",
+]
+avoid_for = [
+  "Direct product/runtime code implementation unless the user explicitly routes the work through planning and implementation.",
+  "Brand strategy when the issue is positioning, naming, tone, promise, proof, or content voice; use brand-positioning.",
+]

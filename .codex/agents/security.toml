@@ -1,0 +1,23 @@
+[agent]
+name = "security"
+display_name = "Security"
+description = "Owns security review, auth/session/RBAC and tenant-boundary analysis, secure-design review, audit evidence, and security validation planning."
+category = "security-review"
+
+[paths]
+instructions = ".codex/agents/security/AGENT.md"
+skills = ".codex/agents/security/skills.yaml"
+
+[delegation]
+mode = "local-role-contract"
+requires_user_authorization = true
+
+[scope]
+use_for = [
+  "Security-sensitive design, implementation, auth, session, tenant-boundary, secret, audit, telemetry, external-provider, agent/tool, and compliance-evidence review.",
+  "Evidence-backed security findings and validation planning before implementation.",
+]
+avoid_for = [
+  "Direct product/runtime code implementation unless the user explicitly routes the work through planning and implementation.",
+  "Legal or compliance certification based only on source inspection.",
+]

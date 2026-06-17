@@ -25,6 +25,10 @@ Use when designing, auditing, adapting, or explaining the harness itself.
 7. Prefer direct replacement of stale harness paths unless the target project
    has a proven live contract requiring temporary compatibility.
 
+Use `references/harness-checklists.md` for deeper blueprint, tool-contract,
+context, eval, observability, and mechanical-invariant checklists when the
+design or audit spans more than one harness surface.
+
 ## Cascade Codex Patterns
 
 Use `codex-maintenance` when the question is specifically about Codex
@@ -36,6 +40,7 @@ Load these when the harness question touches the relevant area:
 - `docs/patterns/boundaries.md`
 - `docs/patterns/context-memory.md`
 - `docs/patterns/workflow.md`
+- `references/harness-checklists.md`
 
 ## Output
 

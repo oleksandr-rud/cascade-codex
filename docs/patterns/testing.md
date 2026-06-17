@@ -16,6 +16,15 @@ Layer choice:
 - CLI or command journey for tool-like products;
 - manual visible evidence only when automation is unavailable or misleading.
 
+Validation mode:
+
+- executable proof: run or author the smallest unit, integration, contract,
+  E2E, scenario, API, CLI, or browser check that proves the behavior;
+- source-blind browser proof: operate the running app as a user would and
+  verify visible text, controls, URLs, enabled or disabled state, screenshots,
+  console errors, and observable side effects; inspect source only when the
+  user asks for diagnosis or owner mapping.
+
 Outcome terms:
 
 - `PASS`: required behavior is proven.
@@ -51,6 +60,8 @@ Rules:
 - Do not create broad scenario suites just because a product scenario file
   exists.
 - Multi-step flows should track carried state and duplicate side effects.
+- Do not mark skipped or environment-gated checks as `PASS`.
+- Do not mock the behavior being tested.
 
 ## Semantic Test Autorepair
 
@@ -74,4 +85,3 @@ Forbidden repairs:
 - blind snapshot updates without visual review;
 - arbitrary sleeps when observable waits exist;
 - skipping required checks without reporting `BLOCKED`.
-

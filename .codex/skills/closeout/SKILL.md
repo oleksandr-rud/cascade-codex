@@ -50,7 +50,12 @@ Use when work is done, blocked, or ready for handoff.
 7. Persist only reusable lessons, required handoff state, requested reports, or
    required thin doc diffs.
 8. Do not create a generic learned-lessons dump.
-9. Keep final handoff concise and honest about checks that did not run.
+9. For active work cleanup, prune completed rows only when the user explicitly
+   asks for cleanup or the closeout scope includes registry maintenance; first
+   preserve durable evidence in `docs/work/reports/`, confirm the row is
+   complete, confirm dependencies are resolved, and remove the active row
+   instead of re-marking it as `CLOSED`.
+10. Keep final handoff concise and honest about checks that did not run.
 
 ## Thin Doc Diff Rules
 
@@ -92,6 +97,9 @@ Every thin doc diff must include:
   durable memory.
 - Active work state: `docs/work/active.md` and `docs/work/lanes/`
 - Durable work handoff: `docs/work/reports/`
+- Completed active registry cleanup: remove `COMPLETE` rows from
+  `docs/work/active.md` only after evidence is preserved in a report and the
+  cleanup scope is explicit
 - Durable rejected scope: existing backlog, pattern, decision, or work report,
   only when it prevents repeat bad suggestions
 - Durable workflow lessons: `.codex/skills/`, `.codex/agents/`, or

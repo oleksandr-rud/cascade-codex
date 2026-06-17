@@ -29,6 +29,12 @@ Supporting skills:
 - `orchestrate-work`
 - `review-change`
 - `ingest-spec`
+- `codebase-audit`
+- `auth-analysis`
+- `secure-design`
+- `ux-flow-review`
+- `accessibility-review`
+- `visual-qa`
 
 ## Agents
 
@@ -39,12 +45,19 @@ Supporting skills:
   practices, skill, memory, and observability guidance.
 - `business-analyst`: owns long market validation, live research,
   business-analysis lanes, evidence grading, and synthesis into specs.
+- `security`: owns security-sensitive review, auth/session/RBAC and
+  tenant-boundary analysis, secure-design review, audit evidence, and security
+  validation planning.
+- `designer`: owns UX flow review, reusable design-system routing,
+  accessibility review, screenshot-backed visual validation, and design
+  handoff planning.
 
 Agent TOML manifests use `[agent]` for identity, `[paths]` for role-contract
 files, `[delegation]` for spawn policy, and `[scope]` for use/avoid boundaries.
 
-Cascade Codex is intentionally skill-first except for repeated long-running
-role boundaries such as business analysis. Keep architecture review,
-functional acceptance, test repair, and issue intake as skills unless the
-target project proves it needs a dedicated delegated role. Use subagents only
-when the user explicitly authorizes delegation in the target runtime.
+Cascade Codex is intentionally skill-first except for repeated long-running or
+specialist review boundaries such as business analysis, security review, and
+design review. Keep architecture review, functional acceptance, test repair,
+and issue intake as skills unless the target project proves it needs a
+dedicated delegated role. Use subagents only when the user explicitly
+authorizes delegation in the target runtime.

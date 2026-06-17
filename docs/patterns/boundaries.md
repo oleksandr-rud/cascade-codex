@@ -33,6 +33,8 @@ Fill this table during `adapt-harness`:
 Use before cross-boundary implementation, public-contract changes, shared
 abstractions, state-machine changes, or major refactors.
 
+- Start one level above the requested file change: name the behavior, owning
+  boundary, and public contract first.
 - Identify direct and hidden consumers.
 - Prefer existing module boundaries and helper APIs.
 - Add an abstraction only when it removes real complexity or matches an
@@ -60,6 +62,26 @@ Classify dependencies before adding a seam or choosing a test double:
 
 Do not expose internal seams merely because a test uses them. The interface is
 the test surface.
+
+## Data Boundary Review
+
+Use when persistence, query shape, document shape, indexes, retention, cache,
+or replicated fields affect behavior or performance.
+
+- Build an access-pattern matrix before proposing data-shape changes: actor,
+  data owner, read/write operation, filter/query, sort/projection, cardinality,
+  frequency, freshness, lifecycle, and validation evidence.
+- Name source of truth. If a field is duplicated, name the owner, copied target,
+  update path, staleness tolerance, and validation check.
+- Bound histories and arrays. Prefer summaries, buckets, archives, cursors, or
+  rollups when the product only needs recent state, counters, rankings, or
+  trends.
+- Propose indexes or query optimizations only for owner queries. Include key
+  order, uniqueness/partial/TTL rules when relevant, expected improvement,
+  write cost, and verification evidence.
+- Do not introduce data-access layers or repository abstractions unless they
+  hide real invariants, remove meaningful duplication, or match an established
+  local pattern.
 
 ## API And Public Contracts
 

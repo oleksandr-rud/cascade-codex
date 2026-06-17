@@ -56,6 +56,7 @@ REQUIRED_FILES = [
     ".codex/skills/hypothesis-scoring/templates/hypothesis-scorecard.md",
     ".codex/skills/validation-experiments/templates/validation-experiment-plan.md",
     ".codex/skills/adversarial-critic/templates/critic-report.md",
+    ".codex/skills/agents-best-practices/references/harness-checklists.md",
     ".codex/skills/synthesis-to-spec/templates/spec-synthesis-packet.md",
     ".codex/skills/compose-spec/templates/product-prd.md",
     ".codex/skills/compose-spec/templates/persona.md",
@@ -79,6 +80,22 @@ REQUIRED_FILES = [
     ".codex/skills/closeout/templates/thin-doc-diff.md",
     ".codex/skills/docs-impact-map/templates/impact-map.md",
     ".codex/skills/architecture-review/checklists/deep-module-review.md",
+    ".codex/skills/codebase-audit/checklists/trajectory-generation.md",
+    ".codex/skills/codebase-audit/templates/trajectory-spec.md",
+    ".codex/skills/auth-analysis/checklists/auth-hardening.md",
+    ".codex/skills/auth-analysis/templates/auth-analysis-report.md",
+    ".codex/skills/secure-design/checklists/secure-design.md",
+    ".codex/skills/secure-design/templates/secure-design-review.md",
+    ".codex/skills/ux-flow-review/checklists/ux-flow-review.md",
+    ".codex/skills/ux-flow-review/references/ux-flow-patterns.md",
+    ".codex/skills/ux-flow-review/templates/product-ux-delta.md",
+    ".codex/skills/ux-flow-review/templates/ux-flow-review.md",
+    ".codex/skills/accessibility-review/checklists/accessibility-review.md",
+    ".codex/skills/accessibility-review/references/accessibility-sources.md",
+    ".codex/skills/accessibility-review/templates/accessibility-review.md",
+    ".codex/skills/visual-qa/checklists/visual-validation.md",
+    ".codex/skills/visual-qa/references/visual-validation.md",
+    ".codex/skills/visual-qa/templates/visual-validation-report.md",
     ".codex/skills/ingest-spec/templates/transformed-spec.md",
     ".codex/skills/ingest-spec/templates/scenario-row.md",
     ".codex/skills/codex-maintenance/checklists/harness-maintenance.md",
@@ -86,6 +103,8 @@ REQUIRED_FILES = [
     ".codex/skills/codex-maintenance/templates/reference-inventory.md",
     ".codex/skills/codex-maintenance/templates/codex-practice-audit.md",
     ".codex/skills/codex-maintenance/templates/maintenance-handoff.md",
+    ".codex/agents/security/checklists/security-agent-workflows.md",
+    ".codex/agents/designer/checklists/designer-workflows.md",
 ]
 
 AGENTS = [
@@ -93,6 +112,8 @@ AGENTS = [
     "project-onboarder",
     "agent-engineer",
     "business-analyst",
+    "security",
+    "designer",
 ]
 
 SKILLS = [
@@ -100,6 +121,12 @@ SKILLS = [
     "orchestrate-work",
     "plan-change",
     "architecture-review",
+    "codebase-audit",
+    "auth-analysis",
+    "secure-design",
+    "ux-flow-review",
+    "accessibility-review",
+    "visual-qa",
     "discover",
     "market-validation",
     "pain-mining",
@@ -199,6 +226,8 @@ REQUIRED_HARNESS_AGENTS = {
     "onboarding": "project-onboarder",
     "harness_design": "agent-engineer",
     "business_analysis": "business-analyst",
+    "security_review": "security",
+    "design_review": "designer",
 }
 
 SKIP_LEAKAGE_PATH_PARTS = {
@@ -310,6 +339,30 @@ SKILL_TRIGGER_REQUIREMENTS = {
     "design-system": [
         r"design|UX|tokens|components|accessibility",
         r"responsive|interaction|visual",
+    ],
+    "codebase-audit": [
+        r"security audit|audit",
+        r"trajectory|inventory|security",
+    ],
+    "auth-analysis": [
+        r"JWT|sessions|RBAC|auth",
+        r"tenant|route|frontend",
+    ],
+    "secure-design": [
+        r"proposed feature|design|architecture",
+        r"insecure|abuse|secure-by-design",
+    ],
+    "ux-flow-review": [
+        r"UX review|workflow|screen|dashboard",
+        r"mockups|implementation|validation",
+    ],
+    "accessibility-review": [
+        r"accessibility|WCAG|ARIA|keyboard",
+        r"focus|contrast|status",
+    ],
+    "visual-qa": [
+        r"screenshot|visual validation|viewport",
+        r"layout|responsive|overflow",
     ],
     "docs-impact-map": [
         r"product|design|brand|spec",

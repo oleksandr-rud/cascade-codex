@@ -93,6 +93,8 @@ routing:
   human_review: "explicit open-question or exception path only"
   stale_test_policy: "test-autorepair preserves semantic coverage; product bugs route to implement-change"
   business_analysis: "business-analyst uses market-validation lanes, synthesis-to-spec for evidence synthesis, and compose-spec for PRDs/personas/spec artifacts"
+  security_review: "security uses codebase-audit, auth-analysis, and secure-design for security-sensitive review before implementation"
+  design_review: "designer uses ux-flow-review, accessibility-review, visual-qa, and design-system for design-sensitive review before implementation"
 
 vocabulary:
   prefer_codebase_terms: true

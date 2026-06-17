@@ -89,6 +89,12 @@ standalone workflow router.
 - `design-system`: use when design tokens, components, UX rules,
   accessibility, layout, responsive behavior, interaction states, or visual
   evidence need durable structure.
+- `security`: use for security-sensitive review, auth/session/RBAC and
+  tenant-boundary analysis, secure-design review, audit evidence, and security
+  validation planning.
+- `designer`: use for UX flow review, accessibility review,
+  screenshot-backed visual validation, reusable design-system routing, and
+  design handoff planning.
 - `ingest-spec`: use to convert source specs into the project docs structure.
 - `docs-impact-map`: use when one product/design/brand/spec/backlog/glossary
   doc update may require sibling doc checks or follow-up routing.
@@ -120,13 +126,19 @@ explicitly authorizes parallel agents.
   skills, memory, tool contracts, observability, and evals.
 - `business-analyst`: long business-analysis discovery, live market research,
   market validation lanes, evidence grading, and synthesis into specs.
+- `security`: security-sensitive review, auth/session/RBAC and
+  tenant-boundary analysis, secure-design review, audit evidence, and security
+  validation planning.
+- `designer`: UX flow review, reusable design-system routing, accessibility
+  review, screenshot-backed visual validation, and design handoff planning.
 
 Cascade Codex is intentionally skill-first except where a repeated long-running
-workflow needs a durable role boundary. Architecture review, functional
-acceptance, scenario checks, product testing, and issue intake remain skills in
-the cascade rather than separate agents. `business-analyst` exists because
-long discovery loops, live research, and non-obvious impact discovery need a
-role that is separate from implementation.
+workflow or specialist review lane needs a durable role boundary. Architecture
+review, functional acceptance, scenario checks, product testing, and issue
+intake remain skills in the cascade rather than separate agents.
+`business-analyst`, `security`, and `designer` exist because long discovery,
+security review, and design review need role boundaries that are separate from
+implementation.
 
 ## Work Packet
 

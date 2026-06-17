@@ -9,8 +9,11 @@
 - [ ] Private selectors and incidental implementation details are avoided.
 - [ ] Assertions are web-first, API-contract, CLI-result, or otherwise observable.
 - [ ] Only true system boundaries or unstable external services are mocked or controlled unless full-stack behavior is the point.
+- [ ] The behavior being tested is not mocked away.
+- [ ] Source-blind browser proof, when selected, verifies only observable behavior until diagnosis is requested.
 - [ ] Generated or drafted tests were reviewed for semantics, traceability, fixtures, and assertions.
 - [ ] Missing product intent is reported as `GAP`.
 - [ ] Product/runtime bugs are handed off with evidence.
 - [ ] Required gated checks are `BLOCKED` when preconditions are missing.
+- [ ] Skipped or environment-gated checks are not reported as `PASS`.
 - [ ] Optional or out-of-scope checks are `NOT_RUN` with a reason.

@@ -21,6 +21,12 @@ Create a lane packet when the workstream needs its own:
 - MCP/tool context policy;
 - blocked/deferred handoff.
 
+Completed rows should leave `docs/work/active.md` only after durable evidence
+has been preserved under `docs/work/reports/` and the cleanup scope is
+explicit. Do not create a permanent `CLOSED` active-row status; remove completed
+rows from the active registry and keep the report or lane packet as historical
+evidence.
+
 ## Parallel Rules
 
 Parallel lanes are allowed only when:

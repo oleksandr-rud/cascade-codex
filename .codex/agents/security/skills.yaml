@@ -1,0 +1,17 @@
+skills:
+  - name: codebase-audit
+    source: .codex/skills/codebase-audit/SKILL.md
+  - name: auth-analysis
+    source: .codex/skills/auth-analysis/SKILL.md
+  - name: secure-design
+    source: .codex/skills/secure-design/SKILL.md
+  - name: architecture-review
+    source: .codex/skills/architecture-review/SKILL.md
+  - name: docs-impact-map
+    source: .codex/skills/docs-impact-map/SKILL.md
+  - name: functional-qa
+    source: .codex/skills/functional-qa/SKILL.md
+  - name: validate-change
+    source: .codex/skills/validate-change/SKILL.md
+  - name: plan-change
+    source: .codex/skills/plan-change/SKILL.md

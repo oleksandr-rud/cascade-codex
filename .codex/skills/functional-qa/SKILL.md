@@ -42,13 +42,23 @@ If expected behavior is missing, report `GAP` and route to `plan-change` or
    - API contract check;
    - CLI or command journey;
    - manual visible evidence when automation is blocked.
-5. Use stable public locators or contracts rather than private selectors.
-6. Mock only true system boundaries or unstable services unless full-stack
+5. Choose validation mode explicitly:
+   - executable proof: create or run the smallest existing unit, integration,
+     contract, E2E, scenario, API, CLI, or browser check that proves the
+     behavior;
+   - source-blind browser proof: operate the running app as a user would and
+     verify only observable outcomes; read source only if the user asks for
+     diagnosis or owner mapping.
+6. Use stable public locators or contracts rather than private selectors.
+7. Mock only true system boundaries or unstable services unless full-stack
    behavior is the point.
-7. Classify every check as `PASS`, `FAIL`, `BLOCKED`, `NOT_RUN`, or `GAP`.
-8. Route product failures to `implement-change`.
-9. Route stale failing tests to `test-autorepair`.
-10. Escalate to human review only for subjective judgment that executable
+8. Do not mock the behavior being tested.
+9. Classify every check as `PASS`, `FAIL`, `BLOCKED`, `NOT_RUN`, or `GAP`.
+   Skipped or environment-gated checks are not `PASS`.
+10. Route product failures to `implement-change`.
+11. Route stale failing tests to `test-autorepair` only when evidence shows
+    product behavior still matches the expected contract.
+12. Escalate to human review only for subjective judgment that executable
    evidence cannot decide.
 
 ## Output
