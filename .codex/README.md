@@ -42,9 +42,9 @@ Supporting skills:
 - `orchestrator`: orchestrates the cascade.
 - `project-onboarder`: orchestrates new-project setup, harness adaptation,
   config/docs migration, validation, and setup handoff.
-- `agent-engineer`: owns Cascade maintenance, Codex surface best
-  practices, agentic workflow checklists, source-context, skill, and
-  observability guidance.
+- `agent-engineer`: owns Cascade maintenance plus target-project agent/LLM
+  system design, Codex surface best practices, agentic workflow checklists,
+  source-context, skill, tool-contract, observability, and eval guidance.
 - `business-analyst`: owns long market validation, live research,
   business-analysis lanes, evidence grading, and synthesis into specs.
 - `security`: owns security-sensitive review, auth/session/RBAC and

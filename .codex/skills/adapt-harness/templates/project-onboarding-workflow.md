@@ -19,7 +19,7 @@ context-memory specs without inventing facts or creating broad dump folders.
 | Agent Route | Manifest | Role Contract | Skill Map | Use In Workflow |
 |---|---|---|---|---|
 | `project-onboarder` | `.codex/agents/project-onboarder.toml` | `.codex/agents/project-onboarder/AGENT.md` | `.codex/agents/project-onboarder/skills.yaml` | merge owner and default executor |
-| `agent-engineer` | `.codex/agents/agent-engineer.toml` | `.codex/agents/agent-engineer/AGENT.md` | `.codex/agents/agent-engineer/skills.yaml` | harness, skill, agent, validator, context-memory support |
+| `agent-engineer` | `.codex/agents/agent-engineer.toml` | `.codex/agents/agent-engineer/AGENT.md` | `.codex/agents/agent-engineer/skills.yaml` | harness, skill, project-agent, validator, context-memory, observability, and eval support |
 | `designer` | `.codex/agents/designer.toml` | `.codex/agents/designer/AGENT.md` | `.codex/agents/designer/skills.yaml` | visual, UX, design-system, brand support when UI evidence exists |
 | `security` | `.codex/agents/security.toml` | `.codex/agents/security/AGENT.md` | `.codex/agents/security/skills.yaml` | security, auth, data, abuse-case, and boundary support |
 | `orchestrator` | `.codex/agents/orchestrator.toml` | `.codex/agents/orchestrator/AGENT.md` | `.codex/agents/orchestrator/skills.yaml` | optional lane scheduling only when the scan is broad enough to split safely |
@@ -132,9 +132,10 @@ only with acceptance criteria.
 ### P-04: Agent Engineer Support
 
 ```text
-Use agent-engineer only for harness, skill, agent, validator, workflow, source
-context, connector, or memory-routing changes. Keep prompt rules separate from
-mechanical validator or hook invariants. Preserve project-neutral Cascade
+Use agent-engineer for harness, skill, agent, project agent/LLM system,
+validator, workflow, source context, connector, memory-routing, observability,
+or eval changes. Keep prompt rules separate from mechanical validator, schema,
+permission, hook, or test invariants. Preserve project-neutral Cascade
 surfaces and update validators when a new required artifact is added.
 ```
 

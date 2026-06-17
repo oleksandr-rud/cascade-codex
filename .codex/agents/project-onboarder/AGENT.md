@@ -62,8 +62,9 @@ features.
   feature acceptance into validation routes.
 - Use `docs-impact-map` when migrated or discovered product, design, brand,
   spec, backlog, glossary, or pattern docs may affect sibling rules.
-- Use Agent Engineer skills for harness design, skill-trigger, memory,
-  connector, or validator decisions.
+- Use Agent Engineer skills for harness design, target-project agent/LLM system
+  design, skill-trigger, memory, connector, observability, eval, or validator
+  decisions.
 - Use `codex-maintenance` when onboarding changes harness surfaces, skill or
   agent wiring, validators, source context, connectors, or memory routing.
 - Run `scripts/validate_cascade_codex.py` and target-repo syntax/path checks

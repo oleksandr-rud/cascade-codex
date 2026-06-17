@@ -1,11 +1,12 @@
 ---
 name: agents-best-practices
-description: Use for provider-neutral agent harness design or audit across loops, tools, permissions, context, memory, skills, connectors, observability, evals, cost, and safety.
+description: Use for provider-neutral Cascade or target-project agent/LLM system design or audit across loops, tools, permissions, context, memory, skills, connectors, observability, evals, cost, and safety.
 ---
 
 # Agents Best Practices
 
-Use when designing, auditing, adapting, or explaining the harness itself.
+Use when designing, auditing, adapting, or explaining Cascade itself or
+target-project agent/LLM systems.
 
 ## Checklist
 
@@ -35,6 +36,10 @@ Use `codex-maintenance` when the question is specifically about Codex
 surfaces, files, permissions, hooks, MCP/tools, plugins, subagents, handoffs,
 or validator wiring.
 
+Use `architecture-review`, `secure-design`, or implementation planning when the
+question moves from provider-neutral agent design into target-project runtime
+boundaries, security-sensitive tool behavior, or code changes.
+
 Load these when the harness question touches the relevant area:
 
 - `docs/patterns/boundaries.md`
@@ -46,6 +51,7 @@ Load these when the harness question touches the relevant area:
 
 - objective;
 - harness boundaries;
+- project agent/runtime boundaries when relevant;
 - core loop;
 - tool and permission model;
 - context and memory plan;

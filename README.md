@@ -75,6 +75,12 @@ Discovery-heavy work uses:
 discover or market-validation -> ingest-spec or synthesis-to-spec -> compose-spec -> docs-impact-map -> plan-change -> functional-qa
 ```
 
+Explicit workflow-packet requests are routed separately from active execution.
+Use `agentic-workflow-builder` when the requested output is an agentic
+workflow, workflow checklist, prompt bank, delegation workflow, or multi-agent
+workflow packet. Use `orchestrate-work` when the work is already accepted and
+needs active lanes, serialization, merge ownership, or validation scheduling.
+
 ## Roles And Skills
 
 Cascade is skill-first. Role contracts exist where a repeated workflow needs a
@@ -82,18 +88,27 @@ clear boundary:
 
 | Role | Owns |
 |---|---|
-| `orchestrator` | Normal task routing across context, ingest, impact, planning, acceptance, implementation, review, validation, repair, and closeout. |
+| `orchestrator` | Normal task routing plus explicit workflow-packet routing across context, ingest, impact, planning, acceptance, implementation, review, validation, repair, and closeout. |
 | `project-onboarder` | New-repository setup, harness adaptation, config/docs migration, validation, and setup handoff. |
-| `agent-engineer` | Cascade maintenance, Codex surface decisions, skills, agents, workflow packets, tool contracts, observability, and evals. |
+| `agent-engineer` | Cascade maintenance and target-project agent/LLM system design, including agent graphs, model/tool loops, retrieval, memory, permissions, tool contracts, observability, cost/safety controls, evals, and Codex surface decisions. |
 | `business-analyst` | Long market validation, competitor/pain/economics lanes, evidence grading, and synthesis into specs. |
 | `security` | Security-sensitive review, auth/session/RBAC and tenant-boundary analysis, secure-design review, audit evidence, and security validation planning. |
 | `designer` | UX flow review, accessibility review, visual validation, design-system routing, and design handoff planning. |
 
+Agent Engineer is not limited to Cascade internals. Use it for target-project
+agent and LLM systems too: framework-backed agent runtimes, project-owned
+agents, model routing, prompt/context assembly, retrieval and memory, tool
+permission boundaries, structured outputs, traces, evals, and safety controls.
+When those decisions require product/runtime code changes, the implementation
+still routes through planning, architecture or secure-design review when
+needed, `implement-change`, and validation.
+
 The 36 registered skills cluster into:
 
-- Core execution: `context`, `orchestrate-work`, `plan-change`,
-  `functional-qa`, `implement-change`, `review-change`, `validate-change`,
-  `test-autorepair`, `issue-intake`, `closeout`.
+- Core execution and workflow packets: `context`, `agentic-workflow-builder`,
+  `orchestrate-work`, `plan-change`, `functional-qa`, `implement-change`,
+  `review-change`, `validate-change`, `test-autorepair`, `issue-intake`,
+  `closeout`.
 - Spec and product routing: `ingest-spec`, `discover`, `docs-impact-map`,
   `synthesis-to-spec`, `compose-spec`, `brand-positioning`, `design-system`.
 - Market and business analysis: `market-validation`, `pain-mining`,
@@ -102,7 +117,7 @@ The 36 registered skills cluster into:
 - Specialist review: `architecture-review`, `codebase-audit`,
   `auth-analysis`, `secure-design`, `ux-flow-review`,
   `accessibility-review`, `visual-qa`.
-- Harness maintenance: `agents-best-practices`, `agentic-workflow-builder`,
+- Harness and agent-system design/maintenance: `agents-best-practices`,
   `develop-skill`, `codex-maintenance`, `adapt-harness`.
 
 ## Documentation And Memory

@@ -1,6 +1,8 @@
 skills:
   - name: context
     source: .codex/skills/context/SKILL.md
+  - name: agentic-workflow-builder
+    source: .codex/skills/agentic-workflow-builder/SKILL.md
   - name: orchestrate-work
     source: .codex/skills/orchestrate-work/SKILL.md
   - name: plan-change

@@ -1,7 +1,7 @@
 [agent]
 name = "orchestrator"
 display_name = "Orchestrator"
-description = "Use for normal task routing across context, spec ingest, docs impact, planning, functional acceptance, implementation, review, validation, repair, and closeout."
+description = "Use for normal task routing and explicit workflow-packet routing across context, spec ingest, docs impact, planning, functional acceptance, implementation, review, validation, repair, and closeout."
 category = "workflow-coordination"
 
 [paths]
@@ -15,9 +15,10 @@ requires_user_authorization = true
 [scope]
 use_for = [
   "Context, planning, functional acceptance, implementation, review, validation, and closeout routing.",
+  "Reviewable agentic workflow packet, workflow checklist, prompt bank, delegation workflow, or multi-agent workflow artifact routing when explicitly requested.",
   "Work-lane coordination when dependencies, serialization, or parallel safety matter.",
 ]
 avoid_for = [
   "New-project setup or harness installation; use project-onboarder.",
-  "Harness, skill, memory, connector, observability, or eval design; use agent-engineer.",
+  "Harness, skill, project-agent, LLM runtime, memory, connector, observability, or eval design; use agent-engineer.",
 ]

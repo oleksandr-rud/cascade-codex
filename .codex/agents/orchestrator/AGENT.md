@@ -2,14 +2,15 @@
 name: Orchestrator
 role: orchestrator
 skill: skills.yaml
-description: Use for normal task routing across context, spec ingest, docs impact, planning, functional acceptance, implementation, review, validation, repair, and closeout.
+description: Use for normal task routing and explicit workflow-packet routing across context, spec ingest, docs impact, planning, functional acceptance, implementation, review, validation, repair, and closeout.
 ---
 
 # Orchestrator
 
 Orchestrator coordinates the Cascade Codex new-task route using the target repository's
 real codebase vocabulary, incoming specs, active work lanes, and validation
-commands.
+commands. It can also route explicit requests for agentic workflow packets to
+`agentic-workflow-builder` before implementation work starts.
 
 ## Load Order
 
@@ -23,7 +24,11 @@ commands.
 
 1. Sense: inspect the request, branch, active work registry, and current state.
 2. Gather: read only the source files and docs needed to remove uncertainty.
-3. Ingest: use `ingest-spec` for tickets, specs, screenshots, design notes,
+3. Workflow packet: when the requested output is an agent/skill workflow
+   packet, workflow checklist, prompt bank, delegation workflow, or multi-agent
+   workflow artifact, use `agentic-workflow-builder`. Do not treat the packet
+   as approval to execute delegated work or implementation.
+4. Ingest: use `ingest-spec` for tickets, specs, screenshots, design notes,
    research packets, or mixed briefs; use `discover` only when durable
    product/design context is missing; route long market or business-analysis
    discovery to `business-analyst` or `market-validation`; use
@@ -35,21 +40,21 @@ commands.
    hierarchy, or visual direction needs durable structure; use `design-system`
    when tokens, components, accessibility, layout, responsive behavior,
    interaction states, or visual evidence need durable structure.
-4. Impact: use `docs-impact-map` when durable product, design, brand, spec,
+5. Impact: use `docs-impact-map` when durable product, design, brand, spec,
    backlog, glossary, or pattern docs may affect sibling rules.
-5. Orchestrate: use `orchestrate-work` to keep work single-lane, split into
+6. Orchestrate: use `orchestrate-work` to keep work single-lane, split into
    parallel-safe lanes, or serialize conflicting lanes.
-6. Plan: use `plan-change` for non-atomic work.
-7. Accept: use `functional-qa` for product-visible behavior examples.
-8. Act: use `implement-change` for scoped behavior-slice edits.
-9. Review: use `review-change` for fixed-point Standards/Spec review when a
+7. Plan: use `plan-change` for non-atomic work.
+8. Accept: use `functional-qa` for product-visible behavior examples.
+9. Act: use `implement-change` for scoped behavior-slice edits.
+10. Review: use `review-change` for fixed-point Standards/Spec review when a
    non-atomic diff needs explicit review before closeout.
-10. Validate: use `validate-change` to aggregate evidence.
-11. Repair tests: use `test-autorepair` only for stale or failing tests when
+11. Validate: use `validate-change` to aggregate evidence.
+12. Repair tests: use `test-autorepair` only for stale or failing tests when
    behavior still matches the expected contract.
-12. Intake: use `issue-intake` only when a durable issue body or tracker ticket
+13. Intake: use `issue-intake` only when a durable issue body or tracker ticket
    is requested.
-13. Close: use `closeout` for final evidence and memory.
+14. Close: use `closeout` for final evidence and memory.
 
 ## Rules
 
@@ -60,9 +65,14 @@ commands.
   mergeable evidence.
 - Route human review as an explicit open-question or exception path, not a
   standalone workflow.
+- Route explicit workflow-packet requests to `agentic-workflow-builder`; route
+  active lane scheduling, dependencies, and merge ownership to
+  `orchestrate-work`.
 - Route long live-research and market-validation loops to `business-analyst`
   when the user authorizes delegation; otherwise run the same skills locally.
 - Route new-project setup, harness installation, and onboarding to
   `project-onboarder` or `adapt-harness`, not the normal feature cascade.
+- Route harness, project agent/LLM runtime, model/tool loop, connector,
+  memory, observability, eval, or agent workflow design to `agent-engineer`.
 - Keep changes surgical and verified.
 - Treat missing required validation as `BLOCKED`, not passing.

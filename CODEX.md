@@ -102,8 +102,9 @@ standalone workflow router.
 - `project-onboarder`: use for new-project setup, harness installation,
   onboarding, or migration of existing instructions into the Cascade
   structure.
-- `agents-best-practices`: use for harness, prompt/context, tool, memory,
-  observability, eval, and connector design.
+- `agents-best-practices`: use for Cascade or target-project agent/LLM system
+  design across harness, prompt/context, tool, memory, observability, eval,
+  cost, safety, and connector concerns.
 - `agentic-workflow-builder`: use when a request needs a reviewable agentic
   workflow checklist that first inventories available agents and global skills,
   then wires step-level skill calls, delegation prompts, source order, write
@@ -123,12 +124,13 @@ live in `.codex/agents/{name}.toml` with `[agent]` identity and `[paths]`
 wiring. Use role contracts locally. Spawn or delegate only when the user
 explicitly authorizes parallel agents.
 
-- `orchestrator`: orchestration.
+- `orchestrator`: normal task orchestration and explicit workflow-packet
+  routing.
 - `project-onboarder`: new-project setup, harness adaptation, config/docs
   migration, validation, and setup handoff.
-- `agent-engineer`: Cascade maintenance, Codex surface best practices,
-  agentic workflow checklists, skills, source-context, tool contracts,
-  observability, and evals.
+- `agent-engineer`: Cascade maintenance, target-project agent/LLM system
+  design, Codex surface best practices, agentic workflow checklists, skills,
+  source-context, tool contracts, observability, and evals.
 - `business-analyst`: long business-analysis discovery, live market research,
   market validation lanes, evidence grading, and synthesis into specs.
 - `security`: security-sensitive review, auth/session/RBAC and

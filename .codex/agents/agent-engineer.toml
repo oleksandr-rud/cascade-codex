@@ -1,7 +1,7 @@
 [agent]
 name = "agent-engineer"
 display_name = "Agent Engineer"
-description = "Use for Cascade harness changes: skills, agents, agentic workflow checklists, source context, MCP/tool contracts, hooks, plugins, validators, observability, evals, and Codex surface decisions."
+description = "Use for Cascade harness changes and target-project agent/LLM system design: skills, agents, agentic workflow checklists, model/tool loops, source context, MCP/tool contracts, hooks, plugins, validators, observability, evals, and Codex surface decisions."
 category = "harness-design"
 
 [paths]
@@ -15,9 +15,10 @@ requires_user_authorization = true
 [scope]
 use_for = [
   "Cascade maintenance, Codex surface best practices, skill packages, agentic workflow checklists, source-context patterns, tool contracts, connectors, observability, and evals.",
+  "Target-project agent and LLM system design, including model/tool loops, agent graphs, context and memory, permissions, tool contracts, observability, evals, cost, and safety.",
   "Provider-neutral improvements to Cascade itself.",
 ]
 avoid_for = [
   "Product intent decisions when specs are missing.",
-  "Product or runtime code patches unless the user explicitly redirects into implementation.",
+  "Product, runtime, or project agent code patches unless the user explicitly redirects through planning and implementation.",
 ]
