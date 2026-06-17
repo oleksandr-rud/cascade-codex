@@ -38,8 +38,6 @@ REQUIRED_FILES = [
     "docs/work/active.md",
     "docs/work/lane-template.md",
     "docs/work/examples/_index.md",
-    "docs/work/examples/W-101-adapt-harness-doc-surface.md",
-    "docs/work/examples/W-102-parallel-implementation-validation.md",
     "docs/work/lanes/.gitkeep",
     "docs/work/reports/_index.md",
     "docs/patterns/workflow.md",

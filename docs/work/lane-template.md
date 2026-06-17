@@ -6,8 +6,8 @@ Created: YYYY-MM-DD
 Lane Model: `<single-lane | sequential-pipeline | parallel-sectioning | parallel-voting | orchestrator-workers | evaluator-optimizer>`
 Next Gate: `<SKILL_OR_COMMAND>`
 
-Copy populated examples from `docs/work/examples/`. Do not treat example lanes
-as active work.
+If `docs/work/examples/` contains a relevant packet, copy it as a starting
+point. Do not treat example lanes as active work.
 
 ## Request
 
