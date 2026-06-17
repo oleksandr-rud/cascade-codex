@@ -1,6 +1,6 @@
 ---
 name: implement-change
-description: Make scoped code or doc changes from a clear request or approved plan using behavior-slice implementation and feedback-loop-first bug fixing.
+description: Use after a clear request or approved plan to make scoped code or doc changes through behavior-slice implementation and feedback-loop-first bug fixing.
 ---
 
 # Implement Change

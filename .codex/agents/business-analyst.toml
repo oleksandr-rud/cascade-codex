@@ -1,7 +1,7 @@
 [agent]
 name = "business-analyst"
 display_name = "Business Analyst"
-description = "Runs long product and market discovery loops, evidence-backed market validation, and synthesis into product specs."
+description = "Use for long product or market research, competitor/pain/economics lanes, evidence grading, validation experiments, and synthesis into plan-ready specs."
 category = "business-analysis"
 
 [paths]

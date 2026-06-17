@@ -1,6 +1,6 @@
 ---
 name: agents-best-practices
-description: Provider-neutral agent harness design and audit guidance for loops, tools, permissions, context, memory, skills, connectors, observability, evals, cost, and safety.
+description: Use for provider-neutral agent harness design or audit across loops, tools, permissions, context, memory, skills, connectors, observability, evals, cost, and safety.
 ---
 
 # Agents Best Practices

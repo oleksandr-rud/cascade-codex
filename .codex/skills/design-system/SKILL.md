@@ -1,6 +1,6 @@
 ---
 name: design-system
-description: Create or update design system and UX rules for tokens, components, accessibility, layout density, responsive behavior, interaction states, visual evidence, and UI patterns when design intent is missing or changing.
+description: Use when reusable design or UX rules are missing or changing for tokens, components, accessibility, layout density, responsive behavior, interaction states, visual evidence, or UI patterns.
 ---
 
 # Design System

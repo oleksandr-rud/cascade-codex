@@ -1,7 +1,7 @@
 [agent]
 name = "orchestrator"
 display_name = "Orchestrator"
-description = "Coordinates the Cascade Codex workflow."
+description = "Use for normal task routing across context, spec ingest, docs impact, planning, functional acceptance, implementation, review, validation, repair, and closeout."
 category = "workflow-coordination"
 
 [paths]

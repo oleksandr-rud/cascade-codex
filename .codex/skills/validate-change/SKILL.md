@@ -1,6 +1,6 @@
 ---
 name: validate-change
-description: Aggregate command, test, type, diff, link, scenario, functional acceptance, and review evidence for a completed or in-progress change.
+description: Use after or during a change to aggregate command, test, type, diff, link, scenario, functional acceptance, and review evidence into validation status.
 ---
 
 # Validate Change

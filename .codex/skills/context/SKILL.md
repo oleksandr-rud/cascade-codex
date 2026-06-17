@@ -1,6 +1,6 @@
 ---
 name: context
-description: Lightweight repository snapshot for active work lanes, branch state, recent handoff memory, and likely next action.
+description: Use at task start, resume, or handoff to snapshot branch state, active work lanes, recent reports, changed files, blockers, and the likely next action.
 ---
 
 # Context Snapshot

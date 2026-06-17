@@ -1,6 +1,6 @@
 ---
 name: brand-positioning
-description: Create or update brand positioning, audience, category, promise, proof, tone, naming, message hierarchy, copy rules, and visual direction when brand or content intent is missing or changing.
+description: Use when brand or content intent is missing or changing to create or update positioning, audience, category, promise, proof, tone, naming, message hierarchy, copy rules, and visual direction.
 ---
 
 # Brand Positioning

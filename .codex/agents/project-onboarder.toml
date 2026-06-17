@@ -1,7 +1,7 @@
 [agent]
 name = "project-onboarder"
 display_name = "Project Onboarder"
-description = "Adapts Cascade Codex to a target repository."
+description = "Use for new-repository setup or Cascade Codex adaptation: inspect the target repo, fill config, route docs, validate wiring, and hand off setup state."
 category = "harness-onboarding"
 
 [paths]

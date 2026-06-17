@@ -104,6 +104,9 @@ standalone workflow router.
   structure.
 - `agents-best-practices`: use for harness, prompt/context, tool, memory,
   observability, eval, and connector design.
+- `agent-workflow-builder`: use when a request needs reviewable agent-call
+  packets with role, source order, allowed skills, checklists, write scope,
+  validation, handoff, and stop rules.
 - `codex-maintenance`: use for Cascade Codex maintenance, Codex-specific
   surface audits across `AGENTS.md`, `CODEX.md`, skills, agents, config,
   hooks, MCP/tools, plugins, subagents, permissions, memory, observability,
@@ -123,7 +126,8 @@ explicitly authorizes parallel agents.
 - `project-onboarder`: new-project setup, harness adaptation, config/docs
   migration, validation, and setup handoff.
 - `agent-engineer`: Cascade Codex maintenance, Codex surface best practices,
-  skills, memory, tool contracts, observability, and evals.
+  workflow packets, skills, source-context, tool contracts, observability, and
+  evals.
 - `business-analyst`: long business-analysis discovery, live market research,
   market validation lanes, evidence grading, and synthesis into specs.
 - `security`: security-sensitive review, auth/session/RBAC and
@@ -199,7 +203,7 @@ or design notes into plan-ready docs. Use `docs-impact-map` when those docs
 create or change a fact that may affect sibling product, design, brand, spec,
 backlog, glossary, or pattern rules.
 
-## Evidence And Memory
+## Evidence And Context
 
 Use `docs/patterns/workflow.md` for scoped coverage from current work-lane
 criteria to changed code and validation. At closeout, scan the final diff for

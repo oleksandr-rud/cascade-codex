@@ -1,6 +1,6 @@
 ---
 name: validation-experiments
-description: Convert market, product, pricing, pain, and workflow hypotheses into validation experiments, interviews, landing tests, prototypes, concierge pilots, smoke tests, and kill criteria.
+description: Use during market or product discovery to convert pricing, pain, workflow, and value hypotheses into validation experiments, interviews, landing tests, prototypes, concierge pilots, smoke tests, and kill criteria.
 ---
 
 # Validation Experiments

@@ -1,6 +1,6 @@
 ---
 name: architecture-review
-description: Review module boundaries, hidden consumers, public contracts, seams, and regression risk before cross-boundary implementation or refactor work.
+description: Use before cross-boundary implementation or refactor work to review module boundaries, hidden consumers, public contracts, seams, data flow, and regression risk.
 ---
 
 # Architecture Review

@@ -1,6 +1,6 @@
 ---
 name: competitive-map
-description: Map direct, substitute, infrastructure, and workflow competitors with positioning, pricing, gaps, evidence quality, and business-analysis implications.
+description: Use during market validation to map direct, substitute, infrastructure, and workflow competitors with positioning, pricing, gaps, evidence quality, and business-analysis implications.
 ---
 
 # Competitive Map

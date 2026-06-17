@@ -1,6 +1,6 @@
 ---
 name: pain-mining
-description: Extract and classify real user pain from reviews, forums, interviews, support notes, sales notes, communities, tickets, or provided research for business-analysis and market-validation lanes.
+description: Use during business-analysis or market-validation lanes to extract and classify real user pain from reviews, forums, interviews, support notes, sales notes, communities, tickets, or provided research.
 ---
 
 # Pain Mining

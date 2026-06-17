@@ -1,13 +1,14 @@
 ---
 name: compose-spec
-description: Compose durable product and spec artifacts such as PRDs, personas, product specs, requirements, journeys, scenarios, transformed specs, and backlog-ready acceptance criteria with stable names, IDs, references, and traceability.
+description: Use when validated or approved source material should become durable PRDs, personas, product specs, requirements, journeys, scenarios, transformed specs, or backlog-ready acceptance criteria.
 ---
 
 # Compose Spec
 
-Use when validated research, approved product intent, source specs, tickets, or
-business-analysis synthesis need to become durable product/spec docs with clear
-artifact names, IDs, cross-references, and traceability.
+Use when validated research, approved product intent, source specs, tickets,
+source-context synthesis, or business-analysis synthesis need to become durable
+product/spec docs with clear artifact names, IDs, cross-references, and
+traceability.
 
 This skill preserves the PRD, persona, journey, requirement, scenario, and
 plan-ready spec structures as first-class artifacts. It composes the right set
@@ -47,6 +48,7 @@ Use this skill for:
 - product scenario rows for functional checks;
 - transformed plan-ready spec packets;
 - backlog-ready candidates with acceptance criteria;
+- trajectory-backed source promotion decisions;
 - traceability between source, product docs, scenarios, functional evidence,
   and implementation planning.
 
@@ -87,6 +89,7 @@ implementation, or test autorepair.
    `persona.md`, or `notes.md` for durable artifacts.
 5. Compose artifacts in dependency order:
    - source identity and transformed spec;
+   - source-context trajectory and contradiction summary when provided;
    - personas;
    - PRD or compact product spec;
    - requirements;
@@ -107,11 +110,13 @@ implementation, or test autorepair.
    - scenarios should cite source and functional evidence.
 9. Use the Doc Routing Decision Matrix for every durable fact, gap, deferred
    item, blocked item, or explicit `NO_DOC_NEEDED` decision.
-10. Run `docs-impact-map` when the authored fact may affect sibling product,
+10. Preserve current/superseded status and contradiction owner when source
+   material includes evolving decisions or conflicting evidence.
+11. Run `docs-impact-map` when the authored fact may affect sibling product,
    design, brand, spec, backlog, glossary, or pattern docs.
-11. Keep doc changes thin. Add the minimum durable artifact or row needed for
+12. Keep doc changes thin. Add the minimum durable artifact or row needed for
    future planning and validation.
-12. Route implementation-ready behavior to `plan-change` and product-visible
+13. Route implementation-ready behavior to `plan-change` and product-visible
    checks to `functional-qa`.
 
 ## Naming And Reference Rules

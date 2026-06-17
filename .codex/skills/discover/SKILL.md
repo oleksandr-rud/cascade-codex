@@ -1,6 +1,6 @@
 ---
 name: discover
-description: Optional deep product and design discovery workflow for missing context, personas, journeys, brand notes, product specs, scenarios, design gaps, and backlog candidates.
+description: Use when missing context blocks planning for product, design, brand, persona, journey, scenario, or backlog work and a durable discovery artifact is needed.
 ---
 
 # Discover

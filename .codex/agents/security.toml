@@ -1,7 +1,7 @@
 [agent]
 name = "security"
 display_name = "Security"
-description = "Owns security review, auth/session/RBAC and tenant-boundary analysis, secure-design review, audit evidence, and security validation planning."
+description = "Use for security-sensitive review of auth, sessions, RBAC, tenant boundaries, secrets, auditability, external providers, agent tools, and secure design."
 category = "security-review"
 
 [paths]

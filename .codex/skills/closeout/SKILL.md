@@ -1,6 +1,6 @@
 ---
 name: closeout
-description: Finish task work by recording validation evidence, durable lessons, work reports, memory updates, thin product/spec/architecture doc diffs, and final handoff.
+description: Use at task finish or handoff to record validation evidence, durable lessons, work reports, memory-routing decisions, thin doc diffs, and final status.
 ---
 
 # Closeout

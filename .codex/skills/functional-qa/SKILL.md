@@ -1,6 +1,6 @@
 ---
 name: functional-qa
-description: Primary product-visible acceptance gate for behavior examples, browser/API/journey/scenario checks, functional tests, and regression evidence.
+description: Use as the primary product-visible acceptance gate when behavior needs evidence through examples, browser/API/journey/scenario checks, functional tests, or regression probes.
 ---
 
 # Functional Acceptance

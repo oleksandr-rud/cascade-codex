@@ -1,6 +1,6 @@
 ---
 name: review-change
-description: Review a branch, PR, work-in-progress diff, or changes since a fixed point along two separate axes: repository standards and originating spec/request fit. Produces review findings only; use `validate-change` for command/test evidence.
+description: Use to review a branch, PR, work-in-progress diff, or fixed-point change for repository standards and originating spec/request fit; produces findings only, not command/test evidence.
 ---
 
 # Review Change

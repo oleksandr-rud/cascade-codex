@@ -1,7 +1,7 @@
 [agent]
 name = "agent-engineer"
 display_name = "Agent Engineer"
-description = "Owns Cascade Codex maintenance, Codex surface best practices, skill, memory, tool-contract, observability, and eval design."
+description = "Use for Cascade Codex harness changes: skills, agents, workflow packets, source context, MCP/tool contracts, hooks, plugins, validators, observability, evals, and Codex surface decisions."
 category = "harness-design"
 
 [paths]
@@ -14,7 +14,7 @@ requires_user_authorization = true
 
 [scope]
 use_for = [
-  "Cascade Codex maintenance, Codex surface best practices, skill packages, memory patterns, tool contracts, connectors, observability, and evals.",
+  "Cascade Codex maintenance, Codex surface best practices, skill packages, agent-call workflow packets, source-context patterns, tool contracts, connectors, observability, and evals.",
   "Provider-neutral improvements to Cascade Codex itself.",
 ]
 avoid_for = [

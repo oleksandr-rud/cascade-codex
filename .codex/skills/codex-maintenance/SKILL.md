@@ -1,6 +1,6 @@
 ---
 name: codex-maintenance
-description: Maintain and audit Cascade Codex when adding or changing Codex-specific surfaces, skills, agents, AGENTS.md, .codex/config.toml, hooks, MCP/tool guidance, permissions, memory, observability, evals, handoffs, scope, file trees, or validator wiring.
+description: Use when changing or auditing Cascade Codex surfaces such as skills, agents, AGENTS.md, CODEX.md, .codex/config.toml, hooks, MCP/tool guidance, memory, observability, evals, handoffs, file trees, or validators.
 ---
 
 # Codex Maintenance

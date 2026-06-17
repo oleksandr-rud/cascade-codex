@@ -1,13 +1,13 @@
 ---
 name: synthesis-to-spec
-description: Synthesize validated business-analysis, market-validation, research, experiment, and source findings into plan-ready inputs for compose-spec, planning, validation, and doc routing.
+description: Use after validated business-analysis, market-validation, research, experiment, or source findings to synthesize plan-ready inputs for compose-spec, planning, functional validation, and doc routing.
 ---
 
 # Synthesis To Spec
 
-Use when validated market research, business analysis, experiment evidence, or
-source packets need to become plan-ready inputs for `compose-spec`, planning,
-validation, and doc routing.
+Use when validated market research, business analysis, experiment evidence,
+source-context packets, or source packets need to become plan-ready inputs for
+`compose-spec`, planning, validation, and doc routing.
 
 This skill is the evidence-backed business-analysis handoff before product/spec
 authoring. It chooses what should become durable product/spec docs and routes
@@ -40,6 +40,7 @@ Use this skill for:
 - backlog candidates with acceptance criteria;
 - transformed plan-ready specs;
 - evidence-to-doc traceability;
+- source-context trajectory analysis before durable promotion;
 - explicit no-doc-needed decisions for weak or non-durable findings.
 
 Do not use this skill for raw research gathering, competitor mapping, pain
@@ -57,7 +58,18 @@ repair.
    `docs/patterns/workflow.md#trajectory-coverage`; every trajectory must cover
    a real problem, requirement, or gap, and the final PRD/spec/backlog synthesis
    must preserve major and minor inspected details from every trajectory.
-3. Choose the smallest owner target:
+3. Run the docs/spec source-context trajectories before durable promotion:
+   - source identity and freshness;
+   - entity mapping for requirement, scenario, persona, journey, decision,
+     code artifact, work lane, or evidence node;
+   - relationships such as `DERIVED_FROM`, `IMPLEMENTS`, `VALIDATED_BY`,
+     `CONFLICTS_WITH`, `SUPERSEDES`, `DEPENDS_ON`, `AFFECTS`, and `ROUTES_TO`;
+   - evidence maturity: observed, user-provided, inferred, weak, validated, or
+     blocked;
+   - current/superseded status;
+   - contradiction owner and resolution route;
+   - acceptance behavior and implementation bridge.
+4. Choose the smallest owner target:
    - `compose-spec` for PRDs, personas, compact product specs,
      requirement rows, journey rows, scenario rows, transformed specs, and
      backlog-ready acceptance criteria;
@@ -67,18 +79,18 @@ repair.
    - `docs/product/personas/` when roles change behavior;
    - `docs/specs/transformed/` for normalized plan-ready source packets;
    - `docs/backlog/_index.md` for follow-up work with acceptance criteria.
-4. Preserve traceability:
+5. Preserve traceability:
    `source -> finding -> requirement or scenario -> functional check -> work lane`.
-5. Use `docs-impact-map` before writing when the fact may affect sibling
+6. Use `docs-impact-map` before writing when the fact may affect sibling
    product, design, brand, spec, backlog, glossary, or pattern docs.
-6. Write only thin sourced deltas. Do not create broad product essays or dump
+7. Write only thin sourced deltas. Do not create broad product essays or dump
    all research into product docs.
-7. Use `ingest-spec` when incoming material needs normalization before
+8. Use `ingest-spec` when incoming material needs normalization before
    synthesis.
-8. Route product/spec document production to `compose-spec`.
-9. Route implementation-ready behavior to `plan-change` and product-visible
+9. Route product/spec document production to `compose-spec`.
+10. Route implementation-ready behavior to `plan-change` and product-visible
    acceptance to `functional-qa`.
-10. Record Doc Routing Decision Matrix rows for every durable fact, gap,
+11. Record Doc Routing Decision Matrix rows for every durable fact, gap,
    deferred item, blocked fact, and explicit `NO_DOC_NEEDED` decision.
 
 ## Templates
@@ -88,6 +100,7 @@ repair.
 ## Output
 
 - synthesis source identity and evidence status;
+- source-context trajectory status and contradiction handling;
 - PRD, requirement, scenario, journey, persona, transformed spec, or backlog
   docs to author, update, propose, or intentionally leave unchanged;
 - doc routing decisions;

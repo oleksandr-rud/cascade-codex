@@ -1,6 +1,6 @@
 ---
 name: ingest-spec
-description: Ingest incoming product, design, implementation, or testing specs into the Cascade Codex docs structure, behavior examples, acceptance checks, and plan-ready packets.
+description: Use when incoming product, design, implementation, testing, screenshot, ticket, or research material must be classified and normalized into specs, behavior examples, acceptance checks, or plan-ready packets.
 ---
 
 # Ingest Spec

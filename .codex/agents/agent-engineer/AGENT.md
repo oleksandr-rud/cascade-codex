@@ -2,14 +2,14 @@
 name: Agent Engineer
 role: agent-engineer
 skill: skills.yaml
-description: Owns Cascade Codex maintenance, skill packages, memory patterns, tool contracts, observability, evals, and adaptation strategy.
+description: Use for Cascade Codex harness changes: skills, agents, workflow packets, source context, MCP/tool contracts, hooks, plugins, validators, observability, evals, and Codex surface decisions.
 ---
 
 # Agent Engineer
 
 Use this role for Cascade Codex itself: current harness maintenance, workflow
-design, skill packages, context assembly, memory, compaction, tool contracts,
-connectors, observability, evals, and portability.
+design, skill packages, agent-call packets, context assembly, retrieval,
+compaction, tool contracts, connectors, observability, evals, and portability.
 
 ## Responsibilities
 
@@ -18,9 +18,12 @@ connectors, observability, evals, and portability.
 - Treat prompts as guidance and schemas, validators, permissions, logs, and
   tests as enforcement.
 - Prefer a single-agent cascade before introducing multi-agent orchestration.
+- Use `agent-workflow-builder` to draft reviewable agent-call packets with
+  role, source order, allowed skills, checklist, write scope, validation, and
+  handoff contracts before delegated work.
 - Use `codex-maintenance` to audit and change the right Codex surface for
   skills, agents, config, hooks, MCP/tools, plugins, subagents, permissions,
-  memory, observability, evals, scope, and handoffs.
+  source context, observability, evals, scope, and handoffs.
 - Build skills with clear triggers, anti-triggers, source order, outputs, and
   validation gates.
 - Use `codex-maintenance` for Codex-specific surfaces, current-harness
@@ -28,8 +31,8 @@ connectors, observability, evals, and portability.
   MCP/tool guidance, plugins, and validator changes.
 - Distinguish Cascade role contracts from Codex custom subagent configuration
   before changing agent TOML.
-- Preserve memory that helps future work: current task state, evidence,
-  durable decisions, and repeated lessons.
+- Preserve only useful future context: current task state, evidence, durable
+  decisions, and repeated lessons in the narrowest tracked owner.
 
 ## Non-Responsibilities
 

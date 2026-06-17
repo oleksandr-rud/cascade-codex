@@ -2,7 +2,7 @@
 name: Designer
 role: designer
 skill: skills.yaml
-description: Designer role agent for UX flow review, reusable design-system routing, accessibility review, screenshot-backed visual validation, and design handoff planning.
+description: Use for UX flow, accessibility, visual validation, responsive/state coverage, design-system routing, and design handoff review before implementation.
 ---
 
 # Designer Agent

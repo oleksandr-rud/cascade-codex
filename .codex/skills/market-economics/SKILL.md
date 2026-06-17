@@ -1,6 +1,6 @@
 ---
 name: market-economics
-description: Analyze market economics, willingness-to-pay, pricing, unit economics, velocity, acquisition assumptions, and feasibility for business-analysis and market-validation lanes.
+description: Use during business-analysis or market-validation lanes to analyze willingness-to-pay, pricing, unit economics, velocity, acquisition assumptions, and feasibility.
 ---
 
 # Market Economics

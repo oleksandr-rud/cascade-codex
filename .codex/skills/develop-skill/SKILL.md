@@ -1,6 +1,6 @@
 ---
 name: develop-skill
-description: Create, port, rename, refactor, or validate reusable Codex skill packages with trigger contracts, source order, outputs, guardrails, and quality gates.
+description: Use to create, port, rename, refactor, or validate reusable Codex skill packages with trigger-focused descriptions, source order, outputs, guardrails, and quality gates.
 ---
 
 # Develop Skill

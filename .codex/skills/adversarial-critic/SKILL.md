@@ -1,6 +1,6 @@
 ---
 name: adversarial-critic
-description: Stress-test market-validation conclusions, hypotheses, evidence quality, competitor assumptions, economics, risks, and missing research before synthesis.
+description: Use before synthesis when market-validation conclusions, hypotheses, evidence quality, competitor assumptions, economics, risks, or missing research need adversarial stress-testing.
 ---
 
 # Adversarial Critic

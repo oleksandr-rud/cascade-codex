@@ -1,6 +1,6 @@
 ---
 name: test-autorepair
-description: Repair failing, flaky, stale, or misaligned automated tests while preserving semantic coverage and routing product bugs back to implementation.
+description: Use only when automated tests are failing, flaky, stale, or drifted while product behavior is believed correct; repair test expectations and route product bugs back to implementation.
 ---
 
 # Test Autorepair

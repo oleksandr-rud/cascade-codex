@@ -2,7 +2,7 @@
 name: Security
 role: security
 skill: skills.yaml
-description: Security role agent for codebase security scans, auth/session/RBAC and tenant-boundary analysis, secure-design review, audit evidence, and validation planning.
+description: Use for security-sensitive review of auth, sessions, RBAC, tenant boundaries, secrets, auditability, external providers, agent tools, and secure design.
 ---
 
 # Security Agent

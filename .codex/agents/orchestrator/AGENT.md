@@ -2,7 +2,7 @@
 name: Orchestrator
 role: orchestrator
 skill: skills.yaml
-description: Cascade Codex orchestrator for context, market validation routing, behavior planning, docs impact mapping, functional acceptance, implementation, review, validation, test autorepair, issue intake, and closeout.
+description: Use for normal task routing across context, spec ingest, docs impact, planning, functional acceptance, implementation, review, validation, repair, and closeout.
 ---
 
 # Orchestrator

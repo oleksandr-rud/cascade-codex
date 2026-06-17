@@ -1,4 +1,6 @@
 skills:
+  - name: agent-workflow-builder
+    source: .codex/skills/agent-workflow-builder/SKILL.md
   - name: agents-best-practices
     source: .codex/skills/agents-best-practices/SKILL.md
   - name: develop-skill

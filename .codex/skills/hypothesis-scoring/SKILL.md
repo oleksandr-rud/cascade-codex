@@ -1,6 +1,6 @@
 ---
 name: hypothesis-scoring
-description: Score market or product hypotheses by pain, urgency, budget, feasibility, competition, risk, evidence quality, and validation route.
+description: Use during market or product discovery to score hypotheses by pain, urgency, budget, feasibility, competition, risk, evidence quality, and validation route.
 ---
 
 # Hypothesis Scoring

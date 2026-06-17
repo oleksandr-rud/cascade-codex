@@ -1,6 +1,6 @@
 ---
 name: docs-impact-map
-description: Map cross-folder product, design, brand, spec, persona, journey, scenario, token, backlog, glossary, or pattern dependencies before planning or closeout when durable docs may affect sibling rules.
+description: Use before planning or closeout for cross-folder impact or dependency mapping when a durable product, design, brand, spec, persona, journey, scenario, token, backlog, glossary, or pattern fact may affect sibling docs or rules.
 ---
 
 # Docs Impact Map

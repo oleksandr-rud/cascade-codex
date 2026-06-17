@@ -1,6 +1,6 @@
 ---
 name: issue-intake
-description: Turn user reports, validation findings, screenshots, or product notes into durable issue bodies or tracker tickets without running validation or patching code.
+description: Use when the requested output is a durable issue body or tracker ticket from user reports, validation findings, screenshots, or product notes, without running validation or patching code.
 ---
 
 # Issue Intake

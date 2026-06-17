@@ -1,6 +1,6 @@
 ---
 name: market-validation
-description: Run broad market validation and long business-analysis discovery with research lanes for market universe, assumptions, competitors, pain, economics, geography, constraints, experiments, scoring, synthesis, and doc routing.
+description: Use for broad market validation or long business-analysis discovery with research lanes for market universe, assumptions, competitors, pain, economics, geography, constraints, experiments, scoring, synthesis, and doc routing.
 ---
 
 # Market Validation

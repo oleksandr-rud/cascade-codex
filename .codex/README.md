@@ -10,6 +10,7 @@ Core cascade:
 
 Supporting skills:
 
+- `agent-workflow-builder`
 - `architecture-review`
 - `agents-best-practices`
 - `codex-maintenance`
@@ -42,7 +43,8 @@ Supporting skills:
 - `project-onboarder`: orchestrates new-project setup, harness adaptation,
   config/docs migration, validation, and setup handoff.
 - `agent-engineer`: owns Cascade Codex maintenance, Codex surface best
-  practices, skill, memory, and observability guidance.
+  practices, workflow packets, source-context, skill, and observability
+  guidance.
 - `business-analyst`: owns long market validation, live research,
   business-analysis lanes, evidence grading, and synthesis into specs.
 - `security`: owns security-sensitive review, auth/session/RBAC and

@@ -1,6 +1,6 @@
 ---
 name: orchestrate-work
-description: Use when Orchestrator needs to split, schedule, track, or merge autonomous work lanes, especially when work can run in parallel or must be serialized because of dependencies, file conflicts, or shared decisions.
+description: Use to split, serialize, schedule, track, or merge work lanes when tasks may run in parallel or conflict through dependencies, file ownership, shared decisions, or validation gates.
 ---
 
 # Orchestrate Work
