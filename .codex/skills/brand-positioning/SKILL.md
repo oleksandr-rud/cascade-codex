@@ -96,7 +96,7 @@ intent is the blocker.
 - Brand index or compact default rules: `docs/brand/_index.md`
 - Product audience dependencies: `docs/product/`
 - Design token or visual-direction dependencies: `docs/design/`
-- Source or transformed spec dependencies: `docs/specs/`
+- Source or spec packet dependencies: `docs/specs/`
 - Terminology: `docs/glossary.md`
 - Follow-up work: `docs/backlog/_index.md`
 - Cross-folder impact report: `docs/work/reports/`

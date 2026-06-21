@@ -44,7 +44,7 @@ features.
   synthesis before product docs are written.
 - Use `compose-spec` when existing source material should become
   durable PRDs, personas, requirements, journeys, scenarios, non-goals, success
-  metrics, transformed specs, or backlog candidates.
+  metrics, spec packets, or backlog candidates.
 - Use `market-validation` only when onboarding uncovers a real market research
   packet or long business-analysis loop that must be preserved.
 - Use `brand-positioning` when existing source material should become durable

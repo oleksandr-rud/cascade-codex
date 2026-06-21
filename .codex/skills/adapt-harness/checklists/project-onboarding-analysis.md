@@ -22,10 +22,10 @@ validation routes, and durable context-memory entries.
 |---|---|---|---|---|
 | `ON-00` context inventory | `[ ]` | `context`, `adapt-harness` | repo root, branch, harness files, docs roots, manifests, entry points, blockers | `docs/work/active.md`, `docs/work/reports/` when needed |
 | `ON-01` stack and commands | `[ ]` | `adapt-harness` | runtime stack, package managers, source roots, test roots, commands, runners | `harness.config.yaml`, `docs/glossary.md` |
-| `ON-02` code area specs | `[ ]` | `adapt-harness`, `architecture-review` | backend, frontend, shared, data, integration, tooling, runtime areas and public contracts | `docs/specs/transformed/`, `docs/patterns/boundaries.md` |
+| `ON-02` code area specs | `[ ]` | `adapt-harness`, `architecture-review` | backend, frontend, shared, data, integration, tooling, runtime areas and public contracts | `docs/specs/{slice-slug}/`, `docs/patterns/boundaries.md` |
 | `ON-03` architecture boundaries | `[ ]` | `architecture-review`, `docs-impact-map` | layer boundaries, consumers, side effects, public contract rules, adapter rules | `docs/patterns/boundaries.md`, `docs/glossary.md` |
 | `ON-04` security and data handling | `[ ]` | `codebase-audit`, `auth-analysis`, `secure-design` | auth, role gates, tenant or owner boundaries, secrets, external sends, auditability, abuse cases | `docs/patterns/boundaries.md`, `docs/patterns/testing.md`, `docs/work/reports/`, `docs/backlog/_index.md` |
-| `ON-05` feature catalog | `[ ]` | `ingest-spec`, `discover`, `synthesis-to-spec`, `compose-spec` | visible features, routes, jobs, user-facing copy, API contracts, existing specs, tests | `docs/product/`, `docs/specs/transformed/`, `docs/backlog/_index.md` |
+| `ON-05` feature catalog | `[ ]` | `ingest-spec`, `discover`, `synthesis-to-spec`, `compose-spec` | visible features, routes, jobs, user-facing copy, API contracts, existing specs, tests | `docs/product/`, `docs/specs/{slice-slug}/`, `docs/backlog/_index.md` |
 | `ON-06` visual/design/brand capture | `[ ]` | `visual-qa`, `ux-flow-review`, `design-system`, `brand-positioning` | screenshots or UI evidence, layout, responsive behavior, states, tokens, components, tone, naming, visual direction | `docs/design/`, `docs/brand/`, `docs/product/`, `docs/work/reports/` |
 | `ON-07` functional acceptance map | `[ ]` | `functional-qa`, `docs-impact-map` | scenarios, acceptance checks, API/browser/CLI/manual proof routes, runner gaps | `docs/product/scenarios.md`, `docs/patterns/testing.md`, `harness.config.yaml` |
 | `ON-08` context-memory routing | `[ ]` | `docs-impact-map`, `closeout` | source identity, durable facts, gaps, deferred work, rejected scope worth preserving | narrow owner docs, `docs/patterns/context-memory.md` |
@@ -55,7 +55,7 @@ Each project-part spec must include:
 ## Routing Rules
 
 - Product feature intent, requirements, journeys, scenarios, and acceptance
-  criteria go to `docs/product/` or `docs/specs/transformed/`.
+  criteria go to `docs/product/` or `docs/specs/{slice-slug}/`.
 - Design tokens, components, layout, interaction, accessibility, and visual
   evidence rules go to `docs/design/` or `design-system`.
 - Brand naming, tone, content, positioning, and visual direction go to

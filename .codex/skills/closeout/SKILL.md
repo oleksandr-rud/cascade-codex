@@ -49,6 +49,9 @@ Use when work is done, blocked, or ready for handoff.
    or report location.
 7. Persist only reusable lessons, required handoff state, requested reports, or
    required thin doc diffs.
+   For research-heavy work, update `docs/patterns/context-memory.md` with a
+   compact research-memory row that points to owner reports, specs, packages,
+   prompts, reusable rules, and validation evidence.
 8. Do not create a generic learned-lessons dump.
 9. For active work cleanup, prune completed rows only when the user explicitly
    asks for cleanup or the closeout scope includes registry maintenance; first
@@ -73,7 +76,7 @@ Routes:
 | Product behavior, requirement, journey, persona, or scenario | Existing `docs/product/` file, usually `requirements.md`, `scenarios.md`, `journeys.md`, or a persona file |
 | Design interaction, accessibility, component, token, or state constraint | Existing `docs/design/` file |
 | Brand, naming, tone, content, or visual direction | Existing `docs/brand/` file |
-| Normalized acceptance criterion or implementation/spec constraint | Existing `docs/specs/transformed/` packet or `docs/specs/_index.md` when no packet exists |
+| Normalized acceptance criterion or implementation/spec constraint | Existing `docs/specs/{slice-slug}/` packet or `docs/specs/_index.md` when no packet exists |
 | Architecture boundary, public contract, adapter, state-machine, or runtime invariant | `docs/patterns/boundaries.md` or a target-specific architecture section named in `docs/structure.md` |
 | Stack, source root, command, runner, tracker, or memory path fact | `harness.config.yaml` in a target repo, or `harness.config.example.yaml` only when the reusable harness contract changes |
 | Codebase term that affects future planning or validation | `docs/glossary.md` |
@@ -96,6 +99,7 @@ Every thin doc diff must include:
 - Use `templates/learn-routing.md` when deciding whether a lesson should become
   durable memory.
 - Active work state: `docs/work/active.md` and `docs/work/lanes/`
+- Durable research memory: `docs/patterns/context-memory.md`
 - Durable work handoff: `docs/work/reports/`
 - Completed active registry cleanup: remove `COMPLETE` rows from
   `docs/work/active.md` only after evidence is preserved in a report and the

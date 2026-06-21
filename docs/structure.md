@@ -8,7 +8,7 @@ config; keep reusable workflow rules in skills, agents, and patterns.
 | Folder | Purpose | Written By |
 |---|---|---|
 | `docs/work/` | Active work lanes, copyable lane examples, lane packets, reports, handoffs | `orchestrate-work`, `market-validation`, `plan-change`, `validate-change`, `closeout` |
-| `docs/specs/` | Incoming and transformed specs | `ingest-spec`, `synthesis-to-spec`, `compose-spec`, `discover`, `docs-impact-map`, `adapt-harness` |
+| `docs/specs/` | Incoming and spec packets | `ingest-spec`, `synthesis-to-spec`, `compose-spec`, `discover`, `docs-impact-map`, `adapt-harness` |
 | `docs/product/` | Product intent, requirements, journeys, personas, scenarios | `discover`, `market-validation`, `synthesis-to-spec`, `compose-spec`, `ingest-spec`, `docs-impact-map` |
 | `docs/design/` | Interaction model, tokens, components, design constraints | `discover`, `design-system`, `ingest-spec`, `docs-impact-map` |
 | `docs/brand/` | Naming, tone, content, visual direction | `discover`, `brand-positioning`, `ingest-spec`, `docs-impact-map` |
@@ -29,9 +29,10 @@ config; keep reusable workflow rules in skills, agents, and patterns.
 
 - Raw/imported specs: `docs/specs/incoming/`; preserve only when useful for
   traceability, source comparison, or future re-normalization.
-- Normalized specs: `docs/specs/transformed/`; use for plan-ready packets with
-  source classification, behavior examples, acceptance checks, and open
-  questions.
+- Spec packet folders: `docs/specs/{slice-slug}/`; create one folder per big
+  issue, capability, or workflow slice. Use it for plan-ready packets with
+  source classification, behavior examples, acceptance checks, open questions,
+  package files, prompt scripts, and module catalogs.
 - Product scenarios: `docs/product/scenarios.md`
 - Product intent, requirements, journeys, and personas: `docs/product/`
 - Domain-owned product folders under `docs/product/<domain>/` are allowed only
@@ -47,8 +48,10 @@ config; keep reusable workflow rules in skills, agents, and patterns.
 
 - Market validation reports and research lane outputs: `docs/work/reports/`
   when requested, multi-turn, blocked, or decision-heavy.
+- Durable research memory summaries and research-to-spec wiring:
+  `docs/patterns/context-memory.md`.
 - Plan-ready product synthesis and authoring: existing owner docs under
-  `docs/product/`, `docs/specs/transformed/`, and `docs/backlog/_index.md`.
+  `docs/product/`, `docs/specs/{slice-slug}/`, and `docs/backlog/_index.md`.
 - Source preservation: `docs/specs/incoming/` only when `ingest-spec` decides a
   raw research or source packet should be preserved.
 - Doc routing: use the shared Doc Routing Decision Matrix before appending

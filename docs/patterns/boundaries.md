@@ -5,17 +5,19 @@ adapter discipline, and agentic runtime invariants.
 
 ## Folder Mapping
 
-Fill this table during `adapt-harness`:
+Current scaffold boundaries:
 
 | Area | Target Path | Owner | Notes |
 |---|---|---|---|
-| Source root | `<SRC_ROOT>` | `<OWNER>` | `<NOTES>` |
-| Test root | `<TEST_ROOT>` | `<OWNER>` | `<NOTES>` |
-| Public contracts | `<PATH>` | `<OWNER>` | `<NOTES>` |
-| UI/features | `<PATH>` | `<OWNER>` | `<NOTES>` |
-| State/store | `<PATH>` | `<OWNER>` | `<NOTES>` |
-| External adapters | `<PATH>` | `<OWNER>` | `<NOTES>` |
-| Generated artifacts | `<PATH>` | `<OWNER>` | `<NOTES>` |
+| Harness skills | `.codex/skills/` | Cascade maintainers | Reusable workflow contracts and templates. |
+| Harness agents | `.codex/agents/` | Cascade maintainers | Role manifests, instructions, and skill maps. |
+| Durable docs | `docs/` | Project maintainers | Product, design, spec, work, glossary, and pattern memory. |
+| Validation script | `scripts/validate_cascade_codex.py` | Project maintainers | Primary executable check for the current scaffold. |
+| Public contracts | `AGENTS.md`; `CODEX.md`; `harness.config.yaml`; `.codex/config.toml` | Project maintainers | Agent boot contract, runtime bridge, adapter config, and harness registry. |
+| UI/features | none yet | Project maintainers | Add source roots and ownership when application implementation starts. |
+| State/store | `docs/work/` | Project maintainers | Active work state, lane packets, examples, and reports. |
+| External adapters | `.codex/config.toml` | Project maintainers | MCP server configuration and future tool integrations. |
+| Generated artifacts | none yet | Project maintainers | Add explicit paths before committing generated files. |
 
 ## Layer Discipline
 
@@ -113,11 +115,13 @@ Rules:
 Write the target project invariant in this shape:
 
 ```text
-Every <USER_OR_EVENT> turn for <FLOW> routes through <RUNTIME_ENTRYPOINT>.
-Services may load deterministic scoped context before the runtime and validate
-or persist structured results after it returns. They must not synthesize
-runtime-authored responses, mutate runtime-owned state, or bypass the runtime
-for user-visible turns.
+Every coding-agent turn for Dynamic Persona Assistant routes through
+AGENTS.md and CODEX.md before using Cascade skills or role contracts.
+Agents may load deterministic scoped context from harness.config.yaml,
+docs/, .codex/skills/, and .codex/agents/ before acting and must validate
+or record durable outcomes through the configured docs and validator. They
+must not bypass the runtime bridge for non-atomic work or persist durable
+project facts outside the narrowest owner doc.
 ```
 
 Audit:

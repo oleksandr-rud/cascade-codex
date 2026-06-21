@@ -57,7 +57,7 @@ their owning skills are needed and delegation is authorized.
 4. Map real source roots, test roots, docs roots, app entry points, public
    contracts, and functional test runners.
 5. Map product/spec folders: personas, scenarios, journeys, design refs,
-   brand/content refs, transformed specs, work lanes, backlog, and work reports.
+   brand/content refs, spec packets, work lanes, backlog, and work reports.
 6. Replace placeholder vocabulary with codebase-specific terms.
 7. Keep reusable workflow rules in `.codex/skills/`, `.codex/agents/`, and
    `docs/patterns/`; keep project facts in config, glossary, work lanes, and
@@ -115,7 +115,7 @@ Required phase outcomes:
    `docs/patterns/testing.md`.
 6. Product feature catalog: inspect routes, UI surfaces, API contracts, tests,
    README docs, specs, and user-facing copy; write durable feature intent,
-   journeys, scenarios, requirements, and transformed specs to their narrow
+   journeys, scenarios, requirements, and spec packets to their narrow
    owner docs.
 7. Visual, design, brand, and layout capture: when a UI can be run or evidence
    exists, use `visual-qa` for screenshot-backed layout/style/state evidence,

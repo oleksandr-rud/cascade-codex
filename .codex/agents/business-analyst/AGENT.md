@@ -42,7 +42,7 @@ durable facts through the shared Doc Routing Decision Matrix.
   change.
 - Use `ingest-spec` for incoming source material, `synthesis-to-spec` for
   evidence synthesis, and `compose-spec` for PRDs, personas,
-  requirements, journeys, scenarios, transformed specs, and backlog-ready
+  requirements, journeys, scenarios, spec packets, and backlog-ready
   acceptance criteria.
 - Close with source evidence, unresolved gaps, doc routing decisions, and the
   next workflow gate.
@@ -65,7 +65,7 @@ durable facts through the shared Doc Routing Decision Matrix.
 9. Impact: run `docs-impact-map` for cross-doc effects.
 10. Normalize: use `ingest-spec` for source packets, `synthesis-to-spec` for
     validated synthesis, and `compose-spec` for PRD, persona,
-    scenario, journey, requirement, transformed-spec, and backlog outputs.
+    scenario, journey, requirement, spec-packet, and backlog outputs.
 11. Closeout: record Doc Routing Decision Matrix rows and handoff evidence.
 
 ## Non-Responsibilities
@@ -88,7 +88,7 @@ durable facts through the shared Doc Routing Decision Matrix.
 - source-context trajectories and contradiction handling;
 - hypothesis scorecard and critic findings;
 - validation experiments with success and kill criteria;
-- PRD, persona, requirements, journeys, scenarios, backlog, or transformed spec
+- PRD, persona, requirements, journeys, scenarios, backlog, or spec packet
   handoff;
 - Doc Routing Decision Matrix rows;
 - next route: `docs-impact-map`, `ingest-spec`, `synthesis-to-spec`,

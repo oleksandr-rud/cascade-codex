@@ -1,0 +1,163 @@
+catalog:
+  id: persona-semantic-core-catalog
+  title: Persona Semantic Core Catalog
+  version: 0.1.0
+  summary: >
+    Module, act, policy, and packet catalog for compiling persona simulator
+    context from Markdown and YAML semantic-core files.
+
+tree:
+  root: persona-semantic-core
+  sections:
+    - id: section.identity
+      title: Identity And Stable Meaning
+      summary: Stable persona facts, traits as priors, values, role, knowledge boundaries, and forbidden inferences.
+      modules: [identity-profile]
+    - id: section.state
+      title: Human State And Social Context
+      summary: Runtime affect, arousal, motivation, trust, perceived control, cognitive load, norms, and active identity.
+      modules: [state-tracker, social-context]
+    - id: section.memory
+      title: Memory And Continuity
+      summary: Semantic, episodic, relationship, commitment, and reflection memories with retrieval and writeback rules.
+      modules: [memory-policy]
+    - id: section.behavior
+      title: Behavior Selection
+      summary: Situation-conditioned signatures, intention selection, behavior policy, and response strategy.
+      modules: [behavioral-signatures, behavior-policy]
+    - id: section.validation
+      title: Consistency And Evaluation
+      summary: Persona drift, contradictions, unsupported claims, calibration limits, safety checks, and evidence-backed evals.
+      modules: [consistency-critic, evaluation-pack]
+
+modules:
+  - id: identity-profile
+    summary: Stable persona profile material; facts must be explicit, sourced, and separated from runtime state.
+    include_when: [response_generation, simulation_step, persona_authoring, eval_design]
+    primary_sources: [S2, S3, S10, S11]
+    prompt_sections:
+      - persona identity
+      - role and background
+      - stable values and trait priors
+      - forbidden inferences
+  - id: behavioral-signatures
+    summary: If-situation-then-behavior patterns that express stable personality through context-sensitive reactions.
+    include_when: [response_generation, simulation_step, behavior_explanation, eval_design]
+    primary_sources: [S9]
+    prompt_sections:
+      - situation cues
+      - appraisal triggers
+      - likely behaviors
+      - confidence and exceptions
+  - id: state-tracker
+    summary: Dynamic state for affect, arousal, needs, perceived control, trust, cognitive load, risk, and fatigue.
+    include_when: [state_update, response_generation, simulation_step, eval_design]
+    primary_sources: [S7, S12, S14, S15]
+    prompt_sections:
+      - current affect
+      - motivation and needs
+      - perceived control
+      - trust and cognitive load
+      - state-transition explanation
+  - id: memory-policy
+    summary: Retrieval, reflection, and writeback policy for long-running persona continuity.
+    include_when: [context_compile, response_generation, simulation_step, memory_writeback]
+    primary_sources: [S1, S19, S20]
+    prompt_sections:
+      - semantic memory
+      - episodic memory
+      - relationship events
+      - commitments
+      - reflections
+  - id: social-context
+    summary: Current relationship, audience, norms, active identity, status, trust target, and social risk.
+    include_when: [response_generation, simulation_step, behavior_explanation, eval_design]
+    primary_sources: [S7, S13, S16, S17]
+    prompt_sections:
+      - relationship state
+      - descriptive norms
+      - injunctive norms
+      - active social identity
+      - trust and threat perception
+  - id: behavior-policy
+    summary: Intention and action selection before final wording; combines situation, goals, norms, values, state, and safety.
+    include_when: [response_generation, simulation_step, behavior_explanation]
+    primary_sources: [S1, S12, S13, S15, S16, S18]
+    prompt_sections:
+      - intended behavior
+      - rejected alternatives
+      - response strategy
+      - tone and disclosure
+  - id: consistency-critic
+    summary: Pre-output check for persona drift, contradictions, unsupported facts, unsafe imitation, and source overreach.
+    include_when: [response_generation, simulation_step, memory_writeback, eval_design]
+    primary_sources: [S2, S3, S6, S8]
+    prompt_sections:
+      - contradiction checks
+      - unsupported-claim checks
+      - demographic-overreach checks
+      - final response guard
+  - id: evaluation-pack
+    summary: Test and calibration rules for consistency, state transitions, trust updates, drift, and synthetic participant limits.
+    include_when: [eval_design, release_gate, research_review]
+    primary_sources: [S4, S5, S6, S7, S8]
+    prompt_sections:
+      - consistency fixtures
+      - state-transition fixtures
+      - distribution checks
+      - calibration status
+      - known limitations
+
+acts:
+  - id: context_compile
+    summary: Assemble semantic-core context from package and catalog files before model use.
+    required_modules: [identity-profile, memory-policy, consistency-critic]
+    optional_modules: [state-tracker, social-context, behavior-policy, evaluation-pack]
+  - id: response_generation
+    summary: Generate a persona response after selecting intention, state, and behavior policy.
+    required_modules: [identity-profile, state-tracker, social-context, memory-policy, behavior-policy, consistency-critic]
+    optional_modules: [behavioral-signatures]
+  - id: state_update
+    summary: Update runtime state from a user event or environment event without producing final persona dialogue.
+    required_modules: [state-tracker, social-context, memory-policy, consistency-critic]
+    optional_modules: [behavioral-signatures]
+  - id: memory_writeback
+    summary: Decide what should be persisted as semantic, episodic, relationship, commitment, or reflection memory.
+    required_modules: [memory-policy, consistency-critic]
+    optional_modules: [state-tracker, social-context]
+  - id: behavior_explanation
+    summary: Explain why a persona selected a behavior without exposing hidden chain-of-thought style reasoning.
+    required_modules: [behavioral-signatures, state-tracker, social-context, behavior-policy]
+    optional_modules: [identity-profile]
+  - id: eval_design
+    summary: Design checks for consistency, drift, calibration, trust behavior, and synthetic participant limits.
+    required_modules: [evaluation-pack, consistency-critic, behavioral-signatures]
+    optional_modules: [identity-profile, state-tracker, social-context]
+
+policies:
+  - id: no-canonical-json-persona
+    summary: Markdown and YAML files are canonical; JSON-like runtime objects may only be generated artifacts or implementation details.
+    applies_to: [context_compile, response_generation, state_update, memory_writeback, eval_design]
+  - id: uncertainty-preservation
+    summary: Missing persona facts remain missing; generated output may mark uncertainty but must not invent stable facts.
+    applies_to: [response_generation, memory_writeback, behavior_explanation]
+  - id: demographic-nondeterminism
+    summary: Demographic traits are weak priors at most and cannot deterministically imply values, opinions, or behavior.
+    applies_to: [persona_authoring, response_generation, eval_design]
+  - id: source-boundary-preservation
+    summary: Compiled context must preserve source file paths or source IDs for every included section.
+    applies_to: [context_compile, eval_design]
+  - id: drift-before-writeback
+    summary: Check persona drift and unsupported claims before final output and before durable memory writeback.
+    applies_to: [response_generation, memory_writeback]
+
+packets:
+  - id: packet.minimal-response
+    summary: Smallest context packet for a single persona response.
+    includes: [identity-profile, state-tracker, social-context, memory-policy, behavior-policy, consistency-critic]
+  - id: packet.simulation-step
+    summary: Full step packet for event appraisal, state update, behavior choice, response, and memory writeback.
+    includes: [identity-profile, behavioral-signatures, state-tracker, social-context, memory-policy, behavior-policy, consistency-critic]
+  - id: packet.evaluation
+    summary: Evaluation packet for consistency, state transition, calibration, limitation, and safety checks.
+    includes: [identity-profile, behavioral-signatures, state-tracker, social-context, consistency-critic, evaluation-pack]

@@ -33,7 +33,7 @@ Use this cascade for non-atomic work:
 - `synthesis-to-spec`: synthesize evidence-backed findings into a plan-ready
   product/spec handoff before durable artifacts are authored.
 - `compose-spec`: produce durable PRDs, personas, product specs,
-  requirements, journeys, scenarios, transformed specs, and backlog-ready
+  requirements, journeys, scenarios, spec packets, and backlog-ready
   acceptance criteria from validated or approved source material.
 - `brand-positioning`: create or update durable brand positioning, audience,
   promise, proof, naming, tone, message hierarchy, copy rules, and visual
@@ -78,7 +78,7 @@ standalone workflow router.
   feature needs research lanes before planning.
 - `synthesis-to-spec`: use when validated findings need evidence synthesis
   before PRDs, personas, requirements, scenarios, backlog candidates, or
-  transformed specs are authored.
+  spec packets are authored.
 - `compose-spec`: use when product/spec artifacts need to be written
   from validated findings or approved source material.
 - `pain-mining`, `competitive-map`, `market-economics`,
@@ -172,7 +172,9 @@ patterns, and architecture mapping belong.
 Required routing:
 
 - `docs/specs/incoming/`: raw source material only when useful to preserve.
-- `docs/specs/transformed/`: normalized plan-ready specs.
+- `docs/specs/{slice-slug}/`: one folder per big issue, capability, or
+  workflow slice; stores normalized plan-ready spec packets, package files,
+  prompt scripts, and module catalogs for that slice.
 - `docs/product/`: product intent, journeys, personas, scenarios.
 - `docs/design/`: interaction, accessibility, tokens, components, constraints.
 - `docs/brand/`: naming, tone, content, visual direction.
@@ -196,7 +198,7 @@ is not market-research-heavy. Use `market-validation` and the
 constraint, experiment, and adversarial research loops. Use
 `synthesis-to-spec` when validated findings need evidence synthesis before doc
 authoring. Use `compose-spec` when PRD, persona, requirement,
-journey, scenario, non-goal, success-metric, transformed-spec, product-spec, or
+journey, scenario, non-goal, success-metric, spec-packet, product-spec, or
 backlog structures should be written. Use `brand-positioning` when brand
 positioning, naming, tone, content hierarchy, or visual direction needs durable
 structure. Use `design-system` when design tokens, components, accessibility,

@@ -21,7 +21,7 @@ decide product intent, or create brand positioning.
    - `docs/design/interaction-model.md`
    - `docs/design/tokens.md`
 3. Related brand positioning, product requirements, personas, journeys,
-   scenarios, and transformed specs.
+   scenarios, and spec packets.
 4. Current UI code, components, tokens, theme files, accessibility tests,
    screenshots, browser evidence, or visual regression artifacts when available.
 5. `docs/glossary.md`, active work state, and current `docs-impact-map`
@@ -129,7 +129,7 @@ features.
 - Compact design index notes: `docs/design/_index.md`
 - Product behavior dependencies: `docs/product/`
 - Brand visual-direction dependencies: `docs/brand/`
-- Source or transformed spec dependencies: `docs/specs/`
+- Source or spec packet dependencies: `docs/specs/`
 - Follow-up work: `docs/backlog/_index.md`
 - Design vocabulary: `docs/glossary.md`
 - Cross-folder impact report: `docs/work/reports/`

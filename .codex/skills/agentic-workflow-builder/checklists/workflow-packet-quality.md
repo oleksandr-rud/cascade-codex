@@ -53,6 +53,20 @@ Use this checklist before returning or executing agentic workflow packets.
 - [ ] File ownership and conflict paths are named.
 - [ ] Handoff evidence can be merged deterministically.
 
+## Research Coverage
+
+- [ ] Research/source-discovery packets name coverage facets before retrieval,
+      not only after gaps appear.
+- [ ] Query vocabulary spans adjacent domains, acronyms, exact titles, and
+      source families likely to use different labels for the same capability.
+- [ ] Evidence classes are separated, such as ideation critique, simulator
+      output, benchmark result, human pilot, official spec, or primary study.
+- [ ] Retrieval miss audit and known-item recovery are required before durable
+      research findings are promoted.
+- [ ] Workflow weakness review records controls or residual risks for lane
+      incompleteness, correlated-agent agreement, validation illusion, and
+      promotion leakage.
+
 ## Validation
 
 - [ ] Required evidence is defined before work starts.

@@ -15,7 +15,7 @@ acceptance or implementation.
 1. Latest user request, screenshot, mockup, Figma link, or UI concern.
 2. Current app in browser when available.
 3. Expected product, UX, brand, and design sources:
-   - owning product spec, scenarios, journeys, or transformed spec under
+   - owning product spec, scenarios, journeys, or spec packet under
      `docs/product/` and `docs/specs/`;
    - `docs/design/interaction-model.md`, `docs/design/tokens.md`, and current
      component or design-system rules;

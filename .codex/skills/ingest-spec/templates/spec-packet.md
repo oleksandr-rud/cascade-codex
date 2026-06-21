@@ -1,4 +1,4 @@
-# Transformed Spec: `<title>`
+# Spec Packet: `<title>`
 
 ## Source
 
@@ -15,7 +15,7 @@
 | product intent | `<detail>` | `docs/product/` |
 | design constraint | `<detail>` | `docs/design/` |
 | brand/content constraint | `<detail>` | `docs/brand/` |
-| implementation constraint | `<detail>` | `docs/specs/transformed/` |
+| implementation constraint | `<detail>` | `docs/specs/{slice-slug}/` |
 | architecture/boundary constraint | `<detail>` | `docs/patterns/boundaries.md` or `architecture-review` |
 | stack/runtime/config fact | `<detail>` | `harness.config.yaml` |
 | validation command or runner | `<detail>` | `harness.config.yaml` |
@@ -37,6 +37,12 @@ Use `docs/patterns/workflow.md` for the shared Doc Routing Decision Matrix.
 ## Behavior Examples
 
 - Given `<state>`, when `<action>`, then `<outcome>`.
+
+## Evidence And Coverage
+
+| Claim Or Rule | Source Family | Evidence Class | Coverage Status | Promotion Status |
+|---|---|---|---|---|
+| `<claim>` | `<paper-official-doc-human-pilot-benchmark-local-spec>` | `<validated-source-ideation-simulator-output-user-provided>` | `<covered-weak-blocked-out-of-scope>` | `<promote-defer-remove>` |
 
 ## Functional Acceptance Checks
 

@@ -44,8 +44,12 @@ review, functional acceptance, or stale-test repair.
 10. Load `docs/patterns/boundaries.md` for public-contract or model/tool
    runtime changes and `docs/patterns/context-memory.md` for
    retrieval/source-context changes.
-11. Report `PASS`, `FAIL`, `BLOCKED`, `NOT_RUN`, or `GAP` with commands and
-   evidence.
+11. For research, source-context, prompt, policy, or semantic-core changes,
+    report structural validation separately from factual or methodological
+    validation. Passing commands do not prove source coverage, evidence
+    strength, claim truth, or docking quality.
+12. Report `PASS`, `FAIL`, `BLOCKED`, `NOT_RUN`, or `GAP` with commands and
+    evidence.
 
 ## Output
 

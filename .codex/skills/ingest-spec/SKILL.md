@@ -46,7 +46,7 @@ Classify incoming material as one or more:
 2. Replace vague language with codebase-specific terms after inspecting source.
 3. For each source problem, requirement, or gap, run several trajectory passes
    per `docs/patterns/workflow.md#trajectory-coverage`; every trajectory must
-   cover a real problem, requirement, or gap, and the transformed packet must
+   cover a real problem, requirement, or gap, and the spec packet must
    synthesize trajectories losslessly without omitting major or minor inspected
    details.
 4. Extract behavior examples in plain language or Given/When/Then form.
@@ -56,7 +56,7 @@ Classify incoming material as one or more:
 8. Write or update the smallest relevant docs using these exact targets:
    - `docs/specs/incoming/` for raw imported specs only when a preserved copy
      is useful;
-   - `docs/specs/transformed/` for normalized plan-ready packets;
+   - `docs/specs/{slice-slug}/` for normalized plan-ready packets;
    - `docs/product/` for product intent, requirements, journeys, personas, and
      scenarios;
    - `docs/design/` for interaction, accessibility, tokens, components, and
@@ -78,10 +78,10 @@ Classify incoming material as one or more:
    context. Hand off to `market-validation` when product facts require long
    business-analysis research before synthesis. Hand off to
    `synthesis-to-spec` when product facts need PRD, persona, requirement,
-   journey, scenario, non-goal, success-metric, transformed-spec, or backlog
+   journey, scenario, non-goal, success-metric, spec-packet, or backlog
    synthesis. Hand off to `compose-spec` when source material is
    ready to become PRDs, personas, requirements, journeys, scenarios,
-   transformed specs, or backlog-ready acceptance criteria. Hand off to
+   spec packets, or backlog-ready acceptance criteria. Hand off to
    `brand-positioning` when brand, naming, tone, content, message hierarchy, or
    visual direction needs durable structure.
    Hand off to `design-system` when design tokens, components, accessibility,
@@ -93,7 +93,7 @@ Classify incoming material as one or more:
 
 ## Required Packet Shape
 
-Use `templates/transformed-spec.md` for normalized specs. Use
+Use `templates/spec-packet.md` for normalized specs. Use
 `templates/scenario-row.md` for durable scenario rows. Each packet must expose:
 
 - source identity and preservation decision;
@@ -108,14 +108,14 @@ Do not store these packets in `AGENTS.md`.
 
 ## Templates
 
-- `templates/transformed-spec.md`
+- `templates/spec-packet.md`
 - `templates/scenario-row.md`
 
 ## Output
 
 - source material classified;
 - doc routing decisions;
-- transformed docs written or proposed;
+- spec packets written or proposed;
 - behavior examples;
 - acceptance checks;
 - open questions;

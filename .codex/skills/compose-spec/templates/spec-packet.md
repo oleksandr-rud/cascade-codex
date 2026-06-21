@@ -1,4 +1,4 @@
-# Transformed Spec: `<title>`
+# Spec Packet: `<title>`
 
 ## Source
 
@@ -18,13 +18,19 @@
 | persona or role | `<detail>` | `docs/product/personas/` |
 | design constraint | `<detail>` | `docs/design/` |
 | brand/content constraint | `<detail>` | `docs/brand/` |
-| implementation constraint | `<detail>` | `docs/specs/transformed/` |
+| implementation constraint | `<detail>` | `docs/specs/{slice-slug}/` |
 | backlog candidate | `<detail>` | `docs/backlog/_index.md` |
 | open question | `<question>` | handoff |
 
 ## Behavior Examples
 
 - Given `<state>`, when `<action>`, then `<outcome>`.
+
+## Evidence And Coverage
+
+| Claim Or Rule | Source Family | Evidence Class | Coverage Status | Promotion Status |
+|---|---|---|---|---|
+| `<claim>` | `<paper-official-doc-human-pilot-benchmark-local-spec>` | `<validated-source-ideation-simulator-output-user-provided>` | `<covered-weak-blocked-out-of-scope>` | `<promote-defer-remove>` |
 
 ## Functional Acceptance Checks
 

@@ -20,3 +20,5 @@ Use this folder as the active work memory for Orchestrator.
 - Lanes may run in parallel only when they do not write the same files, require
   each other's output, or share an unresolved product decision.
 - Merge lane evidence in `active.md` before closeout.
+- For research-heavy work, add detailed evidence to `reports/` and add compact
+  durable research-memory entries to `docs/patterns/context-memory.md`.

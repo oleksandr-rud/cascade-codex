@@ -39,7 +39,7 @@ compatibility name. Treat that as a path/API label, not the product name.
 | `docs/structure.md` | Folder/write-target map for specs, product, design, brand, active work, backlog, patterns, and architecture facts. |
 | `docs/patterns/` | Reusable workflow, boundary, testing, and context-memory rules. |
 | `docs/work/` | Active work registry, lane template, examples, lane packets, reports, and handoffs. |
-| `docs/specs/`, `docs/product/`, `docs/design/`, `docs/brand/` | Durable owner docs for source material, product intent, design constraints, and naming/content direction. |
+| `docs/specs/`, `docs/product/`, `docs/design/`, `docs/brand/` | Durable owner docs for source material, per-slice spec packets, product intent, design constraints, and naming/content direction. |
 | `docs/backlog/`, `docs/glossary.md` | Follow-up candidates and shared codebase/product vocabulary. |
 | `scripts/validate_cascade_codex.py` | Packaging and consistency validator for a complete Cascade distribution. |
 
@@ -127,8 +127,8 @@ Cascade keeps durable facts in owner docs instead of growing prompt files:
 - Project and stack facts live in `harness.config.yaml` after installation.
 - Boot rules stay in `AGENTS.md`.
 - Routing and role detail stay in `CODEX.md`.
-- Product, design, brand, specs, backlog, and glossary facts stay under
-  `docs/`.
+- Product, design, brand, per-slice spec packets, backlog, and glossary facts
+  stay under `docs/`.
 - Active execution state and evidence stay under `docs/work/`.
 - Reusable workflow lessons live in `.codex/skills/`, `.codex/agents/`, or
   `docs/patterns/`.

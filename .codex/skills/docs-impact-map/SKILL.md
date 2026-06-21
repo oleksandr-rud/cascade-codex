@@ -64,13 +64,13 @@ Use these dependency checks before deciding that one doc update is complete:
 | Changed Source | Re-check |
 |---|---|
 | Persona or target user | `docs/product/requirements.md`, `docs/product/journeys.md`, `docs/product/scenarios.md`, `docs/brand/`, `docs/design/`, active work criteria |
-| Product requirement or acceptance criterion | scenario rows, journeys, transformed specs, functional evidence, backlog candidates |
+| Product requirement or acceptance criterion | scenario rows, journeys, spec packets, functional evidence, backlog candidates |
 | Journey or multi-step state | requirements, scenarios, interaction model, functional checks, carried state, duplicate side effects |
 | Scenario row | requirement source, journey coverage, design state, functional evidence, active lane overlay |
 | Brand positioning, naming, tone, or content | product audience, UI copy, visual direction, token implications, scenarios that assert copy |
 | Visual direction or design tokens | brand visual direction, component/state rules, accessibility, visual or browser evidence |
 | Component, interaction, or UX rule | product scenarios, design tokens, accessibility, functional evidence, implementation source areas |
-| Normalized spec packet | product/design/brand owner docs, active work criteria, backlog, glossary, transformed packet status |
+| Normalized spec packet | product/design/brand owner docs, active work criteria, backlog, glossary, spec packet status |
 | Backlog candidate | owning product/spec/design source, acceptance criteria, priority, deferral reason |
 | Glossary term | product/spec language, code/public contract vocabulary, user-facing copy |
 | Pattern or boundary rule | affected skills, agents, validator checks, work-lane templates, validation commands |

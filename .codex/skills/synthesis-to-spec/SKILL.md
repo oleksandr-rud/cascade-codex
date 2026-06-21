@@ -38,7 +38,7 @@ Use this skill for:
 - personas when roles, goals, constraints, permissions, content, or design
   implications affect behavior;
 - backlog candidates with acceptance criteria;
-- transformed plan-ready specs;
+- plan-ready spec packets;
 - evidence-to-doc traceability;
 - source-context trajectory analysis before durable promotion;
 - explicit no-doc-needed decisions for weak or non-durable findings.
@@ -51,9 +51,13 @@ repair.
 
 1. Confirm the source packet is ready:
    - enough evidence exists;
+   - enough source-family coverage exists for the claim's scope;
    - critical assumptions are marked;
    - critic blockers are resolved or explicitly accepted;
    - weak findings are not promoted to requirements.
+   For research-heavy packets, do not equate a plausible answer with completed
+   coverage; require retrieval miss audit, known-item recovery, and evidence
+   class labels before durable promotion.
 2. For each problem, requirement, or gap, run several trajectory passes per
    `docs/patterns/workflow.md#trajectory-coverage`; every trajectory must cover
    a real problem, requirement, or gap, and the final PRD/spec/backlog synthesis
@@ -71,7 +75,7 @@ repair.
    - acceptance behavior and implementation bridge.
 4. Choose the smallest owner target:
    - `compose-spec` for PRDs, personas, compact product specs,
-     requirement rows, journey rows, scenario rows, transformed specs, and
+     requirement rows, journey rows, scenario rows, spec packets, and
      backlog-ready acceptance criteria;
    - existing domain-owned product folders when the target repo already uses
      them for the affected capability;
@@ -79,10 +83,12 @@ repair.
    - `docs/product/scenarios.md` for functional behavior examples;
    - `docs/product/journeys.md` when state carries across steps;
    - `docs/product/personas/` when roles change behavior;
-   - `docs/specs/transformed/` for normalized plan-ready source packets;
+   - `docs/specs/{slice-slug}/` for normalized plan-ready source packets;
    - `docs/backlog/_index.md` for follow-up work with acceptance criteria.
 5. Preserve traceability:
    `source -> finding -> requirement or scenario -> functional check -> work lane`.
+   For research claims, also preserve:
+   `query facet -> source family -> evidence class -> atomic claim -> promotion status`.
 6. Preserve the target repo's current catalog shape: use domain-specific specs,
    scenario files, or journey files only when already defined by the repo's
    product docs or `docs/structure.md`; otherwise use the flat required ledgers.
@@ -106,7 +112,7 @@ repair.
 
 - synthesis source identity and evidence status;
 - source-context trajectory status and contradiction handling;
-- PRD, requirement, scenario, journey, persona, transformed spec, or backlog
+- PRD, requirement, scenario, journey, persona, spec packet, or backlog
   docs to author, update, propose, or intentionally leave unchanged;
 - doc routing decisions;
 - assumptions, non-goals, and open questions;

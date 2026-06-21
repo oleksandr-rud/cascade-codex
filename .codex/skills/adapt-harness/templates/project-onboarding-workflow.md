@@ -58,7 +58,7 @@ context-memory specs without inventing facts or creating broad dump folders.
 | `ON-02` | `<open>` | `project-onboarder` | `adapt-harness`, `architecture-review` | source roots, tests, public contracts | project-part spec list and first packets | one packet per justified area, skipped areas explained | `ON-03` |
 | `ON-03` | `<open>` | `project-onboarder` | `architecture-review`, `docs-impact-map` | project-part packets, boundaries, glossary | boundary and vocabulary updates | Doc Routing Decision Matrix rows | `ON-04` |
 | `ON-04` | `<open>` | `security` or `project-onboarder` | `codebase-audit`, `auth-analysis`, `secure-design` | auth, data, config, API, adapters, logs docs | security/data notes and validation probes | sensitive data omitted, risks separated from evidence | `ON-05` |
-| `ON-05` | `<open>` | `project-onboarder` | `ingest-spec`, `discover`, `synthesis-to-spec`, `compose-spec` | routes, UI copy, APIs, tests, specs, README | feature specs, scenarios, journeys, transformed specs | each feature has source identity or `GAP` | `ON-06` |
+| `ON-05` | `<open>` | `project-onboarder` | `ingest-spec`, `discover`, `synthesis-to-spec`, `compose-spec` | routes, UI copy, APIs, tests, specs, README | feature specs, scenarios, journeys, spec packets | each feature has source identity or `GAP` | `ON-06` |
 | `ON-06` | `<open>` | `designer` or `project-onboarder` | `visual-qa`, `ux-flow-review`, `design-system`, `brand-positioning` | running app, screenshots, UI code, design and brand docs | visual/design/brand/product deltas | viewport/state evidence or blocked reason | `ON-07` |
 | `ON-07` | `<open>` | `project-onboarder` | `functional-qa`, `docs-impact-map` | feature specs, scenarios, public contracts, runners | acceptance and test map | no missing required check marked pass | `ON-08` |
 | `ON-08` | `<open>` | `project-onboarder` | `docs-impact-map`, `closeout` | all durable facts and owner docs | context-memory and doc routing matrix | narrow owner for every retained fact | `ON-09` |
@@ -76,7 +76,7 @@ Allowed:
 - `docs/design/`
 - `docs/brand/`
 - `docs/specs/incoming/` only when source preservation is useful
-- `docs/specs/transformed/`
+- `docs/specs/{slice-slug}/`
 - `docs/backlog/_index.md`
 - `docs/patterns/workflow.md`
 - `docs/patterns/boundaries.md`

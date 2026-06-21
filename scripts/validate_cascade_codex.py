@@ -33,7 +33,6 @@ REQUIRED_FILES = [
     "docs/brand/_index.md",
     "docs/specs/_index.md",
     "docs/specs/incoming/.gitkeep",
-    "docs/specs/transformed/.gitkeep",
     "docs/work/_index.md",
     "docs/work/active.md",
     "docs/work/lane-template.md",
@@ -67,7 +66,7 @@ REQUIRED_FILES = [
     ".codex/skills/compose-spec/templates/requirement-row.md",
     ".codex/skills/compose-spec/templates/journey.md",
     ".codex/skills/compose-spec/templates/scenario-row.md",
-    ".codex/skills/compose-spec/templates/transformed-spec.md",
+    ".codex/skills/compose-spec/templates/spec-packet.md",
     ".codex/skills/brand-positioning/templates/brand-positioning.md",
     ".codex/skills/brand-positioning/templates/message-map.md",
     ".codex/skills/design-system/templates/design-rule.md",
@@ -99,7 +98,7 @@ REQUIRED_FILES = [
     ".codex/skills/visual-qa/checklists/visual-validation.md",
     ".codex/skills/visual-qa/references/visual-validation.md",
     ".codex/skills/visual-qa/templates/visual-validation-report.md",
-    ".codex/skills/ingest-spec/templates/transformed-spec.md",
+    ".codex/skills/ingest-spec/templates/spec-packet.md",
     ".codex/skills/ingest-spec/templates/scenario-row.md",
     ".codex/skills/codex-maintenance/checklists/harness-maintenance.md",
     ".codex/skills/codex-maintenance/checklists/codex-surface-quality.md",
@@ -181,7 +180,6 @@ REQUIRED_PATTERN_FILES = {
 
 REQUIRED_FOLDERS = [
     "docs/specs/incoming",
-    "docs/specs/transformed",
     "docs/product",
     "docs/product/personas",
     "docs/design",
@@ -202,7 +200,6 @@ ALLOWED_DOC_FOLDERS = {
     "docs/product/personas",
     "docs/specs",
     "docs/specs/incoming",
-    "docs/specs/transformed",
     "docs/work",
     "docs/work/examples",
     "docs/work/lanes",
@@ -307,6 +304,10 @@ STALE_TEXT_PATTERNS = [
     r"\bsession reports?\b",
     r"\bmulti-session\b",
     r"Default Cascade",
+    r"docs/specs/transformed",
+    r"templates/transformed-spec\.md",
+    r"\btransformed-spec\b",
+    r"\bspecs_transformed\b",
 ]
 
 SKILL_TRIGGER_REQUIREMENTS = {
@@ -375,7 +376,7 @@ SKILL_TRIGGER_REQUIREMENTS = {
     ],
     "compose-spec": [
         r"PRDs|personas|product specs",
-        r"requirements|journeys|scenarios|transformed specs",
+        r"requirements|journeys|scenarios|spec packets",
     ],
     "brand-positioning": [
         r"brand|tone|naming|message|content",
@@ -447,7 +448,7 @@ SKILL_TRIGGER_REQUIREMENTS = {
 REQUIRED_SKILL_SURFACES = {
     "ingest-spec": [
         "docs/specs/incoming/",
-        "docs/specs/transformed/",
+        "docs/specs/{slice-slug}/",
         "docs/product/",
         "docs/design/",
         "docs/brand/",
@@ -607,7 +608,7 @@ REQUIRED_SKILL_SURFACES = {
         "docs/product/journeys.md",
         "docs/product/scenarios.md",
         "docs/product/personas/",
-        "docs/specs/transformed/",
+        "docs/specs/{slice-slug}/",
         "docs/design/",
         "docs/brand/",
         "docs/backlog/_index.md",
@@ -626,7 +627,7 @@ REQUIRED_SKILL_SURFACES = {
         "docs/product/journeys.md",
         "docs/product/scenarios.md",
         "docs/product/personas/",
-        "docs/specs/transformed/",
+        "docs/specs/{slice-slug}/",
         "docs/backlog/_index.md",
         "docs/glossary.md",
         "docs-impact-map",
@@ -640,7 +641,7 @@ REQUIRED_SKILL_SURFACES = {
         "templates/requirement-row.md",
         "templates/journey.md",
         "templates/scenario-row.md",
-        "templates/transformed-spec.md",
+        "templates/spec-packet.md",
     ],
     "brand-positioning": [
         "docs/brand/",
@@ -790,14 +791,53 @@ SCENARIO_ID = re.compile(r"\bPS-\d{3}\b")
 JOURNEY_ID = re.compile(r"\bJ-\d{3}\b")
 REQUIREMENT_ID = re.compile(r"\bPR-\d{3}\b")
 BRAND_DOC_REF = re.compile(r"docs/brand/[A-Za-z0-9_.-]+\.md")
+SPEC_SLICE_DIR = re.compile(r"^[a-z0-9][a-z0-9-]*$")
+PACKAGE_LANE_ID = re.compile(r"^\s*-\s+id:\s*(L\d+)\b")
+LANE_TOPOLOGY_ROW = re.compile(r"^\|\s*(L\d+)\b")
+LEGACY_SPEC_SLICE_NAMES = {"transformed"}
 
 
 def rel(path: Path) -> str:
-    return str(path.relative_to(ROOT))
+    return path.relative_to(ROOT).as_posix()
 
 
 def read_text(path: Path) -> str:
     return path.read_text(encoding="utf-8")
+
+
+def _extract_package_lane_ids(text: str) -> set[str]:
+    lanes: set[str] = set()
+    in_lanes = False
+    for line in text.splitlines():
+        stripped = line.strip()
+        if stripped == "lanes:":
+            in_lanes = True
+            continue
+        if in_lanes and line and not line.startswith((" ", "\t", "-")):
+            break
+        if not in_lanes:
+            continue
+        match = PACKAGE_LANE_ID.match(line)
+        if match:
+            lanes.add(match.group(1))
+    return lanes
+
+
+def _extract_lane_topology_ids(text: str) -> set[str]:
+    if "## Lane Topology" not in text:
+        return set()
+    lanes: set[str] = set()
+    in_topology = False
+    for line in text.splitlines():
+        if line.startswith("## "):
+            in_topology = line.strip() == "## Lane Topology"
+            continue
+        if not in_topology:
+            continue
+        match = LANE_TOPOLOGY_ROW.match(line)
+        if match:
+            lanes.add(match.group(1))
+    return lanes
 
 
 def check_required_files(errors: list[str]) -> None:
@@ -828,8 +868,21 @@ def check_required_folders(errors: list[str]) -> None:
             if not path.is_dir():
                 continue
             relative = rel(path)
-            if relative not in ALLOWED_DOC_FOLDERS:
+            if not is_allowed_doc_folder(relative):
                 errors.append(f"unexpected docs folder outside structure map: {relative}")
+
+
+def is_allowed_doc_folder(relative: str) -> bool:
+    if relative in ALLOWED_DOC_FOLDERS:
+        return True
+    parts = relative.split("/")
+    if len(parts) == 3 and parts[:2] == ["docs", "specs"]:
+        slice_name = parts[2]
+        return (
+            slice_name not in LEGACY_SPEC_SLICE_NAMES
+            and SPEC_SLICE_DIR.fullmatch(slice_name) is not None
+        )
+    return False
 
 
 def check_toml(errors: list[str]) -> None:
@@ -1168,21 +1221,59 @@ def check_traceability_contracts(errors: list[str]) -> None:
         if "Status" not in token_text:
             errors.append("docs/design/tokens.md missing token status field")
 
-    transformed_root = ROOT / "docs" / "specs" / "transformed"
-    for path in transformed_root.glob("*.md"):
-        text = read_text(path).strip()
-        if not text:
-            continue
-        required_headings = [
-            "## Source",
-            "## Classification",
-            "## Behavior Examples",
-            "## Functional Acceptance Checks",
-            "## Handoff",
-        ]
-        for heading in required_headings:
-            if heading not in text:
-                errors.append(f"transformed spec {rel(path)} missing heading: {heading}")
+    specs_root = ROOT / "docs" / "specs"
+    if specs_root.is_dir():
+        for slice_dir in specs_root.iterdir():
+            if not slice_dir.is_dir() or slice_dir.name == "incoming":
+                continue
+            if slice_dir.name in LEGACY_SPEC_SLICE_NAMES:
+                errors.append(f"legacy spec slice folder is not allowed: {rel(slice_dir)}")
+                continue
+            if SPEC_SLICE_DIR.fullmatch(slice_dir.name) is None:
+                errors.append(f"invalid spec slice folder name: {rel(slice_dir)}")
+                continue
+            for path in slice_dir.glob("*.md"):
+                text = read_text(path).strip()
+                if not text:
+                    continue
+                required_headings = [
+                    "## Source",
+                    "## Classification",
+                    "## Behavior Examples",
+                    "## Functional Acceptance Checks",
+                    "## Handoff",
+                ]
+                for heading in required_headings:
+                    if heading not in text:
+                        errors.append(f"spec packet {rel(path)} missing heading: {heading}")
+            package_lanes: dict[Path, set[str]] = {}
+            for path in slice_dir.glob("*.package.yaml"):
+                lane_ids = _extract_package_lane_ids(read_text(path))
+                if lane_ids:
+                    package_lanes[path] = lane_ids
+            if package_lanes:
+                topology_lanes: dict[Path, set[str]] = {}
+                for path in slice_dir.glob("*.md"):
+                    lane_ids = _extract_lane_topology_ids(read_text(path))
+                    if lane_ids:
+                        topology_lanes[path] = lane_ids
+                topology_union = set().union(*topology_lanes.values()) if topology_lanes else set()
+                for package_path, lane_ids in package_lanes.items():
+                    if not topology_lanes:
+                        errors.append(
+                            f"package {rel(package_path)} declares lanes but no Lane Topology spec table exists"
+                        )
+                        continue
+                    missing_in_specs = lane_ids - topology_union
+                    extra_in_specs = topology_union - lane_ids
+                    for lane_id in sorted(missing_in_specs):
+                        errors.append(
+                            f"package {rel(package_path)} lane {lane_id} missing from Lane Topology spec table"
+                        )
+                    for lane_id in sorted(extra_in_specs):
+                        errors.append(
+                            f"Lane Topology lane {lane_id} missing from package {rel(package_path)}"
+                        )
 
 
 def main() -> int:

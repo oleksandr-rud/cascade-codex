@@ -107,6 +107,29 @@ analyzed by the trajectories, including edge cases, contradictions, rejected
 paths, open questions, and follow-up gaps. Mark uncertain details instead of
 omitting them.
 
+## Research Coverage
+
+Use this rule when research, source discovery, prompt policy, semantic-core
+packets, or workflow specs can become durable rules.
+
+Do not close research because it has enough evidence for a plausible answer.
+Close it only after these statuses are explicit:
+
+- source-family coverage: which adjacent domains, venues, vocabularies,
+  acronyms, exact titles, and known-item searches were checked;
+- evidence class: whether each source supports ideation critique, simulator
+  output, benchmark result, official behavior, human pilot, empirical study, or
+  local design intent;
+- claim status: supported, partly supported, unsupported, conflicting,
+  needs-more-search, or blocked;
+- promotion status: promote, defer, remove, or keep as research only;
+- residual workflow risk: lane incompleteness, vocabulary lock-in,
+  correlated-agent agreement, validation illusion, or promotion leakage.
+
+Structural validators and compiled context previews prove artifact shape and
+reference wiring. They do not prove research coverage, evidence strength,
+claim truth, or human-validation docking.
+
 ## Doc Routing Decision Matrix
 
 Use this shared matrix whenever a skill creates, changes, normalizes, validates,
@@ -131,7 +154,7 @@ Actions:
 Rules:
 
 - `Source`: use the strongest available identity: request or issue ID,
-  spec/transformed-spec path, work lane ID, product artifact ID, changed file,
+  spec/spec-packet path, work lane ID, product artifact ID, changed file,
   or prior report.
 - `Owner Target`: name the exact existing owner file when known; use a folder
   only when owner selection is pending; use `none` only for `NO_DOC_NEEDED`.

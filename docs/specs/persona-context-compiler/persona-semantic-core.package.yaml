@@ -1,0 +1,158 @@
+package:
+  id: persona-semantic-core
+  title: Persona Semantic Core
+  version: 0.1.0
+  status: draft
+  owner: Dynamic Persona Assistant
+  canonical_format: markdown_and_yaml
+  purpose: >
+    Provide the semantic source of truth for persona simulator behavior using
+    Markdown specs, prompt scripts, YAML package metadata, and YAML module
+    catalogs instead of canonical JSON persona objects.
+
+compile:
+  default_mode: summary_first_sources_second
+  compiler_script: scripts/compile_persona_context.py
+  entry_prompt:
+    id: prompt.persona-context-compiler
+    path: docs/specs/persona-context-compiler/persona-context-compiler.prompt.md
+    summary: Model-facing prompt script that defines how package files become compiled persona context.
+  order:
+    - id: spec.persona-semantic-core
+      path: docs/specs/persona-context-compiler/persona-semantic-core.md
+      summary: Architecture spec for file-first persona semantic core packaging.
+    - id: catalog.persona-semantic-core
+      path: docs/specs/persona-context-compiler/persona-semantic-core.catalog.yaml
+      summary: YAML module tree with acts, policies, summaries, and source bindings.
+    - id: prompt.persona-context-compiler
+      path: docs/specs/persona-context-compiler/persona-context-compiler.prompt.md
+      summary: Prompt script for assembling context from package and catalog files.
+    - id: report.persona-behavioral-patterns
+      path: docs/work/reports/2026-06-20-persona-simulator-behavioral-patterns.md
+      summary: Research synthesis on persona simulators, psychology-backed state modeling, and LLM persona limits.
+    - id: pattern.context-memory
+      path: docs/patterns/context-memory.md
+      summary: Cascade rules for source identity, retrieval, compaction, and durable memory routing.
+    - id: pattern.boundaries
+      path: docs/patterns/boundaries.md
+      summary: Project boundary rules for harness assets, docs, public contracts, and runtime invariants.
+
+internal_refs:
+  - id: docs.glossary
+    path: docs/glossary.md
+    summary: Project vocabulary, including persona simulator, behavioral signature, state tracker, and persona drift.
+  - id: docs.structure
+    path: docs/structure.md
+    summary: Folder and write-target map for specs, work reports, patterns, and glossary updates.
+  - id: docs.work.reports.index
+    path: docs/work/reports/_index.md
+    summary: Durable report index that lists the persona behavioral-patterns research synthesis.
+
+external_refs:
+  - id: S1
+    title: Generative Agents
+    url: https://arxiv.org/abs/2304.03442
+    summary: Shows memory stream, reflection, planning, and observation loops for believable LLM agents.
+    used_by: [memory-policy, behavior-policy, evaluation-pack]
+  - id: S2
+    title: Persona-Chat
+    url: https://aclanthology.org/P18-1205/
+    summary: Establishes profile-conditioned dialogue as a baseline for persona consistency.
+    used_by: [identity-profile, consistency-critic]
+  - id: S3
+    title: Two Tales of Persona in LLMs
+    url: https://aclanthology.org/2024.findings-emnlp.969/
+    summary: Separates role-playing personas from personalization and surveys modern LLM persona methods.
+    used_by: [identity-profile, behavior-policy, evaluation-pack]
+  - id: S4
+    title: Using Large Language Models to Simulate Multiple Humans
+    url: https://proceedings.mlr.press/v202/aher23a.html
+    summary: Introduces Turing Experiments for checking whether LLMs reproduce human-subject study patterns.
+    used_by: [evaluation-pack]
+  - id: S5
+    title: Out of One, Many
+    url: https://www.cambridge.org/core/journals/political-analysis/article/out-of-one-many-using-language-models-to-simulate-human-samples/035D7C8A55B237942FB6DBAD7CAA4E49
+    summary: Frames algorithmic fidelity for synthetic samples and emphasizes validation against known populations.
+    used_by: [evaluation-pack]
+  - id: S6
+    title: Whose Opinions Do Language Models Reflect?
+    url: https://arxiv.org/abs/2303.17548
+    summary: Shows demographic steering can misalign with real group opinions, supporting uncertainty and bias checks.
+    used_by: [consistency-critic, evaluation-pack]
+  - id: S7
+    title: Can Large Language Model Agents Simulate Human Trust Behavior?
+    url: https://arxiv.org/abs/2402.04559
+    summary: Studies trust-game behavior and supports target-specific trust state with narrow validation.
+    used_by: [social-context, state-tracker, evaluation-pack]
+  - id: S8
+    title: Synthetic Replacements for Human Survey Data?
+    url: https://www.cambridge.org/core/journals/political-analysis/article/synthetic-replacements-for-human-survey-data-the-perils-of-large-language-models/B92267DC26195C7F36E63EA04A47D2FE
+    summary: Warns that synthetic surveys can match means while distorting variance and relationships.
+    used_by: [evaluation-pack, consistency-critic]
+  - id: S9
+    title: Cognitive-Affective System Theory of Personality
+    url: https://psychology.columbia.edu/sites/default/files/2016-11/246.pdf
+    summary: Defines situation-conditioned behavioral signatures as stable if-then personality patterns.
+    used_by: [behavioral-signatures, state-tracker]
+  - id: S10
+    title: Big-Five Factor Structure
+    url: https://projects.ori.org/lrg/pdfs_papers/goldberg.big-five-factorsstructure.jpsp.1990.pdf
+    summary: Provides broad trait dimensions that can act as priors, thresholds, and style tendencies.
+    used_by: [identity-profile, behavior-policy]
+  - id: S11
+    title: Schwartz Theory of Basic Values
+    url: https://scholarworks.gvsu.edu/orpc/vol2/iss1/11/
+    summary: Provides value priorities and value conflicts for long-term goals and tradeoffs.
+    used_by: [identity-profile, behavior-policy]
+  - id: S12
+    title: Self-Determination Theory
+    url: https://selfdeterminationtheory.org/SDT/documents/2000_RyanDeci_SDT.pdf
+    summary: Models autonomy, competence, and relatedness as dynamic motivation and engagement needs.
+    used_by: [state-tracker, behavior-policy]
+  - id: S13
+    title: Theory of Planned Behavior FAQ
+    url: https://people.umass.edu/aizen/pubs/tpb-faq.pdf
+    summary: Connects attitude, subjective norm, and perceived control to intention and behavior.
+    used_by: [behavior-policy, social-context]
+  - id: S14
+    title: Affect Circumplex Overview
+    url: https://pmc.ncbi.nlm.nih.gov/articles/PMC2367156/
+    summary: Supports valence and arousal as compact runtime affect dimensions.
+    used_by: [state-tracker]
+  - id: S15
+    title: Appraisal Theory of Emotion
+    url: https://ppw.kuleuven.be/okp/_pdf/MoorsInPressATOE.pdf
+    summary: Explains state changes through event appraisal against goals, agency, control, and expectations.
+    used_by: [state-tracker, behavior-policy]
+  - id: S16
+    title: A Focus Theory of Normative Conduct
+    url: https://www.influenceatwork.com/wp-content/uploads/2015/05/A-Focus-Theory-of-Normative-Conduct.pdf
+    summary: Distinguishes descriptive and injunctive norms and makes norm salience explicit.
+    used_by: [social-context, behavior-policy]
+  - id: S17
+    title: Social Identity Theory
+    url: https://web.mit.edu/curhan/www/docs/Articles/15341_Readings/Intergroup_Conflict/Tajfel_%26_Turner_Psych_of_Intergroup_Relations_CH1_Social_Identity_Theory.pdf
+    summary: Explains how active group identity shapes norms, trust, threat perception, and interaction.
+    used_by: [social-context]
+  - id: S18
+    title: ReAct
+    url: https://arxiv.org/abs/2210.03629
+    summary: Supports separating reasoning, action choice, observations, and final response behavior.
+    used_by: [behavior-policy]
+  - id: S19
+    title: MemGPT
+    url: https://arxiv.org/abs/2310.08560
+    summary: Provides memory-management concepts for bounded long-running LLM interactions.
+    used_by: [memory-policy]
+  - id: S20
+    title: Retrieval-Augmented Generation
+    url: https://arxiv.org/abs/2005.11401
+    summary: Supports retrieval-grounded context selection from larger knowledge sources.
+    used_by: [memory-policy]
+
+outputs:
+  compiled_context_format: markdown
+  preserve_source_boundaries: true
+  include_context_map: true
+  include_warning_rows: true
+  reject_canonical_json_persona_object: true

@@ -1,6 +1,6 @@
 ---
 name: compose-spec
-description: Use when validated or approved source material should become durable PRDs, personas, product specs, requirements, journeys, scenarios, transformed specs, or backlog-ready acceptance criteria.
+description: Use when validated or approved source material should become durable PRDs, personas, product specs, requirements, journeys, scenarios, spec packets, or backlog-ready acceptance criteria.
 ---
 
 # Compose Spec
@@ -25,7 +25,7 @@ decide unsupported product intent, implement code, or repair tests.
    - `docs/product/journeys.md`
    - `docs/product/scenarios.md`
    - `docs/product/personas/`
-   - `docs/specs/transformed/`
+   - `docs/specs/{slice-slug}/`
 3. Current `synthesis-to-spec`, `ingest-spec`, `docs-impact-map`, and active
    work-lane outputs when present.
 4. Related `docs/design/`, `docs/brand/`, `docs/backlog/_index.md`,
@@ -46,7 +46,7 @@ Use this skill for:
 - durable requirements and acceptance criteria;
 - journeys with carried state;
 - product scenario rows for functional checks;
-- transformed plan-ready spec packets;
+- plan-ready spec packets;
 - backlog-ready candidates with acceptance criteria;
 - trajectory-backed source promotion decisions;
 - traceability between source, product docs, scenarios, functional evidence,
@@ -61,6 +61,8 @@ implementation, or test autorepair.
 1. Confirm the source is ready to author:
    - source identity is known;
    - facts are evidence-backed or explicitly user-provided;
+   - research-heavy facts have source-family coverage, evidence class, and
+     retrieval miss-audit status;
    - assumptions are marked;
    - open questions are not silently converted into requirements.
 2. Choose the smallest useful artifact set:
@@ -72,7 +74,7 @@ implementation, or test autorepair.
    - `templates/requirement-row.md` for `docs/product/requirements.md`;
    - `templates/journey.md` for `docs/product/journeys.md` or a journey doc;
    - `templates/scenario-row.md` for `docs/product/scenarios.md`;
-   - `templates/transformed-spec.md` for `docs/specs/transformed/`.
+   - `templates/spec-packet.md` for `docs/specs/{slice-slug}/`.
 3. Allocate names and IDs before writing. Check existing docs first and choose
    the next stable ID or path:
    - PRD or product spec path: `docs/product/<capability-slug>.md`;
@@ -80,8 +82,8 @@ implementation, or test autorepair.
      `docs/product/<domain-slug>/<capability-slug>.md` only when the target
      repo already uses or explicitly defines domain-owned product folders;
    - persona file: `docs/product/personas/<persona-slug>.md`;
-   - transformed spec path:
-     `docs/specs/transformed/<source-or-capability-slug>.md`;
+   - spec packet path:
+     `docs/specs/{slice-slug}/<source-or-capability-slug>.md`;
    - persona IDs: next `P-XXX` in `docs/product/personas/_index.md`;
    - requirement IDs: next `PR-XXX` in `docs/product/requirements.md`;
    - journey IDs: next `J-XXX` in `docs/product/journeys.md`;
@@ -98,7 +100,7 @@ implementation, or test autorepair.
      one;
    - update the owning index or registry when the target structure requires it.
 6. Compose artifacts in dependency order:
-   - source identity and transformed spec;
+   - source identity and spec packet;
    - source-context trajectory and contradiction summary when provided;
    - personas;
    - PRD or compact product spec;
@@ -137,6 +139,8 @@ implementation, or test autorepair.
 - Every authored artifact must name its source identity.
 - Every authored requirement or scenario must include a functional evidence
   target or a clear blocker.
+- Every research-derived spec packet must separate claim support, coverage
+  completeness, evidence type, and promotion status.
 - Every persona must state behavior implications; otherwise it is probably not
   durable enough to store.
 - Every PRD must list non-goals and dependencies across product, design, brand,
@@ -155,7 +159,7 @@ implementation, or test autorepair.
 - Requirements: `docs/product/requirements.md`
 - Journeys: `docs/product/journeys.md` or `docs/product/<journey-slug>.md`
 - Scenarios: `docs/product/scenarios.md`
-- Transformed specs: `docs/specs/transformed/<slug>.md`
+- Spec packets: `docs/specs/{slice-slug}/<slug>.md`
 - Backlog candidates: `docs/backlog/_index.md`
 - Product vocabulary: `docs/glossary.md`
 - Impact reports: `docs/work/reports/` when requested, blocked, multi-turn, or
@@ -169,13 +173,13 @@ implementation, or test autorepair.
 - `templates/requirement-row.md`
 - `templates/journey.md`
 - `templates/scenario-row.md`
-- `templates/transformed-spec.md`
+- `templates/spec-packet.md`
 
 ## Output
 
 - artifact type and source identity;
 - product/spec docs created, updated, proposed, or intentionally unchanged;
-- requirement, persona, journey, scenario, transformed-spec, or backlog IDs;
+- requirement, persona, journey, scenario, spec-packet, or backlog IDs;
 - assumptions, non-goals, open questions, and gaps;
 - Doc Routing Decision Matrix rows;
 - next route: `docs-impact-map`, `synthesis-to-spec`, `plan-change`,

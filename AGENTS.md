@@ -8,10 +8,14 @@ This file is the repository instruction entrypoint for coding agents. Keep it
 
 ## Project Identity
 
-- Project name: `<PROJECT_NAME>`
-- Product or system type: `<PROJECT_KIND>`
-- Primary users: `<PRIMARY_USERS>`
-- Primary runtime stack summary: `<PRIMARY_STACK_SUMMARY>`
+- Project name: `Dynamic Persona Assistant`
+- Product or system type: agentic assistant project scaffold with the Cascade
+  harness installed.
+- Primary users: project maintainers and coding agents working in this
+  repository.
+- Primary runtime stack summary: no application runtime exists yet; the current
+  repository is Cascade documentation, role/skill contracts, and a Python
+  validator.
 - Source of truth when docs conflict with code: current code, then this file,
   then `CODEX.md`, then repo-local skills and docs.
 
@@ -30,23 +34,17 @@ This file is the repository instruction entrypoint for coding agents. Keep it
 
 ## Architecture Guardrails
 
-Describe the real codebase vocabulary here. Prefer existing folder and module
-names over generic modeling labels.
+Prefer the repository's current harness vocabulary over generic modeling
+labels. Until application source exists, treat this repository as a scaffold:
 
-Example shape:
-
-```text
-Entry points -> application services -> persistence/external adapters
-UI shell -> feature modules -> API/client layer -> backend
-```
-
-Rules to fill:
-
-- `<BOUNDARY_RULE_1>`
-- `<BOUNDARY_RULE_2>`
-- `<DATA_OR_AUTH_RULE>`
-- `<SIDE_EFFECT_OR_AUDIT_RULE>`
-- `<ASYNC_OR_RUNTIME_RULE>`
+- Agent instructions -> `CODEX.md` runtime bridge -> `.codex/` role and skill
+  contracts -> `docs/` memory targets -> `scripts/validate_cascade_codex.py`.
+- Keep `AGENTS.md` thin; route durable project facts to
+  `harness.config.yaml`, `docs/`, `.codex/skills/`, or `.codex/agents/`.
+- Treat `.codex/skills/` and `.codex/agents/` as canonical harness assets.
+- Create stack-specific source roots only when the application implementation
+  starts, then update `harness.config.yaml` and `docs/patterns/boundaries.md`.
+- Run the Cascade validator after harness, docs, role, or skill edits.
 
 ## Implementation Workflow
 
@@ -73,15 +71,14 @@ cleanup, or single-line changes with no behavior or contract impact.
 
 ## Validation Commands
 
-Fill these with the target repository's real commands:
+Current available validation:
 
 ```bash
-<UNIT_TEST_COMMAND>
-<TYPECHECK_COMMAND>
-<LINT_COMMAND>
-<FUNCTIONAL_TEST_COMMAND>
-<BUILD_COMMAND>
+python scripts/validate_cascade_codex.py
 ```
+
+No install, unit, lint, typecheck, build, or end-to-end command exists until
+application source is added.
 
 ## Codebase Vocabulary
 

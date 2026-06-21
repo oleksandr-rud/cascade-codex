@@ -72,6 +72,16 @@ Parallel lanes are allowed only when:
   IDs instead of passing large raw outputs;
 - the merge step can aggregate evidence deterministically.
 
+For research and source-discovery work, lane safety also requires coverage
+discipline:
+
+- name source-family facets before retrieval starts;
+- include adjacent-domain vocabulary, acronym/title, and known-item recovery
+  passes;
+- distinguish source acquisition lanes from claim-verification and promotion
+  lanes;
+- keep agent consensus separate from evidence strength.
+
 Serialize lanes when file ownership, public contracts, state-machine behavior,
 or product intent overlaps.
 
@@ -89,6 +99,12 @@ is usually present when the work crosses one of these:
 - external adapter, provider, queue, or integration boundaries;
 - independent validation seams that can produce evidence without depending on
   another lane's unfinished implementation.
+
+For research workflows, a lane boundary is also present when sources use
+different discovery vocabularies, evidence classes, or venue families, such as
+official documentation versus papers, HCI versus social science, benchmark
+evidence versus human-pilot evidence, or ideation critique versus validated
+behavior.
 
 Do not split lanes only to make work look parallel. Keep or serialize lanes
 when they depend on the same unresolved product/design decision, edit the same

@@ -77,6 +77,9 @@ use it to fill missing product intent; route to `discover`,
    skill calls first, such as `context`, `orchestrate-work`,
    `docs-impact-map`, `plan-change`, `functional-qa`, `validate-change`, or
    `closeout` when those gates are needed.
+   For research or source-discovery workflows, also name the coverage facets,
+   evidence classes, query-vocabulary families, known-item recovery pass, and
+   miss-audit gate before retrieval starts.
 4. Choose the smallest static role set from existing agents or authorized
    subagents. Do not invent new dynamic agents.
 5. Build a checklist-style workflow where every step has:
@@ -93,6 +96,9 @@ use it to fill missing product intent; route to `discover`,
    it as an explicit cross-role support exception.
 8. Split lanes only when they have disjoint writes, independent validation, and
    a deterministic merge owner.
+   For research lanes, split by source-family coverage and evidence class as
+   well as by work ownership; "enough evidence to answer" is not the same as
+   "coverage complete."
 9. Build the workflow packet and per-role delegation prompts using
    `templates/agentic-workflow-packet.md`.
 10. Check packets with `checklists/workflow-packet-quality.md`.
@@ -119,6 +125,10 @@ use it to fill missing product intent; route to `discover`,
   needed.
 - Prompt-only rules are not enough for mechanical invariants. Route recurring
   checks to validators, hooks, schemas, permissions, or tests.
+- Research workflow packets must distinguish retrieval completeness, claim
+  support, and promotion readiness. Include retrieval miss audits, evidence
+  class labels, and workflow weakness review when the packet can promote
+  research into durable specs, prompts, policies, or runtime behavior.
 
 ## Templates
 

@@ -11,7 +11,7 @@ these four contracts.
 - `testing.md`: functional acceptance, browser/API/CLI checks, scenario tests,
   semantic test repair.
 - `context-memory.md`: retrieval/source fidelity, compaction, context bounds,
-  observability.
+  compact research-memory entries, observability.
 
 ## Routing Rules
 

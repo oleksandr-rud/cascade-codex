@@ -43,7 +43,7 @@ Owner route: `<project-onboarder | designer | security | agent-engineer | other>
 
 | Feature Or Scenario | Evidence | Product Target | Spec Target | Status |
 |---|---|---|---|---|
-| `<feature>` | `<source>` | `docs/product/` | `docs/specs/transformed/` | `<current-gap-blocked>` |
+| `<feature>` | `<source>` | `docs/product/` | `docs/specs/{slice-slug}/` | `<current-gap-blocked>` |
 
 ## Design, Brand, And Visual Evidence
 

@@ -39,10 +39,10 @@ If code and docs disagree, follow code and report the drift.
 - Use `market-validation` when product intent depends on long market,
   competitor, pain, economics, segment, or experiment research.
 - Use `synthesis-to-spec` when PRD, persona, requirement, journey, scenario,
-  non-goal, success-metric, transformed-spec, or backlog synthesis is missing
+  non-goal, success-metric, spec-packet, or backlog synthesis is missing
   for evidence-backed product intent.
 - Use `compose-spec` when product/spec synthesis exists but durable
-  PRD, persona, requirement, journey, scenario, transformed-spec, or backlog
+  PRD, persona, requirement, journey, scenario, spec-packet, or backlog
   artifacts have not been written.
 - Use `brand-positioning` when naming, tone, content hierarchy, visual
   direction, or copy rules are missing for product-visible behavior.

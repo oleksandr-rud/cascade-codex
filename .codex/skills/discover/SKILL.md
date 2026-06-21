@@ -61,11 +61,11 @@ idea. Do not make discovery mandatory for ordinary implementation planning.
    product behavior.
 8. Product spec: use `synthesis-to-spec` when evidence needs synthesis before
    product docs are written; use `compose-spec` when PRD, persona,
-   requirement, journey, scenario, non-goal, success-metric, transformed-spec,
+   requirement, journey, scenario, non-goal, success-metric, spec-packet,
    or backlog structure is ready to author; use `market-validation` when the
    missing product context requires long market, competitor, pain, economics,
    segment, or experiment research; otherwise write compact durable specs under
-   `docs/product/` or normalized specs under `docs/specs/transformed/`.
+   `docs/product/` or normalized specs under `docs/specs/{slice-slug}/`.
 9. Scenarios: add product scenario rows to `docs/product/scenarios.md`.
 10. Journeys: write cross-feature journeys when state carries across steps.
 11. Design gaps: use `design-system` when tokens, components, accessibility,

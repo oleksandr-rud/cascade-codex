@@ -34,7 +34,7 @@ commands. It can also route explicit requests for agentic workflow packets to
    discovery to `business-analyst` or `market-validation`; use
    `synthesis-to-spec` when validated findings need evidence synthesis; use
    `compose-spec` when PRDs, personas, requirements, journeys,
-   scenarios, transformed specs, or backlog-ready acceptance criteria should be
+   scenarios, spec packets, or backlog-ready acceptance criteria should be
    written;
    use `brand-positioning` when brand, naming, tone, content, message
    hierarchy, or visual direction needs durable structure; use `design-system`

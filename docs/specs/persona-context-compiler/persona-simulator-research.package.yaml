@@ -1,0 +1,162 @@
+package:
+  id: persona-simulator-research-workflow
+  title: Persona Simulator Deep-Search Research Workflow
+  version: 0.1.0
+  status: draft
+  owner: Dynamic Persona Assistant
+  canonical_format: markdown_and_yaml
+  purpose: >
+    Provide a separate research execution package for deep-search,
+    multi-perspective, multi-agent persona-simulator research before verified
+    findings are promoted into the runtime persona semantic core.
+
+compile:
+  default_mode: research_workflow_context
+  compiler_script: scripts/compile_persona_context.py
+  entry_prompt:
+    id: prompt.persona-simulator-research
+    path: docs/specs/persona-context-compiler/persona-simulator-research.prompt.md
+    summary: Model-facing prompt script for running the deep-search persona-simulator research workflow.
+  order:
+    - id: spec.persona-simulator-research-workflow
+      path: docs/specs/persona-context-compiler/persona-simulator-research-workflow.md
+      summary: Spec packet defining the deep-search and multi-agent workflow for persona-simulator research.
+    - id: prompt.persona-simulator-research
+      path: docs/specs/persona-context-compiler/persona-simulator-research.prompt.md
+      summary: Prompt script with lane prompts, source standards, retrieval quality checks, and handoff rules.
+    - id: report.persona-simulator-deep-search-workflow
+      path: docs/work/reports/2026-06-20-persona-simulator-deep-search-workflow.md
+      summary: Agentic workflow packet and source-backed design report for implementing the research method.
+    - id: report.persona-behavioral-patterns
+      path: docs/work/reports/2026-06-20-persona-simulator-behavioral-patterns.md
+      summary: Existing behavioral-pattern research report that this workflow can extend or audit.
+    - id: spec.persona-semantic-core
+      path: docs/specs/persona-context-compiler/persona-semantic-core.md
+      summary: Runtime semantic-core spec that receives only verified research findings.
+    - id: catalog.persona-semantic-core
+      path: docs/specs/persona-context-compiler/persona-semantic-core.catalog.yaml
+      summary: Current module, act, policy, and packet catalog for persona simulator context.
+    - id: pattern.workflow
+      path: docs/patterns/workflow.md
+      summary: Cascade workflow rules for lane splitting, coverage, routing, validation, and closeout.
+    - id: pattern.context-memory
+      path: docs/patterns/context-memory.md
+      summary: Source-context and compilation rules for preserving source identity and context boundaries.
+    - id: skill.agentic-workflow-builder
+      path: .codex/skills/agentic-workflow-builder/SKILL.md
+      summary: Harness skill contract for building reviewable multi-agent workflow packets.
+
+external_refs:
+  - id: DR1
+    title: Deep Research Agents
+    url: https://arxiv.org/html/2506.18096v2
+    summary: Surveys deep-search research agents, dynamic planning, retrieval, tool use, static versus dynamic workflows, and single versus multi-agent designs.
+    used_by: [research-orchestration, retrieval-policy, evaluation-gates]
+  - id: DR2
+    title: STORM
+    url: https://arxiv.org/abs/2402.14207
+    summary: Supports multi-perspective question asking before synthesis and source-grounded outline construction.
+    used_by: [perspective-scouting, lane-decomposition]
+  - id: DR3
+    title: Retrieval-Augmented Generation
+    url: https://arxiv.org/abs/2005.11401
+    summary: Supports external retrievable memory and provenance for knowledge-intensive tasks.
+    used_by: [source-acquisition, source-grounding]
+  - id: DR4
+    title: WebGPT
+    url: https://arxiv.org/abs/2112.09332
+    summary: Supports browser-assisted question answering with reference collection for long-form answers.
+    used_by: [source-acquisition, citation-policy]
+  - id: DR5
+    title: ReAct
+    url: https://arxiv.org/abs/2210.03629
+    summary: Supports interleaving reasoning, tool actions, observations, and plan updates.
+    used_by: [iterative-search, tool-use-loop]
+  - id: DR6
+    title: Reflexion
+    url: https://arxiv.org/abs/2303.11366
+    summary: Supports feedback and reflective memory after failed attempts, with caution for preserving bad lessons.
+    used_by: [critic-loop, retry-policy]
+  - id: DR7
+    title: Self-RAG
+    url: https://arxiv.org/abs/2310.11511
+    summary: Supports adaptive retrieval and critique of retrieved passages and generations.
+    used_by: [retrieval-quality, self-critique]
+  - id: DR8
+    title: Corrective RAG
+    url: https://arxiv.org/abs/2401.15884
+    summary: Supports retrieval-quality evaluation, corrective search, filtering, and recomposition.
+    used_by: [retrieval-evaluator, corrective-search]
+  - id: DR9
+    title: Multiagent Debate
+    url: https://arxiv.org/abs/2305.14325
+    summary: Supports multiple agents proposing and critiquing answers, while requiring safeguards against correlated wrong answers.
+    used_by: [adversarial-review, uncertainty-escalation]
+  - id: DR10
+    title: Multi-Agent Collaboration Mechanisms
+    url: https://arxiv.org/abs/2501.06322
+    summary: Provides dimensions for actors, collaboration types, structures, strategies, and coordination protocols.
+    used_by: [agent-role-design, workflow-topology]
+  - id: DR11
+    title: AutoGen
+    url: https://arxiv.org/abs/2308.08155
+    summary: Supports customizable multi-agent conversations with tools and human input.
+    used_by: [agent-routing, conversation-protocol]
+  - id: DR12
+    title: MetaGPT
+    url: https://arxiv.org/abs/2308.00352
+    summary: Supports SOP-style multi-agent workflows to reduce errors from naive chaining.
+    used_by: [workflow-sop, merge-discipline]
+  - id: DR13
+    title: Long-form factuality and SAFE
+    url: https://arxiv.org/abs/2403.18802
+    summary: Supports atomic fact decomposition and search-backed verification for long-form research outputs.
+    used_by: [claim-verification, report-evaluation]
+  - id: DR14
+    title: SPIRIT
+    url: https://arxiv.org/abs/2603.27056
+    summary: Supports semi-structured individual persona profiles that combine structured traits and beliefs with narrative values and lived-experience text.
+    used_by: [profile-depth, core-profile-layer]
+  - id: DR15
+    title: PersonaFlow
+    url: https://arxiv.org/abs/2409.12538
+    summary: Supports multi-perspective simulated expert feedback for interdisciplinary ideation, while requiring separate validation before treating feedback as user evidence.
+    used_by: [ideation-feedback, multi-agent-chat-layer]
+
+lanes:
+  - id: L1
+    title: persona architecture
+    summary: Persona chatbot, simulator, memory, planning, consistency, and drift-control evidence.
+    output: architecture evidence matrix
+  - id: L2
+    title: human-state evidence
+    summary: Psychology and social-science models for state, behavior signatures, motivation, norms, identity, affect, and trust.
+    output: human-state evidence matrix
+  - id: L3
+    title: agentic retrieval method
+    summary: Deep-search, RAG, tool use, source cards, retrieval evaluation, and corrective search method.
+    output: research workflow method
+  - id: L4
+    title: verification and limits
+    summary: Claim verification, debate/critic review, simulator limits, synthetic-data caveats, and safety constraints.
+    output: verification checklist
+  - id: L5
+    title: semantic-core integration
+    summary: Merge verified findings into spec packets, package refs, prompt scripts, or deferred gaps.
+    output: semantic-core handoff
+  - id: L6
+    title: simulation setup audit
+    summary: Check core profile depth, interaction format, consistency maintenance, and human-validation docking before simulation execution.
+    output: setup readiness checklist
+
+outputs:
+  compiled_context_format: markdown
+  preserve_source_boundaries: true
+  include_context_map: true
+  include_source_cards: true
+  include_simulation_setup_layers: true
+  include_retrieval_miss_audit: true
+  include_workflow_weakness_review: true
+  include_atomic_claim_verification: true
+  include_critic_gate: true
+  promote_only_verified_findings: true

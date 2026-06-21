@@ -44,7 +44,7 @@ Use this skill for:
 - geography, segment, channel, and operational fit;
 - regulatory or operational constraints when relevant;
 - ranked hypotheses and validation experiments;
-- synthesis into PRD, requirement, scenario, transformed spec, or backlog
+- synthesis into PRD, requirement, scenario, spec packet, or backlog
   handoff.
 
 Do not use this skill for ordinary implementation planning when product intent

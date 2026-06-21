@@ -27,6 +27,7 @@ exception_paths = ["issue-intake"]
 [memory]
 glossary = "docs/glossary.md"
 work = "docs/work"
+research = "docs/patterns/context-memory.md"
 product = "docs/product"
 specs = "docs/specs"
 patterns = "docs/patterns"

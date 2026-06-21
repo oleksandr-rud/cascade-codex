@@ -2,42 +2,49 @@
 # Copy to harness.config.yaml after installing the harness in a target project.
 
 project:
-  name: "<PROJECT_NAME>"
-  kind: "<PROJECT_KIND>"
+  name: "Dynamic Persona Assistant"
+  kind: "agentic assistant project scaffold"
   primary_users:
-    - "<PRIMARY_USER>"
+    - "Project maintainers"
+    - "Coding agents working in this repository"
   stack:
     backend:
-      language: "<BACKEND_LANGUAGE_OR_NONE>"
-      framework: "<BACKEND_FRAMEWORK_OR_NONE>"
-      package_manager: "<BACKEND_PACKAGE_MANAGER_OR_NONE>"
+      language: "Python for harness validation only"
+      framework: "none yet"
+      package_manager: "none yet"
       runtime:
-        - "<BACKEND_RUNTIME_OR_NONE>"
+        - "Python 3.14+"
     frontend:
-      language: "<FRONTEND_LANGUAGE_OR_NONE>"
-      framework: "<FRONTEND_FRAMEWORK_OR_NONE>"
-      build_tool: "<FRONTEND_BUILD_TOOL_OR_NONE>"
-      package_manager: "<FRONTEND_PACKAGE_MANAGER_OR_NONE>"
+      language: "none yet"
+      framework: "none yet"
+      build_tool: "none yet"
+      package_manager: "none yet"
     data:
-      database: "<DATABASE_OR_NONE>"
-      cache: "<CACHE_OR_NONE>"
-      storage: "<STORAGE_OR_NONE>"
+      database: "none yet"
+      cache: "none yet"
+      storage: "none yet"
     integrations:
-      - "<INTEGRATION_OR_NONE>"
+      - "Codex runtime"
+      - "GitHub repository"
     test:
-      unit: "<UNIT_TEST_RUNNER_OR_NONE>"
-      functional: "<FUNCTIONAL_TEST_RUNNER_OR_NONE>"
-      e2e: "<E2E_TEST_RUNNER_OR_NONE>"
+      unit: "none yet"
+      functional: "Cascade validator"
+      e2e: "none yet"
 
 paths:
   source_roots:
-    - "<SRC_ROOT>"
+    - ".codex"
+    - "docs"
+    - "scripts"
   test_roots:
-    - "<TEST_ROOT>"
+    - "scripts"
   app_entrypoints:
-    - "<APP_ENTRYPOINT>"
+    - "AGENTS.md"
+    - "CODEX.md"
   public_contracts:
-    - "<API_OR_SCHEMA_OR_UI_CONTRACT>"
+    - "harness.config.yaml"
+    - ".codex/config.toml"
+    - "scripts/validate_cascade_codex.py"
   docs_root: "docs"
   structure: "docs/structure.md"
   glossary: "docs/glossary.md"
@@ -59,22 +66,16 @@ paths:
   patterns: "docs/patterns"
 
 validation_commands:
-  install:
-    - "<INSTALL_COMMAND>"
+  install: []
   targeted:
-    - "<TARGETED_TEST_COMMAND>"
-  unit:
-    - "<UNIT_TEST_COMMAND>"
-  lint:
-    - "<LINT_COMMAND>"
-  typecheck:
-    - "<TYPECHECK_COMMAND>"
-  build:
-    - "<BUILD_COMMAND>"
+    - "python scripts/validate_cascade_codex.py"
+  unit: []
+  lint: []
+  typecheck: []
+  build: []
   functional:
-    - "<FUNCTIONAL_TEST_COMMAND>"
-  e2e:
-    - "<E2E_COMMAND>"
+    - "python scripts/validate_cascade_codex.py"
+  e2e: []
 
 routing:
   new_task_path:
@@ -100,16 +101,16 @@ vocabulary:
   prefer_codebase_terms: true
   term_sources:
     - "docs/glossary.md"
-    - "<PROJECT_SPEC_PATH>"
+    - "README.md"
   forbidden_generic_framing:
     - "generic domain layer"
     - "abstract business object"
 
 functional_acceptance:
   primary_gate: true
-  browser_or_e2e_runner: "<PLAYWRIGHT_OR_OTHER_RUNNER>"
-  api_check_runner: "<API_CHECK_RUNNER>"
-  visual_check_runner: "<VISUAL_CHECK_RUNNER_OR_NONE>"
+  browser_or_e2e_runner: "none yet"
+  api_check_runner: "none yet"
+  visual_check_runner: "none yet"
   source_blind_product_checks: true
   scenario_sources:
     - "docs/product/scenarios.md"
@@ -139,9 +140,9 @@ memory:
     - "blocked_handoff"
 
 issue_tracker:
-  provider: "<NONE_OR_TRACKER>"
-  project_key: "<PROJECT_KEY>"
-  default_project_or_team: "<TRACKER_PROJECT_OR_TEAM>"
+  provider: "none"
+  project_key: ""
+  default_project_or_team: ""
   file_when_requested_only: true
 
 patterns:
