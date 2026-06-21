@@ -55,7 +55,7 @@ paths:
   design_index: "docs/design/_index.md"
   brand_index: "docs/brand/_index.md"
   specs_index: "docs/specs/_index.md"
-  specs_incoming: "docs/specs/incoming"
+  specs_source: "docs/specs/source"
   specs_slice_pattern: "docs/specs/{slice-slug}"
   work_index: "docs/work/_index.md"
   active_work: "docs/work/active.md"

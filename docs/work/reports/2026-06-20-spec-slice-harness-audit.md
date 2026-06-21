@@ -75,7 +75,7 @@ or template name.
 | `docs/_index.md` | Docs area index | Updated to "source and spec packets." |
 | `docs/structure.md` | Folder/write-target map | Updated spec translation path to `docs/specs/{slice-slug}/` and defined one folder per issue/capability/workflow slice. |
 | `docs/specs/_index.md` | Spec index | Replaced the legacy bucket rows with `persona-context-compiler/` rows and documented `{slice-slug}/`. |
-| `docs/specs/incoming/` | Raw preserved source material | Preserved. |
+| `docs/specs/source/` | Provided source material saved mostly as-is | Replaced the old incoming-spec folder name after issue #7. |
 | `docs/specs/persona-context-compiler/` | Concrete migrated slice | Added semantic-core spec, package YAML, catalog YAML, and prompt script. |
 | Legacy processed-spec bucket | Legacy global bucket | Removed. Validator now rejects this folder if it reappears. |
 | `docs/glossary.md` | Shared vocabulary | Updated paths for persona semantic core and module catalog. |

@@ -75,7 +75,7 @@ Allowed:
 - `docs/product/`
 - `docs/design/`
 - `docs/brand/`
-- `docs/specs/incoming/` only when source preservation is useful
+- `docs/specs/source/` only when source preservation is useful
 - `docs/specs/{slice-slug}/`
 - `docs/backlog/_index.md`
 - `docs/patterns/workflow.md`
