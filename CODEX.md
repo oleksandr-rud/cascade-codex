@@ -171,7 +171,8 @@ patterns, and architecture mapping belong.
 
 Required routing:
 
-- `docs/specs/incoming/`: raw source material only when useful to preserve.
+- `docs/specs/source/`: provided source material saved mostly as-is, with only
+  compact metadata or planning status when useful.
 - `docs/specs/{slice-slug}/`: one folder per big issue, capability, or
   workflow slice; stores normalized plan-ready spec packets, package files,
   prompt scripts, and module catalogs for that slice.

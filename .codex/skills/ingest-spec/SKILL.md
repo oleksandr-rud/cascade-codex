@@ -54,8 +54,10 @@ Classify incoming material as one or more:
 6. Identify functional acceptance checks and likely automated test layer.
 7. Identify open questions and ask only blockers.
 8. Write or update the smallest relevant docs using these exact targets:
-   - `docs/specs/incoming/` for raw imported specs only when a preserved copy
-     is useful;
+   - `docs/specs/source/` for provided or imported source docs saved mostly
+     as-is when a preserved copy is useful; add only compact metadata such as
+     category, task or issue type, preservation mode, routing target, and
+     planning status;
    - `docs/specs/{slice-slug}/` for normalized plan-ready packets;
    - `docs/product/` for product intent, requirements, journeys, personas, and
      scenarios;
@@ -93,10 +95,13 @@ Classify incoming material as one or more:
 
 ## Required Packet Shape
 
-Use `templates/spec-packet.md` for normalized specs. Use
+Use `templates/source-packet.md` only for preserved source material under
+`docs/specs/source/`. Use `templates/spec-packet.md` for normalized specs. Use
 `templates/scenario-row.md` for durable scenario rows. Each packet must expose:
 
 - source identity and preservation decision;
+- category, task or issue type, preservation mode, routing target, and planning
+  status when saving preserved source material;
 - classification by write target;
 - behavior examples;
 - functional acceptance checks;
@@ -109,11 +114,13 @@ Do not store these packets in `AGENTS.md`.
 ## Templates
 
 - `templates/spec-packet.md`
+- `templates/source-packet.md`
 - `templates/scenario-row.md`
 
 ## Output
 
 - source material classified;
+- source packets preserved when needed;
 - doc routing decisions;
 - spec packets written or proposed;
 - behavior examples;

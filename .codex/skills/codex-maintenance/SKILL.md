@@ -165,7 +165,7 @@ Apply these rules before approving a harness design or file change:
 - Product/spec/design/brand/backlog context must stay separated by source:
   product facts in `docs/product/`, design facts in `docs/design/`, brand facts
   in `docs/brand/`, normalized specs in `docs/specs/{slice-slug}/`, raw sources
-  in `docs/specs/incoming/`, execution state in `docs/work/`, and candidates
+  in `docs/specs/source/`, execution state in `docs/work/`, and candidates
   in `docs/backlog/_index.md`.
 - Shared doc routing decisions live in `docs/patterns/workflow.md`; reusable
   closeout matrices use `.codex/skills/closeout/templates/doc-routing-decision.md`.

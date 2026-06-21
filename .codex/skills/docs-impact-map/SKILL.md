@@ -114,8 +114,8 @@ Use these dependency checks before deciding that one doc update is complete:
 - Use `templates/impact-map.md` for larger or multi-folder impact checks.
 - Store durable impact reports under `docs/work/reports/` only when requested,
   multi-turn, blocked, or decision-heavy.
-- Do not store raw incoming source material unless `ingest-spec` decides
-  preservation is useful.
+- Do not store raw source material under `docs/specs/source/` unless
+  `ingest-spec` decides preservation is useful.
 - Do not add new pattern files; use the existing `docs/patterns/` owner files.
 
 ## Output

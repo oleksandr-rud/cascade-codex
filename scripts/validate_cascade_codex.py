@@ -32,7 +32,7 @@ REQUIRED_FILES = [
     "docs/design/tokens.md",
     "docs/brand/_index.md",
     "docs/specs/_index.md",
-    "docs/specs/incoming/.gitkeep",
+    "docs/specs/source/.gitkeep",
     "docs/work/_index.md",
     "docs/work/active.md",
     "docs/work/lane-template.md",
@@ -99,6 +99,7 @@ REQUIRED_FILES = [
     ".codex/skills/visual-qa/references/visual-validation.md",
     ".codex/skills/visual-qa/templates/visual-validation-report.md",
     ".codex/skills/ingest-spec/templates/spec-packet.md",
+    ".codex/skills/ingest-spec/templates/source-packet.md",
     ".codex/skills/ingest-spec/templates/scenario-row.md",
     ".codex/skills/codex-maintenance/checklists/harness-maintenance.md",
     ".codex/skills/codex-maintenance/checklists/codex-surface-quality.md",
@@ -179,7 +180,7 @@ REQUIRED_PATTERN_FILES = {
 }
 
 REQUIRED_FOLDERS = [
-    "docs/specs/incoming",
+    "docs/specs/source",
     "docs/product",
     "docs/product/personas",
     "docs/design",
@@ -199,7 +200,7 @@ ALLOWED_DOC_FOLDERS = {
     "docs/product",
     "docs/product/personas",
     "docs/specs",
-    "docs/specs/incoming",
+    "docs/specs/source",
     "docs/work",
     "docs/work/examples",
     "docs/work/lanes",
@@ -305,9 +306,11 @@ STALE_TEXT_PATTERNS = [
     r"\bmulti-session\b",
     r"Default Cascade",
     r"docs/specs/transformed",
+    r"docs/specs/incoming",
     r"templates/transformed-spec\.md",
     r"\btransformed-spec\b",
     r"\bspecs_transformed\b",
+    r"\bspecs_incoming\b",
 ]
 
 SKILL_TRIGGER_REQUIREMENTS = {
@@ -447,7 +450,7 @@ SKILL_TRIGGER_REQUIREMENTS = {
 
 REQUIRED_SKILL_SURFACES = {
     "ingest-spec": [
-        "docs/specs/incoming/",
+        "docs/specs/source/",
         "docs/specs/{slice-slug}/",
         "docs/product/",
         "docs/design/",
@@ -794,7 +797,7 @@ BRAND_DOC_REF = re.compile(r"docs/brand/[A-Za-z0-9_.-]+\.md")
 SPEC_SLICE_DIR = re.compile(r"^[a-z0-9][a-z0-9-]*$")
 PACKAGE_LANE_ID = re.compile(r"^\s*-\s+id:\s*(L\d+)\b")
 LANE_TOPOLOGY_ROW = re.compile(r"^\|\s*(L\d+)\b")
-LEGACY_SPEC_SLICE_NAMES = {"transformed"}
+LEGACY_SPEC_SLICE_NAMES = {"transformed", "incoming"}
 
 
 def rel(path: Path) -> str:
@@ -1224,7 +1227,7 @@ def check_traceability_contracts(errors: list[str]) -> None:
     specs_root = ROOT / "docs" / "specs"
     if specs_root.is_dir():
         for slice_dir in specs_root.iterdir():
-            if not slice_dir.is_dir() or slice_dir.name == "incoming":
+            if not slice_dir.is_dir() or slice_dir.name == "source":
                 continue
             if slice_dir.name in LEGACY_SPEC_SLICE_NAMES:
                 errors.append(f"legacy spec slice folder is not allowed: {rel(slice_dir)}")

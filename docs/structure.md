@@ -27,8 +27,10 @@ config; keep reusable workflow rules in skills, agents, and patterns.
 
 ## Spec Translation Paths
 
-- Raw/imported specs: `docs/specs/incoming/`; preserve only when useful for
-  traceability, source comparison, or future re-normalization.
+- Source specs: `docs/specs/source/`; preserve provided or imported source
+  material mostly as-is when useful for traceability, source comparison, or
+  future re-normalization. Add only compact metadata such as category,
+  task/issue type, preservation mode, routing target, and planning status.
 - Spec packet folders: `docs/specs/{slice-slug}/`; create one folder per big
   issue, capability, or workflow slice. Use it for plan-ready packets with
   source classification, behavior examples, acceptance checks, open questions,
@@ -52,7 +54,7 @@ config; keep reusable workflow rules in skills, agents, and patterns.
   `docs/patterns/context-memory.md`.
 - Plan-ready product synthesis and authoring: existing owner docs under
   `docs/product/`, `docs/specs/{slice-slug}/`, and `docs/backlog/_index.md`.
-- Source preservation: `docs/specs/incoming/` only when `ingest-spec` decides a
+- Source preservation: `docs/specs/source/` only when `ingest-spec` decides a
   raw research or source packet should be preserved.
 - Doc routing: use the shared Doc Routing Decision Matrix before appending
   durable market, product, spec, design, brand, backlog, glossary, or pattern
