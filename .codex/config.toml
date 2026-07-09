@@ -1,3 +1,6 @@
+model = "gpt-5.6-sol"
+model_reasoning_effort = "high"
+
 [harness]
 name = "cascade"
 version = "1.0.0"
@@ -9,6 +12,7 @@ default = [
   "context",
   "ingest-spec",
   "docs-impact-map",
+  "pattern-context",
   "orchestrate-work",
   "plan-change",
   "functional-qa",
@@ -21,17 +25,37 @@ default = [
 conditional_discovery = "discover"
 conditional_business_analysis = "market-validation"
 conditional_spec_composition = "compose-spec"
+conditional_harness_evaluation = "harness-evaluation"
 test_autorepair_condition = "only if stale tests"
 exception_paths = ["issue-intake"]
+
+[agents]
+max_threads = 6
+max_depth = 1
 
 [memory]
 glossary = "docs/glossary.md"
 work = "docs/work"
-research = "docs/patterns/context-memory.md"
+research = "docs/patterns/context-memory/index.md"
 product = "docs/product"
 specs = "docs/specs"
 patterns = "docs/patterns"
+pattern_context_builder = "scripts/build_pattern_context_pack.py"
+pattern_context_packs = "docs/patterns/*/*.pack.yaml"
 backlog = "docs/backlog"
+
+[harness_evals]
+planning_model = "gpt-5.6-sol"
+execution_model = "gpt-5.6-terra"
+golden_model = "gpt-5.6-sol"
+default_model_profile = "execution"
+cases = "evals/harness/skill-cases.json"
+interactions = "evals/harness/interactions.json"
+catalog = "evals/harness/scenarios.generated.json"
+response_schema = "evals/harness/response.schema.json"
+judge_schema = "evals/harness/judge-response.schema.json"
+runner = "scripts/run_harness_evals.py"
+artifacts = ".artifacts/harness-evals"
 
 [mcp_servers.context7]
 command = "npx"
@@ -45,3 +69,4 @@ harness_design = "agent-engineer"
 business_analysis = "business-analyst"
 security_review = "security"
 design_review = "designer"
+golden_evaluation = "harness-evaluator"

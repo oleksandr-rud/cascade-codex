@@ -43,7 +43,7 @@ labels. Until application source exists, treat this repository as a scaffold:
   `harness.config.yaml`, `docs/`, `.codex/skills/`, or `.codex/agents/`.
 - Treat `.codex/skills/` and `.codex/agents/` as canonical harness assets.
 - Create stack-specific source roots only when the application implementation
-  starts, then update `harness.config.yaml` and `docs/patterns/boundaries.md`.
+  starts, then update `harness.config.yaml` and `docs/patterns/boundaries/index.md`.
 - Run the Cascade validator after harness, docs, role, or skill edits.
 
 ## Implementation Workflow
@@ -60,7 +60,7 @@ product-visible behavior change should start with a short plan before edits:
 
 Use the new-task route for non-atomic work:
 
-`context -> ingest-spec/discover if needed -> docs-impact-map when durable docs may affect sibling rules -> orchestrate-work -> plan-change -> functional-qa -> implement-change -> review-change -> validate-change -> test-autorepair only if stale tests -> closeout`
+`context -> ingest-spec/discover if needed -> docs-impact-map when durable docs may affect sibling rules -> pattern-context when reusable pattern packs are needed -> orchestrate-work -> plan-change -> functional-qa -> implement-change -> review-change -> validate-change -> test-autorepair only if stale tests -> closeout`
 
 `issue-intake` is an explicit exception path for issue bodies or tracker
 tickets. Human review is an explicit open-question or exception path, not a
@@ -74,7 +74,9 @@ cleanup, or single-line changes with no behavior or contract impact.
 Current available validation:
 
 ```bash
-python scripts/validate_cascade_codex.py
+python3 scripts/validate_cascade_codex.py
+python3 scripts/run_harness_evals.py catalog --check
+python3 scripts/run_harness_evals.py self-test
 ```
 
 No install, unit, lint, typecheck, build, or end-to-end command exists until

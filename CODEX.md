@@ -15,11 +15,23 @@ bridge when a task needs workflow detail.
 
 If docs and code disagree, follow current code and report the drift.
 
+## Model Routing
+
+- Pin `gpt-5.6-sol` for the default runtime, orchestration, planning,
+  synthesis, security reasoning, and golden harness evaluation.
+- Pin `gpt-5.6-terra` for bounded read-heavy scans, onboarding inventory,
+  design evidence review, and target-agent execution probes.
+- Keep model choices in `.codex/config.toml`, custom-agent TOML files, and the
+  adapter config. Do not inherit an unrecorded user-level model for replayable
+  harness experiments.
+- A diagnostic model override is allowed only when its value is captured in
+  the run metadata; it does not change the canonical pins.
+
 ## New Task And Spec Route
 
 Use this cascade for non-atomic work:
 
-`context -> ingest-spec/discover/market-validation/synthesis-to-spec/compose-spec if needed -> docs-impact-map when durable docs may affect sibling rules -> orchestrate-work -> plan-change -> functional-qa -> implement-change -> review-change -> validate-change -> test-autorepair only if stale tests -> closeout`
+`context -> ingest-spec/discover/market-validation/synthesis-to-spec/compose-spec if needed -> docs-impact-map when durable docs may affect sibling rules -> pattern-context when reusable pattern packs are needed -> orchestrate-work -> plan-change -> functional-qa -> implement-change -> review-change -> validate-change -> test-autorepair only if stale tests -> closeout`
 
 - `context`: re-orient to branch, active work lanes, recent handoff state, and
   backlog.
@@ -44,6 +56,9 @@ Use this cascade for non-atomic work:
 - `docs-impact-map`: proactively check cross-folder product, design, brand,
   spec, backlog, glossary, and pattern dependencies before planning or
   closeout.
+- `pattern-context`: retrieve, compile, create, or update bounded
+  `docs/patterns/{entry}/` metadata and context packs when reusable pattern
+  memory is in scope.
 - `orchestrate-work`: split, serialize, track, or merge work lanes when the
   work can run in parallel or needs dependency management.
 - `plan-change`: capture product/design intent, codebase vocabulary, behavior
@@ -98,6 +113,9 @@ standalone workflow router.
 - `ingest-spec`: use to convert source specs into the project docs structure.
 - `docs-impact-map`: use when one product/design/brand/spec/backlog/glossary
   doc update may require sibling doc checks or follow-up routing.
+- `pattern-context`: use when a task needs selected pattern context, or when
+  onboarding, planning, validation, or closeout creates or updates a pattern
+  entry or `*.pack.yaml` context pack.
 - `adapt-harness`: use when wiring this harness into a new repository.
 - `project-onboarder`: use for new-project setup, harness installation,
   onboarding, or migration of existing instructions into the Cascade
@@ -113,16 +131,20 @@ standalone workflow router.
   surface audits across `AGENTS.md`, `CODEX.md`, skills, agents, config,
   hooks, MCP/tools, plugins, subagents, permissions, memory, observability,
   evals, scope, handoffs, file-tree inventories, and validator changes.
+- `harness-evaluation`: use for generated Cascade scenarios, read-only live
+  experiments, JSONL trace capture, deterministic grading, golden semantic
+  evaluation, and regression promotion.
 - `develop-skill`: use for creating or refactoring reusable skills.
 - `issue-intake`: use only when a user asks for an issue body, tracker ticket,
   or durable bug-report artifact.
 
 ## Role Contracts
 
-Readable role contracts live in `.codex/agents/{name}/AGENT.md`; TOML manifests
-live in `.codex/agents/{name}.toml` with `[agent]` identity and `[paths]`
-wiring. Use role contracts locally. Spawn or delegate only when the user
-explicitly authorizes parallel agents.
+Readable role contracts live in `.codex/agents/{name}/AGENT.md`; standalone
+Codex custom-agent files live in `.codex/agents/{name}.toml` with top-level
+`name`, `description`, `model`, and `developer_instructions`; role skill maps live in
+`.codex/agents/{name}/skills.yaml`. Use role contracts locally. Spawn or
+delegate only when the user explicitly authorizes parallel agents.
 
 - `orchestrator`: normal task orchestration and explicit workflow-packet
   routing.
@@ -138,14 +160,16 @@ explicitly authorizes parallel agents.
   validation planning.
 - `designer`: UX flow review, reusable design-system routing, accessibility
   review, screenshot-backed visual validation, and design handoff planning.
+- `harness-evaluator`: read-only golden evaluation of completed Cascade
+  scenario outputs and traces after deterministic hard gates run.
 
 Cascade is intentionally skill-first except where a repeated long-running
 workflow or specialist review lane needs a durable role boundary. Architecture
 review, functional acceptance, scenario checks, product testing, and issue
 intake remain skills in the cascade rather than separate agents.
-`business-analyst`, `security`, and `designer` exist because long discovery,
-security review, and design review need role boundaries that are separate from
-implementation.
+`business-analyst`, `security`, `designer`, and `harness-evaluator` exist
+because long discovery, specialist review, and golden trace adjudication need
+role boundaries that are separate from implementation.
 
 ## Work Packet
 
@@ -180,6 +204,9 @@ Required routing:
 - `docs/design/`: interaction, accessibility, tokens, components, constraints.
 - `docs/brand/`: naming, tone, content, visual direction.
 - `docs/work/`: active execution state and durable work reports.
+- `docs/patterns/{entry}/`: reusable pattern memory with `index.md` plus
+  `*.pack.yaml` files that contain summary, routing, graph-like documents, and
+  selectable sections.
 - `docs/glossary.md`: codebase vocabulary.
 
 ## Product And Spec Packet
@@ -211,9 +238,24 @@ backlog, glossary, or pattern rules.
 
 ## Evidence And Context
 
-Use `docs/patterns/workflow.md` for scoped coverage from current work-lane
-criteria to changed code and validation. At closeout, scan the final diff for
+Use `docs/patterns/workflow/index.md` for scoped coverage from current work-lane
+criteria to changed code and validation. Use
+`scripts/build_pattern_context_pack.py` to compile selected pattern-pack text
+from `docs/patterns/*/*.pack.yaml` when prompt context should include only
+specific rules. At closeout, scan the final diff for
 durable product, design, brand, spec, architecture, stack/runtime, or glossary
 changes and append only thin sourced doc diffs to the existing owner docs.
 Persist only reusable lessons, required handoff state, or required thin diffs;
 avoid decorative documentation churn.
+
+## Harness Evaluation
+
+Canonical harness scenarios and schemas live under `evals/harness/`. Generate
+and check the 7-case-per-skill catalog with
+`python3 scripts/run_harness_evals.py catalog --write` and `catalog --check`.
+Live target runs are read-only and store raw JSONL, normalized traces, grades,
+and reports under ignored `.artifacts/harness-evals/`. Use the
+`harness-evaluator` role only after target execution; no live trace means no
+live scenario pass. Run `python3 scripts/run_harness_evals.py judge --run-dir
+.artifacts/harness-evals/<run-id>` for Sol-pinned semantic adjudication of
+failed or non-perfect cases.

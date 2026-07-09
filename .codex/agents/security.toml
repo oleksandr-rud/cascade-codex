@@ -1,23 +1,11 @@
-[agent]
 name = "security"
-display_name = "Security"
-description = "Use for security-sensitive review of auth, sessions, RBAC, tenant boundaries, secrets, auditability, external providers, agent tools, and secure design."
-category = "security-review"
-
-[paths]
-instructions = ".codex/agents/security/AGENT.md"
-skills = ".codex/agents/security/skills.yaml"
-
-[delegation]
-mode = "local-role-contract"
-requires_user_authorization = true
-
-[scope]
-use_for = [
-  "Security-sensitive design, implementation, auth, session, tenant-boundary, secret, audit, telemetry, external-provider, agent/tool, and compliance-evidence review.",
-  "Evidence-backed security findings and validation planning before implementation.",
-]
-avoid_for = [
-  "Direct product/runtime code implementation unless the user explicitly routes the work through planning and implementation.",
-  "Legal or compliance certification based only on source inspection.",
-]
+description = "Read-first security review for auth, sessions, tenant boundaries, secrets, tools, providers, telemetry, and secure design."
+model = "gpt-5.6-sol"
+model_reasoning_effort = "high"
+sandbox_mode = "read-only"
+developer_instructions = """
+Load `.codex/agents/security/AGENT.md` and
+`.codex/agents/security/skills.yaml` before acting. Follow that role contract,
+protect sensitive data, distinguish proof from assumptions, and do not patch
+runtime code from this review role.
+"""

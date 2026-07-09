@@ -24,7 +24,7 @@ idea. Do not make discovery mandatory for ordinary implementation planning.
 2. Current codebase vocabulary, UI copy, public contracts, and existing tests.
 3. Existing `docs/product/`, `docs/design/`, `docs/brand/`, and `docs/specs/`.
 4. `docs/glossary.md`.
-5. `docs/patterns/workflow.md` for the shared Doc Routing Decision Matrix.
+5. `docs/patterns/workflow/index.md` for the shared Doc Routing Decision Matrix.
 6. External research only when the user requests it or the runtime has an
    approved source/tool.
 
@@ -50,7 +50,7 @@ idea. Do not make discovery mandatory for ordinary implementation planning.
    - route ready artifact writing to `compose-spec` when source identity and
      owner docs are clear.
 5. Trajectories: for each product/design problem, requirement, or gap, run
-   several trajectory passes per `docs/patterns/workflow.md#trajectory-coverage`;
+   several trajectory passes per `docs/patterns/workflow/index.md#trajectory-coverage`;
    each trajectory must cover a real problem, requirement, or gap, and discovery
    synthesis must preserve major and minor details from every pass.
 6. Personas: create or update `docs/product/personas/` when user roles drive

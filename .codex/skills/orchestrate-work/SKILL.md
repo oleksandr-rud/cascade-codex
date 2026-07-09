@@ -20,7 +20,7 @@ This skill coordinates work; it does not patch product/runtime code by itself.
 3. Current code, tests, changed files, and planned validation commands.
 4. `CODEX.md`, `AGENTS.md`, `harness.config.yaml`, and relevant workflow
    skills.
-5. `docs/patterns/workflow.md`.
+5. `docs/patterns/workflow/index.md`.
 6. `docs/structure.md` for lane/example/report write targets.
 
 ## Task Routing Table

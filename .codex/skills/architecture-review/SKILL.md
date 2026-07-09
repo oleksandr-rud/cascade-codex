@@ -55,5 +55,5 @@ behavior, or crosses integration boundaries.
 Use `checklists/deep-module-review.md` for story/epic scope or abstraction
 pressure.
 
-Load `docs/patterns/boundaries.md` for folder mapping, layer rules, API
+Load `docs/patterns/boundaries/index.md` for folder mapping, layer rules, API
 contracts, adapters, seams, and agentic runtime invariants.

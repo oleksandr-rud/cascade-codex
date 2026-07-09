@@ -30,6 +30,9 @@ portability.
   validation, and handoff contracts before delegated work.
 - Use `agents-best-practices` for provider-neutral design or audit of Cascade
   or target-project agent systems.
+- Use `harness-evaluation` to generate and execute Cascade scenarios, capture
+  JSONL traces, apply deterministic hard gates, and prepare evidence for the
+  read-only `harness-evaluator` role.
 - Use `architecture-review` when agent/runtime work touches module boundaries,
   public contracts, state machines, adapters, or data flow.
 - Use `secure-design` when agent tools, connectors, external writes, memory,
@@ -37,6 +40,9 @@ portability.
 - Use `codex-maintenance` to audit and change the right Codex surface for
   skills, agents, config, hooks, MCP/tools, plugins, subagents, permissions,
   source context, observability, evals, scope, and handoffs.
+- Use `pattern-context` when changing `docs/patterns/{entry}/` pack metadata,
+  `*.pack.yaml` context packs, or prompt-context previews built from pattern
+  packs.
 - Build skills with clear triggers, anti-triggers, source order, outputs, and
   validation gates.
 - Use `codex-maintenance` for Codex-specific surfaces, current-harness

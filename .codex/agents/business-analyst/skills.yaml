@@ -19,6 +19,8 @@ skills:
     source: .codex/skills/adversarial-critic/SKILL.md
   - name: docs-impact-map
     source: .codex/skills/docs-impact-map/SKILL.md
+  - name: pattern-context
+    source: .codex/skills/pattern-context/SKILL.md
   - name: ingest-spec
     source: .codex/skills/ingest-spec/SKILL.md
   - name: synthesis-to-spec

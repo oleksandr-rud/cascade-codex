@@ -31,7 +31,7 @@ Owner route: `<project-onboarder | designer | security | agent-engineer | other>
 
 | Boundary | Owns | Must Not Own | Evidence | Doc Target |
 |---|---|---|---|---|
-| `<boundary>` | `<responsibility>` | `<excluded-responsibility>` | `<source>` | `docs/patterns/boundaries.md` |
+| `<boundary>` | `<responsibility>` | `<excluded-responsibility>` | `<source>` | `docs/patterns/boundaries/` or bounded `docs/patterns/{entry}/` via `pattern-context` |
 
 ## Security And Data Handling
 

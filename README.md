@@ -18,9 +18,11 @@ work-lane tracking, and release validation into one reusable package.
 - Harness name: `cascade`
 - Runtime bridge: `CODEX.md`
 - Adapter template: `harness.config.example.yaml`
-- Local role contracts: 6
-- Registered skills: 36
+- Local role contracts: 7
+- Registered skills: 38
 - Canonical skill and role source: `.codex/skills/` and `.codex/agents/`
+- Planning and golden model: `gpt-5.6-sol`
+- Read-heavy execution model: `gpt-5.6-terra`
 - Validator: `python3 scripts/validate_cascade_codex.py`
 
 The validator filename and output label still use `cascade_codex` as a stable
@@ -34,10 +36,12 @@ compatibility name. Treat that as a path/API label, not the product name.
 | `CODEX.md` | Runtime bridge: load order, canonical task route, optional escalations, role references, work packets, write targets, and closeout evidence rules. |
 | `.codex/config.toml` | Harness registry: name, bridge path, config template, canonical route, memory roots, MCP server config, and role registry. |
 | `.codex/skills/` | Reusable workflow skills with trigger-focused frontmatter, source order, output contracts, templates, checklists, and references where needed. |
-| `.codex/agents/` | Local role contracts, TOML manifests, skill maps, delegation policy, and specialist checklists. |
+| `.codex/agents/` | Codex-compatible custom-agent TOML files plus local role contracts, skill maps, delegation policy, and specialist checklists. |
+| `evals/harness/` | Curated per-skill cases, cross-skill collisions, a generated golden catalog, and target/judge response schemas. |
+| `.artifacts/harness-evals/` | Ignored local JSONL traces, normalized runs, deterministic grades, and reports. |
 | `harness.config.example.yaml` | Target-repository adapter template for stack, roots, validation commands, routing, functional acceptance, memory, tracker, and pattern paths. |
 | `docs/structure.md` | Folder/write-target map for specs, product, design, brand, active work, backlog, patterns, and architecture facts. |
-| `docs/patterns/` | Reusable workflow, boundary, testing, and context-memory rules. |
+| `docs/patterns/` | Reusable workflow, boundary, testing, and context-memory entries with YAML metadata and selectable context packs. |
 | `docs/work/` | Active work registry, lane template, examples, lane packets, reports, and handoffs. |
 | `docs/specs/`, `docs/product/`, `docs/design/`, `docs/brand/` | Durable owner docs for source material, per-slice spec packets, product intent, design constraints, and naming/content direction. |
 | `docs/backlog/`, `docs/glossary.md` | Follow-up candidates and shared codebase/product vocabulary. |
@@ -52,7 +56,7 @@ reusable workflow skills and role contracts in a complete release package.
 Cascade routes non-atomic engineering work through this path:
 
 ```text
-context -> ingest-spec/discover/market-validation/synthesis-to-spec/compose-spec if needed -> docs-impact-map when durable docs may affect sibling rules -> orchestrate-work -> plan-change -> functional-qa -> implement-change -> review-change -> validate-change -> test-autorepair only if stale tests -> closeout
+context -> ingest-spec/discover/market-validation/synthesis-to-spec/compose-spec if needed -> docs-impact-map when durable docs may affect sibling rules -> pattern-context when reusable pattern packs are needed -> orchestrate-work -> plan-change -> functional-qa -> implement-change -> review-change -> validate-change -> test-autorepair only if stale tests -> closeout
 ```
 
 Use `issue-intake` only for issue bodies or tracker tickets. Use
@@ -86,14 +90,15 @@ needs active lanes, serialization, merge ownership, or validation scheduling.
 Cascade is skill-first. Role contracts exist where a repeated workflow needs a
 clear boundary:
 
-| Role | Owns |
-|---|---|
-| `orchestrator` | Normal task routing plus explicit workflow-packet routing across context, ingest, impact, planning, acceptance, implementation, review, validation, repair, and closeout. |
-| `project-onboarder` | New-repository setup, harness adaptation, config/docs migration, validation, and setup handoff. |
-| `agent-engineer` | Cascade maintenance and target-project agent/LLM system design, including agent graphs, model/tool loops, retrieval, memory, permissions, tool contracts, observability, cost/safety controls, evals, and Codex surface decisions. |
-| `business-analyst` | Long market validation, competitor/pain/economics lanes, evidence grading, and synthesis into specs. |
-| `security` | Security-sensitive review, auth/session/RBAC and tenant-boundary analysis, secure-design review, audit evidence, and security validation planning. |
-| `designer` | UX flow review, accessibility review, visual validation, design-system routing, and design handoff planning. |
+| Role | Model | Owns |
+|---|---|---|
+| `orchestrator` | `gpt-5.6-sol` | Normal task routing plus explicit workflow-packet routing across context, ingest, impact, planning, acceptance, implementation, review, validation, repair, and closeout. |
+| `project-onboarder` | `gpt-5.6-terra` | New-repository setup, read-heavy harness adaptation, config/docs migration, validation, and setup handoff. |
+| `agent-engineer` | `gpt-5.6-sol` | Cascade maintenance and target-project agent/LLM system design, including agent graphs, model/tool loops, retrieval, memory, permissions, tool contracts, observability, cost/safety controls, evals, and Codex surface decisions. |
+| `business-analyst` | `gpt-5.6-sol` | Long market validation, competitor/pain/economics lanes, evidence grading, and synthesis into specs. |
+| `security` | `gpt-5.6-sol` | Security-sensitive review, auth/session/RBAC and tenant-boundary analysis, secure-design review, audit evidence, and security validation planning. |
+| `designer` | `gpt-5.6-terra` | Read-heavy UX flow review, accessibility review, visual validation, design-system routing, and design handoff planning. |
+| `harness-evaluator` | `gpt-5.6-sol` | Read-only golden evaluation of completed Cascade scenario outputs and traces after deterministic hard gates. |
 
 Agent Engineer is not limited to Cascade internals. Use it for target-project
 agent and LLM systems too: framework-backed agent runtimes, project-owned
@@ -103,7 +108,7 @@ When those decisions require product/runtime code changes, the implementation
 still routes through planning, architecture or secure-design review when
 needed, `implement-change`, and validation.
 
-The 36 registered skills cluster into:
+The 38 registered skills cluster into:
 
 - Core execution and workflow packets: `context`, `agentic-workflow-builder`,
   `orchestrate-work`, `plan-change`, `functional-qa`, `implement-change`,
@@ -118,7 +123,8 @@ The 36 registered skills cluster into:
   `auth-analysis`, `secure-design`, `ux-flow-review`,
   `accessibility-review`, `visual-qa`.
 - Harness and agent-system design/maintenance: `agents-best-practices`,
-  `develop-skill`, `codex-maintenance`, `adapt-harness`.
+  `develop-skill`, `codex-maintenance`, `pattern-context`,
+  `adapt-harness`, `harness-evaluation`.
 
 ## Documentation And Memory
 
@@ -131,12 +137,20 @@ Cascade keeps durable facts in owner docs instead of growing prompt files:
   stay under `docs/`.
 - Active execution state and evidence stay under `docs/work/`.
 - Reusable workflow lessons live in `.codex/skills/`, `.codex/agents/`, or
-  `docs/patterns/`.
+  bounded `docs/patterns/{entry}/` folders with metadata and context packs.
+
+Pattern entries include `index.md` and one or more `*.pack.yaml` files. Pack
+YAML owns `summary`, `routing`, graph-like `documents`, and selectable
+document `sections`. Use
+`python3 scripts/build_pattern_context_pack.py --list-packs` to inspect
+available packs and `--pack`, `--section`, `--tag`, or `--query` to compile
+only the needed rule text.
 
 The write-target map is intentionally narrow. The validator rejects unexpected
-docs folders, stale active skill references, unwired skills, invalid TOML,
-overgrown `AGENTS.md`, stale naming, project-specific leakage, and broken
-traceability IDs.
+docs folders, stale active skill references, unwired skills, invalid custom
+agent TOML, overgrown `AGENTS.md`, stale naming, project-specific token
+leakage, stale eval catalogs, and broken traceability IDs. The deeper harness
+audit adds missing-resource, semantic leakage, route, runtime, and trace checks.
 
 ## Setup In A Target Repository
 
@@ -205,7 +219,7 @@ Manual setup still works when an agent is unavailable:
    contracts, validation commands, tracker settings, and memory paths in
    `harness.config.yaml`.
 2. Replace placeholders in `AGENTS.md`, `docs/glossary.md`,
-   `docs/patterns/boundaries.md`, and any product/design/spec docs that should
+   `docs/patterns/boundaries/index.md`, and any product/design/spec docs that should
    guide future work.
 3. Add the release-bundle `.codex/skills/` and `.codex/agents/` assets when the
    target runtime should load reusable Cascade skills or role contracts.
@@ -227,10 +241,18 @@ Expected output includes:
 
 ```text
 cascade_codex_status=PASS
-agents=6
-skills=36
+agents=7
+skills=38
 project_specific_leakage=0
 standalone_qa_refs=0
+```
+
+Run deterministic harness-eval checks with:
+
+```bash
+python3 scripts/run_harness_evals.py catalog --check
+python3 scripts/run_harness_evals.py self-test
+python3 scripts/run_harness_evals.py audit --runtime
 ```
 
 Run repository-specific install, test, typecheck, lint, build, functional, and

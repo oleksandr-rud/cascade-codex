@@ -6,7 +6,7 @@ This directory contains reusable workflow skills and role contracts.
 
 Core cascade:
 
-`context -> ingest-spec/discover/market-validation/synthesis-to-spec/compose-spec if needed -> docs-impact-map -> orchestrate-work -> plan-change -> functional-qa -> implement-change -> review-change -> validate-change -> test-autorepair only if stale tests -> closeout`
+`context -> ingest-spec/discover/market-validation/synthesis-to-spec/compose-spec if needed -> docs-impact-map -> pattern-context when reusable pattern packs are needed -> orchestrate-work -> plan-change -> functional-qa -> implement-change -> review-change -> validate-change -> test-autorepair only if stale tests -> closeout`
 
 Supporting skills:
 
@@ -15,6 +15,8 @@ Supporting skills:
 - `agents-best-practices`
 - `codex-maintenance`
 - `develop-skill`
+- `pattern-context`
+- `harness-evaluation`
 - `discover`
 - `market-validation`
 - `pain-mining`
@@ -53,9 +55,15 @@ Supporting skills:
 - `designer`: owns UX flow review, reusable design-system routing,
   accessibility review, screenshot-backed visual validation, and design
   handoff planning.
+- `harness-evaluator`: owns read-only golden evaluation of completed harness
+  scenario outputs and JSONL traces after deterministic grading.
 
-Agent TOML manifests use `[agent]` for identity, `[paths]` for role-contract
-files, `[delegation]` for spawn policy, and `[scope]` for use/avoid boundaries.
+Agent TOML files use the current Codex custom-agent schema with top-level
+`name`, `description`, `model`, and `developer_instructions`. Planning,
+synthesis, security reasoning, and golden evaluation roles pin
+`gpt-5.6-sol`; bounded read-heavy roles pin `gpt-5.6-terra`. Detailed Cascade scope,
+delegation, workflow, and skill mapping stay in the companion `AGENT.md` and
+`skills.yaml` files.
 
 Cascade is intentionally skill-first except for repeated long-running or
 specialist review boundaries such as business analysis, security review, and

@@ -13,7 +13,7 @@ Status: `<proposed | validated | blocked | superseded>`
 
 ## Doc Routing Decision
 
-Use `docs/patterns/workflow.md` for the shared Doc Routing Decision Matrix.
+Use `docs/patterns/workflow/index.md` for the shared Doc Routing Decision Matrix.
 
 | Fact | Source | Owner Target | Action | Bloat Check | Evidence | Next Gate |
 |---|---|---|---|---|---|---|
@@ -41,4 +41,4 @@ Use `docs/patterns/workflow.md` for the shared Doc Routing Decision Matrix.
 
 ## Next Route
 
-- `<discover | market-validation | synthesis-to-spec | compose-spec | ingest-spec | orchestrate-work | plan-change | functional-qa | closeout | codex-maintenance>`
+- `<discover | market-validation | synthesis-to-spec | compose-spec | ingest-spec | pattern-context | orchestrate-work | plan-change | functional-qa | closeout | codex-maintenance>`

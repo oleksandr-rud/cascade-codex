@@ -24,7 +24,7 @@ easier to navigate.
    `docs/brand/`, plus any `docs-impact-map` report for current source docs.
 6. Feature Impact Matrix rows from the current work lane when present.
 7. `docs/glossary.md` and durable patterns.
-8. `docs/structure.md` and `docs/patterns/workflow.md` when the plan changes
+8. `docs/structure.md` and `docs/patterns/workflow/index.md` when the plan changes
    active work lanes or write targets.
 
 If code and docs disagree, follow code and report the drift.
@@ -61,7 +61,7 @@ If code and docs disagree, follow code and report the drift.
 1. State customer pain, intended behavior, assumptions, success criteria, and
    non-goals.
 2. For each problem, requirement, or gap, run several trajectory passes per
-   `docs/patterns/workflow.md#trajectory-coverage`; every trajectory must cover
+   `docs/patterns/workflow/index.md#trajectory-coverage`; every trajectory must cover
    a real problem, requirement, or gap, and the final plan must synthesize those
    trajectories losslessly without omitting major or minor inspected details.
 3. Map codebase context: entry points, modules, state, data, adapters,

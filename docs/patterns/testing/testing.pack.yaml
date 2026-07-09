@@ -1,0 +1,95 @@
+pack_id: testing-core
+entry_id: testing
+title: Testing Core Pattern Pack
+kind: pattern-context-pack
+owner: Cascade maintainers
+summary: "Selectable validation rules for functional acceptance, browser and E2E evidence, scenario tests, and semantic test autorepair."
+description: "Use this pack when proving behavior, choosing validation layers, or repairing stale tests."
+routing:
+  use_when:
+    - "A task needs executable or manual evidence for visible behavior, public API contracts, CLI journeys, scenarios, or stale tests."
+  do_not_use_when:
+    - "The task only needs architecture ownership or context retrieval rules."
+  load_when:
+    - route: functional-acceptance
+      use_when: "Visible behavior, public API, CLI, journey, side effect, or scenario evidence is required."
+    - route: stale-test-repair
+      use_when: "Automated tests are failing, flaky, or stale while product behavior is believed correct."
+  write_when:
+    - "A reusable validation, browser, scenario, or semantic repair rule changes."
+  defer_when:
+    - "Expected behavior is ambiguous and needs plan-change or functional-qa before repair."
+  primary_skills:
+    - functional-qa
+    - validate-change
+    - test-autorepair
+  related_roles:
+    - orchestrator
+    - project-onboarder
+    - security
+    - designer
+selection_rules:
+  - "Use semantic-test-autorepair only when behavior is believed correct and test drift is the likely problem."
+documents:
+  - path: docs/patterns/testing/index.md
+    kind: pattern-entry
+    description: "Durable functional and semantic test rules."
+    trigger_when:
+      - "Validation evidence, browser checks, E2E checks, scenario tests, or stale test repair is in scope."
+    sections:
+      - id: functional-acceptance
+        title: Functional Acceptance
+        anchor: "## Functional Acceptance"
+        summary: "Defines behavior evidence layers and PASS, FAIL, BLOCKED, NOT_RUN, and GAP outcomes."
+        routing_description: "Use before validation planning, functional-qa, and validate-change."
+        tags:
+          - functional-qa
+          - validation
+          - evidence
+      - id: browser-and-e2e
+        title: Browser And E2E
+        anchor: "## Browser And E2E"
+        summary: "Rules for locators, credentials, cleanup, waits, and trace or screenshot evidence."
+        routing_description: "Use when browser, E2E, visual, or source-blind checks are planned."
+        tags:
+          - browser
+          - e2e
+          - visual
+      - id: scenario-tests
+        title: Scenario Tests
+        anchor: "## Scenario Tests"
+        summary: "Traceability and fixture rules for product scenarios and functional tests."
+        routing_description: "Use when docs/product/scenarios or work lanes need executable scenario coverage."
+        tags:
+          - scenarios
+          - functional-qa
+          - traceability
+      - id: semantic-test-autorepair
+        title: Semantic Test Autorepair
+        anchor: "## Semantic Test Autorepair"
+        summary: "Failure classes and forbidden repairs for stale, flaky, or failing tests."
+        routing_description: "Use after evidence shows product behavior still matches the expected contract."
+        tags:
+          - test-autorepair
+          - stale-tests
+          - validation
+  - path: .codex/skills/functional-qa/SKILL.md
+    kind: skill
+    description: "Primary product-visible acceptance gate."
+    trigger_when:
+      - "Behavior needs evidence through examples, browser/API journeys, or regression probes."
+  - path: .codex/skills/validate-change/SKILL.md
+    kind: skill
+    description: "Evidence aggregation and status terms."
+    trigger_when:
+      - "A change needs validation evidence aggregated into a final status."
+  - path: .codex/skills/test-autorepair/SKILL.md
+    kind: skill
+    description: "Stale, flaky, or failing test repair workflow."
+    trigger_when:
+      - "Tests fail while product behavior is believed correct and expectations may be stale."
+  - path: scripts/build_pattern_context_pack.py
+    kind: script
+    description: "Builds selected text previews from pack metadata."
+    trigger_when:
+      - "A prompt needs selected context from pattern-pack metadata."

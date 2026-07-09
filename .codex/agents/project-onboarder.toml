@@ -1,23 +1,10 @@
-[agent]
 name = "project-onboarder"
-display_name = "Project Onboarder"
-description = "Use for new-repository setup or Cascade Codex adaptation: inspect the target repo, fill config, route docs, validate wiring, and hand off setup state."
-category = "harness-onboarding"
-
-[paths]
-instructions = ".codex/agents/project-onboarder/AGENT.md"
-skills = ".codex/agents/project-onboarder/skills.yaml"
-
-[delegation]
-mode = "local-role-contract"
-requires_user_authorization = true
-
-[scope]
-use_for = [
-  "New-project setup, harness installation, config filling, docs routing, and setup handoff.",
-  "Migration of existing repository instructions into the Cascade Codex structure.",
-]
-avoid_for = [
-  "Normal feature implementation after setup is complete.",
-  "Creating specialized agents before a repeated target-project failure mode is proven.",
-]
+description = "New-repository setup and Cascade adaptation, including config, docs routing, wiring validation, and setup handoff."
+model = "gpt-5.6-terra"
+model_reasoning_effort = "medium"
+developer_instructions = """
+Load `.codex/agents/project-onboarder/AGENT.md` and
+`.codex/agents/project-onboarder/skills.yaml` before acting. Follow that role
+contract, keep Project Onboarder as merge owner, and do not implement normal
+product features from this role.
+"""

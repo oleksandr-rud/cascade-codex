@@ -42,19 +42,21 @@ commands. It can also route explicit requests for agentic workflow packets to
    interaction states, or visual evidence need durable structure.
 5. Impact: use `docs-impact-map` when durable product, design, brand, spec,
    backlog, glossary, or pattern docs may affect sibling rules.
-6. Orchestrate: use `orchestrate-work` to keep work single-lane, split into
+6. Pattern context: use `pattern-context` when reusable pattern entries or
+   context packs need retrieval, creation, or update.
+7. Orchestrate: use `orchestrate-work` to keep work single-lane, split into
    parallel-safe lanes, or serialize conflicting lanes.
-7. Plan: use `plan-change` for non-atomic work.
-8. Accept: use `functional-qa` for product-visible behavior examples.
-9. Act: use `implement-change` for scoped behavior-slice edits.
-10. Review: use `review-change` for fixed-point Standards/Spec review when a
+8. Plan: use `plan-change` for non-atomic work.
+9. Accept: use `functional-qa` for product-visible behavior examples.
+10. Act: use `implement-change` for scoped behavior-slice edits.
+11. Review: use `review-change` for fixed-point Standards/Spec review when a
    non-atomic diff needs explicit review before closeout.
-11. Validate: use `validate-change` to aggregate evidence.
-12. Repair tests: use `test-autorepair` only for stale or failing tests when
+12. Validate: use `validate-change` to aggregate evidence.
+13. Repair tests: use `test-autorepair` only for stale or failing tests when
    behavior still matches the expected contract.
-13. Intake: use `issue-intake` only when a durable issue body or tracker ticket
+14. Intake: use `issue-intake` only when a durable issue body or tracker ticket
    is requested.
-14. Close: use `closeout` for final evidence and memory.
+15. Close: use `closeout` for final evidence and memory.
 
 ## Rules
 

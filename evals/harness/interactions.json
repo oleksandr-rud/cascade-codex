@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "interactions": [
+    {"id": "HX-001", "prompt": "Draft a tracker issue from an observed screenshot without validation or fixes.", "expected_primary": "issue-intake", "forbidden_primary": ["functional-qa", "visual-qa"]},
+    {"id": "HX-002", "prompt": "Reproduce a screenshot-reported bug in the running UI and prove the visible failure.", "expected_primary": "functional-qa", "forbidden_primary": ["issue-intake"]},
+    {"id": "HX-003", "prompt": "Review a screenshot for spacing and overflow, then route any keyboard concern separately.", "expected_primary": "visual-qa", "allowed_supporting": ["accessibility-review"]},
+    {"id": "HX-004", "prompt": "Audit an existing refresh-token implementation, not a proposed design.", "expected_primary": "auth-analysis", "forbidden_primary": ["secure-design"]},
+    {"id": "HX-005", "prompt": "Threat-model a proposed external-send feature before code exists.", "expected_primary": "secure-design", "forbidden_primary": ["codebase-audit", "auth-analysis"]},
+    {"id": "HX-006", "prompt": "Create security audit trajectories across the whole current repository.", "expected_primary": "codebase-audit", "forbidden_primary": ["secure-design"]},
+    {"id": "HX-007", "prompt": "Normalize the supplied ticket into behavior examples before planning.", "expected_primary": "ingest-spec", "forbidden_primary": ["discover"]},
+    {"id": "HX-008", "prompt": "Product intent is missing and no source packet exists; create the smallest durable discovery artifact.", "expected_primary": "discover", "forbidden_primary": ["ingest-spec", "compose-spec"]},
+    {"id": "HX-009", "prompt": "Evidence is validated; decide what should become durable product artifacts before writing them.", "expected_primary": "synthesis-to-spec", "forbidden_primary": ["compose-spec"]},
+    {"id": "HX-010", "prompt": "The synthesis is approved; write final PRD, persona, requirements, journeys, and scenarios.", "expected_primary": "compose-spec", "forbidden_primary": ["synthesis-to-spec"]},
+    {"id": "HX-011", "prompt": "Build an agent and skill workflow packet with prompt bank and stop rules.", "expected_primary": "agentic-workflow-builder", "forbidden_primary": ["orchestrate-work", "plan-change"]},
+    {"id": "HX-012", "prompt": "Track active lanes, dependencies, file ownership, merge owner, and validation gates.", "expected_primary": "orchestrate-work", "forbidden_primary": ["agentic-workflow-builder"]},
+    {"id": "HX-013", "prompt": "Write a normal implementation plan with examples and risks, no workflow packet or lane registry.", "expected_primary": "plan-change", "forbidden_primary": ["agentic-workflow-builder", "orchestrate-work"]},
+    {"id": "HX-014", "prompt": "Compile selected reusable pattern sections, not current branch state.", "expected_primary": "pattern-context", "forbidden_primary": ["context"]},
+    {"id": "HX-015", "prompt": "Orient to branch, dirty files, active lanes, and recent reports, not reusable patterns.", "expected_primary": "context", "forbidden_primary": ["pattern-context"]},
+    {"id": "HX-016", "prompt": "Review a fixed-point diff for standards and spec findings without running tests.", "expected_primary": "review-change", "forbidden_primary": ["validate-change"]},
+    {"id": "HX-017", "prompt": "Aggregate commands, tests, functional evidence, review findings, and feature impact into status.", "expected_primary": "validate-change", "forbidden_primary": ["review-change"]},
+    {"id": "HX-018", "prompt": "Product behavior is correct but a locator changed; repair the semantic test.", "expected_primary": "test-autorepair", "forbidden_primary": ["implement-change"]},
+    {"id": "HX-019", "prompt": "An approved plan identifies the documented contract, failing runtime behavior, and product-code target. Apply the scoped product fix, not a test repair.", "expected_primary": "implement-change", "forbidden_primary": ["test-autorepair"]},
+    {"id": "HX-020", "prompt": "Audit a provider-neutral agent architecture without choosing Codex files.", "expected_primary": "agents-best-practices", "forbidden_primary": ["codex-maintenance"]},
+    {"id": "HX-021", "prompt": "Change Codex custom-agent TOML, skill wiring, config, and validator surfaces.", "expected_primary": "codex-maintenance", "forbidden_primary": ["agents-best-practices"]},
+    {"id": "HX-022", "prompt": "Turn a repeated workflow into a focused reusable skill package.", "expected_primary": "develop-skill", "forbidden_primary": ["codex-maintenance"]},
+    {"id": "HX-023", "prompt": "Evaluate generated harness scenarios and their JSONL traces; do not repair the harness.", "expected_primary": "harness-evaluation", "forbidden_primary": ["validate-change", "codex-maintenance"]},
+    {"id": "HX-024", "prompt": "A harness evaluation confirmed a defect; now repair the owning skill and validator.", "expected_primary": "codex-maintenance", "forbidden_primary": ["harness-evaluation"]}
+  ]
+}

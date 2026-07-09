@@ -37,10 +37,10 @@ compile:
       path: docs/specs/persona-context-compiler/persona-semantic-core.catalog.yaml
       summary: Current module, act, policy, and packet catalog for persona simulator context.
     - id: pattern.workflow
-      path: docs/patterns/workflow.md
+      path: docs/patterns/workflow/index.md
       summary: Cascade workflow rules for lane splitting, coverage, routing, validation, and closeout.
     - id: pattern.context-memory
-      path: docs/patterns/context-memory.md
+      path: docs/patterns/context-memory/index.md
       summary: Source-context and compilation rules for preserving source identity and context boundaries.
     - id: skill.agentic-workflow-builder
       path: .codex/skills/agentic-workflow-builder/SKILL.md

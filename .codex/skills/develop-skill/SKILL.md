@@ -28,7 +28,7 @@ less context-heavy, and easier to validate.
    - `CODEX.md`
    - `.codex/README.md`
    - `docs/structure.md`
-   - `docs/patterns/workflow.md`
+   - `docs/patterns/workflow/index.md`
 5. Product, design, brand, spec, work-lane, backlog, glossary, or pattern docs
    only when the skill depends on those facts.
 6. Technology documentation MCP context when the skill depends on a stack,

@@ -36,7 +36,9 @@ the user explicitly redirects the work through `implement-change`.
    - `.codex/agents/*/AGENT.md`
    - `.codex/agents/*/skills.yaml`
    - `docs/structure.md`
-   - `docs/patterns/*`
+   - `docs/patterns/_index.md`
+   - `docs/patterns/{entry}/index.md`
+   - `docs/patterns/{entry}/*.pack.yaml`
    - `docs/work/active.md`
    - `docs/specs/`
    - `docs/product/`
@@ -75,11 +77,12 @@ the user explicitly redirects the work through `implement-change`.
   repo-skill or plugin layouts as packaging targets, not the primary harness
   documentation surface.
 - Agent role contract: local Cascade role behavior in
-  `.codex/agents/{name}/AGENT.md`, with TOML identity/wiring and `skills.yaml`.
-- Codex custom subagent: standalone TOML intended for spawned sessions; require
-  top-level Codex-compatible `name`, `description`, and
-  `developer_instructions` when the artifact is meant to be spawned by Codex
-  rather than used as a local role contract.
+  `.codex/agents/{name}/AGENT.md`, with `skills.yaml` for the role skill map.
+- Codex custom subagent: every standalone `.codex/agents/{name}.toml` is loaded
+  by Codex as spawned-session configuration and therefore requires top-level
+  `name`, `description`, and `developer_instructions`. Keep Cascade-only scope,
+  delegation, path, and workflow detail in the companion `AGENT.md` and
+  `skills.yaml`, not in unsupported TOML tables.
 - Hook: lifecycle enforcement around tool calls, prompts, compaction, subagent
   starts/stops, or turn-stop events. Use `hooks.json` or inline `[hooks]` next
   to an active config layer; project hooks load only for trusted projects.
@@ -93,7 +96,10 @@ the user explicitly redirects the work through `implement-change`.
   `.codex-plugin/plugin.json`; repo-local marketplace entries live under
   `.agents/plugins/marketplace.json`.
 - Docs/patterns: reusable project-neutral rules that do not belong to one skill
-  or role.
+  or role. Pattern entries are first-level folders with `index.md` and at
+  least one `*.pack.yaml` containing summary, routing, graph-like documents,
+  and selectable sections; use `pattern-context` for creation, retrieval, and
+  context-pack assembly.
 - Validator: mechanical checks for required files, stale paths, registered
   skills, agent wiring, surface contracts, and packaging invariants.
 
@@ -134,7 +140,7 @@ Apply these rules before approving a harness design or file change:
 - Require source paths for product-sensitive work. Skills that benefit from
   product specs must name the relevant `docs/specs/`, `docs/product/`,
   `docs/design/`, `docs/brand/`, `docs/work/`, and backlog sources.
-- Use the shared Doc Routing Decision Matrix in `docs/patterns/workflow.md`
+- Use the shared Doc Routing Decision Matrix in `docs/patterns/workflow/index.md`
   when a harness change creates, changes, validates, or closes out durable
   facts across product, design, brand, specs, backlog, glossary, patterns,
   skills, agents, config, or validator wiring.
@@ -154,8 +160,8 @@ Apply these rules before approving a harness design or file change:
   `description`.
 - Every skill used by an agent appears in that agent's `skills.yaml` with an
   existing `source` path.
-- Every Cascade agent has TOML identity, `AGENT.md`, `skills.yaml`, delegation
-  policy, use scope, and avoid scope.
+- Every Cascade agent has Codex-compatible standalone TOML identity,
+  `AGENT.md`, `skills.yaml`, delegation policy, use scope, and avoid scope.
 - Skill, agent, config, hook, MCP, plugin, subagent, and docs changes update
   `scripts/validate_cascade_codex.py` when they add a required surface or
   invariant.
@@ -167,7 +173,7 @@ Apply these rules before approving a harness design or file change:
   in `docs/brand/`, normalized specs in `docs/specs/{slice-slug}/`, raw sources
   in `docs/specs/source/`, execution state in `docs/work/`, and candidates
   in `docs/backlog/_index.md`.
-- Shared doc routing decisions live in `docs/patterns/workflow.md`; reusable
+- Shared doc routing decisions live in `docs/patterns/workflow/index.md`; reusable
   closeout matrices use `.codex/skills/closeout/templates/doc-routing-decision.md`.
 
 ## Codex Documentation Basis
@@ -236,9 +242,10 @@ documented source unless the requested output is explicitly a layout migration.
    - wire the skill into the owning agent's `skills.yaml`;
    - register it in `scripts/validate_cascade_codex.py`.
 6. For agent changes:
-   - distinguish Cascade role contracts from Codex custom subagents;
-   - use top-level `name`, `description`, and `developer_instructions` only for
-     spawnable Codex custom-agent TOML;
+   - distinguish the Cascade `AGENT.md` role contract from its Codex custom
+     agent TOML packaging surface;
+   - use top-level `name`, `description`, and `developer_instructions` in every
+     `.codex/agents/*.toml` file because Codex loads that location directly;
    - update TOML, `AGENT.md`, `skills.yaml`, docs, and validator checks
      together;
    - avoid adding a new agent when a skill cleanly owns the repeated workflow;

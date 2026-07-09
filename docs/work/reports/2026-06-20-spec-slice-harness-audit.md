@@ -45,7 +45,7 @@ or template name.
 | Old storage/config/template search | Find old storage path, old config key, and old template name | No hits outside validator stale guards. |
 | `rg -n "\b[Tt]ransformed\b"` | Find old conceptual wording | Only validator stale guards and legacy folder-name constant remain. |
 | `rg -n "docs/specs/\{slice-slug\}\|docs/specs/persona-context-compiler"` | Confirm new generic and concrete slice paths | Hits in root docs, skills, config, validator, semantic-core package, and glossary. |
-| `python scripts/validate_cascade_codex.py` | Validate harness wiring and new invariants | PASS. |
+| `python3 scripts/validate_cascade_codex.py` | Validate harness wiring and new invariants | PASS. |
 | `python scripts/compile_persona_context.py` | Validate package compiler path and referenced source inclusion | PASS; emitted Markdown context bundle. |
 
 ## Surface Analysis
@@ -79,9 +79,9 @@ or template name.
 | `docs/specs/persona-context-compiler/` | Concrete migrated slice | Added semantic-core spec, package YAML, catalog YAML, and prompt script. |
 | Legacy processed-spec bucket | Legacy global bucket | Removed. Validator now rejects this folder if it reappears. |
 | `docs/glossary.md` | Shared vocabulary | Updated paths for persona semantic core and module catalog. |
-| `docs/patterns/context-memory.md` | Context and retrieval rules | Added semantic-core package rules: package YAML, catalog YAML, Markdown specs, prompt scripts, deterministic compiler, source boundaries. |
-| `docs/patterns/workflow.md` | Workflow and closeout rules | Updated spec routing language to `spec/spec-packet path`. |
-| `docs/patterns/boundaries.md` | Boundary map | No old spec-path rule remained; earlier scaffold setup remains valid. |
+| `docs/patterns/context-memory/index.md` | Context and retrieval rules | Added semantic-core package rules: package YAML, catalog YAML, Markdown specs, prompt scripts, deterministic compiler, source boundaries. |
+| `docs/patterns/workflow/index.md` | Workflow and closeout rules | Updated spec routing language to `spec/spec-packet path`. |
+| `docs/patterns/boundaries/index.md` | Boundary map | No old spec-path rule remained; earlier scaffold setup remains valid. |
 | `docs/work/reports/_index.md` | Report index | Includes persona behavioral research; should also index this audit and workflow packet. |
 | `docs/work/reports/2026-06-20-persona-simulator-behavioral-patterns.md` | Research synthesis | Updated canonical model from JSON-shaped object to file-first semantic core under the slice folder. |
 
@@ -172,7 +172,7 @@ Non-harness correction:
 
 | Command | Result | Notes |
 |---|---|---|
-| `python scripts/validate_cascade_codex.py` | PASS | `cascade_codex_status=PASS`; 6 agents, 36 skills. |
+| `python3 scripts/validate_cascade_codex.py` | PASS | `cascade_codex_status=PASS`; 6 agents, 36 skills. |
 | `python scripts/compile_persona_context.py` | PASS | Emitted Markdown context bundle with source boundaries. |
 | `python -m py_compile scripts/compile_persona_context.py scripts/validate_cascade_codex.py` | PASS | Python syntax check. |
 

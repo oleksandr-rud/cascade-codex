@@ -8,6 +8,22 @@ description: Use for provider-neutral Cascade or target-project agent/LLM system
 Use when designing, auditing, adapting, or explaining Cascade itself or
 target-project agent/LLM systems.
 
+## Source Order
+
+1. Latest user objective, constraints, autonomy expectations, and risk.
+2. Current agent/runtime code, tool contracts, prompts, tests, and traces.
+3. `AGENTS.md`, `CODEX.md`, `harness.config.yaml`, and relevant role or skill
+   contracts.
+4. Relevant boundary, context-memory, workflow, and testing patterns.
+5. `references/harness-checklists.md` for multi-surface audits.
+
+## Scope
+
+This skill owns provider-neutral design and audit. Use `codex-maintenance` for
+Codex file, hook, plugin, custom-agent, or validator changes. Do not patch
+product/runtime code from this skill; route implementation through planning and
+the repository implementation workflow.
+
 ## Checklist
 
 1. Identify objective, autonomy level, risk, state duration, tool surface, and
@@ -42,9 +58,9 @@ boundaries, security-sensitive tool behavior, or code changes.
 
 Load these when the harness question touches the relevant area:
 
-- `docs/patterns/boundaries.md`
-- `docs/patterns/context-memory.md`
-- `docs/patterns/workflow.md`
+- `docs/patterns/boundaries/index.md`
+- `docs/patterns/context-memory/index.md`
+- `docs/patterns/workflow/index.md`
 - `references/harness-checklists.md`
 
 ## Output

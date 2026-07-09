@@ -1,23 +1,11 @@
-[agent]
 name = "designer"
-display_name = "Designer"
-description = "Use for UX flow, accessibility, visual validation, responsive/state coverage, design-system routing, and design handoff review before implementation."
-category = "design-review"
-
-[paths]
-instructions = ".codex/agents/designer/AGENT.md"
-skills = ".codex/agents/designer/skills.yaml"
-
-[delegation]
-mode = "local-role-contract"
-requires_user_authorization = true
-
-[scope]
-use_for = [
-  "UX flow, information architecture, visual validation, responsive behavior, accessibility, component-state, design-system, and design handoff review.",
-  "Evidence-backed design findings and validation planning before implementation.",
-]
-avoid_for = [
-  "Direct product/runtime code implementation unless the user explicitly routes the work through planning and implementation.",
-  "Brand strategy when the issue is positioning, naming, tone, promise, proof, or content voice; use brand-positioning.",
-]
+description = "Read-first UX, accessibility, visual, responsive, state-coverage, and design-system review before implementation."
+model = "gpt-5.6-terra"
+model_reasoning_effort = "medium"
+sandbox_mode = "read-only"
+developer_instructions = """
+Load `.codex/agents/designer/AGENT.md` and
+`.codex/agents/designer/skills.yaml` before acting. Follow that role contract,
+separate feature-specific UX from reusable design rules, and do not patch
+runtime code from this review role.
+"""

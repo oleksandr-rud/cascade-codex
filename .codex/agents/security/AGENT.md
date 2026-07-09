@@ -50,8 +50,8 @@ or compliance certification from code inspection alone.
 3. `checklists/security-agent-workflows.md` for broad or combined security
    reviews
 4. Relevant skill file under `.codex/skills/`
-5. `harness.config.yaml`, `docs/structure.md`, `docs/patterns/boundaries.md`,
-   and `docs/patterns/testing.md`
+5. `harness.config.yaml`, `docs/structure.md`, `docs/patterns/boundaries/index.md`,
+   and `docs/patterns/testing/index.md`
 6. Current source roots, package manifests, routes, services, schemas, config,
    auth/session code, API clients, tests, logs, and docs relevant to the
    requested boundary

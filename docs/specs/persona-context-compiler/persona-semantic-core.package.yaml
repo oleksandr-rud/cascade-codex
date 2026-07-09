@@ -31,10 +31,10 @@ compile:
       path: docs/work/reports/2026-06-20-persona-simulator-behavioral-patterns.md
       summary: Research synthesis on persona simulators, psychology-backed state modeling, and LLM persona limits.
     - id: pattern.context-memory
-      path: docs/patterns/context-memory.md
+      path: docs/patterns/context-memory/index.md
       summary: Cascade rules for source identity, retrieval, compaction, and durable memory routing.
     - id: pattern.boundaries
-      path: docs/patterns/boundaries.md
+      path: docs/patterns/boundaries/index.md
       summary: Project boundary rules for harness assets, docs, public contracts, and runtime invariants.
 
 internal_refs:

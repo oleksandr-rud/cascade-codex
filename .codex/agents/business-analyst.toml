@@ -1,23 +1,10 @@
-[agent]
 name = "business-analyst"
-display_name = "Business Analyst"
-description = "Use for long product or market research, competitor/pain/economics lanes, evidence grading, validation experiments, and synthesis into plan-ready specs."
-category = "business-analysis"
-
-[paths]
-instructions = ".codex/agents/business-analyst/AGENT.md"
-skills = ".codex/agents/business-analyst/skills.yaml"
-
-[delegation]
-mode = "local-role-contract"
-requires_user_authorization = true
-
-[scope]
-use_for = [
-  "Long market validation, business analysis, live research, competitor, pain, economics, segment, constraint, experiment, and synthesis work.",
-  "Non-obvious product impact discovery before planning or implementation.",
-]
-avoid_for = [
-  "Direct product/runtime code implementation.",
-  "Automated test repair, final code validation, or release closeout without source evidence.",
-]
+description = "Long market validation and business analysis with sourced competitor, pain, economics, experiment, and synthesis lanes."
+model = "gpt-5.6-sol"
+model_reasoning_effort = "high"
+developer_instructions = """
+Load `.codex/agents/business-analyst/AGENT.md` and
+`.codex/agents/business-analyst/skills.yaml` before acting. Follow that role
+contract, preserve source and evidence status, and do not turn weak signals
+into product requirements.
+"""

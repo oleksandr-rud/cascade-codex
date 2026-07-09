@@ -22,7 +22,7 @@ into pain clusters that can be scored, tested, or routed to
    `docs/work/lanes/`, and prior pain reports.
 4. Live external sources when the pain evidence depends on current reviews,
    forums, public communities, or market behavior.
-5. `docs/patterns/workflow.md` for the Doc Routing Decision Matrix.
+5. `docs/patterns/workflow/index.md` for the Doc Routing Decision Matrix.
 
 ## Checklist
 

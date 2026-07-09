@@ -1,14 +1,16 @@
 # Visual Validation Reference
 
-Read this reference when a visual validation task needs the target project-specific
-heuristics or evidence planning.
+Read this reference when a visual validation task needs reusable heuristics or
+evidence planning. Load project-specific design, brand, and product rules from
+their owner docs.
 
-## the target project Visual Rules
+## Reusable Visual Rules
 
-- Use clinical, restrained, task-focused UI.
-- Prefer dense but organized operational layouts for dashboards and admin
-  surfaces.
-- Keep first-screen product surfaces useful, not marketing-like.
+- Match visual direction, density, and task focus to the owning product,
+  design, and brand sources.
+- Prefer organized, scannable layouts for operational dashboards and repeated
+  workflows when the product context calls for them.
+- Keep the first screen useful for the documented user goal.
 - Avoid card-in-card page structures and decorative backgrounds.
 - Cards are for repeated items, modals, or framed tools, not whole page
   sections.
@@ -26,10 +28,10 @@ Recommended viewport set:
 
 | Viewport | Use |
 | --- | --- |
-| 390x844 | Mobile/narrow field user path |
-| 768x1024 | Tablet/clinical workstation |
+| 390x844 | Mobile/narrow path |
+| 768x1024 | Tablet |
 | 1280x800 | Common laptop |
-| 1440x1000 | Director/admin desktop |
+| 1440x1000 | Wide desktop |
 
 State set:
 

@@ -92,7 +92,7 @@ can decide which material matters when context must be trimmed.
 | Local compiler can assemble package paths into a Markdown context bundle | `python scripts/compile_persona_context.py` |
 | Compiled context map preserves reference IDs and summaries | `python scripts/compile_persona_context.py` output |
 | Research report no longer presents JSON as the canonical persona model | `docs/work/reports/2026-06-20-persona-simulator-behavioral-patterns.md` |
-| Harness structure remains valid | `python scripts/validate_cascade_codex.py` |
+| Harness structure remains valid | `python3 scripts/validate_cascade_codex.py` |
 
 ## Handoff
 

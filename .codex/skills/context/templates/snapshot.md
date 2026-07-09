@@ -34,4 +34,4 @@ Date: YYYY-MM-DD
 
 ## Next Entry Point
 
-`context | orchestrate-work | ingest-spec | discover | plan-change | functional-qa | implement-change | review-change | validate-change | test-autorepair | issue-intake | closeout`
+`context | ingest-spec | discover | docs-impact-map | pattern-context | orchestrate-work | plan-change | functional-qa | implement-change | review-change | validate-change | test-autorepair | issue-intake | closeout`

@@ -16,7 +16,7 @@
 | design constraint | `<detail>` | `docs/design/` |
 | brand/content constraint | `<detail>` | `docs/brand/` |
 | implementation constraint | `<detail>` | `docs/specs/{slice-slug}/` |
-| architecture/boundary constraint | `<detail>` | `docs/patterns/boundaries.md` or `architecture-review` |
+| architecture/boundary constraint | `<detail>` | `docs/patterns/boundaries/index.md` or `architecture-review` |
 | stack/runtime/config fact | `<detail>` | `harness.config.yaml` |
 | validation command or runner | `<detail>` | `harness.config.yaml` |
 | acceptance criterion | `<detail>` | `docs/work/` or scenario row |
@@ -28,7 +28,7 @@
 
 ## Doc Routing Decisions
 
-Use `docs/patterns/workflow.md` for the shared Doc Routing Decision Matrix.
+Use `docs/patterns/workflow/index.md` for the shared Doc Routing Decision Matrix.
 
 | Fact | Source | Owner Target | Action | Bloat Check | Evidence | Next Gate |
 |---|---|---|---|---|---|---|

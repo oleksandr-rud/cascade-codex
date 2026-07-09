@@ -3,6 +3,8 @@
 
 from __future__ import annotations
 
+import hashlib
+import json
 import re
 import sys
 import tomllib
@@ -39,10 +41,24 @@ REQUIRED_FILES = [
     "docs/work/examples/_index.md",
     "docs/work/lanes/.gitkeep",
     "docs/work/reports/_index.md",
-    "docs/patterns/workflow.md",
-    "docs/patterns/boundaries.md",
-    "docs/patterns/testing.md",
-    "docs/patterns/context-memory.md",
+    "docs/patterns/_index.md",
+    "docs/patterns/context-pack-schema.yaml",
+    "docs/patterns/workflow/index.md",
+    "docs/patterns/workflow/workflow.pack.yaml",
+    "docs/patterns/boundaries/index.md",
+    "docs/patterns/boundaries/boundaries.pack.yaml",
+    "docs/patterns/testing/index.md",
+    "docs/patterns/testing/testing.pack.yaml",
+    "docs/patterns/context-memory/index.md",
+    "docs/patterns/context-memory/context-memory.pack.yaml",
+    "scripts/build_pattern_context_pack.py",
+    "scripts/run_harness_evals.py",
+    "evals/harness/README.md",
+    "evals/harness/skill-cases.json",
+    "evals/harness/interactions.json",
+    "evals/harness/scenarios.generated.json",
+    "evals/harness/response.schema.json",
+    "evals/harness/judge-response.schema.json",
     ".codex/skills/discover/templates/product-spec.md",
     ".codex/skills/discover/templates/journey.md",
     ".codex/skills/discover/templates/brand-spec.md",
@@ -106,7 +122,11 @@ REQUIRED_FILES = [
     ".codex/skills/codex-maintenance/templates/reference-inventory.md",
     ".codex/skills/codex-maintenance/templates/codex-practice-audit.md",
     ".codex/skills/codex-maintenance/templates/maintenance-handoff.md",
+    ".codex/skills/harness-evaluation/checklists/golden-eval-quality.md",
+    ".codex/skills/harness-evaluation/references/trace-schema.md",
+    ".codex/skills/harness-evaluation/templates/evaluation-report.md",
     ".codex/agents/security/checklists/security-agent-workflows.md",
+    ".codex/agents/security/scripts/security_stack_scan.py",
     ".codex/agents/designer/checklists/designer-workflows.md",
 ]
 
@@ -117,6 +137,7 @@ AGENTS = [
     "business-analyst",
     "security",
     "designer",
+    "harness-evaluator",
 ]
 
 SKILLS = [
@@ -146,6 +167,7 @@ SKILLS = [
     "docs-impact-map",
     "implement-change",
     "functional-qa",
+    "pattern-context",
     "review-change",
     "validate-change",
     "test-autorepair",
@@ -156,13 +178,13 @@ SKILLS = [
     "develop-skill",
     "adapt-harness",
     "ingest-spec",
+    "harness-evaluation",
 ]
 
 FORBIDDEN_PATH_PATTERNS = [
     "docs/" + "tasks",
     "docs/" + "sessions",
     "docs/patterns/" + "process/",
-    "docs/patterns/" + "testing/",
     "docs/patterns/" + "architecture/",
     "docs/patterns/" + "api/",
     "docs/patterns/" + "codebase/",
@@ -173,10 +195,26 @@ FORBIDDEN_PATH_PATTERNS = [
 ]
 
 REQUIRED_PATTERN_FILES = {
-    "docs/patterns/workflow.md",
-    "docs/patterns/boundaries.md",
-    "docs/patterns/testing.md",
-    "docs/patterns/context-memory.md",
+    "docs/patterns/workflow/index.md",
+    "docs/patterns/boundaries/index.md",
+    "docs/patterns/testing/index.md",
+    "docs/patterns/context-memory/index.md",
+}
+
+REQUIRED_PATTERN_ENTRIES = {
+    "workflow": "workflow.pack.yaml",
+    "boundaries": "boundaries.pack.yaml",
+    "testing": "testing.pack.yaml",
+    "context-memory": "context-memory.pack.yaml",
+}
+
+REQUIRED_PATTERN_ENTRY_FILES = {
+    "index.md",
+}
+
+ALLOWED_PATTERN_ROOT_FILES = {
+    "_index.md",
+    "context-pack-schema.yaml",
 }
 
 REQUIRED_FOLDERS = [
@@ -212,6 +250,7 @@ CANONICAL_CASCADE_TOKENS = [
     "ingest-spec",
     "discover",
     "docs-impact-map",
+    "pattern-context",
     "orchestrate-work",
     "plan-change",
     "functional-qa",
@@ -235,6 +274,7 @@ REQUIRED_WIRING_SKILLS = {
     "test-autorepair",
     "ingest-spec",
     "docs-impact-map",
+    "pattern-context",
     "market-validation",
     "synthesis-to-spec",
     "compose-spec",
@@ -247,10 +287,24 @@ REQUIRED_HARNESS_AGENTS = {
     "business_analysis": "business-analyst",
     "security_review": "security",
     "design_review": "designer",
+    "golden_evaluation": "harness-evaluator",
+}
+
+PLANNING_MODEL = "gpt-5.6-sol"
+EXECUTION_MODEL = "gpt-5.6-terra"
+EXPECTED_AGENT_MODELS = {
+    "orchestrator": PLANNING_MODEL,
+    "project-onboarder": EXECUTION_MODEL,
+    "agent-engineer": PLANNING_MODEL,
+    "business-analyst": PLANNING_MODEL,
+    "security": PLANNING_MODEL,
+    "designer": EXECUTION_MODEL,
+    "harness-evaluator": PLANNING_MODEL,
 }
 
 SKIP_LEAKAGE_PATH_PARTS = {
     ".git",
+    ".artifacts",
     "__pycache__",
 }
 
@@ -417,6 +471,10 @@ SKILL_TRIGGER_REQUIREMENTS = {
         r"product|design|brand|spec",
         r"impact|dependenc|cross-folder",
     ],
+    "pattern-context": [
+        r"pattern|context entr|context pack|pack\.yaml",
+        r"create|update|retrieve|compile|planning|onboarding",
+    ],
     "orchestrate-work": [
         r"split|schedule|track|merge",
         r"serialized|dependencies|conflicts",
@@ -446,6 +504,11 @@ SKILL_TRIGGER_REQUIREMENTS = {
         r"skill|agent|AGENTS|config|file.?tree|reference",
         r"permission|memory|observability|eval|handoff|scope",
     ],
+    "harness-evaluation": [
+        r"Cascade|harness",
+        r"scenario|trace|experiment|grading|evaluation",
+        r"golden|regression|eval",
+    ],
 }
 
 REQUIRED_SKILL_SURFACES = {
@@ -459,7 +522,7 @@ REQUIRED_SKILL_SURFACES = {
         "docs/work/lanes/",
         "docs/backlog/_index.md",
         "docs/glossary.md",
-        "docs/patterns/boundaries.md",
+        "docs/patterns/boundaries/index.md",
         "Doc Routing Decision Matrix",
         "harness.config.yaml",
         "market-validation",
@@ -500,9 +563,9 @@ REQUIRED_SKILL_SURFACES = {
         ".codex/agents/{agent}/skills.yaml",
         ".codex/skills/{skill}/SKILL.md",
         ".codex/agents/{agent}/checklists/",
-        "docs/patterns/workflow.md",
-        "docs/patterns/boundaries.md",
-        "docs/patterns/testing.md",
+        "docs/patterns/workflow/index.md",
+        "docs/patterns/boundaries/index.md",
+        "docs/patterns/testing/index.md",
         "templates/agentic-workflow-packet.md",
         "checklists/workflow-packet-quality.md",
         "plan-change",
@@ -532,6 +595,18 @@ REQUIRED_SKILL_SURFACES = {
         "ingest-spec",
         "plan-change",
         "functional-qa",
+        "closeout",
+    ],
+    "pattern-context": [
+        "docs/patterns/_index.md",
+        "docs/patterns/{entry}/",
+        "index.md",
+        "*.pack.yaml",
+        "summary, routing, documents, and sections",
+        "scripts/build_pattern_context_pack.py",
+        "docs-impact-map",
+        "adapt-harness",
+        "validate-change",
         "closeout",
     ],
     "market-validation": [
@@ -702,7 +777,7 @@ REQUIRED_SKILL_SURFACES = {
         "docs/design/",
         "docs/brand/",
         "docs/specs/",
-        "docs/patterns/boundaries.md",
+        "docs/patterns/boundaries/index.md",
         "docs/glossary.md",
         "Doc Routing Decision Matrix",
         "templates/doc-routing-decision.md",
@@ -717,7 +792,7 @@ REQUIRED_SKILL_SURFACES = {
         "CODEX.md",
         "harness.config.yaml",
         "docs/glossary.md",
-        "docs/patterns/boundaries.md",
+        "docs/patterns/boundaries/index.md",
         "docs/work/active.md",
         "Doc Routing Decision Matrix",
     ],
@@ -763,6 +838,21 @@ REQUIRED_SKILL_SURFACES = {
         "handoff",
         "scope",
         "validator",
+    ],
+    "harness-evaluation": [
+        "evals/harness/skill-cases.json",
+        "evals/harness/interactions.json",
+        "evals/harness/scenarios.generated.json",
+        "evals/harness/response.schema.json",
+        ".artifacts/harness-evals/<run-id>/",
+        "docs/patterns/agent-evaluation/index.md",
+        "scripts/run_harness_evals.py",
+        "harness-evaluator",
+        "deterministic",
+        "read-only",
+        "JSONL",
+        "hard gates",
+        "regression",
     ],
 }
 
@@ -879,6 +969,9 @@ def is_allowed_doc_folder(relative: str) -> bool:
     if relative in ALLOWED_DOC_FOLDERS:
         return True
     parts = relative.split("/")
+    if len(parts) == 3 and parts[:2] == ["docs", "patterns"]:
+        entry_name = parts[2]
+        return SPEC_SLICE_DIR.fullmatch(entry_name) is not None
     if len(parts) == 3 and parts[:2] == ["docs", "specs"]:
         slice_name = parts[2]
         return (
@@ -918,6 +1011,24 @@ def check_harness_agent_registry(errors: list[str]) -> None:
         template = harness.get("config_template")
         if not isinstance(template, str) or not (ROOT / template).is_file():
             errors.append(".codex/config.toml harness.config_template does not point to a file")
+    if config.get("model") != PLANNING_MODEL:
+        errors.append(
+            f".codex/config.toml default model must be pinned to {PLANNING_MODEL}"
+        )
+    eval_config = config.get("harness_evals")
+    if not isinstance(eval_config, dict):
+        errors.append(".codex/config.toml missing [harness_evals] settings")
+    else:
+        expected_eval_models = {
+            "planning_model": PLANNING_MODEL,
+            "golden_model": PLANNING_MODEL,
+            "execution_model": EXECUTION_MODEL,
+        }
+        for key, model in expected_eval_models.items():
+            if eval_config.get(key) != model:
+                errors.append(
+                    f"harness eval model mismatch for {key}: expected {model}"
+                )
     for key, agent in REQUIRED_HARNESS_AGENTS.items():
         if registry.get(key) != agent:
             errors.append(f"harness agent registry mismatch for {key}: expected {agent}")
@@ -929,24 +1040,46 @@ def check_harness_agent_registry(errors: list[str]) -> None:
             manifest = tomllib.loads(read_text(manifest_path))
         except tomllib.TOMLDecodeError:
             continue
-        agent_section = manifest.get("agent")
-        paths_section = manifest.get("paths")
-        if not isinstance(agent_section, dict):
-            errors.append(f"agent manifest missing [agent] table in {rel(manifest_path)}")
-            agent_section = {}
-        if not isinstance(paths_section, dict):
-            errors.append(f"agent manifest missing [paths] table in {rel(manifest_path)}")
-            paths_section = {}
-        if agent_section.get("name") != agent:
+        if manifest.get("name") != agent:
             errors.append(f"agent manifest name mismatch in {rel(manifest_path)}")
-        if not isinstance(agent_section.get("description"), str):
+        if not isinstance(manifest.get("description"), str):
             errors.append(f"agent manifest description missing in {rel(manifest_path)}")
-        instructions = paths_section.get("instructions")
-        if not isinstance(instructions, str) or not (ROOT / instructions).is_file():
-            errors.append(f"agent manifest instructions path invalid in {rel(manifest_path)}")
-        skills = paths_section.get("skills")
-        if not isinstance(skills, str) or not (ROOT / skills).is_file():
-            errors.append(f"agent manifest skills path invalid in {rel(manifest_path)}")
+        if not isinstance(manifest.get("developer_instructions"), str):
+            errors.append(
+                f"agent manifest developer_instructions missing in {rel(manifest_path)}"
+            )
+        expected_model = EXPECTED_AGENT_MODELS[agent]
+        if manifest.get("model") != expected_model:
+            errors.append(
+                f"agent model mismatch in {rel(manifest_path)}: "
+                f"expected {expected_model}"
+            )
+        for legacy_table in ["agent", "paths", "delegation", "scope"]:
+            if legacy_table in manifest:
+                errors.append(
+                    f"agent manifest uses unsupported legacy table {legacy_table!r} "
+                    f"in {rel(manifest_path)}"
+                )
+        instructions_path = ROOT / ".codex" / "agents" / agent / "AGENT.md"
+        skills_path = ROOT / ".codex" / "agents" / agent / "skills.yaml"
+        if not instructions_path.is_file():
+            errors.append(f"agent role contract missing: {rel(instructions_path)}")
+        if not skills_path.is_file():
+            errors.append(f"agent skill map missing: {rel(skills_path)}")
+
+
+def check_retired_model_refs(errors: list[str]) -> None:
+    retired = "gpt-" + "5.5"
+    skipped_parts = {".git", ".artifacts", "__pycache__"}
+    for path in ROOT.rglob("*"):
+        if not path.is_file() or skipped_parts.intersection(path.parts):
+            continue
+        try:
+            text = read_text(path)
+        except (UnicodeDecodeError, OSError):
+            continue
+        if retired in text.lower():
+            errors.append(f"retired model reference remains in {rel(path)}")
 
 
 def parse_frontmatter(text: str) -> dict[str, str]:
@@ -1107,19 +1240,96 @@ def check_thin_agents(errors: list[str]) -> None:
 
 
 def check_pattern_shape(errors: list[str]) -> None:
-    actual_patterns = {
-        rel(path)
-        for path in (ROOT / "docs" / "patterns").glob("*.md")
-        if path.name != "_index.md"
-    }
-    for pattern in sorted(REQUIRED_PATTERN_FILES - actual_patterns):
-        errors.append(f"missing required simplified pattern: {pattern}")
-    for pattern in sorted(actual_patterns - REQUIRED_PATTERN_FILES):
-        errors.append(f"unexpected pattern file outside simplified set: {pattern}")
-    for path in (ROOT / "docs" / "patterns").rglob("*.md"):
-        relative = rel(path)
-        if path.parent != ROOT / "docs" / "patterns":
-            errors.append(f"nested pattern file is not allowed in simplified set: {relative}")
+    patterns_root = ROOT / "docs" / "patterns"
+    if not patterns_root.is_dir():
+        errors.append("missing docs/patterns folder")
+        return
+
+    for path in patterns_root.iterdir():
+        if path.is_file() and path.name not in ALLOWED_PATTERN_ROOT_FILES:
+            errors.append(f"unexpected root pattern file: {rel(path)}")
+        if path.is_dir() and SPEC_SLICE_DIR.fullmatch(path.name) is None:
+            errors.append(f"invalid pattern entry folder name: {rel(path)}")
+
+    for entry, required_pack in REQUIRED_PATTERN_ENTRIES.items():
+        entry_dir = patterns_root / entry
+        if not entry_dir.is_dir():
+            errors.append(f"missing required pattern entry folder: {rel(entry_dir)}")
+            continue
+        for filename in REQUIRED_PATTERN_ENTRY_FILES:
+            required_path = entry_dir / filename
+            if not required_path.is_file():
+                errors.append(f"missing required pattern entry file: {rel(required_path)}")
+        if not (entry_dir / required_pack).is_file():
+            errors.append(f"missing required pattern pack: {rel(entry_dir / required_pack)}")
+
+    for entry_dir in sorted(path for path in patterns_root.iterdir() if path.is_dir()):
+        for nested in entry_dir.iterdir():
+            if nested.is_dir():
+                errors.append(f"nested pattern folders are not allowed: {rel(nested)}")
+            if nested.name in {
+                "summary.yaml",
+                "routing.yaml",
+                "refs.yaml",
+                "documents.yaml",
+                "parts.yaml",
+                "sections.yaml",
+            }:
+                errors.append(
+                    f"pattern sidecar metadata is not allowed; keep it inside pack YAML: {rel(nested)}"
+                )
+        for filename in REQUIRED_PATTERN_ENTRY_FILES:
+            required_path = entry_dir / filename
+            if not required_path.is_file():
+                errors.append(f"pattern entry missing required file: {rel(required_path)}")
+        pack_paths = sorted(entry_dir.glob("*.pack.yaml"))
+        if not pack_paths:
+            errors.append(f"pattern entry missing *.pack.yaml: {rel(entry_dir)}")
+        for pack_path in pack_paths:
+            pack_text = read_text(pack_path)
+            for key in [
+                "pack_id:",
+                "entry_id:",
+                "title:",
+                "kind:",
+                "owner:",
+                "summary:",
+                "routing:",
+                "documents:",
+            ]:
+                if not re.search(rf"(?m)^{re.escape(key)}", pack_text):
+                    errors.append(f"pattern pack {rel(pack_path)} missing key {key}")
+            if not re.search(r"(?m)^kind:\s+pattern-context-pack\s*$", pack_text):
+                errors.append(
+                    f"pattern pack {rel(pack_path)} must set kind: pattern-context-pack"
+                )
+            for legacy_key in ["status", "refs", "parts"]:
+                if re.search(rf"(?m)^{legacy_key}:", pack_text):
+                    errors.append(
+                        f"pattern pack {rel(pack_path)} uses legacy top-level {legacy_key}:"
+                    )
+            for key in [
+                "path:",
+                "description:",
+                "trigger_when:",
+                "sections:",
+                "id:",
+                "anchor:",
+                "routing_description:",
+                "tags:",
+            ]:
+                if key not in pack_text:
+                    errors.append(f"pattern pack {rel(pack_path)} missing document/section key {key}")
+            for source in re.findall(r"(?m)^\s+source:\s+([^\n]+)$", pack_text):
+                errors.append(
+                    f"pattern pack {rel(pack_path)} uses legacy section source: {source}"
+                )
+            for source in re.findall(r"(?m)^\s+path:\s+([^\n]+)$", pack_text):
+                source_path = ROOT / source.strip().strip('"').strip("'")
+                if not source_path.is_file():
+                    errors.append(
+                        f"pattern pack {rel(pack_path)} references missing path: {source}"
+                    )
 
 
 def check_no_project_leakage(errors: list[str]) -> None:
@@ -1279,12 +1489,151 @@ def check_traceability_contracts(errors: list[str]) -> None:
                         )
 
 
+def check_harness_eval_contracts(errors: list[str]) -> None:
+    cases_path = ROOT / "evals" / "harness" / "skill-cases.json"
+    interactions_path = ROOT / "evals" / "harness" / "interactions.json"
+    catalog_path = ROOT / "evals" / "harness" / "scenarios.generated.json"
+    schema_path = ROOT / "evals" / "harness" / "response.schema.json"
+    judge_schema_path = ROOT / "evals" / "harness" / "judge-response.schema.json"
+    if not all(
+        path.is_file()
+        for path in [
+            cases_path,
+            interactions_path,
+            catalog_path,
+            schema_path,
+            judge_schema_path,
+        ]
+    ):
+        return
+
+    try:
+        cases_data = json.loads(read_text(cases_path))
+        interactions_data = json.loads(read_text(interactions_path))
+        catalog_data = json.loads(read_text(catalog_path))
+        schema_data = json.loads(read_text(schema_path))
+        judge_schema_data = json.loads(read_text(judge_schema_path))
+    except json.JSONDecodeError as exc:
+        errors.append(f"harness eval JSON parse error: {exc}")
+        return
+
+    case_rows = cases_data.get("skills")
+    interaction_rows = interactions_data.get("interactions")
+    scenarios = catalog_data.get("scenarios")
+    if not isinstance(case_rows, list):
+        errors.append("evals/harness/skill-cases.json missing skills list")
+        return
+    if not isinstance(interaction_rows, list):
+        errors.append("evals/harness/interactions.json missing interactions list")
+        return
+    if not isinstance(scenarios, list):
+        errors.append("evals/harness/scenarios.generated.json missing scenarios list")
+        return
+
+    source_skills = [row.get("skill") for row in case_rows if isinstance(row, dict)]
+    if len(source_skills) != len(set(source_skills)):
+        errors.append("harness eval skill case registry contains duplicate skills")
+    missing_skills = set(SKILLS) - set(source_skills)
+    extra_skills = set(source_skills) - set(SKILLS)
+    for skill in sorted(missing_skills):
+        errors.append(f"registered skill missing harness eval source cases: {skill}")
+    for skill in sorted(extra_skills):
+        errors.append(f"harness eval source case references unknown skill: {skill}")
+
+    expected_kinds = {
+        "implicit-trigger",
+        "explicit-trigger",
+        "near-miss",
+        "missing-precondition",
+        "guardrail",
+        "output-contract",
+        "handoff",
+    }
+    scenario_ids: list[str] = []
+    per_skill_kinds: dict[str, set[str]] = {skill: set() for skill in SKILLS}
+    for row in scenarios:
+        if not isinstance(row, dict):
+            errors.append("harness eval catalog contains a non-object scenario")
+            continue
+        scenario_id = row.get("id")
+        if not isinstance(scenario_id, str):
+            errors.append("harness eval catalog scenario missing string id")
+            continue
+        scenario_ids.append(scenario_id)
+        target = row.get("target_skill")
+        kind = row.get("kind")
+        if target in per_skill_kinds and kind in expected_kinds:
+            per_skill_kinds[target].add(kind)
+        expectation = row.get("expectation")
+        if not isinstance(expectation, dict):
+            errors.append(f"harness eval scenario {scenario_id} missing expectation")
+            continue
+        primary = expectation.get("primary_skill")
+        if primary not in SKILLS:
+            errors.append(
+                f"harness eval scenario {scenario_id} expects unknown skill: {primary}"
+            )
+    if len(scenario_ids) != len(set(scenario_ids)):
+        errors.append("harness eval catalog contains duplicate scenario ids")
+    for skill, kinds in sorted(per_skill_kinds.items()):
+        missing_kinds = expected_kinds - kinds
+        if missing_kinds:
+            errors.append(
+                f"harness eval catalog missing case kinds for {skill}: "
+                f"{', '.join(sorted(missing_kinds))}"
+            )
+
+    expected_count = len(SKILLS) * len(expected_kinds) + len(interaction_rows)
+    if catalog_data.get("skill_count") != len(SKILLS):
+        errors.append("harness eval catalog skill_count is stale")
+    if catalog_data.get("scenario_count") != expected_count or len(scenarios) != expected_count:
+        errors.append(
+            f"harness eval catalog scenario count mismatch: expected {expected_count}"
+        )
+    digest = hashlib.sha256(
+        json.dumps(scenarios, sort_keys=True, separators=(",", ":")).encode()
+    ).hexdigest()
+    if catalog_data.get("catalog_digest") != digest:
+        errors.append("harness eval catalog digest is stale or invalid")
+
+    required_response = {
+        "scenario_id",
+        "primary_skill",
+        "supporting_skills",
+        "rejected_skills",
+        "status",
+        "decision",
+        "evidence",
+        "actions",
+        "missing_context",
+        "next_route",
+    }
+    if set(schema_data.get("required", [])) != required_response:
+        errors.append("harness eval response schema required fields are stale")
+    required_judgment = {
+        "run_id",
+        "scenario_id",
+        "verdict",
+        "root_cause",
+        "deterministic_verdict",
+        "earliest_failing_event",
+        "rationale",
+        "evidence",
+        "replay_command",
+        "regression_recommendation",
+        "residual_uncertainty",
+    }
+    if set(judge_schema_data.get("required", [])) != required_judgment:
+        errors.append("harness eval judge schema required fields are stale")
+
+
 def main() -> int:
     errors: list[str] = []
     check_required_files(errors)
     check_required_folders(errors)
     check_toml(errors)
     check_harness_agent_registry(errors)
+    check_retired_model_refs(errors)
     check_skill_frontmatter(errors)
     check_skill_trigger_descriptions(errors)
     check_skill_surface_contracts(errors)
@@ -1295,6 +1644,7 @@ def main() -> int:
     check_pattern_shape(errors)
     check_no_project_leakage(errors)
     check_traceability_contracts(errors)
+    check_harness_eval_contracts(errors)
 
     if errors:
         for error in errors:

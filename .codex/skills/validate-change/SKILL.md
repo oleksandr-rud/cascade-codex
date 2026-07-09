@@ -9,6 +9,15 @@ Use after implementation, during feedback loops, or whenever confidence depends
 on evidence. This skill aggregates evidence; it does not replace fixed-point
 review, functional acceptance, or stale-test repair.
 
+## Source Order
+
+1. Latest request, current plan, behavior examples, and required evidence.
+2. Current diff and directly affected feature contracts.
+3. Targeted command, test, functional, scenario, and review evidence.
+4. Current work lane, Feature Impact Matrix, and directly relevant specs.
+5. `docs/patterns/testing/index.md`, `docs/patterns/workflow/index.md`, and
+   boundary or context-memory patterns when the change touches those areas.
+
 ## Modes
 
 - `targeted`: smallest relevant lint/type/unit/integration checks.
@@ -24,7 +33,7 @@ review, functional acceptance, or stale-test repair.
 1. Read current diff, plan, behavior examples, and validation requirements.
 2. Run targeted checks before broad checks.
 3. Compare current request and current work-lane criteria against changed files and
-   tests using `docs/patterns/workflow.md`.
+   tests using `docs/patterns/workflow/index.md`.
 4. Compare Feature Impact Matrix rows against the diff, source docs/spec IDs,
    touched code/public contracts, and required checks. If no matrix exists for
    a product-visible change, infer the directly changed feature and likely
@@ -41,8 +50,8 @@ review, functional acceptance, or stale-test repair.
 8. Use `functional-qa` for product-visible acceptance evidence.
 9. Use `test-autorepair` only when evidence shows tests are stale while behavior
    still matches the expected contract.
-10. Load `docs/patterns/boundaries.md` for public-contract or model/tool
-   runtime changes and `docs/patterns/context-memory.md` for
+10. Load `docs/patterns/boundaries/index.md` for public-contract or model/tool
+   runtime changes and `docs/patterns/context-memory/index.md` for
    retrieval/source-context changes.
 11. For research, source-context, prompt, policy, or semantic-core changes,
     report structural validation separately from factual or methodological

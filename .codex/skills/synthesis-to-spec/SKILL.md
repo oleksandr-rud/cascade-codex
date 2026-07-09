@@ -25,7 +25,7 @@ authoring to `compose-spec`. It does not implement code.
 4. Current code, UI copy, public contracts, tests, analytics, or support
    workflows when the spec affects an existing system.
 5. Current `docs-impact-map` report.
-6. `docs/structure.md` and `docs/patterns/workflow.md`, especially the shared
+6. `docs/structure.md` and `docs/patterns/workflow/index.md`, especially the shared
    Doc Routing Decision Matrix.
 
 ## Scope
@@ -59,7 +59,7 @@ repair.
    coverage; require retrieval miss audit, known-item recovery, and evidence
    class labels before durable promotion.
 2. For each problem, requirement, or gap, run several trajectory passes per
-   `docs/patterns/workflow.md#trajectory-coverage`; every trajectory must cover
+   `docs/patterns/workflow/index.md#trajectory-coverage`; every trajectory must cover
    a real problem, requirement, or gap, and the final PRD/spec/backlog synthesis
    must preserve major and minor inspected details from every trajectory.
 3. Run the docs/spec source-context trajectories before durable promotion:

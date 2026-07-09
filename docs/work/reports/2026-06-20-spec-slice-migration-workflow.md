@@ -198,7 +198,7 @@ Write scope:
 - Approval points: satisfied through the GitHub connector; local `gh` remains
   unauthenticated, and no labels/projects were applied.
 - Stop rules:
-  - Stop if `python scripts/validate_cascade_codex.py` fails.
+  - Stop if `python3 scripts/validate_cascade_codex.py` fails.
   - Stop if stale old-path search finds a non-validator old reference.
   - Stop if GitHub auth is unavailable; write issue bodies instead.
   - Stop for destructive git operations, push, or PR creation without explicit
@@ -208,7 +208,7 @@ Write scope:
 
 | Evidence | Command Or Check | Required? | Status |
 |---|---|---|---|
-| Harness validator | `python scripts/validate_cascade_codex.py` | yes | PASS locally |
+| Harness validator | `python3 scripts/validate_cascade_codex.py` | yes | PASS locally |
 | Compiler script | `python scripts/compile_persona_context.py` | yes | PASS locally |
 | Python syntax | `python -m py_compile scripts/compile_persona_context.py scripts/validate_cascade_codex.py` | yes | PASS locally |
 | Stale old-path search | `rg -n "legacy processed-spec bucket|legacy spec-packet token"` | yes | PASS except validator stale guards |

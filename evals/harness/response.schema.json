@@ -1,0 +1,50 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Cascade harness scenario response",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "scenario_id",
+    "primary_skill",
+    "supporting_skills",
+    "rejected_skills",
+    "status",
+    "decision",
+    "evidence",
+    "actions",
+    "missing_context",
+    "next_route"
+  ],
+  "properties": {
+    "scenario_id": {"type": "string", "minLength": 1},
+    "primary_skill": {"type": "string", "minLength": 1},
+    "supporting_skills": {
+      "type": "array",
+      "items": {"type": "string"}
+    },
+    "rejected_skills": {
+      "type": "array",
+      "items": {"type": "string"}
+    },
+    "status": {
+      "type": "string",
+      "enum": ["PASS", "FAIL", "BLOCKED", "GAP", "NOT_RUN"]
+    },
+    "decision": {"type": "string", "minLength": 1},
+    "evidence": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["path", "observation"],
+        "properties": {
+          "path": {"type": "string"},
+          "observation": {"type": "string", "minLength": 1}
+        }
+      }
+    },
+    "actions": {"type": "array", "items": {"type": "string"}},
+    "missing_context": {"type": "array", "items": {"type": "string"}},
+    "next_route": {"type": "string"}
+  }
+}

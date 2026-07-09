@@ -18,18 +18,21 @@ or test planning.
 - NHS accessibility guidance:
   https://service-manual.nhs.uk/accessibility
 
-## the target project Accessibility Requirements
+## Project Accessibility Requirements
 
 - Use semantic controls and labels for all actionable UI.
-- Preserve visible focus treatment. the target project token guidance sets focus ring width
-  at `2px`; current shadcn buttons/inputs use focus-visible ring styling.
-- Maintain practical `44px` touch targets for mobile/gloved field user workflows.
+- Preserve visible focus treatment according to the project's token and
+  component rules.
+- Apply the project's documented target-size requirements and record the WCAG
+  criterion or product constraint used for the finding.
 - Keep status states perceivable by text and shape, not only color.
 - Ensure tables, filters, dialogs, sheets, tabs, dropdowns, and command menus
   retain keyboard paths.
-- Voice-first flows need visual fallback controls and error recovery.
+- Voice or automation-assisted flows need an accessible fallback and error
+  recovery when the project supports those modes.
 - Avoid horizontal overflow and clipped text on narrow viewports.
-- Do not hide compliance/audit-critical state behind hover-only affordances.
+- Do not hide safety, permission, compliance, or audit-critical state behind
+  hover-only affordances when the product contract requires that state.
 
 ## Manual Evidence To Prefer
 

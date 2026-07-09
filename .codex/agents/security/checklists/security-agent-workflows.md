@@ -7,8 +7,10 @@ findings into the rest of the Cascade workflow.
 
 - [ ] Load `codebase-audit`.
 - [ ] Inspect `harness.config.yaml`, `docs/structure.md`,
-      `docs/patterns/boundaries.md`, source roots, package manifests, routes,
+      `docs/patterns/boundaries/index.md`, source roots, package manifests, routes,
       services, configuration, and tests relevant to the requested boundary.
+- [ ] Use `pattern-context` before adding reusable security pattern entries or
+      context packs; do not create broad security dump folders.
 - [ ] Generate or update focused audit trajectories rather than one broad
       undifferentiated report.
 - [ ] Use helper scripts only when the target repo explicitly provides a

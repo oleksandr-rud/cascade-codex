@@ -6,7 +6,7 @@ description: Use this skill when Security needs to audit the target project code
 # Codebase Audit
 
 Use this skill to turn a broad security review request into concrete,
-evidence-backed audit trajectories for the the target project codebase.
+evidence-backed audit trajectories for the target project codebase.
 
 ## Trigger Contract
 
@@ -32,8 +32,8 @@ Do not use this skill when:
 1. Latest user request and active goal.
 2. `AGENTS.md` and `.codex/agents/security/AGENT.md`.
 3. Security and boundary docs when present:
-   - `docs/patterns/boundaries.md`
-   - `docs/patterns/testing.md`
+   - `docs/patterns/boundaries/index.md`
+   - `docs/patterns/testing/index.md`
    - `docs/structure.md`
    - `harness.config.yaml`
 4. Current code and config discovered from `harness.config.yaml`,

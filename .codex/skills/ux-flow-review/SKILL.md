@@ -7,7 +7,7 @@ description: Use when a target-project feature, screen, wizard, dashboard, sessi
 
 Use this skill to review product-visible workflow quality for the target project. It owns
 feature-specific UX analysis, IA, task flow, hierarchy, state coverage, density,
-and technician/operator ergonomics. It does not own reusable design-system
+and role-specific ergonomics. It does not own reusable design-system
 rules, brand positioning, final validation, or implementation.
 
 ## Source Order
@@ -15,11 +15,11 @@ rules, brand positioning, final validation, or implementation.
 1. Latest user request, screenshot, source note, or UI behavior concern.
 2. Owning product spec, scenario file, and journey file under `docs/product/`.
 3. Related design docs under `docs/design/`, starting with
-   `docs/design/interaction-model.md` for shadcn/Radix, density,
-   mobile, and AI checklist workspace rules, plus brand docs under
+   `docs/design/interaction-model.md` for project-specific composition,
+   density, responsive, and interaction rules, plus brand docs under
    `docs/brand/`.
 4. Current frontend route/page/components for the flow.
-5. `references/ux-flow-patterns.md` for the target project workflow heuristics and external
+5. `references/ux-flow-patterns.md` for reusable workflow heuristics and
    source-backed design principles.
 6. `docs/structure.md` for write-target routing.
 
@@ -34,10 +34,10 @@ rules, brand positioning, final validation, or implementation.
    - carried state;
    - empty/loading/error/blocked states;
    - mobile and desktop behavior.
-3. Compare against the target project context:
-   - field users often work hands-on, gloved, mobile, and under time pressure;
-   - operational reviewers need dense but scannable operational views;
-   - compliance/audit state must remain explicit.
+3. Compare against inspected project context:
+   - actor constraints from personas, journeys, or current workflows;
+   - documented density, device, environment, and interruption needs;
+   - explicit safety, compliance, audit, or permission state when applicable.
 4. Classify findings:
    - P0 blocks task completion or safety/compliance state;
    - P1 causes likely wrong action, lost work, or hidden required state;

@@ -1,7 +1,8 @@
 # Accessibility Review Checklist
 
 - [ ] Scope, states, and user role named.
-- [ ] Native HTML/Radix/shadcn semantics preferred before custom ARIA.
+- [ ] Native HTML and established accessible component semantics preferred
+      before custom ARIA.
 - [ ] Keyboard path checked or planned.
 - [ ] Focus visibility and focus order checked or planned.
 - [ ] Accessible names/descriptions checked or planned.

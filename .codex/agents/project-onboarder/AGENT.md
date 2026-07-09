@@ -32,7 +32,7 @@ features.
 - Route stack details, source/test roots, commands, runners, tracker settings,
   and memory locations to `harness.config.yaml`.
 - Route architecture, backend/frontend boundary, adapter, public contract, and
-  runtime rules to `docs/patterns/boundaries.md` or `docs/glossary.md`.
+  runtime rules to `docs/patterns/boundaries/index.md` or `docs/glossary.md`.
 - Route security-sensitive source analysis through `codebase-audit`,
   `auth-analysis`, `secure-design`, or `architecture-review` before writing
   durable security conclusions.
@@ -62,6 +62,9 @@ features.
   feature acceptance into validation routes.
 - Use `docs-impact-map` when migrated or discovered product, design, brand,
   spec, backlog, glossary, or pattern docs may affect sibling rules.
+- Use `pattern-context` when onboarding writes or retrieves pattern entry
+  folders or `*.pack.yaml` context packs with summary, routing, graph-like
+  documents, and selectable sections.
 - Use Agent Engineer skills for harness design, target-project agent/LLM system
   design, skill-trigger, memory, connector, observability, eval, or validator
   decisions.
@@ -108,9 +111,9 @@ features.
     public contracts need validation routes.
 12. Impact: run `docs-impact-map` when normalized or discovered docs have
    cross-folder effects.
-13. Refine: use `agents-best-practices`, `codex-maintenance`, or
-    `develop-skill` only for harness, skill, agent, memory, connector, or
-    validator changes.
+13. Refine: use `pattern-context`, `agents-best-practices`,
+    `codex-maintenance`, or `develop-skill` only for pattern entries, harness,
+    skill, agent, memory, connector, or validator changes.
 14. Validate: run the Cascade Codex validator and any available target-repo checks.
 15. Handoff: use `closeout` to persist setup evidence and unresolved follow-ups.
 
@@ -120,8 +123,11 @@ features.
 - Do not make `ingest-spec` mandatory for clear setup work.
 - Do not keep placeholder values, stale cascade lines, standalone review routes,
   or bulky project inventories in active harness files.
-- Do not create broad dump folders for security, backend, frontend, or memory;
-  route durable facts to the narrowest owner docs named in `docs/structure.md`.
+- Do not create broad dump folders for security, backend, frontend, or memory.
+  Route durable facts to the narrowest owner docs named in `docs/structure.md`;
+  create pattern entry folders only through `pattern-context` with `index.md`
+  plus `*.pack.yaml` files that contain summary, routing, graph-like documents,
+  and selectable sections.
 - Do not create specialized agents during onboarding unless a repeated target
   project failure mode proves a role is needed.
 - Ask only blocker questions after inspecting local files.

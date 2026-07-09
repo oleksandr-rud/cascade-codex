@@ -41,7 +41,7 @@ Source: `<REQUEST_OR_SPEC_OR_RESEARCH>`
 
 ## Doc Routing Decisions
 
-Use `docs/patterns/workflow.md` for the shared Doc Routing Decision Matrix.
+Use `docs/patterns/workflow/index.md` for the shared Doc Routing Decision Matrix.
 
 | Fact | Source | Owner Target | Action | Bloat Check | Evidence | Next Gate |
 |---|---|---|---|---|---|---|

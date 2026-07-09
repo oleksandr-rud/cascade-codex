@@ -7,7 +7,7 @@ memory.
 |---|---|
 | Skill behavior | Relevant `.codex/skills/{name}/SKILL.md` |
 | Role behavior | Relevant `.codex/agents/{name}/AGENT.md` |
-| Reusable implementation pattern | `docs/patterns/workflow.md`, `docs/patterns/boundaries.md`, `docs/patterns/testing.md`, or `docs/patterns/context-memory.md` plus `docs/patterns/_index.md` |
+| Reusable implementation pattern | `docs/patterns/workflow/index.md`, `docs/patterns/boundaries/index.md`, `docs/patterns/testing/index.md`, or `docs/patterns/context-memory/index.md` plus `docs/patterns/_index.md` |
 | Product behavior | Product spec, product scenario, task scenario, or regression test |
 | Product/spec/design/brand/architecture change found at closeout | Existing owner doc via `templates/thin-doc-diff.md` |
 | New codebase term | `docs/glossary.md` |

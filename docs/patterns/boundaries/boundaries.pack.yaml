@@ -1,0 +1,133 @@
+pack_id: boundary-core
+entry_id: boundaries
+title: Boundary Core Pattern Pack
+kind: pattern-context-pack
+owner: Cascade maintainers
+summary: "Selectable architecture and runtime boundary rules for source roots, layers, seams, data, APIs, adapters, and agentic runtime."
+description: "Use this pack when planning or validating public contracts, architecture rules, or onboarding boundary memory."
+routing:
+  use_when:
+    - "A task touches module boundaries, public contracts, data access, adapters, source roots, or agent runtime invariants."
+    - "Onboarding needs reusable architecture or boundary rules."
+  do_not_use_when:
+    - "The task only needs active workflow routing, test evidence rules, or source-context retrieval rules."
+  load_when:
+    - route: architecture
+      use_when: "A change crosses module, folder, public contract, adapter, persistence, or runtime boundaries."
+    - route: onboarding
+      use_when: "A target repository needs real source roots, public contracts, and reusable architecture rules."
+    - route: validation
+      use_when: "A diff changes public contracts, adapters, data access, or agent runtime context."
+  write_when:
+    - "A reusable boundary, API, adapter, data, or runtime invariant changes."
+    - "Onboarding discovers repeated architecture rules that future planning must retrieve."
+  defer_when:
+    - "The fact is a one-off work-lane decision or product requirement rather than a reusable boundary rule."
+  primary_skills:
+    - architecture-review
+    - plan-change
+    - adapt-harness
+    - validate-change
+  related_roles:
+    - orchestrator
+    - project-onboarder
+    - agent-engineer
+    - security
+selection_rules:
+  - "Use folder-mapping for harness write-target questions."
+  - "Use data-boundary-review for persistence, query, index, retention, or replicated-field decisions."
+documents:
+  - path: docs/patterns/boundaries/index.md
+    kind: pattern-entry
+    description: "Durable boundary, API, adapter, and runtime rules."
+    trigger_when:
+      - "Module boundaries, public contracts, adapters, data access, source roots, or agent runtime invariants are in scope."
+    sections:
+      - id: folder-mapping
+        title: Folder Mapping
+        anchor: "## Folder Mapping"
+        summary: "Maps harness folders, public contracts, docs, validation script, and future source roots."
+        routing_description: "Use for onboarding, structure validation, or write-target ownership decisions."
+        tags:
+          - onboarding
+          - folders
+          - write-targets
+      - id: layer-discipline
+        title: Layer Discipline
+        anchor: "## Layer Discipline"
+        summary: "Defines responsibilities and exclusions for entry point, service, data, adapter, UI, and agent/runtime layers."
+        routing_description: "Use before implementation or architecture review when layer ownership is unclear."
+        tags:
+          - architecture
+          - layers
+          - planning
+      - id: module-seam-review
+        title: Module And Seam Review
+        anchor: "## Module And Seam Review"
+        summary: "Rules for reviewing consumers, abstractions, public contracts, and validation seams."
+        routing_description: "Use before cross-boundary changes, shared abstractions, or state-machine refactors."
+        tags:
+          - architecture-review
+          - public-contract
+          - refactor
+      - id: data-boundary-review
+        title: Data Boundary Review
+        anchor: "## Data Boundary Review"
+        summary: "Access-pattern matrix and source-of-truth rules for persistence, query shape, indexes, retention, cache, and replicated fields."
+        routing_description: "Use when a change touches data shape, tenant or owner filters, query performance, or storage lifecycle."
+        tags:
+          - data
+          - persistence
+          - isolation
+      - id: api-public-contracts
+        title: API And Public Contracts
+        anchor: "## API And Public Contracts"
+        summary: "Rules for request/response shapes, boundary validation, errors, schemas, and known consumers."
+        routing_description: "Use for API, schema, CLI, UI contract, auth context, or breaking-change planning."
+        tags:
+          - api
+          - public-contract
+          - validation
+      - id: adapter-boundaries
+        title: Adapter Boundaries
+        anchor: "## Adapter Boundaries"
+        summary: "Core workflow to port to provider adapter pattern with retries, idempotency, rate limits, and stable error translation."
+        routing_description: "Use when external providers, gateways, load balancers, queues, or tool adapters are in scope."
+        tags:
+          - adapters
+          - integrations
+          - reliability
+      - id: agentic-runtime-invariant
+        title: Agentic Runtime Invariant
+        anchor: "## Agentic Runtime Invariant"
+        summary: "Defines the repo-level invariant for coding-agent turns, scoped context, docs, and validation."
+        routing_description: "Use for Codex/Cascade runtime, context loading, memory, tool, and validator decisions."
+        tags:
+          - agent-runtime
+          - context
+          - harness
+  - path: .codex/skills/architecture-review/SKILL.md
+    kind: skill
+    description: "Boundary review trigger and checklist."
+    trigger_when:
+      - "A change crosses module, folder, public contract, adapter, persistence, or runtime boundaries."
+  - path: .codex/skills/adapt-harness/SKILL.md
+    kind: skill
+    description: "Onboarding route for target-specific source roots and architecture rules."
+    trigger_when:
+      - "Onboarding discovers target-specific source roots or reusable architecture rules."
+  - path: .codex/agents/security/AGENT.md
+    kind: agent
+    description: "Security role consumes boundary rules for auth, tenant, and provider review."
+    trigger_when:
+      - "Auth, tenant, provider, data, or external boundary risk is under review."
+  - path: harness.config.yaml
+    kind: config
+    description: "Current scaffold source roots, public contracts, and memory paths."
+    trigger_when:
+      - "Harness source roots, public contracts, memory paths, or validation commands are changing."
+  - path: scripts/build_pattern_context_pack.py
+    kind: script
+    description: "Builds selected text previews from pack metadata."
+    trigger_when:
+      - "A prompt needs selected context from pattern-pack metadata."

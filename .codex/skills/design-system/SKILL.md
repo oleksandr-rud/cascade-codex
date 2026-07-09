@@ -26,7 +26,7 @@ decide product intent, or create brand positioning.
    screenshots, browser evidence, or visual regression artifacts when available.
 5. `docs/glossary.md`, active work state, and current `docs-impact-map`
    reports.
-6. `docs/patterns/workflow.md` for the shared Doc Routing Decision Matrix.
+6. `docs/patterns/workflow/index.md` for the shared Doc Routing Decision Matrix.
 
 Follow existing code and design-system implementation when docs conflict, then
 report the drift.
@@ -64,7 +64,7 @@ blocker.
    - static mockup or Figma evidence;
    - design gap.
 2. For each design/UX problem, requirement, or gap, run several trajectory
-   passes per `docs/patterns/workflow.md#trajectory-coverage`; every trajectory
+   passes per `docs/patterns/workflow/index.md#trajectory-coverage`; every trajectory
    must cover a real problem, requirement, or gap, and final design-rule
    synthesis must preserve major and minor inspected details.
 3. Identify the source of truth:

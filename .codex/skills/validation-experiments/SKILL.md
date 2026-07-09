@@ -18,7 +18,7 @@ declare product behavior valid without evidence.
 2. Existing product/spec/scenario/backlog docs and active work lanes.
 3. Available channels, analytics, prototype tools, interview access, support
    workflows, sales notes, landing pages, and current product surfaces.
-4. `docs/patterns/workflow.md` for the Doc Routing Decision Matrix.
+4. `docs/patterns/workflow/index.md` for the Doc Routing Decision Matrix.
 
 Use live research for current channel availability, competitor response,
 regulatory constraints, and geography-specific assumptions.

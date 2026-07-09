@@ -22,7 +22,7 @@ certainty or replace implementation planning.
    data.
 4. Current product costs, runtime costs, support load, operations, sales motion,
    or implementation constraints when available.
-5. `docs/patterns/workflow.md` for the Doc Routing Decision Matrix.
+5. `docs/patterns/workflow/index.md` for the Doc Routing Decision Matrix.
 
 Use live research for pricing, public market, competitor, geography, and
 regulatory facts that can change.

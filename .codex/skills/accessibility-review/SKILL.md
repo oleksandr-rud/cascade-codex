@@ -38,8 +38,8 @@ parent session explicitly routes to implementation.
    - status messages and async updates;
    - reduced motion and animation restraint;
    - mobile/narrow viewport accessibility.
-3. Prefer native elements and Radix/shadcn accessible primitives before custom
-   widget semantics.
+3. Prefer native elements and the target project's established accessible
+   component primitives before custom widget semantics.
 4. Use WAI ARIA APG for custom widgets and WCAG 2.2 for testable criteria.
 5. Separate:
    - confirmed issue;

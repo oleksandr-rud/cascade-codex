@@ -1,0 +1,141 @@
+pack_id: workflow-core
+entry_id: workflow
+title: Workflow Core Pattern Pack
+kind: pattern-context-pack
+owner: Cascade maintainers
+summary: "Selectable workflow rules for routing, lanes, coverage, doc impact, research coverage, closeout, and memory."
+description: "Use this pack when a prompt or skill needs the workflow rules without loading every pattern entry."
+routing:
+  use_when:
+    - "A task needs lane routing, dependency handling, work-to-source coverage, or closeout memory."
+    - "A skill references the Doc Routing Decision Matrix or trajectory coverage."
+  do_not_use_when:
+    - "The task only needs architecture boundary rules, functional testing rules, or source-context retrieval rules."
+  load_when:
+    - route: active-work
+      use_when: "Opening, splitting, serializing, merging, or closing work lanes."
+    - route: planning
+      use_when: "Turning a request, gap, or requirement into behavior examples and validation routes."
+    - route: doc-routing
+      use_when: "Durable facts may require product, design, brand, spec, backlog, glossary, or pattern updates."
+    - route: research
+      use_when: "Research or source discovery may become durable rules or specs."
+  write_when:
+    - "A repeated workflow, routing, closeout, or research-coverage rule changes."
+    - "A validated harness change updates the Doc Routing Decision Matrix, lane model, or memory routing."
+  defer_when:
+    - "The fact is product-specific and belongs in docs/product, docs/design, docs/brand, docs/specs, or docs/backlog."
+  primary_skills:
+    - orchestrate-work
+    - plan-change
+    - docs-impact-map
+    - validate-change
+    - closeout
+  related_roles:
+    - orchestrator
+    - project-onboarder
+    - business-analyst
+    - agent-engineer
+selection_rules:
+  - "Prefer summary-only first when deciding whether the pack is relevant."
+  - "Use section and tag filters for narrow prompt assembly."
+documents:
+  - path: docs/patterns/workflow/index.md
+    kind: pattern-entry
+    description: "Durable workflow rules and matrices."
+    trigger_when:
+      - "Workflow routing, active lanes, planning coverage, doc impact, research coverage, closeout, or memory routing is in scope."
+    sections:
+      - id: workflow-prompt-routing
+        title: Workflow Prompt Routing
+        anchor: "## Workflow Prompt Routing"
+        summary: "Classifies workflow prompts into workflow-packet, active-lane, planning, implementation, UX, security, market, validation, or closeout routes."
+        routing_description: "Use before choosing agentic-workflow-builder, orchestrate-work, plan-change, implement-change, or specialist review skills."
+        tags:
+          - routing
+          - skills
+          - planning
+      - id: active-work
+        title: Active Work
+        anchor: "## Active Work"
+        summary: "Defines active registry, lane packets, lane examples, and completed-row cleanup rules."
+        routing_description: "Use when opening, updating, splitting, or closing active work lanes."
+        tags:
+          - lanes
+          - orchestration
+          - memory
+      - id: doc-routing-decision-matrix
+        title: Doc Routing Decision Matrix
+        anchor: "## Doc Routing Decision Matrix"
+        summary: "Shared matrix for routing durable facts to the narrowest owner doc or recording no-doc-needed decisions."
+        routing_description: "Use whenever a change creates, validates, normalizes, or closes out durable facts."
+        tags:
+          - docs-impact
+          - closeout
+          - memory
+      - id: trajectory-coverage
+        title: Trajectory Coverage
+        anchor: "## Trajectory Coverage"
+        summary: "Requires several real trajectories for problems, requirements, gaps, plans, or groomed artifacts."
+        routing_description: "Use in planning, product grooming, impact mapping, and validation-route design."
+        tags:
+          - planning
+          - coverage
+          - behavior-examples
+      - id: research-coverage
+        title: Research Coverage
+        anchor: "## Research Coverage"
+        summary: "Separates source-family coverage, evidence class, claim status, promotion status, and residual workflow risk."
+        routing_description: "Use for research, source discovery, prompt policy, semantic-core packets, or workflow specs that may become durable."
+        tags:
+          - research
+          - evidence
+          - source-context
+      - id: closeout-drift-scan
+        title: Closeout Drift Scan
+        anchor: "## Closeout Drift Scan"
+        summary: "Defines when final diffs need thin sourced doc updates and when reports or discovery routes are better."
+        routing_description: "Use at task finish after validation evidence exists."
+        tags:
+          - closeout
+          - docs-impact
+          - validation
+      - id: memory-routing
+        title: Memory
+        anchor: "## Memory"
+        summary: "Maps active work, reports, thin diffs, skills, agents, patterns, glossary, and rejected scope to durable owners."
+        routing_description: "Use when deciding where to persist work state or reusable lessons."
+        tags:
+          - memory
+          - closeout
+          - routing
+  - path: .codex/skills/orchestrate-work/SKILL.md
+    kind: skill
+    description: "Lane orchestration source order and routing."
+    trigger_when:
+      - "Work needs to be split, serialized, scheduled, tracked, or merged across lanes."
+  - path: .codex/skills/plan-change/SKILL.md
+    kind: skill
+    description: "Planning examples, risks, and validation plan."
+    trigger_when:
+      - "A non-atomic implementation, bug fix, refactor, or product-visible change needs a plan."
+  - path: .codex/skills/docs-impact-map/SKILL.md
+    kind: skill
+    description: "Cross-folder impact and doc routing."
+    trigger_when:
+      - "A durable product, design, brand, spec, backlog, glossary, or pattern fact may affect sibling docs."
+  - path: .codex/skills/validate-change/SKILL.md
+    kind: skill
+    description: "Validation evidence aggregation."
+    trigger_when:
+      - "A change needs command, test, type, diff, link, scenario, or review evidence aggregated."
+  - path: .codex/skills/closeout/SKILL.md
+    kind: skill
+    description: "Final evidence, memory, and thin doc diffs."
+    trigger_when:
+      - "Work is finishing and needs validation evidence, memory routing, or handoff recorded."
+  - path: scripts/build_pattern_context_pack.py
+    kind: script
+    description: "Builds selected text previews from pack metadata."
+    trigger_when:
+      - "A prompt needs selected context from pattern-pack metadata."

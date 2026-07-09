@@ -17,7 +17,7 @@ without evidence and routing through `synthesis-to-spec`.
 2. `pain-mining`, `competitive-map`, `market-economics`, and
    `validation-experiments` reports.
 3. Existing product/spec/backlog docs and active work lanes.
-4. `docs/patterns/workflow.md` for the Doc Routing Decision Matrix.
+4. `docs/patterns/workflow/index.md` for the Doc Routing Decision Matrix.
 
 ## Scoring Dimensions
 

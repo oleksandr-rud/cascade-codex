@@ -1,0 +1,135 @@
+pack_id: context-memory-core
+entry_id: context-memory
+title: Context Memory Core Pattern Pack
+kind: pattern-context-pack
+owner: Cascade maintainers
+summary: "Selectable context and memory rules for source identity, retrieval, semantic-core packages, handoff, memory writes, research memory, and observability."
+description: "Use this pack when prompt assembly, retrieval, memory, semantic packages, or context-pack behavior is in scope."
+routing:
+  use_when:
+    - "A task needs source-context selection, memory routing, semantic-core package rules, compaction handoff, research memory, or context observability."
+  do_not_use_when:
+    - "The task only needs lane orchestration, architecture boundaries, or functional testing rules."
+  load_when:
+    - route: context-retrieval
+      use_when: "Source identity, scoped retrieval, connector output, or model context assembly matters."
+    - route: semantic-core
+      use_when: "Several specs, prompts, policies, scripts, documents, or packets compile into one model context."
+    - route: memory-routing
+      use_when: "Durable work, research, lessons, or rejected scope need a narrow owner."
+    - route: observability
+      use_when: "Context size, duplicate context, source count, tool result size, or retry behavior should be tracked."
+  write_when:
+    - "A reusable context selection, memory routing, package, compaction, research-memory, or observability rule changes."
+    - "Research-heavy closeout needs a compact research-memory row."
+  defer_when:
+    - "The fact is an active lane detail better stored in docs/work/active.md or docs/work/lanes."
+  primary_skills:
+    - context
+    - pattern-context
+    - adapt-harness
+    - validate-change
+    - closeout
+  related_roles:
+    - orchestrator
+    - project-onboarder
+    - agent-engineer
+    - business-analyst
+selection_rules:
+  - "Use summary-only first to decide whether source-context rules are relevant."
+  - "Use source-identity and retrieval-rules before loading connector or MCP output into prompts."
+documents:
+  - path: docs/patterns/context-memory/index.md
+    kind: pattern-entry
+    description: "Durable context, retrieval, semantic-core, memory, and observability rules."
+    trigger_when:
+      - "Prompt assembly, retrieval, source identity, memory routing, semantic packages, handoff, or context observability is in scope."
+    sections:
+      - id: source-identity
+        title: Source Identity
+        anchor: "## Source Identity"
+        summary: "Fields required to identify source type, source ID, owner, title, version, chunk, retrieval method, and confidence."
+        routing_description: "Use before preserving source material, connector results, research evidence, or retrieved context."
+        tags:
+          - source-context
+          - retrieval
+          - evidence
+      - id: retrieval-rules
+        title: Retrieval Rules
+        anchor: "## Retrieval Rules"
+        summary: "Rules for explicit source selection, bounded retrieval, MCP context, plugin tools, and untrusted tool output."
+        routing_description: "Use before assembling prompts, loading external data, or passing tool results between systems."
+        tags:
+          - retrieval
+          - mcp
+          - prompt-assembly
+      - id: semantic-core-packages
+        title: Semantic Core Packages
+        anchor: "## Semantic Core Packages"
+        summary: "Required shape and limits for package YAML, catalog YAML, Markdown specs, prompt scripts, compilers, and source boundaries."
+        routing_description: "Use when several source docs compile into one model context or prompt package."
+        tags:
+          - semantic-core
+          - package
+          - prompt-assembly
+      - id: compaction-and-handoff
+        title: Compaction And Handoff
+        anchor: "## Compaction And Handoff"
+        summary: "Lists state that compaction must not erase."
+        routing_description: "Use for long-running work, resumptions, and handoff reports."
+        tags:
+          - handoff
+          - compaction
+          - memory
+      - id: memory-write-routing
+        title: Memory Write Routing
+        anchor: "## Memory Write Routing"
+        summary: "Maps active execution, lane criteria, research memory, reports, reusable rules, product facts, glossary, and rejected scope to owners."
+        routing_description: "Use before writing memory or closing research-heavy work."
+        tags:
+          - memory
+          - closeout
+          - docs-impact
+      - id: research-memory-entries
+        title: Research Memory Entries
+        anchor: "## Research Memory Entries"
+        summary: "Compact durable rows that connect reports, specs, packages, prompt scripts, validators, and reusable rules."
+        routing_description: "Use when research reports need a compact durable lookup entry."
+        tags:
+          - research
+          - memory
+          - reports
+      - id: observability
+        title: Observability
+        anchor: "## Observability"
+        summary: "Tracks context size, duplicate context, retrieval source count, tool-result size, token usage, latency, retries, and empty-result behavior."
+        routing_description: "Use when context loading or retrieval needs traceability and cost control."
+        tags:
+          - observability
+          - context
+          - validation
+  - path: .codex/skills/context/SKILL.md
+    kind: skill
+    description: "Task-start and resume source order includes compact research memory."
+    trigger_when:
+      - "A task starts, resumes, or needs a current-state snapshot before planning."
+  - path: .codex/skills/pattern-context/SKILL.md
+    kind: skill
+    description: "Pattern entry and context-pack retrieval owner."
+    trigger_when:
+      - "Reusable pattern memory, context-pack retrieval, or pattern-pack schema changes are in scope."
+  - path: .codex/skills/adapt-harness/SKILL.md
+    kind: skill
+    description: "Onboarding route for source-context and memory rules."
+    trigger_when:
+      - "Onboarding discovers repeated context, memory, retrieval, or pattern rules."
+  - path: .codex/skills/closeout/SKILL.md
+    kind: skill
+    description: "Closeout route for durable memory decisions."
+    trigger_when:
+      - "A completed task needs durable lessons, memory routing, or thin doc diffs."
+  - path: scripts/build_pattern_context_pack.py
+    kind: script
+    description: "Builds selected text previews from pack metadata."
+    trigger_when:
+      - "A prompt needs selected context from pattern-pack metadata."

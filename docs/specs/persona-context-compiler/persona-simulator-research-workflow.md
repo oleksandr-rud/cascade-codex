@@ -226,7 +226,7 @@ Every proposed simulation run should declare these layers before execution:
 
 | Check | Evidence |
 |---|---|
-| Spec packet includes source, classification, behavior examples, functional checks, and handoff | `python scripts/validate_cascade_codex.py` |
+| Spec packet includes source, classification, behavior examples, functional checks, and handoff | `python3 scripts/validate_cascade_codex.py` |
 | Research workflow has a separate package from runtime persona semantic core | `docs/specs/persona-context-compiler/persona-simulator-research.package.yaml` |
 | Prompt script exists for executing the research workflow | `docs/specs/persona-context-compiler/persona-simulator-research.prompt.md` |
 | Workflow report records agent routes, lanes, prompts, gates, validation, and source evidence | `docs/work/reports/2026-06-20-persona-simulator-deep-search-workflow.md` |

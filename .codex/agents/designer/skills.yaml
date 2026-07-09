@@ -15,6 +15,8 @@ skills:
     source: .codex/skills/compose-spec/SKILL.md
   - name: docs-impact-map
     source: .codex/skills/docs-impact-map/SKILL.md
+  - name: pattern-context
+    source: .codex/skills/pattern-context/SKILL.md
   - name: functional-qa
     source: .codex/skills/functional-qa/SKILL.md
   - name: validate-change

@@ -1,0 +1,61 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Cascade golden harness judgment",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "run_id",
+    "scenario_id",
+    "verdict",
+    "root_cause",
+    "deterministic_verdict",
+    "earliest_failing_event",
+    "rationale",
+    "evidence",
+    "replay_command",
+    "regression_recommendation",
+    "residual_uncertainty"
+  ],
+  "properties": {
+    "run_id": {"type": "string", "minLength": 1},
+    "scenario_id": {"type": "string", "minLength": 1},
+    "verdict": {
+      "type": "string",
+      "enum": ["PASS", "FAIL", "FLAKY", "BLOCKED", "INVALID_SCENARIO"]
+    },
+    "root_cause": {
+      "type": "string",
+      "enum": [
+        "none",
+        "harness-defect",
+        "model-variance",
+        "scenario-defect",
+        "environment-blocker"
+      ]
+    },
+    "deterministic_verdict": {
+      "type": "string",
+      "enum": ["PASS", "FAIL", "BLOCKED"]
+    },
+    "earliest_failing_event": {"type": "string"},
+    "rationale": {"type": "string", "minLength": 1},
+    "evidence": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["path", "observation"],
+        "properties": {
+          "path": {"type": "string", "minLength": 1},
+          "observation": {"type": "string", "minLength": 1}
+        }
+      }
+    },
+    "replay_command": {"type": "string", "minLength": 1},
+    "regression_recommendation": {"type": "string"},
+    "residual_uncertainty": {
+      "type": "array",
+      "items": {"type": "string"}
+    }
+  }
+}

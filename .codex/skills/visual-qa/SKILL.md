@@ -25,7 +25,7 @@ acceptance or implementation.
 4. Current UI code, frontend components, CSS, tokens, routes, screenshots, or
    Figma evidence when diagnosis is requested.
 5. `references/visual-validation.md`.
-6. `docs/patterns/context-memory.md` when a repeated visual validation lesson
+6. `docs/patterns/context-memory/index.md` when a repeated visual validation lesson
    may become durable workflow memory.
 
 ## Procedure
@@ -70,7 +70,7 @@ acceptance or implementation.
      accessibility expectation -> `docs/design/` through `design-system`;
    - brand or content rule -> `docs/brand/` through `brand-positioning`;
    - repeated visual-validation workflow lesson -> `.codex/skills/`,
-     `.codex/agents/`, or `docs/patterns/context-memory.md` through
+     `.codex/agents/`, or `docs/patterns/context-memory/index.md` through
      `closeout` or `codex-maintenance`;
    - follow-up work -> `docs/backlog/_index.md` through `docs-impact-map`.
 7. Do not write durable docs directly from visual inspection unless the source

@@ -11,6 +11,8 @@ Merge owner: `project-onboarder`
 Adapt Cascade Codex to `<TARGET_PROJECT>` and produce routed project-part,
 feature, stack, architecture, security, design, brand, visual, validation, and
 context-memory specs without inventing facts or creating broad dump folders.
+When reusable pattern memory is needed, create bounded pattern entries through
+`pattern-context` with metadata and pack YAML.
 
 ## Agent And Global Skill Inventory
 
@@ -46,6 +48,7 @@ context-memory specs without inventing facts or creating broad dump folders.
 | `brand-positioning` | `.codex/skills/brand-positioning/SKILL.md` | `ON-06` for brand/content rules |
 | `functional-qa` | `.codex/skills/functional-qa/SKILL.md` | `ON-07` |
 | `docs-impact-map` | `.codex/skills/docs-impact-map/SKILL.md` | `ON-03` through `ON-08` before durable writes |
+| `pattern-context` | `.codex/skills/pattern-context/SKILL.md` | `ON-03`, `ON-04`, `ON-07`, `ON-08` when pattern entries or packs change |
 | `validate-change` | `.codex/skills/validate-change/SKILL.md` | `ON-09` |
 | `closeout` | `.codex/skills/closeout/SKILL.md` | `ON-08`, `ON-09` |
 
@@ -56,12 +59,12 @@ context-memory specs without inventing facts or creating broad dump folders.
 | `ON-00` | `<open>` | `project-onboarder` | `context`, `adapt-harness` | request, repo root, branch, existing harness/docs/manifests | source inventory and blockers | no writes before inventory | `ON-01` |
 | `ON-01` | `<open>` | `project-onboarder` | `adapt-harness` | manifests, build files, test config, README, entrypoints | stack, roots, commands, runners | paths and commands are real or marked blocked | `ON-02` |
 | `ON-02` | `<open>` | `project-onboarder` | `adapt-harness`, `architecture-review` | source roots, tests, public contracts | project-part spec list and first packets | one packet per justified area, skipped areas explained | `ON-03` |
-| `ON-03` | `<open>` | `project-onboarder` | `architecture-review`, `docs-impact-map` | project-part packets, boundaries, glossary | boundary and vocabulary updates | Doc Routing Decision Matrix rows | `ON-04` |
-| `ON-04` | `<open>` | `security` or `project-onboarder` | `codebase-audit`, `auth-analysis`, `secure-design` | auth, data, config, API, adapters, logs docs | security/data notes and validation probes | sensitive data omitted, risks separated from evidence | `ON-05` |
+| `ON-03` | `<open>` | `project-onboarder` | `architecture-review`, `docs-impact-map`, `pattern-context` | project-part packets, boundaries, glossary | boundary, vocabulary, and pattern-entry updates | Doc Routing Decision Matrix rows and pack metadata when changed | `ON-04` |
+| `ON-04` | `<open>` | `security` or `project-onboarder` | `codebase-audit`, `auth-analysis`, `secure-design`, `pattern-context` | auth, data, config, API, adapters, logs docs | security/data notes and validation probes | sensitive data omitted, risks separated from evidence; no broad security dump | `ON-05` |
 | `ON-05` | `<open>` | `project-onboarder` | `ingest-spec`, `discover`, `synthesis-to-spec`, `compose-spec` | routes, UI copy, APIs, tests, specs, README | feature specs, scenarios, journeys, spec packets | each feature has source identity or `GAP` | `ON-06` |
 | `ON-06` | `<open>` | `designer` or `project-onboarder` | `visual-qa`, `ux-flow-review`, `design-system`, `brand-positioning` | running app, screenshots, UI code, design and brand docs | visual/design/brand/product deltas | viewport/state evidence or blocked reason | `ON-07` |
-| `ON-07` | `<open>` | `project-onboarder` | `functional-qa`, `docs-impact-map` | feature specs, scenarios, public contracts, runners | acceptance and test map | no missing required check marked pass | `ON-08` |
-| `ON-08` | `<open>` | `project-onboarder` | `docs-impact-map`, `closeout` | all durable facts and owner docs | context-memory and doc routing matrix | narrow owner for every retained fact | `ON-09` |
+| `ON-07` | `<open>` | `project-onboarder` | `functional-qa`, `docs-impact-map`, `pattern-context` | feature specs, scenarios, public contracts, runners | acceptance and test map | no missing required check marked pass; reusable validation packs updated only when durable | `ON-08` |
+| `ON-08` | `<open>` | `project-onboarder` | `docs-impact-map`, `pattern-context`, `closeout` | all durable facts and owner docs | context-memory, pattern context, and doc routing matrix | narrow owner for every retained fact | `ON-09` |
 | `ON-09` | `<open>` | `project-onboarder` | `validate-change`, `closeout` | changed files, validator, target checks | validation and handoff | validator and available target checks recorded | done |
 
 ## Write Scope
@@ -78,10 +81,8 @@ Allowed:
 - `docs/specs/source/` only when source preservation is useful
 - `docs/specs/{slice-slug}/`
 - `docs/backlog/_index.md`
-- `docs/patterns/workflow.md`
-- `docs/patterns/boundaries.md`
-- `docs/patterns/testing.md`
-- `docs/patterns/context-memory.md`
+- `docs/patterns/{entry}/index.md`
+- `docs/patterns/{entry}/*.pack.yaml`
 - `docs/work/active.md`
 - `docs/work/lanes/`
 - `docs/work/reports/`
@@ -104,7 +105,8 @@ repository before writing. Fill configuration and docs only from observed
 sources. Produce project-part specs with templates/project-part-spec.md when a
 project area has independent behavior or validation risk. Route durable facts
 through docs-impact-map and the existing owner docs. Keep AGENTS.md thin. Run
-the Cascade validator and available target checks before closeout.
+the Cascade validator and available target checks before closeout. Use
+pattern-context for bounded pattern entries and context packs.
 ```
 
 ### P-02: Designer Support
@@ -125,8 +127,8 @@ Use security only for security-sensitive source areas. Use codebase-audit for
 current-code trajectory inventory, auth-analysis for auth/session/role or
 tenant boundaries, and secure-design for workflow or agent/tool risks. Separate
 proven controls, likely risks, gaps, and assumptions. Route durable boundary
-and validation rules to existing pattern files, and follow-up work to backlog
-only with acceptance criteria.
+and validation rules through pattern-context only when they are reusable
+patterns, and route follow-up work to backlog only with acceptance criteria.
 ```
 
 ### P-04: Agent Engineer Support
@@ -136,7 +138,9 @@ Use agent-engineer for harness, skill, agent, project agent/LLM system,
 validator, workflow, source context, connector, memory-routing, observability,
 or eval changes. Keep prompt rules separate from mechanical validator, schema,
 permission, hook, or test invariants. Preserve project-neutral Cascade
-surfaces and update validators when a new required artifact is added.
+surfaces and update validators when a new required artifact is added. Use
+scripts/build_pattern_context_pack.py to verify pattern-pack previews when
+pack metadata changes.
 ```
 
 ## Stop Rules
@@ -154,5 +158,5 @@ Onboarding is done when the harness points at real project roots and commands,
 project facts have narrow owner docs, project-part specs are written or skipped
 with reasons, feature specs and acceptance routes are recorded, visual/design
 and brand evidence is routed when available, security and architecture facts
-have owners, context-memory routing is explicit, and validation evidence or
-blockers are recorded.
+have owners, context-memory and pattern-context routing are explicit, and
+validation evidence or blockers are recorded.

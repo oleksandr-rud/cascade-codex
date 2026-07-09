@@ -21,7 +21,7 @@ does not decide implementation scope by itself.
    marketplaces, analyst summaries, and public filings when available.
 4. Current code, UI, integrations, and public contracts when an existing
    product surface is being compared.
-5. `docs/patterns/workflow.md` for the Doc Routing Decision Matrix.
+5. `docs/patterns/workflow/index.md` for the Doc Routing Decision Matrix.
 
 Use live research for current competitors, pricing, positioning, geography,
 availability, and public claims.

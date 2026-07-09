@@ -28,7 +28,7 @@ evidence with focused skills, and routes validated findings to
 5. Live external sources when facts can change, including competitor sites,
    pricing pages, public reviews, forums, app stores, communities, public
    filings, regulation pages, and geography-specific sources.
-6. `docs/structure.md` and `docs/patterns/workflow.md`, especially the shared
+6. `docs/structure.md` and `docs/patterns/workflow/index.md`, especially the shared
    Doc Routing Decision Matrix.
 
 ## Scope
@@ -67,7 +67,7 @@ is already clear. Do not implement code or repair tests from this skill.
    - synthesis output;
    - blocked or follow-up route.
 3. For each problem, requirement, or gap, run several trajectory passes per
-   `docs/patterns/workflow.md#trajectory-coverage`; trajectories may vary by
+   `docs/patterns/workflow/index.md#trajectory-coverage`; trajectories may vary by
    segment, persona, geography, competitor category, pain source, economics,
    constraint, experiment, or implementation route, but every trajectory must
    cover a real problem, requirement, or gap.
@@ -113,15 +113,15 @@ is already clear. Do not implement code or repair tests from this skill.
 | Lane | Purpose | Skill | Evidence Standard | Template | Status |
 |---|---|---|---|---|---|
 | Market frame | Universe, scope, assumptions | `market-validation` | source map plus assumptions | `templates/market-validation-report.md` | `<status>` |
-| Competitors | direct, substitute, infra | `competitive-map` | current sourced map | `templates/competitive-map.md` | `<status>` |
-| Pain | real user pain | `pain-mining` | sourced pain quotes or summaries | `templates/pain-mining-report.md` | `<status>` |
-| Economics | pricing, WTP, velocity | `market-economics` | model with assumptions | `templates/economics-model.md` | `<status>` |
+| Competitors | direct, substitute, infra | `competitive-map` | current sourced map | `.codex/skills/competitive-map/templates/competitive-map.md` | `<status>` |
+| Pain | real user pain | `pain-mining` | sourced pain quotes or summaries | `.codex/skills/pain-mining/templates/pain-mining-report.md` | `<status>` |
+| Economics | pricing, WTP, velocity | `market-economics` | model with assumptions | `.codex/skills/market-economics/templates/economics-model.md` | `<status>` |
 | Geography | segment and location fit | `market-validation` | sourced segment logic | `templates/market-validation-report.md` | `<status>` |
 | Constraints | regulatory or operational | `market-validation` | sourced constraints | `templates/market-validation-report.md` | `<status>` |
-| Experiments | proof and kill tests | `validation-experiments` | measurable test plan | `templates/validation-experiment-plan.md` | `<status>` |
-| Score | rank hypotheses | `hypothesis-scoring` | scored evidence quality | `templates/hypothesis-scorecard.md` | `<status>` |
-| Critic | stress test | `adversarial-critic` | objections and gaps | `templates/critic-report.md` | `<status>` |
-| Synthesis | PRD/spec/backlog | `synthesis-to-spec` -> `compose-spec` | routed facts | `templates/spec-synthesis-packet.md` | `<status>` |
+| Experiments | proof and kill tests | `validation-experiments` | measurable test plan | `.codex/skills/validation-experiments/templates/validation-experiment-plan.md` | `<status>` |
+| Score | rank hypotheses | `hypothesis-scoring` | scored evidence quality | `.codex/skills/hypothesis-scoring/templates/hypothesis-scorecard.md` | `<status>` |
+| Critic | stress test | `adversarial-critic` | objections and gaps | `.codex/skills/adversarial-critic/templates/critic-report.md` | `<status>` |
+| Synthesis | PRD/spec/backlog | `synthesis-to-spec` -> `compose-spec` | routed facts | `.codex/skills/synthesis-to-spec/templates/spec-synthesis-packet.md` | `<status>` |
 
 ## Templates
 

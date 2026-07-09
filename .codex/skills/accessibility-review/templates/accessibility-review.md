@@ -17,7 +17,7 @@ Source: `<request | screenshot | code | Figma | product spec>`
 
 - WCAG criteria:
 - ARIA APG patterns:
-- the target project token/design rules:
+- Project token/design rules:
 
 ## Findings
 

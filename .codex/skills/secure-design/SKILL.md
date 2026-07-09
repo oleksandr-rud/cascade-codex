@@ -34,7 +34,7 @@ Do not use this skill when:
 
 1. Latest user request, source spec, product note, ticket, screenshot, or design.
 2. `AGENTS.md`, `.codex/agents/security/AGENT.md`.
-3. `docs/patterns/boundaries.md`.
+3. `docs/patterns/boundaries/index.md`.
 4. Relevant product, design, spec, or work docs:
    - `docs/product/`
    - `docs/patterns/`

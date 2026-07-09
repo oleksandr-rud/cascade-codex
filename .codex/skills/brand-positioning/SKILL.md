@@ -25,7 +25,7 @@ design tokens directly, or replace `synthesis-to-spec`.
    support workflows.
 6. Current `docs-impact-map` report when a sibling doc change triggered the
    brand review.
-7. `docs/patterns/workflow.md` for the shared Doc Routing Decision Matrix.
+7. `docs/patterns/workflow/index.md` for the shared Doc Routing Decision Matrix.
 
 Separate explicit source facts from assumptions. Do not invent market claims,
 competitors, proof points, or research conclusions.
@@ -59,7 +59,7 @@ intent is the blocker.
    - visual direction;
    - content risk or avoid list.
 2. For each brand/content problem, requirement, or gap, run several trajectory
-   passes per `docs/patterns/workflow.md#trajectory-coverage`; every trajectory
+   passes per `docs/patterns/workflow/index.md#trajectory-coverage`; every trajectory
    must cover a real problem, requirement, or gap, and final positioning or
    message-map synthesis must preserve major and minor inspected details.
 3. Identify the affected audience or persona. If user roles affect product

@@ -5,6 +5,7 @@ only while they are useful for handoff; move durable details into reports.
 
 | Lane | Status | Request | Owner | Next Gate | Files/Areas | Dependencies | Evidence |
 |---|---|---|---|---|---|---|---|
+| `W-001` | `IN_PROGRESS` | Complete live execution and golden evaluation for all 290 current Cascade harness scenarios | `agent-engineer` | `harness-evaluation` | `evals/harness/`; `scripts/run_harness_evals.py`; `.artifacts/harness-evals/`; harness evaluation report | 190 current scenarios require first live traces; runs remain serial and read-only | `docs/work/lanes/W-001-harness-evaluation-lab.md`; `.artifacts/harness-evals/coverage-current.json` |
 
 No active lanes.
 

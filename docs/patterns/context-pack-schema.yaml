@@ -1,0 +1,59 @@
+schema_id: pattern-context-pack-v1
+kind: pattern-context-pack-schema
+summary: "Schema notes for docs/patterns entry metadata and graph-shaped selectable context packs."
+entry_shape:
+  required_files:
+    - index.md
+    - "*.pack.yaml"
+summary_rules:
+  - "Pack summary is short routing metadata for deciding whether the pack may apply; it is not the source of durable rules."
+  - "Document description explains what the document owns and should be written as trigger text for retrieval."
+  - "Document trigger_when lists concrete task conditions where the document should be considered."
+  - "Section summary states the durable rule, decision, or evidence value in one sentence."
+  - "Section routing_description states when to load that section into a prompt or planning context."
+pack_fields:
+  required:
+    - pack_id
+    - entry_id
+    - title
+    - kind
+    - owner
+    - summary
+    - routing
+    - documents
+  routing_required:
+    - use_when
+    - do_not_use_when
+    - load_when
+    - write_when
+    - defer_when
+  document_required:
+    - path
+    - kind
+    - description
+    - trigger_when
+  section_required:
+    - id
+    - title
+    - anchor
+    - summary
+    - routing_description
+    - tags
+document_graph:
+  node_shape: "Each item under documents is a graph node with path, kind, description, trigger_when, and optional sections."
+  edge_shape: "Routing, trigger_when, section routing_description, primary_skills, and related_roles are retrieval edges into the owning document or skill."
+  section_shape: "Sections are selectable subnodes under the owning document, not separate top-level parts."
+selection_parameters:
+  - "--pack selects by pack_id, path, or file stem"
+  - "--entry selects all packs under a pattern entry folder"
+  - "--section selects specific section IDs"
+  - "--part is a compatibility alias for --section"
+  - "--tag selects sections with matching tags"
+  - "--query selects documents or sections by summary, description, trigger text, routing description, title, ID, kind, or tags"
+  - "--summary-only emits pack, document, and section metadata without Markdown bodies"
+guardrails:
+  - "Pack metadata is retrieval metadata, not proof that referenced rules are current."
+  - "Load the referenced Markdown section before making durable planning, validation, or closeout decisions."
+  - "Do not split summary, routing, documents, or sections into sidecar YAML files; they are inside the pack YAML."
+  - "Do not use top-level status, refs, or parts in pack YAML; pack type is captured by kind and references live under documents."
+  - "Do not create broad dump folders; every entry needs index.md and at least one pack."

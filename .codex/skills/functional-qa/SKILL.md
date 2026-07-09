@@ -21,7 +21,7 @@ product/runtime source code.
    `docs/design/`, `docs/brand/`, `docs/specs/`, and `docs/work/`.
 4. Running app, API, CLI, logs, traces, console, and network evidence.
 5. Existing tests, helpers, fixtures, and test patterns.
-6. `docs/patterns/testing.md` for functional, E2E, scenario, and evidence
+6. `docs/patterns/testing/index.md` for functional, E2E, scenario, and evidence
    rules.
 
 If expected behavior is missing, report `GAP` and route to `plan-change` or

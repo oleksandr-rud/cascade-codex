@@ -20,7 +20,7 @@ patch product/runtime code.
 4. Existing behavior examples and scenario ledgers.
 5. `harness.config.yaml` paths when available.
 6. `docs/structure.md` for write targets.
-7. `docs/patterns/workflow.md` for the shared Doc Routing Decision Matrix.
+7. `docs/patterns/workflow/index.md` for the shared Doc Routing Decision Matrix.
 
 ## Classification
 
@@ -45,7 +45,7 @@ Classify incoming material as one or more:
 1. Preserve explicit user constraints and source links.
 2. Replace vague language with codebase-specific terms after inspecting source.
 3. For each source problem, requirement, or gap, run several trajectory passes
-   per `docs/patterns/workflow.md#trajectory-coverage`; every trajectory must
+   per `docs/patterns/workflow/index.md#trajectory-coverage`; every trajectory must
    cover a real problem, requirement, or gap, and the spec packet must
    synthesize trajectories losslessly without omitting major or minor inspected
    details.
@@ -68,7 +68,7 @@ Classify incoming material as one or more:
    - `docs/backlog/_index.md` for real follow-up work with acceptance
      criteria;
    - `docs/glossary.md` for reusable codebase terms;
-   - `docs/patterns/boundaries.md` for reusable architecture and boundary
+   - `docs/patterns/boundaries/index.md` for reusable architecture and boundary
      rules;
    - `harness.config.yaml` for stack, source/test roots, commands, runners,
      tracker settings, and memory paths;

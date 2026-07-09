@@ -32,7 +32,7 @@ Do not use this skill when:
 
 1. Latest user request and active goal.
 2. `AGENTS.md`, `.codex/agents/security/AGENT.md`.
-3. `docs/patterns/boundaries.md`.
+3. `docs/patterns/boundaries/index.md`.
 4. Active auth/security specs under `docs/specs/` when the request names or
    implies one.
 5. Backend, API, service, middleware, route, schema, database, and audit code
@@ -58,7 +58,7 @@ Do not use this skill when:
    route role guards, cached auth state, and API/backend route parity.
 6. Map sensitive actions to audit events and security alerts.
 7. Compare implementation against the auth requirements in
-   `docs/patterns/boundaries.md`.
+   `docs/patterns/boundaries/index.md`.
 8. Produce findings using `templates/auth-analysis-report.md`.
 9. Recommend validation checks, including regression tests for revocation,
    tenant isolation, role access, route parity, and client auth behavior.

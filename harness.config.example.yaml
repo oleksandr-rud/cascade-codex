@@ -29,15 +29,28 @@ project:
       functional: "<FUNCTIONAL_TEST_RUNNER_OR_NONE>"
       e2e: "<E2E_TEST_RUNNER_OR_NONE>"
 
+models:
+  default: "gpt-5.6-sol"
+  planning: "gpt-5.6-sol"
+  golden_evaluation: "gpt-5.6-sol"
+  subagent_execution: "gpt-5.6-terra"
+  read_heavy: "gpt-5.6-terra"
+
 paths:
   source_roots:
     - "<SRC_ROOT>"
+    - "evals"
   test_roots:
     - "<TEST_ROOT>"
+    - "evals/harness"
   app_entrypoints:
     - "<APP_ENTRYPOINT>"
   public_contracts:
     - "<API_OR_SCHEMA_OR_UI_CONTRACT>"
+    - "scripts/run_harness_evals.py"
+    - "evals/harness/scenarios.generated.json"
+    - "evals/harness/response.schema.json"
+    - "evals/harness/judge-response.schema.json"
   docs_root: "docs"
   structure: "docs/structure.md"
   glossary: "docs/glossary.md"
@@ -57,12 +70,21 @@ paths:
   work_lanes: "docs/work/lanes"
   work_reports: "docs/work/reports"
   patterns: "docs/patterns"
+  pattern_context_builder: "scripts/build_pattern_context_pack.py"
+  harness_evals: "evals/harness"
+  harness_eval_catalog: "evals/harness/scenarios.generated.json"
+  harness_eval_response_schema: "evals/harness/response.schema.json"
+  harness_eval_judge_schema: "evals/harness/judge-response.schema.json"
+  harness_eval_runner: "scripts/run_harness_evals.py"
+  harness_eval_artifacts: ".artifacts/harness-evals"
 
 validation_commands:
   install:
     - "<INSTALL_COMMAND>"
   targeted:
     - "<TARGETED_TEST_COMMAND>"
+    - "python3 scripts/run_harness_evals.py catalog --check"
+    - "python3 scripts/run_harness_evals.py self-test"
   unit:
     - "<UNIT_TEST_COMMAND>"
   lint:
@@ -77,10 +99,12 @@ validation_commands:
     - "<E2E_COMMAND>"
 
 routing:
+  model_policy: "Use gpt-5.6-sol for planning, synthesis, security reasoning, and golden evaluation; use gpt-5.6-terra for read-heavy scans and target execution probes."
   new_task_path:
     - "context"
     - "ingest-spec, discover, market-validation, synthesis-to-spec, or compose-spec when source material, missing intent, long business-analysis research, evidence synthesis, or product/spec authoring exists"
     - "docs-impact-map when durable docs may affect sibling rules"
+    - "pattern-context when reusable pattern packs or entries are needed"
     - "orchestrate-work"
     - "plan-change"
     - "functional-qa"
@@ -119,7 +143,8 @@ functional_acceptance:
 
 memory:
   active_work: "docs/work/active.md"
-  research_memory: "docs/patterns/context-memory.md"
+  research_memory: "docs/patterns/context-memory/index.md"
+  pattern_context_packs: "docs/patterns/*/*.pack.yaml"
   lane_packets: "docs/work/lanes"
   lane_examples: "docs/work/examples"
   work_reports: "docs/work/reports"
@@ -145,7 +170,11 @@ issue_tracker:
   file_when_requested_only: true
 
 patterns:
-  workflow: "docs/patterns/workflow.md"
-  boundaries: "docs/patterns/boundaries.md"
-  testing: "docs/patterns/testing.md"
-  context_memory: "docs/patterns/context-memory.md"
+  root: "docs/patterns"
+  schema: "docs/patterns/context-pack-schema.yaml"
+  builder: "scripts/build_pattern_context_pack.py"
+  workflow: "docs/patterns/workflow/index.md"
+  boundaries: "docs/patterns/boundaries/index.md"
+  testing: "docs/patterns/testing/index.md"
+  context_memory: "docs/patterns/context-memory/index.md"
+  packs_glob: "docs/patterns/*/*.pack.yaml"

@@ -21,7 +21,7 @@ skills or final spec synthesis.
    system.
 5. Live external sources when the critique depends on current competitors,
    pricing, regulations, geography, or market behavior.
-6. `docs/patterns/workflow.md` for the Doc Routing Decision Matrix.
+6. `docs/patterns/workflow/index.md` for the Doc Routing Decision Matrix.
 
 ## Checklist
 

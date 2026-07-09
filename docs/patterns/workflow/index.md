@@ -226,7 +226,7 @@ Guardrails:
 | Lane packet | `docs/work/lanes/W-XXX-slug.md` | A row needs criteria, examples, dependencies, or validation detail |
 | Lane examples | `docs/work/examples/` | First-time adaptation needs copyable non-active lane examples |
 | Durable report | `docs/work/reports/` | Requested, multi-turn, durable decision, blocked handoff, or complex merge |
-| Thin product/spec/architecture diff | Existing owner doc in `docs/product/`, `docs/design/`, `docs/brand/`, `docs/specs/`, `docs/patterns/boundaries.md`, `harness.config.yaml`, or `docs/glossary.md` | Closeout detects a validated durable fact not already documented |
+| Thin product/spec/architecture diff | Existing owner doc in `docs/product/`, `docs/design/`, `docs/brand/`, `docs/specs/`, `docs/patterns/boundaries/index.md`, `harness.config.yaml`, or `docs/glossary.md` | Closeout detects a validated durable fact not already documented |
 | Durable skill rule | `.codex/skills/` | Repeated workflow lesson |
 | Durable role rule | `.codex/agents/` | Delegation or role-boundary lesson |
 | Durable pattern | `docs/patterns/` | Reusable implementation/testing/process rule |

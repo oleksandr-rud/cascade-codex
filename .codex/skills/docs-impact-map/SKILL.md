@@ -31,8 +31,10 @@ durable doc fact. It does not patch product/runtime code.
 4. Active work state: `docs/work/active.md`, relevant `docs/work/lanes/`, and
    recent `docs/work/reports/`.
 5. `docs/structure.md` for write targets and owner docs.
-6. `docs/patterns/workflow.md` for the shared Doc Routing Decision Matrix.
-7. Current code, UI copy, tests, public contracts, and validation commands only
+6. `docs/patterns/workflow/index.md` for the shared Doc Routing Decision Matrix.
+7. `docs/patterns/_index.md` and `pattern-context` when a reusable pattern
+   entry, pack metadata, or context pack may change.
+8. Current code, UI copy, tests, public contracts, and validation commands only
    when docs conflict or a referenced behavior needs grounding.
 
 If current code and docs conflict, follow code for implementation planning and
@@ -73,7 +75,7 @@ Use these dependency checks before deciding that one doc update is complete:
 | Normalized spec packet | product/design/brand owner docs, active work criteria, backlog, glossary, spec packet status |
 | Backlog candidate | owning product/spec/design source, acceptance criteria, priority, deferral reason |
 | Glossary term | product/spec language, code/public contract vocabulary, user-facing copy |
-| Pattern or boundary rule | affected skills, agents, validator checks, work-lane templates, validation commands |
+| Pattern or boundary rule | pattern entry metadata, context packs, affected skills, agents, validator checks, work-lane templates, validation commands |
 
 ## Checklist
 
@@ -82,7 +84,7 @@ Use these dependency checks before deciding that one doc update is complete:
 2. Build or update the shared Doc Routing Decision Matrix for the changed fact
    before writing owner docs.
 3. For each changed problem, requirement, or gap, run several trajectory passes
-   per `docs/patterns/workflow.md#trajectory-coverage`; every trajectory must
+   per `docs/patterns/workflow/index.md#trajectory-coverage`; every trajectory must
    cover a real problem, requirement, or gap, and the impact synthesis must
    preserve every major and minor detail inspected across affected targets.
 4. Build an impact matrix with one row per affected target.
@@ -99,7 +101,8 @@ Use these dependency checks before deciding that one doc update is complete:
    `ingest-spec` before `plan-change`.
 7. Route missing acceptance or scenario coverage to `functional-qa` or
    `plan-change` depending on whether expected behavior is already clear.
-8. Route reusable harness rule changes to `codex-maintenance` and validator
+8. Route reusable harness rule changes to `codex-maintenance`, pattern-entry
+   changes to `pattern-context`, and enforced structure changes to validator
    updates.
 9. Update the smallest owner docs only when the source fact is explicit enough
    and the target doc has a clear owner.
@@ -116,7 +119,9 @@ Use these dependency checks before deciding that one doc update is complete:
   multi-turn, blocked, or decision-heavy.
 - Do not store raw source material under `docs/specs/source/` unless
   `ingest-spec` decides preservation is useful.
-- Do not add new pattern files; use the existing `docs/patterns/` owner files.
+- Do not create broad pattern dumps. Use existing pattern entries when they
+  fit; use `pattern-context` before adding or changing an entry folder,
+  pack metadata or `*.pack.yaml`.
 
 ## Output
 
@@ -126,7 +131,7 @@ Use these dependency checks before deciding that one doc update is complete:
 - docs updated, deferred, blocked, or intentionally unchanged;
 - next route: `discover`, `market-validation`, `synthesis-to-spec`,
   `compose-spec`, `ingest-spec`, `orchestrate-work`, `plan-change`,
-  `functional-qa`, `closeout`, or `codex-maintenance`.
+  `functional-qa`, `pattern-context`, `closeout`, or `codex-maintenance`.
 
 ## Templates
 

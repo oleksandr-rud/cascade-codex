@@ -30,8 +30,8 @@ tools, or approve delegation by itself.
    route.
 5. `.codex/skills/{skill}/SKILL.md` for each planned global skill call.
 6. Agent checklists under `.codex/agents/{agent}/checklists/` when present.
-7. `docs/patterns/workflow.md`, `docs/patterns/boundaries.md`, and
-   `docs/patterns/testing.md`.
+7. `docs/patterns/workflow/index.md`, `docs/patterns/boundaries/index.md`, and
+   `docs/patterns/testing/index.md`.
 8. Relevant `docs/product/`, `docs/design/`, `docs/brand/`, `docs/specs/`,
    `docs/work/`, `docs/backlog/`, and `docs/glossary.md` sources.
 9. Current diff, file ownership, validation commands, and unresolved blockers.

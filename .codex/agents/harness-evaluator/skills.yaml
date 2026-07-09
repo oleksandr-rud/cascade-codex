@@ -1,0 +1,11 @@
+skills:
+  - name: harness-evaluation
+    source: .codex/skills/harness-evaluation/SKILL.md
+  - name: agents-best-practices
+    source: .codex/skills/agents-best-practices/SKILL.md
+  - name: codex-maintenance
+    source: .codex/skills/codex-maintenance/SKILL.md
+  - name: validate-change
+    source: .codex/skills/validate-change/SKILL.md
+  - name: issue-intake
+    source: .codex/skills/issue-intake/SKILL.md

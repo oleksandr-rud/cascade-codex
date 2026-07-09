@@ -22,17 +22,20 @@ questions.
    tests, and docs.
 4. `docs/structure.md`, `harness.config.example.yaml`, and existing
    `harness.config.yaml` if present.
-5. `docs/patterns/workflow.md` for the shared Doc Routing Decision Matrix.
-6. `docs/patterns/boundaries.md`, `docs/patterns/testing.md`, and
-   `docs/patterns/context-memory.md` for reusable architecture, validation,
+5. `docs/patterns/workflow/index.md` for the shared Doc Routing Decision Matrix.
+6. `docs/patterns/boundaries/index.md`, `docs/patterns/testing/index.md`, and
+   `docs/patterns/context-memory/index.md` for reusable architecture, validation,
    and source-context routing.
-7. `checklists/project-onboarding-analysis.md` when onboarding requires a
+7. `docs/patterns/_index.md`, `.codex/skills/pattern-context/SKILL.md`, and
+   `scripts/build_pattern_context_pack.py` when onboarding writes or retrieves
+   pattern entries, metadata, or context packs.
+8. `checklists/project-onboarding-analysis.md` when onboarding requires a
    full project scan, project-part specs, feature cataloging, visual evidence,
    or durable context routing.
-8. `templates/project-onboarding-workflow.md` and
+9. `templates/project-onboarding-workflow.md` and
    `templates/project-part-spec.md` when the request needs a repeatable
    agent/skill workflow packet or one spec per meaningful project area.
-9. `scripts/validate_cascade_codex.py`.
+10. `scripts/validate_cascade_codex.py`.
 
 ## Scope
 
@@ -62,15 +65,18 @@ their owning skills are needed and delegation is authorized.
 7. Keep reusable workflow rules in `.codex/skills/`, `.codex/agents/`, and
    `docs/patterns/`; keep project facts in config, glossary, work lanes, and
    specs.
-8. Decide which generic patterns need target-specific entries:
-   workflow, boundaries, testing, and context-memory.
+8. Decide which generic pattern entries need target-specific updates:
+   workflow, boundaries, testing, context-memory, or a new bounded entry
+   created through `pattern-context`.
 9. Translate current project architecture into exact paths:
    - `AGENTS.md` only for project identity, primary users, a tiny stack
      summary, hard guardrails, real validation commands, and pointers;
    - `harness.config.yaml` for stack details, source/test/docs roots,
      commands, runners, tracker settings, and memory locations;
    - `docs/glossary.md` for codebase terms;
-   - `docs/patterns/boundaries.md` only for reusable boundary rules;
+   - `docs/patterns/{entry}/index.md` plus `*.pack.yaml` containing summary,
+     routing, graph-like documents, and selectable sections only for reusable
+     pattern rules;
    - `docs/work/active.md` for active adaptation follow-up lanes.
 10. Record Doc Routing Decision Matrix rows for migrated, deferred, blocked,
     or intentionally unchanged project facts.
@@ -80,8 +86,9 @@ their owning skills are needed and delegation is authorized.
     - product/spec/brand/design facts -> `docs/product/`, `docs/design/`,
       `docs/brand/`, or `docs/specs/`;
     - codebase vocabulary -> `docs/glossary.md`;
-    - reusable workflow or boundary rules -> `.codex/skills/`,
-      `.codex/agents/`, or `docs/patterns/`;
+    - reusable workflow, boundary, testing, context, memory, or other bounded
+      pattern rules -> `.codex/skills/`, `.codex/agents/`, or a
+      `docs/patterns/{entry}/` folder maintained with `pattern-context`;
     - active state or handoff memory -> `docs/work/`.
 12. Refuse to leave placeholder values, stale cascade lines, or standalone
     review/triage routes in active harness docs; fix them or report a blocker.
@@ -107,12 +114,13 @@ Required phase outcomes:
    runtime area when the target repo is large enough to benefit from separate
    specs.
 4. Architecture and boundary synthesis: route reusable boundaries to
-   `docs/patterns/boundaries.md`, codebase vocabulary to `docs/glossary.md`,
-   and open architecture questions to `docs/work/reports/` or backlog.
+   `docs/patterns/boundaries/index.md` or a bounded pattern entry maintained
+   with `pattern-context`, codebase vocabulary to `docs/glossary.md`, and open
+   architecture questions to `docs/work/reports/` or backlog.
 5. Security and data handling: route current-code security inventory to
    `codebase-audit`, auth/session/role concerns to `auth-analysis`, proposed
    workflow risks to `secure-design`, and durable validation rules to
-   `docs/patterns/testing.md`.
+   `docs/patterns/testing/index.md`.
 6. Product feature catalog: inspect routes, UI surfaces, API contracts, tests,
    README docs, specs, and user-facing copy; write durable feature intent,
    journeys, scenarios, requirements, and spec packets to their narrow
@@ -124,9 +132,10 @@ Required phase outcomes:
    visual direction.
 8. Functional acceptance map: use `functional-qa` to connect discovered
    product scenarios and public contracts to executable or manual checks, then
-   route durable test rules to `docs/patterns/testing.md`.
+   route durable test rules to `docs/patterns/testing/index.md`.
 9. Context-memory routing and doc impact: use `docs-impact-map` before writing
-   cross-folder facts, and write durable memory to the narrowest owner:
+   cross-folder facts, use `pattern-context` for pattern entries and packs, and
+   write durable memory to the narrowest owner:
    `docs/product/`, `docs/design/`, `docs/brand/`, `docs/specs/`,
    `docs/patterns/`, `docs/glossary.md`, `harness.config.yaml`, or
    `docs/work/`.
@@ -134,8 +143,10 @@ Required phase outcomes:
     available, stale-reference searches, and close with files written,
     skipped, blocked, and next routes.
 
-Do not create broad security, backend, frontend, or memory dump folders. Use
-the existing owner files and folders named in `docs/structure.md`.
+Do not create broad security, backend, frontend, or memory dump folders.
+Controlled pattern entries are allowed only when `pattern-context` is used and
+the entry has `index.md` plus at least one `*.pack.yaml` containing summary,
+routing, graph-like documents, and selectable sections.
 
 ## Replacement Rules
 

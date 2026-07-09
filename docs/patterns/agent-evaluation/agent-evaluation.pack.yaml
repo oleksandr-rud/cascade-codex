@@ -1,0 +1,96 @@
+pack_id: agent-evaluation-core
+entry_id: agent-evaluation
+title: Agent Evaluation Core Pattern Pack
+kind: pattern-context-pack
+owner: Cascade maintainers
+summary: "Selectable rules for harness scenarios, read-only target runs, trace evidence, deterministic hard gates, golden evaluation, and regression promotion."
+description: "Use this pack when designing, running, or reviewing Cascade harness evaluations and agent traces."
+routing:
+  use_when:
+    - "A task evaluates Cascade skills, routes, custom agents, outputs, or JSONL execution traces."
+  do_not_use_when:
+    - "The task only validates product-visible runtime behavior or repairs a normal automated test."
+  load_when:
+    - route: harness-evaluation
+      use_when: "Scenario generation, live harness experiments, trace grading, or golden adjudication is in scope."
+  write_when:
+    - "A reusable scenario, trace, grading, or regression-promotion rule changes."
+  defer_when:
+    - "No target trace or scenario contract exists; gather evidence before semantic grading."
+  primary_skills:
+    - harness-evaluation
+    - agents-best-practices
+    - codex-maintenance
+  related_roles:
+    - harness-evaluator
+    - agent-engineer
+    - orchestrator
+selection_rules:
+  - "Load deterministic hard-gate rules before semantic evaluator guidance."
+documents:
+  - path: docs/patterns/agent-evaluation/index.md
+    kind: pattern-entry
+    description: "Durable scenario, trace, grading, root-cause, and regression-promotion rules."
+    trigger_when:
+      - "Harness evaluation or agent trace analysis is in scope."
+    sections:
+      - id: evaluation-architecture
+        title: Evaluation Architecture
+        anchor: "## Evaluation Architecture"
+        summary: "Separates target execution, raw evidence, deterministic grading, and semantic adjudication."
+        routing_description: "Use when designing the evaluation loop or preventing grader leakage."
+        tags:
+          - evals
+          - traces
+          - architecture
+      - id: scenario-coverage
+        title: Scenario Coverage
+        anchor: "## Scenario Coverage"
+        summary: "Defines the seven required per-skill case families and cross-skill collision cases."
+        routing_description: "Use when generating or auditing the scenario corpus."
+        tags:
+          - scenarios
+          - skills
+          - routing
+      - id: trace-evidence
+        title: Trace Evidence
+        anchor: "## Trace Evidence"
+        summary: "Defines the evidence required before a live scenario can pass."
+        routing_description: "Use when normalizing or judging JSONL execution traces."
+        tags:
+          - traces
+          - evidence
+          - observability
+      - id: grading-order
+        title: Grading Order
+        anchor: "## Grading Order"
+        summary: "Runs mechanical hard gates before semantic judgment."
+        routing_description: "Use when scoring outputs or resolving conflicts between deterministic and model grades."
+        tags:
+          - grading
+          - hard-gates
+          - safety
+      - id: root-cause
+        title: Root Cause
+        anchor: "## Root Cause"
+        summary: "Separates harness defects, model variance, scenario defects, and environment blockers."
+        routing_description: "Use when turning a failed run into a repair or regression case."
+        tags:
+          - diagnosis
+          - regressions
+          - flakiness
+  - path: .codex/skills/harness-evaluation/SKILL.md
+    kind: skill
+    description: "Harness scenario generation, execution, trace normalization, and grading workflow."
+    trigger_when:
+      - "A Cascade harness evaluation is requested."
+  - path: .codex/agents/harness-evaluator/AGENT.md
+    kind: agent-role
+    description: "Read-only golden semantic evaluator role."
+    trigger_when:
+      - "A completed target run needs semantic adjudication."
+  - path: scripts/run_harness_evals.py
+    kind: script
+    description: "Generates catalogs, audits the harness, executes live cases, grades traces, and runs Sol golden adjudication."
+    trigger_when:
+      - "Deterministic or live harness evaluation commands need to run."

@@ -13,9 +13,11 @@ config; keep reusable workflow rules in skills, agents, and patterns.
 | `docs/design/` | Interaction model, tokens, components, design constraints | `discover`, `design-system`, `ingest-spec`, `docs-impact-map` |
 | `docs/brand/` | Naming, tone, content, visual direction | `discover`, `brand-positioning`, `ingest-spec`, `docs-impact-map` |
 | `docs/backlog/` | Follow-up candidates with acceptance criteria | `discover`, `synthesis-to-spec`, `compose-spec`, `validation-experiments`, `docs-impact-map`, `issue-intake`, `closeout` |
-| `docs/patterns/` | Reusable workflow, boundary, testing, context rules | `closeout`, `adapt-harness`, Agent Engineer skills |
+| `docs/patterns/` | Reusable workflow, boundary, testing, context rules, and selectable context packs | `pattern-context`, `closeout`, `adapt-harness`, Agent Engineer skills |
 | `.codex/skills/` | Reusable workflow skills | `develop-skill`, Agent Engineer skills |
 | `.codex/agents/` | Role contracts and skill maps | Agent Engineer skills |
+| `evals/harness/` | Canonical Cascade scenario sources, generated catalog, target schema, and golden-judge schema | `harness-evaluation`, Agent Engineer skills |
+| `.artifacts/harness-evals/` | Ignored raw JSONL traces, normalized runs, grades, and local reports | `scripts/run_harness_evals.py` |
 
 ## Active Work Paths
 
@@ -51,7 +53,9 @@ config; keep reusable workflow rules in skills, agents, and patterns.
 - Market validation reports and research lane outputs: `docs/work/reports/`
   when requested, multi-turn, blocked, or decision-heavy.
 - Durable research memory summaries and research-to-spec wiring:
-  `docs/patterns/context-memory.md`.
+  `docs/patterns/context-memory/index.md`.
+- Pattern context packs: `docs/patterns/{entry}/*.pack.yaml`; build selected
+  text with `scripts/build_pattern_context_pack.py`.
 - Plan-ready product synthesis and authoring: existing owner docs under
   `docs/product/`, `docs/specs/{slice-slug}/`, and `docs/backlog/_index.md`.
 - Source preservation: `docs/specs/source/` only when `ingest-spec` decides a
@@ -72,12 +76,13 @@ decision-heavy; otherwise update the smallest existing owner docs.
 - Repo boot contract and hard guardrails: `AGENTS.md`
 - Runtime bridge: `CODEX.md`
 - Adapter variables: `harness.config.yaml`
-- Codebase folder map and boundary rules: `docs/patterns/boundaries.md`
-- Reusable architecture lessons: `docs/patterns/boundaries.md`
+- Codebase folder map and boundary rules: `docs/patterns/boundaries/index.md`
+- Reusable architecture lessons: `docs/patterns/boundaries/index.md` or another
+  bounded `docs/patterns/{entry}/` folder with metadata and pack YAML
 - Stack details, source roots, test roots, commands, runners, tracker settings,
   and memory locations: `harness.config.yaml`
 - Project-specific architecture facts: `harness.config.yaml`,
-  `docs/patterns/boundaries.md`, or `docs/glossary.md`
+  `docs/patterns/boundaries/index.md`, or `docs/glossary.md`
 
 ## Closeout Thin Diffs
 
@@ -87,7 +92,7 @@ docs when the final diff changed durable facts:
 - product/spec/design/brand facts: `docs/product/`, `docs/design/`,
   `docs/brand/`, or `docs/specs/`
 - architecture, public contract, adapter, state-machine, or runtime invariant:
-  `docs/patterns/boundaries.md`
+  `docs/patterns/boundaries/index.md`
 - stack, command, source root, runner, tracker, or memory path:
   `harness.config.yaml` in target repositories
 - codebase vocabulary: `docs/glossary.md`
@@ -105,7 +110,28 @@ role inventories, historical decisions, or learned lessons there.
 
 ## Pattern Files
 
-- `docs/patterns/workflow.md`
-- `docs/patterns/boundaries.md`
-- `docs/patterns/testing.md`
-- `docs/patterns/context-memory.md`
+Each pattern entry is a folder:
+
+- `docs/patterns/workflow/`
+- `docs/patterns/boundaries/`
+- `docs/patterns/testing/`
+- `docs/patterns/context-memory/`
+
+Required files per entry:
+
+- `index.md`
+- `*.pack.yaml`
+
+Use `docs/patterns/context-pack-schema.yaml` for the metadata contract and
+`scripts/build_pattern_context_pack.py` to build filtered text from packs.
+
+## Harness Evaluation Paths
+
+- Source cases: `evals/harness/skill-cases.json`
+- Cross-skill collisions: `evals/harness/interactions.json`
+- Generated catalog: `evals/harness/scenarios.generated.json`
+- Target response schema: `evals/harness/response.schema.json`
+- Golden judgment schema: `evals/harness/judge-response.schema.json`
+- Runner and deterministic grader: `scripts/run_harness_evals.py`
+- Ignored live run evidence: `.artifacts/harness-evals/<run-id>/`
+- Durable scenario and trace rules: `docs/patterns/agent-evaluation/index.md`

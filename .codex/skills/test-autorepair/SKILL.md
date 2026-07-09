@@ -20,7 +20,7 @@ the task and the work is routed through `implement-change`.
 4. Feature Impact Matrix rows from the current work lane when present.
 5. User request, specs, scenarios, and `docs/glossary.md`.
 6. Existing tests, helpers, fixtures, and testing patterns.
-7. `docs/patterns/testing.md` for semantic repair rules.
+7. `docs/patterns/testing/index.md` for semantic repair rules.
 
 ## Failure Classes
 

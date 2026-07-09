@@ -31,7 +31,7 @@ decide unsupported product intent, implement code, or repair tests.
 4. Related `docs/design/`, `docs/brand/`, `docs/backlog/_index.md`,
    `docs/glossary.md`, and current code or UI copy when needed to ground
    behavior.
-5. `docs/structure.md` and `docs/patterns/workflow.md`, especially the shared
+5. `docs/structure.md` and `docs/patterns/workflow/index.md`, especially the shared
    Doc Routing Decision Matrix.
 
 If source evidence is weak, missing, or research-heavy, route to

@@ -14,7 +14,7 @@ where the work stands.
 2. Git branch, working tree, recent commits.
 3. Active work registry under `docs/work/active.md`.
 4. Relevant lane packets under `docs/work/lanes/` when present.
-5. Research memory entries under `docs/patterns/context-memory.md` when present.
+5. Research memory entries under `docs/patterns/context-memory/index.md` when present.
 6. Recent reports under `docs/work/reports/` when present.
 7. High-priority backlog notes under `docs/backlog/` when configured.
 
