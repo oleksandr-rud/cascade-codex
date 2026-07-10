@@ -27,3 +27,6 @@ node_modules/
 
 # Local harness evaluation traces and reports
 .artifacts/
+
+# Local archives excluded from release and development branches
+.local-archives/

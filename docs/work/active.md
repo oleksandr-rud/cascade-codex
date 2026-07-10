@@ -5,9 +5,9 @@ only while they are useful for handoff; move durable details into reports.
 
 | Lane | Status | Request | Owner | Next Gate | Files/Areas | Dependencies | Evidence |
 |---|---|---|---|---|---|---|---|
-| `W-001` | `IN_PROGRESS` | Complete live execution and golden evaluation for all 290 current Cascade harness scenarios | `agent-engineer` | `harness-evaluation` | `evals/harness/`; `scripts/run_harness_evals.py`; `.artifacts/harness-evals/`; harness evaluation report | 190 current scenarios require first live traces; runs remain serial and read-only | `docs/work/lanes/W-001-harness-evaluation-lab.md`; `.artifacts/harness-evals/coverage-current.json` |
+| `W-001` | `COMPLETE` | Complete live execution and golden evaluation for all 290 current Cascade harness scenarios | `agent-engineer` | none | `evals/harness/`; `scripts/run_harness_evals.py`; `.artifacts/harness-evals/`; harness evaluation report | one confirmed regression is intentionally unaccepted | `docs/work/lanes/W-001-harness-evaluation-lab.md`; `.artifacts/harness-evals/coverage-final-20260710.json`; `docs/work/reports/2026-07-09-harness-evaluation-lab.md` |
 
-No active lanes.
+`W-001` is complete; there are no active lanes.
 
 When example lanes exist under `docs/work/examples/`, they are not active work
 unless copied into `docs/work/lanes/` and registered above.

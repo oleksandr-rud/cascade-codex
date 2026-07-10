@@ -8,14 +8,13 @@ This file is the repository instruction entrypoint for coding agents. Keep it
 
 ## Project Identity
 
-- Project name: `Dynamic Persona Assistant`
-- Product or system type: agentic assistant project scaffold with the Cascade
-  harness installed.
+- Project name: `Cascade`
+- Product or system type: standalone coding-agent workflow harness.
 - Primary users: project maintainers and coding agents working in this
   repository.
-- Primary runtime stack summary: no application runtime exists yet; the current
-  repository is Cascade documentation, role/skill contracts, and a Python
-  validator.
+- Primary runtime stack summary: no application runtime exists; the repository
+  contains Cascade documentation, role/skill contracts, Python validators, and
+  harness evaluation tooling.
 - Source of truth when docs conflict with code: current code, then this file,
   then `CODEX.md`, then repo-local skills and docs.
 

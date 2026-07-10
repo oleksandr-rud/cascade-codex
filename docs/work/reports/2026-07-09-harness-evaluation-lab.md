@@ -3,8 +3,8 @@
 Date: 2026-07-09
 Owner: Agent Engineer
 Scope: Cascade harness only
-Status: Complete for corpus construction, model pinning, static audit, and the
-executed trigger, near-miss, planning, and interaction matrices
+Status: Complete with one confirmed regression; all 290 current scenarios were
+executed and 289 have accepted evidence
 
 ## Objective
 
@@ -32,7 +32,7 @@ Cascade harness scaffold.
 | Durable pattern | `docs/patterns/agent-evaluation/` with a selectable context pack |
 
 Final catalog digest:
-`adb472d20dcc766729047184b529724a6b4fba383bd18522c5403dc5228220a3`.
+`aeaf75715d99135f144683279be19b9251ff3f3bc43569718ec22b88dfcdea30`.
 
 ## Model Policy
 
@@ -66,8 +66,12 @@ complete traces without changing user-level installation links.
 | P2 | Reusable design and accessibility resources contained unscoped framework, clinical, and field-work assumptions. | Reworded reusable contracts around evidence and target-project primitives. | Semantic leakage audit reports zero findings. |
 | P2 | The package validator scanned ignored run artifacts as source and produced stale-text false positives. | Excluded `.artifacts` from source-package leakage checks. | Validator passes with 17 MB of local traces present. |
 | P2 | Shell redirection to `/dev/null` was classified as mutation. | Distinguished harmless descriptor redirection from filesystem writes and added self-tests. | UX live cases pass; unsafe command count is zero. |
+| P2 | A `>` token inside a quoted search expression was classified as shell mutation. | Replaced token splitting with quote-aware `shlex` parsing and added a regression self-test. | The 15-case grader self-test and all 30 regraded Terra cases pass. |
+| P2 | Handoff grading searched for the expected route as an unrestricted substring. | Parse route sequences and validate the immediate next skill while allowing source-prefixed chains. | Source-owned handoff chains grade correctly without weakening immediate-route checks. |
+| P2 | Coverage was inferred from run names and IDs, and execution trusted summary flags without verifying preserved case files. | Added exact full-scenario matching, physical trace-artifact checks, model and golden gates, empty-artifact handling, and separate executed-versus-accepted ledgers. | The final ledger ignores 14 stale and two unsupported-model candidates; the 15-case self-test covers complete and incomplete artifact sets. |
 | P2 | Environment failures that ended with structured BLOCKED output could be attributed to the harness. | Added known runtime-error detection before root-cause attribution. | Missing helper smoke is classified `environment-blocker`. |
 | P2 | Two golden prompts demanded implementation without satisfying the harness plan-first and implementation-precondition contracts. | Sol judge marked both `INVALID_SCENARIO`; prompts were repaired and regenerated. | Both repaired cases pass at 100 on Sol and Terra. |
+| P2 | Six handoff prompts were ambiguous or contradicted their source-skill contracts. | Used golden judgments to repair only the defective scenario definitions, regenerated the catalog, and replayed the affected cases. | All six current definitions now have accepted exact-match traces. |
 
 ## Scenario Design
 
@@ -125,6 +129,49 @@ matrices. That supports using Terra for broad read-heavy execution and Sol for
 planning and selective golden evaluation rather than judging every passing
 trace semantically.
 
+### Exhaustive Continuation: 2026-07-10
+
+The continuation first calculated an exact current-definition baseline of
+100/290 accepted scenarios, then executed the remaining 190 definitions once:
+30 Terra-owned read-heavy cases and 160 Sol-owned planning or synthesis cases.
+Seven initial handoff failures were sent to the golden evaluator. Six were
+scenario defects; the seventh was a valid model failure.
+
+Fifteen focused target replays repaired the six invalid prompts and repeated
+the two valid route failures. Nine Sol-high golden judgments classified seven
+judgment events as `INVALID_SCENARIO` across six unique prompts and two as
+`FAIL` with `model-variance` root cause.
+
+| Evidence | Cases | Duration | Input / Cached | Output / Reasoning | Commands | Unsafe Attempts |
+|---|---:|---:|---:|---:|---:|---:|
+| Remaining current matrix | 190 | 4,796.79 s | 11,813,005 / 9,193,984 | 201,381 / 58,139 | 391 | 0 |
+| Focused repairs and repeats | 15 | 418.37 s | 1,137,945 / 921,344 | 18,152 / 5,609 | 39 | 0 |
+| Golden judgments | 9 | 828.67 s | 1,983,623 / 1,555,456 | 38,041 / 21,158 | 59 | 0 |
+
+The final exact-match ledger reports:
+
+- 290/290 current scenario definitions trace-complete and executed;
+- 289/290 accepted, with 38/38 accepted in every family except handoff at
+  37/38;
+- accepted evidence selected from 192 Sol and 97 Terra traces;
+- 14 stale scenario-revision candidates and two unsupported-model candidates
+  excluded;
+- zero target timeouts, nonzero exits, mutations, network calls, or delegation
+  attempts in the 205 continuation target traces.
+
+`HS-implement-change-handoff` is the one confirmed regression. Sol returned
+`plan-change -> functional-qa -> implement-change` instead of the required
+immediate `functional-qa` handoff in three of three identical low-reasoning
+runs. The prompt states that the implementation slice is complete, and the
+skill contract sends missing acceptance evidence directly to `functional-qa`.
+The golden evaluator upheld the failure as model variance. The scenario was not
+weakened to manufacture a pass.
+
+`HS-hypothesis-scoring-handoff` is unstable rather than cleanly passing: the
+current scenario version produced one pass and two failures. Its exact passing
+trace satisfies accepted coverage, but the 1/3 rate remains a flaky route
+finding and should stay in the release regression set.
+
 ## Golden Evaluator
 
 `python3 scripts/run_harness_evals.py judge --run-dir <run>` selects failed or
@@ -132,49 +179,54 @@ non-perfect cases by default. It pins the judge to Sol, loads the
 `harness-evaluator` role, preserves a separate raw and normalized judge trace,
 and emits one of `PASS`, `FAIL`, `FLAKY`, `BLOCKED`, or `INVALID_SCENARIO`.
 
-The judge cannot override schema, trace-integrity, permission, or mutation hard
-gates. Its first live use correctly accepted two evidence-light but valid
-BLOCKED responses and rejected two contradictory golden expectations. This
-prevented valid plan-first behavior from being misreported as a harness
-regression.
+The judge cannot override schema, trace-integrity, permission, mutation, or
+deterministic route hard gates. Across both experiment phases it separated
+invalid prompts from valid model failures without converting any hard failure
+into a pass. This prevented valid plan-first behavior from being misreported as
+a harness regression while preserving the reproducible implementation-handoff
+failure.
 
 ## Validation
 
 Passed checks:
 
 - `python3 scripts/run_harness_evals.py catalog --check`
-- `python3 scripts/run_harness_evals.py self-test`
+- `python3 scripts/run_harness_evals.py self-test` (15 cases)
 - `python3 scripts/run_harness_evals.py audit --runtime`
 - `python3 scripts/validate_cascade_codex.py`
 - `python3 scripts/build_pattern_context_pack.py --pack agent-evaluation-core --summary-only`
 - Python compilation for the runner, validator, and security scanner
 - TOML parsing for every custom-agent manifest
-- `codex doctor --json`
+- `TERM=xterm-256color codex doctor --json`
 - exact Sol and Terra presence in `codex debug models`
 - no tracked retired-model references
 - `git diff --check`
 
 ## Residual Risk
 
-1. The corpus is complete, but five of the seven per-skill families have not
-   yet been executed live across all skills. They are prepared, not claimed as
-   observed behavior.
-2. Most cases have one repetition. A nightly or release matrix should repeat
-   failures and high-value route collisions before assigning `FLAKY`.
-3. The command classifier covers current shell traces. Enabling more tool
+1. `HS-implement-change-handoff` is a confirmed 0/3 model regression and remains
+   unaccepted by design.
+2. `HS-hypothesis-scoring-handoff` is flaky at 1/3 for the current prompt; most
+   other scenarios still have one current-definition repetition.
+3. Run metadata fingerprints the full scenario definition but not every harness
+   source file read during execution. A skill or routing edit can therefore
+   make an old exact-scenario trace behaviorally stale without the ledger
+   detecting it.
+4. The command classifier covers current shell traces. Enabling more tool
    families requires tool-specific mutation, network, and delegation policy.
-4. Golden judging is expensive and slow. Keep deterministic gates first and
+5. Golden judging is expensive and slow. Keep deterministic gates first and
    invoke Sol only for failed, soft, sampled, or release-critical cases.
-5. Run evidence is local and ignored. CI retention, trend baselines, and
+6. Run evidence is local and ignored. CI retention, trend baselines, and
    release thresholds remain future operational work.
-6. The standalone helper-link issue is mitigated inside the runner, not fixed
+7. The standalone helper-link issue is mitigated inside the runner, not fixed
    in the external installer.
 
 ## Next Recommended Runs
 
-1. Execute missing-precondition and guardrail families on Terra.
-2. Execute output-contract and handoff families on Sol for planning-owned
-   skills and Terra for read-heavy owners.
-3. Repeat the highest-risk collision cases three times before release.
+1. Keep `HS-implement-change-handoff` as a failing release regression and probe
+   whether reasoning effort or a future model revision changes the route.
+2. Repeat `HS-hypothesis-scoring-handoff` and other high-risk route collisions
+   before release.
+3. Add a harness-source manifest digest to run metadata and coverage matching.
 4. Add CI catalog, validator, self-test, and sampled live-run gates; keep the
    full live matrix scheduled or release-triggered because of cost.

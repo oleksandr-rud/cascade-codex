@@ -2,8 +2,8 @@
 # Copy to harness.config.yaml after installing the harness in a target project.
 
 project:
-  name: "Dynamic Persona Assistant"
-  kind: "agentic assistant project scaffold"
+  name: "Cascade"
+  kind: "standalone coding-agent workflow harness"
   primary_users:
     - "Project maintainers"
     - "Coding agents working in this repository"

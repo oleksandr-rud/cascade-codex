@@ -1,5 +1,5 @@
 {
-  "catalog_digest": "adb472d20dcc766729047184b529724a6b4fba383bd18522c5403dc5228220a3",
+  "catalog_digest": "aeaf75715d99135f144683279be19b9251ff3f3bc43569718ec22b88dfcdea30",
   "generated_by": "scripts/run_harness_evals.py",
   "scenario_count": 290,
   "scenarios": [
@@ -2729,7 +2729,7 @@
       "id": "HS-context-handoff",
       "kind": "handoff",
       "owner": "orchestrator",
-      "prompt": "Re-orient to a resumed non-atomic implementation request and name the next planning gate after the snapshot.",
+      "prompt": "Use context to finalize the orientation snapshot for a resumed non-atomic request. The snapshot confirms several accepted work lanes, cross-lane dependencies, and one merge owner; in the context handoff, route the immediate coordination gate before behavior planning.",
       "source": "evals/harness/skill-cases.json",
       "target_skill": "context"
     },
@@ -3314,7 +3314,7 @@
       "id": "HS-discover-handoff",
       "kind": "handoff",
       "owner": "orchestrator",
-      "prompt": "Resolve a compact product-context gap and route the resulting clear behavior into planning.",
+      "prompt": "Use discover to finalize the compact discovery artifact from approved evidence that resolves the product-context gap into a named user, trigger, and expected outcome. In the discovery handoff, route that clear behavior into implementation planning.",
       "source": "evals/harness/skill-cases.json",
       "target_skill": "discover"
     },
@@ -3704,7 +3704,7 @@
       "id": "HS-functional-qa-handoff",
       "kind": "handoff",
       "owner": "orchestrator",
-      "prompt": "Run functional acceptance, observe a real product failure, and route the fix owner.",
+      "prompt": "A runnable acceptance check with explicit preconditions and expected behavior reproducibly observes a product/runtime failure. Route the confirmed fix owner.",
       "source": "evals/harness/skill-cases.json",
       "target_skill": "functional-qa"
     },
@@ -4094,7 +4094,7 @@
       "id": "HS-hypothesis-scoring-handoff",
       "kind": "handoff",
       "owner": "business-analyst",
-      "prompt": "Rank hypotheses and route the smallest proof for the highest-potential uncertain item.",
+      "prompt": "Use hypothesis-scoring to finalize an evidence-backed scorecard for a defined hypothesis set, keeping one highest-potential item whose key assumption remains uncertain. In the scorecard handoff, route the cheapest decision-changing proof.",
       "source": "evals/harness/skill-cases.json",
       "target_skill": "hypothesis-scoring"
     },
@@ -5849,7 +5849,7 @@
       "id": "HS-plan-change-handoff",
       "kind": "handoff",
       "owner": "orchestrator",
-      "prompt": "Finish a plan for product-visible behavior and route the tracer-bullet acceptance gate.",
+      "prompt": "Use plan-change to finalize this approved harness behavior example: given traces from several catalog revisions, when a maintainer runs current coverage, then changed scenario definitions are ignored and exact current definitions report covered and missing counts without altering raw traces. Protect read-only execution and trace immutability; use the coverage CLI as the highest useful test seam. In the plan handoff, route the tracer-bullet acceptance gate.",
       "source": "evals/harness/skill-cases.json",
       "target_skill": "plan-change"
     },
@@ -6434,7 +6434,7 @@
       "id": "HS-synthesis-to-spec-handoff",
       "kind": "handoff",
       "owner": "business-analyst",
-      "prompt": "Complete evidence-backed synthesis and route final durable product and spec authoring.",
+      "prompt": "Complete evidence-backed synthesis after docs-impact-map confirms the affected sibling documents and reports no unresolved routing dependency. Route final durable product and spec authoring.",
       "source": "evals/harness/skill-cases.json",
       "target_skill": "synthesis-to-spec"
     },

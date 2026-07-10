@@ -44,8 +44,11 @@ read-only `harness-evaluator` role, pins it to `gpt-5.6-sol`, and writes a
 separate judgment trace and summary under the run directory.
 
 The `coverage` command exact-matches each run's complete scenario object to the
-current catalog. It rejects stale prompts, unsupported models, blocked or
-failed traces, and unjudged sub-100 scores before claiming current coverage.
+current catalog. It verifies the case's raw, normalized, and grade artifacts,
+then rejects stale prompts, unsupported models, blocked or failed traces, and
+unjudged sub-100 scores before claiming accepted coverage.
+It reports trace-complete execution separately from acceptance so confirmed
+regressions remain counted as executed without being converted into passes.
 
 The default `execution` profile pins read-heavy target probes to
 `gpt-5.6-terra`. Use `--model-profile planning` to pin planning, synthesis, or

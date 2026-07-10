@@ -194,6 +194,17 @@ FORBIDDEN_PATH_PATTERNS = [
     "docs/patterns/" + "memory/",
 ]
 
+FORBIDDEN_REPOSITORY_PATHS = [
+    "scripts/" + "compile_persona_context.py",
+    "docs/specs/" + "persona-context-compiler",
+    "docs/work/reports/"
+    + "2026-06-20-ai-experiments-perceptron-neural-visual-research-workflow.md",
+    "docs/work/reports/" + "2026-06-20-persona-simulator-behavioral-patterns.md",
+    "docs/work/reports/" + "2026-06-20-persona-simulator-deep-search-workflow.md",
+    "docs/work/reports/" + "2026-06-20-spec-slice-harness-audit.md",
+    "docs/work/reports/" + "2026-06-20-spec-slice-migration-workflow.md",
+]
+
 REQUIRED_PATTERN_FILES = {
     "docs/patterns/workflow/index.md",
     "docs/patterns/boundaries/index.md",
@@ -857,6 +868,7 @@ REQUIRED_SKILL_SURFACES = {
 }
 
 FORBIDDEN_STRINGS = [
+    "".join(("Dynamic Persona", " Assistant")),
     "".join(("Lee", "ra")),
     "".join(("BM", "ET")),
     "".join(("Nuv", "olo")),
@@ -949,6 +961,9 @@ def check_required_files(errors: list[str]) -> None:
         item = ROOT / ".codex" / "skills" / skill / "SKILL.md"
         if not item.is_file():
             errors.append(f"missing skill: {rel(item)}")
+    for item in FORBIDDEN_REPOSITORY_PATHS:
+        if (ROOT / item).exists():
+            errors.append(f"non-harness project artifact remains: {item}")
 
 
 def check_required_folders(errors: list[str]) -> None:

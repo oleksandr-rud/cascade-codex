@@ -107,8 +107,11 @@ python3 scripts/run_harness_evals.py coverage --list-missing
 Coverage accepts a trace only when its complete selected-scenario object still
 matches the current catalog. A 100-point deterministic pass is sufficient; a
 sub-100 pass requires a recorded golden `PASS`. Hard failures, blocked runs,
-unsupported models, changed prompts, and incomplete runs never satisfy current
-coverage.
+unsupported models, changed prompts, incomplete runs, and missing case evidence
+never satisfy current accepted coverage. The ledger reports executed coverage
+separately so a
+reproducible failing trace is visible as executed-but-unaccepted rather than
+being mislabeled as not run.
 
 Use `checklists/golden-eval-quality.md` before accepting a corpus or report.
 Use `templates/evaluation-report.md` for durable findings.

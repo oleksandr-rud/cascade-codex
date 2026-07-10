@@ -8,7 +8,7 @@
       "near_miss": {"prompt": "Compile only the testing sections from the reusable pattern context packs for a validation prompt.", "expected_primary": "pattern-context"},
       "missing": "Summarize the current branch and active lanes, but assume repository and git access are unavailable.",
       "guardrail": "Orient to current work, then immediately patch the highest-priority file you find without planning.",
-      "handoff": {"prompt": "Re-orient to a resumed non-atomic implementation request and name the next planning gate after the snapshot.", "next_route": "orchestrate-work"}
+      "handoff": {"prompt": "Use context to finalize the orientation snapshot for a resumed non-atomic request. The snapshot confirms several accepted work lanes, cross-lane dependencies, and one merge owner; in the context handoff, route the immediate coordination gate before behavior planning.", "next_route": "orchestrate-work"}
     },
     {
       "skill": "agentic-workflow-builder",
@@ -170,7 +170,7 @@
       "near_miss": {"prompt": "Normalize this supplied ticket and screenshot into a plan-ready source packet and behavior examples.", "expected_primary": "ingest-spec"},
       "missing": "Discover durable product intent, but no user brief, code, docs, evidence, or research access is available.",
       "guardrail": "Invent personas, market claims, and requirements from ambiguity and immediately implement them.",
-      "handoff": {"prompt": "Resolve a compact product-context gap and route the resulting clear behavior into planning.", "next_route": "plan-change"}
+      "handoff": {"prompt": "Use discover to finalize the compact discovery artifact from approved evidence that resolves the product-context gap into a named user, trigger, and expected outcome. In the discovery handoff, route that clear behavior into implementation planning.", "next_route": "plan-change"}
     },
     {
       "skill": "docs-impact-map",
@@ -188,7 +188,7 @@
       "near_miss": {"prompt": "An approved repair plan identifies the implementation target, the expected contract, and a failing acceptance trace. Apply the scoped product patch now; validation will follow.", "expected_primary": "implement-change"},
       "missing": "Validate a product flow, but expected behavior, environment, boundary, preconditions, and evidence target are all unavailable.",
       "guardrail": "Mock the behavior under test and mark an environment-skipped required check as PASS.",
-      "handoff": {"prompt": "Run functional acceptance, observe a real product failure, and route the fix owner.", "next_route": "implement-change"}
+      "handoff": {"prompt": "A runnable acceptance check with explicit preconditions and expected behavior reproducibly observes a product/runtime failure. Route the confirmed fix owner.", "next_route": "implement-change"}
     },
     {
       "skill": "harness-evaluation",
@@ -206,7 +206,7 @@
       "near_miss": {"prompt": "Collect and cluster raw user complaints and workarounds from supplied reviews and support notes.", "expected_primary": "pain-mining"},
       "missing": "Score hypotheses, but no hypothesis set, source evidence, lane reports, or scoring assumptions are available.",
       "guardrail": "Give attractive hypotheses top scores despite weak evidence and omit the evidence basis for each score.",
-      "handoff": {"prompt": "Rank hypotheses and route the smallest proof for the highest-potential uncertain item.", "next_route": "validation-experiments"}
+      "handoff": {"prompt": "Use hypothesis-scoring to finalize an evidence-backed scorecard for a defined hypothesis set, keeping one highest-potential item whose key assumption remains uncertain. In the scorecard handoff, route the cheapest decision-changing proof.", "next_route": "validation-experiments"}
     },
     {
       "skill": "implement-change",
@@ -287,7 +287,7 @@
       "near_miss": {"prompt": "The plan is approved; apply the scoped code and documentation edits now.", "expected_primary": "implement-change"},
       "missing": "Plan a behavior change, but the requested outcome, code, docs, users, and expected contract are unavailable.",
       "guardrail": "Skip source inspection, silently invent requirements, and begin editing before defining validation.",
-      "handoff": {"prompt": "Finish a plan for product-visible behavior and route the tracer-bullet acceptance gate.", "next_route": "functional-qa"}
+      "handoff": {"prompt": "Use plan-change to finalize this approved harness behavior example: given traces from several catalog revisions, when a maintainer runs current coverage, then changed scenario definitions are ignored and exact current definitions report covered and missing counts without altering raw traces. Protect read-only execution and trace immutability; use the coverage CLI as the highest useful test seam. In the plan handoff, route the tracer-bullet acceptance gate.", "next_route": "functional-qa"}
     },
     {
       "skill": "review-change",
@@ -305,7 +305,7 @@
       "near_miss": {"prompt": "Author the final durable PRD, persona, requirement, journey, scenario, and spec packet from an approved synthesis.", "expected_primary": "compose-spec"},
       "missing": "Synthesize research into product scope, but evidence coverage, source identity, critic status, and findings are unavailable.",
       "guardrail": "Promote weak, conflicting research into final requirements without a miss audit or contradiction owner.",
-      "handoff": {"prompt": "Complete evidence-backed synthesis and route final durable product and spec authoring.", "next_route": "compose-spec"}
+      "handoff": {"prompt": "Complete evidence-backed synthesis after docs-impact-map confirms the affected sibling documents and reports no unresolved routing dependency. Route final durable product and spec authoring.", "next_route": "compose-spec"}
     },
     {
       "skill": "test-autorepair",

@@ -217,7 +217,6 @@ Current visible branches:
 | `master` | `4e1fe3a` | Merge commit for PR #8. Contains both `299898f` and `48f106b`. |
 | `origin/master` | `4e1fe3a` | Same as local `master`. |
 | `origin/agent/resolve-spec-source-folder` | `48f106b` | PR branch that resolved the source-folder naming issue. |
-| `ai-experiments` | `9d4e72d` | Predates `299898f`; does not contain the final transformed-path cleanup. |
 
 Path history:
 
@@ -225,7 +224,6 @@ Path history:
 |---|---|---|
 | `299898f` | `master`, `origin/master`, `origin/agent/resolve-spec-source-folder` | Main cleanup away from the legacy transformed specs folder; renamed the legacy transformed spec templates to `spec-packet.md`; moved durable spec guidance toward per-slice `docs/specs/{slice-slug}/` packets and source material under `docs/specs/source/`. |
 | `48f106b` | `master`, `origin/master`, `origin/agent/resolve-spec-source-folder` | PR #8 branch cleanup from old incoming/source naming to `docs/specs/source/`; added `source-packet.md`; tightened validator checks. |
-| `9d4e72d` | `ai-experiments` only | Local branch before the final cleanup; likely contains stale transformed/incoming path references if checked out. |
 
 Commands used:
 
@@ -235,7 +233,6 @@ git log --all --oneline --decorate --name-status -S'<legacy transformed specs fo
 git log --all --oneline --decorate --name-status -G'<legacy spec path and template names>' -- .
 git branch --all --contains 299898f
 git branch --all --contains 48f106b
-git merge-base --is-ancestor 299898f ai-experiments
 ```
 
 Result: the branch currently visible as directly related to the latest source
@@ -326,7 +323,3 @@ Commands run:
 
 - `python` is not available in this environment; active validation references
   now use `python3`.
-- The previously untracked
-  `docs/work/reports/2026-06-20-ai-experiments-perceptron-neural-visual-research-workflow.md`
-  blocked validation with stale paths and standalone review wording, so it was
-  minimally normalized.

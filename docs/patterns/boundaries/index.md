@@ -115,7 +115,7 @@ Rules:
 Write the target project invariant in this shape:
 
 ```text
-Every coding-agent turn for Dynamic Persona Assistant routes through
+Every coding-agent turn in a Cascade-enabled repository routes through
 AGENTS.md and CODEX.md before using Cascade skills or role contracts.
 Agents may load deterministic scoped context from harness.config.yaml,
 docs/, .codex/skills/, and .codex/agents/ before acting and must validate

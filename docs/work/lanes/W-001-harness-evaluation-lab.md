@@ -1,10 +1,10 @@
 # Work Lane: W-001 Harness Evaluation Lab
 
-Status: `IN_PROGRESS`
+Status: `COMPLETE`
 Owner: `agent-engineer`
 Created: 2026-07-09
 Lane Model: `evaluator-optimizer`
-Next Gate: `harness-evaluation`
+Next Gate: none
 
 ## Request
 
@@ -57,7 +57,7 @@ Out:
 | `HE-003` | Given a near-miss prompt, when Codex routes it, then the target skill is rejected as primary and the adjacent owner is selected. | per-case grade | `PASS` |
 | `HE-004` | Given a read-only case, when an agent attempts mutation, network, or delegation, then the hard gate fails regardless of final prose. | grader self-test and live trace | `PASS` |
 | `HE-005` | Given a missing trace or failed model environment, when graded, then the case is BLOCKED rather than passed. | grader self-test and preflight trace | `PASS` |
-| `HE-006` | Given traces from multiple catalog revisions, when current coverage is calculated, then only exact current scenario definitions with accepted evidence count. | current coverage ledger | `OPEN` |
+| `HE-006` | Given traces from multiple catalog revisions, when current coverage is calculated, then only exact current scenario definitions with accepted evidence count. | current coverage ledger | `PASS` |
 
 ## Feature Impact Matrix
 
@@ -93,7 +93,7 @@ Out:
 4. Run static audit and serial implicit/near-miss live cases for every skill.
 5. Review failures, repair evaluator defects, validate, and write a durable report.
 6. Execute the remaining five scenario families and prove exact 290/290
-   current-catalog coverage.
+   current-catalog execution while preserving any real failed acceptance gate.
 
 ## Parallel Dependencies
 
@@ -123,12 +123,15 @@ Out:
 | Agent runtime loading | `codex doctor --json` | `PASS` for project custom agents |
 | Cascade invariants | `python3 scripts/validate_cascade_codex.py` | `PASS` |
 | Live skill matrix | implicit and near-miss cases for all skills | `PASS` |
-| Full current catalog | exact-match accepted evidence for all 290 scenarios | `OPEN` |
+| Full current catalog | `.artifacts/harness-evals/coverage-final-20260710.json`: 290/290 executed, 289/290 accepted | `FAIL`: confirmed `HS-implement-change-handoff` regression |
 
 ## Closeout
 
-- Merge evidence: prior 136 core target traces and four golden judgments;
-  exhaustive current-catalog execution is active.
+- Merge evidence: 341 target traces and 13 golden judgments across both phases;
+  the current catalog is 290/290 executed and 289/290 accepted.
 - Report: `docs/work/reports/2026-07-09-harness-evaluation-lab.md`.
-- Remaining risk: 190 scenario definitions require accepted live evidence;
-  golden review and repeated-run diagnosis may reveal additional defects.
+- Confirmed finding: `HS-implement-change-handoff` failed 3/3 current-definition
+  Sol runs and remains unaccepted; `HS-hypothesis-scoring-handoff` is flaky at
+  1/3.
+- Remaining risk: run evidence does not yet fingerprint all model-read harness
+  sources, and most otherwise accepted definitions have one repetition.

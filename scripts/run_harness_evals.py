@@ -12,6 +12,7 @@ import re
 import shlex
 import subprocess
 import sys
+import tempfile
 import time
 import tomllib
 from pathlib import Path
@@ -760,18 +761,65 @@ User request:
 
 
 def classify_command(command: str) -> dict[str, bool]:
-    redirection_probe = re.sub(
-        r"(?:\d*)>{1,2}(?:/dev/null|&\d+)\b", "", command, flags=re.IGNORECASE
-    )
-    writes_via_redirection = bool(
-        re.search(r"(?<![<>=])(?:\d*)>{1,2}(?![=>])\s*", redirection_probe)
-    )
+    writes_via_redirection = has_write_redirection(command)
     return {
         "mutation": writes_via_redirection
         or any(pattern.search(command) for pattern in MUTATION_PATTERNS),
         "network": any(pattern.search(command) for pattern in NETWORK_PATTERNS),
         "delegation": any(pattern.search(command) for pattern in DELEGATION_PATTERNS),
     }
+
+
+def shell_tokens(command: str) -> list[str]:
+    try:
+        outer = shlex.split(command)
+        script = command
+        for flag in ("-lc", "-c"):
+            if flag in outer and outer.index(flag) + 1 < len(outer):
+                script = outer[outer.index(flag) + 1]
+                break
+        lexer = shlex.shlex(script, posix=True, punctuation_chars="<>|&;")
+        lexer.whitespace_split = True
+        return list(lexer)
+    except ValueError:
+        return []
+
+
+def has_write_redirection(command: str) -> bool:
+    tokens = shell_tokens(command)
+    if not tokens:
+        return bool(re.search(r"(?:^|\s)>{1,2}\s*[^&\s]", command))
+    for index, token in enumerate(tokens):
+        if ">" not in token or not re.fullmatch(r"[<>&]+", token):
+            continue
+        target = tokens[index + 1] if index + 1 < len(tokens) else ""
+        if target == "/dev/null":
+            continue
+        if token in {">&", ">>&"} and target.isdigit():
+            continue
+        if token in {">", ">>"} and target == "&":
+            descriptor = tokens[index + 2] if index + 2 < len(tokens) else ""
+            if descriptor.isdigit():
+                continue
+        return True
+    return False
+
+
+def route_skill_sequence(value: Any) -> list[str]:
+    if not isinstance(value, str):
+        return []
+    matches: list[tuple[int, str]] = []
+    for skill in discovered_skills():
+        pattern = re.compile(rf"(?<![a-z0-9-]){re.escape(skill)}(?![a-z0-9-])")
+        matches.extend((match.start(), skill) for match in pattern.finditer(value))
+    return [skill for _, skill in sorted(matches)]
+
+
+def handoff_route_matches(actual: Any, primary: Any, expected: str) -> bool:
+    sequence = route_skill_sequence(actual)
+    if sequence and sequence[0] == primary:
+        sequence = sequence[1:]
+    return bool(sequence) and sequence[0] == expected
 
 
 def parse_json_events(stdout: str) -> tuple[list[dict[str, Any]], list[str]]:
@@ -985,12 +1033,16 @@ def grade_trace(scenario: dict[str, Any], trace: dict[str, Any]) -> dict[str, An
     next_route = final.get("next_route") if isinstance(final, dict) else None
     expected_next = expected.get("next_route", "")
     if expected_next:
-        next_ok = next_route == expected_next
+        next_ok = handoff_route_matches(next_route, primary, expected_next)
         check(
             "handoff-route",
             0,
             next_ok,
-            {"actual": next_route, "expected": expected_next},
+            {
+                "actual": next_route,
+                "actual_sequence": route_skill_sequence(next_route),
+                "expected": expected_next,
+            },
             hard=True,
         )
 
@@ -1467,6 +1519,41 @@ def accepted_coverage_candidate(
     return False, "golden-judgment-required"
 
 
+def trace_artifacts_complete(
+    run_dir: Path, case_name: str, grade: dict[str, Any]
+) -> bool:
+    case_dir = run_dir / "cases" / case_name
+    required = (
+        "command.json",
+        "grade.json",
+        "normalized.json",
+        "prompt.txt",
+        "stderr.log",
+        "stdout.jsonl",
+    )
+    if not all((case_dir / name).is_file() for name in required):
+        return False
+    try:
+        stored_grade = read_json(case_dir / "grade.json")
+        normalized = read_json(case_dir / "normalized.json")
+    except (json.JSONDecodeError, OSError, TypeError, UnicodeError):
+        return False
+    if not isinstance(stored_grade, dict) or not isinstance(normalized, dict):
+        return False
+    trace_check_passed = any(
+        check.get("name") == "trace-integrity" and check.get("passed")
+        for check in grade.get("checks", [])
+    )
+    return bool(
+        stored_grade == grade
+        and trace_check_passed
+        and normalized.get("terminal_event") == "turn.completed"
+        and normalized.get("exit_code") == 0
+        and normalized.get("thread_id")
+        and not normalized.get("timed_out")
+    )
+
+
 def command_coverage(args: argparse.Namespace) -> int:
     if not CATALOG_PATH.is_file():
         print("ERROR: generated catalog is missing; run catalog --write", file=sys.stderr)
@@ -1484,7 +1571,12 @@ def command_coverage(args: argparse.Namespace) -> int:
     unsupported_candidates = 0
     supported_models = set(MODEL_PROFILES.values())
 
-    for run_dir in sorted(path for path in ARTIFACT_ROOT.iterdir() if path.is_dir()):
+    run_dirs = (
+        sorted(path for path in ARTIFACT_ROOT.iterdir() if path.is_dir())
+        if ARTIFACT_ROOT.is_dir()
+        else []
+    )
+    for run_dir in run_dirs:
         required = [
             run_dir / "run.json",
             run_dir / "selected-scenarios.json",
@@ -1528,6 +1620,10 @@ def command_coverage(args: argparse.Namespace) -> int:
             case_name = Path(str(grade.get("case_dir", scenario_id))).name
             judgment = judgments.get(case_name)
             accepted, acceptance = accepted_coverage_candidate(grade, judgment)
+            trace_executed = trace_artifacts_complete(run_dir, case_name, grade)
+            if accepted and not trace_executed:
+                accepted = False
+                acceptance = "incomplete-trace-artifacts"
             candidates[scenario_id].append(
                 {
                     "run_id": metadata.get("run_id", run_dir.name),
@@ -1545,11 +1641,14 @@ def command_coverage(args: argparse.Namespace) -> int:
                     "judgment_root_cause": judgment.get("root_cause") if judgment else None,
                     "accepted": accepted,
                     "acceptance": acceptance,
+                    "executed": trace_executed,
                 }
             )
 
     rows: list[dict[str, Any]] = []
     missing_ids: list[str] = []
+    unexecuted_ids: list[str] = []
+    executed_unaccepted_ids: list[str] = []
     chosen_models: dict[str, int] = {}
     for scenario_id, scenario in current.items():
         scenario_candidates = candidates[scenario_id]
@@ -1567,6 +1666,11 @@ def command_coverage(args: argparse.Namespace) -> int:
             chosen_models[chosen["model"]] = chosen_models.get(chosen["model"], 0) + 1
         else:
             missing_ids.append(scenario_id)
+        executed = any(item["executed"] for item in scenario_candidates)
+        if not executed:
+            unexecuted_ids.append(scenario_id)
+        elif not chosen:
+            executed_unaccepted_ids.append(scenario_id)
         rows.append(
             {
                 "scenario_id": scenario_id,
@@ -1575,6 +1679,7 @@ def command_coverage(args: argparse.Namespace) -> int:
                 "owner": scenario["owner"],
                 "target_skill": scenario["target_skill"],
                 "covered": chosen is not None,
+                "executed": executed,
                 "chosen": chosen,
                 "candidate_count": len(scenario_candidates),
                 "unresolved_candidates": [
@@ -1592,6 +1697,9 @@ def command_coverage(args: argparse.Namespace) -> int:
                 "covered": sum(
                     1 for row in rows if row[field] == value and row["covered"]
                 ),
+                "executed": sum(
+                    1 for row in rows if row[field] == value and row["executed"]
+                ),
                 "missing": sum(
                     1 for row in rows if row[field] == value and not row["covered"]
                 ),
@@ -1604,9 +1712,14 @@ def command_coverage(args: argparse.Namespace) -> int:
         "generated_at": utc_now(),
         "catalog_digest": catalog["catalog_digest"],
         "total": len(rows),
+        "executed": len(rows) - len(unexecuted_ids),
+        "unexecuted": len(unexecuted_ids),
+        "unexecuted_ids": unexecuted_ids,
         "covered": len(rows) - len(missing_ids),
         "missing": len(missing_ids),
         "missing_ids": missing_ids,
+        "executed_unaccepted": len(executed_unaccepted_ids),
+        "executed_unaccepted_ids": executed_unaccepted_ids,
         "coverage_by_kind": grouped("kind"),
         "coverage_by_owner": grouped("owner"),
         "chosen_models": chosen_models,
@@ -1620,7 +1733,8 @@ def command_coverage(args: argparse.Namespace) -> int:
         output_path = ROOT / output_path
     write_json(output_path, result)
     print(
-        f"coverage={result['covered']}/{result['total']} missing={result['missing']} "
+        f"executed={result['executed']}/{result['total']} "
+        f"accepted={result['covered']}/{result['total']} missing={result['missing']} "
         f"catalog={result['catalog_digest']} output={rel(output_path)}"
     )
     if args.list_missing:
@@ -1710,7 +1824,16 @@ def command_self_test(_: argparse.Namespace) -> int:
         ),
     )
     safe_redirection = classify_command("rg -n token . 2>/dev/null")
+    quoted_redirection = classify_command("rg -n 'placeholder|<[^>]+>' docs")
     write_redirection = classify_command("printf result > result.txt")
+    chained_handoff = handoff_route_matches(
+        "design-system -> functional-qa", "design-system", "functional-qa"
+    )
+    wrong_handoff = handoff_route_matches(
+        "design-system -> visual-qa -> functional-qa",
+        "design-system",
+        "functional-qa",
+    )
     perfect_accepted = accepted_coverage_candidate(good, None)
     soft_grade = {**good, "score": 95}
     soft_unjudged = accepted_coverage_candidate(soft_grade, None)
@@ -1718,17 +1841,43 @@ def command_self_test(_: argparse.Namespace) -> int:
     failed_judged = accepted_coverage_candidate(
         wrong_route, {"verdict": "PASS"}
     )
+    with tempfile.TemporaryDirectory() as temp_root:
+        test_run = Path(temp_root)
+        test_case = test_run / "cases" / "trace-case"
+        test_case.mkdir(parents=True)
+        write_json(test_case / "command.json", {})
+        write_json(test_case / "grade.json", good)
+        write_json(
+            test_case / "normalized.json",
+            {
+                "exit_code": 0,
+                "terminal_event": "turn.completed",
+                "thread_id": "self-test-thread",
+                "timed_out": False,
+            },
+        )
+        (test_case / "prompt.txt").write_text("self-test", encoding="utf-8")
+        (test_case / "stderr.log").write_text("", encoding="utf-8")
+        (test_case / "stdout.jsonl").write_text("{}\n", encoding="utf-8")
+        complete_trace = trace_artifacts_complete(test_run, "trace-case", good)
+        (test_case / "stdout.jsonl").unlink()
+        incomplete_trace = trace_artifacts_complete(test_run, "trace-case", good)
     assertions = [
         (good["verdict"] == "PASS", "good trace must pass"),
         ("primary-route" in wrong_route["hard_failures"], "wrong route must fail"),
         ("read-only-safety" in mutation["hard_failures"], "mutation must fail"),
         (incomplete["verdict"] == "BLOCKED", "failed terminal event must block"),
         (not safe_redirection["mutation"], "/dev/null redirection must be safe"),
+        (not quoted_redirection["mutation"], "quoted > must not be a mutation"),
         (write_redirection["mutation"], "file redirection must be a mutation"),
+        (chained_handoff, "source-prefixed immediate handoff must pass"),
+        (not wrong_handoff, "non-immediate handoff must fail"),
         (perfect_accepted[0], "perfect deterministic pass must cover a scenario"),
         (not soft_unjudged[0], "soft pass must require golden judgment"),
         (soft_judged[0], "golden PASS must accept a soft deterministic pass"),
         (not failed_judged[0], "golden judgment cannot override a hard failure"),
+        (complete_trace, "complete trace artifact set must count as executed"),
+        (not incomplete_trace, "missing trace artifacts must not count as executed"),
     ]
     failed = [message for passed, message in assertions if not passed]
     if failed:
@@ -1736,7 +1885,7 @@ def command_self_test(_: argparse.Namespace) -> int:
             print(f"ERROR: {message}")
         print(f"harness_eval_self_test=FAIL errors={len(failed)}")
         return 1
-    print("harness_eval_self_test=PASS cases=10")
+    print("harness_eval_self_test=PASS cases=15")
     return 0
 
 
