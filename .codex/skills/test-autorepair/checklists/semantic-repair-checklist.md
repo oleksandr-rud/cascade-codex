@@ -21,10 +21,12 @@
       silent reset, and topology changes require a new graph revision.
 - [ ] Stale evidence remains historical; replacement evidence either carries a
       stable evidence ID and subject, graph revision and attempt, input/source
-      versions and commit/digest, producer and time, requirement level,
+      versions and commit/digest, producer and time, result, requirement level,
       evaluator authority, acceptance criteria, invalidation condition, and
       failure route, or references a complete bound receipt containing them.
-- [ ] Missing replacement-evidence identity or evaluator authority is `GAP`
-      and does not satisfy an acceptance gate.
+- [ ] Replacement evidence has its own `PASS`, `FAIL`, `BLOCKED`, `GAP`, or
+      `NOT_RUN` result; the validation-command table is not used as a substitute.
+- [ ] Missing replacement-evidence identity, result, or evaluator authority is
+      `GAP` and does not satisfy an acceptance gate.
 - [ ] The resume route returns repaired work to `PENDING` for readiness
       recalculation, and only the lane-state owner records transitions.

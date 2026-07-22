@@ -17,11 +17,11 @@ Run this locally unless the user explicitly authorizes parallel agents.
 
 ## Source Order
 
-1. Fixed point supplied by the user, or a safe default only when the user asks
-   for one.
+1. Comparison Base and Reviewed Head/Digest supplied by the user, or safe
+   defaults only when the user asks for them.
 2. Current diff and commit list:
-   - `git diff <fixed-point>...HEAD`
-   - `git log <fixed-point>..HEAD --oneline`
+   - `git diff <comparison-base>...<reviewed-head>`
+   - `git log <comparison-base>..<reviewed-head> --oneline`
 3. Originating request/spec source:
    - latest user request or current plan;
    - referenced issue, PRD, work lane, scenario, product/spec doc, or design
@@ -38,10 +38,13 @@ Run this locally unless the user explicitly authorizes parallel agents.
 
 ## Checklist
 
-1. Pin the fixed point. If none is provided and there is no safe default, ask:
-   "Review against what: a branch, commit, tag, or main?"
+1. Pin the Comparison Base and the distinct Reviewed Head/Digest. If no safe
+   comparison base exists, ask: "Review against what: a branch, commit, tag,
+   or main?" If the review target is ambiguous, also ask which head, commit,
+   digest, or work-in-progress state is being reviewed.
 2. Capture the diff command and commit list once. Use the three-dot diff so the
-   comparison is against the merge base.
+   comparison is against the merge base, while the Reviewed Head/Digest records
+   the exact change state receiving findings.
 3. Identify the spec source. If none exists, keep the Standards review and mark
    Spec as `NO_SPEC_AVAILABLE`.
 4. Identify standards sources and read only files relevant to touched areas.
@@ -53,7 +56,7 @@ Run this locally unless the user explicitly authorizes parallel agents.
 6. For a graph-shaped lane, emit separate Standards and Spec evidence records,
    even when one reviewer produces both. Each record names a stable evidence
    ID; subject node/gate; graph revision; node attempt; input/source versions;
-   reviewed fixed-point commit or digest; producer/reviewer; production time;
+   Comparison Base; Reviewed Head/Digest; producer/reviewer; production time;
    required/optional level; acceptance criteria; invalidation condition; and
    failure route. Missing identity or reviewer authority is `GAP`.
 7. Treat the assigned reviewer as the review-evidence producer and the
@@ -66,14 +69,15 @@ Run this locally unless the user explicitly authorizes parallel agents.
 9. `NO_SPEC_AVAILABLE` cannot satisfy a required Spec-review input. Record that
    evidence as `GAP` and route the missing contract; when Spec review is
    explicitly optional, record optional `NOT_RUN` and its reason.
-10. When the reviewed commit, revision, attempt, inputs, or governing sources
-   change, mark the affected review evidence stale and propose reopening its
-   subject, gate, and consumers that relied on it. Preserve unrelated accepted
-   work.
+10. Key freshness to the Reviewed Head/Digest, not only the Comparison Base.
+    When the reviewed head/digest, comparison base, revision, attempt, inputs,
+    or governing sources change, mark the affected review evidence stale and
+    propose reopening its subject, gate, and consumers that relied on it.
+    Preserve unrelated accepted work.
 
 ## Output
 
-- fixed point, diff command, and commit count;
+- Comparison Base, Reviewed Head/Digest, diff command, and commit count;
 - Standards findings, or `PASS`;
 - Spec findings, `PASS`, or `NO_SPEC_AVAILABLE`;
 - graph evidence identities, requirement levels, reviewer/evaluator
@@ -86,6 +90,8 @@ Run this locally unless the user explicitly authorizes parallel agents.
 
 - Do not edit files from this skill.
 - Do not treat a review as validation evidence for commands that did not run.
+- Keep review output findings-only; binding the reviewed head does not turn a
+  review into command or test evidence.
 - Do not let missing spec context block Standards review.
 - Do not use completed or unrelated work packets as the spec source.
 - Do not self-accept a node or mutate authoritative gate state; return evidence
