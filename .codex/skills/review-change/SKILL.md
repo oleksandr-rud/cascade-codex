@@ -33,6 +33,8 @@ Run this locally unless the user explicitly authorizes parallel agents.
    - relevant `docs/patterns/*`;
    - lint/type/test configs only as standards inventory, not as a substitute
      for running tools.
+5. `docs/patterns/workflow/graph-shaped-work.md` plus the current lane's
+   authoritative node/gate records when review evidence feeds a graph gate.
 
 ## Checklist
 
@@ -48,12 +50,34 @@ Run this locally unless the user explicitly authorizes parallel agents.
    - Spec findings cite the request/spec row and missing, partial, wrong, or
      extra behavior.
    - Keep judgment calls separate from hard violations.
+6. For a graph-shaped lane, emit separate Standards and Spec evidence records,
+   even when one reviewer produces both. Each record names a stable evidence
+   ID; subject node/gate; graph revision; node attempt; input/source versions;
+   reviewed fixed-point commit or digest; producer/reviewer; production time;
+   required/optional level; acceptance criteria; invalidation condition; and
+   failure route. Missing identity or reviewer authority is `GAP`.
+7. Treat the assigned reviewer as the review-evidence producer and the
+   gate-named independent reviewer/evaluator as acceptance authority. When
+   independence is required, self-review cannot satisfy that input. Only the
+   lane-state owner records gate transitions.
+8. Apply requirement levels without collapsing outcomes: required `PASS` may
+   contribute to acceptance; required `FAIL`, `BLOCKED`, `GAP`, or `NOT_RUN`
+   prevents it; optional `NOT_RUN` records optionality and reason.
+9. `NO_SPEC_AVAILABLE` cannot satisfy a required Spec-review input. Record that
+   evidence as `GAP` and route the missing contract; when Spec review is
+   explicitly optional, record optional `NOT_RUN` and its reason.
+10. When the reviewed commit, revision, attempt, inputs, or governing sources
+   change, mark the affected review evidence stale and propose reopening its
+   subject, gate, and consumers that relied on it. Preserve unrelated accepted
+   work.
 
 ## Output
 
 - fixed point, diff command, and commit count;
 - Standards findings, or `PASS`;
 - Spec findings, `PASS`, or `NO_SPEC_AVAILABLE`;
+- graph evidence identities, requirement levels, reviewer/evaluator
+  authority, freshness, and proposed gate/reopen state when applicable;
 - worst issue per axis when findings exist;
 - routes for follow-up: `implement-change`, `functional-qa`,
   `test-autorepair`, `validate-change`, or `issue-intake`.
@@ -64,3 +88,5 @@ Run this locally unless the user explicitly authorizes parallel agents.
 - Do not treat a review as validation evidence for commands that did not run.
 - Do not let missing spec context block Standards review.
 - Do not use completed or unrelated work packets as the spec source.
+- Do not self-accept a node or mutate authoritative gate state; return evidence
+  and a proposed transition to the lane-state owner.
