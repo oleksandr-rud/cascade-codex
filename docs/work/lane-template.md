@@ -103,6 +103,104 @@ shape lives in the `plan-change` definition-ready template.
 |---|---|---|---|---|---|
 | `DEP-01` | `<NODE_GATE_EXTERNAL>` | `<IDS>` | `<ID>` | `<RULE>` | `<RULE>` |
 
+### Optional Graph-Shaped Lane State
+
+Use this block only when connected obligations need typed readiness, evidence
+joins, bounded repair, revision-aware handoff, or cross-lane invalidation. The
+lane's Task Graph, Evidence Gates, latest Graph Amendment, and transition/repair
+history are authoritative. Current Frontier and `docs/work/active.md` are
+derived projections; reconcile them from the authoritative records before
+execution. These records remain instruction-driven and do not create a graph
+runtime or automatic state mutation.
+
+For atomic work, record the bypass and omit the remaining graph-shaped tables:
+
+| Applicability | Reason / Boundary | Normal Rules Still Required |
+|---|---|---|
+| `<GRAPH_SHAPED | ATOMIC_BYPASS>` | `<WHY_GRAPH_STATE_HELPS_OR_IS_UNNECESSARY>` | `<PLANNING_APPROVAL_REVIEW_VALIDATION_CLOSEOUT>` |
+
+When graph-shaped state applies, record its authority before creating nodes:
+
+| Graph Revision | Plan Revision | Lane-State Owner | Authoritative Records | Derived Projections | Instruction-Driven Limit |
+|---|---|---|---|---|---|
+| `<1>` | `<PLAN_REVISION>` | `<SOLE_TRANSITION_OWNER>` | `Task Graph; Evidence Gates; latest Graph Amendment; Transition/Repair History` | `Current Frontier; active registry; status boards; merge queues` | `No scheduler, parser, locking, transactions, or automatic transitions` |
+
+#### Task Graph
+
+Keep prerequisite nodes, acceptance gates, and external conditions in separate
+columns. IDs are lane-scoped, stable, and never reused, including after
+supersession. Producing the expected receipt moves a node to `REVIEW`; only its
+accepted per-node gate permits `REVIEW -> ACCEPTED`.
+
+| Node ID | Obligation | Actor / Type | Requires Nodes | Requires Gates | External Conditions | Named / Versioned Inputs | Expected Receipt | Write Scope | Tools / Permissions | Per-Node Gate | Attempt / Max | Status | Last Transition | Evidence |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| `N-01` | `<BOUNDED_OUTCOME>` | `<OWNER_AND_TYPE>` | `<NODE_IDS_OR_NONE>` | `<GATE_IDS_OR_NONE>` | `<CONDITION_IDS_OR_NONE>` | `<INPUT_ID_AT_VERSION>` | `<RECEIPT_ID_AND_OUTPUT>` | `<PATHS_OR_NONE>` | `<TOOLS_APPROVAL_COST_IDEMPOTENCY_CLEANUP_BOUNDS>` | `AG-01` | `<1/3>` | `<PENDING_READY_IN_PROGRESS_REVIEW_ACCEPTED_FAILED_BLOCKED_SUPERSEDED>` | `<TRANSITION_ID>` | `<EVIDENCE_IDS_OR_GAP>` |
+
+#### External And Cross-Lane Conditions
+
+Cross-lane readiness requires the producer lane, an accepted producer gate,
+current evidence, compatible version/freshness, and non-conflicting merge
+ownership. Keep ordinary permissions, decisions, and environment conditions
+typed here as well.
+
+| Condition ID | Type | Authority / Producer Lane | Required Gate / Evidence | Consumer Nodes | Version / Freshness | Merge Owner | Satisfaction State | Invalidation / Block Route |
+|---|---|---|---|---|---|---|---|---|
+| `EXT-01` | `<APPROVAL_DECISION_ENVIRONMENT_CROSS_LANE>` | `<AUTHORITY_OR_LANE_ID>` | `<GATE_AND_EVIDENCE_OR_NA>` | `<NODE_IDS>` | `<VERSION_AND_FRESHNESS_RULE>` | `<OWNER_OR_NA>` | `<SATISFIED_BLOCKED_STALE>` | `<RECALCULATE_REOPEN_OR_RESOLUTION_ROUTE>` |
+
+#### Evidence Gates
+
+Per-node gates accept one producer. Aggregate and terminal gates verify already
+accepted producers and never accept a producer needed by another input to the
+same gate. A terminal gate has no consumer in this graph.
+
+| Gate ID | Type / Subject | Required Evidence | Optional Evidence | Evidence Producers | Evaluator / Reviewer Authority | Acceptance Criteria | Invalidation / Reopen Rule | State | Failure / Repair Route |
+|---|---|---|---|---|---|---|---|---|---|
+| `AG-01` | `<PER_NODE_AND_NODE_ID | AGGREGATE | TERMINAL>` | `<EVIDENCE_IDS>` | `<EVIDENCE_IDS_OR_NONE>` | `<TOOLS_SKILLS_ACTORS>` | `<INDEPENDENT_AUTHORITY>` | `<ALL_REQUIRED_CURRENT_PASS>` | `<WHEN_ACCEPTED_RETURNS_TO_OPEN_AND_CONSUMERS_REOPEN>` | `<OPEN_ACCEPTED_FAILED_BLOCKED>` | `<EARLIEST_RESPONSIBLE_NODE_AND_ROUTE>` |
+
+Bind every evidence input before gate evaluation:
+
+| Evidence ID | Subject Node / Gate | Graph Revision | Attempt | Input / Source Versions | Source Commit / Digest | Producer | Produced At | Requirement | Result | Invalidation Condition |
+|---|---|---:|---:|---|---|---|---|---|---|---|
+| `EV-01` | `<N_OR_AG_ID>` | `<REVISION>` | `<ATTEMPT>` | `<INPUT_IDS_AT_VERSIONS>` | `<COMMIT_OR_DIGEST_OR_NA>` | `<TOOL_SKILL_ACTOR>` | `<TIMESTAMP>` | `<REQUIRED_OPTIONAL>` | `<PASS_FAIL_BLOCKED_GAP_NOT_RUN>` | `<VERSION_SOURCE_CONTRACT_OR_TIME_CHANGE>` |
+
+#### Transition History
+
+Only the lane-state owner records authoritative transitions. Worker output and
+evidence producers return bound receipts or proposed transitions.
+
+| Transition ID / Time | Subject | Prior -> Next | Recorded By | Preconditions | Receipt / Evidence | Invalidation Condition | Failure / Resume Route |
+|---|---|---|---|---|---|---|---|
+| `TR-01 / <TIME>` | `<NODE_OR_GATE_ID>` | `<STATE -> STATE>` | `<LANE_STATE_OWNER>` | `<READINESS_OR_GATE_RULE>` | `<RECEIPT_AND_EVIDENCE_IDS>` | `<WHEN_REOPENED>` | `<DETERMINISTIC_DESTINATION>` |
+
+#### Repair History
+
+| Repair ID / Time | Failure Class / Cause | Failed Evidence / Input | Earliest Responsible Node | Reopened Nodes / Gates | Preserved Accepted IDs | Versions / Attempt / Revisions | Deterministic Resume Route |
+|---|---|---|---|---|---|---|---|
+| `RP-01 / <TIME>` | `<PRODUCT_STALE_TEST_ABSENT_CONTRACT_ABSENT_EVIDENCE_ENVIRONMENT_WORKFLOW>` | `<IDS_AND_RESULT>` | `<NODE_ID>` | `<AFFECTED_CONSUMERS>` | `<UNCHANGED_IDS>` | `<INPUT_VERSIONS_ATTEMPT_PLAN_GRAPH>` | `<PENDING_THEN_READINESS_RECALCULATION_OR_BLOCKED_ROUTE>` |
+
+#### Graph Amendment History
+
+Topology, dependency, actor, ownership, or gate changes increment Graph
+Revision. An unchanged-topology retry changes attempt/history only. Never reuse
+an earlier or superseded node or gate ID.
+
+| Amendment ID / Time | Prior -> Next Revision | Reason | Changed Nodes / Edges / Actors / Owners / Gates | Stable New / Replacement IDs | Preserved Evidence | Invalidated Evidence | Affected Consumers | Recomputed Frontier |
+|---|---|---|---|---|---|---|---|---|
+| `AM-01 / <TIME>` | `<1 -> 2>` | `<MATERIAL_CHANGE>` | `<DELTA>` | `<NEW_IDS_OR_NONE>` | `<EVIDENCE_IDS>` | `<EVIDENCE_IDS>` | `<NODE_GATE_IDS>` | `<READY_REVIEW_BLOCKED_PENDING>` |
+
+#### Current Frontier (Derived)
+
+- Graph revision / plan revision: `<GRAPH_REVISION / PLAN_REVISION>`
+- Ready: `<NODE_IDS_OR_NONE>`
+- In progress: `<NODE_IDS_OR_NONE>`
+- In review: `<NODE_IDS_OR_NONE>`
+- Blocked: `<NODE_IDS_WITH_BLOCKER_OR_NONE>`
+- Accepted: `<NODE_IDS_OR_NONE>`
+- Open or unresolved joins: `<GATE_IDS_AND_ABSENT_INPUTS_OR_NONE>`
+- External or cross-lane conditions: `<CONDITION_IDS_AND_STATE>`
+- Next executable node: `<NODE_ID_OR_NONE>`
+- Projection reconciliation: `<CURRENT | DRIFT_FOUND_AND_RECOMPUTED_FROM_AUTHORITY>`
+
 ## File Ownership
 
 | Path Or Area | Owner | Access | Notes |
