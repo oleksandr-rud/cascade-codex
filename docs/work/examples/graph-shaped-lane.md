@@ -41,8 +41,8 @@ note, and integration evidence.
 
 | ID | Kind | Statement | Status / Route |
 |---|---|---|---|
-| `DEF-01` | definition | Output production moves a node to `REVIEW`; only its per-node gate may accept it. | `ACCEPTED` |
-| `DEF-02` | definition | The Task Graph, Evidence Gates, latest Graph Amendment, and transition/repair history are authoritative. | `ACCEPTED` |
+| `DEF-01` | definition | Output production supports an `IN_PROGRESS -> REVIEW` proposal; the lane-state owner's recorded transition moves the node, and only its per-node gate may accept it. | `ACCEPTED` |
+| `DEF-02` | definition | The Task Graph, Evidence Gates, latest accepted Graph Amendment and ownership-handoff record, and lane-owner-recorded transition/repair history are authoritative; receipts are supporting evidence, proposals, and history only. | `ACCEPTED` |
 | `DEF-03` | constraint | IDs are stable and never reused; graph mechanics remain instruction-driven. | `ACCEPTED` |
 | `DEF-04` | constraint | The example is not active state and never updates the active registry. | `ACCEPTED` |
 
@@ -62,13 +62,13 @@ note, and integration evidence.
 
 | Graph Revision | Plan Revision | Lane-State Owner | Authoritative Records | Derived Projections | Instruction-Driven Limit |
 |---:|---:|---|---|---|---|
-| `3` | `2` | example `orchestrator` only after `OH-01` | Task Graph; worker receipts; Evidence Gates; `AM-02`; Ownership, Transition, and Repair History | Current Frontier and any status summary | no scheduler, parser, locking, transactions, or automatic transitions |
+| `3` | `2` | example `orchestrator` only after `OH-01` | Task Graph; Evidence Gates; accepted `AM-02` and `OH-01`; lane-owner-recorded Transition and Repair History | Current Frontier and any status summary | no scheduler, parser, locking, transactions, or automatic transitions |
 
 ### Ownership Handoff Record
 
 | Handoff ID | Prior Owner | Incoming Owner | Prior -> New Graph Revision | Mutation-Blocked State | Initiated / Accepted At | Acceptance Record / Evidence | Status | Invalidation / Resume Rule |
 |---|---|---|---|---|---|---|---|---|
-| `OH-01` | example lane owner | example `orchestrator` | `2 -> 3` | `BLOCKED` from initiation through acceptance; no authoritative mutation permitted | `2026-01-11T12:00Z` / `2026-01-11T12:05Z` | `R-HO-01`; prior-owner inventory plus incoming-owner source, graph, gate, repair, and frontier reconciliation | `HANDOFF_ACCEPTED` | owner, source inventory, or acceptance-record change reopens handoff and blocks mutation; `R-HO-01` permits resume only at revision 3 |
+| `OH-01` | example lane owner | example `orchestrator` | `2 -> 3` | `BLOCKED` from initiation through acceptance; no authoritative mutation permitted | `2026-01-11T12:00Z` / `2026-01-11T12:05Z` | accepted `OH-01` handoff transition record, supported by `R-HO-01` and prior-owner inventory plus incoming-owner source, graph, gate, repair, and frontier reconciliation | `HANDOFF_ACCEPTED` | owner, source inventory, or acceptance-record change reopens handoff and blocks mutation; accepted `OH-01`, not its supporting receipt alone, permits resume only at revision 3 |
 
 ### Task Graph
 
@@ -88,10 +88,14 @@ ownership and preserves the reviewed revision-2 receipts and evidence.
 
 ### Worker And Proposed-Transition Receipts
 
-Every receipt below proposes `IN_PROGRESS -> REVIEW`. The example lane owner
-records the transition only after checking the binding; the receipt does not
-self-accept its node or gate. `AM-02` explicitly preserves the current
-revision-2 receipts across the ownership-only revision change.
+Every node-execution receipt below proposes `IN_PROGRESS -> REVIEW`, while
+`R-HO-01` proposes `HANDOFF_PENDING -> HANDOFF_ACCEPTED`. These receipts are
+supporting bound evidence, proposals, and history, never authoritative active
+state by themselves. The example lane owner records each node transition only
+after checking its binding; the accepted `OH-01` handoff transition record,
+not `R-HO-01` alone, authorizes the ownership change. `AM-02` explicitly
+preserves the current revision-2 receipts across the ownership-only revision
+change.
 
 | Receipt ID | Subject Node / Workline / Gate | Plan / Graph Revision | Attempt / Max | Named Inputs / Source Versions | Source Commit / Digest | Producer Role / Thread / Time | Prior / Proposed State | Allowed / Actual Paths | Tools / Permissions / Resource Bounds | Outputs | Checks / Evidence Refs | Invalidation Condition | Stop / Repair Route |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|
@@ -105,7 +109,7 @@ revision-2 receipts across the ownership-only revision change.
 | `R-N03-v2` | `N-03` / `EX-WL-03` / `AG-03` | `2 / 2` | `2/3` | `CONTRACT@v2` | `example-c2` | documentation worker / `example-thread-03` / `2026-01-11T10:15Z` | `IN_PROGRESS -> REVIEW` | `docs/example-guide.md` / same | local files / allowed / no paid, live, or external mutation | `GUIDE@v2` | guide check / `EV-03-v2` | contract, guide, source commit, or receipt binding changes | repair `N-03`, then affected `N-05` |
 | `R-N05-v2` | `N-05` / `EX-WL-05` / `AG-05` | `2 / 2` | `2/2` | `BUILD@v2`, `GUIDE@v2`, `POLICY@v1`, `MIGRATION@v1`, `EV-UP-v4` | `example-e2` | integrator / `example-thread-05` / `2026-01-11T11:10Z` | `IN_PROGRESS -> REVIEW` | none / none | local validator / allowed / bounded local execution | `BUNDLE@v2` | integration and review checks / `EV-05-CMD-v2`, `EV-05-REV-v2` | any named input, producer gate, upstream evidence, source digest, or receipt binding changes | another unchanged-topology request is `BLOCKED`; replan or create a new Graph Revision before execution |
 | `R-N06-v1` | `N-06` / `EX-WL-06` / `AG-06` | `2 / 2` | `1/2` | `CONTRACT@v2` | `example-f1` | documentation worker / `example-thread-06` / `2026-01-11T10:20Z` | `IN_PROGRESS -> REVIEW` | `docs/example-migration.md` / same | local files / allowed / no paid, live, or external mutation | `MIGRATION@v1` | migration-note check / `EV-06-v1` | contract, note, source commit, or receipt binding changes | repair `N-06`, then affected `N-05` |
-| `R-HO-01` | lane authority / ownership handoff / no gate | `2 / 3` | not applicable | graph revision 2 Task Graph, gates, `AM-01`, `RP-01`, transition ledger, frontier | `example-terminal2` | incoming owner / `example-owner-thread` / `2026-01-11T12:05Z` | `HANDOFF_PENDING -> HANDOFF_ACCEPTED` | none / none | read-only reconciliation / allowed / mutation blocked until acceptance | revision-3 owner authority and reconciled frontier | source, graph, gate, repair, transition, and frontier inventory checks | owner identity, source inventory, or acceptance binding changes | return handoff to pending and block every authoritative mutation |
+| `R-HO-01` | ownership handoff / proposed transition / no gate | `2 / 3` | not applicable | graph revision 2 Task Graph, gates, `AM-01`, `RP-01`, transition ledger, frontier | `example-terminal2` | incoming owner / `example-owner-thread` / `2026-01-11T12:05Z` | `HANDOFF_PENDING -> HANDOFF_ACCEPTED` | none / none | read-only reconciliation / allowed / mutation blocked until acceptance | revision-3 ownership proposal and reconciled frontier | source, graph, gate, repair, transition, and frontier inventory checks | owner identity, source inventory, or acceptance binding changes | return handoff to pending and block every authoritative mutation |
 
 ### External And Cross-Lane Conditions
 
@@ -162,7 +166,9 @@ the ownership handoff; it does not rewrite those production bindings.
 This is the complete node/gate transition ledger for both graph executions.
 Every row names time, owner, preconditions, receipt/evidence, invalidation, and
 the deterministic failure or resume destination. `OH-01` owns the later
-authority transfer; no node/gate transition occurs during its mutation block.
+authority transfer; its accepted handoff transition record, rather than the
+supporting receipt alone, is authoritative, and no node/gate transition occurs
+during its mutation block.
 Rows are grouped by obligation sequence; timestamps, not numeric adjacency
 across independent nodes, reconstruct concurrent ordering.
 
@@ -243,13 +249,14 @@ across independent nodes, reconstruct concurrent ordering.
 | Amendment ID / Time | Prior -> Next Revision | Reason | Changed Nodes / Edges / Actors / Owners / Gates | Stable New / Replacement IDs | Preserved Evidence | Invalidated Evidence | Affected Consumers | Recomputed Frontier |
 |---|---|---|---|---|---|---|---|---|
 | `AM-01 / 2026-01-11T08:30Z` | `1 -> 2` | request adds `CONTRACT@v2` and a required migration note | change inputs for `N-01`, `N-02`, `N-03`, `N-05`; add `N-06 -> AG-06 -> N-05`; add `AG-06 -> TG-01` | new `N-06`, `AG-06`; all prior IDs retained, none reused | `EV-04-v1`, `N-04`, `AG-04`, `EV-UP-v4`, `APR-01` | `EV-01-v1`, `EV-02-CMD-v1`, `EV-02-REV-v1`, optional `EV-02-LIVE-v1` (`NOT_RUN`, now stale), `EV-03-v1`, `EV-05-CMD-v1`, `EV-05-REV-v1`, `EV-RISK-v1` | reopen `N-01`, `N-02`, `N-03`, `N-05`; add `N-06`; reopen affected gates and terminal | `N-01` ready; `N-02`, `N-03`, `N-05`, `N-06` pending; `N-04` accepted |
-| `AM-02 / 2026-01-11T12:00Z` | `2 -> 3` | lane-state ownership transfers through `OH-01` | owner changes from example lane owner to example `orchestrator`; topology, dependencies, actors, nodes, and gates unchanged | none; every existing ID retained | all revision-2 node receipts and evidence, `N-01` through `N-06`, `AG-01` through `AG-06`, `TG-01`, `RP-01`, and `EV-UP-v4` | none; ownership-only amendment explicitly preserves prior bindings | none after `R-HO-01`; all mutation is blocked while handoff is pending | during handoff: mutation blocked; after acceptance: terminal state preserved, no executable node |
+| `AM-02 / 2026-01-11T12:00Z` | `2 -> 3` | lane-state ownership transfers through `OH-01` | owner changes from example lane owner to example `orchestrator`; topology, dependencies, actors, nodes, and gates unchanged | none; every existing ID retained | all revision-2 node receipts and evidence, `N-01` through `N-06`, `AG-01` through `AG-06`, `TG-01`, `RP-01`, and `EV-UP-v4` | none; ownership-only amendment explicitly preserves prior bindings | none after accepted `OH-01`; all mutation is blocked while handoff is pending | during handoff: mutation blocked; after acceptance: terminal state preserved, no executable node |
 
 ### Current Frontier (Derived)
 
 - Graph revision / plan revision: `3 / 2`.
-- Lane-state owner: example `orchestrator` under accepted handoff `OH-01` and
-  `R-HO-01`; the prior owner no longer has mutation authority.
+- Lane-state owner: example `orchestrator` under accepted authoritative handoff
+  `OH-01`, supported by `R-HO-01`; the prior owner no longer has mutation
+  authority.
 - Ready, in progress, in review, blocked, or failed: none.
 - Accepted: `N-01` through `N-06`.
 - Accepted gates: `AG-01` through `AG-06` and `TG-01`.
@@ -351,9 +358,11 @@ producer that is needed by another input to the same terminal gate.
    may record a node, gate, repair, or frontier mutation during the handoff.
 3. The incoming example `orchestrator` reconciles the source, Task Graph,
    gates, amendments, repair history, complete transition ledger, and frontier,
-   then emits `R-HO-01` at `2026-01-11T12:05Z`.
-4. `OH-01` records `HANDOFF_ACCEPTED`; mutation authority resumes only for the
-   incoming owner at revision 3. `AM-02` preserves all current revision-2
+   then emits `R-HO-01` proposing `HANDOFF_PENDING -> HANDOFF_ACCEPTED` at
+   `2026-01-11T12:05Z`; that receipt does not transfer authority by itself.
+4. The accepted `OH-01` handoff transition record records
+   `HANDOFF_PENDING -> HANDOFF_ACCEPTED`; mutation authority resumes only for
+   the incoming owner at revision 3. `AM-02` preserves all current revision-2
    receipts and evidence because no input, topology, actor, or gate changed.
 
 ## Validation Snapshot
