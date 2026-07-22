@@ -12,7 +12,10 @@ model/tool loops. Skills still plan, implement, review, validate, repair, and
 close work. The graph-shaped lane state records which bounded obligations may
 run, which evidence gates must accept them, and which work must reopen after a
 failure. Context-pack metadata selects these rules but does not redefine them
-or store live state.
+or store live state. Changing reusable graph semantics invalidates affected
+skill, lane-template, pack-metadata, and evaluation consumers; refresh those
+consumers against this document before relying on them again. Retrieval
+metadata never becomes semantic authority.
 
 A lane is one independently tracked workstream with one owner, scope, merge
 boundary, and terminal validation boundary. Use graph-shaped sections when a
@@ -54,6 +57,19 @@ state, accept a node or gate, update a derived status board, or merge work.
 Conflicting proposals remain evidence/history while the owner records one
 reconciled transition.
 
+Every ordinary worker-output or proposed-transition receipt binds a stable
+receipt ID; its node, workline, and gate subject as applicable; plan and graph
+revision; attempt; named inputs and source versions; source commit or digest;
+producer and thread; production time; outputs and evidence references; and
+invalidation conditions. A receipt missing a required binding remains an
+untrusted proposal rather than current lane state.
+
+Transferring lane-state ownership increments graph revision and blocks every
+authoritative mutation until an explicit handoff acceptance records the new
+owner and revision. Workers may preserve output or proposals during the block,
+but neither prior nor incoming owner may record transitions before that
+handoff completes.
+
 The lane's Task Graph, evidence-gate records, latest graph amendment, and
 transition/repair history are authoritative active state. Current Frontier,
 status boards, merge queues, and the active-work registry are derived
@@ -77,11 +93,11 @@ Gates use `OPEN`, `ACCEPTED`, `FAILED`, and `BLOCKED`; their evidence-bound
 legal transitions and reopen routes are defined under Evidence Gates below.
 
 Every transition record names the transition owner, prior and next state,
-preconditions, input and evidence identity, invalidation condition, and a
-deterministic failure or resume route. A failed or unblocked node returns to
-`PENDING` for readiness recalculation; it never skips directly to `READY`.
-Producing the expected output moves an `IN_PROGRESS` node to `REVIEW`. Only its
-accepted per-node gate authorizes `REVIEW -> ACCEPTED`.
+preconditions, the governing receipt and evidence identities, invalidation
+condition, and a deterministic failure or resume route. A failed or unblocked
+node returns to `PENDING` for readiness recalculation; it never skips directly
+to `READY`. Producing the expected output moves an `IN_PROGRESS` node to
+`REVIEW`. Only its accepted per-node gate authorizes `REVIEW -> ACCEPTED`.
 
 Definition coverage: `DEF-02`, `DEF-04`, `DEF-06`, `DEF-07`, `DEF-14`.
 Boundary coverage: `BND-02`, `BND-03`.
@@ -187,11 +203,13 @@ blocker, or invalid workflow state. Then:
    and Current Frontier before execution resumes.
 
 An unchanged-topology retry increments the node attempt and leaves graph
-revision unchanged. Every retryable obligation has an explicit maximum. When
-the maximum is reached, move the node to `BLOCKED` and route to the lane owner,
-`plan-change`, or user escalation; never reset the counter silently. A change
-to topology, dependencies, actor, ownership, or gates is an amendment and a new
-graph revision, not another unchanged-topology attempt.
+revision unchanged. Every retryable obligation has an explicit maximum, and
+attempts `1` through that maximum may execute. After the maximum attempt has
+been consumed without success, a request for another unchanged-topology retry
+moves the node to `BLOCKED` and routes to the lane owner, `plan-change`, or user
+escalation; never reset the counter silently. A change to topology,
+dependencies, actor, ownership, or gates is an amendment and a new graph
+revision, not another unchanged-topology attempt.
 
 New impact evidence may expand the repair set, but a failure does not reopen
 unrelated accepted work. Resume from the earliest reopened obligation whose
