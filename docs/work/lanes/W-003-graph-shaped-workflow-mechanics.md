@@ -6,7 +6,7 @@ Plan Revision: `4`
 Owner: `agent-engineer`
 Created: 2026-07-22
 Lane Model: `orchestrator-workers-dependency-waves`
-Next Gate: parallel `AG-02`, `AG-03`, and `AG-04` workline gates
+Next Gate: `AG-05` focused judged-harness evidence
 Graph Revision: `3`
 
 ## Request
@@ -403,10 +403,10 @@ none becomes downstream-ready until the root integration join `JG-CORE` passes.
 | Workline | Outcome | Primary Criteria | Requires Gates | External Conditions | Produces | Ownership / Writes | Acceptance Gate | Attempt / Max | Status |
 |---|---|---|---|---|---|---|---|---|---|
 | `WL-01` | One selectively retrievable graph semantic authority | reusable semantics; atomic bypass; typed dependencies; state/evidence authority | `DG-00` | plan revision 4 and graph revision 3 remain current | `graph-shaped-work.md` plus pack routing | thread `W003-WL01`; workflow pattern/pack only | `AG-01` | `1/3` | `ACCEPTED` |
-| `WL-02` | Optional lane representation that can express and demonstrate the contract | operational state, identity, frontier, gates, repair, history | `AG-01` | common wave-2 base current | lane-template sections and valid non-active example | thread `W003-WL02`; work template/example | `AG-02` | `1/3` | `IN_PROGRESS` — bounded `JG-CORE` compatibility repair |
-| `WL-03` | Existing skills create, resume, plan, and execute only ready obligations | creation/resume/execution authority; permissions/write scope | `AG-01` | common wave-2 base current | graph-aware context/orchestration/planning/implementation contracts | thread `W003-WL03`; named creation/execution skill files | `AG-03` | `1/3` | `IN_PROGRESS` — bounded revision-checklist repair |
-| `WL-04` | Existing skills accept evidence, repair minimally, exhaust safely, and close only terminal work | evidence identity, gate lifecycle, partial repair, retry/exhaustion | `AG-01` | common wave-2 base current | graph-aware functional/review/validation/repair/closeout contracts | thread `W003-WL04`; named evidence/repair skill files | `AG-04` | `1/3` | `IN_PROGRESS` — bounded review/replacement-receipt repair |
-| `WL-05` | Current judged harness distinguishes safe graph behavior from plausible unsafe prose | `GW-001` through `GW-022`; W-002 compatibility | `JG-CORE` | `EXT-01` W-002 contract reinspection current | authored cases, current catalog, deterministic and focused evidence | thread `W003-WL05`; eval surfaces after reinspection | `AG-05` | `0/2` | `PENDING` |
+| `WL-02` | Optional lane representation that can express and demonstrate the contract | operational state, identity, frontier, gates, repair, history | `AG-01` | common wave-2 base current | lane-template sections and valid non-active example | thread `W003-WL02`; work template/example | `AG-02` | `2/3` | `ACCEPTED` |
+| `WL-03` | Existing skills create, resume, plan, and execute only ready obligations | creation/resume/execution authority; permissions/write scope | `AG-01` | common wave-2 base current | graph-aware context/orchestration/planning/implementation contracts | thread `W003-WL03`; named creation/execution skill files | `AG-03` | `2/3` | `ACCEPTED` |
+| `WL-04` | Existing skills accept evidence, repair minimally, exhaust safely, and close only terminal work | evidence identity, gate lifecycle, partial repair, retry/exhaustion | `AG-01` | common wave-2 base current | graph-aware functional/review/validation/repair/closeout contracts | thread `W003-WL04`; named evidence/repair skill files | `AG-04` | `2/3` | `ACCEPTED` |
+| `WL-05` | Current judged harness distinguishes safe graph behavior from plausible unsafe prose | `GW-001` through `GW-022`; W-002 compatibility | `JG-CORE` | `EXT-01` must be refreshed by `SL-05A` before eval-file writes | authored cases, current catalog, deterministic and focused evidence | thread `W003-WL05`; eval surfaces after reinspection | `AG-05` | `1/2` | `READY` for `SL-05A` preflight |
 | `WL-06` | Integrated change is documented, validated, and honestly closed | all request criteria and residual-risk reporting | `JG-CORE`, `AG-05` | required commands/environment available or explicitly blocked | docs-impact disposition, final validation, handoff | thread `W003-WL06`; conditional public docs; root owns lane state | `AG-06` | `0/2` | `PENDING` |
 
 ## Implementation Slices
@@ -496,21 +496,19 @@ flowchart LR
 
 ## Current Frontier
 
-- Ready: none while `JG-CORE` attempt-1 repairs are active.
-- In progress: bounded repairs in `WL-02`, `WL-03`, and `WL-04`.
+- Ready: `WL-05 / SL-05A` read-only W-002 contract refresh.
+- In progress: none.
 - In review: none.
-- Failed join: `JG-CORE` attempt 1 at integrated head `5c4b267`; required
-  Standards/Spec compatibility evidence failed.
-- Accepted worklines: `WL-01`.
-- Pending: `WL-05` and `WL-06`.
-- Accepted gates: `DG-00` and `AG-01`.
-- Open gates: `AG-02` through `AG-06` and `TG-01`; `JG-CORE` is `FAILED`
-  pending bounded repair and reevaluation.
+- Preserved failed history: `JG-CORE` attempt 1 at `5c4b267` remains recorded.
+- Accepted worklines: `WL-01` through `WL-04`.
+- Pending: `WL-06`.
+- Accepted gates: `DG-00`, `AG-01` through `AG-04`, and `JG-CORE`.
+- Open gates: `AG-05`, `AG-06`, and `TG-01`.
 - External conditions: `EXT-01` is expected satisfiable because W-002 is
   complete, but `SL-05A` must refresh it before `WL-05` becomes ready.
-- Next executable action: complete only the recorded `JG-CORE` repair set in
-  `W003-WL02`, `W003-WL03`, and `W003-WL04`, merge refreshed receipts, then
-  rerun the independent compatibility join.
+- Next executable action: dispatch `W003-WL05`; execute read-only `SL-05A` to
+  refresh `EXT-01` before any eval-file write, then author and evaluate the
+  focused W-003 scenarios under the current W-002 contract.
 
 Current Frontier is a derived projection. On resume, `context` must reconstruct
 it from the Selected Workline Map, gate table, external conditions, and latest
@@ -522,10 +520,10 @@ replanning/repair records before recommending execution.
 |---|---|---|---|---|---|---|
 | `DG-00` | dispatch gate | integration base for all worktrees | `R-DG00`: base `28d69ec70396a31125b7b989e5066149eff8a8ae`; approved 54-file W-002/W-003/planning inventory; clean detached checkout; validator `PASS` (7 agents, 39 skills); catalog `PASS` (299 scenarios, digest `89076ff0f1a51bec91eaa413131cfebe41daed3da525316c11452cc6548e2c0d`); self-test `PASS` (18); diff hygiene `PASS` | every required W-002/W-003/planning input is reproducible from one commit and no unresolved user-owned dependency is omitted | `ACCEPTED` | invalidate on source-inventory or lineage change and refresh before new dispatch |
 | `AG-01` | per-workline | `WL-01` | `R-01A`/`R-01B` at `70c7c3323e92eef43ccd53cb364fe72d68ddaf84`; two owned commits from base `3e9d35b37aa6be4b2d3c815a37141da728f09d8f`; three-path scope audit; independent Standards `PASS`; independent Spec `PASS` after four repaired findings; full pack `PASS` (15 sections); six filtered packs `PASS`; prior sections 9/9; validator/catalog/self-test/diff `PASS` on integrated tip | all required evidence passes and graph rules have one authority | `ACCEPTED` | reopen `WL-01` and affected consumers if semantics, routing, or evidence binding changes |
-| `AG-02` | per-workline | `WL-02` | template review; cycle-free example walk; `GW-001` through `GW-018` representability | schema and example implement accepted `AG-01` semantics without active-state duplication | `OPEN` | reopen `WL-02` or `WL-01` if semantic |
-| `AG-03` | per-workline | `WL-03` | skill fixed-point review; creation/readiness/frontier/authority scenarios | all changed skills use the same authoritative state and readiness contracts | `OPEN` | reopen affected `WL-03` slice or upstream gate |
-| `AG-04` | per-workline | `WL-04` | skill fixed-point review; gate/repair/exhaustion/terminal scenarios | evidence, invalidation, repair, retries, and terminal behavior agree | `OPEN` | reopen affected `WL-04` slice or upstream gate |
-| `JG-CORE` | cross-workline integration | merged `AG-02`, `AG-03`, `AG-04` outputs on root integration tip | attempt-1 head `5c4b267`: branch/receipt lineage, disjoint writes, validator/pack/catalog/self-test/runtime/diff checks `PASS`; independent Standards/Spec compatibility `FAIL` on ordinary/evidence receipt representation, transition reconstruction, ownership handoff, revision checklist, reviewed-head freshness, replacement result, exhausted example route, and active-registry wording | all three workline gates are current, root merges their reviewed commits, and integrated contracts agree on IDs, states, transitions, evidence, and repair | `FAILED` — attempt 1 | reopen only `WL-02`, `WL-03`, and `WL-04` named repair slices; root repairs derived-registry wording; preserve `WL-01` and unrelated wave outputs |
+| `AG-02` | per-workline | `WL-02` | refreshed `R-02A`/`R-02B` at `bc78f2b`; 3-path scope; template 11 tables; example 16 tables, 15 subjects, 21 acyclic edges, 11 bound receipts, 18 bound evidence rows, `TR-01..TR-63`, ownership handoff, partial repair, terminal outdegree 0; independent Standards/Spec `PASS`; integrated validator/diff `PASS` | schema and example implement accepted `AG-01` semantics without active-state duplication | `ACCEPTED` | reopen `WL-02` or `WL-01` if semantic |
+| `AG-03` | per-workline | `WL-03` | refreshed `R-03A`/`R-03B` at `a363f42`; 7-path scope; readiness/resume/permission/receipt/conflict and revision-trigger trajectories `PASS`; independent Standards/Spec `PASS`; integrated validator/diff `PASS` | all changed skills use the same authoritative state and readiness contracts | `ACCEPTED` | reopen affected `WL-03` slice or upstream gate |
+| `AG-04` | per-workline | `WL-04` | refreshed `R-04A`/`R-04B` at `c6583ff`; 9-path scope; evidence/join/repair/exhaustion/terminal/review-head/replacement-result trajectories `PASS`; independent Standards/Spec `PASS`; integrated validator/diff `PASS` | evidence, invalidation, repair, retries, and terminal behavior agree | `ACCEPTED` | reopen affected `WL-04` slice or upstream gate |
+| `JG-CORE` | cross-workline integration | merged `AG-02`, `AG-03`, `AG-04` outputs on root integration tip | attempt-2 head `ce737f2998db11db45511d977beb1c15f3290bb5`; refreshed worker heads are ancestors and owned paths byte-identical/disjoint; pack, validator, catalog, self-test, runtime audit, diff, receipt/transition checks `PASS`; `EV-JGCORE-STANDARDS-CE737F2` and `EV-JGCORE-SPEC-CE737F2` required `PASS` | all three workline gates are current, root merges their reviewed commits, and integrated contracts agree on IDs, states, transitions, evidence, and repair | `ACCEPTED` — attempt 2 | reopen only responsible workline(s) and affected consumers; preserve unrelated accepted wave outputs |
 
 ### JG-CORE Repair Record — Attempt 1
 
@@ -542,6 +540,23 @@ replanning/repair records before recommending execution.
   root merges refreshed heads, reruns mechanical checks and independent
   Standards/Spec review, then reevaluates `AG-02`/`AG-03`/`AG-04` and
   `JG-CORE`.
+
+### JG-CORE Acceptance Record — Attempt 2
+
+- Integrated head: `ce737f2998db11db45511d977beb1c15f3290bb5`.
+- Refreshed worker tips: `WL-02 bc78f2b`, `WL-03 a363f42`, and
+  `WL-04 c6583ff`; all are ancestors of the integration tip with disjoint owned
+  paths and preserved merge lineage.
+- Mechanical evidence: full pack 15 sections/750 lines; six filtered graph
+  sections compile individually; validator `PASS` (7 agents, 39 skills);
+  catalog `PASS` (299, digest `89076ff0...`); self-test `PASS` (18); runtime
+  audit `PASS` with zero findings; diff hygiene `PASS`; 63 transitions and 11
+  ordinary/handoff receipts resolve.
+- Independent evidence: `EV-JGCORE-STANDARDS-CE737F2` required `PASS` and
+  `EV-JGCORE-SPEC-CE737F2` required `PASS`, both bound to comparison base
+  `fee3f2e`, reviewed head `ce737f2`, graph revision 3, reevaluation attempt 2.
+- Transition: `WL-02`/`AG-02`, `WL-03`/`AG-03`, `WL-04`/`AG-04`, and
+  `JG-CORE -> ACCEPTED`; `WL-05 / SL-05A -> READY`.
 | `AG-05` | per-workline | `WL-05` | refreshed W-002 impact note; catalog; self-test; required focused eligibility/target/judge evidence under that refreshed contract | unsafe routes rejected; intended routes accepted; evidence states remain distinct; optional live evidence may be `NOT_RUN` only with explicit optionality/reason | `OPEN` | repair `WL-05` cases or route observed workflow defect upstream |
 | `AG-06` | per-workline | `WL-06` | docs-impact matrix; validator; pack compilation; catalog; self-test; runtime audit; diff check | every required check passes; required blockers, gaps, failures, or not-run evidence prevent acceptance | `OPEN` | reopen smallest responsible workline |
 | `TG-01` | terminal aggregate | `AG-01` through `AG-06` | accepted current per-workline gates plus explicit residual-risk statement | all six gates are `ACCEPTED`; no workline consumes `TG-01` | `OPEN` | reopen invalidated gates/consumers; lane remains incomplete |
@@ -655,13 +670,13 @@ resumes.
 | Compile evidence-gate section | `python3 scripts/build_pattern_context_pack.py --pack workflow --section evidence-gates` | `WL-01` | `PASS`; 1 section, 132 lines |
 | Compile repair/retry section | `python3 scripts/build_pattern_context_pack.py --pack workflow --section partial-repair` | `WL-01` | `PASS`; 1 section, 124 lines |
 | Compile revision/cross-lane section | `python3 scripts/build_pattern_context_pack.py --pack workflow --section graph-revision-cross-lane` | `WL-01` | `PASS`; 1 section, 125 lines |
-| Walk non-active example from initial nodes through terminal gate | fixed-point graph inspection plus focused scenario | `WL-02` | `NOT_RUN` |
-| Review skill consumers for one authority and legal transitions | Standards/Spec fixed-point review | `WL-03` and `WL-04` | `NOT_RUN` |
-| Wave-2 integration compatibility | root merge lineage, disjoint-write audit, lane-schema/skill fixed point, focused readiness/evidence/repair trajectories | `JG-CORE` | `NOT_RUN` |
+| Walk non-active example from initial nodes through terminal gate | fixed-point graph inspection plus focused scenario | `WL-02` | `PASS`; 15 subjects, 21 edges, 63 transitions, terminal outdegree 0, readiness/repair/exhaustion/handoff walks current |
+| Review skill consumers for one authority and legal transitions | Standards/Spec fixed-point review | `WL-03` and `WL-04` | `PASS` after bounded review and integration repairs |
+| Wave-2 integration compatibility | root merge lineage, disjoint-write audit, lane-schema/skill fixed point, focused readiness/evidence/repair trajectories | `JG-CORE` | `PASS` at `ce737f2`; attempt-1 failure preserved; required attempt-2 Standards/Spec evidence passed |
 | Cascade structural validation | `python3 scripts/validate_cascade_codex.py` | each coherent slice and final | `PASS` at `AG-01`; 7 agents, 39 skills, zero leakage |
-| Catalog freshness | `python3 scripts/run_harness_evals.py catalog --check` | `WL-05` and final | `NOT_RUN` |
-| Harness evaluator self-test | `python3 scripts/run_harness_evals.py self-test` | `WL-05` and final | `NOT_RUN` |
-| Runtime audit | `python3 scripts/run_harness_evals.py audit --runtime` | final | `NOT_RUN` |
+| Catalog freshness | `python3 scripts/run_harness_evals.py catalog --check` | `WL-05` and final | `PASS` pre-WL-05; 299 scenarios, digest `89076ff0...`; refresh after authored cases |
+| Harness evaluator self-test | `python3 scripts/run_harness_evals.py self-test` | `WL-05` and final | `PASS` at `JG-CORE`; 18 cases |
+| Runtime audit | `python3 scripts/run_harness_evals.py audit --runtime` | final | `PASS` at `JG-CORE`; zero findings, required models available; rerun final |
 | Diff hygiene | `git diff --check` | each coherent slice and final | `PASS` at `AG-01` |
 | Focused behavioral evidence | Current eligibility/target/judge commands pinned during `SL-05A` | `WL-05` | `NOT_RUN` |
 
@@ -764,13 +779,13 @@ validation remain lower-level structural checks.
 - Accepted definitions/decisions: `DEF-01` through `DEF-20`, `AQ-01`, `AQ-02`,
   `AQ-06`, and `AQ-07`; preserve rejected `AQ-03`/`AQ-04`, deferred `AQ-05`,
   and resolved historical dispatch constraint `AQ-08`.
-- Current worklines: `WL-01` is accepted; `WL-02`, `WL-03`, and `WL-04` are
-  ready for the parallel wave; `WL-05` and `WL-06` remain pending.
-- Current evidence: accepted `R-DG00`, `R-01A`, `R-01B`, independent
-  Standards/Spec fixed points, and integrated pack/validator evidence for
-  `AG-01`.
-- Next executable action: dispatch the three wave-2 threads from one common
-  accepted base and collect `R-02*`, `R-03*`, and `R-04*` before `JG-CORE`.
+- Current worklines: `WL-01` through `WL-04` are accepted; `WL-05 / SL-05A`
+  is ready; `WL-06` remains pending.
+- Current evidence: accepted `R-DG00`, `R-01*`, refreshed `R-02*`/`R-03*`/
+  `R-04*`, attempt-2 integrated mechanical evidence, and required
+  `EV-JGCORE-STANDARDS-CE737F2`/`EV-JGCORE-SPEC-CE737F2` passes.
+- Next executable action: dispatch `W003-WL05`, refresh `EXT-01` read-only,
+  then author focused graph-mechanics cases under the confirmed W-002 contract.
 - Merge and lane-state owner: root `agent-engineer`.
 - Merge target: root integration branch created from the accepted `DG-00` base,
   later merged to the current branch only after `TG-01`.

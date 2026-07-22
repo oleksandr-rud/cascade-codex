@@ -7,7 +7,7 @@ Authority: `W-003` plan revision `4`, graph revision `3`
 Execution Model: `orchestrator-workers-dependency-waves`
 Lane And Merge Owner: root `agent-engineer`
 Delegation Authorized: `YES` — separate workline threads/worktrees; root control only
-Current Task: bounded `JG-CORE` attempt-1 repairs in `WL-02`/`WL-03`/`WL-04`
+Current Task: `T-05A / SL-05A` W-002 contract refresh
 Created: 2026-07-22
 
 ## Purpose And Authority
@@ -169,14 +169,14 @@ lane state. Reconcile them with W-003 before every task.
 | `DG-00` | root / control | `ACCEPTED` | `context`, `orchestrate-work`, `plan-change`, `validate-change` | user -> git state -> W-002/W-003 -> checks / `P-ROOT-CONTROL` | approved reproducible base / `R-DG00` | base `28d69ec70396a31125b7b989e5066149eff8a8ae`; clean checkout and all required deterministic checks passed |
 | `T-01A / SL-01A` | 1 / `W003-WL01` | `ACCEPTED` | `context`, `pattern-context`, `codex-maintenance`, `implement-change` | `SB-BASE -> SB-SEM -> skills -> targets` / `P-WL01` | `DG-00` / `R-01A`, semantic document | accepted at head `70c7c3323e92eef43ccd53cb364fe72d68ddaf84` after independent review and repair |
 | `T-01B / SL-01B` | 1 / `W003-WL01` | `ACCEPTED` | prior plus `validate-change`, `review-change` | `SB-BASE -> R-01A -> SB-SEM -> pack` / `P-WL01` | `R-01A` / `R-01B`, pack previews | `MQ-01` merged; integrated full/selected pack and structural checks passed; `AG-01 ACCEPTED` |
-| `T-02A / SL-02A` | 2 / `W003-WL02` | `READY` | `context`, `codex-maintenance`, `implement-change` | `SB-BASE -> AG-01 -> SB-LANE -> template` / `P-WL02` | common wave base / `R-02A`, lane template | completeness, validator, diff; continue `T-02B` |
-| `T-02B / SL-02B` | 2 / `W003-WL02` | `PENDING` | prior plus `review-change`, `validate-change` | `SB-BASE -> R-02A -> SB-LANE -> example` / `P-WL02` | `R-02A` / `R-02B`, example walk | acyclic fixed point, validator, diff; root `MQ-02`/`AG-02` after merge |
-| `T-03A / SL-03A` | 2 / `W003-WL03` | `READY` | `context`, `codex-maintenance`, `implement-change` | `SB-BASE -> AG-01 -> SB-EXEC -> target skills` / `P-WL03` | common wave base / `R-03A`, creation/resume rules | source trajectories, validator, diff; continue `T-03B` |
-| `T-03B / SL-03B` | 2 / `W003-WL03` | `PENDING` | prior plus `review-change`, `validate-change` | `SB-BASE -> R-03A -> SB-EXEC -> implement skill` / `P-WL03` | `R-03A` / `R-03B`, execution receipt rules | Standards/Spec review, trajectories, validator, diff; root `MQ-03`/`AG-03` after merge |
-| `T-04A / SL-04A` | 2 / `W003-WL04` | `READY` | `context`, `codex-maintenance`, `implement-change` | `SB-BASE -> AG-01 -> SB-EVIDENCE -> evidence skills` / `P-WL04` | common wave base / `R-04A`, evidence-gate rules | source trajectories, validator, diff; continue `T-04B` |
-| `T-04B / SL-04B` | 2 / `W003-WL04` | `PENDING` | prior plus `review-change`, `validate-change` | `SB-BASE -> R-04A -> SB-EVIDENCE -> repair skills` / `P-WL04` | `R-04A` / `R-04B`, repair/terminal rules | Standards/Spec review, trajectories, validator, diff; root `MQ-04`/`AG-04` after merge |
-| `JG-CORE` | root / integration | `PENDING` | `context`, `review-change`, `validate-change` | W-003 -> merged receipts/commits -> integrated diff / `P-ROOT-CONTROL` | merged wave-2 receipts / `R-JGCORE` | lineage, disjoint writes, validator/diff, compatibility trajectories; dispatch `W003-WL05` |
-| `T-05A / SL-05A` | 3 / `W003-WL05` | `PENDING` | `context`, `harness-evaluation`, `codex-maintenance` | `SB-BASE -> JG-CORE -> SB-EVAL -> runner/schema` / `P-WL05` | W-002 complete / `R-05A`, refreshed impact | read-only contract/CLI inspection; root records `EXT-01` |
+| `T-02A / SL-02A` | 2 / `W003-WL02` | `ACCEPTED` | `context`, `codex-maintenance`, `implement-change` | `SB-BASE -> AG-01 -> SB-LANE -> template` / `P-WL02` | common wave base / `R-02A`, lane template | refreshed receipt at `bc78f2b`; merged and accepted by `AG-02` |
+| `T-02B / SL-02B` | 2 / `W003-WL02` | `ACCEPTED` | prior plus `review-change`, `validate-change` | `SB-BASE -> R-02A -> SB-LANE -> example` / `P-WL02` | `R-02A` / `R-02B`, example walk | repaired fixed point, integrated checks, independent review `PASS` |
+| `T-03A / SL-03A` | 2 / `W003-WL03` | `ACCEPTED` | `context`, `codex-maintenance`, `implement-change` | `SB-BASE -> AG-01 -> SB-EXEC -> target skills` / `P-WL03` | common wave base / `R-03A`, creation/resume rules | refreshed receipt at `a363f42`; merged and accepted by `AG-03` |
+| `T-03B / SL-03B` | 2 / `W003-WL03` | `ACCEPTED` | prior plus `review-change`, `validate-change` | `SB-BASE -> R-03A -> SB-EXEC -> implement skill` / `P-WL03` | `R-03A` / `R-03B`, execution receipt rules | repaired fixed point, integrated checks, independent review `PASS` |
+| `T-04A / SL-04A` | 2 / `W003-WL04` | `ACCEPTED` | `context`, `codex-maintenance`, `implement-change` | `SB-BASE -> AG-01 -> SB-EVIDENCE -> evidence skills` / `P-WL04` | common wave base / `R-04A`, evidence-gate rules | refreshed receipt at `c6583ff`; merged and accepted by `AG-04` |
+| `T-04B / SL-04B` | 2 / `W003-WL04` | `ACCEPTED` | prior plus `review-change`, `validate-change` | `SB-BASE -> R-04A -> SB-EVIDENCE -> repair skills` / `P-WL04` | `R-04A` / `R-04B`, repair/terminal rules | repaired fixed point, integrated checks, independent review `PASS` |
+| `JG-CORE` | root / integration | `ACCEPTED` | `context`, `review-change`, `validate-change` | W-003 -> merged receipts/commits -> integrated diff / `P-ROOT-CONTROL` | merged wave-2 receipts / `R-JGCORE` | attempt 2 accepted at `ce737f2`; lineage/mechanical/Standards/Spec joins passed |
+| `T-05A / SL-05A` | 3 / `W003-WL05` | `READY` | `context`, `harness-evaluation`, `codex-maintenance` | `SB-BASE -> JG-CORE -> SB-EVAL -> runner/schema` / `P-WL05` | W-002 complete / `R-05A`, refreshed impact | read-only contract/CLI inspection; root records `EXT-01` |
 | `T-05B / SL-05B` | 3 / `W003-WL05` | `PENDING` | prior plus `implement-change`, `validate-change` | `SB-BASE -> R-05A -> SB-EVAL -> eval sources` / `P-WL05` | `EXT-01` / `R-05B`, cases/catalog | catalog, audit, self-test, validator, diff; continue `T-05C` |
 | `T-05C / SL-05C` | 3 / `W003-WL05` | `PENDING` | `context`, `harness-evaluation`, `review-change`, `validate-change` | `SB-BASE -> R-05A/B -> permission -> CLI` / `P-WL05` | authored canary / `R-05C`, evidence or blocker | target/evaluate/judge/coverage as required; root `MQ-05`/`AG-05` |
 | `T-06A / SL-06A` | 4 / `W003-WL06` | `PENDING` | `context`, `docs-impact-map`, `codex-maintenance`, `implement-change` | `SB-BASE -> JG-CORE/AG-05 -> SB-CLOSE -> docs` / `P-WL06` | prior gates / `R-06A`, impact disposition | docs fixed point, thin-file check; continue `T-06B` |
@@ -223,11 +223,11 @@ flowchart LR
 |---:|---|---|---|---|---|---|---|
 | 0 | root | `agent/w003-integration-r4-g3` | `28d69ec70396a31125b7b989e5066149eff8a8ae` | `ACCEPTED` | `GATE_ACCEPTED` | `R-DG00` | `DG-00 ACCEPTED` |
 | 1 | `W003-WL01` | `agent/w003-wl01-r4-g3` | `3e9d35b37aa6be4b2d3c815a37141da728f09d8f` | `ACCEPTED` | `GATE_ACCEPTED` | `R-01A`, `R-01B` at `70c7c33` | `MQ-01 MERGED`; `AG-01 ACCEPTED` |
-| 2 | `W003-WL02` | `agent/w003-wl02-r4-g3` | `fee3f2ee155ff3d22354e0560279f4a527bc1e90` | `IN_PROGRESS` | `REPAIR` | prior head `01c4263` stale for join; refresh pending | `AG-02 OPEN` |
-| 2 | `W003-WL03` | `agent/w003-wl03-r4-g3` | `fee3f2ee155ff3d22354e0560279f4a527bc1e90` | `IN_PROGRESS` | `REPAIR` | prior head `a109018` stale for join; refresh pending | `AG-03 OPEN` |
-| 2 | `W003-WL04` | `agent/w003-wl04-r4-g3` | `fee3f2ee155ff3d22354e0560279f4a527bc1e90` | `IN_PROGRESS` | `REPAIR` | prior head `6ae53f9` stale for join; refresh pending | `AG-04 OPEN` |
-| join | root | `agent/w003-integration-r4-g3` | merged attempt-1 head `5c4b267` | `FAILED` | `REPAIR` | `EV-JGCORE-STANDARDS-5C4B267`, `EV-JGCORE-SPEC-01` | `JG-CORE FAILED`; bounded repair active |
-| 3 | `W003-WL05` | `agent/w003-wl05-r4-g3` | accepted `JG-CORE` tip | `PENDING` | `HOLD` | none | `AG-05 OPEN` |
+| 2 | `W003-WL02` | `agent/w003-wl02-r4-g3` | `fee3f2ee155ff3d22354e0560279f4a527bc1e90` | `ACCEPTED` | `GATE_ACCEPTED` | `R-02A`, `R-02B` at `bc78f2b` | `MQ-02 MERGED`; `AG-02 ACCEPTED` |
+| 2 | `W003-WL03` | `agent/w003-wl03-r4-g3` | `fee3f2ee155ff3d22354e0560279f4a527bc1e90` | `ACCEPTED` | `GATE_ACCEPTED` | `R-03A`, `R-03B` at `a363f42` | `MQ-03 MERGED`; `AG-03 ACCEPTED` |
+| 2 | `W003-WL04` | `agent/w003-wl04-r4-g3` | `fee3f2ee155ff3d22354e0560279f4a527bc1e90` | `ACCEPTED` | `GATE_ACCEPTED` | `R-04A`, `R-04B` at `c6583ff` | `MQ-04 MERGED`; `AG-04 ACCEPTED` |
+| join | root | `agent/w003-integration-r4-g3` | attempt-2 integrated head `ce737f2` | `ACCEPTED` | `GATE_ACCEPTED` | `R-JGCORE`, `EV-JGCORE-STANDARDS-CE737F2`, `EV-JGCORE-SPEC-CE737F2` | `JG-CORE ACCEPTED` |
+| 3 | `W003-WL05` | `agent/w003-wl05-r4-g3` | accepted `JG-CORE` tip after this state record | `READY` | `DISPATCH` | pending | `AG-05 OPEN` |
 | 4 | `W003-WL06` | `agent/w003-wl06-r4-g3` | accepted `AG-05` tip | `PENDING` | `HOLD` | none | `AG-06`, `TG-01 OPEN` |
 
 ### Worker Event Protocol
@@ -255,10 +255,10 @@ Root replies with exactly one control state: `HOLD`, `CONTINUE`, `REPAIR`,
 | Queue Item | Preconditions | Root Checks | Initial State |
 |---|---|---|---|
 | `MQ-01 WL-01` | `R-01A`, `R-01B`; branch frozen | lineage, scoped diff, review, pack/validator checks, post-merge evidence | `MERGED`; `AG-01 ACCEPTED` |
-| `MQ-02 WL-02` | refreshed `R-02A`, `R-02B` | lineage, lane/example/receipt checks, post-merge evidence | `REPAIR` after attempt-1 merge |
-| `MQ-03 WL-03` | refreshed `R-03A`, `R-03B` | lineage, revision-contract review/trajectories, post-merge evidence | `REPAIR` after attempt-1 merge |
-| `MQ-04 WL-04` | refreshed `R-04A`, `R-04B` | lineage, reviewed-head/replacement-result checks, post-merge evidence | `REPAIR` after attempt-1 merge |
-| `MQ-JG CORE` | refreshed `MQ-02` through `MQ-04` merged | disjoint-write audit, integrated compatibility, validator/diff, focused trajectories | `FAILED` attempt 1; reevaluation pending |
+| `MQ-02 WL-02` | refreshed `R-02A`, `R-02B` | lineage, lane/example/receipt checks, post-merge evidence | `MERGED`; `AG-02 ACCEPTED` |
+| `MQ-03 WL-03` | refreshed `R-03A`, `R-03B` | lineage, revision-contract review/trajectories, post-merge evidence | `MERGED`; `AG-03 ACCEPTED` |
+| `MQ-04 WL-04` | refreshed `R-04A`, `R-04B` | lineage, reviewed-head/replacement-result checks, post-merge evidence | `MERGED`; `AG-04 ACCEPTED` |
+| `MQ-JG CORE` | refreshed `MQ-02` through `MQ-04` merged | disjoint-write audit, integrated compatibility, validator/diff, focused trajectories | `ACCEPTED` attempt 2 at `ce737f2` |
 | `MQ-05 WL-05` | `JG-CORE`, `R-05A` through `R-05C` | W-002 freshness, evidence-state audit, post-merge harness checks | `HOLD` |
 | `MQ-06 WL-06` | `AG-05`, `R-06A`, `R-06B` | final reviews, full commands, residual risks, active/lane closeout | `HOLD` |
 
