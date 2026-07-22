@@ -1,7 +1,7 @@
 {
-  "catalog_digest": "89076ff0f1a51bec91eaa413131cfebe41daed3da525316c11452cc6548e2c0d",
+  "catalog_digest": "6d856d23e4c9695094382fd09beaae96efdba56a29cbb168f8b12e9797ca2fea",
   "generated_by": "scripts/run_harness_evals.py",
-  "scenario_count": 299,
+  "scenario_count": 309,
   "scenarios": [
     {
       "expectation": {
@@ -8393,6 +8393,306 @@
       "prompt": "The judge profiles and rubrics are fixed; run them independently on completed harness traces and calculate current accepted coverage.",
       "source": "evals/harness/interactions.json",
       "target_skill": "harness-evaluation"
+    },
+    {
+      "expectation": {
+        "allowed_supporting": [],
+        "delegation_policy": "none",
+        "forbidden_primary": [
+          "implement-change"
+        ],
+        "must_load_skills": [
+          "orchestrate-work"
+        ],
+        "mutation_policy": "none",
+        "network_policy": "none",
+        "next_route": "",
+        "primary_skill": "orchestrate-work",
+        "status_any": [
+          "BLOCKED",
+          "FAIL",
+          "GAP",
+          "NOT_RUN",
+          "PASS"
+        ],
+        "target_skill": "orchestrate-work"
+      },
+      "id": "HX-027",
+      "kind": "interaction",
+      "owner": "orchestrator",
+      "prompt": "Classify a one-file typo correction with no dependencies, joins, repair branches, or revision-sensitive state. State whether it needs graph-shaped coordination and identify the ordinary workflow obligations that still apply; do not edit anything.",
+      "source": "evals/harness/interactions.json",
+      "target_skill": "orchestrate-work"
+    },
+    {
+      "expectation": {
+        "allowed_supporting": [],
+        "delegation_policy": "none",
+        "forbidden_primary": [
+          "implement-change"
+        ],
+        "must_load_skills": [
+          "orchestrate-work"
+        ],
+        "mutation_policy": "none",
+        "network_policy": "none",
+        "next_route": "",
+        "primary_skill": "orchestrate-work",
+        "status_any": [
+          "BLOCKED",
+          "FAIL",
+          "GAP",
+          "NOT_RUN",
+          "PASS"
+        ],
+        "target_skill": "orchestrate-work"
+      },
+      "id": "HX-028",
+      "kind": "interaction",
+      "owner": "orchestrator",
+      "prompt": "Recompute readiness for a complex lane where N-03 requires accepted N-01 and N-02 plus current human approval. N-01 is accepted, N-02 is still in review, and approval is absent. Return the node state, unmet typed dependencies, and the deterministic resume condition without executing work.",
+      "source": "evals/harness/interactions.json",
+      "target_skill": "orchestrate-work"
+    },
+    {
+      "expectation": {
+        "allowed_supporting": [],
+        "delegation_policy": "none",
+        "forbidden_primary": [
+          "orchestrate-work"
+        ],
+        "must_load_skills": [
+          "implement-change"
+        ],
+        "mutation_policy": "none",
+        "network_policy": "none",
+        "next_route": "",
+        "primary_skill": "implement-change",
+        "status_any": [
+          "BLOCKED",
+          "FAIL",
+          "GAP",
+          "NOT_RUN",
+          "PASS"
+        ],
+        "target_skill": "implement-change"
+      },
+      "id": "HX-029",
+      "kind": "interaction",
+      "owner": "orchestrator",
+      "prompt": "A graph-bound worker has produced its assigned diff, but review and validation evidence do not exist. One actor proposes ACCEPTED while another proposes FAILED. Return the worker's version-bound receipt, proposed transition, treatment of both proposals, and handoff to the authoritative state writer; do not mutate shared lane state or the merge queue.",
+      "source": "evals/harness/interactions.json",
+      "target_skill": "implement-change"
+    },
+    {
+      "expectation": {
+        "allowed_supporting": [],
+        "delegation_policy": "none",
+        "forbidden_primary": [
+          "closeout"
+        ],
+        "must_load_skills": [
+          "validate-change"
+        ],
+        "mutation_policy": "none",
+        "network_policy": "none",
+        "next_route": "",
+        "primary_skill": "validate-change",
+        "status_any": [
+          "BLOCKED",
+          "FAIL",
+          "GAP",
+          "NOT_RUN",
+          "PASS"
+        ],
+        "target_skill": "validate-change"
+      },
+      "id": "HX-030",
+      "kind": "interaction",
+      "owner": "orchestrator",
+      "prompt": "Evaluate a gate that requires command and functional evidence. The command evidence passes, the functional check is BLOCKED, and previously accepted required evidence has since been invalidated. Keep the evidence classes separate and report the gate proposal, node impact, and reopen route.",
+      "source": "evals/harness/interactions.json",
+      "target_skill": "validate-change"
+    },
+    {
+      "expectation": {
+        "allowed_supporting": [],
+        "delegation_policy": "none",
+        "forbidden_primary": [
+          "test-autorepair"
+        ],
+        "must_load_skills": [
+          "validate-change"
+        ],
+        "mutation_policy": "none",
+        "network_policy": "none",
+        "next_route": "",
+        "primary_skill": "validate-change",
+        "status_any": [
+          "BLOCKED",
+          "FAIL",
+          "GAP",
+          "NOT_RUN",
+          "PASS"
+        ],
+        "target_skill": "validate-change"
+      },
+      "id": "HX-031",
+      "kind": "interaction",
+      "owner": "orchestrator",
+      "prompt": "Assess repair impact after an integration check finds branch B's merged skill contract incompatible with the lane schema and its evidence is bound to an old input version. Branch A has accepted current evidence and unchanged inputs. A consumer lane depends on B's producer gate and version. Identify the earliest responsible node, reopened gates and consumers, preserved accepted work, and freshness conditions.",
+      "source": "evals/harness/interactions.json",
+      "target_skill": "validate-change"
+    },
+    {
+      "expectation": {
+        "allowed_supporting": [],
+        "delegation_policy": "none",
+        "forbidden_primary": [
+          "implement-change"
+        ],
+        "must_load_skills": [
+          "test-autorepair"
+        ],
+        "mutation_policy": "none",
+        "network_policy": "none",
+        "next_route": "",
+        "primary_skill": "test-autorepair",
+        "status_any": [
+          "BLOCKED",
+          "FAIL",
+          "GAP",
+          "NOT_RUN",
+          "PASS"
+        ],
+        "target_skill": "test-autorepair"
+      },
+      "id": "HX-032",
+      "kind": "interaction",
+      "owner": "orchestrator",
+      "prompt": "An automated check failed on a graph node while the documented product behavior is believed correct. Compare three requested follow-ups: retry the same topology with attempts remaining, add a new consumer-mapping node, and retry after the unchanged-topology maximum is already consumed. Report attempt versus revision effects, blocked or repair states, preserved evidence, and the deterministic escalation route.",
+      "source": "evals/harness/interactions.json",
+      "target_skill": "test-autorepair"
+    },
+    {
+      "expectation": {
+        "allowed_supporting": [],
+        "delegation_policy": "none",
+        "forbidden_primary": [
+          "pattern-context"
+        ],
+        "must_load_skills": [
+          "context"
+        ],
+        "mutation_policy": "none",
+        "network_policy": "none",
+        "next_route": "",
+        "primary_skill": "context",
+        "status_any": [
+          "BLOCKED",
+          "FAIL",
+          "GAP",
+          "NOT_RUN",
+          "PASS"
+        ],
+        "target_skill": "context"
+      },
+      "id": "HX-033",
+      "kind": "interaction",
+      "owner": "orchestrator",
+      "prompt": "Resume a graph-shaped lane after compaction. The saved Current Frontier says N-04 is READY, but authoritative node and gate records show an unresolved join and a newer graph revision. Rehydrate the authoritative state, report projection drift, and return the reconciled frontier, blockers, and next executable node without implementation.",
+      "source": "evals/harness/interactions.json",
+      "target_skill": "context"
+    },
+    {
+      "expectation": {
+        "allowed_supporting": [],
+        "delegation_policy": "none",
+        "forbidden_primary": [
+          "implement-change"
+        ],
+        "must_load_skills": [
+          "plan-change"
+        ],
+        "mutation_policy": "none",
+        "network_policy": "none",
+        "next_route": "",
+        "primary_skill": "plan-change",
+        "status_any": [
+          "BLOCKED",
+          "FAIL",
+          "GAP",
+          "NOT_RUN",
+          "PASS"
+        ],
+        "target_skill": "plan-change"
+      },
+      "id": "HX-034",
+      "kind": "interaction",
+      "owner": "orchestrator",
+      "prompt": "Review a proposed task graph before implementation. A consumer requires its producer to be accepted, while their shared aggregate gate also requires the consumer's evidence; the revision also reuses a superseded node ID and an existing gate ID. Report graph validity, blocking defects, and the revision or repair needed before readiness.",
+      "source": "evals/harness/interactions.json",
+      "target_skill": "plan-change"
+    },
+    {
+      "expectation": {
+        "allowed_supporting": [],
+        "delegation_policy": "none",
+        "forbidden_primary": [
+          "implement-change"
+        ],
+        "must_load_skills": [
+          "orchestrate-work"
+        ],
+        "mutation_policy": "none",
+        "network_policy": "none",
+        "next_route": "",
+        "primary_skill": "orchestrate-work",
+        "status_any": [
+          "BLOCKED",
+          "FAIL",
+          "GAP",
+          "NOT_RUN",
+          "PASS"
+        ],
+        "target_skill": "orchestrate-work"
+      },
+      "id": "HX-035",
+      "kind": "interaction",
+      "owner": "orchestrator",
+      "prompt": "Root is preparing worker dispatch, but required source changes are uncommitted and therefore absent from the proposed HEAD. Decide whether a worktree may be created, and return the dispatch-base evidence, state, and exact condition for safe resumption without modifying the repository.",
+      "source": "evals/harness/interactions.json",
+      "target_skill": "orchestrate-work"
+    },
+    {
+      "expectation": {
+        "allowed_supporting": [],
+        "delegation_policy": "none",
+        "forbidden_primary": [
+          "implement-change"
+        ],
+        "must_load_skills": [
+          "orchestrate-work"
+        ],
+        "mutation_policy": "none",
+        "network_policy": "none",
+        "next_route": "",
+        "primary_skill": "orchestrate-work",
+        "status_any": [
+          "BLOCKED",
+          "FAIL",
+          "GAP",
+          "NOT_RUN",
+          "PASS"
+        ],
+        "target_skill": "orchestrate-work"
+      },
+      "id": "HX-036",
+      "kind": "interaction",
+      "owner": "orchestrator",
+      "prompt": "Plan the next dependency wave after AG-01 is accepted. WL-02, WL-03, and WL-04 have disjoint declared writes, separate thread and branch identities, one immutable base, per-workline gates, and one root merge owner. Determine whether they may run concurrently and return assignment, evidence-join, and downstream readiness boundaries.",
+      "source": "evals/harness/interactions.json",
+      "target_skill": "orchestrate-work"
     }
   ],
   "schema_version": 1,
