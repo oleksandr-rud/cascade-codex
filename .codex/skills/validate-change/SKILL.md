@@ -17,6 +17,8 @@ review, functional acceptance, or stale-test repair.
 4. Current work lane, Feature Impact Matrix, and directly relevant specs.
 5. `docs/patterns/testing/index.md`, `docs/patterns/workflow/index.md`, and
    boundary or context-memory patterns when the change touches those areas.
+6. `docs/patterns/workflow/graph-shaped-work.md` plus the current lane's
+   authoritative node/gate records when validation evaluates a graph gate.
 
 ## Modes
 
@@ -59,12 +61,34 @@ review, functional acceptance, or stale-test repair.
     strength, claim truth, or docking quality.
 12. Report `PASS`, `FAIL`, `BLOCKED`, `NOT_RUN`, or `GAP` with commands and
     evidence.
+13. For a graph-shaped lane, inventory every gate input without merging its
+    evidence class. Each functional, command, Standards, Spec, or semantic
+    evidence record retains a stable evidence ID; subject node/gate; graph
+    revision; node attempt; input/source versions; source commit or digest;
+    producer; production time; required/optional level; named evaluator or
+    reviewer authority; acceptance criteria; invalidation condition; and
+    failure route. Missing identity or evaluator authority is `GAP`.
+14. Evaluate the join explicitly: all required current inputs must pass;
+    required `FAIL` fails it; required `BLOCKED` blocks it; required `GAP` or
+    `NOT_RUN` keeps it from acceptance; optional `NOT_RUN` records optionality
+    and reason. Validation aggregates evidence and proposes a gate state; only
+    the lane-state owner records `OPEN`, `ACCEPTED`, `FAILED`, or `BLOCKED`
+    transitions.
+15. Recheck freshness against the current subject, graph revision, attempt,
+    named inputs/sources, and commit. Invalidated evidence proposes
+    `ACCEPTED -> OPEN`, identifies the earliest responsible producer or
+    contract, and reopens only consumers whose named input, contract, gate, or
+    evidence is no longer trustworthy. Preserve unrelated accepted work.
 
 ## Output
 
 - commands run and results;
+- evidence-input matrix with identities, producers, evaluator/reviewer
+  authorities, requirement levels, freshness, and acceptance criteria;
 - functional/scenario evidence;
 - Feature Impact Matrix coverage and routes;
 - work-lane/spec coverage matrix summary;
 - failures and routing;
+- proposed gate state, invalidated evidence, affected consumers, preserved
+  accepted work, and deterministic failure/reopen route when graph-shaped;
 - residual risk.

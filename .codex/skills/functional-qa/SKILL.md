@@ -23,6 +23,8 @@ product/runtime source code.
 5. Existing tests, helpers, fixtures, and test patterns.
 6. `docs/patterns/testing/index.md` for functional, E2E, scenario, and evidence
    rules.
+7. `docs/patterns/workflow/graph-shaped-work.md` plus the current lane's
+   authoritative node/gate records when the work uses graph-shaped state.
 
 If expected behavior is missing, report `GAP` and route to `plan-change` or
 `ingest-spec`.
@@ -59,13 +61,32 @@ If expected behavior is missing, report `GAP` and route to `plan-change` or
 10. Classify every check and every scenario row as `PASS`, `FAIL`, `BLOCKED`,
    `NOT_RUN`, or `GAP`.
    Skipped or environment-gated checks are not `PASS`.
-11. Separate product/runtime failures, stale test failures, missing product
-   intent, and infrastructure blockers before choosing the next route.
-12. Route product failures to `implement-change`.
-13. Route stale failing tests to `test-autorepair` only when evidence shows
+11. For a graph-shaped lane, define each functional evidence receipt before
+    using it in a gate: stable evidence ID; subject node/gate; graph revision;
+    node attempt; input/source versions; source commit or digest when
+    available; producer; production time; required/optional level; named
+    evaluator/reviewer authority; acceptance criteria; invalidation condition;
+    and failure route. Missing identity or evaluator authority is `GAP`, not
+    acceptance evidence.
+12. Keep functional evidence distinct from command results, Standards/Spec
+    review, and semantic judgments even when one gate consumes all of them.
+    The functional check executor produces the receipt; the evaluator named by
+    the gate judges it; only the lane-state owner records a gate transition.
+13. Apply requirement levels explicitly: required `PASS` may contribute to a
+    join; required `FAIL`, `BLOCKED`, `GAP`, or `NOT_RUN` prevents acceptance;
+    optional `NOT_RUN` records its optionality and reason. A blocked required
+    check proposes a blocked join rather than a pass.
+14. When a receipt's subject, revision, attempt, input/source version, or
+    source commit changes, mark it stale and propose reopening the accepted
+    gate plus only consumers whose named inputs or evidence depend on it.
+    Preserve unrelated accepted work.
+15. Separate product/runtime failures, stale test failures, missing product
+    intent, and infrastructure blockers before choosing the next route.
+16. Route product failures to `implement-change`.
+17. Route stale failing tests to `test-autorepair` only when evidence shows
     product behavior still matches the expected contract.
-14. Escalate to human review only for subjective judgment that executable
-   evidence cannot decide.
+18. Escalate to human review only for subjective judgment that executable
+    evidence cannot decide.
 
 ## Output
 
@@ -74,7 +95,10 @@ If expected behavior is missing, report `GAP` and route to `plan-change` or
 - test layer and reason;
 - scenario ledger with per-scenario outcomes when scenario rows were used;
 - commands or visible checks run;
-- evidence and outcome;
+- evidence receipts, producer/evaluator authority, requirement level, and
+  outcome;
+- invalidated evidence, affected consumers, and proposed gate state when the
+  lane is graph-shaped;
 - gaps and next owner.
 
 Use `templates/functional-test-plan.md` for larger coverage plans and
