@@ -63,8 +63,14 @@ Use before marking a non-atomic plan `DEFINITION_READY`, before marking it
 - [ ] Ownership transfer increments graph revision and blocks both prior and
       incoming owners from authoritative mutation until explicit handoff
       acceptance records the incoming owner and new revision.
-- [ ] Plan revision and graph revision have distinct change rules; an ordinary
-      retry changes attempt/history only.
+- [ ] Plan revision increments for material changes to planning knowledge,
+      definitions, workline boundaries, or implementation decisions.
+- [ ] Graph revision increments for changes to instantiated topology,
+      dependencies, actors, ownership, or gates.
+- [ ] An instantiated graph-only change does not require a plan-revision
+      increment unless it also changes a plan-revision trigger.
+- [ ] An unchanged-topology retry changes attempt/history only; it increments
+      neither plan revision nor graph revision.
 
 ## Adaptive Workline Discovery
 
@@ -100,8 +106,10 @@ Use before marking a non-atomic plan `DEFINITION_READY`, before marking it
 
 ## Replanning And Handoff
 
-- [ ] The plan revision changed when definitions, scope, worklines,
-      dependencies, ownership, or acceptance changed materially.
+- [ ] Revision history increments only the revision whose trigger changed;
+      graph-only dependency, actor, ownership, gate, or topology changes do not
+      force a plan revision unless planning knowledge, definitions, workline
+      boundaries, or implementation decisions also changed.
 - [ ] Invalidated downstream slices and evidence are named; unaffected accepted
       knowledge is preserved.
 - [ ] The compact resume contract contains sources, decisions, constraints,

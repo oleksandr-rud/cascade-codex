@@ -158,13 +158,16 @@ needs independent status, ownership, dependencies, validation, or handoff.
 
 ## Replanning And Preservation History
 
-| Revision | Trigger | Preserved | Changed / Added | Invalidated / Superseded | Worklines Re-evaluated | Evidence Impact |
+| Plan Revision | Trigger | Preserved | Changed / Added | Invalidated / Superseded | Worklines Re-evaluated | Evidence Impact |
 |---|---|---|---|---|---|---|
 | `1` | `<INITIAL_OR_TRIGGER>` | `<IDS>` | `<IDS>` | `<IDS>` | `<IDS>` | `<IMPACT>` |
 
-Replanning appends a revision row before replacing current projections. Preserve
-the identity and disposition of invalidated decisions; do not silently delete
-them from the planning record.
+Material replanning appends a plan-revision row before replacing current
+projections. An instantiated graph-only amendment belongs in the lane's graph
+amendment history and does not add a plan-revision row unless planning
+knowledge, definitions, workline boundaries, or implementation decisions also
+changed. Preserve the identity and disposition of invalidated decisions; do not
+silently delete them from the planning record.
 
 ## Validation Plan
 

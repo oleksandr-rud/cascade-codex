@@ -161,6 +161,9 @@ first satisfy the definition-readiness and traceability checks in
   knowledge, workline boundaries, or implementation decisions change plan
   revision. Topology, dependencies, actors, ownership, or gates change graph
   revision. An unchanged-topology retry changes attempt/history only.
+  An instantiated graph-only amendment does not also increment plan revision
+  unless it changes planning knowledge, definitions, workline boundaries, or
+  implementation decisions.
 - An ownership transfer increments graph revision and blocks authoritative
   mutation by both the prior and incoming owner until an explicit handoff
   acceptance record binds the incoming owner and new revision.
