@@ -2,7 +2,7 @@
 
 Date: 2026-07-22
 Lane: `W-003`
-Status: `READY_FOR_TERMINAL_REVIEW`
+Status: `BLOCKED`
 Plan Revision: `4`
 Graph Revision: `3`
 
@@ -45,8 +45,8 @@ failed-attempt history.
 | `AG-01` | Accepted semantic authority and pack routing |
 | `AG-02` through `AG-04` | Accepted lane representation, execution skills, and evidence/repair skills |
 | `JG-CORE` | Accepted on attempt 2 after bounded compatibility repair |
-| `AG-05` | Accepted for authored/deterministic harness coverage only |
-| `AG-06`, `TG-01` | Pending independent terminal review |
+| `AG-05` | `BLOCKED`; authored/deterministic coverage passes, required bounded target/evaluate/judge evidence awaits spend authority |
+| `AG-06`, `TG-01` | `OPEN`; affected consumers of blocked `AG-05` |
 
 ## Validation Evidence
 
@@ -74,8 +74,9 @@ All required deterministic checks pass on integrated head
 
 ## Evidence Boundaries And Deferred Scope
 
-- Model-backed target, evaluation, and judge execution was optional and
-  `NOT_RUN`; no model spend occurred.
+- Model-backed target, evaluation, and judge execution is required by the
+  unchanged `AG-05` contract and is `NOT_RUN`; no model spend occurred because
+  explicit authority was not provided.
 - Current coverage is 0/309 executed and 0/309 accepted. The authored cases and
   deterministic checks do not prove live-model effectiveness or judge
   calibration.
@@ -84,5 +85,7 @@ All required deterministic checks pass on integrated head
 - An executable graph parser/validator remains deferred under `AQ-05`; it
   requires a separate runtime/schema decision rather than silent scope growth.
 
-Terminal acceptance and active-registry removal remain owned by the root lane
-owner after independent Standards and Spec reviews reach a fixed point.
+All implementation, documentation, and deterministic evidence is preserved.
+The deterministic resume route is: authorize one bounded `HX-031` run, execute
+target/evaluate/judge/coverage under the current W-002 contract, reevaluate
+`AG-05`, then refresh terminal Standards/Spec reviews and `AG-06`/`TG-01`.

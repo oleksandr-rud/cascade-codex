@@ -1,12 +1,12 @@
 # Work Lane: W-003
 
-Status: `OPEN`
+Status: `BLOCKED`
 Planning Status: `IMPLEMENTATION_READY`
 Plan Revision: `4`
 Owner: `agent-engineer`
 Created: 2026-07-22
 Lane Model: `orchestrator-workers-dependency-waves`
-Next Gate: `AG-06` terminal validation and closeout
+Next Gate: `AG-05` focused target/evaluate/judge evidence
 Graph Revision: `3`
 
 ## Request
@@ -346,12 +346,12 @@ goal; the root owner confirms all required terminal gates.
 
 | Feature / Flow | Source | Code Areas / Public Contracts | Touched Directly? | Protected Adjacent Behavior | Required Check | Status | Route |
 |---|---|---|---|---|---|---|---|
-| Selective workflow context | current request | `docs/patterns/workflow/index.md`; `workflow.pack.yaml`; context-pack builder | yes | Existing pack IDs, sections, and filtered compilation remain valid. | compile full pack and each new section | `NOT_RUN` | `pattern-context` |
-| Lane orchestration | current request | `orchestrate-work`; `docs/work/lane-template.md`; `docs/work/active.md` | yes | Small lanes remain lightweight; examples remain non-active. | targeted scenario and validator | `NOT_RUN` | `implement-change` |
-| Planning and execution | current request | `plan-change`; `implement-change`; `functional-qa`; `review-change` | yes | Existing behavior examples, Feature Impact Matrix, and fixed-point review remain distinct. | skill contract review and harness cases | `NOT_RUN` | `implement-change` |
-| Validation and repair | current request | `validate-change`; `test-autorepair`; `closeout` | yes | Product defects never route to stale-test repair; required missing evidence never passes. | partial-repair and blocked-join cases | `NOT_RUN` | `implement-change` |
-| Harness evaluation | W-002 plus current request | `evals/harness/`; runner; judge contracts | later | Completed W-002 eligibility/judge contracts remain authoritative and unmodified by earlier worklines. | reinspect W-002, catalog check, self-test, focused cases | `NOT_RUN` | `WL-05` after `AG-04` |
-| Runtime bridge and package docs | existing public docs | `CODEX.md`; `README.md`; `docs/structure.md` | conditional | Canonical task route and thin-entrypoint policy remain unchanged. | impact scan after implementation | `NOT_RUN` | `WL-06` |
+| Selective workflow context | current request | `docs/patterns/workflow/index.md`; `workflow.pack.yaml`; context-pack builder | yes | Existing pack IDs, sections, and filtered compilation remain valid. | compile full pack and each new section | `PASS` | complete in `WL-01` |
+| Lane orchestration | current request | `orchestrate-work`; `docs/work/lane-template.md`; `docs/work/active.md` | yes | Small lanes remain lightweight; examples remain non-active. | targeted scenario and validator | `PASS` | complete in `WL-02`/`WL-03` |
+| Planning and execution | current request | `plan-change`; `implement-change`; `functional-qa`; `review-change` | yes | Existing behavior examples, Feature Impact Matrix, and fixed-point review remain distinct. | skill contract review and harness cases | `PASS` | complete in `WL-03`/`JG-CORE` |
+| Validation and repair | current request | `validate-change`; `test-autorepair`; `closeout` | yes | Product defects never route to stale-test repair; required missing evidence never passes. | partial-repair and blocked-join cases | `PASS` | complete in `WL-04`/`JG-CORE` |
+| Harness evaluation | W-002 plus current request | `evals/harness/`; runner; judge contracts | yes | Completed W-002 eligibility/judge contracts remain authoritative and unchanged. | reinspect W-002, catalog check, self-test, focused cases and judgment | `BLOCKED` | authored/deterministic evidence passes; required `SL-05C` canary awaits spend authority |
+| Runtime bridge and package docs | existing public docs | `CODEX.md`; `README.md`; `docs/structure.md` | yes | Canonical task route and thin-entrypoint policy remain unchanged. | impact scan after implementation | `PASS` | merged `R-06A` at `6c4e33e` |
 
 ## Documentation Impact And Routing
 
@@ -359,9 +359,9 @@ goal; the root owner confirms all required terminal gates.
 |---|---|---|---|---|---|---|
 | Active implementation plan for graph-shaped workflow mechanics | current request | `docs/work/lanes/W-003-graph-shaped-workflow-mechanics.md`; `docs/work/active.md` | `UPDATED` | One lane packet owns all connected worklines and current execution state. | plan revision 4 and active row | root `DG-00` |
 | Derived workline implementation packet | W-003 revision 4 | `docs/work/lanes/W-003-graph-shaped-workflow-implementation-packet.md` | `UPDATED` | Task/thread detail, root status chart, and merge queue are separated from canonical lane state; no second active registry is created. | six workline prompts; thirteen task/receipt contracts; dependency waves | root `DG-00` |
-| Reusable graph semantics | W-003 | `docs/patterns/workflow/graph-shaped-work.md` | `DEFERRED` | Dedicated document inside the existing workflow pattern preserves one semantic authority without creating another pack. | definition ledger and `SL-01A` | `WL-01` |
-| Selective graph-work context routing | W-003 | `docs/patterns/workflow/workflow.pack.yaml`; thin link from `index.md` if needed | `DEFERRED` | Existing `workflow-core` remains the pack; metadata stays routing-only. | current schema supports documents and sections | `WL-01` |
-| Instantiated graph state and valid example | W-003 | `docs/work/lane-template.md`; `docs/work/examples/graph-shaped-lane.md` | `DEFERRED` | Template owns operational fields; example proves one cycle-free instantiation; `active.md` stays thin. | `SL-02A`; `SL-02B` | `WL-02` |
+| Reusable graph semantics | W-003 | `docs/patterns/workflow/graph-shaped-work.md` | `UPDATED` | Dedicated document inside the existing workflow pattern preserves one semantic authority without creating another pack. | accepted `AG-01` semantic review | done |
+| Selective graph-work context routing | W-003 | `docs/patterns/workflow/workflow.pack.yaml`; thin link from `index.md` | `UPDATED` | Existing `workflow-core` remains the pack; metadata stays routing-only. | full and six selected pack builds pass | done |
+| Instantiated graph state and valid example | W-003 | `docs/work/lane-template.md`; `docs/work/examples/graph-shaped-lane.md` | `UPDATED` | Template owns operational fields; example proves one cycle-free instantiation; `active.md` stays thin. | accepted `AG-02` and `JG-CORE` | done |
 | Product, design, brand, or application behavior | current request | none | `NO_DOC_NEEDED` | Harness workflow mechanics do not change a product UI or application contract. | repository is a harness scaffold | done |
 
 ## Boundary Contracts
@@ -406,8 +406,8 @@ none becomes downstream-ready until the root integration join `JG-CORE` passes.
 | `WL-02` | Optional lane representation that can express and demonstrate the contract | operational state, identity, frontier, gates, repair, history | `AG-01` | common wave-2 base current | lane-template sections and valid non-active example | thread `W003-WL02`; work template/example | `AG-02` | `2/3` | `ACCEPTED` |
 | `WL-03` | Existing skills create, resume, plan, and execute only ready obligations | creation/resume/execution authority; permissions/write scope | `AG-01` | common wave-2 base current | graph-aware context/orchestration/planning/implementation contracts | thread `W003-WL03`; named creation/execution skill files | `AG-03` | `2/3` | `ACCEPTED` |
 | `WL-04` | Existing skills accept evidence, repair minimally, exhaust safely, and close only terminal work | evidence identity, gate lifecycle, partial repair, retry/exhaustion | `AG-01` | common wave-2 base current | graph-aware functional/review/validation/repair/closeout contracts | thread `W003-WL04`; named evidence/repair skill files | `AG-04` | `2/3` | `ACCEPTED` |
-| `WL-05` | Current judged harness distinguishes safe graph behavior from plausible unsafe prose | `GW-001` through `GW-022`; W-002 compatibility | `JG-CORE` | `EXT-01` refreshed by `SL-05A` before eval-file writes | authored cases, current catalog, deterministic and focused evidence | thread `W003-WL05`; eval surfaces after reinspection | `AG-05` | `1/2` | `ACCEPTED`; authored/deterministic evidence only |
-| `WL-06` | Integrated change is documented, validated, and honestly closed | all request criteria and residual-risk reporting | `JG-CORE`, `AG-05` | required commands/environment available or explicitly blocked | docs-impact disposition, final validation, handoff | thread `W003-WL06`; conditional public docs; root owns lane state | `AG-06` | `1/2` | `REVIEW`; merged at `6c4e33e` |
+| `WL-05` | Current judged harness distinguishes safe graph behavior from plausible unsafe prose | `GW-001` through `GW-022`; W-002 compatibility | `JG-CORE` | `EXT-01` refreshed by `SL-05A` before eval-file writes | authored cases, current catalog, deterministic and focused evidence | thread `W003-WL05`; eval surfaces after reinspection | `AG-05` | `1/2` | `BLOCKED`; required bounded model evidence lacks spend authority |
+| `WL-06` | Integrated change is documented, validated, and honestly closed | all request criteria and residual-risk reporting | `JG-CORE`, `AG-05` | required commands/environment available or explicitly blocked | docs-impact disposition, final validation, handoff | thread `W003-WL06`; conditional public docs; root owns lane state | `AG-06` | `1/2` | `REVIEW_BLOCKED`; outputs merged at `6c4e33e`, predecessor `AG-05` reopened |
 
 ## Implementation Slices
 
@@ -498,18 +498,23 @@ flowchart LR
 
 - Ready: none.
 - In progress: none.
-- In review: `WL-06`, `AG-06`, and terminal `TG-01` at integrated head
-  `6c4e33e833373b9fb514e040f2a3f68fd0a9e590`.
+- In review: merged `WL-06` outputs at
+  `6c4e33e833373b9fb514e040f2a3f68fd0a9e590`; acceptance is blocked by its
+  reopened `AG-05` predecessor.
+- Blocked: `WL-05 / SL-05C` requires explicit authority for one bounded
+  model-backed target/evaluate/judge canary. `WL-06`, `AG-06`, and `TG-01` are
+  affected consumers.
 - Preserved failed history: `JG-CORE` attempt 1 at `5c4b267` remains recorded.
-- Accepted worklines: `WL-01` through `WL-05`.
+- Accepted worklines: `WL-01` through `WL-04`.
 - Pending: none.
-- Accepted gates: `DG-00`, `AG-01` through `AG-05`, and `JG-CORE`.
-- Open gates: `AG-06` and `TG-01`.
+- Accepted gates: `DG-00`, `AG-01` through `AG-04`, and `JG-CORE`.
+- Open/blocked gates: `AG-05` is `BLOCKED`; `AG-06` and `TG-01` remain `OPEN`.
 - External conditions: `EXT-01` is satisfied by `R-05A` and remains current for
-  the accepted WL-05 source versions.
-- Next executable action: obtain independent Standards and Spec reviews over
-  the integrated closeout head, repair any findings, then let the root lane
-  owner evaluate `AG-06` and `TG-01`.
+  the authored WL-05 source versions.
+- Next executable action: obtain explicit model-spend authority for the bounded
+  `HX-031` canary, then run target/evaluate/judge/coverage and reevaluate
+  `AG-05`. Without that authority, preserve all authored/deterministic and
+  merged WL-06 evidence and keep the terminal consumers blocked.
 
 Current Frontier is a derived projection. On resume, `context` must reconstruct
 it from the Selected Workline Map, gate table, external conditions, and latest
@@ -525,6 +530,9 @@ replanning/repair records before recommending execution.
 | `AG-03` | per-workline | `WL-03` | refreshed `R-03A`/`R-03B` at `a363f42`; 7-path scope; readiness/resume/permission/receipt/conflict and revision-trigger trajectories `PASS`; independent Standards/Spec `PASS`; integrated validator/diff `PASS` | all changed skills use the same authoritative state and readiness contracts | `ACCEPTED` | reopen affected `WL-03` slice or upstream gate |
 | `AG-04` | per-workline | `WL-04` | refreshed `R-04A`/`R-04B` at `c6583ff`; 9-path scope; evidence/join/repair/exhaustion/terminal/review-head/replacement-result trajectories `PASS`; independent Standards/Spec `PASS`; integrated validator/diff `PASS` | evidence, invalidation, repair, retries, and terminal behavior agree | `ACCEPTED` | reopen affected `WL-04` slice or upstream gate |
 | `JG-CORE` | cross-workline integration | merged `AG-02`, `AG-03`, `AG-04` outputs on root integration tip | attempt-2 head `ce737f2998db11db45511d977beb1c15f3290bb5`; refreshed worker heads are ancestors and owned paths byte-identical/disjoint; pack, validator, catalog, self-test, runtime audit, diff, receipt/transition checks `PASS`; `EV-JGCORE-STANDARDS-CE737F2` and `EV-JGCORE-SPEC-CE737F2` required `PASS` | all three workline gates are current, root merges their reviewed commits, and integrated contracts agree on IDs, states, transitions, evidence, and repair | `ACCEPTED` — attempt 2 | reopen only responsible workline(s) and affected consumers; preserve unrelated accepted wave outputs |
+| `AG-05` | per-workline | `WL-05` | refreshed W-002 impact note; authored `HX-027` through `HX-036`; catalog/self-test/audit/validator/diff; required focused eligibility/target/judge evidence under the unchanged W-002 contract | unsafe routes rejected; intended routes accepted; evidence states remain distinct; required live evidence needs explicit spend authority | `BLOCKED` — authored/deterministic evidence passes; target/evaluate/judge `NOT_RUN` without authority | obtain explicit authority and run bounded `HX-031`, or formally replan before changing this gate; repair cases or route observed workflow defects upstream |
+| `AG-06` | per-workline | `WL-06` | docs-impact matrix; validator; pack compilation; catalog; self-test; runtime audit; diff check; current predecessor gates | every required check passes and `AG-05` remains accepted/current; required blockers, gaps, failures, or not-run evidence prevent acceptance | `OPEN` — outputs merged, predecessor blocked | preserve `R-06A`/`R-06B`; reevaluate after `AG-05` accepts or reopen smallest responsible workline |
+| `TG-01` | terminal aggregate | `AG-01` through `AG-06` | accepted current per-workline gates plus explicit residual-risk statement | all six gates are `ACCEPTED`; no workline consumes `TG-01` | `OPEN` | reopen invalidated gates/consumers; lane remains incomplete |
 
 ### JG-CORE Repair Record — Attempt 1
 
@@ -558,11 +566,8 @@ replanning/repair records before recommending execution.
   `fee3f2e`, reviewed head `ce737f2`, graph revision 3, reevaluation attempt 2.
 - Transition: `WL-02`/`AG-02`, `WL-03`/`AG-03`, `WL-04`/`AG-04`, and
   `JG-CORE -> ACCEPTED`; `WL-05 / SL-05A -> READY`.
-| `AG-05` | per-workline | `WL-05` | `R-05A` through `R-05C` at `0e6ba3c`; ten authored interactions `HX-027` through `HX-036` covering `GW-001` through `GW-022`; catalog `PASS` (309 scenarios, digest `6d856d23e4c9695094382fd09beaae96efdba56a29cbb168f8b12e9797ca2fea`); audit/self-test/validator/diff `PASS`; independent Standards/Spec `PASS`; coverage 0 executed, 0 accepted, 309 missing; optional model canary `NOT_RUN` because no explicit spend authority was provided | authored unsafe/intended routes are structurally distinguished; deterministic checks pass; evidence states remain distinct; no claim of live target effectiveness or accepted model judgment is made | `ACCEPTED` — attempt 1, authored/deterministic scope | repair `WL-05` cases or route an observed workflow defect upstream; any future live claim requires a new version-bound target/evaluate/judge receipt |
-| `AG-06` | per-workline | `WL-06` | docs-impact matrix; validator; pack compilation; catalog; self-test; runtime audit; diff check | every required check passes; required blockers, gaps, failures, or not-run evidence prevent acceptance | `OPEN` | reopen smallest responsible workline |
-| `TG-01` | terminal aggregate | `AG-01` through `AG-06` | accepted current per-workline gates plus explicit residual-risk statement | all six gates are `ACCEPTED`; no workline consumes `TG-01` | `OPEN` | reopen invalidated gates/consumers; lane remains incomplete |
 
-### WL-05 Acceptance Record — Attempt 1
+### WL-05 Evidence Record — Attempt 1; Gate Blocked
 
 - Integrated and reviewed head: `0e6ba3c3d3b144c533330694368d641488cf8c81`.
 - `R-05A`: read-only inspection confirmed the current W-002 runner, schema,
@@ -573,15 +578,16 @@ replanning/repair records before recommending execution.
   generated catalog contains 309 scenarios with digest
   `6d856d23e4c9695094382fd09beaae96efdba56a29cbb168f8b12e9797ca2fea`.
 - `R-05C`: catalog check, runtime audit, self-test (18), Cascade validator, and
-  diff hygiene passed. Independent harness Standards and Spec reviews reported
-  no findings.
+  diff hygiene passed. Independent harness Standards and Spec source reviews
+  reported no findings.
 - Evidence boundary: coverage reports 0 executed, 0 accepted, and 309 missing.
-  The bounded `HX-031` target/evaluate/judge canary is optional and is
-  `NOT_RUN` because this task had no explicit model-spend authority. Therefore
-  `AG-05` accepts authored/deterministic harness coverage, not live-model
-  behavior or calibration.
-- Transition: `EXT-01`, `WL-05`, and `AG-05 -> ACCEPTED`; `WL-06 / SL-06A ->
-  READY`.
+  The bounded `HX-031` target/evaluate/judge canary is required by the unchanged
+  `AG-05` contract and is `NOT_RUN` because this task had no explicit
+  model-spend authority. Authored/deterministic coverage cannot accept the
+  focused-behavior gate.
+- Transition: `EXT-01 -> SATISFIED`; `WL-05 / SL-05C` and `AG-05 -> BLOCKED`;
+  affected consumers `WL-06`, `AG-06`, and `TG-01` remain unaccepted. Preserve
+  all accepted upstream gates and merged outputs.
 
 | Authored Interaction | Covered Behavior Criteria | Evidence State |
 |---|---|---|
@@ -589,14 +595,14 @@ replanning/repair records before recommending execution.
 | `HX-028` | `GW-002`, `GW-017` | `AUTHORED_ONLY` |
 | `HX-029` | `GW-003`, `GW-013`, `GW-018`, `GW-021` | `AUTHORED_ONLY` |
 | `HX-030` | `GW-004`, `GW-015` | `AUTHORED_ONLY` |
-| `HX-031` | `GW-005`, `GW-011`, `GW-016`, `GW-022` | `AUTHORED_ONLY`; proposed optional canary |
+| `HX-031` | `GW-005`, `GW-011`, `GW-016`, `GW-022` | `AUTHORED_ONLY`; required bounded canary pending authority |
 | `HX-032` | `GW-006`, `GW-007`, `GW-014` | `AUTHORED_ONLY` |
 | `HX-033` | `GW-008`, `GW-012` | `AUTHORED_ONLY` |
 | `HX-034` | `GW-009`, `GW-010` | `AUTHORED_ONLY` |
 | `HX-035` | `GW-019` | `AUTHORED_ONLY` |
 | `HX-036` | `GW-020`, `GW-021` | `AUTHORED_ONLY` |
 
-### WL-06 Integrated Receipt — Review Pending
+### WL-06 Integrated Receipt — Review Blocked
 
 - Worker base/head: `7a5b85862322b994d4113b4744fcdd084a246a36` /
   `6c4e33e833373b9fb514e040f2a3f68fd0a9e590`; one owned commit, clean branch,
@@ -609,12 +615,32 @@ replanning/repair records before recommending execution.
   309-scenario catalog check, 18-case self-test, runtime audit, and diff hygiene
   passed on the integrated head. Worker Standards and Spec self-reviews passed
   with no findings but do not constitute root acceptance.
-- Residual evidence boundary: model target/evaluate/judge remains optional
-  `NOT_RUN`; coverage is 0 executed, 0 accepted, and 309 missing. The protocol
-  remains instruction-driven, and executable graph parsing/validation remains
-  deferred under `AQ-05`.
-- Proposed transition: `WL-06 -> REVIEW`; `AG-06` and `TG-01` remain `OPEN`
-  until independent integrated reviews pass.
+- Blocking evidence boundary: required model target/evaluate/judge remains
+  `NOT_RUN` without explicit spend authority; coverage is 0 executed, 0
+  accepted, and 309 missing. The protocol remains instruction-driven, and
+  executable graph parsing/validation remains deferred under `AQ-05`.
+- Proposed transition: preserve merged `WL-06` outputs in `REVIEW_BLOCKED`;
+  `AG-06` and `TG-01` remain `OPEN` until `AG-05` accepts and independent
+  integrated reviews pass.
+
+### Terminal Review Record — Attempt 1
+
+- Reviewed candidate: `41aad397b4f58a21a2aba854021726976378943a` against
+  dispatch base `28d69ec70396a31125b7b989e5066149eff8a8ae`.
+- `EV-AG06-STANDARDS-41AAD39`: required `FAIL`; found stale feature/doc impact,
+  compact-resume, closeout, and packet projections. Those root-owned
+  projections are repaired in the next state commit without changing accepted
+  implementation evidence.
+- `EV-AG06-SPEC-41AAD39`: required `FAIL`; found the same projection drift, an
+  orphaned acceptance-gate table fragment, and the terminal-blocking fact that
+  `AG-05` had been accepted by silently treating its required canary as
+  optional. The gate table and projections are repaired; `AG-05` is restored
+  to `BLOCKED` under unchanged plan revision 4 / graph revision 3.
+- Preserved: `DG-00`, `AG-01` through `AG-04`, `JG-CORE`, every worker commit,
+  authored harness cases, deterministic results, public-doc deltas, and the
+  durable report.
+- Resume: obtain explicit canary authority, complete `SL-05C`, reevaluate
+  `AG-05`, then obtain new head-bound terminal Standards and Spec reviews.
 
 ## Repair And Revision Policy
 
@@ -733,13 +759,18 @@ resumes.
 | Harness evaluator self-test | `python3 scripts/run_harness_evals.py self-test` | `WL-05` and final | `PASS` at `AG-05`; 18 cases |
 | Runtime audit | `python3 scripts/run_harness_evals.py audit --runtime` | final | `PASS` at `AG-05`; zero findings, required models available; rerun final |
 | Diff hygiene | `git diff --check` | each coherent slice and final | `PASS` at `AG-05` |
-| Focused behavioral evidence | `HX-027` through `HX-036`; current eligibility/target/judge commands pinned during `SL-05A` | `WL-05` | `AUTHORED_ONLY`; deterministic validation `PASS`; optional live canary `NOT_RUN`; coverage 0 executed/accepted, 309 missing |
+| Focused behavioral evidence | `HX-027` through `HX-036`; current eligibility/target/judge commands pinned during `SL-05A` | `WL-05` | `BLOCKED`; authored/deterministic validation `PASS`, but required live canary is `NOT_RUN` without spend authority; coverage 0 executed/accepted, 309 missing |
 
-Passing structural and compilation checks will prove artifact shape and routing
-wiring. They will not prove that a live model consistently applies readiness,
-joins, or repair; that requires focused executed traces and accepted judgments.
+Passing structural and compilation checks proves artifact shape and routing
+wiring. It does not prove that a live model consistently applies readiness,
+joins, or repair; required focused execution and accepted judgments remain the
+blocking `AG-05` input.
 
 ### Planning Artifact Validation — 2026-07-22
+
+The dated planning subsections below are historical snapshots. Their scenario
+counts and open-gate statements describe the named planning stage, not the
+current frontier.
 
 | Check | Result | Interpretation |
 |---|---|---|
@@ -834,14 +865,17 @@ validation remain lower-level structural checks.
 - Accepted definitions/decisions: `DEF-01` through `DEF-20`, `AQ-01`, `AQ-02`,
   `AQ-06`, and `AQ-07`; preserve rejected `AQ-03`/`AQ-04`, deferred `AQ-05`,
   and resolved historical dispatch constraint `AQ-08`.
-- Current worklines: `WL-01` through `WL-05` are accepted; `WL-06 / SL-06A`
-  is ready.
+- Current worklines: `WL-01` through `WL-04` are accepted; `WL-05 / SL-05C`
+  is blocked on spend authority; merged `WL-06` outputs remain
+  `REVIEW_BLOCKED` as affected consumers.
 - Current evidence: accepted `R-DG00`, `R-01*`, refreshed `R-02*`/`R-03*`/
-  `R-04*`, `R-05A` through `R-05C`, attempt-2 integrated mechanical evidence,
-  required `EV-JGCORE-STANDARDS-CE737F2`/`EV-JGCORE-SPEC-CE737F2` passes, and
-  the WL-05 independent Standards/Spec pass.
-- Next executable action: dispatch `W003-WL06`, produce the docs-impact
-  disposition, run terminal checks, and propose `AG-06`/`TG-01`.
+  `R-04*`, the authored/deterministic portions of `R-05A` through `R-05C`,
+  attempt-2 integrated mechanical evidence, required
+  `EV-JGCORE-STANDARDS-CE737F2`/`EV-JGCORE-SPEC-CE737F2` passes, merged
+  `R-06A`/`R-06B`, and the failed terminal reviews that exposed the evidence
+  block and now-repaired projection drift.
+- Next executable action: obtain explicit authority, execute the bounded
+  `HX-031` canary, and reevaluate `AG-05`; then refresh terminal reviews.
 - Merge and lane-state owner: root `agent-engineer`.
 - Merge target: root integration branch created from the accepted `DG-00` base,
   later merged to the current branch only after `TG-01`.
@@ -854,9 +888,11 @@ validation remain lower-level structural checks.
 
 ## Closeout
 
-- Merge evidence: pending implementation.
-- Report: create only if implementation becomes multi-turn, blocked, or
-  decision-heavy beyond this lane packet.
+- Merge evidence: all implementation and public-doc outputs are integrated on
+  `agent/w003-integration-r4-g3`; only required live evidence and terminal gate
+  acceptance remain.
+- Report: `docs/work/reports/2026-07-22-graph-shaped-workflow-mechanics.md`
+  records the multi-turn implementation and current blocker.
 - Remaining risk: this design improves instruction-driven coordination but does
   not provide deterministic runtime transition enforcement; executable Markdown
   graph validation remains explicitly deferred under `AQ-05`.
