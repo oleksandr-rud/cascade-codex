@@ -19,7 +19,12 @@
       affected consumers, and unrelated accepted work to preserve.
 - [ ] Attempt/maximum is checked; exhaustion routes to `BLOCKED` without a
       silent reset, and topology changes require a new graph revision.
-- [ ] Stale evidence remains historical and replacement evidence is bound to
-      the current revision, attempt, inputs, source, producer, and time.
+- [ ] Stale evidence remains historical; replacement evidence either carries a
+      stable evidence ID and subject, graph revision and attempt, input/source
+      versions and commit/digest, producer and time, requirement level,
+      evaluator authority, acceptance criteria, invalidation condition, and
+      failure route, or references a complete bound receipt containing them.
+- [ ] Missing replacement-evidence identity or evaluator authority is `GAP`
+      and does not satisfy an acceptance gate.
 - [ ] The resume route returns repaired work to `PENDING` for readiness
       recalculation, and only the lane-state owner records transitions.

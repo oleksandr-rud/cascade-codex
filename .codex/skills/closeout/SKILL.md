@@ -43,19 +43,25 @@ Use when work is done, blocked, or ready for handoff.
    producers, accepts no producer on their behalf, and has no downstream
    consumer in the same graph. Closeout may propose a terminal gate state;
    only the lane-state owner records the transition.
-6. Treat lane completion and the user's overall goal as separate decisions.
+6. Bind every terminal proposed-transition output to an ordinary receipt with
+   a stable receipt ID and subject node/gate; plan and graph revisions; node
+   attempt; named input/source versions; fixed-point source commit or digest;
+   producer and production time; outputs and evidence references; and
+   invalidation condition. An incomplete binding remains an untrusted proposal
+   and cannot close the gate.
+7. Treat lane completion and the user's overall goal as separate decisions.
    For every cross-lane input, verify its producer lane, accepted producer gate
    and current evidence, compatible version/freshness, merge owner, and
    invalidation route. Report remaining required lanes, cross-lane gates,
    external conditions, or residual risks even when the current lane's
    terminal gate can accept.
-7. When a cross-lane producer reopens or changes version, recalculate consumer
+8. When a cross-lane producer reopens or changes version, recalculate consumer
    readiness and reopen only work whose inputs are no longer current.
-8. If closeout evidence is invalidated, identify the earliest responsible node
+9. If closeout evidence is invalidated, identify the earliest responsible node
    and affected consumers, preserve unrelated accepted work, and give a
    deterministic resume route through `PENDING` and readiness recalculation.
-9. Return to implementation if required behavior is missing and feasible.
-10. Run the closeout drift scan:
+10. Return to implementation if required behavior is missing and feasible.
+11. Run the closeout drift scan:
    - identify whether the diff introduced or changed durable product behavior,
      design/brand constraints, normalized spec acceptance criteria,
      architecture/boundary rules, stack/runtime facts, or codebase vocabulary;
@@ -68,23 +74,23 @@ Use when work is done, blocked, or ready for handoff.
      useful for future planning or validation;
    - write `no durable doc diff needed` in the closeout output when the change
      is mechanical, refactor-only, test-only, or already documented.
-11. Mark deferred or blocked work with owner and next step.
-12. Persist durable rejected-scope decisions only when they would prevent future
+12. Mark deferred or blocked work with owner and next step.
+13. Persist durable rejected-scope decisions only when they would prevent future
    re-suggestion: record the concept, why it is out of scope, and any prior
    request/report links in the narrowest existing decision, backlog, pattern,
    or report location.
-13. Persist only reusable lessons, required handoff state, requested reports, or
+14. Persist only reusable lessons, required handoff state, requested reports, or
    required thin doc diffs.
    For research-heavy work, update `docs/patterns/context-memory/index.md` with a
    compact research-memory row that points to owner reports, specs, packages,
    prompts, reusable rules, and validation evidence.
-14. Do not create a generic learned-lessons dump.
-15. For active work cleanup, prune completed rows only when the user explicitly
+15. Do not create a generic learned-lessons dump.
+16. For active work cleanup, prune completed rows only when the user explicitly
    asks for cleanup or the closeout scope includes registry maintenance; first
    preserve durable evidence in `docs/work/reports/`, confirm the row is
    complete, confirm dependencies are resolved, and remove the active row
    instead of re-marking it as `CLOSED`.
-16. Keep final handoff concise and honest about checks that did not run.
+17. Keep final handoff concise and honest about checks that did not run.
 
 ## Thin Doc Diff Rules
 
@@ -149,6 +155,9 @@ decisions, or learned lessons into `AGENTS.md`.
 - outcome and lane status;
 - current graph revision, terminal-gate proposal, required/optional evidence
   disposition, and lane-state authority when graph-shaped;
+- terminal proposed-transition receipt ID/subject, plan/graph revisions,
+  attempt, input/source versions, fixed-point commit/digest, producer/time,
+  outputs/evidence references, and invalidation condition;
 - overall user-goal status, remaining terminal/cross-lane obligations, and
   deterministic resume route when incomplete;
 - files changed;

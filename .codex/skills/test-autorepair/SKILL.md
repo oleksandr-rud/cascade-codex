@@ -66,14 +66,19 @@ the task and the work is routed through `implement-change`.
 11. Preserve scenario IDs and behavior coverage.
 12. Re-run the repaired test and at least one neighboring confidence check when
    feasible.
-13. Replace stale evidence with a new version-bound result; never relabel the
-    old receipt as current. Record failed evidence, cause, reopened/preserved
-    IDs, attempt, and the deterministic resume route. Repaired or unblocked
-    graph nodes return to `PENDING` for readiness recalculation, never directly
-    to `READY`.
-14. Return repair evidence and a proposed transition to the lane-state owner;
+13. Replace stale evidence with either a complete new bound evidence receipt or
+    a stable reference to one. The receipt names its stable evidence ID and
+    subject; graph revision and node attempt; input/source versions and source
+    commit or digest; producer and production time; required/optional level;
+    evaluator/reviewer authority; acceptance criteria; invalidation condition;
+    and failure route. Missing identity or authority is `GAP` and cannot satisfy
+    a gate. Never relabel the old receipt as current.
+14. Record failed evidence, cause, reopened/preserved IDs, attempt, and the
+    deterministic resume route. Repaired or unblocked graph nodes return to
+    `PENDING` for readiness recalculation, never directly to `READY`.
+15. Return repair evidence and a proposed transition to the lane-state owner;
     the repair executor does not mutate authoritative node or gate state.
-15. Inspect the diff for assertion weakening before closing.
+16. Inspect the diff for assertion weakening before closing.
 
 ## Forbidden Repairs
 
@@ -93,7 +98,8 @@ the task and the work is routed through `implement-change`.
 - Feature Impact Matrix rows consulted when present;
 - repair made or reason stopped;
 - validation commands;
-- invalidated and replacement evidence plus deterministic resume route;
+- invalidated evidence, complete replacement-evidence binding or bound receipt
+  reference, and deterministic resume route;
 - outcome: `REPAIRED`, `PRODUCT_BUG`, `BLOCKED`, `AMBIGUOUS`, or `STOPPED`.
 
 Use `templates/repair-report.md` for substantial repairs and

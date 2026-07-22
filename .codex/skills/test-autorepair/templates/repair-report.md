@@ -46,10 +46,25 @@ Rationale:
 | Command | Result | Evidence |
 |---|---|---|
 
+## Replacement Evidence Binding
+
+- Complete bound receipt reference, when fields live elsewhere:
+- Stable evidence ID / subject node or gate:
+- Graph revision / node attempt:
+- Input/source versions:
+- Source commit or digest:
+- Producer / production time:
+- Required / optional level:
+- Evaluator/reviewer authority:
+- Acceptance criteria:
+- Invalidation condition:
+- Failure route:
+- Missing-field disposition (`GAP` when incomplete):
+
 ## Residual Risk Or Handoff
 
 - Exhaustion state and route:
 - Invalidated evidence:
-- Replacement evidence:
+- Replacement evidence receipt/reference:
 - Proposed transition:
 - Deterministic resume destination:

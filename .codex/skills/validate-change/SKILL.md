@@ -76,10 +76,10 @@ review, functional acceptance, or stale-test repair.
     transitions.
 15. Recheck freshness against the current subject, graph revision, attempt,
     named inputs/sources, and commit. Invalidated evidence proposes
-    `ACCEPTED -> OPEN`, identifies the earliest responsible producer or
-    contract, and reopens its subject plus only consumers whose named input,
-    contract, gate, or evidence is no longer trustworthy. Preserve unrelated
-    accepted work.
+    `ACCEPTED -> OPEN`, identifies the earliest responsible graph node plus its
+    producer or contract, and reopens that subject plus only consumers whose
+    named input, contract, gate, or evidence is no longer trustworthy. Preserve
+    unrelated accepted work.
 
 ## Output
 
@@ -90,6 +90,7 @@ review, functional acceptance, or stale-test repair.
 - Feature Impact Matrix coverage and routes;
 - work-lane/spec coverage matrix summary;
 - failures and routing;
-- proposed gate state, invalidated evidence, affected consumers, preserved
-  accepted work, and deterministic failure/reopen route when graph-shaped;
+- proposed gate state, invalidated evidence, earliest responsible graph node,
+  affected consumers, preserved accepted work, and deterministic
+  failure/reopen route when graph-shaped;
 - residual risk.
