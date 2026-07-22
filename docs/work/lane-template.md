@@ -107,11 +107,14 @@ shape lives in the `plan-change` definition-ready template.
 
 Use this block only when connected obligations need typed readiness, evidence
 joins, bounded repair, revision-aware handoff, or cross-lane invalidation. The
-lane's Task Graph, Evidence Gates, latest Graph Amendment, and transition/repair
-history are authoritative. Current Frontier and `docs/work/active.md` are
-derived projections; reconcile them from the authoritative records before
-execution. These records remain instruction-driven and do not create a graph
-runtime or automatic state mutation.
+lane's Task Graph, Evidence Gates, latest accepted Graph Amendment and
+ownership-handoff record, and lane-owner-recorded transition/repair history are
+authoritative. Worker and proposed-transition receipts are supporting bound
+evidence, proposals, and history; they are never authoritative active state by
+themselves. Current Frontier and `docs/work/active.md` are derived projections;
+reconcile them from the authoritative records before execution. These records
+remain instruction-driven and do not create a graph runtime or automatic state
+mutation.
 
 For atomic work, record the bypass and omit the remaining graph-shaped tables:
 
@@ -123,18 +126,42 @@ When graph-shaped state applies, record its authority before creating nodes:
 
 | Graph Revision | Plan Revision | Lane-State Owner | Authoritative Records | Derived Projections | Instruction-Driven Limit |
 |---|---|---|---|---|---|
-| `<1>` | `<PLAN_REVISION>` | `<SOLE_TRANSITION_OWNER>` | `Task Graph; Evidence Gates; latest Graph Amendment; Transition/Repair History` | `Current Frontier; active registry; status boards; merge queues` | `No scheduler, parser, locking, transactions, or automatic transitions` |
+| `<1>` | `<PLAN_REVISION>` | `<SOLE_TRANSITION_OWNER>` | `Task Graph; Evidence Gates; latest accepted Graph Amendment and Ownership Handoff; lane-owner-recorded Transition and Repair History` | `Current Frontier; active registry; status boards; merge queues` | `No scheduler, parser, locking, transactions, or automatic transitions` |
+
+#### Ownership Handoff Record
+
+Changing the lane-state owner increments Graph Revision. Authoritative mutation
+stays blocked from handoff initiation until the incoming owner explicitly
+accepts a stable handoff record. A handoff receipt may propose acceptance and
+bind its supporting reconciliation evidence; only the accepted handoff record
+and lane-owner-recorded handoff transition authorize the ownership change.
+
+| Handoff ID | Prior Owner | Incoming Owner | Prior -> New Graph Revision | Mutation-Blocked State | Initiated / Accepted At | Acceptance Record / Evidence | Status | Invalidation / Resume Rule |
+|---|---|---|---|---|---|---|---|---|
+| `OH-01` | `<PRIOR_OWNER>` | `<INCOMING_OWNER>` | `<1 -> 2>` | `<BLOCKED_FROM_TO_NO_MUTATION>` | `<INITIATED_AND_ACCEPTED_TIMES>` | `<ACCEPTED_HANDOFF_TRANSITION_RECORD_SUPPORTED_BY_RECEIPT_AND_EVIDENCE>` | `<PENDING_HANDOFF_ACCEPTED_REJECTED>` | `<WHEN_REOPENED_AND_WHEN_MUTATION_MAY_RESUME>` |
 
 #### Task Graph
 
 Keep prerequisite nodes, acceptance gates, and external conditions in separate
 columns. IDs are lane-scoped, stable, and never reused, including after
-supersession. Producing the expected receipt moves a node to `REVIEW`; only its
-accepted per-node gate permits `REVIEW -> ACCEPTED`.
+supersession. Producing the expected receipt proposes `IN_PROGRESS -> REVIEW`;
+the lane-state owner's recorded transition moves the node to `REVIEW`, and only
+its accepted per-node gate permits `REVIEW -> ACCEPTED`.
 
 | Node ID | Obligation | Actor / Type | Requires Nodes | Requires Gates | External Conditions | Named / Versioned Inputs | Expected Receipt | Write Scope | Tools / Permissions | Per-Node Gate | Attempt / Max | Repair Route | Exhaustion Route | Status | Last Transition | Evidence |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | `N-01` | `<BOUNDED_OUTCOME>` | `<OWNER_AND_TYPE>` | `<NODE_IDS_OR_NONE>` | `<GATE_IDS_OR_NONE>` | `<CONDITION_IDS_OR_NONE>` | `<INPUT_ID_AT_VERSION>` | `<RECEIPT_ID_AND_OUTPUT>` | `<PATHS_OR_NONE>` | `<TOOLS_APPROVAL_COST_IDEMPOTENCY_CLEANUP_BOUNDS>` | `AG-01` | `<1/3>` | `<EARLIEST_REPAIR_AND_AFFECTED_CONSUMERS>` | `<BLOCKED_REPLAN_OR_ESCALATION_DESTINATION>` | `<PENDING_READY_IN_PROGRESS_REVIEW_ACCEPTED_FAILED_BLOCKED_SUPERSEDED>` | `<TRANSITION_ID>` | `<EVIDENCE_IDS_OR_GAP>` |
+
+#### Worker And Proposed-Transition Receipts
+
+Define every ordinary worker/output receipt before referencing it from the Task
+Graph or Transition History. Receipts are supporting bound evidence, proposals,
+and history. A receipt proposes state; it never mutates or accepts authoritative
+active state by itself.
+
+| Receipt ID | Subject Node / Workline / Gate | Plan / Graph Revision | Attempt / Max | Named Inputs / Source Versions | Source Commit / Digest | Producer Role / Thread / Time | Prior / Proposed State | Allowed / Actual Paths | Tools / Permissions / Resource Bounds | Outputs | Checks / Evidence Refs | Invalidation Condition | Stop / Repair Route |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| `R-N01-v1` | `<NODE_WORKLINE_GATE_IDS>` | `<PLAN_AND_GRAPH_REVISIONS>` | `<ATTEMPT_MAX>` | `<INPUT_IDS_AT_VERSIONS>` | `<COMMIT_OR_DIGEST>` | `<ROLE_THREAD_TIMESTAMP>` | `<PRIOR_STATE_TO_PROPOSED_STATE>` | `<ALLOWED_AND_ACTUAL_PATHS>` | `<TOOLS_APPROVAL_COST_IDEMPOTENCY_CLEANUP_BOUNDS>` | `<OUTPUT_IDS_AT_VERSIONS>` | `<CHECK_AND_EVIDENCE_IDS>` | `<SOURCE_INPUT_CONTRACT_OR_COMMIT_CHANGE>` | `<DETERMINISTIC_STOP_OR_REPAIR_DESTINATION>` |
 
 #### External And Cross-Lane Conditions
 
@@ -159,14 +186,15 @@ same gate. A terminal gate has no consumer in this graph.
 
 Bind every evidence input before gate evaluation:
 
-| Evidence ID | Subject Node / Gate | Graph Revision | Attempt | Input / Source Versions | Source Commit / Digest | Producer | Produced At | Requirement | Result | Invalidation Condition |
-|---|---|---:|---:|---|---|---|---|---|---|---|
-| `EV-01` | `<N_OR_AG_ID>` | `<REVISION>` | `<ATTEMPT>` | `<INPUT_IDS_AT_VERSIONS>` | `<COMMIT_OR_DIGEST_OR_NA>` | `<TOOL_SKILL_ACTOR>` | `<TIMESTAMP>` | `<REQUIRED_OPTIONAL>` | `<PASS_FAIL_BLOCKED_GAP_NOT_RUN>` | `<VERSION_SOURCE_CONTRACT_OR_TIME_CHANGE>` |
+| Evidence ID | Subject Node / Gate | Graph Revision | Attempt | Input / Source Versions | Source Commit / Digest | Producer | Produced At | Requirement | Result | Evaluator / Reviewer Authority | Acceptance Criteria | Failure Route | Invalidation Condition |
+|---|---|---:|---:|---|---|---|---|---|---|---|---|---|---|
+| `EV-01` | `<N_OR_AG_ID>` | `<REVISION>` | `<ATTEMPT>` | `<INPUT_IDS_AT_VERSIONS>` | `<COMMIT_OR_DIGEST_OR_NA>` | `<TOOL_SKILL_ACTOR>` | `<TIMESTAMP>` | `<REQUIRED_OPTIONAL>` | `<PASS_FAIL_BLOCKED_GAP_NOT_RUN>` | `<INDEPENDENT_EVALUATOR_OR_REVIEWER>` | `<EVIDENCE_PASS_RULE>` | `<RESPONSIBLE_NODE_GATE_AND_ROUTE>` | `<VERSION_SOURCE_CONTRACT_OR_TIME_CHANGE>` |
 
 #### Transition History
 
 Only the lane-state owner records authoritative transitions. Worker output and
-evidence producers return bound receipts or proposed transitions.
+evidence producers return supporting bound receipts or proposed transitions;
+those records do not become authoritative active state by themselves.
 
 | Transition ID / Time | Subject | Prior -> Next | Recorded By | Preconditions | Receipt / Evidence | Invalidation Condition | Failure / Resume Route |
 |---|---|---|---|---|---|---|---|
@@ -198,6 +226,7 @@ an earlier or superseded node or gate ID.
 - Accepted: `<NODE_IDS_OR_NONE>`
 - Open or unresolved joins: `<GATE_IDS_AND_ABSENT_INPUTS_OR_NONE>`
 - External or cross-lane conditions: `<CONDITION_IDS_AND_STATE>`
+- Ownership handoff / mutation state: `<HANDOFF_ID_PRIOR_INCOMING_STATUS_AND_BLOCK>`
 - Next executable node: `<NODE_ID_OR_NONE>`
 - Projection reconciliation: `<CURRENT | DRIFT_FOUND_AND_RECOMPUTED_FROM_AUTHORITY>`
 
