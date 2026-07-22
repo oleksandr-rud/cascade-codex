@@ -7,7 +7,7 @@ Authority: `W-003` plan revision `4`, graph revision `3`
 Execution Model: `orchestrator-workers-dependency-waves`
 Lane And Merge Owner: root `agent-engineer`
 Delegation Authorized: `YES` — separate workline threads/worktrees; root control only
-Current Task: parallel `T-02A`, `T-03A`, and `T-04A`
+Current Task: bounded `JG-CORE` attempt-1 repairs in `WL-02`/`WL-03`/`WL-04`
 Created: 2026-07-22
 
 ## Purpose And Authority
@@ -223,10 +223,10 @@ flowchart LR
 |---:|---|---|---|---|---|---|---|
 | 0 | root | `agent/w003-integration-r4-g3` | `28d69ec70396a31125b7b989e5066149eff8a8ae` | `ACCEPTED` | `GATE_ACCEPTED` | `R-DG00` | `DG-00 ACCEPTED` |
 | 1 | `W003-WL01` | `agent/w003-wl01-r4-g3` | `3e9d35b37aa6be4b2d3c815a37141da728f09d8f` | `ACCEPTED` | `GATE_ACCEPTED` | `R-01A`, `R-01B` at `70c7c33` | `MQ-01 MERGED`; `AG-01 ACCEPTED` |
-| 2 | `W003-WL02` | `agent/w003-wl02-r4-g3` | common accepted `AG-01` tip after this state record | `READY` | `DISPATCH` | pending | `AG-02 OPEN` |
-| 2 | `W003-WL03` | `agent/w003-wl03-r4-g3` | common accepted `AG-01` tip after this state record | `READY` | `DISPATCH` | pending | `AG-03 OPEN` |
-| 2 | `W003-WL04` | `agent/w003-wl04-r4-g3` | common accepted `AG-01` tip after this state record | `READY` | `DISPATCH` | pending | `AG-04 OPEN` |
-| join | root | integration branch assigned at `DG-00` | merged wave-2 receipts | `PENDING` | `HOLD` | none | `JG-CORE OPEN` |
+| 2 | `W003-WL02` | `agent/w003-wl02-r4-g3` | `fee3f2ee155ff3d22354e0560279f4a527bc1e90` | `IN_PROGRESS` | `REPAIR` | prior head `01c4263` stale for join; refresh pending | `AG-02 OPEN` |
+| 2 | `W003-WL03` | `agent/w003-wl03-r4-g3` | `fee3f2ee155ff3d22354e0560279f4a527bc1e90` | `IN_PROGRESS` | `REPAIR` | prior head `a109018` stale for join; refresh pending | `AG-03 OPEN` |
+| 2 | `W003-WL04` | `agent/w003-wl04-r4-g3` | `fee3f2ee155ff3d22354e0560279f4a527bc1e90` | `IN_PROGRESS` | `REPAIR` | prior head `6ae53f9` stale for join; refresh pending | `AG-04 OPEN` |
+| join | root | `agent/w003-integration-r4-g3` | merged attempt-1 head `5c4b267` | `FAILED` | `REPAIR` | `EV-JGCORE-STANDARDS-5C4B267`, `EV-JGCORE-SPEC-01` | `JG-CORE FAILED`; bounded repair active |
 | 3 | `W003-WL05` | `agent/w003-wl05-r4-g3` | accepted `JG-CORE` tip | `PENDING` | `HOLD` | none | `AG-05 OPEN` |
 | 4 | `W003-WL06` | `agent/w003-wl06-r4-g3` | accepted `AG-05` tip | `PENDING` | `HOLD` | none | `AG-06`, `TG-01 OPEN` |
 
@@ -255,10 +255,10 @@ Root replies with exactly one control state: `HOLD`, `CONTINUE`, `REPAIR`,
 | Queue Item | Preconditions | Root Checks | Initial State |
 |---|---|---|---|
 | `MQ-01 WL-01` | `R-01A`, `R-01B`; branch frozen | lineage, scoped diff, review, pack/validator checks, post-merge evidence | `MERGED`; `AG-01 ACCEPTED` |
-| `MQ-02 WL-02` | `R-02A`, `R-02B` | lineage, lane/example checks, post-merge evidence | `HOLD` |
-| `MQ-03 WL-03` | `R-03A`, `R-03B` | lineage, skill review/trajectories, post-merge evidence | `HOLD` |
-| `MQ-04 WL-04` | `R-04A`, `R-04B` | lineage, skill review/trajectories, post-merge evidence | `HOLD` |
-| `MQ-JG CORE` | `MQ-02` through `MQ-04` merged | disjoint-write audit, integrated compatibility, validator/diff, focused trajectories | `HOLD` |
+| `MQ-02 WL-02` | refreshed `R-02A`, `R-02B` | lineage, lane/example/receipt checks, post-merge evidence | `REPAIR` after attempt-1 merge |
+| `MQ-03 WL-03` | refreshed `R-03A`, `R-03B` | lineage, revision-contract review/trajectories, post-merge evidence | `REPAIR` after attempt-1 merge |
+| `MQ-04 WL-04` | refreshed `R-04A`, `R-04B` | lineage, reviewed-head/replacement-result checks, post-merge evidence | `REPAIR` after attempt-1 merge |
+| `MQ-JG CORE` | refreshed `MQ-02` through `MQ-04` merged | disjoint-write audit, integrated compatibility, validator/diff, focused trajectories | `FAILED` attempt 1; reevaluation pending |
 | `MQ-05 WL-05` | `JG-CORE`, `R-05A` through `R-05C` | W-002 freshness, evidence-state audit, post-merge harness checks | `HOLD` |
 | `MQ-06 WL-06` | `AG-05`, `R-06A`, `R-06B` | final reviews, full commands, residual risks, active/lane closeout | `HOLD` |
 

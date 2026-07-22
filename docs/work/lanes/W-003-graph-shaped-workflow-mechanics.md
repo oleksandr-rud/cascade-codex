@@ -403,9 +403,9 @@ none becomes downstream-ready until the root integration join `JG-CORE` passes.
 | Workline | Outcome | Primary Criteria | Requires Gates | External Conditions | Produces | Ownership / Writes | Acceptance Gate | Attempt / Max | Status |
 |---|---|---|---|---|---|---|---|---|---|
 | `WL-01` | One selectively retrievable graph semantic authority | reusable semantics; atomic bypass; typed dependencies; state/evidence authority | `DG-00` | plan revision 4 and graph revision 3 remain current | `graph-shaped-work.md` plus pack routing | thread `W003-WL01`; workflow pattern/pack only | `AG-01` | `1/3` | `ACCEPTED` |
-| `WL-02` | Optional lane representation that can express and demonstrate the contract | operational state, identity, frontier, gates, repair, history | `AG-01` | common wave-2 base current | lane-template sections and valid non-active example | thread `W003-WL02`; work template/example | `AG-02` | `1/3` | `READY` |
-| `WL-03` | Existing skills create, resume, plan, and execute only ready obligations | creation/resume/execution authority; permissions/write scope | `AG-01` | common wave-2 base current | graph-aware context/orchestration/planning/implementation contracts | thread `W003-WL03`; named creation/execution skill files | `AG-03` | `1/3` | `READY` |
-| `WL-04` | Existing skills accept evidence, repair minimally, exhaust safely, and close only terminal work | evidence identity, gate lifecycle, partial repair, retry/exhaustion | `AG-01` | common wave-2 base current | graph-aware functional/review/validation/repair/closeout contracts | thread `W003-WL04`; named evidence/repair skill files | `AG-04` | `1/3` | `READY` |
+| `WL-02` | Optional lane representation that can express and demonstrate the contract | operational state, identity, frontier, gates, repair, history | `AG-01` | common wave-2 base current | lane-template sections and valid non-active example | thread `W003-WL02`; work template/example | `AG-02` | `1/3` | `IN_PROGRESS` — bounded `JG-CORE` compatibility repair |
+| `WL-03` | Existing skills create, resume, plan, and execute only ready obligations | creation/resume/execution authority; permissions/write scope | `AG-01` | common wave-2 base current | graph-aware context/orchestration/planning/implementation contracts | thread `W003-WL03`; named creation/execution skill files | `AG-03` | `1/3` | `IN_PROGRESS` — bounded revision-checklist repair |
+| `WL-04` | Existing skills accept evidence, repair minimally, exhaust safely, and close only terminal work | evidence identity, gate lifecycle, partial repair, retry/exhaustion | `AG-01` | common wave-2 base current | graph-aware functional/review/validation/repair/closeout contracts | thread `W003-WL04`; named evidence/repair skill files | `AG-04` | `1/3` | `IN_PROGRESS` — bounded review/replacement-receipt repair |
 | `WL-05` | Current judged harness distinguishes safe graph behavior from plausible unsafe prose | `GW-001` through `GW-022`; W-002 compatibility | `JG-CORE` | `EXT-01` W-002 contract reinspection current | authored cases, current catalog, deterministic and focused evidence | thread `W003-WL05`; eval surfaces after reinspection | `AG-05` | `0/2` | `PENDING` |
 | `WL-06` | Integrated change is documented, validated, and honestly closed | all request criteria and residual-risk reporting | `JG-CORE`, `AG-05` | required commands/environment available or explicitly blocked | docs-impact disposition, final validation, handoff | thread `W003-WL06`; conditional public docs; root owns lane state | `AG-06` | `0/2` | `PENDING` |
 
@@ -496,19 +496,21 @@ flowchart LR
 
 ## Current Frontier
 
-- Ready: `WL-02`, `WL-03`, and `WL-04` on one common accepted `AG-01` base.
-- In progress: none.
+- Ready: none while `JG-CORE` attempt-1 repairs are active.
+- In progress: bounded repairs in `WL-02`, `WL-03`, and `WL-04`.
 - In review: none.
-- Blocked: none at the current frontier.
+- Failed join: `JG-CORE` attempt 1 at integrated head `5c4b267`; required
+  Standards/Spec compatibility evidence failed.
 - Accepted worklines: `WL-01`.
 - Pending: `WL-05` and `WL-06`.
 - Accepted gates: `DG-00` and `AG-01`.
-- Open gates: `AG-02` through `AG-06`, `JG-CORE`, and `TG-01`.
+- Open gates: `AG-02` through `AG-06` and `TG-01`; `JG-CORE` is `FAILED`
+  pending bounded repair and reevaluation.
 - External conditions: `EXT-01` is expected satisfiable because W-002 is
   complete, but `SL-05A` must refresh it before `WL-05` becomes ready.
-- Next executable action: root creates `W003-WL02`, `W003-WL03`, and
-  `W003-WL04` from the same accepted integration tip and dispatches the three
-  disjoint worklines in parallel.
+- Next executable action: complete only the recorded `JG-CORE` repair set in
+  `W003-WL02`, `W003-WL03`, and `W003-WL04`, merge refreshed receipts, then
+  rerun the independent compatibility join.
 
 Current Frontier is a derived projection. On resume, `context` must reconstruct
 it from the Selected Workline Map, gate table, external conditions, and latest
@@ -523,7 +525,23 @@ replanning/repair records before recommending execution.
 | `AG-02` | per-workline | `WL-02` | template review; cycle-free example walk; `GW-001` through `GW-018` representability | schema and example implement accepted `AG-01` semantics without active-state duplication | `OPEN` | reopen `WL-02` or `WL-01` if semantic |
 | `AG-03` | per-workline | `WL-03` | skill fixed-point review; creation/readiness/frontier/authority scenarios | all changed skills use the same authoritative state and readiness contracts | `OPEN` | reopen affected `WL-03` slice or upstream gate |
 | `AG-04` | per-workline | `WL-04` | skill fixed-point review; gate/repair/exhaustion/terminal scenarios | evidence, invalidation, repair, retries, and terminal behavior agree | `OPEN` | reopen affected `WL-04` slice or upstream gate |
-| `JG-CORE` | cross-workline integration | merged `AG-02`, `AG-03`, `AG-04` outputs on root integration tip | branch/receipt lineage; disjoint-write audit; merged validator/diff checks; lane-schema-to-skill compatibility review; focused readiness/evidence/repair trajectories | all three workline gates are current, root merges their reviewed commits, and integrated contracts agree on IDs, states, transitions, evidence, and repair | `OPEN` | reopen only responsible workline(s) and affected consumers; preserve unrelated accepted wave outputs |
+| `JG-CORE` | cross-workline integration | merged `AG-02`, `AG-03`, `AG-04` outputs on root integration tip | attempt-1 head `5c4b267`: branch/receipt lineage, disjoint writes, validator/pack/catalog/self-test/runtime/diff checks `PASS`; independent Standards/Spec compatibility `FAIL` on ordinary/evidence receipt representation, transition reconstruction, ownership handoff, revision checklist, reviewed-head freshness, replacement result, exhausted example route, and active-registry wording | all three workline gates are current, root merges their reviewed commits, and integrated contracts agree on IDs, states, transitions, evidence, and repair | `FAILED` — attempt 1 | reopen only `WL-02`, `WL-03`, and `WL-04` named repair slices; root repairs derived-registry wording; preserve `WL-01` and unrelated wave outputs |
+
+### JG-CORE Repair Record — Attempt 1
+
+- Failed evidence: `EV-JGCORE-STANDARDS-5C4B267` and
+  `EV-JGCORE-SPEC-01`, bound to integrated head
+  `5c4b2678b201d87f5020ea0f473cf170ab9f4b02`.
+- Reopened: `WL-02` receipt/evidence/transition/handoff/example compatibility;
+  `WL-03` revision-trigger checklist; `WL-04` review-head and replacement-result
+  bindings; root-owned `active.md` projection wording.
+- Preserved: accepted `DG-00`, `WL-01`/`AG-01`, all unrelated content in the
+  three wave branches, merge lineage, and passing mechanical evidence whose
+  inputs remain unchanged. Head-bound compatibility reviews must be rerun.
+- Resume route: owning threads commit bounded repairs without rebase/amend;
+  root merges refreshed heads, reruns mechanical checks and independent
+  Standards/Spec review, then reevaluates `AG-02`/`AG-03`/`AG-04` and
+  `JG-CORE`.
 | `AG-05` | per-workline | `WL-05` | refreshed W-002 impact note; catalog; self-test; required focused eligibility/target/judge evidence under that refreshed contract | unsafe routes rejected; intended routes accepted; evidence states remain distinct; optional live evidence may be `NOT_RUN` only with explicit optionality/reason | `OPEN` | repair `WL-05` cases or route observed workflow defect upstream |
 | `AG-06` | per-workline | `WL-06` | docs-impact matrix; validator; pack compilation; catalog; self-test; runtime audit; diff check | every required check passes; required blockers, gaps, failures, or not-run evidence prevent acceptance | `OPEN` | reopen smallest responsible workline |
 | `TG-01` | terminal aggregate | `AG-01` through `AG-06` | accepted current per-workline gates plus explicit residual-risk statement | all six gates are `ACCEPTED`; no workline consumes `TG-01` | `OPEN` | reopen invalidated gates/consumers; lane remains incomplete |
