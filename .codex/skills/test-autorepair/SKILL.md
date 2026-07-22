@@ -69,10 +69,12 @@ the task and the work is routed through `implement-change`.
 13. Replace stale evidence with either a complete new bound evidence receipt or
     a stable reference to one. The receipt names its stable evidence ID and
     subject; graph revision and node attempt; input/source versions and source
-    commit or digest; producer and production time; required/optional level;
+    commit or digest; producer and production time; result (`PASS`, `FAIL`,
+    `BLOCKED`, `GAP`, or `NOT_RUN`); required/optional level;
     evaluator/reviewer authority; acceptance criteria; invalidation condition;
-    and failure route. Missing identity or authority is `GAP` and cannot satisfy
-    a gate. Never relabel the old receipt as current.
+    and failure route. The replacement receipt's result is explicit; a command
+    table is not a substitute. Missing identity, result, or authority is `GAP`
+    and cannot satisfy a gate. Never relabel the old receipt as current.
 14. Record failed evidence, cause, reopened/preserved IDs, attempt, and the
     deterministic resume route. Repaired or unblocked graph nodes return to
     `PENDING` for readiness recalculation, never directly to `READY`.
@@ -99,7 +101,7 @@ the task and the work is routed through `implement-change`.
 - repair made or reason stopped;
 - validation commands;
 - invalidated evidence, complete replacement-evidence binding or bound receipt
-  reference, and deterministic resume route;
+  reference including its result, and deterministic resume route;
 - outcome: `REPAIRED`, `PRODUCT_BUG`, `BLOCKED`, `AMBIGUOUS`, or `STOPPED`.
 
 Use `templates/repair-report.md` for substantial repairs and

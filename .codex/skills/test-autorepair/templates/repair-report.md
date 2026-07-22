@@ -54,12 +54,16 @@ Rationale:
 - Input/source versions:
 - Source commit or digest:
 - Producer / production time:
+- Result (`PASS | FAIL | BLOCKED | GAP | NOT_RUN`):
 - Required / optional level:
 - Evaluator/reviewer authority:
 - Acceptance criteria:
 - Invalidation condition:
 - Failure route:
 - Missing-field disposition (`GAP` when incomplete):
+
+The Validation command table above does not supply this receipt's result or
+other evidence identity fields.
 
 ## Residual Risk Or Handoff
 
