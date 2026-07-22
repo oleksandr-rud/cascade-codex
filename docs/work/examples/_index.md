@@ -1,7 +1,12 @@
 # Work Lane Examples
 
-This folder is reserved for optional copyable reference packets. It currently
-ships without populated examples.
+This folder contains optional copyable reference packets. Examples are never
+active work unless copied into `docs/work/lanes/` and registered separately in
+`docs/work/active.md`.
+
+- [`graph-shaped-lane.md`](graph-shaped-lane.md): non-active graph-shaped lane
+  with typed dependencies, evidence joins, blocked readiness, bounded repair,
+  revision history, and a terminal aggregate.
 
 When adding an example, keep it project-neutral and use it to show:
 
