@@ -52,6 +52,17 @@ Use this section when the change introduces or modifies state, graphs,
 dependencies, joins/gates, retries, queues, approvals, concurrency, or derived
 projections. Omit it only when those mechanics are genuinely absent.
 
+- Applicability: `<GRAPH_REQUIRED | ATOMIC_BYPASS>`
+- Applicability rationale:
+- Graph revision: `<REVISION_OR_NONE>`
+- Lane-state owner:
+- Ownership handoff: `<NOT_APPLICABLE | PENDING | ACCEPTED>`
+- Handoff acceptance record: `<RECORD_ID_PRIOR_OWNER_INCOMING_OWNER_GRAPH_REVISION_OR_NONE>`
+- Mutation rule during handoff: both prior and incoming owners remain blocked
+  until explicit handoff acceptance binds the incoming owner and new revision.
+- Authoritative state sources:
+- Derived projections and reconciliation rule:
+
 ### Entity And State Authority
 
 | Entity / Field | Stable Identity | Authority / Source Of Truth | Mutable By | Derived From | Lifecycle / Retention |
@@ -60,25 +71,52 @@ projections. Omit it only when those mechanics are genuinely absent.
 
 ### State Transitions
 
-| Subject | From | To | Transition Owner | Preconditions | Required Evidence | Failure / Resume Route |
-|---|---|---|---|---|---|---|
-| `<ENTITY>` | `<STATE>` | `<STATE>` | `<ACTOR>` | `<CONDITIONS>` | `<EVIDENCE>` | `<ROUTE>` |
+| Subject | From | To | Transition Owner | Preconditions | Required Evidence | Invalidation Condition | Failure / Resume Route |
+|---|---|---|---|---|---|---|---|
+| `<ENTITY>` | `<STATE>` | `<STATE>` | `<ACTOR>` | `<CONDITIONS>` | `<EVIDENCE>` | `<INVALIDATION>` | `<ROUTE>` |
 
-### Dependencies And Gates
+### Typed Dependencies And Gates
 
-Keep prerequisite nodes, acceptance gates, and external conditions in separate
-fields. Walk the dependency order before implementation; an aggregate or
+Keep prerequisite nodes, acceptance gates, and external conditions structurally
+separate. Walk the dependency order before implementation; an aggregate or
 terminal gate must not make a producer depend on its own consumer.
 
-| ID | Type | Prerequisite / Inputs | Consumer / Subject | Satisfaction / Acceptance Rule | Invalidation / Reopen Rule |
+#### Requires Nodes
+
+| Dependency ID | Prerequisite Node ID | Consumer Node ID | Required State | Input Version / Freshness | Invalidation / Reopen Rule |
 |---|---|---|---|---|---|
-| `DEP-01` | `<NODE_GATE_EXTERNAL>` | `<IDS>` | `<ID>` | `<RULE>` | `<RULE>` |
+| `DN-01` | `<NODE_ID>` | `<NODE_ID>` | `ACCEPTED` | `<VERSION_RULE>` | `<RULE>` |
+
+#### Requires Gates
+
+Gate IDs are lane-scoped. A cross-lane gate reference must also name its
+producer lane.
+
+| Dependency ID | Producer Lane ID | Acceptance Gate ID | Consumer Node ID | Required State | Evidence Version / Freshness | Invalidation / Reopen Rule |
+|---|---|---|---|---|---|---|
+| `DG-01` | `<LANE_ID_OR_CURRENT_LANE>` | `<GATE_ID>` | `<NODE_ID>` | `ACCEPTED` | `<VERSION_RULE>` | `<RULE>` |
+
+#### External Conditions
+
+| Condition ID | Condition | Authority / Source | Consumer Node ID | Satisfaction / Freshness Rule | Block / Invalidation Route |
+|---|---|---|---|---|---|
+| `EXT-01` | `<CONDITION>` | `<OWNER_OR_SOURCE>` | `<NODE_ID>` | `<RULE>` | `<ROUTE>` |
 
 ### Retry And Resource Bounds
 
 | Subject | Attempt / Maximum | Time / Token / Tool / Cost Bound | Exhaustion Route | Idempotency / Cleanup |
 |---|---|---|---|---|
 | `<ID>` | `<CURRENT_MAX>` | `<BOUNDS_OR_NONE_WITH_REASON>` | `<BLOCK_ESCALATE_REPLAN>` | `<RULE>` |
+
+### Readiness And Cross-Lane Inputs
+
+Readiness must cover typed accepted dependencies, current versioned inputs,
+external conditions, permissions/tools, write or merge ownership, attempt and
+exhaustion bounds, and any paid/live cost, idempotency, and cleanup bounds.
+
+| Subject | Ready-State Authority | Input / Source Versions | Permissions / Tools / Write Scope | Cross-Lane Producer Lane / Gate / Evidence / Merge Owner | Block / Invalidation Route |
+|---|---|---|---|---|---|
+| `<NODE_OR_WORKLINE>` | `<AUTHORITATIVE_STATE_SOURCE>` | `<VERSIONS>` | `<BOUNDS>` | `<IDS_OR_NONE>` | `<ROUTE>` |
 
 ## Behavior And Failure Trajectories
 

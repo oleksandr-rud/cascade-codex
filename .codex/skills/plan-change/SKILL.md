@@ -95,6 +95,10 @@ first satisfy the definition-readiness and traceability checks in
    retry/resource bounds, and exhaustion behavior. Record assumptions, open
    questions, rejected paths, and deferred decisions when losing them could
    change implementation.
+   Decide graph applicability explicitly: atomic work with one obligation and
+   no useful dependency, join, repair, or revision structure may omit graph
+   sections, but cannot bypass normal planning, permission, review, validation,
+   or closeout.
 5. Map codebase context: entry points, modules, state, data, adapters,
    generated clients, tests, and user paths.
 6. Identify affected and protected feature contracts: the directly changed
@@ -132,6 +136,38 @@ first satisfy the definition-readiness and traceability checks in
 21. Check the plan with `checklists/planning-completeness.md` before claiming
    `DEFINITION_READY` or `IMPLEMENTATION_READY`.
 
+## Graph-Shaped Planning When Applicable
+
+- Name one lane-state owner and distinguish authoritative Task Graph, gate,
+  amendment, and transition/repair records from derived frontier, registry,
+  status-board, and merge-queue projections. Workers and evidence producers
+  emit receipts or transition proposals; they do not self-record shared state.
+- Define each legal transition with its prior and next state, transition owner,
+  preconditions, required evidence, invalidation condition, and deterministic
+  failure or resume route.
+- Give nodes and gates stable, never-reused IDs and reject duplicate IDs,
+  dependency cycles, undefined transitions/resume destinations, invalid legal
+  transition paths, and critical open definitions before claiming
+  `DEFINITION_READY` or `IMPLEMENTATION_READY`.
+- Define readiness from accepted prerequisite nodes/gates; current external
+  conditions and named input/source versions; objective, actor, receipt, write
+  scope, tools/permissions, per-node gate, attempt/maximum, repair and
+  exhaustion routes; absence of blockers; and any paid/live cost,
+  idempotency, or cleanup bounds.
+- For cross-lane readiness, require the producer lane, accepted producer gate,
+  current evidence/version, compatible merge ownership, and invalidation
+  route. A producer completion claim or unaccepted receipt is insufficient.
+- Record plan revision and graph revision separately. Definitions, planning
+  knowledge, workline boundaries, or implementation decisions change plan
+  revision. Topology, dependencies, actors, ownership, or gates change graph
+  revision. An unchanged-topology retry changes attempt/history only.
+- An ownership transfer increments graph revision and blocks authoritative
+  mutation by both the prior and incoming owner until an explicit handoff
+  acceptance record binds the incoming owner and new revision.
+- Recalculate readiness and the derived frontier after blocker resolution,
+  repair, evidence/input invalidation, cross-lane change, or graph amendment.
+  Failed or unblocked work returns to `PENDING` before it can become `READY`.
+
 ## Compression And Replanning Rules
 
 - Compress repeated explanation, completed-step narration, and raw evidence
@@ -160,6 +196,8 @@ first satisfy the definition-readiness and traceability checks in
 
 - intended behavior and assumptions;
 - planning status and revision;
+- graph applicability, graph revision, state owner, authoritative graph sources,
+  and derived-frontier rule when applicable;
 - compact source, definition/decision, question, and boundary ledgers;
 - behavior examples;
 - affected and protected feature contracts;
