@@ -89,3 +89,8 @@ All implementation, documentation, and deterministic evidence is preserved.
 The deterministic resume route is: authorize one bounded `HX-031` run, execute
 target/evaluate/judge/coverage under the current W-002 contract, reevaluate
 `AG-05`, then refresh terminal Standards/Spec reviews and `AG-06`/`TG-01`.
+
+Independent blocked-handoff reviews pass at `6d88300`:
+`EV-W003-BLOCKED-STANDARDS-6D88300` and
+`EV-W003-BLOCKED-SPEC-6D88300`. They confirm the current state is coherent and
+uses the legal vocabulary; they do not accept any blocked or downstream gate.

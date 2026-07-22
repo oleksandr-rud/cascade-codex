@@ -642,6 +642,22 @@ replanning/repair records before recommending execution.
 - Resume: obtain explicit canary authority, complete `SL-05C`, reevaluate
   `AG-05`, then obtain new head-bound terminal Standards and Spec reviews.
 
+### Blocked Handoff Review Record — Repair Attempt 2
+
+- Reviewed head: `6d88300fa87781a5cc3174d2eed98af3727f8c60` after
+  root-owned projection, gate-table, evidence-state, and status-vocabulary
+  repairs.
+- `EV-W003-BLOCKED-STANDARDS-6D88300`: required `PASS`; no findings. The
+  current and derived projections use legal states, preserve completed outputs,
+  and represent the unresolved evidence blocker without accepting consumers.
+- `EV-W003-BLOCKED-SPEC-6D88300`: required `PASS`; no findings. The unchanged
+  `AG-05` requirement, coherent frontier, accepted upstream gates, blocked
+  consumer states, and deterministic resume route match plan revision 4 /
+  graph revision 3.
+- Disposition: the repository is fit for an honest blocked handoff, not for
+  `AG-06` or `TG-01` acceptance. Either new model evidence or an explicitly
+  authorized replan invalidates these receipts and requires refreshed review.
+
 ## Repair And Revision Policy
 
 | Failure | Earliest Responsible Workline | Reopen | Preserve |
@@ -872,8 +888,9 @@ validation remain lower-level structural checks.
   `R-04*`, the authored/deterministic portions of `R-05A` through `R-05C`,
   attempt-2 integrated mechanical evidence, required
   `EV-JGCORE-STANDARDS-CE737F2`/`EV-JGCORE-SPEC-CE737F2` passes, merged
-  `R-06A`/`R-06B`, and the failed terminal reviews that exposed the evidence
-  block and now-repaired projection drift.
+  `R-06A`/`R-06B`, failed terminal attempt-1 receipts, and passing blocked
+  handoff receipts `EV-W003-BLOCKED-STANDARDS-6D88300` /
+  `EV-W003-BLOCKED-SPEC-6D88300` after repair.
 - Next executable action: obtain explicit authority, execute the bounded
   `HX-031` canary, and reevaluate `AG-05`; then refresh terminal reviews.
 - Merge and lane-state owner: root `agent-engineer`.
