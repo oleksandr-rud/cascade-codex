@@ -407,7 +407,7 @@ none becomes downstream-ready until the root integration join `JG-CORE` passes.
 | `WL-03` | Existing skills create, resume, plan, and execute only ready obligations | creation/resume/execution authority; permissions/write scope | `AG-01` | common wave-2 base current | graph-aware context/orchestration/planning/implementation contracts | thread `W003-WL03`; named creation/execution skill files | `AG-03` | `2/3` | `ACCEPTED` |
 | `WL-04` | Existing skills accept evidence, repair minimally, exhaust safely, and close only terminal work | evidence identity, gate lifecycle, partial repair, retry/exhaustion | `AG-01` | common wave-2 base current | graph-aware functional/review/validation/repair/closeout contracts | thread `W003-WL04`; named evidence/repair skill files | `AG-04` | `2/3` | `ACCEPTED` |
 | `WL-05` | Current judged harness distinguishes safe graph behavior from plausible unsafe prose | `GW-001` through `GW-022`; W-002 compatibility | `JG-CORE` | `EXT-01` refreshed by `SL-05A` before eval-file writes | authored cases, current catalog, deterministic and focused evidence | thread `W003-WL05`; eval surfaces after reinspection | `AG-05` | `1/2` | `BLOCKED`; required bounded model evidence lacks spend authority |
-| `WL-06` | Integrated change is documented, validated, and honestly closed | all request criteria and residual-risk reporting | `JG-CORE`, `AG-05` | required commands/environment available or explicitly blocked | docs-impact disposition, final validation, handoff | thread `W003-WL06`; conditional public docs; root owns lane state | `AG-06` | `1/2` | `REVIEW_BLOCKED`; outputs merged at `6c4e33e`, predecessor `AG-05` reopened |
+| `WL-06` | Integrated change is documented, validated, and honestly closed | all request criteria and residual-risk reporting | `JG-CORE`, `AG-05` | required commands/environment available or explicitly blocked | docs-impact disposition, final validation, handoff | thread `W003-WL06`; conditional public docs; root owns lane state | `AG-06` | `1/2` | `BLOCKED`; outputs merged at `6c4e33e`, predecessor `AG-05` reopened |
 
 ## Implementation Slices
 
@@ -619,7 +619,7 @@ replanning/repair records before recommending execution.
   `NOT_RUN` without explicit spend authority; coverage is 0 executed, 0
   accepted, and 309 missing. The protocol remains instruction-driven, and
   executable graph parsing/validation remains deferred under `AQ-05`.
-- Proposed transition: preserve merged `WL-06` outputs in `REVIEW_BLOCKED`;
+- Proposed transition: preserve merged `WL-06` outputs and set `WL-06 -> BLOCKED`;
   `AG-06` and `TG-01` remain `OPEN` until `AG-05` accepts and independent
   integrated reviews pass.
 
@@ -867,7 +867,7 @@ validation remain lower-level structural checks.
   and resolved historical dispatch constraint `AQ-08`.
 - Current worklines: `WL-01` through `WL-04` are accepted; `WL-05 / SL-05C`
   is blocked on spend authority; merged `WL-06` outputs remain
-  `REVIEW_BLOCKED` as affected consumers.
+  `BLOCKED` as affected consumers, with their merged outputs preserved.
 - Current evidence: accepted `R-DG00`, `R-01*`, refreshed `R-02*`/`R-03*`/
   `R-04*`, the authored/deterministic portions of `R-05A` through `R-05C`,
   attempt-2 integrated mechanical evidence, required
