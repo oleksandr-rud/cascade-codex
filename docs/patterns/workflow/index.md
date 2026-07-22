@@ -40,6 +40,11 @@ Create a lane packet when the workstream needs its own:
 - MCP/tool context policy;
 - blocked/deferred handoff.
 
+For a complex lane with typed dependencies, evidence joins, bounded repair, or
+revision-aware handoff, load the reusable semantics in
+[`graph-shaped-work.md`](graph-shaped-work.md). Atomic work may omit that graph
+state without bypassing normal planning, permission, validation, or closeout.
+
 Completed rows should leave `docs/work/active.md` only after durable evidence
 has been preserved under `docs/work/reports/` and the cleanup scope is
 explicit. Do not create a permanent `CLOSED` active-row status; remove completed

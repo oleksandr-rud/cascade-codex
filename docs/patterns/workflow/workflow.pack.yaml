@@ -3,11 +3,12 @@ entry_id: workflow
 title: Workflow Core Pattern Pack
 kind: pattern-context-pack
 owner: Cascade maintainers
-summary: "Selectable workflow rules for routing, lanes, adaptive worklines, planning knowledge, coverage, doc impact, research coverage, closeout, and memory."
-description: "Use this pack when a prompt or skill needs workflow, planning-preservation, or workline rules without loading every pattern entry."
+summary: "Selectable workflow rules for routing, lanes, graph-shaped coordination, adaptive worklines, planning knowledge, coverage, doc impact, research coverage, closeout, and memory."
+description: "Use this pack when a prompt or skill needs workflow, graph-shaped lane, planning-preservation, or workline rules without loading every pattern entry."
 routing:
   use_when:
     - "A task needs lane/workline routing, dependency handling, planning preservation, work-to-source coverage, or closeout memory."
+    - "A complex lane needs typed dependency readiness, evidence joins, bounded repair, revision history, or cross-lane invalidation rules."
     - "A skill references the Doc Routing Decision Matrix or trajectory coverage."
   do_not_use_when:
     - "The task only needs architecture boundary rules, functional testing rules, or source-context retrieval rules."
@@ -18,12 +19,14 @@ routing:
       use_when: "Turning a request, gap, or requirement into behavior examples and validation routes."
     - route: planning-knowledge
       use_when: "Planning or replanning must preserve definitions, boundaries, traceability, and an adaptive workline map."
+    - route: graph-shaped-work
+      use_when: "A complex lane needs graph applicability, authoritative state, readiness, evidence gates, partial repair, revision, or cross-lane rules."
     - route: doc-routing
       use_when: "Durable facts may require product, design, brand, spec, backlog, glossary, or pattern updates."
     - route: research
       use_when: "Research or source discovery may become durable rules or specs."
   write_when:
-    - "A repeated workflow, planning-knowledge, adaptive-workline, routing, closeout, or research-coverage rule changes."
+    - "A repeated workflow, graph-shaped coordination, planning-knowledge, adaptive-workline, routing, closeout, or research-coverage rule changes."
     - "A validated harness change updates the Doc Routing Decision Matrix, lane model, or memory routing."
   defer_when:
     - "The fact is product-specific and belongs in docs/product, docs/design, docs/brand, docs/specs, or docs/backlog."
@@ -132,6 +135,73 @@ documents:
           - memory
           - closeout
           - routing
+  - path: docs/patterns/workflow/graph-shaped-work.md
+    kind: pattern-entry
+    description: "Durable graph-shaped lane semantics for applicability, authoritative state, readiness, evidence gates, bounded repair, revision, and cross-lane work."
+    trigger_when:
+      - "A complex lane has connected obligations, typed dependencies, evidence joins, partial repair, revision-aware handoff, or cross-lane invalidation."
+      - "A graph-aware skill needs one semantic authority without loading task-specific lane state."
+    sections:
+      - id: graph-shaped-work
+        title: Graph-Shaped Work
+        anchor: "## Graph-Shaped Work"
+        summary: "Applies graph-shaped coordination only where connected obligations need it, preserves atomic bypass, and keeps the mechanism instruction-driven."
+        routing_description: "Use when deciding whether a lane needs graph-shaped state or may follow the atomic-work path."
+        tags:
+          - workflow
+          - graph
+          - routing
+          - atomic-work
+      - id: graph-state-authority
+        title: Graph State Authority
+        anchor: "## Graph State Authority"
+        summary: "Defines stable node and gate identity, legal node transitions, one lane-state writer, authoritative records, and receipt-only worker output."
+        routing_description: "Use when creating, resuming, handing off, or reconciling graph-shaped lane state and transition authority."
+        tags:
+          - graph
+          - state
+          - authority
+          - handoff
+      - id: dependency-readiness
+        title: Dependency Readiness
+        anchor: "## Dependency Readiness"
+        summary: "Separates node, gate, and external dependencies and requires current inputs, bounds, permissions, tools, and cycle-free topology before readiness."
+        routing_description: "Use before dispatching or executing a node, or when reviewing dependency typing, permissions, resource bounds, or cycles."
+        tags:
+          - graph
+          - dependencies
+          - readiness
+          - permissions
+      - id: evidence-gates
+        title: Evidence Gates
+        anchor: "## Evidence Gates"
+        summary: "Binds required and optional evidence to current subjects and evaluator authority so output remains in review until its gate accepts it."
+        routing_description: "Use when producing, reviewing, evaluating, accepting, blocking, failing, or reopening graph evidence and gates."
+        tags:
+          - graph
+          - evidence
+          - gates
+          - review
+      - id: partial-repair
+        title: Partial Repair
+        anchor: "## Partial Repair"
+        summary: "Reopens the earliest responsible node and affected consumers, preserves unrelated accepted work, and bounds retries and exhaustion."
+        routing_description: "Use after failed, blocked, stale, or invalid evidence to calculate a bounded repair set and deterministic resume route."
+        tags:
+          - graph
+          - repair
+          - retry
+          - validation
+      - id: graph-revision-cross-lane
+        title: Graph Revision And Cross-Lane Work
+        anchor: "## Graph Revision And Cross-Lane Work"
+        summary: "Separates plan and graph revision, records amendment impact, propagates producer invalidation across lanes, and keeps terminal aggregation non-cyclic."
+        routing_description: "Use when topology changes, work crosses lane or merge boundaries, parallel outputs join, or terminal acceptance is evaluated."
+        tags:
+          - graph
+          - revision
+          - cross-lane
+          - integration
   - path: .codex/skills/orchestrate-work/SKILL.md
     kind: skill
     description: "Adaptive workline discovery, lane materialization, dependency, scheduling, and merge routing."
