@@ -52,6 +52,13 @@ Use this section when the change introduces or modifies state, graphs,
 dependencies, joins/gates, retries, queues, approvals, concurrency, or derived
 projections. Omit it only when those mechanics are genuinely absent.
 
+- Applicability: `<GRAPH_REQUIRED | ATOMIC_BYPASS>`
+- Applicability rationale:
+- Graph revision: `<REVISION_OR_NONE>`
+- Lane-state owner:
+- Authoritative state sources:
+- Derived projections and reconciliation rule:
+
 ### Entity And State Authority
 
 | Entity / Field | Stable Identity | Authority / Source Of Truth | Mutable By | Derived From | Lifecycle / Retention |
@@ -79,6 +86,16 @@ terminal gate must not make a producer depend on its own consumer.
 | Subject | Attempt / Maximum | Time / Token / Tool / Cost Bound | Exhaustion Route | Idempotency / Cleanup |
 |---|---|---|---|---|
 | `<ID>` | `<CURRENT_MAX>` | `<BOUNDS_OR_NONE_WITH_REASON>` | `<BLOCK_ESCALATE_REPLAN>` | `<RULE>` |
+
+### Readiness And Cross-Lane Inputs
+
+Readiness must cover typed accepted dependencies, current versioned inputs,
+external conditions, permissions/tools, write or merge ownership, attempt and
+exhaustion bounds, and any paid/live cost, idempotency, and cleanup bounds.
+
+| Subject | Ready-State Authority | Input / Source Versions | Permissions / Tools / Write Scope | Cross-Lane Producer Gate / Evidence / Merge Owner | Block / Invalidation Route |
+|---|---|---|---|---|---|
+| `<NODE_OR_WORKLINE>` | `<AUTHORITATIVE_STATE_SOURCE>` | `<VERSIONS>` | `<BOUNDS>` | `<IDS_OR_NONE>` | `<ROUTE>` |
 
 ## Behavior And Failure Trajectories
 

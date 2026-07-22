@@ -31,22 +31,37 @@ Use before marking a non-atomic plan `DEFINITION_READY`, before marking it
 
 ## Operational Semantics When Applicable
 
+- [ ] Graph applicability is explicit. Atomic bypass is used only for one
+      bounded obligation with no useful dependency, join, repair, or revision
+      structure and does not bypass normal workflow gates.
 - [ ] Stateful entities and important fields have stable identity, one source
       of truth, mutation authority, derivation rule, and lifecycle/retention.
+- [ ] One lane-state owner records authoritative transitions; workers and
+      evidence producers return receipts or proposals only.
 - [ ] Every legal transition names its actor, preconditions, required evidence,
       and failure, block, reopen, or resume behavior.
 - [ ] Prerequisite nodes, acceptance gates, and external conditions use separate
       fields and satisfaction rules.
 - [ ] The dependency order was walked end to end and contains no cycle or gate
       that requires a downstream consumer before accepting its producer.
+- [ ] Node and gate IDs are unique and never reused; critical open definitions,
+      undefined transitions/resume destinations, and invalid transition paths
+      prevent readiness.
 - [ ] Aggregate/terminal gates are distinct from per-producer acceptance when a
       downstream node depends on that producer.
 - [ ] Join or gate statuses, required/optional inputs, reopening, and evidence
       invalidation are complete when joins or gates exist.
 - [ ] Retry/loop attempts, time/token/tool/cost bounds when relevant,
       idempotency/cleanup, and exhaustion routes are explicit.
+- [ ] Readiness requires current versioned inputs, typed accepted nodes/gates,
+      external conditions, permissions/tools, write or merge ownership,
+      attempts, repair/exhaustion routes, and paid/live bounds when applicable.
+- [ ] Cross-lane readiness names the producer lane, accepted producer gate,
+      current evidence/version, merge owner, and invalidation route.
 - [ ] Concurrent actors cannot mutate the same authoritative state without one
       declared state or merge owner.
+- [ ] Plan revision and graph revision have distinct change rules; an ordinary
+      retry changes attempt/history only.
 
 ## Adaptive Workline Discovery
 

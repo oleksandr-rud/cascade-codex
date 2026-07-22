@@ -2,6 +2,8 @@
 
 Date: YYYY-MM-DD
 Plan Revision: `<REVISION_OR_NONE>`
+Graph Applicability: `<GRAPH_REQUIRED | ATOMIC_BYPASS | NOT_EVALUATED>`
+Graph Revision: `<REVISION_OR_NONE>`
 
 ## Work
 
@@ -32,9 +34,19 @@ Plan Revision: `<REVISION_OR_NONE>`
 
 ## Workline State
 
-| Workline | Outcome | Requires | Produces | Evidence State | Blocker / Drift | Next Gate |
-|---|---|---|---|---|---|---|
-| `<WL-ID>` | `<OUTCOME>` | `<IDS>` | `<OUTPUT>` | `<STATUS>` | `<BLOCKER_OR_NONE>` | `<GATE>` |
+| Workline / Node | Outcome | Typed Requires | Input Versions / Attempt | Produces | Evidence State | Blocker / Drift | Next Gate |
+|---|---|---|---|---|---|---|---|
+| `<WL_OR_NODE_ID>` | `<OUTCOME>` | `<NODES_GATES_EXTERNAL>` | `<VERSIONS_ATTEMPT_MAX>` | `<OUTPUT_RECEIPT>` | `<STATUS>` | `<BLOCKER_OR_NONE>` | `<GATE>` |
+
+## Graph State When Applicable
+
+- Lane-state owner and ownership-handoff status:
+- Authoritative Task Graph / gate / amendment / transition-repair sources:
+- Derived frontier before reconciliation:
+- Recomputed frontier and next ready node:
+- Rejected duplicate/cycle/open-definition/transition conditions:
+- Cross-lane producer gate, evidence version, merge owner, and invalidation route:
+- Worker receipts or conflicting proposals retained as evidence/history:
 
 ## Rehydration Check
 

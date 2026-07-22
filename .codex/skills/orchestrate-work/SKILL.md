@@ -11,6 +11,12 @@ opportunities.
 
 This skill coordinates work; it does not patch product/runtime code by itself.
 
+Graph-shaped coordination is optional. Use it only when connected obligations
+need typed readiness, evidence joins, bounded repair, cross-lane invalidation,
+or revision-aware handoff. Atomic work with one obligation and no useful
+dependency or repair structure may bypass graph-shaped lane sections without
+bypassing normal planning, permissions, review, validation, or closeout.
+
 ## Source Order
 
 1. Latest user request and active goal.
@@ -75,6 +81,57 @@ itself an explicit delivery constraint. Derive the smallest coherent set:
 Multiple worklines do not authorize delegation or parallel execution. Apply
 the normal authorization, file-conflict, independent-validation, and merge
 rules after discovery.
+
+## Graph Construction And State Authority
+
+When graph-shaped coordination applies:
+
+1. Declare one lane-state owner. The lane Task Graph, gate records, latest graph
+   amendment, and transition/repair history are authoritative. Frontiers,
+   status boards, merge queues, and active-registry rows are derived.
+2. Give every node and gate a lane-scoped, stable, never-reused ID. Each node
+   names its obligation, actor/type, versioned inputs, expected receipt, write
+   scope, tools and permissions, per-node acceptance gate, attempt/maximum,
+   repair route, and exhaustion route.
+3. Keep `Requires Nodes`, `Requires Gates`, and `External Conditions` separate.
+   Per-node gates accept one producer; aggregate or terminal gates consume
+   already accepted producers and must not create producer/consumer cycles.
+4. Reject duplicate IDs, undefined transitions or resume destinations,
+   critical open definitions, invalid transition paths, and every dependency
+   cycle before dispatch. A topology that needs any of these repaired is not
+   ready.
+5. Keep plan revision distinct from graph revision. Planning-knowledge or
+   workline-decision changes increment plan revision; topology, dependency,
+   actor, ownership, or gate changes increment graph revision. An
+   unchanged-topology retry increments attempt/history only.
+6. Workers and evidence producers return version-bound receipts or transition
+   proposals. They do not mutate lane state, derived boards, or gates. The
+   lane-state owner reconciles conflicting proposals, records one transition,
+   and retains rejected proposals as evidence/history.
+
+## Readiness And Scheduling
+
+Schedule only nodes whose authoritative state is `READY` after current
+readiness has been recalculated. Readiness requires:
+
+- every typed prerequisite node and gate is `ACCEPTED`;
+- every external condition and named/versioned input is current;
+- objective, actor, output receipt, write scope, gate, attempt/maximum, repair,
+  and exhaustion contracts are defined;
+- no unresolved definition, ownership, product/design, permission, or
+  environment blocker applies;
+- write scopes are disjoint or one merge owner is declared;
+- required tools and permissions exist, with explicit cost, idempotency, and
+  cleanup bounds for paid/live or externally mutating work;
+- no newer graph revision supersedes the node; and
+- a cross-lane input names its producer lane, accepted producer gate, current
+  evidence/version, merge owner, and invalidation route.
+
+Recalculate readiness after accepted results, blocker changes, repair,
+evidence/input invalidation, cross-lane changes, and graph amendments. A worker
+completion claim, local output, stale receipt, or derived `READY` label does not
+satisfy a dependency. A failed or unblocked node returns to `PENDING` for
+recalculation rather than jumping directly to `READY`.
 
 ## Lane Decision Rules
 
@@ -186,10 +243,19 @@ planning implementation.
 8. Apply lane boundary detection before authoring Feature Impact Matrix rows.
 9. Track dependencies, file ownership, source inputs, and MCP/tool context
    before starting edits.
-10. During replanning, preserve workline IDs and dispositions where possible;
+10. Decide graph applicability explicitly. If applicable, record state owner,
+    stable IDs, typed dependencies, gates, versions, permission/tool/write
+    bounds, attempts, repair/exhaustion routes, and plan/graph revisions.
+11. Reject cycles, duplicate IDs, critical open definitions, undefined resume
+    routes, invalid transitions, and ambiguous state or merge ownership before
+    scheduling.
+12. Recompute graph readiness and derived frontier from authoritative state;
+    schedule only current `READY` nodes and require accepted producer-gate
+    evidence for cross-lane inputs.
+13. During replanning, preserve workline IDs and dispositions where possible;
     record added, merged, split, serialized, and superseded worklines.
-11. Merge evidence into `docs/work/active.md` before closeout.
-12. Write a report under `docs/work/reports/` only when requested, multi-turn,
+14. Merge evidence into `docs/work/active.md` before closeout.
+15. Write a report under `docs/work/reports/` only when requested, multi-turn,
    blocked, or decision-heavy.
 
 ## Output
@@ -204,3 +270,6 @@ planning implementation.
 - next gates;
 - source inputs, file ownership, and MCP/tool context;
 - merge evidence plus validation plan.
+- graph applicability; authoritative state owner; plan/graph revision; typed
+  readiness and frontier; rejected invalid topology/state when applicable;
+- receipt/proposal and conflicting-transition reconciliation route.
