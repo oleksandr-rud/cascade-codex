@@ -7,7 +7,7 @@ Authority: `W-003` plan revision `4`, graph revision `3`
 Execution Model: `orchestrator-workers-dependency-waves`
 Lane And Merge Owner: root `agent-engineer`
 Delegation Authorized: `YES` — separate workline threads/worktrees; root control only
-Current Task: `T-06A / SL-06A` documentation-impact inspection
+Current Task: root independent `AG-06` / `TG-01` terminal review
 Created: 2026-07-22
 
 ## Purpose And Authority
@@ -179,8 +179,8 @@ lane state. Reconcile them with W-003 before every task.
 | `T-05A / SL-05A` | 3 / `W003-WL05` | `ACCEPTED` | `context`, `harness-evaluation`, `codex-maintenance` | `SB-BASE -> JG-CORE -> SB-EVAL -> runner/schema` / `P-WL05` | W-002 complete / `R-05A`, refreshed impact | current CLI and protected evidence contracts inspected at `0e6ba3c`; `EXT-01 SATISFIED` |
 | `T-05B / SL-05B` | 3 / `W003-WL05` | `ACCEPTED` | prior plus `implement-change`, `validate-change` | `SB-BASE -> R-05A -> SB-EVAL -> eval sources` / `P-WL05` | `EXT-01` / `R-05B`, cases/catalog | ten interactions authored; catalog/audit/self-test/validator/diff passed; 309-scenario digest recorded |
 | `T-05C / SL-05C` | 3 / `W003-WL05` | `OPTIONAL_NOT_RUN` | `context`, `harness-evaluation`, `review-change`, `validate-change` | `SB-BASE -> R-05A/B -> permission -> CLI` / `P-WL05` | authored canary / `R-05C`, evidence or blocker | no explicit model-spend authority; 0 executed/accepted and 309 missing preserved; `AG-05` accepts authored/deterministic scope only |
-| `T-06A / SL-06A` | 4 / `W003-WL06` | `READY` | `context`, `docs-impact-map`, `codex-maintenance`, `implement-change` | `SB-BASE -> JG-CORE/AG-05 -> SB-CLOSE -> docs` / `P-WL06` | prior gates / `R-06A`, impact disposition | docs fixed point, thin-file check; continue `T-06B` |
-| `T-06B / SL-06B` | 4 / `W003-WL06` | `PENDING` | `context`, `review-change`, `validate-change`, `closeout` | `SB-BASE -> R-06A -> SB-CLOSE -> full evidence` / `P-WL06` | all prior evidence / `R-06B`, final result | full commands, Standards/Spec review; root `MQ-06`, `AG-06`, `TG-01` |
+| `T-06A / SL-06A` | 4 / `W003-WL06` | `REVIEW` | `context`, `docs-impact-map`, `codex-maintenance`, `implement-change` | `SB-BASE -> JG-CORE/AG-05 -> SB-CLOSE -> docs` / `P-WL06` | prior gates / `R-06A`, impact disposition | two thin public docs updated and all sibling targets dispositioned; merged at `6c4e33e` |
+| `T-06B / SL-06B` | 4 / `W003-WL06` | `REVIEW` | `context`, `review-change`, `validate-change`, `closeout` | `SB-BASE -> R-06A -> SB-CLOSE -> full evidence` / `P-WL06` | all prior evidence / `R-06B`, final result | every deterministic command passed on integrated head; independent terminal reviews pending |
 
 Every worker row uses its `P-WLNN` dispatch prompt below. Blocked rows hand off
 to root and the Stop, Repair, And Replan Matrix instead of advancing locally.
@@ -228,7 +228,7 @@ flowchart LR
 | 2 | `W003-WL04` | `agent/w003-wl04-r4-g3` | `fee3f2ee155ff3d22354e0560279f4a527bc1e90` | `ACCEPTED` | `GATE_ACCEPTED` | `R-04A`, `R-04B` at `c6583ff` | `MQ-04 MERGED`; `AG-04 ACCEPTED` |
 | join | root | `agent/w003-integration-r4-g3` | attempt-2 integrated head `ce737f2` | `ACCEPTED` | `GATE_ACCEPTED` | `R-JGCORE`, `EV-JGCORE-STANDARDS-CE737F2`, `EV-JGCORE-SPEC-CE737F2` | `JG-CORE ACCEPTED` |
 | 3 | `W003-WL05` | `agent/w003-wl05-r4-g3` | accepted `JG-CORE` state tip `6a5c5d8` | `ACCEPTED` | `GATE_ACCEPTED` | `R-05A`, `R-05B`, `R-05C` at `0e6ba3c` | `MQ-05 MERGED`; `AG-05 ACCEPTED` with live evidence `NOT_RUN` |
-| 4 | `W003-WL06` | `agent/w003-wl06-r4-g3` | accepted `AG-05` state tip | `READY` | `DISPATCH` | pending | `AG-06`, `TG-01 OPEN` |
+| 4 | `W003-WL06` | `agent/w003-wl06-r4-g3` | accepted `AG-05` state tip `7a5b858` | `REVIEW` | `MERGED_PENDING_GATE` | `R-06A`, `R-06B` at `6c4e33e` | `MQ-06 MERGED`; independent `AG-06`/`TG-01` review pending |
 
 ### Worker Event Protocol
 
@@ -260,7 +260,7 @@ Root replies with exactly one control state: `HOLD`, `CONTINUE`, `REPAIR`,
 | `MQ-04 WL-04` | refreshed `R-04A`, `R-04B` | lineage, reviewed-head/replacement-result checks, post-merge evidence | `MERGED`; `AG-04 ACCEPTED` |
 | `MQ-JG CORE` | refreshed `MQ-02` through `MQ-04` merged | disjoint-write audit, integrated compatibility, validator/diff, focused trajectories | `ACCEPTED` attempt 2 at `ce737f2` |
 | `MQ-05 WL-05` | `JG-CORE`, `R-05A` through `R-05C` | W-002 freshness, evidence-state audit, post-merge harness checks | `MERGED`; `AG-05 ACCEPTED` at `0e6ba3c`, authored/deterministic scope |
-| `MQ-06 WL-06` | `AG-05`, `R-06A`, `R-06B` | final reviews, full commands, residual risks, active/lane closeout | `HOLD` |
+| `MQ-06 WL-06` | `AG-05`, `R-06A`, `R-06B` | final reviews, full commands, residual risks, active/lane closeout | `MERGED_PENDING_GATE` at `6c4e33e`; commands pass, independent reviews pending |
 
 Worker branches freeze at `RECEIPT_READY`. Root uses fast-forward merges for
 serialized waves when possible. Wave-2 branches intentionally diverge from one

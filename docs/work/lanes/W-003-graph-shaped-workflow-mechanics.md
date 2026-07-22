@@ -407,7 +407,7 @@ none becomes downstream-ready until the root integration join `JG-CORE` passes.
 | `WL-03` | Existing skills create, resume, plan, and execute only ready obligations | creation/resume/execution authority; permissions/write scope | `AG-01` | common wave-2 base current | graph-aware context/orchestration/planning/implementation contracts | thread `W003-WL03`; named creation/execution skill files | `AG-03` | `2/3` | `ACCEPTED` |
 | `WL-04` | Existing skills accept evidence, repair minimally, exhaust safely, and close only terminal work | evidence identity, gate lifecycle, partial repair, retry/exhaustion | `AG-01` | common wave-2 base current | graph-aware functional/review/validation/repair/closeout contracts | thread `W003-WL04`; named evidence/repair skill files | `AG-04` | `2/3` | `ACCEPTED` |
 | `WL-05` | Current judged harness distinguishes safe graph behavior from plausible unsafe prose | `GW-001` through `GW-022`; W-002 compatibility | `JG-CORE` | `EXT-01` refreshed by `SL-05A` before eval-file writes | authored cases, current catalog, deterministic and focused evidence | thread `W003-WL05`; eval surfaces after reinspection | `AG-05` | `1/2` | `ACCEPTED`; authored/deterministic evidence only |
-| `WL-06` | Integrated change is documented, validated, and honestly closed | all request criteria and residual-risk reporting | `JG-CORE`, `AG-05` | required commands/environment available or explicitly blocked | docs-impact disposition, final validation, handoff | thread `W003-WL06`; conditional public docs; root owns lane state | `AG-06` | `1/2` | `READY` |
+| `WL-06` | Integrated change is documented, validated, and honestly closed | all request criteria and residual-risk reporting | `JG-CORE`, `AG-05` | required commands/environment available or explicitly blocked | docs-impact disposition, final validation, handoff | thread `W003-WL06`; conditional public docs; root owns lane state | `AG-06` | `1/2` | `REVIEW`; merged at `6c4e33e` |
 
 ## Implementation Slices
 
@@ -496,20 +496,20 @@ flowchart LR
 
 ## Current Frontier
 
-- Ready: `WL-06 / SL-06A` documentation-impact inspection.
+- Ready: none.
 - In progress: none.
-- In review: none.
+- In review: `WL-06`, `AG-06`, and terminal `TG-01` at integrated head
+  `6c4e33e833373b9fb514e040f2a3f68fd0a9e590`.
 - Preserved failed history: `JG-CORE` attempt 1 at `5c4b267` remains recorded.
 - Accepted worklines: `WL-01` through `WL-05`.
-- Pending: `WL-06`.
+- Pending: none.
 - Accepted gates: `DG-00`, `AG-01` through `AG-05`, and `JG-CORE`.
 - Open gates: `AG-06` and `TG-01`.
 - External conditions: `EXT-01` is satisfied by `R-05A` and remains current for
   the accepted WL-05 source versions.
-- Next executable action: dispatch `W003-WL06`; inspect public-document impact,
-  apply only necessary consistency changes, run the complete validation set,
-  and propose `AG-06` and `TG-01` without overstating the unexecuted model
-  evidence.
+- Next executable action: obtain independent Standards and Spec reviews over
+  the integrated closeout head, repair any findings, then let the root lane
+  owner evaluate `AG-06` and `TG-01`.
 
 Current Frontier is a derived projection. On resume, `context` must reconstruct
 it from the Selected Workline Map, gate table, external conditions, and latest
@@ -595,6 +595,26 @@ replanning/repair records before recommending execution.
 | `HX-034` | `GW-009`, `GW-010` | `AUTHORED_ONLY` |
 | `HX-035` | `GW-019` | `AUTHORED_ONLY` |
 | `HX-036` | `GW-020`, `GW-021` | `AUTHORED_ONLY` |
+
+### WL-06 Integrated Receipt — Review Pending
+
+- Worker base/head: `7a5b85862322b994d4113b4744fcdd084a246a36` /
+  `6c4e33e833373b9fb514e040f2a3f68fd0a9e590`; one owned commit, clean branch,
+  and only `CODEX.md` plus `README.md` changed.
+- `R-06A`: `CODEX.md` and `README.md` were `UPDATED` with thin routing and
+  capability-boundary text; README's validated skill count was corrected to
+  39. `docs/structure.md`, work/pattern indexes, the workflow semantic index,
+  and root-owned state files were inspected and marked `NO_CHANGE`.
+- `R-06B`: the full workflow pack, all six graph selectors, Cascade validator,
+  309-scenario catalog check, 18-case self-test, runtime audit, and diff hygiene
+  passed on the integrated head. Worker Standards and Spec self-reviews passed
+  with no findings but do not constitute root acceptance.
+- Residual evidence boundary: model target/evaluate/judge remains optional
+  `NOT_RUN`; coverage is 0 executed, 0 accepted, and 309 missing. The protocol
+  remains instruction-driven, and executable graph parsing/validation remains
+  deferred under `AQ-05`.
+- Proposed transition: `WL-06 -> REVIEW`; `AG-06` and `TG-01` remain `OPEN`
+  until independent integrated reviews pass.
 
 ## Repair And Revision Policy
 
