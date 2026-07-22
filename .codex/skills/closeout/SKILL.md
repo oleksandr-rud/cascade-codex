@@ -44,11 +44,11 @@ Use when work is done, blocked, or ready for handoff.
    consumer in the same graph. Closeout may propose a terminal gate state;
    only the lane-state owner records the transition.
 6. Bind every terminal proposed-transition output to an ordinary receipt with
-   a stable receipt ID and subject node/gate; plan and graph revisions; node
-   attempt; named input/source versions; fixed-point source commit or digest;
-   producer and production time; outputs and evidence references; and
-   invalidation condition. An incomplete binding remains an untrusted proposal
-   and cannot close the gate.
+   a stable receipt ID and subject node, workline, and gate as applicable; plan
+   and graph revisions; node attempt; named input/source versions; fixed-point
+   source commit or digest; producer role/actor, thread ID, and production time;
+   outputs and evidence references; and invalidation condition. An incomplete
+   binding remains an untrusted proposal and cannot close the gate.
 7. Treat lane completion and the user's overall goal as separate decisions.
    For every cross-lane input, verify its producer lane, accepted producer gate
    and current evidence, compatible version/freshness, merge owner, and
@@ -155,9 +155,10 @@ decisions, or learned lessons into `AGENTS.md`.
 - outcome and lane status;
 - current graph revision, terminal-gate proposal, required/optional evidence
   disposition, and lane-state authority when graph-shaped;
-- terminal proposed-transition receipt ID/subject, plan/graph revisions,
-  attempt, input/source versions, fixed-point commit/digest, producer/time,
-  outputs/evidence references, and invalidation condition;
+- terminal proposed-transition receipt ID; subject node/workline/gate as
+  applicable; plan/graph revisions; attempt; input/source versions; fixed-point
+  commit/digest; producer role/actor, thread ID, and time; outputs/evidence
+  references; and invalidation condition;
 - overall user-goal status, remaining terminal/cross-lane obligations, and
   deterministic resume route when incomplete;
 - files changed;
