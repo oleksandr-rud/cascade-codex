@@ -142,6 +142,9 @@ first satisfy the definition-readiness and traceability checks in
   amendment, and transition/repair records from derived frontier, registry,
   status-board, and merge-queue projections. Workers and evidence producers
   emit receipts or transition proposals; they do not self-record shared state.
+- Define each legal transition with its prior and next state, transition owner,
+  preconditions, required evidence, invalidation condition, and deterministic
+  failure or resume route.
 - Give nodes and gates stable, never-reused IDs and reject duplicate IDs,
   dependency cycles, undefined transitions/resume destinations, invalid legal
   transition paths, and critical open definitions before claiming
@@ -158,6 +161,9 @@ first satisfy the definition-readiness and traceability checks in
   knowledge, workline boundaries, or implementation decisions change plan
   revision. Topology, dependencies, actors, ownership, or gates change graph
   revision. An unchanged-topology retry changes attempt/history only.
+- An ownership transfer increments graph revision and blocks authoritative
+  mutation by both the prior and incoming owner until an explicit handoff
+  acceptance record binds the incoming owner and new revision.
 - Recalculate readiness and the derived frontier after blocker resolution,
   repair, evidence/input invalidation, cross-lane change, or graph amendment.
   Failed or unblocked work returns to `PENDING` before it can become `READY`.

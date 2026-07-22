@@ -45,7 +45,8 @@ Graph Revision: `<REVISION_OR_NONE>`
 - Derived frontier before reconciliation:
 - Recomputed frontier and next ready node:
 - Rejected duplicate/cycle/open-definition/transition conditions:
-- Cross-lane producer gate, evidence version, merge owner, and invalidation route:
+- Cross-lane producer lane, lane-scoped gate, evidence version, merge owner,
+  and invalidation route:
 - Worker receipts or conflicting proposals retained as evidence/history:
 
 ## Rehydration Check

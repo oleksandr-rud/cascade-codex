@@ -38,7 +38,8 @@ write or external action, bind the assignment to all of these current fields:
 - per-node acceptance gate, expected output receipt, repair route, exhaustion
   route, and deterministic stop/resume route; and
 - current typed prerequisite nodes, acceptance gates, external conditions, and
-  cross-lane producer gate/evidence versions that established readiness.
+  cross-lane producer lane, lane-scoped gate, evidence version, merge owner,
+  and invalidation route that established readiness.
 
 Use the authoritative lane records, not Current Frontier, a status board, a
 worker completion claim, or a prior snapshot, to confirm the node and graph
@@ -75,6 +76,8 @@ returns one receipt containing:
 - tools/permissions used and applicable time/token/tool/cost, idempotency, and
   cleanup bounds;
 - outputs, checks with exact states, and evidence/artifact references;
+- cross-lane producer lane, lane-scoped gate, evidence version, merge owner,
+  and invalidation route when a cross-lane input applies;
 - blockers or conflicting proposals, invalidation conditions, and preserved
   accepted work; and
 - deterministic repair, exhaustion, stop, or resume route plus the next

@@ -39,7 +39,7 @@ Use before marking a non-atomic plan `DEFINITION_READY`, before marking it
 - [ ] One lane-state owner records authoritative transitions; workers and
       evidence producers return receipts or proposals only.
 - [ ] Every legal transition names its actor, preconditions, required evidence,
-      and failure, block, reopen, or resume behavior.
+      invalidation condition, and failure, block, reopen, or resume behavior.
 - [ ] Prerequisite nodes, acceptance gates, and external conditions use separate
       fields and satisfaction rules.
 - [ ] The dependency order was walked end to end and contains no cycle or gate
@@ -60,6 +60,9 @@ Use before marking a non-atomic plan `DEFINITION_READY`, before marking it
       current evidence/version, merge owner, and invalidation route.
 - [ ] Concurrent actors cannot mutate the same authoritative state without one
       declared state or merge owner.
+- [ ] Ownership transfer increments graph revision and blocks both prior and
+      incoming owners from authoritative mutation until explicit handoff
+      acceptance records the incoming owner and new revision.
 - [ ] Plan revision and graph revision have distinct change rules; an ordinary
       retry changes attempt/history only.
 

@@ -100,11 +100,18 @@ When graph-shaped coordination applies:
    critical open definitions, invalid transition paths, and every dependency
    cycle before dispatch. A topology that needs any of these repaired is not
    ready.
-5. Keep plan revision distinct from graph revision. Planning-knowledge or
+5. Define every legal transition with prior and next state, transition owner,
+   preconditions, required evidence, invalidation condition, and deterministic
+   failure or resume route.
+6. Keep plan revision distinct from graph revision. Planning-knowledge or
    workline-decision changes increment plan revision; topology, dependency,
    actor, ownership, or gate changes increment graph revision. An
    unchanged-topology retry increments attempt/history only.
-6. Workers and evidence producers return version-bound receipts or transition
+7. Treat lane-state ownership transfer as a graph amendment. Increment graph
+   revision, record the proposed prior and incoming owner, and block every
+   authoritative mutation by both owners until an explicit handoff-acceptance
+   record binds the incoming owner and new graph revision.
+8. Workers and evidence producers return version-bound receipts or transition
    proposals. They do not mutate lane state, derived boards, or gates. The
    lane-state owner reconciles conflicting proposals, records one transition,
    and retains rejected proposals as evidence/history.
@@ -249,13 +256,16 @@ planning implementation.
 11. Reject cycles, duplicate IDs, critical open definitions, undefined resume
     routes, invalid transitions, and ambiguous state or merge ownership before
     scheduling.
-12. Recompute graph readiness and derived frontier from authoritative state;
+12. For an ownership transfer, increment graph revision and keep both prior and
+    incoming owners mutation-blocked until explicit handoff acceptance records
+    the incoming owner and revision.
+13. Recompute graph readiness and derived frontier from authoritative state;
     schedule only current `READY` nodes and require accepted producer-gate
     evidence for cross-lane inputs.
-13. During replanning, preserve workline IDs and dispositions where possible;
+14. During replanning, preserve workline IDs and dispositions where possible;
     record added, merged, split, serialized, and superseded worklines.
-14. Merge evidence into `docs/work/active.md` before closeout.
-15. Write a report under `docs/work/reports/` only when requested, multi-turn,
+15. Merge evidence into `docs/work/active.md` before closeout.
+16. Write a report under `docs/work/reports/` only when requested, multi-turn,
    blocked, or decision-heavy.
 
 ## Output
