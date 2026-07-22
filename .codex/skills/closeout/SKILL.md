@@ -13,14 +13,16 @@ Use when work is done, blocked, or ready for handoff.
 2. Current diff and validation evidence.
 3. Current work lanes and behavior examples.
 4. `docs/patterns/workflow/index.md`, especially the Doc Routing Decision Matrix.
-5. Existing product, design, brand, spec, architecture, and glossary docs:
+5. `docs/patterns/workflow/graph-shaped-work.md` plus authoritative graph,
+   gate, amendment, and repair records when the current lane is graph-shaped.
+6. Existing product, design, brand, spec, architecture, and glossary docs:
    - `docs/product/`
    - `docs/design/`
    - `docs/brand/`
    - `docs/specs/`
    - `docs/patterns/boundaries/index.md`
    - `docs/glossary.md`
-6. Session memory and durable lesson locations.
+7. Session memory and durable lesson locations.
 
 ## Checklist
 
@@ -28,8 +30,32 @@ Use when work is done, blocked, or ready for handoff.
    behavior.
 2. Compare current request and directly relevant criteria against changed files
    and tests.
-3. Return to implementation if required behavior is missing and feasible.
-4. Run the closeout drift scan:
+3. For a graph-shaped lane, reconcile the derived frontier and status from the
+   authoritative Task Graph, evidence gates, latest amendment, and repair
+   history before reporting completion. Stale projections or receipts cannot
+   close a gate.
+4. Evaluate terminal evidence without collapsing its classes: every required
+   input must be current and `PASS`; required `FAIL`, `BLOCKED`, `GAP`, or
+   `NOT_RUN` prevents lane completion; optional `NOT_RUN` records optionality
+   and reason. An exhausted required obligation remains `BLOCKED` until its
+   named replan or escalation resolves it.
+5. Confirm an aggregate or terminal gate consumes only already accepted
+   producers, accepts no producer on their behalf, and has no downstream
+   consumer in the same graph. Closeout may propose a terminal gate state;
+   only the lane-state owner records the transition.
+6. Treat lane completion and the user's overall goal as separate decisions.
+   For every cross-lane input, verify its producer lane, accepted producer gate
+   and current evidence, compatible version/freshness, merge owner, and
+   invalidation route. Report remaining required lanes, cross-lane gates,
+   external conditions, or residual risks even when the current lane's
+   terminal gate can accept.
+7. When a cross-lane producer reopens or changes version, recalculate consumer
+   readiness and reopen only work whose inputs are no longer current.
+8. If closeout evidence is invalidated, identify the earliest responsible node
+   and affected consumers, preserve unrelated accepted work, and give a
+   deterministic resume route through `PENDING` and readiness recalculation.
+9. Return to implementation if required behavior is missing and feasible.
+10. Run the closeout drift scan:
    - identify whether the diff introduced or changed durable product behavior,
      design/brand constraints, normalized spec acceptance criteria,
      architecture/boundary rules, stack/runtime facts, or codebase vocabulary;
@@ -42,23 +68,23 @@ Use when work is done, blocked, or ready for handoff.
      useful for future planning or validation;
    - write `no durable doc diff needed` in the closeout output when the change
      is mechanical, refactor-only, test-only, or already documented.
-5. Mark deferred or blocked work with owner and next step.
-6. Persist durable rejected-scope decisions only when they would prevent future
+11. Mark deferred or blocked work with owner and next step.
+12. Persist durable rejected-scope decisions only when they would prevent future
    re-suggestion: record the concept, why it is out of scope, and any prior
    request/report links in the narrowest existing decision, backlog, pattern,
    or report location.
-7. Persist only reusable lessons, required handoff state, requested reports, or
+13. Persist only reusable lessons, required handoff state, requested reports, or
    required thin doc diffs.
    For research-heavy work, update `docs/patterns/context-memory/index.md` with a
    compact research-memory row that points to owner reports, specs, packages,
    prompts, reusable rules, and validation evidence.
-8. Do not create a generic learned-lessons dump.
-9. For active work cleanup, prune completed rows only when the user explicitly
+14. Do not create a generic learned-lessons dump.
+15. For active work cleanup, prune completed rows only when the user explicitly
    asks for cleanup or the closeout scope includes registry maintenance; first
    preserve durable evidence in `docs/work/reports/`, confirm the row is
    complete, confirm dependencies are resolved, and remove the active row
    instead of re-marking it as `CLOSED`.
-10. Keep final handoff concise and honest about checks that did not run.
+16. Keep final handoff concise and honest about checks that did not run.
 
 ## Thin Doc Diff Rules
 
@@ -121,6 +147,10 @@ decisions, or learned lessons into `AGENTS.md`.
 ## Output
 
 - outcome and lane status;
+- current graph revision, terminal-gate proposal, required/optional evidence
+  disposition, and lane-state authority when graph-shaped;
+- overall user-goal status, remaining terminal/cross-lane obligations, and
+  deterministic resume route when incomplete;
 - files changed;
 - validation evidence;
 - doc routing decisions;

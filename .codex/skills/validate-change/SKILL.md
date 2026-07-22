@@ -77,8 +77,9 @@ review, functional acceptance, or stale-test repair.
 15. Recheck freshness against the current subject, graph revision, attempt,
     named inputs/sources, and commit. Invalidated evidence proposes
     `ACCEPTED -> OPEN`, identifies the earliest responsible producer or
-    contract, and reopens only consumers whose named input, contract, gate, or
-    evidence is no longer trustworthy. Preserve unrelated accepted work.
+    contract, and reopens its subject plus only consumers whose named input,
+    contract, gate, or evidence is no longer trustworthy. Preserve unrelated
+    accepted work.
 
 ## Output
 

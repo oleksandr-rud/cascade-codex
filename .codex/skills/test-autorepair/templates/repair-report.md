@@ -20,6 +20,21 @@
 
 Rationale:
 
+## Graph Repair Binding
+
+- Failed evidence ID / subject:
+- Plan revision / graph revision:
+- Attempt / maximum:
+- Input/source versions:
+- Source commit or digest:
+- Earliest responsible node:
+- Lane-state owner:
+
+| Disposition | Node / Gate / Consumer ID | Reason / Invalidated Input |
+|---|---|---|
+| Reopen |  |  |
+| Preserve |  |  |
+
 ## Repair
 
 - Files changed:
@@ -33,3 +48,8 @@ Rationale:
 
 ## Residual Risk Or Handoff
 
+- Exhaustion state and route:
+- Invalidated evidence:
+- Replacement evidence:
+- Proposed transition:
+- Deterministic resume destination:

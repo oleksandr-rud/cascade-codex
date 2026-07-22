@@ -77,9 +77,9 @@ If expected behavior is missing, report `GAP` and route to `plan-change` or
     optional `NOT_RUN` records its optionality and reason. A blocked required
     check proposes a blocked join rather than a pass.
 14. When a receipt's subject, revision, attempt, input/source version, or
-    source commit changes, mark it stale and propose reopening the accepted
-    gate plus only consumers whose named inputs or evidence depend on it.
-    Preserve unrelated accepted work.
+    source commit changes, mark it stale and propose reopening its subject,
+    the accepted gate, and only consumers whose named inputs or evidence
+    depend on it. Preserve unrelated accepted work.
 15. Separate product/runtime failures, stale test failures, missing product
     intent, and infrastructure blockers before choosing the next route.
 16. Route product failures to `implement-change`.

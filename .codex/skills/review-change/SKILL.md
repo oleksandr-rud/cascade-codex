@@ -63,9 +63,13 @@ Run this locally unless the user explicitly authorizes parallel agents.
 8. Apply requirement levels without collapsing outcomes: required `PASS` may
    contribute to acceptance; required `FAIL`, `BLOCKED`, `GAP`, or `NOT_RUN`
    prevents it; optional `NOT_RUN` records optionality and reason.
-9. When the reviewed commit, revision, attempt, inputs, or governing sources
-   change, mark the affected review evidence stale and propose reopening the
-   gate and consumers that relied on it. Preserve unrelated accepted work.
+9. `NO_SPEC_AVAILABLE` cannot satisfy a required Spec-review input. Record that
+   evidence as `GAP` and route the missing contract; when Spec review is
+   explicitly optional, record optional `NOT_RUN` and its reason.
+10. When the reviewed commit, revision, attempt, inputs, or governing sources
+   change, mark the affected review evidence stale and propose reopening its
+   subject, gate, and consumers that relied on it. Preserve unrelated accepted
+   work.
 
 ## Output
 

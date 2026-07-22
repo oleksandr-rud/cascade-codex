@@ -29,5 +29,6 @@
       semantic-judgment evidence.
 - [ ] Required non-passing or not-run evidence prevents a pass; optional
       `NOT_RUN` records optionality and reason.
-- [ ] Stale evidence proposes reopening only its gate and affected consumers;
-      the evidence producer does not record authoritative transitions.
+- [ ] Stale evidence proposes reopening its subject, gate, and affected
+      consumers only; the evidence producer does not record authoritative
+      transitions.
