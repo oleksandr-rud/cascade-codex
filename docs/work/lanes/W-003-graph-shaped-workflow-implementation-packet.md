@@ -7,7 +7,7 @@ Authority: `W-003` plan revision `4`, graph revision `3`
 Execution Model: `orchestrator-workers-dependency-waves`
 Lane And Merge Owner: root `agent-engineer`
 Delegation Authorized: `YES` — separate workline threads/worktrees; root control only
-Current Task: `DG-00` dispatch-base readiness
+Current Task: `T-01A / SL-01A` durable graph semantics
 Created: 2026-07-22
 
 ## Purpose And Authority
@@ -166,8 +166,8 @@ lane state. Reconcile them with W-003 before every task.
 
 | Task / Slice | Wave / Thread | State | Owner Skills | Source Order / Prompt | Requires / Output | Validation / Handoff |
 |---|---|---|---|---|---|---|
-| `DG-00` | root / control | `BLOCKED` | `context`, `orchestrate-work`, `plan-change`, `validate-change` | user -> git state -> W-002/W-003 -> checks / `P-ROOT-CONTROL` | approved reproducible base / `R-DG00` | inventory, clean worker checkout, validator/catalog/self-test/diff; dispatch `W003-WL01` |
-| `T-01A / SL-01A` | 1 / `W003-WL01` | `PENDING` | `context`, `pattern-context`, `codex-maintenance`, `implement-change` | `SB-BASE -> SB-SEM -> skills -> targets` / `P-WL01` | `DG-00` / `R-01A`, semantic document | semantic fixed point, validator, diff; continue `T-01B` |
+| `DG-00` | root / control | `ACCEPTED` | `context`, `orchestrate-work`, `plan-change`, `validate-change` | user -> git state -> W-002/W-003 -> checks / `P-ROOT-CONTROL` | approved reproducible base / `R-DG00` | base `28d69ec70396a31125b7b989e5066149eff8a8ae`; clean checkout and all required deterministic checks passed |
+| `T-01A / SL-01A` | 1 / `W003-WL01` | `READY` | `context`, `pattern-context`, `codex-maintenance`, `implement-change` | `SB-BASE -> SB-SEM -> skills -> targets` / `P-WL01` | `DG-00` / `R-01A`, semantic document | semantic fixed point, validator, diff; continue `T-01B` |
 | `T-01B / SL-01B` | 1 / `W003-WL01` | `PENDING` | prior plus `validate-change`, `review-change` | `SB-BASE -> R-01A -> SB-SEM -> pack` / `P-WL01` | `R-01A` / `R-01B`, pack previews | full/selected compilation, validator, diff; root `MQ-01`/`AG-01` |
 | `T-02A / SL-02A` | 2 / `W003-WL02` | `PENDING` | `context`, `codex-maintenance`, `implement-change` | `SB-BASE -> AG-01 -> SB-LANE -> template` / `P-WL02` | common wave base / `R-02A`, lane template | completeness, validator, diff; continue `T-02B` |
 | `T-02B / SL-02B` | 2 / `W003-WL02` | `PENDING` | prior plus `review-change`, `validate-change` | `SB-BASE -> R-02A -> SB-LANE -> example` / `P-WL02` | `R-02A` / `R-02B`, example walk | acyclic fixed point, validator, diff; root `MQ-02`/`AG-02` after merge |
@@ -221,8 +221,8 @@ flowchart LR
 
 | Wave | Thread | Branch | Base | Workline State | Root Control | Receipt | Merge / Gate |
 |---:|---|---|---|---|---|---|---|
-| 0 | root | `master` pending integration branch | `e562ee5...` plus dirty/untracked inputs | `BLOCKED` | `BASELINE_BLOCKED` | none | `DG-00 BLOCKED` |
-| 1 | `W003-WL01` | `agent/w003-wl01-r4-g3` | assigned after `DG-00` | `PENDING` | `HOLD` | none | `AG-01 OPEN` |
+| 0 | root | `agent/w003-integration-r4-g3` | `28d69ec70396a31125b7b989e5066149eff8a8ae` | `ACCEPTED` | `GATE_ACCEPTED` | `R-DG00` | `DG-00 ACCEPTED` |
+| 1 | `W003-WL01` | `agent/w003-wl01-r4-g3` | accepted integration tip after this state record | `READY` | `DISPATCH` | pending | `AG-01 OPEN` |
 | 2 | `W003-WL02` | `agent/w003-wl02-r4-g3` | accepted `AG-01` tip | `PENDING` | `HOLD` | none | `AG-02 OPEN` |
 | 2 | `W003-WL03` | `agent/w003-wl03-r4-g3` | accepted `AG-01` tip | `PENDING` | `HOLD` | none | `AG-03 OPEN` |
 | 2 | `W003-WL04` | `agent/w003-wl04-r4-g3` | accepted `AG-01` tip | `PENDING` | `HOLD` | none | `AG-04 OPEN` |
@@ -297,6 +297,21 @@ python3 scripts/run_harness_evals.py catalog --check
 python3 scripts/run_harness_evals.py self-test
 git diff --check
 ```
+
+### R-DG00 Dispatch Receipt — 2026-07-22
+
+- Integration branch: `agent/w003-integration-r4-g3`.
+- Dispatch base SHA: `28d69ec70396a31125b7b989e5066149eff8a8ae`.
+- Approved inventory: 54 paths comprising completed W-002 judged-evaluation
+  authority, the planning/context foundation, and W-003 revision 4/task packet
+  revision 2; no unrelated path was identified.
+- Reproducibility proof: a detached worktree created from the recorded SHA was
+  clean and contained both W-002 and both W-003 authoritative artifacts.
+- Checks in that clean worktree: validator `PASS` (7 agents, 39 skills, zero
+  leakage); catalog `PASS` (299 scenarios, digest
+  `89076ff0f1a51bec91eaa413131cfebe41daed3da525316c11452cc6548e2c0d`);
+  self-test `PASS` (18); diff hygiene `PASS`.
+- Proposed transition: `DG-00 -> ACCEPTED`; `T-01A / SL-01A -> READY`.
 
 ### Root Acceptance Join
 
@@ -860,9 +875,9 @@ serialized root-controlled boundaries.
 | `python3 scripts/run_harness_evals.py self-test` | `PASS` | 18 evaluator self-test cases pass. |
 | Tracked and untracked plan diff hygiene | `PASS` | No whitespace errors in the current diff or either untracked W-003 plan artifact. |
 | Deterministic graph-state enforcement | `DECLARED_RESIDUAL_RISK` | Semantics remain instruction/evaluation driven; executable Markdown parsing/validation stays deferred under `AQ-05`. |
-| Reproducible worker dispatch base | `BLOCKED` | Current `master` HEAD does not contain the required dirty/untracked W-002/W-003 and planning inputs; no worker thread is dispatchable yet. |
+| Reproducible worker dispatch base | `PASS` | `R-DG00` binds the approved inventory and clean-checkout evidence to `28d69ec70396a31125b7b989e5066149eff8a8ae`; `W003-WL01` is dispatchable from the accepted integration tip. |
 | W-003 implementation evidence | `NOT_RUN` | Packet preparation does not accept `DG-00`, execute a worker, or accept `AG-01` through `TG-01`/`JG-CORE`. |
 
-The next executable action is root `DG-00`: classify and anchor the approved
-baseline, record its SHA and checks, and prove a clean worker checkout. Only
-then may root dispatch `P-WL01`.
+The next executable action is `P-WL01`: create its branch/worktree from the
+accepted integration tip, execute `T-01A` then `T-01B`, and return `R-01A` and
+`R-01B` without editing root-owned lane state.

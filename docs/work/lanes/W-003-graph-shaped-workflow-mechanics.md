@@ -6,7 +6,7 @@ Plan Revision: `4`
 Owner: `agent-engineer`
 Created: 2026-07-22
 Lane Model: `orchestrator-workers-dependency-waves`
-Next Gate: `DG-00` dispatch-base readiness
+Next Gate: `AG-01` durable semantics and selective context
 Graph Revision: `3`
 
 ## Request
@@ -313,7 +313,7 @@ goal; the root owner confirms all required terminal gates.
 | `AQ-05` | deferred | Add executable parsing/validation of arbitrary Markdown graph topology. | Could improve deterministic enforcement but expands beyond the requested rule/mechanics change. | future `codex-maintenance` only if prompt/eval evidence proves insufficient | `DEFERRED` |
 | `AQ-06` | decision | All six selected worklines remain sections of W-003 and one `active.md` row even though each implementation workline receives a separate thread/branch/worktree. | Separate active lanes would duplicate canonical state and the root status board. | root owner | `ACCEPTED`; revised by plan revision 4 |
 | `AQ-07` | decision | After `AG-01`, `WL-02`, `WL-03`, and `WL-04` may implement concurrently against the accepted semantic contract because their writes are disjoint; their compatibility is not downstream-ready until root accepts `JG-CORE`. | Removes conservative producer-to-producer serialization while preserving an evidence join before evaluation. | root owner plus `JG-CORE` | `ACCEPTED` |
-| `AQ-08` | constraint | The current dirty `master` at `e562ee5e3e1a7348cfc69b8fb4d55d6f83b41a59` is not a valid dispatch base because required W-002/W-003 and planning changes are uncommitted or untracked. | Worktrees created from current `HEAD` would omit required inputs and produce invalid receipts. | root `DG-00` | `OPEN_BLOCKER` |
+| `AQ-08` | constraint | The dirty `master` at `e562ee5e3e1a7348cfc69b8fb4d55d6f83b41a59` was not a valid dispatch base because required W-002/W-003 and planning changes were uncommitted or untracked. | Worktrees created from that historical `HEAD` would omit required inputs and produce invalid receipts. | root `DG-00` | `RESOLVED` by dispatch base `28d69ec70396a31125b7b989e5066149eff8a8ae` |
 
 ## Behavior Examples
 
@@ -402,7 +402,7 @@ none becomes downstream-ready until the root integration join `JG-CORE` passes.
 
 | Workline | Outcome | Primary Criteria | Requires Gates | External Conditions | Produces | Ownership / Writes | Acceptance Gate | Attempt / Max | Status |
 |---|---|---|---|---|---|---|---|---|---|
-| `WL-01` | One selectively retrievable graph semantic authority | reusable semantics; atomic bypass; typed dependencies; state/evidence authority | `DG-00` | plan revision 4 and graph revision 3 remain current | `graph-shaped-work.md` plus pack routing | thread `W003-WL01`; workflow pattern/pack only | `AG-01` | `0/3` | `PENDING` |
+| `WL-01` | One selectively retrievable graph semantic authority | reusable semantics; atomic bypass; typed dependencies; state/evidence authority | `DG-00` | plan revision 4 and graph revision 3 remain current | `graph-shaped-work.md` plus pack routing | thread `W003-WL01`; workflow pattern/pack only | `AG-01` | `1/3` | `READY` |
 | `WL-02` | Optional lane representation that can express and demonstrate the contract | operational state, identity, frontier, gates, repair, history | `AG-01` | common wave-2 base current | lane-template sections and valid non-active example | thread `W003-WL02`; work template/example | `AG-02` | `0/3` | `PENDING` |
 | `WL-03` | Existing skills create, resume, plan, and execute only ready obligations | creation/resume/execution authority; permissions/write scope | `AG-01` | common wave-2 base current | graph-aware context/orchestration/planning/implementation contracts | thread `W003-WL03`; named creation/execution skill files | `AG-03` | `0/3` | `PENDING` |
 | `WL-04` | Existing skills accept evidence, repair minimally, exhaust safely, and close only terminal work | evidence identity, gate lifecycle, partial repair, retry/exhaustion | `AG-01` | common wave-2 base current | graph-aware functional/review/validation/repair/closeout contracts | thread `W003-WL04`; named evidence/repair skill files | `AG-04` | `0/3` | `PENDING` |
@@ -491,22 +491,22 @@ flowchart LR
 
 | Condition | Authority / Source | Consumer | Satisfaction Rule | Current Status | Invalidation / Block Route |
 |---|---|---|---|---|---|
-| `DG-00` | root branch/worktree inspection | every workline thread | One reviewed integration commit contains approved W-002, planning foundation, W-003 revision 4, and task packet revision 2; root records commit SHA and deterministic checks; worker worktrees can start cleanly from it. | `BLOCKED`; current `master` HEAD omits required dirty/untracked sources | Root classifies and anchors the intended baseline. No worker dispatch before acceptance. |
+| `DG-00` | root branch/worktree inspection | every workline thread | One reviewed integration commit contains approved W-002, planning foundation, W-003 revision 4, and task packet revision 2; root records commit SHA and deterministic checks; worker worktrees can start cleanly from it. | `SATISFIED` by `R-DG00` at `28d69ec70396a31125b7b989e5066149eff8a8ae` | Any source-inventory or lineage change invalidates the receipt and blocks new dispatch until root refreshes it. |
 | `EXT-01` | `SRC-09`, refreshed by `SL-05A` | `WL-05` | W-002 is complete; current runner/schema/profile/rubric commands and protected evidence meanings are recorded before W-003 eval edits. | `EXPECTED_SATISFIABLE`; not current enough to unlock `WL-05` until refreshed | Any drift or ambiguous ownership keeps `WL-05` `BLOCKED` and routes to `SL-05A`/`plan-change`. |
 
 ## Current Frontier
 
-- Ready: none until `DG-00` is accepted.
+- Ready: `WL-01` (`SL-01A` then `SL-01B`) on the accepted integration base.
 - In progress: none.
 - In review: none.
-- Blocked: dispatch under `AQ-08`; the current dirty `master` is not a
-  reproducible worker base.
-- Pending: `WL-01` through `WL-06`.
-- Open gates: `DG-00`, `AG-01` through `AG-06`, `JG-CORE`, and `TG-01`.
+- Blocked: none at the current frontier.
+- Pending: `WL-02` through `WL-06`.
+- Accepted gates: `DG-00`.
+- Open gates: `AG-01` through `AG-06`, `JG-CORE`, and `TG-01`.
 - External conditions: `EXT-01` is expected satisfiable because W-002 is
   complete, but `SL-05A` must refresh it before `WL-05` becomes ready.
-- Next executable gate: root evaluates `DG-00` by classifying and anchoring the
-  approved dirty baseline. After acceptance it dispatches thread `W003-WL01`.
+- Next executable action: root dispatches thread `W003-WL01` for `SL-01A` and
+  `SL-01B`, then evaluates `AG-01` on the integrated result.
 
 Current Frontier is a derived projection. On resume, `context` must reconstruct
 it from the Selected Workline Map, gate table, external conditions, and latest
@@ -516,7 +516,7 @@ replanning/repair records before recommending execution.
 
 | Gate | Type | Subject / Inputs | Required Evidence | Acceptance Rule | Status | Failure / Reopen Route |
 |---|---|---|---|---|---|---|
-| `DG-00` | dispatch gate | integration base for all worktrees | reviewed base commit/digest; intended source inventory; clean worker checkout proof; validator, catalog, self-test, and diff hygiene | every required W-002/W-003/planning input is reproducible from one commit and no unresolved user-owned dependency is omitted | `BLOCKED` | root classifies/anchors baseline; remain blocked rather than dispatch from incomplete `HEAD` |
+| `DG-00` | dispatch gate | integration base for all worktrees | `R-DG00`: base `28d69ec70396a31125b7b989e5066149eff8a8ae`; approved 54-file W-002/W-003/planning inventory; clean detached checkout; validator `PASS` (7 agents, 39 skills); catalog `PASS` (299 scenarios, digest `89076ff0f1a51bec91eaa413131cfebe41daed3da525316c11452cc6548e2c0d`); self-test `PASS` (18); diff hygiene `PASS` | every required W-002/W-003/planning input is reproducible from one commit and no unresolved user-owned dependency is omitted | `ACCEPTED` | invalidate on source-inventory or lineage change and refresh before new dispatch |
 | `AG-01` | per-workline | `WL-01` | semantic fixed-point review; full/selected pack compilation; existing section compatibility | all required evidence passes and graph rules have one authority | `OPEN` | reopen `WL-01` |
 | `AG-02` | per-workline | `WL-02` | template review; cycle-free example walk; `GW-001` through `GW-018` representability | schema and example implement accepted `AG-01` semantics without active-state duplication | `OPEN` | reopen `WL-02` or `WL-01` if semantic |
 | `AG-03` | per-workline | `WL-03` | skill fixed-point review; creation/readiness/frontier/authority scenarios | all changed skills use the same authoritative state and readiness contracts | `OPEN` | reopen affected `WL-03` slice or upstream gate |
@@ -627,7 +627,7 @@ resumes.
 
 | Check | Command Or Evidence | Intended Stage | Status |
 |---|---|---|---|
-| Dispatch-base reproducibility | reviewed base commit/digest; clean worker checkout; source inventory; current validator/catalog/self-test/diff results | `DG-00` | `BLOCKED` — current dirty `master` is not anchored |
+| Dispatch-base reproducibility | `R-DG00`; base `28d69ec70396a31125b7b989e5066149eff8a8ae`; clean detached checkout; source inventory; validator/catalog/self-test/diff results | `DG-00` | `PASS`; `DG-00 ACCEPTED` |
 | Compile full workflow pack | `python3 scripts/build_pattern_context_pack.py --pack workflow` | `WL-01` and final | `NOT_RUN` |
 | Compile graph applicability section | `python3 scripts/build_pattern_context_pack.py --pack workflow --section graph-shaped-work` | `WL-01` | `NOT_RUN` |
 | Compile state/authority section | `python3 scripts/build_pattern_context_pack.py --pack workflow --section graph-state-authority` | `WL-01` | `NOT_RUN` |
@@ -704,11 +704,11 @@ only; `AG-01` through `AG-06` and `TG-01` remain `OPEN`.
 | `python3 scripts/run_harness_evals.py catalog --check` | `PASS` — 299 scenarios, digest `89076ff0f1a51bec91eaa413131cfebe41daed3da525316c11452cc6548e2c0d` | Current W-002 catalog remains coherent; no W-003 behavioral scenario has been executed. |
 | `python3 scripts/run_harness_evals.py self-test` | `PASS` — 18 cases | Evaluator mechanics remain healthy; this is not worker or graph-mechanics evidence. |
 | Tracked and untracked plan diff hygiene | `PASS` | No whitespace errors exist in the current tracked diff or either untracked W-003 plan artifact. |
-| Dispatch readiness | `BLOCKED` | Current `master` at `e562ee5e3e1a7348cfc69b8fb4d55d6f83b41a59` does not contain the required dirty/untracked inputs. `DG-00` must anchor one approved reproducible base before worker creation. |
+| Dispatch readiness | `PASS` | Root anchored the approved 54-file W-002/W-003/planning inventory at `28d69ec70396a31125b7b989e5066149eff8a8ae` and reproduced all required checks from a clean detached checkout. |
 
-Plan revision 4 and task revision 2 are `IMPLEMENTATION_READY`; execution is
-correctly blocked at `DG-00`. No worker thread, implementation task, workline
-gate, integration join, or terminal gate is accepted by this planning evidence.
+Plan revision 4 and task revision 2 are `IMPLEMENTATION_READY`; `DG-00` is
+accepted by `R-DG00`. No implementation workline gate, integration join, or
+terminal gate is accepted yet.
 
 ## Risks And Mitigations
 
@@ -743,13 +743,13 @@ validation remain lower-level structural checks.
   `SRC-11` for task/thread execution and refresh `SRC-09` at `SL-05A`.
 - Accepted definitions/decisions: `DEF-01` through `DEF-20`, `AQ-01`, `AQ-02`,
   `AQ-06`, and `AQ-07`; preserve rejected `AQ-03`/`AQ-04`, deferred `AQ-05`,
-  and open blocker `AQ-08`.
-- Current worklines: all pending. `DG-00` blocks dispatch; after it passes,
-  `WL-01` is wave 1 and `WL-02`/`WL-03`/`WL-04` are parallel wave 2.
-- Current evidence: planning/context foundation checks only. No W-003
-  graph-mechanics workline or gate is accepted.
-- Next executable action: root classifies the current dirty baseline and records
-  one reproducible dispatch commit for `DG-00`; no worker thread launches yet.
+  and resolved historical dispatch constraint `AQ-08`.
+- Current worklines: `WL-01` is ready; `WL-02` through `WL-06` are pending.
+  `WL-02`/`WL-03`/`WL-04` become the parallel wave only after `AG-01`.
+- Current evidence: planning/context foundation plus accepted dispatch receipt
+  `R-DG00`; no graph-mechanics workline gate is accepted.
+- Next executable action: dispatch `W003-WL01` from the accepted integration
+  tip and collect `R-01A`/`R-01B` for root review and `AG-01`.
 - Merge and lane-state owner: root `agent-engineer`.
 - Merge target: root integration branch created from the accepted `DG-00` base,
   later merged to the current branch only after `TG-01`.
