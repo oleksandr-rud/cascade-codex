@@ -117,7 +117,7 @@ For atomic work, record the bypass and omit the remaining graph-shaped tables:
 
 | Applicability | Reason / Boundary | Normal Rules Still Required |
 |---|---|---|
-| `<GRAPH_SHAPED | ATOMIC_BYPASS>` | `<WHY_GRAPH_STATE_HELPS_OR_IS_UNNECESSARY>` | `<PLANNING_APPROVAL_REVIEW_VALIDATION_CLOSEOUT>` |
+| `<GRAPH_SHAPED_OR_ATOMIC_BYPASS>` | `<WHY_GRAPH_STATE_HELPS_OR_IS_UNNECESSARY>` | `<PLANNING_APPROVAL_REVIEW_VALIDATION_CLOSEOUT>` |
 
 When graph-shaped state applies, record its authority before creating nodes:
 
@@ -132,9 +132,9 @@ columns. IDs are lane-scoped, stable, and never reused, including after
 supersession. Producing the expected receipt moves a node to `REVIEW`; only its
 accepted per-node gate permits `REVIEW -> ACCEPTED`.
 
-| Node ID | Obligation | Actor / Type | Requires Nodes | Requires Gates | External Conditions | Named / Versioned Inputs | Expected Receipt | Write Scope | Tools / Permissions | Per-Node Gate | Attempt / Max | Status | Last Transition | Evidence |
-|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| `N-01` | `<BOUNDED_OUTCOME>` | `<OWNER_AND_TYPE>` | `<NODE_IDS_OR_NONE>` | `<GATE_IDS_OR_NONE>` | `<CONDITION_IDS_OR_NONE>` | `<INPUT_ID_AT_VERSION>` | `<RECEIPT_ID_AND_OUTPUT>` | `<PATHS_OR_NONE>` | `<TOOLS_APPROVAL_COST_IDEMPOTENCY_CLEANUP_BOUNDS>` | `AG-01` | `<1/3>` | `<PENDING_READY_IN_PROGRESS_REVIEW_ACCEPTED_FAILED_BLOCKED_SUPERSEDED>` | `<TRANSITION_ID>` | `<EVIDENCE_IDS_OR_GAP>` |
+| Node ID | Obligation | Actor / Type | Requires Nodes | Requires Gates | External Conditions | Named / Versioned Inputs | Expected Receipt | Write Scope | Tools / Permissions | Per-Node Gate | Attempt / Max | Repair Route | Exhaustion Route | Status | Last Transition | Evidence |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| `N-01` | `<BOUNDED_OUTCOME>` | `<OWNER_AND_TYPE>` | `<NODE_IDS_OR_NONE>` | `<GATE_IDS_OR_NONE>` | `<CONDITION_IDS_OR_NONE>` | `<INPUT_ID_AT_VERSION>` | `<RECEIPT_ID_AND_OUTPUT>` | `<PATHS_OR_NONE>` | `<TOOLS_APPROVAL_COST_IDEMPOTENCY_CLEANUP_BOUNDS>` | `AG-01` | `<1/3>` | `<EARLIEST_REPAIR_AND_AFFECTED_CONSUMERS>` | `<BLOCKED_REPLAN_OR_ESCALATION_DESTINATION>` | `<PENDING_READY_IN_PROGRESS_REVIEW_ACCEPTED_FAILED_BLOCKED_SUPERSEDED>` | `<TRANSITION_ID>` | `<EVIDENCE_IDS_OR_GAP>` |
 
 #### External And Cross-Lane Conditions
 
@@ -155,7 +155,7 @@ same gate. A terminal gate has no consumer in this graph.
 
 | Gate ID | Type / Subject | Required Evidence | Optional Evidence | Evidence Producers | Evaluator / Reviewer Authority | Acceptance Criteria | Invalidation / Reopen Rule | State | Failure / Repair Route |
 |---|---|---|---|---|---|---|---|---|---|
-| `AG-01` | `<PER_NODE_AND_NODE_ID | AGGREGATE | TERMINAL>` | `<EVIDENCE_IDS>` | `<EVIDENCE_IDS_OR_NONE>` | `<TOOLS_SKILLS_ACTORS>` | `<INDEPENDENT_AUTHORITY>` | `<ALL_REQUIRED_CURRENT_PASS>` | `<WHEN_ACCEPTED_RETURNS_TO_OPEN_AND_CONSUMERS_REOPEN>` | `<OPEN_ACCEPTED_FAILED_BLOCKED>` | `<EARLIEST_RESPONSIBLE_NODE_AND_ROUTE>` |
+| `AG-01` | `<PER_NODE_AND_NODE_ID_OR_AGGREGATE_OR_TERMINAL>` | `<EVIDENCE_IDS>` | `<EVIDENCE_IDS_OR_NONE>` | `<TOOLS_SKILLS_ACTORS>` | `<INDEPENDENT_AUTHORITY>` | `<ALL_REQUIRED_CURRENT_PASS>` | `<WHEN_ACCEPTED_RETURNS_TO_OPEN_AND_CONSUMERS_REOPEN>` | `<OPEN_ACCEPTED_FAILED_BLOCKED>` | `<EARLIEST_RESPONSIBLE_NODE_AND_ROUTE>` |
 
 Bind every evidence input before gate evaluation:
 

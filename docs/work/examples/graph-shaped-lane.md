@@ -70,14 +70,14 @@ The table is the current revision-2 state after the amendment and bounded
 repair. `N-06` and `AG-06` were introduced once in revision 2; no prior ID was
 reused.
 
-| Node ID | Obligation | Actor / Type | Requires Nodes | Requires Gates | External Conditions | Named / Versioned Inputs | Expected Receipt | Write Scope | Tools / Permissions | Per-Node Gate | Attempt / Max | Status | Last Transition | Evidence |
-|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| `N-01` | freeze interface contract | planner / definition | none | none | none | `SRC-01@request-v2` | `R-N01-v2` / `CONTRACT@v2` | `docs/specs/example-contract.md` | local files / allowed | `AG-01` | `2/3` | `ACCEPTED` | `TR-13` | `EV-01-v2` |
-| `N-02` | implement the contract | worker / implementation | none | `AG-01` | `EXT-01` | `CONTRACT@v2` | `R-N02-v2` / `BUILD@v2` | `src/example/` | local test runner / sandbox approval recorded | `AG-02` | `2/3` | `ACCEPTED` | `TR-16` | `EV-02-CMD-v2`, `EV-02-REV-v2`; optional `EV-02-LIVE-v2` |
-| `N-03` | update the operator guide | writer / documentation | `N-01` | none | none | `CONTRACT@v2` | `R-N03-v2` / `GUIDE@v2` | `docs/example-guide.md` | local files / allowed | `AG-03` | `2/3` | `ACCEPTED` | `TR-19` | `EV-03-v2` |
-| `N-04` | run the independent policy scan | reviewer / policy | none | none | none | `SRC-03@boundary-v1` | `R-N04-v1` / `POLICY@v1` | none | read-only scan / allowed | `AG-04` | `1/2` | `ACCEPTED` | `TR-07` | `EV-04-v1` |
-| `N-05` | validate the integrated bundle | integrator / validation | none | `AG-02`, `AG-03`, `AG-04`, `AG-06` | `XL-01` | `BUILD@v2`, `GUIDE@v2`, `POLICY@v1`, `MIGRATION@v1`, `EV-UP-v4` | `R-N05-v2` / `BUNDLE@v2` | none | local validator / allowed | `AG-05` | `2/2` | `ACCEPTED` | `TR-25` | `EV-05-CMD-v2`, `EV-05-REV-v2` |
-| `N-06` | author the migration note | writer / documentation | `N-01` | none | none | `CONTRACT@v2` | `R-N06-v1` / `MIGRATION@v1` | `docs/example-migration.md` | local files / allowed | `AG-06` | `1/2` | `ACCEPTED` | `TR-22` | `EV-06-v1` |
+| Node ID | Obligation | Actor / Type | Requires Nodes | Requires Gates | External Conditions | Named / Versioned Inputs | Expected Receipt | Write Scope | Tools / Permissions | Per-Node Gate | Attempt / Max | Repair Route | Exhaustion Route | Status | Last Transition | Evidence |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| `N-01` | freeze interface contract | planner / definition | none | none | none | `SRC-01@request-v2` | `R-N01-v2` / `CONTRACT@v2` | `docs/specs/example-contract.md` | local files / allowed | `AG-01` | `2/3` | return to `PENDING`; refresh contract; reopen stale consumers | `BLOCKED`; lane owner routes to `plan-change` or user | `ACCEPTED` | `TR-13` | `EV-01-v2` |
+| `N-02` | implement the contract | worker / implementation | none | `AG-01` | `EXT-01` | `CONTRACT@v2` | `R-N02-v2` / `BUILD@v2` | `src/example/` | local test runner / sandbox approval recorded | `AG-02` | `2/3` | return to `PENDING`; repair implementation; reopen `N-05` | `BLOCKED`; lane owner routes to `plan-change` or user | `ACCEPTED` | `TR-16` | `EV-02-CMD-v2`, `EV-02-REV-v2`; optional `EV-02-LIVE-v2` |
+| `N-03` | update the operator guide | writer / documentation | `N-01` | none | none | `CONTRACT@v2` | `R-N03-v2` / `GUIDE@v2` | `docs/example-guide.md` | local files / allowed | `AG-03` | `2/3` | return to `PENDING`; update guide; reopen `N-05` | `BLOCKED`; lane owner routes to `plan-change` or user | `ACCEPTED` | `TR-19` | `EV-03-v2` |
+| `N-04` | run the independent policy scan | reviewer / policy | none | none | none | `SRC-03@boundary-v1` | `R-N04-v1` / `POLICY@v1` | none | read-only scan / allowed | `AG-04` | `1/2` | return to `PENDING`; refresh scan; reopen `N-05` | `BLOCKED`; policy owner and lane owner replan | `ACCEPTED` | `TR-07` | `EV-04-v1` |
+| `N-05` | validate the integrated bundle | integrator / validation | none | `AG-02`, `AG-03`, `AG-04`, `AG-06` | `XL-01` | `BUILD@v2`, `GUIDE@v2`, `POLICY@v1`, `MIGRATION@v1`, `EV-UP-v4` | `R-N05-v2` / `BUNDLE@v2` | none | local validator / allowed | `AG-05` | `2/2` | return to `PENDING`; repair earliest invalid producer; rerun integration | `BLOCKED`; lane owner routes to `plan-change` or user before another attempt | `ACCEPTED` | `TR-25` | `EV-05-CMD-v2`, `EV-05-REV-v2` |
+| `N-06` | author the migration note | writer / documentation | `N-01` | none | none | `CONTRACT@v2` | `R-N06-v1` / `MIGRATION@v1` | `docs/example-migration.md` | local files / allowed | `AG-06` | `1/2` | return to `PENDING`; update note; reopen `N-05` | `BLOCKED`; lane owner routes to `plan-change` or user | `ACCEPTED` | `TR-22` | `EV-06-v1` |
 
 ### External And Cross-Lane Conditions
 
@@ -109,7 +109,7 @@ for either required input.
 | `EV-01-v1` | `N-01`, `AG-01` | `1` | `1` | `SRC-01@request-v1` | `example-a1` | contract checker | `2026-01-10T09:00Z` | required | `PASS`, later invalidated | request or contract version changes |
 | `EV-02-CMD-v1` | `N-02`, `AG-02` | `1` | `1` | `CONTRACT@v1` | `example-b1` | test runner | `2026-01-10T10:00Z` | required | `PASS`, later invalidated | contract or implementation source changes |
 | `EV-02-REV-v1` | `N-02`, `AG-02` | `1` | `1` | `CONTRACT@v1`, `EV-02-CMD-v1` | `example-b1` | independent reviewer | `2026-01-10T10:02Z` | required | `PASS`, later invalidated | reviewed commit or command evidence changes |
-| `EV-02-LIVE-v1` | `N-02`, `AG-02` | `1` | `1` | `CONTRACT@v1` | not applicable | live probe | `2026-01-10T10:02Z` | optional | `NOT_RUN`; no live environment | optionality or live requirement changes |
+| `EV-02-LIVE-v1` | `N-02`, `AG-02` | `1` | `1` | `CONTRACT@v1` | not applicable | live probe | `2026-01-10T10:02Z` | optional | `NOT_RUN`; no live environment; later invalidated as stale | contract version, optionality, or live requirement changes |
 | `EV-03-v1` | `N-03`, `AG-03` | `1` | `1` | `CONTRACT@v1` | `example-c1` | documentation checker | `2026-01-10T10:05Z` | required | `PASS`, later invalidated | contract or guide changes |
 | `EV-04-v1` | `N-04`, `AG-04` | `1` | `1` | `SRC-03@boundary-v1` | `example-d1` | policy scanner | `2026-01-10T10:10Z` | required | `PASS` | boundary or scan policy changes |
 | `EV-05-CMD-v1` | `N-05`, `AG-05` | `1` | `1` | revision-1 producer gates, `EV-UP-v4` | `example-e1` | integration validator | `2026-01-10T11:00Z` | required | `PASS`, later invalidated | any named input or source changes |
@@ -118,7 +118,7 @@ for either required input.
 | `EV-01-v2` | `N-01`, `AG-01` | `2` | `2` | `SRC-01@request-v2` | `example-a2` | contract checker | `2026-01-11T09:00Z` | required | `PASS` | request or contract version changes |
 | `EV-02-CMD-v2` | `N-02`, `AG-02` | `2` | `2` | `CONTRACT@v2` | `example-b2` | test runner | `2026-01-11T10:00Z` | required | `PASS` | contract or implementation source changes |
 | `EV-02-REV-v2` | `N-02`, `AG-02` | `2` | `2` | `CONTRACT@v2`, `EV-02-CMD-v2` | `example-b2` | independent reviewer | `2026-01-11T10:10Z` | required | `PASS` | reviewed commit or command evidence changes |
-| `EV-02-LIVE-v2` | `N-02`, `AG-02` | `2` | `2` | `CONTRACT@v2` | not applicable | live probe | `2026-01-11T10:10Z` | optional | `NOT_RUN`; no live environment | optionality or live requirement changes |
+| `EV-02-LIVE-v2` | `N-02`, `AG-02` | `2` | `2` | `CONTRACT@v2` | not applicable | live probe | `2026-01-11T10:10Z` | optional | `NOT_RUN`; no live environment | contract version, optionality, or live requirement changes |
 | `EV-03-v2` | `N-03`, `AG-03` | `2` | `2` | `CONTRACT@v2` | `example-c2` | documentation checker | `2026-01-11T10:15Z` | required | `PASS` | contract or guide changes |
 | `EV-05-CMD-v2` | `N-05`, `AG-05` | `2` | `2` | `BUILD@v2`, `GUIDE@v2`, `POLICY@v1`, `MIGRATION@v1`, `EV-UP-v4` | `example-e2` | integration validator | `2026-01-11T11:00Z` | required | `PASS` | any named input or source changes |
 | `EV-05-REV-v2` | `N-05`, `AG-05` | `2` | `2` | `EV-05-CMD-v2` | `example-e2` | independent reviewer | `2026-01-11T11:10Z` | required | `PASS` | reviewed commit or integration evidence changes |
@@ -151,13 +151,13 @@ the complete legal state sequence used for each execution.
 
 | Repair ID / Time | Failure Class / Cause | Failed Evidence / Input | Earliest Responsible Node | Reopened Nodes / Gates | Preserved Accepted IDs | Versions / Attempt / Revisions | Deterministic Resume Route |
 |---|---|---|---|---|---|---|---|
-| `RP-01 / 2026-01-11T08:30Z` | stale evidence after material contract amendment | `CONTRACT@v1`; `EV-01-v1`, `EV-02-CMD-v1`, `EV-02-REV-v1`, `EV-03-v1`, `EV-05-CMD-v1`, `EV-05-REV-v1`, `EV-RISK-v1` | `N-01` | `N-01`, `N-02`, `N-03`, `N-05`; `AG-01`, `AG-02`, `AG-03`, `AG-05`, `TG-01`; new `N-06`/`AG-06` start pending/open | `N-04`, `AG-04`, `EV-04-v1`; source `SRC-03` | affected existing nodes move to attempt 2; plan `2`; graph `1 -> 2` | resume `N-01` from `PENDING`; after `AG-01`, run ready `N-02`, `N-03`, `N-06`; then `N-05`; reevaluate terminal |
+| `RP-01 / 2026-01-11T08:30Z` | stale evidence after material contract amendment | `CONTRACT@v1`; `EV-01-v1`, `EV-02-CMD-v1`, `EV-02-REV-v1`, optional `EV-02-LIVE-v1` (`NOT_RUN`, now stale), `EV-03-v1`, `EV-05-CMD-v1`, `EV-05-REV-v1`, `EV-RISK-v1` | `N-01` | `N-01`, `N-02`, `N-03`, `N-05`; `AG-01`, `AG-02`, `AG-03`, `AG-05`, `TG-01`; new `N-06`/`AG-06` start pending/open | `N-04`, `AG-04`, `EV-04-v1`; source `SRC-03` | affected existing nodes move to attempt 2; plan `2`; graph `1 -> 2` | resume `N-01` from `PENDING`; after `AG-01`, run ready `N-02`, `N-03`, `N-06`; then `N-05`; reevaluate terminal |
 
 ### Graph Amendment History
 
 | Amendment ID / Time | Prior -> Next Revision | Reason | Changed Nodes / Edges / Actors / Owners / Gates | Stable New / Replacement IDs | Preserved Evidence | Invalidated Evidence | Affected Consumers | Recomputed Frontier |
 |---|---|---|---|---|---|---|---|---|
-| `AM-01 / 2026-01-11T08:30Z` | `1 -> 2` | request adds `CONTRACT@v2` and a required migration note | change inputs for `N-01`, `N-02`, `N-03`, `N-05`; add `N-06 -> AG-06 -> N-05`; add `AG-06 -> TG-01` | new `N-06`, `AG-06`; all prior IDs retained, none reused | `EV-04-v1`, `N-04`, `AG-04`, `EV-UP-v4`, `APR-01` | `EV-01-v1`, `EV-02-CMD-v1`, `EV-02-REV-v1`, `EV-03-v1`, `EV-05-CMD-v1`, `EV-05-REV-v1`, `EV-RISK-v1` | reopen `N-01`, `N-02`, `N-03`, `N-05`; add `N-06`; reopen affected gates and terminal | `N-01` ready; `N-02`, `N-03`, `N-05`, `N-06` pending; `N-04` accepted |
+| `AM-01 / 2026-01-11T08:30Z` | `1 -> 2` | request adds `CONTRACT@v2` and a required migration note | change inputs for `N-01`, `N-02`, `N-03`, `N-05`; add `N-06 -> AG-06 -> N-05`; add `AG-06 -> TG-01` | new `N-06`, `AG-06`; all prior IDs retained, none reused | `EV-04-v1`, `N-04`, `AG-04`, `EV-UP-v4`, `APR-01` | `EV-01-v1`, `EV-02-CMD-v1`, `EV-02-REV-v1`, optional `EV-02-LIVE-v1` (`NOT_RUN`, now stale), `EV-03-v1`, `EV-05-CMD-v1`, `EV-05-REV-v1`, `EV-RISK-v1` | reopen `N-01`, `N-02`, `N-03`, `N-05`; add `N-06`; reopen affected gates and terminal | `N-01` ready; `N-02`, `N-03`, `N-05`, `N-06` pending; `N-04` accepted |
 
 ### Current Frontier (Derived)
 
@@ -232,10 +232,12 @@ producer that is needed by another input to the same terminal gate.
    requires a migration note. Because topology and a gate change, the lane
    owner records `AM-01` and increments graph revision `1 -> 2` rather than
    treating the change as an ordinary retry.
-2. Evidence bound to `CONTRACT@v1` becomes stale. `AG-01`, `AG-02`, `AG-03`,
-   `AG-05`, and `TG-01` reopen. `N-01`, `N-02`, `N-03`, and `N-05` return to
-   `PENDING`; new `N-06` starts `PENDING`. The owner records the exact set in
-   `RP-01`.
+2. Evidence bound to `CONTRACT@v1` becomes stale, including optional
+   `EV-02-LIVE-v1`: it remains historically `NOT_RUN` but is explicitly
+   invalidated rather than silently carried forward. `AG-01`, `AG-02`,
+   `AG-03`, `AG-05`, and `TG-01` reopen. `N-01`, `N-02`, `N-03`, and `N-05`
+   return to `PENDING`; new `N-06` starts `PENDING`. The owner records the exact
+   set in `RP-01`.
 3. `N-04`, `AG-04`, and `EV-04-v1` remain accepted because their
    `SRC-03@boundary-v1` input, scope, contract, and evidence did not change.
    This is the preserved side of the partial repair.
