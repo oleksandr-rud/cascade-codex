@@ -6,7 +6,7 @@ Plan Revision: `4`
 Owner: `agent-engineer`
 Created: 2026-07-22
 Lane Model: `orchestrator-workers-dependency-waves`
-Next Gate: `AG-05` focused judged-harness evidence
+Next Gate: `AG-06` terminal validation and closeout
 Graph Revision: `3`
 
 ## Request
@@ -406,8 +406,8 @@ none becomes downstream-ready until the root integration join `JG-CORE` passes.
 | `WL-02` | Optional lane representation that can express and demonstrate the contract | operational state, identity, frontier, gates, repair, history | `AG-01` | common wave-2 base current | lane-template sections and valid non-active example | thread `W003-WL02`; work template/example | `AG-02` | `2/3` | `ACCEPTED` |
 | `WL-03` | Existing skills create, resume, plan, and execute only ready obligations | creation/resume/execution authority; permissions/write scope | `AG-01` | common wave-2 base current | graph-aware context/orchestration/planning/implementation contracts | thread `W003-WL03`; named creation/execution skill files | `AG-03` | `2/3` | `ACCEPTED` |
 | `WL-04` | Existing skills accept evidence, repair minimally, exhaust safely, and close only terminal work | evidence identity, gate lifecycle, partial repair, retry/exhaustion | `AG-01` | common wave-2 base current | graph-aware functional/review/validation/repair/closeout contracts | thread `W003-WL04`; named evidence/repair skill files | `AG-04` | `2/3` | `ACCEPTED` |
-| `WL-05` | Current judged harness distinguishes safe graph behavior from plausible unsafe prose | `GW-001` through `GW-022`; W-002 compatibility | `JG-CORE` | `EXT-01` must be refreshed by `SL-05A` before eval-file writes | authored cases, current catalog, deterministic and focused evidence | thread `W003-WL05`; eval surfaces after reinspection | `AG-05` | `1/2` | `READY` for `SL-05A` preflight |
-| `WL-06` | Integrated change is documented, validated, and honestly closed | all request criteria and residual-risk reporting | `JG-CORE`, `AG-05` | required commands/environment available or explicitly blocked | docs-impact disposition, final validation, handoff | thread `W003-WL06`; conditional public docs; root owns lane state | `AG-06` | `0/2` | `PENDING` |
+| `WL-05` | Current judged harness distinguishes safe graph behavior from plausible unsafe prose | `GW-001` through `GW-022`; W-002 compatibility | `JG-CORE` | `EXT-01` refreshed by `SL-05A` before eval-file writes | authored cases, current catalog, deterministic and focused evidence | thread `W003-WL05`; eval surfaces after reinspection | `AG-05` | `1/2` | `ACCEPTED`; authored/deterministic evidence only |
+| `WL-06` | Integrated change is documented, validated, and honestly closed | all request criteria and residual-risk reporting | `JG-CORE`, `AG-05` | required commands/environment available or explicitly blocked | docs-impact disposition, final validation, handoff | thread `W003-WL06`; conditional public docs; root owns lane state | `AG-06` | `1/2` | `READY` |
 
 ## Implementation Slices
 
@@ -492,23 +492,24 @@ flowchart LR
 | Condition | Authority / Source | Consumer | Satisfaction Rule | Current Status | Invalidation / Block Route |
 |---|---|---|---|---|---|
 | `DG-00` | root branch/worktree inspection | every workline thread | One reviewed integration commit contains approved W-002, planning foundation, W-003 revision 4, and task packet revision 2; root records commit SHA and deterministic checks; worker worktrees can start cleanly from it. | `SATISFIED` by `R-DG00` at `28d69ec70396a31125b7b989e5066149eff8a8ae` | Any source-inventory or lineage change invalidates the receipt and blocks new dispatch until root refreshes it. |
-| `EXT-01` | `SRC-09`, refreshed by `SL-05A` | `WL-05` | W-002 is complete; current runner/schema/profile/rubric commands and protected evidence meanings are recorded before W-003 eval edits. | `EXPECTED_SATISFIABLE`; not current enough to unlock `WL-05` until refreshed | Any drift or ambiguous ownership keeps `WL-05` `BLOCKED` and routes to `SL-05A`/`plan-change`. |
+| `EXT-01` | `SRC-09`, refreshed by `SL-05A` | `WL-05` | W-002 is complete; current runner/schema/profile/rubric commands and protected evidence meanings are recorded before W-003 eval edits. | `SATISFIED` by `R-05A` at `0e6ba3c3d3b144c533330694368d641488cf8c81`; current CLI and W-002 evidence meanings were inspected before writes | Any runner, schema, profile, rubric, or protected-source drift invalidates `R-05A` and reopens `SL-05A`. |
 
 ## Current Frontier
 
-- Ready: `WL-05 / SL-05A` read-only W-002 contract refresh.
+- Ready: `WL-06 / SL-06A` documentation-impact inspection.
 - In progress: none.
 - In review: none.
 - Preserved failed history: `JG-CORE` attempt 1 at `5c4b267` remains recorded.
-- Accepted worklines: `WL-01` through `WL-04`.
+- Accepted worklines: `WL-01` through `WL-05`.
 - Pending: `WL-06`.
-- Accepted gates: `DG-00`, `AG-01` through `AG-04`, and `JG-CORE`.
-- Open gates: `AG-05`, `AG-06`, and `TG-01`.
-- External conditions: `EXT-01` is expected satisfiable because W-002 is
-  complete, but `SL-05A` must refresh it before `WL-05` becomes ready.
-- Next executable action: dispatch `W003-WL05`; execute read-only `SL-05A` to
-  refresh `EXT-01` before any eval-file write, then author and evaluate the
-  focused W-003 scenarios under the current W-002 contract.
+- Accepted gates: `DG-00`, `AG-01` through `AG-05`, and `JG-CORE`.
+- Open gates: `AG-06` and `TG-01`.
+- External conditions: `EXT-01` is satisfied by `R-05A` and remains current for
+  the accepted WL-05 source versions.
+- Next executable action: dispatch `W003-WL06`; inspect public-document impact,
+  apply only necessary consistency changes, run the complete validation set,
+  and propose `AG-06` and `TG-01` without overstating the unexecuted model
+  evidence.
 
 Current Frontier is a derived projection. On resume, `context` must reconstruct
 it from the Selected Workline Map, gate table, external conditions, and latest
@@ -557,9 +558,43 @@ replanning/repair records before recommending execution.
   `fee3f2e`, reviewed head `ce737f2`, graph revision 3, reevaluation attempt 2.
 - Transition: `WL-02`/`AG-02`, `WL-03`/`AG-03`, `WL-04`/`AG-04`, and
   `JG-CORE -> ACCEPTED`; `WL-05 / SL-05A -> READY`.
-| `AG-05` | per-workline | `WL-05` | refreshed W-002 impact note; catalog; self-test; required focused eligibility/target/judge evidence under that refreshed contract | unsafe routes rejected; intended routes accepted; evidence states remain distinct; optional live evidence may be `NOT_RUN` only with explicit optionality/reason | `OPEN` | repair `WL-05` cases or route observed workflow defect upstream |
+| `AG-05` | per-workline | `WL-05` | `R-05A` through `R-05C` at `0e6ba3c`; ten authored interactions `HX-027` through `HX-036` covering `GW-001` through `GW-022`; catalog `PASS` (309 scenarios, digest `6d856d23e4c9695094382fd09beaae96efdba56a29cbb168f8b12e9797ca2fea`); audit/self-test/validator/diff `PASS`; independent Standards/Spec `PASS`; coverage 0 executed, 0 accepted, 309 missing; optional model canary `NOT_RUN` because no explicit spend authority was provided | authored unsafe/intended routes are structurally distinguished; deterministic checks pass; evidence states remain distinct; no claim of live target effectiveness or accepted model judgment is made | `ACCEPTED` — attempt 1, authored/deterministic scope | repair `WL-05` cases or route an observed workflow defect upstream; any future live claim requires a new version-bound target/evaluate/judge receipt |
 | `AG-06` | per-workline | `WL-06` | docs-impact matrix; validator; pack compilation; catalog; self-test; runtime audit; diff check | every required check passes; required blockers, gaps, failures, or not-run evidence prevent acceptance | `OPEN` | reopen smallest responsible workline |
 | `TG-01` | terminal aggregate | `AG-01` through `AG-06` | accepted current per-workline gates plus explicit residual-risk statement | all six gates are `ACCEPTED`; no workline consumes `TG-01` | `OPEN` | reopen invalidated gates/consumers; lane remains incomplete |
+
+### WL-05 Acceptance Record — Attempt 1
+
+- Integrated and reviewed head: `0e6ba3c3d3b144c533330694368d641488cf8c81`.
+- `R-05A`: read-only inspection confirmed the current W-002 runner, schema,
+  profile, rubric, evidence-state, and CLI contracts before any eval-source
+  write; no protected runner, schema, profile, rubric, or skill-case source was
+  changed.
+- `R-05B`: `HX-027` through `HX-036` cover `GW-001` through `GW-022`; the
+  generated catalog contains 309 scenarios with digest
+  `6d856d23e4c9695094382fd09beaae96efdba56a29cbb168f8b12e9797ca2fea`.
+- `R-05C`: catalog check, runtime audit, self-test (18), Cascade validator, and
+  diff hygiene passed. Independent harness Standards and Spec reviews reported
+  no findings.
+- Evidence boundary: coverage reports 0 executed, 0 accepted, and 309 missing.
+  The bounded `HX-031` target/evaluate/judge canary is optional and is
+  `NOT_RUN` because this task had no explicit model-spend authority. Therefore
+  `AG-05` accepts authored/deterministic harness coverage, not live-model
+  behavior or calibration.
+- Transition: `EXT-01`, `WL-05`, and `AG-05 -> ACCEPTED`; `WL-06 / SL-06A ->
+  READY`.
+
+| Authored Interaction | Covered Behavior Criteria | Evidence State |
+|---|---|---|
+| `HX-027` | `GW-001` | `AUTHORED_ONLY` |
+| `HX-028` | `GW-002`, `GW-017` | `AUTHORED_ONLY` |
+| `HX-029` | `GW-003`, `GW-013`, `GW-018`, `GW-021` | `AUTHORED_ONLY` |
+| `HX-030` | `GW-004`, `GW-015` | `AUTHORED_ONLY` |
+| `HX-031` | `GW-005`, `GW-011`, `GW-016`, `GW-022` | `AUTHORED_ONLY`; proposed optional canary |
+| `HX-032` | `GW-006`, `GW-007`, `GW-014` | `AUTHORED_ONLY` |
+| `HX-033` | `GW-008`, `GW-012` | `AUTHORED_ONLY` |
+| `HX-034` | `GW-009`, `GW-010` | `AUTHORED_ONLY` |
+| `HX-035` | `GW-019` | `AUTHORED_ONLY` |
+| `HX-036` | `GW-020`, `GW-021` | `AUTHORED_ONLY` |
 
 ## Repair And Revision Policy
 
@@ -674,11 +709,11 @@ resumes.
 | Review skill consumers for one authority and legal transitions | Standards/Spec fixed-point review | `WL-03` and `WL-04` | `PASS` after bounded review and integration repairs |
 | Wave-2 integration compatibility | root merge lineage, disjoint-write audit, lane-schema/skill fixed point, focused readiness/evidence/repair trajectories | `JG-CORE` | `PASS` at `ce737f2`; attempt-1 failure preserved; required attempt-2 Standards/Spec evidence passed |
 | Cascade structural validation | `python3 scripts/validate_cascade_codex.py` | each coherent slice and final | `PASS` at `AG-01`; 7 agents, 39 skills, zero leakage |
-| Catalog freshness | `python3 scripts/run_harness_evals.py catalog --check` | `WL-05` and final | `PASS` pre-WL-05; 299 scenarios, digest `89076ff0...`; refresh after authored cases |
-| Harness evaluator self-test | `python3 scripts/run_harness_evals.py self-test` | `WL-05` and final | `PASS` at `JG-CORE`; 18 cases |
-| Runtime audit | `python3 scripts/run_harness_evals.py audit --runtime` | final | `PASS` at `JG-CORE`; zero findings, required models available; rerun final |
-| Diff hygiene | `git diff --check` | each coherent slice and final | `PASS` at `AG-01` |
-| Focused behavioral evidence | Current eligibility/target/judge commands pinned during `SL-05A` | `WL-05` | `NOT_RUN` |
+| Catalog freshness | `python3 scripts/run_harness_evals.py catalog --check` | `WL-05` and final | `PASS` at `AG-05`; 309 scenarios, digest `6d856d23e4c9695094382fd09beaae96efdba56a29cbb168f8b12e9797ca2fea` |
+| Harness evaluator self-test | `python3 scripts/run_harness_evals.py self-test` | `WL-05` and final | `PASS` at `AG-05`; 18 cases |
+| Runtime audit | `python3 scripts/run_harness_evals.py audit --runtime` | final | `PASS` at `AG-05`; zero findings, required models available; rerun final |
+| Diff hygiene | `git diff --check` | each coherent slice and final | `PASS` at `AG-05` |
+| Focused behavioral evidence | `HX-027` through `HX-036`; current eligibility/target/judge commands pinned during `SL-05A` | `WL-05` | `AUTHORED_ONLY`; deterministic validation `PASS`; optional live canary `NOT_RUN`; coverage 0 executed/accepted, 309 missing |
 
 Passing structural and compilation checks will prove artifact shape and routing
 wiring. They will not prove that a live model consistently applies readiness,
@@ -779,13 +814,14 @@ validation remain lower-level structural checks.
 - Accepted definitions/decisions: `DEF-01` through `DEF-20`, `AQ-01`, `AQ-02`,
   `AQ-06`, and `AQ-07`; preserve rejected `AQ-03`/`AQ-04`, deferred `AQ-05`,
   and resolved historical dispatch constraint `AQ-08`.
-- Current worklines: `WL-01` through `WL-04` are accepted; `WL-05 / SL-05A`
-  is ready; `WL-06` remains pending.
+- Current worklines: `WL-01` through `WL-05` are accepted; `WL-06 / SL-06A`
+  is ready.
 - Current evidence: accepted `R-DG00`, `R-01*`, refreshed `R-02*`/`R-03*`/
-  `R-04*`, attempt-2 integrated mechanical evidence, and required
-  `EV-JGCORE-STANDARDS-CE737F2`/`EV-JGCORE-SPEC-CE737F2` passes.
-- Next executable action: dispatch `W003-WL05`, refresh `EXT-01` read-only,
-  then author focused graph-mechanics cases under the confirmed W-002 contract.
+  `R-04*`, `R-05A` through `R-05C`, attempt-2 integrated mechanical evidence,
+  required `EV-JGCORE-STANDARDS-CE737F2`/`EV-JGCORE-SPEC-CE737F2` passes, and
+  the WL-05 independent Standards/Spec pass.
+- Next executable action: dispatch `W003-WL06`, produce the docs-impact
+  disposition, run terminal checks, and propose `AG-06`/`TG-01`.
 - Merge and lane-state owner: root `agent-engineer`.
 - Merge target: root integration branch created from the accepted `DG-00` base,
   later merged to the current branch only after `TG-01`.

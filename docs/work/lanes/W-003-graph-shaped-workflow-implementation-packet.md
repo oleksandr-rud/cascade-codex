@@ -7,7 +7,7 @@ Authority: `W-003` plan revision `4`, graph revision `3`
 Execution Model: `orchestrator-workers-dependency-waves`
 Lane And Merge Owner: root `agent-engineer`
 Delegation Authorized: `YES` — separate workline threads/worktrees; root control only
-Current Task: `T-05A / SL-05A` W-002 contract refresh
+Current Task: `T-06A / SL-06A` documentation-impact inspection
 Created: 2026-07-22
 
 ## Purpose And Authority
@@ -176,10 +176,10 @@ lane state. Reconcile them with W-003 before every task.
 | `T-04A / SL-04A` | 2 / `W003-WL04` | `ACCEPTED` | `context`, `codex-maintenance`, `implement-change` | `SB-BASE -> AG-01 -> SB-EVIDENCE -> evidence skills` / `P-WL04` | common wave base / `R-04A`, evidence-gate rules | refreshed receipt at `c6583ff`; merged and accepted by `AG-04` |
 | `T-04B / SL-04B` | 2 / `W003-WL04` | `ACCEPTED` | prior plus `review-change`, `validate-change` | `SB-BASE -> R-04A -> SB-EVIDENCE -> repair skills` / `P-WL04` | `R-04A` / `R-04B`, repair/terminal rules | repaired fixed point, integrated checks, independent review `PASS` |
 | `JG-CORE` | root / integration | `ACCEPTED` | `context`, `review-change`, `validate-change` | W-003 -> merged receipts/commits -> integrated diff / `P-ROOT-CONTROL` | merged wave-2 receipts / `R-JGCORE` | attempt 2 accepted at `ce737f2`; lineage/mechanical/Standards/Spec joins passed |
-| `T-05A / SL-05A` | 3 / `W003-WL05` | `READY` | `context`, `harness-evaluation`, `codex-maintenance` | `SB-BASE -> JG-CORE -> SB-EVAL -> runner/schema` / `P-WL05` | W-002 complete / `R-05A`, refreshed impact | read-only contract/CLI inspection; root records `EXT-01` |
-| `T-05B / SL-05B` | 3 / `W003-WL05` | `PENDING` | prior plus `implement-change`, `validate-change` | `SB-BASE -> R-05A -> SB-EVAL -> eval sources` / `P-WL05` | `EXT-01` / `R-05B`, cases/catalog | catalog, audit, self-test, validator, diff; continue `T-05C` |
-| `T-05C / SL-05C` | 3 / `W003-WL05` | `PENDING` | `context`, `harness-evaluation`, `review-change`, `validate-change` | `SB-BASE -> R-05A/B -> permission -> CLI` / `P-WL05` | authored canary / `R-05C`, evidence or blocker | target/evaluate/judge/coverage as required; root `MQ-05`/`AG-05` |
-| `T-06A / SL-06A` | 4 / `W003-WL06` | `PENDING` | `context`, `docs-impact-map`, `codex-maintenance`, `implement-change` | `SB-BASE -> JG-CORE/AG-05 -> SB-CLOSE -> docs` / `P-WL06` | prior gates / `R-06A`, impact disposition | docs fixed point, thin-file check; continue `T-06B` |
+| `T-05A / SL-05A` | 3 / `W003-WL05` | `ACCEPTED` | `context`, `harness-evaluation`, `codex-maintenance` | `SB-BASE -> JG-CORE -> SB-EVAL -> runner/schema` / `P-WL05` | W-002 complete / `R-05A`, refreshed impact | current CLI and protected evidence contracts inspected at `0e6ba3c`; `EXT-01 SATISFIED` |
+| `T-05B / SL-05B` | 3 / `W003-WL05` | `ACCEPTED` | prior plus `implement-change`, `validate-change` | `SB-BASE -> R-05A -> SB-EVAL -> eval sources` / `P-WL05` | `EXT-01` / `R-05B`, cases/catalog | ten interactions authored; catalog/audit/self-test/validator/diff passed; 309-scenario digest recorded |
+| `T-05C / SL-05C` | 3 / `W003-WL05` | `OPTIONAL_NOT_RUN` | `context`, `harness-evaluation`, `review-change`, `validate-change` | `SB-BASE -> R-05A/B -> permission -> CLI` / `P-WL05` | authored canary / `R-05C`, evidence or blocker | no explicit model-spend authority; 0 executed/accepted and 309 missing preserved; `AG-05` accepts authored/deterministic scope only |
+| `T-06A / SL-06A` | 4 / `W003-WL06` | `READY` | `context`, `docs-impact-map`, `codex-maintenance`, `implement-change` | `SB-BASE -> JG-CORE/AG-05 -> SB-CLOSE -> docs` / `P-WL06` | prior gates / `R-06A`, impact disposition | docs fixed point, thin-file check; continue `T-06B` |
 | `T-06B / SL-06B` | 4 / `W003-WL06` | `PENDING` | `context`, `review-change`, `validate-change`, `closeout` | `SB-BASE -> R-06A -> SB-CLOSE -> full evidence` / `P-WL06` | all prior evidence / `R-06B`, final result | full commands, Standards/Spec review; root `MQ-06`, `AG-06`, `TG-01` |
 
 Every worker row uses its `P-WLNN` dispatch prompt below. Blocked rows hand off
@@ -227,8 +227,8 @@ flowchart LR
 | 2 | `W003-WL03` | `agent/w003-wl03-r4-g3` | `fee3f2ee155ff3d22354e0560279f4a527bc1e90` | `ACCEPTED` | `GATE_ACCEPTED` | `R-03A`, `R-03B` at `a363f42` | `MQ-03 MERGED`; `AG-03 ACCEPTED` |
 | 2 | `W003-WL04` | `agent/w003-wl04-r4-g3` | `fee3f2ee155ff3d22354e0560279f4a527bc1e90` | `ACCEPTED` | `GATE_ACCEPTED` | `R-04A`, `R-04B` at `c6583ff` | `MQ-04 MERGED`; `AG-04 ACCEPTED` |
 | join | root | `agent/w003-integration-r4-g3` | attempt-2 integrated head `ce737f2` | `ACCEPTED` | `GATE_ACCEPTED` | `R-JGCORE`, `EV-JGCORE-STANDARDS-CE737F2`, `EV-JGCORE-SPEC-CE737F2` | `JG-CORE ACCEPTED` |
-| 3 | `W003-WL05` | `agent/w003-wl05-r4-g3` | accepted `JG-CORE` tip after this state record | `READY` | `DISPATCH` | pending | `AG-05 OPEN` |
-| 4 | `W003-WL06` | `agent/w003-wl06-r4-g3` | accepted `AG-05` tip | `PENDING` | `HOLD` | none | `AG-06`, `TG-01 OPEN` |
+| 3 | `W003-WL05` | `agent/w003-wl05-r4-g3` | accepted `JG-CORE` state tip `6a5c5d8` | `ACCEPTED` | `GATE_ACCEPTED` | `R-05A`, `R-05B`, `R-05C` at `0e6ba3c` | `MQ-05 MERGED`; `AG-05 ACCEPTED` with live evidence `NOT_RUN` |
+| 4 | `W003-WL06` | `agent/w003-wl06-r4-g3` | accepted `AG-05` state tip | `READY` | `DISPATCH` | pending | `AG-06`, `TG-01 OPEN` |
 
 ### Worker Event Protocol
 
@@ -259,7 +259,7 @@ Root replies with exactly one control state: `HOLD`, `CONTINUE`, `REPAIR`,
 | `MQ-03 WL-03` | refreshed `R-03A`, `R-03B` | lineage, revision-contract review/trajectories, post-merge evidence | `MERGED`; `AG-03 ACCEPTED` |
 | `MQ-04 WL-04` | refreshed `R-04A`, `R-04B` | lineage, reviewed-head/replacement-result checks, post-merge evidence | `MERGED`; `AG-04 ACCEPTED` |
 | `MQ-JG CORE` | refreshed `MQ-02` through `MQ-04` merged | disjoint-write audit, integrated compatibility, validator/diff, focused trajectories | `ACCEPTED` attempt 2 at `ce737f2` |
-| `MQ-05 WL-05` | `JG-CORE`, `R-05A` through `R-05C` | W-002 freshness, evidence-state audit, post-merge harness checks | `HOLD` |
+| `MQ-05 WL-05` | `JG-CORE`, `R-05A` through `R-05C` | W-002 freshness, evidence-state audit, post-merge harness checks | `MERGED`; `AG-05 ACCEPTED` at `0e6ba3c`, authored/deterministic scope |
 | `MQ-06 WL-06` | `AG-05`, `R-06A`, `R-06B` | final reviews, full commands, residual risks, active/lane closeout | `HOLD` |
 
 Worker branches freeze at `RECEIPT_READY`. Root uses fast-forward merges for
@@ -330,6 +330,24 @@ git diff --check
   and diff hygiene passed on the integrated tip.
 - Transition: `WL-01`, `SL-01A`, `SL-01B`, and `AG-01 -> ACCEPTED`;
   `WL-02`, `WL-03`, and `WL-04 -> READY` on one common wave-2 base.
+
+### R-AG05 Acceptance Receipt — 2026-07-22
+
+- Worker branch/base/head: `agent/w003-wl05-r4-g3` / `6a5c5d8` /
+  `0e6ba3c3d3b144c533330694368d641488cf8c81`; only
+  `interactions.json` and its generated catalog changed.
+- `R-05A`: current W-002 CLI, schema, profile, rubric, and evidence boundaries
+  were inspected before writing; `EXT-01 SATISFIED`.
+- `R-05B`: ten interactions cover `GW-001` through `GW-022`; catalog check
+  passed at 309 scenarios with digest
+  `6d856d23e4c9695094382fd09beaae96efdba56a29cbb168f8b12e9797ca2fea`.
+- `R-05C`: audit, self-test (18), validator, diff hygiene, and independent
+  Standards/Spec review passed. Coverage remains 0 executed, 0 accepted, and
+  309 missing.
+- Model evidence: the bounded `HX-031` target/evaluate/judge canary was
+  optional and `NOT_RUN` because no explicit model-spend authority was
+  provided. `AG-05` therefore accepts authored/deterministic coverage only.
+- Transition: `WL-05` and `AG-05 -> ACCEPTED`; `T-06A / SL-06A -> READY`.
 
 ### Root Acceptance Join
 
