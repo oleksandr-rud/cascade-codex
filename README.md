@@ -19,7 +19,7 @@ work-lane tracking, and release validation into one reusable package.
 - Runtime bridge: `CODEX.md`
 - Adapter template: `harness.config.example.yaml`
 - Local role contracts: 7
-- Registered skills: 38
+- Registered skills: 39
 - Canonical skill and role source: `.codex/skills/` and `.codex/agents/`
 - Planning and judge model: `gpt-5.6-sol`
 - Read-heavy execution model: `gpt-5.6-terra`
@@ -67,6 +67,12 @@ Broad work is split by `orchestrate-work` only when lanes have independent
 source inputs, disjoint file ownership or one merge owner, acceptance checks,
 and merge evidence. Shared product/design/security decisions stay serialized.
 
+Complex lanes with typed dependencies, evidence joins, bounded partial repair,
+or revision-aware handoff can use the graph-shaped protocol in
+`docs/patterns/workflow/graph-shaped-work.md`. The lane packet remains the
+authoritative task state, atomic work may omit the graph sections, and Cascade
+does not add a graph runtime or replace the agent's reasoning and tool loop.
+
 At closeout, the shared Doc Routing Decision Matrix records whether durable
 product, design, brand, spec, architecture, stack, glossary, or backlog facts
 were updated, already aligned, deferred, blocked, missing context, or did not
@@ -108,7 +114,7 @@ When those decisions require product/runtime code changes, the implementation
 still routes through planning, architecture or secure-design review when
 needed, `implement-change`, and validation.
 
-The 38 registered skills cluster into:
+The 39 registered skills cluster into:
 
 - Core execution and workflow packets: `context`, `agentic-workflow-builder`,
   `orchestrate-work`, `plan-change`, `functional-qa`, `implement-change`,
@@ -242,7 +248,7 @@ Expected output includes:
 ```text
 cascade_codex_status=PASS
 agents=7
-skills=38
+skills=39
 project_specific_leakage=0
 standalone_qa_refs=0
 ```

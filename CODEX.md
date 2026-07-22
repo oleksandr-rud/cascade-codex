@@ -190,6 +190,14 @@ Completed or unrelated work lanes are historical context. Example lanes are
 copyable guidance only and are not active work unless copied into
 `docs/work/lanes/` and registered in `docs/work/active.md`.
 
+For a complex lane with typed dependencies, evidence joins, bounded partial
+repair, or revision-aware handoff, load
+`docs/patterns/workflow/graph-shaped-work.md`. The lane packet owns
+authoritative task and gate state; `docs/work/active.md` and status boards are
+derived projections. Atomic work may omit the graph sections, and the protocol
+does not add a scheduler, compiler, or replacement for the agent's reasoning
+and tool loop.
+
 ## Write Targets
 
 Use `docs/structure.md` as the folder map for skills that write or translate
