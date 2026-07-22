@@ -1,6 +1,6 @@
 ---
 name: orchestrate-work
-description: Use to split, serialize, schedule, track, or merge work lanes when tasks may run in parallel or conflict through dependencies, file ownership, shared decisions, or validation gates.
+description: Use to discover, split, merge, serialize, schedule, track, or connect one or several worklines when a request crosses dependencies, ownership, write scopes, shared decisions, validation gates, or handoff boundaries.
 ---
 
 # Orchestrate Work
@@ -22,6 +22,8 @@ This skill coordinates work; it does not patch product/runtime code by itself.
    skills.
 5. `docs/patterns/workflow/index.md`.
 6. `docs/structure.md` for lane/example/report write targets.
+7. `docs/patterns/context-memory/index.md` when workline planning must survive
+   compaction, handoff, or replanning.
 
 ## Task Routing Table
 
@@ -41,6 +43,38 @@ This skill coordinates work; it does not patch product/runtime code by itself.
 
 Human review is an explicit open-question or exception path, not a standalone
 workflow route.
+
+## Adaptive Workline Discovery
+
+A workline is one bounded obligation with an outcome, primary criteria,
+dependencies, ownership/write scope, expected output, and validation seam. A
+workline is a planning unit; create a separate active lane only when it needs
+independent tracking, ownership, validation, merge, or handoff.
+
+Do not ask the user how many worklines or plans to create unless the number is
+itself an explicit delivery constraint. Derive the smallest coherent set:
+
+1. enumerate candidate obligations from the latest request, behavior/failure
+   trajectories, affected boundaries, source owners, outputs, writes, and
+   validation seams;
+2. select a distinct workline when it has an independently meaningful outcome
+   or evidence boundary;
+3. merge or serialize candidates that share an unresolved decision,
+   state-machine/public-contract change, conflicting write scope, or evidence
+   that cannot be accepted independently;
+4. assign every request criterion to exactly one primary workline owner and
+   record protected consumers separately;
+5. connect selected worklines through named inputs, outputs, blockers,
+   validation, merge ownership, and stop conditions;
+6. decide which worklines remain sections of one lane and which require
+   separate active lanes;
+7. rerun the boundary pass during replanning. Add, merge, split, serialize, or
+   supersede worklines when evidence changes scope; do not preserve an original
+   count for appearance or symmetry.
+
+Multiple worklines do not authorize delegation or parallel execution. Apply
+the normal authorization, file-conflict, independent-validation, and merge
+rules after discovery.
 
 ## Lane Decision Rules
 
@@ -138,22 +172,31 @@ planning implementation.
 
 ## Checklist
 
-1. Classify work as `single-lane`, `parallel-sectioning`, `parallel-voting`,
+1. Discover candidate worklines without a target count and record why each is
+   selected, merged, serialized, deferred, or rejected.
+2. Verify every request criterion has one primary workline owner and no
+   workline lacks an independently meaningful outcome or validation seam.
+3. Classify execution as `single-lane`, `parallel-sectioning`, `parallel-voting`,
    `orchestrator-workers`, or `evaluator-optimizer`.
-2. Record lanes in `docs/work/active.md`.
-3. Create lane packets only for lanes that need more detail than a row.
-4. Use `docs/work/examples/` when a first-time lane needs a populated model.
-5. Assign each lane a next gate from the task routing table.
-6. Apply lane boundary detection before authoring Feature Impact Matrix rows.
-7. Track dependencies, file ownership, source inputs, and MCP/tool context
+4. Record only materialized lanes in `docs/work/active.md`.
+5. Create lane packets only for worklines that need more detail than a row or
+   must preserve connected request-level planning context.
+6. Use `docs/work/examples/` when a first-time lane needs a populated model.
+7. Assign each lane a next gate from the task routing table.
+8. Apply lane boundary detection before authoring Feature Impact Matrix rows.
+9. Track dependencies, file ownership, source inputs, and MCP/tool context
    before starting edits.
-8. Merge evidence into `docs/work/active.md` before closeout.
-9. Write a report under `docs/work/reports/` only when requested, multi-turn,
+10. During replanning, preserve workline IDs and dispositions where possible;
+    record added, merged, split, serialized, and superseded worklines.
+11. Merge evidence into `docs/work/active.md` before closeout.
+12. Write a report under `docs/work/reports/` only when requested, multi-turn,
    blocked, or decision-heavy.
 
 ## Output
 
-- lane model selected;
+- candidate and selected workline map with boundary rationale;
+- criterion ownership and cross-workline dependencies;
+- materialized lanes and lane model selected;
 - lane boundary rationale and Feature Impact Matrix scope;
 - active lanes and dependencies;
 - parallel-safe lanes;

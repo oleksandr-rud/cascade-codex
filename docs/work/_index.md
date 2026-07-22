@@ -6,6 +6,9 @@ Use this folder as the active work memory for Orchestrator.
 
 - `active.md`: active and recently closed work lanes.
 - `lane-template.md`: template for a lane packet when one row is not enough.
+- `.codex/skills/plan-change/templates/definition-ready-plan.md`: reusable
+  planning overlay for preserving definitions, boundaries, adaptive worklines,
+  traceability, and replanning history inside a lane or returned plan.
 - `lanes/`: optional per-lane packets for parallel work.
 - `examples/`: optional non-active lane examples when the harness ships any.
 - `reports/`: durable reports and blocked/deferred handoffs.
@@ -14,7 +17,14 @@ Use this folder as the active work memory for Orchestrator.
 
 - Keep small work in `active.md` only.
 - Create a lane packet when work needs more than a row: separate acceptance
-  criteria, behavior examples, commands, blockers, or independent validation.
+  criteria, behavior examples, definitions, connected worklines, commands,
+  blockers, or independent validation.
+- Derive the number of worklines from inspected outcomes and boundaries. Do not
+  require the user to specify a count; materialize only worklines that need
+  independent state, ownership, validation, merge, or handoff.
+- Preserve compact source, definition/decision, constraint, boundary,
+  traceability, and replanning ledgers; keep detailed content in its
+  authoritative owner.
 - Copy from `examples/` only when a relevant example exists; do not treat
   example lanes as active work.
 - Lanes may run in parallel only when they do not write the same files, require

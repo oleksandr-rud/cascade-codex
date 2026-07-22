@@ -59,6 +59,9 @@ REQUIRED_FILES = [
     "evals/harness/scenarios.generated.json",
     "evals/harness/response.schema.json",
     "evals/harness/judge-response.schema.json",
+    "evals/harness/judge-profiles.json",
+    "evals/harness/rubrics/outcome-v1.json",
+    "evals/harness/rubrics/trajectory-v1.json",
     ".codex/skills/discover/templates/product-spec.md",
     ".codex/skills/discover/templates/journey.md",
     ".codex/skills/discover/templates/brand-spec.md",
@@ -122,9 +125,12 @@ REQUIRED_FILES = [
     ".codex/skills/codex-maintenance/templates/reference-inventory.md",
     ".codex/skills/codex-maintenance/templates/codex-practice-audit.md",
     ".codex/skills/codex-maintenance/templates/maintenance-handoff.md",
-    ".codex/skills/harness-evaluation/checklists/golden-eval-quality.md",
+    ".codex/skills/harness-evaluation/checklists/judged-eval-quality.md",
     ".codex/skills/harness-evaluation/references/trace-schema.md",
     ".codex/skills/harness-evaluation/templates/evaluation-report.md",
+    ".codex/skills/judge-eval-builder/checklists/judge-quality.md",
+    ".codex/skills/judge-eval-builder/references/judged-eval-contract.md",
+    ".codex/skills/judge-eval-builder/templates/judge-design-brief.md",
     ".codex/agents/security/checklists/security-agent-workflows.md",
     ".codex/agents/security/scripts/security_stack_scan.py",
     ".codex/agents/designer/checklists/designer-workflows.md",
@@ -179,6 +185,7 @@ SKILLS = [
     "adapt-harness",
     "ingest-spec",
     "harness-evaluation",
+    "judge-eval-builder",
 ]
 
 FORBIDDEN_PATH_PATTERNS = [
@@ -298,7 +305,7 @@ REQUIRED_HARNESS_AGENTS = {
     "business_analysis": "business-analyst",
     "security_review": "security",
     "design_review": "designer",
-    "golden_evaluation": "harness-evaluator",
+    "judged_evaluation": "harness-evaluator",
 }
 
 PLANNING_MODEL = "gpt-5.6-sol"
@@ -517,8 +524,13 @@ SKILL_TRIGGER_REQUIREMENTS = {
     ],
     "harness-evaluation": [
         r"Cascade|harness",
-        r"scenario|trace|experiment|grading|evaluation",
-        r"golden|regression|eval",
+        r"scenario|trace|experiment|eligibility|evaluation",
+        r"judge|regression|eval",
+    ],
+    "judge-eval-builder": [
+        r"judge|semantic",
+        r"profile|rubric|schema|calibrat|aggregation|adversarial",
+        r"evaluation|eval",
     ],
 }
 
@@ -859,11 +871,23 @@ REQUIRED_SKILL_SURFACES = {
         "docs/patterns/agent-evaluation/index.md",
         "scripts/run_harness_evals.py",
         "harness-evaluator",
-        "deterministic",
+        "eligibility",
         "read-only",
         "JSONL",
-        "hard gates",
+        "outcome",
+        "trajectory",
         "regression",
+    ],
+    "judge-eval-builder": [
+        "evals/harness/judge-profiles.json",
+        "rubrics",
+        "response schema",
+        "0–4",
+        "calibration",
+        "false-pass",
+        "false-fail",
+        "harness",
+        "NOT_RUN",
     ],
 }
 
@@ -1036,7 +1060,7 @@ def check_harness_agent_registry(errors: list[str]) -> None:
     else:
         expected_eval_models = {
             "planning_model": PLANNING_MODEL,
-            "golden_model": PLANNING_MODEL,
+            "judge_model": PLANNING_MODEL,
             "execution_model": EXECUTION_MODEL,
         }
         for key, model in expected_eval_models.items():
@@ -1510,6 +1534,11 @@ def check_harness_eval_contracts(errors: list[str]) -> None:
     catalog_path = ROOT / "evals" / "harness" / "scenarios.generated.json"
     schema_path = ROOT / "evals" / "harness" / "response.schema.json"
     judge_schema_path = ROOT / "evals" / "harness" / "judge-response.schema.json"
+    judge_profiles_path = ROOT / "evals" / "harness" / "judge-profiles.json"
+    rubric_paths = [
+        ROOT / "evals" / "harness" / "rubrics" / "outcome-v1.json",
+        ROOT / "evals" / "harness" / "rubrics" / "trajectory-v1.json",
+    ]
     if not all(
         path.is_file()
         for path in [
@@ -1518,6 +1547,8 @@ def check_harness_eval_contracts(errors: list[str]) -> None:
             catalog_path,
             schema_path,
             judge_schema_path,
+            judge_profiles_path,
+            *rubric_paths,
         ]
     ):
         return
@@ -1528,6 +1559,8 @@ def check_harness_eval_contracts(errors: list[str]) -> None:
         catalog_data = json.loads(read_text(catalog_path))
         schema_data = json.loads(read_text(schema_path))
         judge_schema_data = json.loads(read_text(judge_schema_path))
+        judge_profiles_data = json.loads(read_text(judge_profiles_path))
+        rubric_data = [json.loads(read_text(path)) for path in rubric_paths]
     except json.JSONDecodeError as exc:
         errors.append(f"harness eval JSON parse error: {exc}")
         return
@@ -1628,11 +1661,16 @@ def check_harness_eval_contracts(errors: list[str]) -> None:
     required_judgment = {
         "run_id",
         "scenario_id",
+        "judge_profile_id",
+        "judge_type",
+        "rubric_id",
+        "rubric_version",
         "verdict",
         "root_cause",
-        "deterministic_verdict",
         "earliest_failing_event",
-        "rationale",
+        "dimensions",
+        "confidence",
+        "summary",
         "evidence",
         "replay_command",
         "regression_recommendation",
@@ -1640,6 +1678,82 @@ def check_harness_eval_contracts(errors: list[str]) -> None:
     }
     if set(judge_schema_data.get("required", [])) != required_judgment:
         errors.append("harness eval judge schema required fields are stale")
+    expected_root_causes = {
+        "none",
+        "harness-defect",
+        "target-behavior",
+        "model-variance",
+        "scenario-defect",
+        "environment-blocker",
+    }
+    root_cause_enum = (
+        judge_schema_data.get("properties", {})
+        .get("root_cause", {})
+        .get("enum", [])
+    )
+    if set(root_cause_enum) != expected_root_causes:
+        errors.append("harness eval judge root-cause taxonomy is stale")
+
+    profiles = judge_profiles_data.get("profiles")
+    if not isinstance(profiles, list):
+        errors.append("harness eval judge profile registry missing profiles list")
+        return
+    expected_profiles = {"outcome-v1", "trajectory-v1"}
+    profile_ids = {
+        profile.get("id") for profile in profiles if isinstance(profile, dict)
+    }
+    if profile_ids != expected_profiles:
+        errors.append("harness eval required judge profiles are stale")
+    for profile in profiles:
+        if not isinstance(profile, dict):
+            errors.append("harness eval judge profile must be an object")
+            continue
+        if profile.get("required_for_acceptance") is not True:
+            errors.append(
+                f"harness eval judge profile {profile.get('id')} must be required"
+            )
+        rubric_path = ROOT / str(profile.get("rubric", ""))
+        if not rubric_path.is_file():
+            errors.append(
+                f"harness eval judge profile {profile.get('id')} has missing rubric"
+            )
+
+    rubric_ids: set[str] = set()
+    for rubric in rubric_data:
+        rubric_id = rubric.get("rubric_id")
+        rubric_ids.add(str(rubric_id))
+        dimensions = rubric.get("dimensions")
+        if not isinstance(dimensions, list) or not dimensions:
+            errors.append(f"harness eval rubric {rubric_id} has no dimensions")
+            continue
+        dimension_ids = [
+            dimension.get("id")
+            for dimension in dimensions
+            if isinstance(dimension, dict)
+        ]
+        if len(dimension_ids) != len(dimensions) or len(dimension_ids) != len(
+            set(dimension_ids)
+        ):
+            errors.append(f"harness eval rubric {rubric_id} has invalid dimension ids")
+        weights = [
+            dimension.get("weight")
+            for dimension in dimensions
+            if isinstance(dimension, dict)
+        ]
+        if not all(isinstance(weight, int) and weight > 0 for weight in weights):
+            errors.append(f"harness eval rubric {rubric_id} has invalid weights")
+        elif sum(weights) != 100:
+            errors.append(f"harness eval rubric {rubric_id} weights must total 100")
+        anchors = rubric.get("score_anchors")
+        if not isinstance(anchors, dict) or set(anchors) != {"0", "1", "2", "3", "4"}:
+            errors.append(f"harness eval rubric {rubric_id} anchors are stale")
+        if not isinstance(rubric.get("pass_threshold"), int):
+            errors.append(f"harness eval rubric {rubric_id} threshold is invalid")
+        floor = rubric.get("minimum_dimension_score")
+        if not isinstance(floor, int) or not 0 <= floor <= 4:
+            errors.append(f"harness eval rubric {rubric_id} floor is invalid")
+    if rubric_ids != expected_profiles:
+        errors.append("harness eval rubric ids do not match required judge profiles")
 
 
 def main() -> int:

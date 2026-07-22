@@ -21,7 +21,7 @@ work-lane tracking, and release validation into one reusable package.
 - Local role contracts: 7
 - Registered skills: 38
 - Canonical skill and role source: `.codex/skills/` and `.codex/agents/`
-- Planning and golden model: `gpt-5.6-sol`
+- Planning and judge model: `gpt-5.6-sol`
 - Read-heavy execution model: `gpt-5.6-terra`
 - Validator: `python3 scripts/validate_cascade_codex.py`
 
@@ -37,7 +37,7 @@ compatibility name. Treat that as a path/API label, not the product name.
 | `.codex/config.toml` | Harness registry: name, bridge path, config template, canonical route, memory roots, MCP server config, and role registry. |
 | `.codex/skills/` | Reusable workflow skills with trigger-focused frontmatter, source order, output contracts, templates, checklists, and references where needed. |
 | `.codex/agents/` | Codex-compatible custom-agent TOML files plus local role contracts, skill maps, delegation policy, and specialist checklists. |
-| `evals/harness/` | Curated per-skill cases, cross-skill collisions, a generated golden catalog, and target/judge response schemas. |
+| `evals/harness/` | Curated per-skill cases, cross-skill collisions, a generated catalog, judge profiles, anchored rubrics, and response schemas. |
 | `.artifacts/harness-evals/` | Ignored local JSONL traces, normalized runs, deterministic grades, and reports. |
 | `harness.config.example.yaml` | Target-repository adapter template for stack, roots, validation commands, routing, functional acceptance, memory, tracker, and pattern paths. |
 | `docs/structure.md` | Folder/write-target map for specs, product, design, brand, active work, backlog, patterns, and architecture facts. |
@@ -98,7 +98,7 @@ clear boundary:
 | `business-analyst` | `gpt-5.6-sol` | Long market validation, competitor/pain/economics lanes, evidence grading, and synthesis into specs. |
 | `security` | `gpt-5.6-sol` | Security-sensitive review, auth/session/RBAC and tenant-boundary analysis, secure-design review, audit evidence, and security validation planning. |
 | `designer` | `gpt-5.6-terra` | Read-heavy UX flow review, accessibility review, visual validation, design-system routing, and design handoff planning. |
-| `harness-evaluator` | `gpt-5.6-sol` | Read-only golden evaluation of completed Cascade scenario outputs and traces after deterministic hard gates. |
+| `harness-evaluator` | `gpt-5.6-sol` | Read-only outcome or trajectory judgment of eligible Cascade scenario outputs and traces. |
 
 Agent Engineer is not limited to Cascade internals. Use it for target-project
 agent and LLM systems too: framework-backed agent runtimes, project-owned

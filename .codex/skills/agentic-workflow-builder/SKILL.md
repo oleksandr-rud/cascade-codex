@@ -73,16 +73,21 @@ use it to fill missing product intent; route to `discover`,
    skills relevant to the request.
 2. Identify the objective, expected output, risk, required evidence, and
    whether delegation was explicitly authorized.
-3. Translate the request into workflow phases. Name the global orchestration
-   skill calls first, such as `context`, `orchestrate-work`,
+3. Discover candidate worklines from outcomes, criteria, source/boundary
+   ownership, writes, dependencies, and validation seams. Do not ask for or
+   target a workline count unless the user made that count a constraint. Merge
+   or serialize candidates whose decisions, contracts, writes, or evidence are
+   not independent.
+4. Translate the selected worklines into workflow phases. Name the global
+   orchestration skill calls first, such as `context`, `orchestrate-work`,
    `docs-impact-map`, `plan-change`, `functional-qa`, `validate-change`, or
    `closeout` when those gates are needed.
    For research or source-discovery workflows, also name the coverage facets,
    evidence classes, query-vocabulary families, known-item recovery pass, and
    miss-audit gate before retrieval starts.
-4. Choose the smallest static role set from existing agents or authorized
+5. Choose the smallest static role set from existing agents or authorized
    subagents. Do not invent new dynamic agents.
-5. Build a checklist-style workflow where every step has:
+6. Build a checklist-style workflow where every step has:
    - step ID and status;
    - owning agent or subagent route;
    - global skill or skills to load at that step;
@@ -91,24 +96,31 @@ use it to fill missing product intent; route to `discover`,
    - output artifact;
    - validation or evidence;
    - handoff and stop rule.
-6. Verify every selected agent has TOML, `AGENT.md`, and `skills.yaml`.
-7. Verify every selected skill exists and is wired to the target agent, or mark
+7. Verify every selected agent has TOML, `AGENT.md`, and `skills.yaml`.
+8. Verify every selected skill exists and is wired to the target agent, or mark
    it as an explicit cross-role support exception.
-8. Split lanes only when they have disjoint writes, independent validation, and
+9. Split lanes only when they have disjoint writes, independent validation, and
    a deterministic merge owner.
    For research lanes, split by source-family coverage and evidence class as
    well as by work ownership; "enough evidence to answer" is not the same as
    "coverage complete."
-9. Build the workflow packet and per-role delegation prompts using
+10. Verify every request criterion has one primary workline owner and that
+    cross-workline inputs, outputs, evidence, merge ownership, and stop rules
+    are explicit. Multiple worklines do not imply delegation or parallelism.
+11. Build the workflow packet and per-role delegation prompts using
    `templates/agentic-workflow-packet.md`.
-10. Check packets with `checklists/workflow-packet-quality.md`.
-11. Return the workflow checklist, delegation prompt bank, serialized or
+12. Check packets with `checklists/workflow-packet-quality.md`.
+13. Return the workflow checklist, delegation prompt bank, serialized or
     parallel execution guidance, validation gates, and approval points.
 
 ## Packet Rules
 
 - The packet starts with the agent/global skill inventory used to make routing
   choices.
+- The packet records candidate and selected worklines without implying that a
+  fixed number was requested or known before boundary inspection.
+- Every request criterion has one primary workline owner; shared protection or
+  consumption is recorded without duplicating ownership.
 - Each checklist step names objective, owner route, skill calls, source order,
   prompt, output contract, validation evidence, stop rules, and handoff target.
 - Each delegation prompt is written for an existing role or authorized subagent

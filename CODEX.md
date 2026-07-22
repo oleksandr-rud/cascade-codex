@@ -18,7 +18,7 @@ If docs and code disagree, follow current code and report the drift.
 ## Model Routing
 
 - Pin `gpt-5.6-sol` for the default runtime, orchestration, planning,
-  synthesis, security reasoning, and golden harness evaluation.
+  synthesis, security reasoning, and independent harness judgment.
 - Pin `gpt-5.6-terra` for bounded read-heavy scans, onboarding inventory,
   design evidence review, and target-agent execution probes.
 - Keep model choices in `.codex/config.toml`, custom-agent TOML files, and the
@@ -132,8 +132,11 @@ standalone workflow router.
   hooks, MCP/tools, plugins, subagents, permissions, memory, observability,
   evals, scope, handoffs, file-tree inventories, and validator changes.
 - `harness-evaluation`: use for generated Cascade scenarios, read-only live
-  experiments, JSONL trace capture, deterministic grading, golden semantic
-  evaluation, and regression promotion.
+  experiments, JSONL trace capture, mechanical eligibility, independent
+  outcome and trajectory judgments, coverage measurement, and regression
+  promotion.
+- `judge-eval-builder`: use to create or calibrate judge profiles, anchored
+  rubrics, schemas, aggregation rules, and adversarial judge tests.
 - `develop-skill`: use for creating or refactoring reusable skills.
 - `issue-intake`: use only when a user asks for an issue body, tracker ticket,
   or durable bug-report artifact.
@@ -160,15 +163,15 @@ delegate only when the user explicitly authorizes parallel agents.
   validation planning.
 - `designer`: UX flow review, reusable design-system routing, accessibility
   review, screenshot-backed visual validation, and design handoff planning.
-- `harness-evaluator`: read-only golden evaluation of completed Cascade
-  scenario outputs and traces after deterministic hard gates run.
+- `harness-evaluator`: read-only outcome or trajectory judgment of eligible
+  Cascade scenario outputs and traces.
 
 Cascade is intentionally skill-first except where a repeated long-running
 workflow or specialist review lane needs a durable role boundary. Architecture
 review, functional acceptance, scenario checks, product testing, and issue
 intake remain skills in the cascade rather than separate agents.
 `business-analyst`, `security`, `designer`, and `harness-evaluator` exist
-because long discovery, specialist review, and golden trace adjudication need
+because long discovery, specialist review, and independent trace judgment need
 role boundaries that are separate from implementation.
 
 ## Work Packet
@@ -253,9 +256,10 @@ avoid decorative documentation churn.
 Canonical harness scenarios and schemas live under `evals/harness/`. Generate
 and check the 7-case-per-skill catalog with
 `python3 scripts/run_harness_evals.py catalog --write` and `catalog --check`.
-Live target runs are read-only and store raw JSONL, normalized traces, grades,
-and reports under ignored `.artifacts/harness-evals/`. Use the
-`harness-evaluator` role only after target execution; no live trace means no
-live scenario pass. Run `python3 scripts/run_harness_evals.py judge --run-dir
-.artifacts/harness-evals/<run-id>` for Sol-pinned semantic adjudication of
-failed or non-perfect cases.
+Live target runs are read-only and store raw JSONL, normalized traces,
+eligibility, a source manifest, judgments, and reports under ignored
+`.artifacts/harness-evals/`. Use the `harness-evaluator` role only after target
+execution and eligibility; no live trace means no live scenario pass. Run
+`python3 scripts/run_harness_evals.py judge --run-dir
+.artifacts/harness-evals/<run-id>` for independent outcome and trajectory
+judgments of every eligible case. Accepted coverage requires both.

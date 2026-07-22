@@ -23,7 +23,7 @@ Current entries:
   compaction, context bounds, compact research-memory entries, and
   observability.
 - `agent-evaluation/`: harness scenario coverage, trace evidence,
-  deterministic hard gates, golden evaluation, root cause, and regression
+  mechanical eligibility, independent judged evaluation, root cause, and regression
   promotion.
 
 Use `context-pack-schema.yaml` for the pack metadata contract and

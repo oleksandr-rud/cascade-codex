@@ -31,6 +31,8 @@ Create a lane packet when the workstream needs its own:
 
 - acceptance criteria;
 - behavior examples;
+- compact source, definition/decision, constraint, and boundary ledgers;
+- connected workline discovery, ownership, and replanning history;
 - dependency/conflict tracking;
 - validation commands;
 - source inputs and freshness;
@@ -106,6 +108,86 @@ result loose enough to preserve every major and minor detail inspected or
 analyzed by the trajectories, including edge cases, contradictions, rejected
 paths, open questions, and follow-up gaps. Mark uncertain details instead of
 omitting them.
+
+## Planning Knowledge Contract
+
+A plan is a compact index of implementation knowledge, not a replacement for
+its authoritative sources. Planning and replanning must preserve the minimum
+information needed to reconstruct why the work is shaped as it is:
+
+- source identity, authority, version or freshness, and the claims it supports;
+- accepted definitions and decisions, plus assumptions and unresolved
+  questions with explicit status;
+- negative constraints, rejected paths, and non-goals when losing them would
+  enable an unsafe or repeatedly rejected implementation;
+- producer/consumer boundaries, ownership, compatibility, and invalidation
+  rules;
+- for stateful work, stable identity, source of truth, mutation authority,
+  legal transitions, typed dependencies/gates/external conditions, retry and
+  resource bounds, and exhaustion behavior;
+- request-to-workline-to-artifact-to-evidence traceability;
+- current workline dependencies, blockers, changed artifacts, evidence status,
+  and next gate;
+- revision history showing what was preserved, changed, added, invalidated, or
+  superseded.
+
+This section owns what planning must preserve. `Planning Context Preservation`
+in `docs/patterns/context-memory/index.md` owns how that knowledge is compressed,
+rehydrated, and checked for drift.
+
+Compress repeated explanation and long evidence bodies into summaries with
+stable references. Never compress away identity, provenance, status, negative
+constraints, ownership, acceptance meaning, or the difference between
+authored, executed, blocked, and accepted evidence. A compact projection must
+not become a second authority.
+
+Use planning states deliberately:
+
+- `DRAFT`: coverage or definitions remain open;
+- `DEFINITION_READY`: important terms, boundaries, authority, lifecycle, and
+  failure behavior are coherent;
+- `IMPLEMENTATION_READY`: worklines, slices, writes, dependencies, validation,
+  and stop conditions are mapped;
+- `BLOCKED`: a required source, decision, permission, or validation
+  precondition is unavailable;
+- `SUPERSEDED`: a later revision replaced this plan while retaining its
+  identity and disposition.
+
+For material replanning, increment the plan revision and record the delta
+before replacing current projections. Re-evaluate affected worklines, checks,
+and evidence; preserve unrelated accepted knowledge whose sources and
+boundaries remain current.
+
+## Adaptive Workline Planning
+
+Derive worklines from inspected work; do not begin with a requested, default,
+or aesthetically convenient number. One request may remain one coherent
+workline or produce several connected worklines. The planner chooses the
+smallest set that gives every obligation a clear owner, dependency path,
+write boundary, validation seam, and merge route.
+
+1. Enumerate candidate obligations from request criteria, behavior and failure
+   trajectories, boundaries, source ownership, expected outputs, write scopes,
+   and validation seams.
+2. Select a separate workline when it has an independently meaningful outcome
+   or evidence boundary and can be tracked without hiding a shared decision.
+3. Merge or serialize candidates that share unresolved product/design intent,
+   state-machine or public-contract decisions, conflicting writes, or evidence
+   that cannot be accepted independently.
+4. Give every request criterion one primary workline owner. Other worklines may
+   protect or consume that criterion, but ownership must remain unambiguous.
+5. Record cross-workline inputs, outputs, blockers, validation, and one merge
+   owner. Several worklines do not imply parallel execution or delegation.
+6. Materialize a workline as a separate active lane only when it needs its own
+   status, owner, dependency, validation, merge, or handoff boundary.
+7. Repeat the boundary pass when new evidence changes scope. Add, merge,
+   serialize, or supersede worklines through a plan revision rather than
+   preserving the original count.
+
+Do not ask the user how many worklines or plans to create unless the number is
+itself an explicit product, organizational, or delivery constraint. Ask only
+when an undiscoverable boundary decision would materially change ownership or
+outcome.
 
 ## Research Coverage
 
@@ -223,7 +305,7 @@ Guardrails:
 | Type | Location | Write When |
 |---|---|---|
 | Active work registry | `docs/work/active.md` | A lane opens, changes status, blocks, or closes |
-| Lane packet | `docs/work/lanes/W-XXX-slug.md` | A row needs criteria, examples, dependencies, or validation detail |
+| Lane packet | `docs/work/lanes/W-XXX-slug.md` | A row needs criteria, definitions, connected worklines, dependencies, replanning history, or validation detail |
 | Lane examples | `docs/work/examples/` | First-time adaptation needs copyable non-active lane examples |
 | Durable report | `docs/work/reports/` | Requested, multi-turn, durable decision, blocked handoff, or complex merge |
 | Thin product/spec/architecture diff | Existing owner doc in `docs/product/`, `docs/design/`, `docs/brand/`, `docs/specs/`, `docs/patterns/boundaries/index.md`, `harness.config.yaml`, or `docs/glossary.md` | Closeout detects a validated durable fact not already documented |

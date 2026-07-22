@@ -1,12 +1,22 @@
 # Context Snapshot
 
 Date: YYYY-MM-DD
+Plan Revision: `<REVISION_OR_NONE>`
 
 ## Work
 
 - Active lanes:
+- Connected worklines:
 - Status:
 - Criteria met:
+
+## Compact Planning Context
+
+- Authoritative sources and freshness:
+- Accepted definitions and decisions:
+- Negative constraints and non-goals:
+- Assumptions and open questions:
+- Superseded or invalidated knowledge:
 
 ## Branch
 
@@ -19,6 +29,19 @@ Date: YYYY-MM-DD
 - Last gate:
 - Open loops:
 - Drift risk:
+
+## Workline State
+
+| Workline | Outcome | Requires | Produces | Evidence State | Blocker / Drift | Next Gate |
+|---|---|---|---|---|---|---|
+| `<WL-ID>` | `<OUTCOME>` | `<IDS>` | `<OUTPUT>` | `<STATUS>` | `<BLOCKER_OR_NONE>` | `<GATE>` |
+
+## Rehydration Check
+
+- Current and preserved:
+- Changed or added:
+- Invalidated or superseded:
+- Unknown freshness:
 
 ## Backlog Pressure
 

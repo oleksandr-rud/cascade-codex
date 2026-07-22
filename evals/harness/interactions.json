@@ -24,6 +24,8 @@
     {"id": "HX-021", "prompt": "Change Codex custom-agent TOML, skill wiring, config, and validator surfaces.", "expected_primary": "codex-maintenance", "forbidden_primary": ["agents-best-practices"]},
     {"id": "HX-022", "prompt": "Turn a repeated workflow into a focused reusable skill package.", "expected_primary": "develop-skill", "forbidden_primary": ["codex-maintenance"]},
     {"id": "HX-023", "prompt": "Evaluate generated harness scenarios and their JSONL traces; do not repair the harness.", "expected_primary": "harness-evaluation", "forbidden_primary": ["validate-change", "codex-maintenance"]},
-    {"id": "HX-024", "prompt": "A harness evaluation confirmed a defect; now repair the owning skill and validator.", "expected_primary": "codex-maintenance", "forbidden_primary": ["harness-evaluation"]}
+    {"id": "HX-024", "prompt": "A harness evaluation confirmed a defect; now repair the owning skill and validator.", "expected_primary": "codex-maintenance", "forbidden_primary": ["harness-evaluation"]},
+    {"id": "HX-025", "prompt": "Create and calibrate new outcome and trajectory judge profiles, anchored rubrics, schemas, and aggregation rules; do not run completed traces yet.", "expected_primary": "judge-eval-builder", "forbidden_primary": ["harness-evaluation"]},
+    {"id": "HX-026", "prompt": "The judge profiles and rubrics are fixed; run them independently on completed harness traces and calculate current accepted coverage.", "expected_primary": "harness-evaluation", "forbidden_primary": ["judge-eval-builder"]}
   ]
 }

@@ -1,16 +1,21 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "title": "Cascade golden harness judgment",
+  "title": "Cascade judged-evaluation response",
   "type": "object",
   "additionalProperties": false,
   "required": [
     "run_id",
     "scenario_id",
+    "judge_profile_id",
+    "judge_type",
+    "rubric_id",
+    "rubric_version",
     "verdict",
     "root_cause",
-    "deterministic_verdict",
     "earliest_failing_event",
-    "rationale",
+    "dimensions",
+    "confidence",
+    "summary",
     "evidence",
     "replay_command",
     "regression_recommendation",
@@ -19,26 +24,54 @@
   "properties": {
     "run_id": {"type": "string", "minLength": 1},
     "scenario_id": {"type": "string", "minLength": 1},
+    "judge_profile_id": {"type": "string", "minLength": 1},
+    "judge_type": {"type": "string", "enum": ["outcome", "trajectory"]},
+    "rubric_id": {"type": "string", "minLength": 1},
+    "rubric_version": {"type": "integer", "minimum": 1},
     "verdict": {
       "type": "string",
-      "enum": ["PASS", "FAIL", "FLAKY", "BLOCKED", "INVALID_SCENARIO"]
+      "enum": ["PASS", "FAIL", "BLOCKED", "INVALID_SCENARIO"]
     },
     "root_cause": {
       "type": "string",
       "enum": [
         "none",
         "harness-defect",
+        "target-behavior",
         "model-variance",
         "scenario-defect",
         "environment-blocker"
       ]
     },
-    "deterministic_verdict": {
-      "type": "string",
-      "enum": ["PASS", "FAIL", "BLOCKED"]
-    },
     "earliest_failing_event": {"type": "string"},
-    "rationale": {"type": "string", "minLength": 1},
+    "dimensions": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "score", "rationale", "evidence"],
+        "properties": {
+          "id": {"type": "string", "minLength": 1},
+          "score": {"type": "integer", "minimum": 0, "maximum": 4},
+          "rationale": {"type": "string", "minLength": 1},
+          "evidence": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["path", "observation"],
+              "properties": {
+                "path": {"type": "string", "minLength": 1},
+                "observation": {"type": "string", "minLength": 1}
+              }
+            }
+          }
+        }
+      }
+    },
+    "confidence": {"type": "number", "minimum": 0, "maximum": 1},
+    "summary": {"type": "string", "minLength": 1},
     "evidence": {
       "type": "array",
       "items": {

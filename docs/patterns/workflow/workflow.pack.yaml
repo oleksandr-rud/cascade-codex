@@ -3,11 +3,11 @@ entry_id: workflow
 title: Workflow Core Pattern Pack
 kind: pattern-context-pack
 owner: Cascade maintainers
-summary: "Selectable workflow rules for routing, lanes, coverage, doc impact, research coverage, closeout, and memory."
-description: "Use this pack when a prompt or skill needs the workflow rules without loading every pattern entry."
+summary: "Selectable workflow rules for routing, lanes, adaptive worklines, planning knowledge, coverage, doc impact, research coverage, closeout, and memory."
+description: "Use this pack when a prompt or skill needs workflow, planning-preservation, or workline rules without loading every pattern entry."
 routing:
   use_when:
-    - "A task needs lane routing, dependency handling, work-to-source coverage, or closeout memory."
+    - "A task needs lane/workline routing, dependency handling, planning preservation, work-to-source coverage, or closeout memory."
     - "A skill references the Doc Routing Decision Matrix or trajectory coverage."
   do_not_use_when:
     - "The task only needs architecture boundary rules, functional testing rules, or source-context retrieval rules."
@@ -16,16 +16,19 @@ routing:
       use_when: "Opening, splitting, serializing, merging, or closing work lanes."
     - route: planning
       use_when: "Turning a request, gap, or requirement into behavior examples and validation routes."
+    - route: planning-knowledge
+      use_when: "Planning or replanning must preserve definitions, boundaries, traceability, and an adaptive workline map."
     - route: doc-routing
       use_when: "Durable facts may require product, design, brand, spec, backlog, glossary, or pattern updates."
     - route: research
       use_when: "Research or source discovery may become durable rules or specs."
   write_when:
-    - "A repeated workflow, routing, closeout, or research-coverage rule changes."
+    - "A repeated workflow, planning-knowledge, adaptive-workline, routing, closeout, or research-coverage rule changes."
     - "A validated harness change updates the Doc Routing Decision Matrix, lane model, or memory routing."
   defer_when:
     - "The fact is product-specific and belongs in docs/product, docs/design, docs/brand, docs/specs, or docs/backlog."
   primary_skills:
+    - context
     - orchestrate-work
     - plan-change
     - docs-impact-map
@@ -42,9 +45,9 @@ selection_rules:
 documents:
   - path: docs/patterns/workflow/index.md
     kind: pattern-entry
-    description: "Durable workflow rules and matrices."
+    description: "Durable workflow, planning-knowledge, adaptive-workline, and routing rules and matrices."
     trigger_when:
-      - "Workflow routing, active lanes, planning coverage, doc impact, research coverage, closeout, or memory routing is in scope."
+      - "Workflow routing, active lanes, adaptive worklines, planning knowledge, doc impact, research coverage, closeout, or memory routing is in scope."
     sections:
       - id: workflow-prompt-routing
         title: Workflow Prompt Routing
@@ -82,6 +85,26 @@ documents:
           - planning
           - coverage
           - behavior-examples
+      - id: planning-knowledge-contract
+        title: Planning Knowledge Contract
+        anchor: "## Planning Knowledge Contract"
+        summary: "Preserves authoritative sources, definitions, constraints, boundaries, traceability, evidence meaning, and revision deltas in compact plans."
+        routing_description: "Use before non-atomic planning or replanning when implementation knowledge must survive handoff or compaction."
+        tags:
+          - planning
+          - context
+          - traceability
+          - replanning
+      - id: adaptive-workline-planning
+        title: Adaptive Workline Planning
+        anchor: "## Adaptive Workline Planning"
+        summary: "Derives the smallest coherent set of connected worklines from outcomes and boundaries without requiring a target count."
+        routing_description: "Use when one request may need one or several worklines, lanes, or implementation slices."
+        tags:
+          - planning
+          - worklines
+          - lanes
+          - orchestration
       - id: research-coverage
         title: Research Coverage
         anchor: "## Research Coverage"
@@ -111,14 +134,14 @@ documents:
           - routing
   - path: .codex/skills/orchestrate-work/SKILL.md
     kind: skill
-    description: "Lane orchestration source order and routing."
+    description: "Adaptive workline discovery, lane materialization, dependency, scheduling, and merge routing."
     trigger_when:
-      - "Work needs to be split, serialized, scheduled, tracked, or merged across lanes."
+      - "A request may need one or several connected worklines, lanes, dependencies, or merge boundaries."
   - path: .codex/skills/plan-change/SKILL.md
     kind: skill
-    description: "Planning examples, risks, and validation plan."
+    description: "Definition-ready planning, compact knowledge preservation, workline coverage, implementation slices, and validation."
     trigger_when:
-      - "A non-atomic implementation, bug fix, refactor, or product-visible change needs a plan."
+      - "A non-atomic implementation, bug fix, refactor, contract change, or material replan needs an implementation-ready plan."
   - path: .codex/skills/docs-impact-map/SKILL.md
     kind: skill
     description: "Cross-folder impact and doc routing."

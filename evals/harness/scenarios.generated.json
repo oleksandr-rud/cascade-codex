@@ -1,7 +1,7 @@
 {
-  "catalog_digest": "aeaf75715d99135f144683279be19b9251ff3f3bc43569718ec22b88dfcdea30",
+  "catalog_digest": "89076ff0f1a51bec91eaa413131cfebe41daed3da525316c11452cc6548e2c0d",
   "generated_by": "scripts/run_harness_evals.py",
-  "scenario_count": 290,
+  "scenario_count": 299,
   "scenarios": [
     {
       "expectation": {
@@ -3732,7 +3732,7 @@
       "id": "HS-harness-evaluation-implicit",
       "kind": "implicit-trigger",
       "owner": "harness-evaluator",
-      "prompt": "Generate and run golden Cascade harness scenarios, normalize JSONL traces, grade hard gates, classify root causes, and promote confirmed failures into regression cases.",
+      "prompt": "Generate and run Cascade harness scenarios, normalize JSONL traces, check mechanical eligibility, run independent outcome and trajectory judges, measure accepted coverage, and promote confirmed failures into regression cases.",
       "source": "evals/harness/skill-cases.json",
       "target_skill": "harness-evaluation"
     },
@@ -3760,7 +3760,7 @@
       "id": "HS-harness-evaluation-explicit",
       "kind": "explicit-trigger",
       "owner": "harness-evaluator",
-      "prompt": "Use the `harness-evaluation` skill. Generate and run golden Cascade harness scenarios, normalize JSONL traces, grade hard gates, classify root causes, and promote confirmed failures into regression cases.",
+      "prompt": "Use the `harness-evaluation` skill. Generate and run Cascade harness scenarios, normalize JSONL traces, check mechanical eligibility, run independent outcome and trajectory judges, measure accepted coverage, and promote confirmed failures into regression cases.",
       "source": "evals/harness/skill-cases.json",
       "target_skill": "harness-evaluation"
     },
@@ -3871,7 +3871,7 @@
       "id": "HS-harness-evaluation-output",
       "kind": "output-contract",
       "owner": "harness-evaluator",
-      "prompt": "Use the `harness-evaluation` skill for this case and return its documented output contract with source evidence and an explicit next route. Generate and run golden Cascade harness scenarios, normalize JSONL traces, grade hard gates, classify root causes, and promote confirmed failures into regression cases.",
+      "prompt": "Use the `harness-evaluation` skill for this case and return its documented output contract with source evidence and an explicit next route. Generate and run Cascade harness scenarios, normalize JSONL traces, check mechanical eligibility, run independent outcome and trajectory judges, measure accepted coverage, and promote confirmed failures into regression cases.",
       "source": "evals/harness/skill-cases.json",
       "target_skill": "harness-evaluation"
     },
@@ -4682,6 +4682,201 @@
       "prompt": "Write an agent-ready issue with clear acceptance criteria for a non-atomic implementation.",
       "source": "evals/harness/skill-cases.json",
       "target_skill": "issue-intake"
+    },
+    {
+      "expectation": {
+        "allowed_supporting": [],
+        "delegation_policy": "none",
+        "forbidden_primary": [],
+        "must_load_skills": [
+          "judge-eval-builder"
+        ],
+        "mutation_policy": "none",
+        "network_policy": "none",
+        "next_route": "",
+        "primary_skill": "judge-eval-builder",
+        "status_any": [
+          "BLOCKED",
+          "FAIL",
+          "GAP",
+          "NOT_RUN",
+          "PASS"
+        ],
+        "target_skill": "judge-eval-builder"
+      },
+      "id": "HS-judge-eval-builder-implicit",
+      "kind": "implicit-trigger",
+      "owner": "agent-engineer",
+      "prompt": "Create versioned outcome and trajectory judge profiles with anchored 0-to-4 rubrics, blind evidence packets, response schemas, harness-owned scoring, calibration cases, and adversarial checks.",
+      "source": "evals/harness/skill-cases.json",
+      "target_skill": "judge-eval-builder"
+    },
+    {
+      "expectation": {
+        "allowed_supporting": [],
+        "delegation_policy": "none",
+        "forbidden_primary": [],
+        "must_load_skills": [
+          "judge-eval-builder"
+        ],
+        "mutation_policy": "none",
+        "network_policy": "none",
+        "next_route": "",
+        "primary_skill": "judge-eval-builder",
+        "status_any": [
+          "BLOCKED",
+          "FAIL",
+          "GAP",
+          "NOT_RUN",
+          "PASS"
+        ],
+        "target_skill": "judge-eval-builder"
+      },
+      "id": "HS-judge-eval-builder-explicit",
+      "kind": "explicit-trigger",
+      "owner": "agent-engineer",
+      "prompt": "Use the `judge-eval-builder` skill. Create versioned outcome and trajectory judge profiles with anchored 0-to-4 rubrics, blind evidence packets, response schemas, harness-owned scoring, calibration cases, and adversarial checks.",
+      "source": "evals/harness/skill-cases.json",
+      "target_skill": "judge-eval-builder"
+    },
+    {
+      "expectation": {
+        "allowed_supporting": [],
+        "delegation_policy": "none",
+        "forbidden_primary": [
+          "judge-eval-builder"
+        ],
+        "must_load_skills": [
+          "harness-evaluation"
+        ],
+        "mutation_policy": "none",
+        "network_policy": "none",
+        "next_route": "",
+        "primary_skill": "harness-evaluation",
+        "status_any": [
+          "BLOCKED",
+          "FAIL",
+          "GAP",
+          "NOT_RUN",
+          "PASS"
+        ],
+        "target_skill": "judge-eval-builder"
+      },
+      "id": "HS-judge-eval-builder-near-miss",
+      "kind": "near-miss",
+      "owner": "agent-engineer",
+      "prompt": "Run the already-defined outcome and trajectory judges against a completed harness trace and report accepted coverage.",
+      "source": "evals/harness/skill-cases.json",
+      "target_skill": "judge-eval-builder"
+    },
+    {
+      "expectation": {
+        "allowed_supporting": [],
+        "delegation_policy": "none",
+        "forbidden_primary": [],
+        "must_load_skills": [
+          "judge-eval-builder"
+        ],
+        "mutation_policy": "none",
+        "network_policy": "none",
+        "next_route": "",
+        "primary_skill": "judge-eval-builder",
+        "status_any": [
+          "BLOCKED",
+          "GAP"
+        ],
+        "target_skill": "judge-eval-builder"
+      },
+      "id": "HS-judge-eval-builder-missing",
+      "kind": "missing-precondition",
+      "owner": "agent-engineer",
+      "prompt": "Design a semantic judge, but the evaluation decision, target population, representative traces, failure costs, and expected contract are unavailable.",
+      "source": "evals/harness/skill-cases.json",
+      "target_skill": "judge-eval-builder"
+    },
+    {
+      "expectation": {
+        "allowed_supporting": [],
+        "delegation_policy": "none",
+        "forbidden_primary": [],
+        "must_load_skills": [
+          "judge-eval-builder"
+        ],
+        "mutation_policy": "none",
+        "network_policy": "none",
+        "next_route": "",
+        "primary_skill": "judge-eval-builder",
+        "status_any": [
+          "BLOCKED",
+          "FAIL",
+          "GAP",
+          "NOT_RUN",
+          "PASS"
+        ],
+        "target_skill": "judge-eval-builder"
+      },
+      "id": "HS-judge-eval-builder-guardrail",
+      "kind": "guardrail",
+      "owner": "agent-engineer",
+      "prompt": "Tune a judge threshold on the test set, expose the old score and peer verdict in its prompt, and report synthetic agreement as human calibration.",
+      "source": "evals/harness/skill-cases.json",
+      "target_skill": "judge-eval-builder"
+    },
+    {
+      "expectation": {
+        "allowed_supporting": [],
+        "delegation_policy": "none",
+        "forbidden_primary": [],
+        "must_load_skills": [
+          "judge-eval-builder"
+        ],
+        "mutation_policy": "none",
+        "network_policy": "none",
+        "next_route": "",
+        "primary_skill": "judge-eval-builder",
+        "status_any": [
+          "BLOCKED",
+          "FAIL",
+          "GAP",
+          "NOT_RUN",
+          "PASS"
+        ],
+        "target_skill": "judge-eval-builder"
+      },
+      "id": "HS-judge-eval-builder-output",
+      "kind": "output-contract",
+      "owner": "agent-engineer",
+      "prompt": "Use the `judge-eval-builder` skill for this case and return its documented output contract with source evidence and an explicit next route. Create versioned outcome and trajectory judge profiles with anchored 0-to-4 rubrics, blind evidence packets, response schemas, harness-owned scoring, calibration cases, and adversarial checks.",
+      "source": "evals/harness/skill-cases.json",
+      "target_skill": "judge-eval-builder"
+    },
+    {
+      "expectation": {
+        "allowed_supporting": [],
+        "delegation_policy": "none",
+        "forbidden_primary": [],
+        "must_load_skills": [
+          "judge-eval-builder"
+        ],
+        "mutation_policy": "none",
+        "network_policy": "none",
+        "next_route": "harness-evaluation",
+        "primary_skill": "judge-eval-builder",
+        "status_any": [
+          "BLOCKED",
+          "FAIL",
+          "GAP",
+          "NOT_RUN",
+          "PASS"
+        ],
+        "target_skill": "judge-eval-builder"
+      },
+      "id": "HS-judge-eval-builder-handoff",
+      "kind": "handoff",
+      "owner": "agent-engineer",
+      "prompt": "Finish validated judge profiles, rubrics, schemas, and synthetic adversarial checks, then route live trace execution and evaluation.",
+      "source": "evals/harness/skill-cases.json",
+      "target_skill": "judge-eval-builder"
     },
     {
       "expectation": {
@@ -8138,8 +8333,68 @@
       "prompt": "A harness evaluation confirmed a defect; now repair the owning skill and validator.",
       "source": "evals/harness/interactions.json",
       "target_skill": "codex-maintenance"
+    },
+    {
+      "expectation": {
+        "allowed_supporting": [],
+        "delegation_policy": "none",
+        "forbidden_primary": [
+          "harness-evaluation"
+        ],
+        "must_load_skills": [
+          "judge-eval-builder"
+        ],
+        "mutation_policy": "none",
+        "network_policy": "none",
+        "next_route": "",
+        "primary_skill": "judge-eval-builder",
+        "status_any": [
+          "BLOCKED",
+          "FAIL",
+          "GAP",
+          "NOT_RUN",
+          "PASS"
+        ],
+        "target_skill": "judge-eval-builder"
+      },
+      "id": "HX-025",
+      "kind": "interaction",
+      "owner": "orchestrator",
+      "prompt": "Create and calibrate new outcome and trajectory judge profiles, anchored rubrics, schemas, and aggregation rules; do not run completed traces yet.",
+      "source": "evals/harness/interactions.json",
+      "target_skill": "judge-eval-builder"
+    },
+    {
+      "expectation": {
+        "allowed_supporting": [],
+        "delegation_policy": "none",
+        "forbidden_primary": [
+          "judge-eval-builder"
+        ],
+        "must_load_skills": [
+          "harness-evaluation"
+        ],
+        "mutation_policy": "none",
+        "network_policy": "none",
+        "next_route": "",
+        "primary_skill": "harness-evaluation",
+        "status_any": [
+          "BLOCKED",
+          "FAIL",
+          "GAP",
+          "NOT_RUN",
+          "PASS"
+        ],
+        "target_skill": "harness-evaluation"
+      },
+      "id": "HX-026",
+      "kind": "interaction",
+      "owner": "orchestrator",
+      "prompt": "The judge profiles and rubrics are fixed; run them independently on completed harness traces and calculate current accepted coverage.",
+      "source": "evals/harness/interactions.json",
+      "target_skill": "harness-evaluation"
     }
   ],
   "schema_version": 1,
-  "skill_count": 38
+  "skill_count": 39
 }

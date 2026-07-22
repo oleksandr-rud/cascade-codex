@@ -28,13 +28,13 @@ project:
       - "GitHub repository"
     test:
       unit: "none yet"
-      functional: "Cascade validator and deterministic harness evals"
+      functional: "Cascade validator and judged harness evals"
       e2e: "none yet"
 
 models:
   default: "gpt-5.6-sol"
   planning: "gpt-5.6-sol"
-  golden_evaluation: "gpt-5.6-sol"
+  judged_evaluation: "gpt-5.6-sol"
   subagent_execution: "gpt-5.6-terra"
   read_heavy: "gpt-5.6-terra"
 
@@ -58,6 +58,9 @@ paths:
     - "evals/harness/scenarios.generated.json"
     - "evals/harness/response.schema.json"
     - "evals/harness/judge-response.schema.json"
+    - "evals/harness/judge-profiles.json"
+    - "evals/harness/rubrics/outcome-v1.json"
+    - "evals/harness/rubrics/trajectory-v1.json"
   docs_root: "docs"
   structure: "docs/structure.md"
   glossary: "docs/glossary.md"
@@ -82,6 +85,8 @@ paths:
   harness_eval_catalog: "evals/harness/scenarios.generated.json"
   harness_eval_response_schema: "evals/harness/response.schema.json"
   harness_eval_judge_schema: "evals/harness/judge-response.schema.json"
+  harness_eval_judge_profiles: "evals/harness/judge-profiles.json"
+  harness_eval_rubrics: "evals/harness/rubrics"
   harness_eval_runner: "scripts/run_harness_evals.py"
   harness_eval_artifacts: ".artifacts/harness-evals"
 
@@ -100,7 +105,7 @@ validation_commands:
   e2e: []
 
 routing:
-  model_policy: "Use gpt-5.6-sol for planning, synthesis, security reasoning, and golden evaluation; use gpt-5.6-terra for read-heavy scans and target execution probes."
+  model_policy: "Use gpt-5.6-sol for planning, synthesis, security reasoning, and independent judged evaluation; use gpt-5.6-terra for read-heavy scans and target execution probes."
   new_task_path:
     - "context"
     - "ingest-spec, discover, market-validation, synthesis-to-spec, or compose-spec when source material, missing intent, long business-analysis research, evidence synthesis, or product/spec authoring exists"

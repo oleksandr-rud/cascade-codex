@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Generate, execute, normalize, and grade Cascade harness evaluations."""
+"""Generate, execute, normalize, and judge Cascade harness evaluations."""
 
 from __future__ import annotations
 
@@ -26,6 +26,7 @@ INTERACTION_SOURCE = EVAL_ROOT / "interactions.json"
 CATALOG_PATH = EVAL_ROOT / "scenarios.generated.json"
 OUTPUT_SCHEMA = EVAL_ROOT / "response.schema.json"
 JUDGE_SCHEMA = EVAL_ROOT / "judge-response.schema.json"
+JUDGE_PROFILES_PATH = EVAL_ROOT / "judge-profiles.json"
 ARTIFACT_ROOT = ROOT / ".artifacts" / "harness-evals"
 PLANNING_MODEL = "gpt-5.6-sol"
 EXECUTION_MODEL = "gpt-5.6-terra"
@@ -139,6 +140,88 @@ def catalog_digest(scenarios: list[dict[str, Any]]) -> str:
 def value_digest(value: Any) -> str:
     payload = json.dumps(value, sort_keys=True, separators=(",", ":")).encode()
     return hashlib.sha256(payload).hexdigest()
+
+
+def file_digest(path: Path) -> str:
+    return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def harness_source_paths() -> list[Path]:
+    fixed = [
+        ROOT / "AGENTS.md",
+        ROOT / "CODEX.md",
+        ROOT / "harness.config.yaml",
+        ROOT / ".codex" / "config.toml",
+        ROOT / "scripts" / "run_harness_evals.py",
+        ROOT / "scripts" / "validate_cascade_codex.py",
+        CASE_SOURCE,
+        INTERACTION_SOURCE,
+        OUTPUT_SCHEMA,
+        JUDGE_SCHEMA,
+        JUDGE_PROFILES_PATH,
+    ]
+    dynamic = [
+        *sorted(
+            path
+            for path in (ROOT / ".codex" / "skills").rglob("*")
+            if path.is_file() and path.suffix != ".pyc"
+        ),
+        *sorted(
+            path
+            for path in (ROOT / ".codex" / "agents").rglob("*")
+            if path.is_file() and path.suffix != ".pyc"
+        ),
+        *sorted((EVAL_ROOT / "rubrics").glob("*.json")),
+    ]
+    return sorted({path.resolve() for path in [*fixed, *dynamic] if path.is_file()})
+
+
+def harness_source_manifest() -> dict[str, Any]:
+    files = [
+        {"path": rel(path), "sha256": file_digest(path)}
+        for path in harness_source_paths()
+    ]
+    return {
+        "schema_version": 1,
+        "digest": value_digest(files),
+        "files": files,
+    }
+
+
+def judge_profiles() -> dict[str, dict[str, Any]]:
+    data = read_json(JUDGE_PROFILES_PATH)
+    profiles = data.get("profiles", [])
+    if not isinstance(profiles, list):
+        raise ValueError("judge profile registry is missing profiles list")
+    result: dict[str, dict[str, Any]] = {}
+    for profile in profiles:
+        if not isinstance(profile, dict) or not isinstance(profile.get("id"), str):
+            raise ValueError("judge profile registry contains an invalid profile")
+        profile_id = profile["id"]
+        if profile_id in result:
+            raise ValueError(f"duplicate judge profile: {profile_id}")
+        result[profile_id] = profile
+    return result
+
+
+def load_rubric(profile: dict[str, Any]) -> dict[str, Any]:
+    path = ROOT / str(profile.get("rubric", ""))
+    if not path.is_file():
+        raise ValueError(f"judge rubric is missing: {rel(path)}")
+    rubric = read_json(path)
+    if rubric.get("rubric_id") != profile.get("id"):
+        raise ValueError(
+            f"judge profile {profile.get('id')} does not match rubric {rubric.get('rubric_id')}"
+        )
+    return rubric
+
+
+def required_judge_profiles() -> list[dict[str, Any]]:
+    return [
+        profile
+        for profile in judge_profiles().values()
+        if profile.get("required_for_acceptance") is True
+    ]
 
 
 def discovered_skills() -> dict[str, Path]:
@@ -689,7 +772,7 @@ def build_audit(include_runtime: bool) -> dict[str, Any]:
                 "output-contract",
                 "Harness response schema required keys do not match the evaluator contract",
                 f"required={sorted(required)}",
-                "Restore the required structured output fields or update runner and grader atomically.",
+                "Restore the required structured output fields or update runner and eligibility contract atomically.",
             )
     except (FileNotFoundError, json.JSONDecodeError) as exc:
         add_finding(
@@ -747,7 +830,7 @@ Rules:
 - Work only with this repository and do not edit any file.
 - Do not access the network, external apps, connectors, or MCP servers.
 - Do not spawn or delegate to another agent.
-- Do not read evals/harness/, .artifacts/harness-evals/, prior runs, golden answers, or evaluator rubrics.
+- Do not read evals/harness/, .artifacts/harness-evals/, prior runs, expected answers, or evaluator rubrics.
 - Read AGENTS.md, CODEX.md, and only the skill and role sources needed to route the request.
 - Select one primary Cascade skill. Supporting and rejected skills must be existing repository skills.
 - If required evidence is unavailable, return BLOCKED or GAP rather than inventing it.
@@ -924,18 +1007,16 @@ def normalize_trace(
     }
 
 
-def grade_trace(scenario: dict[str, Any], trace: dict[str, Any]) -> dict[str, Any]:
+def check_eligibility(scenario: dict[str, Any], trace: dict[str, Any]) -> dict[str, Any]:
     expected = scenario["expectation"]
     final = trace.get("final_response")
     checks: list[dict[str, Any]] = []
     hard_failures: list[str] = []
 
-    def check(name: str, points: int, passed: bool, evidence: Any, hard: bool = False) -> None:
+    def check(name: str, passed: bool, evidence: Any, hard: bool = True) -> None:
         checks.append(
             {
                 "name": name,
-                "points": points if passed else 0,
-                "possible": points,
                 "passed": passed,
                 "evidence": evidence,
                 "hard_gate": hard,
@@ -954,16 +1035,29 @@ def grade_trace(scenario: dict[str, Any], trace: dict[str, Any]) -> dict[str, An
             and isinstance(final.get("rejected_skills"), list)
             and isinstance(final.get("evidence"), list)
         )
-    check("output-contract", 15, valid_output, sorted(response_keys), hard=True)
+    check("output-contract", valid_output, sorted(response_keys))
 
     primary = final.get("primary_skill") if isinstance(final, dict) else None
     route_ok = primary == expected["primary_skill"]
     check(
         "primary-route",
-        30,
         route_ok,
         {"actual": primary, "expected": expected["primary_skill"]},
-        hard=True,
+    )
+
+    supporting = (
+        set(final.get("supporting_skills", [])) if isinstance(final, dict) else set()
+    )
+    allowed_supporting = set(expected.get("allowed_supporting", []))
+    unexpected_supporting = supporting - allowed_supporting
+    check(
+        "supporting-route",
+        not unexpected_supporting,
+        {
+            "actual": sorted(supporting),
+            "allowed": sorted(allowed_supporting),
+            "unexpected": sorted(unexpected_supporting),
+        },
     )
 
     forbidden = set(expected.get("forbidden_primary", []))
@@ -972,7 +1066,6 @@ def grade_trace(scenario: dict[str, Any], trace: dict[str, Any]) -> dict[str, An
         anti_ok = anti_ok and primary != scenario["target_skill"]
     check(
         "anti-trigger",
-        10,
         anti_ok,
         {"actual": primary, "forbidden": sorted(forbidden)},
         hard=scenario["kind"] == "near-miss",
@@ -983,10 +1076,8 @@ def grade_trace(scenario: dict[str, Any], trace: dict[str, Any]) -> dict[str, An
     loads_ok = required_loads.issubset(loaded)
     check(
         "required-skill-load",
-        10,
         loads_ok,
         {"loaded": sorted(loaded), "required": sorted(required_loads)},
-        hard=True,
     )
 
     unsafe = [
@@ -994,7 +1085,7 @@ def grade_trace(scenario: dict[str, Any], trace: dict[str, Any]) -> dict[str, An
         for command in trace.get("commands", [])
         if command.get("mutation") or command.get("network") or command.get("delegation")
     ]
-    check("read-only-safety", 15, not unsafe, unsafe, hard=True)
+    check("read-only-safety", not unsafe, unsafe)
 
     trace_ok = (
         bool(trace.get("thread_id"))
@@ -1005,14 +1096,12 @@ def grade_trace(scenario: dict[str, Any], trace: dict[str, Any]) -> dict[str, An
     )
     check(
         "trace-integrity",
-        10,
         trace_ok,
         {
             "thread_id": trace.get("thread_id"),
             "terminal_event": trace.get("terminal_event"),
             "exit_code": trace.get("exit_code"),
         },
-        hard=True,
     )
 
     status = final.get("status") if isinstance(final, dict) else None
@@ -1021,14 +1110,13 @@ def grade_trace(scenario: dict[str, Any], trace: dict[str, Any]) -> dict[str, An
         status_ok = status in {"BLOCKED", "GAP"}
     check(
         "status-contract",
-        5,
         status_ok,
         {"actual": status, "allowed": expected.get("status_any", [])},
     )
 
     evidence = final.get("evidence") if isinstance(final, dict) else None
     evidence_ok = isinstance(evidence, list) and bool(evidence)
-    check("source-evidence", 5, evidence_ok, evidence or [])
+    check("source-evidence", evidence_ok, evidence or [])
 
     next_route = final.get("next_route") if isinstance(final, dict) else None
     expected_next = expected.get("next_route", "")
@@ -1036,17 +1124,14 @@ def grade_trace(scenario: dict[str, Any], trace: dict[str, Any]) -> dict[str, An
         next_ok = handoff_route_matches(next_route, primary, expected_next)
         check(
             "handoff-route",
-            0,
             next_ok,
             {
                 "actual": next_route,
                 "actual_sequence": route_skill_sequence(next_route),
                 "expected": expected_next,
             },
-            hard=True,
         )
 
-    score = sum(item["points"] for item in checks)
     environment_failure = (
         trace.get("timed_out")
         or trace.get("exit_code") not in (0, None)
@@ -1059,25 +1144,89 @@ def grade_trace(scenario: dict[str, Any], trace: dict[str, Any]) -> dict[str, An
     )
     if environment_failure:
         verdict = "BLOCKED"
-        root_cause = "environment-blocker"
+        failure_class = "environment-blocker"
     elif hard_failures:
         verdict = "FAIL"
-        root_cause = "harness-defect"
-    elif score >= 80:
-        verdict = "PASS"
-        root_cause = "none"
+        failure_class = "mechanical-contract"
     else:
-        verdict = "FAIL"
-        root_cause = "model-variance"
+        verdict = "PASS"
+        failure_class = "none"
     return {
         "scenario_id": scenario["id"],
-        "score": score,
-        "possible": 100,
         "verdict": verdict,
-        "root_cause": root_cause,
+        "failure_class": failure_class,
         "hard_failures": hard_failures,
         "checks": checks,
     }
+
+
+def validate_judgment(
+    judgment: dict[str, Any],
+    profile: dict[str, Any],
+    rubric: dict[str, Any],
+    run_id: str,
+    scenario_id: str,
+    repetitions: int = 1,
+) -> dict[str, Any]:
+    """Validate judge identity and ratings, then recompute the authoritative score."""
+    errors: list[str] = []
+    expected_dimensions = {item["id"]: item for item in rubric["dimensions"]}
+    dimensions = judgment.get("dimensions", [])
+    actual_ids = [item.get("id") for item in dimensions if isinstance(item, dict)]
+    identity_checks = {
+        "run_id": run_id,
+        "scenario_id": scenario_id,
+        "judge_profile_id": profile["id"],
+        "judge_type": profile["judge_type"],
+        "rubric_id": rubric["rubric_id"],
+        "rubric_version": rubric["version"],
+    }
+    for field, expected in identity_checks.items():
+        if judgment.get(field) != expected:
+            errors.append(f"{field}-mismatch")
+    if len(actual_ids) != len(set(actual_ids)):
+        errors.append("duplicate-dimension")
+    if set(actual_ids) != set(expected_dimensions):
+        errors.append("dimension-set-mismatch")
+
+    weighted = 0.0
+    minimum = 4
+    for dimension in dimensions:
+        if not isinstance(dimension, dict) or dimension.get("id") not in expected_dimensions:
+            continue
+        score = dimension.get("score")
+        if isinstance(score, bool) or not isinstance(score, int) or not 0 <= score <= 4:
+            errors.append(f"invalid-score:{dimension.get('id')}")
+            continue
+        minimum = min(minimum, score)
+        weighted += expected_dimensions[dimension["id"]]["weight"] * score / 4
+
+    weight_total = sum(item["weight"] for item in rubric["dimensions"])
+    if weight_total != 100:
+        errors.append("rubric-weight-total")
+    computed_score = round(weighted, 2)
+    threshold_pass = (
+        computed_score >= rubric["pass_threshold"]
+        and minimum >= rubric["minimum_dimension_score"]
+    )
+    model_pass = judgment.get("verdict") == "PASS"
+    if model_pass != threshold_pass:
+        errors.append("verdict-score-disagreement")
+    if judgment.get("root_cause") == "model-variance" and repetitions < 2:
+        errors.append("model-variance-requires-repeated-run")
+
+    result = dict(judgment)
+    result.update(
+        {
+            "computed_score": computed_score,
+            "minimum_dimension_score": minimum,
+            "pass_threshold": rubric["pass_threshold"],
+            "required_minimum_dimension_score": rubric["minimum_dimension_score"],
+            "validation_errors": errors,
+            "accepted": not errors and model_pass and threshold_pass,
+        }
+    )
+    return result
 
 
 def codex_command(
@@ -1119,10 +1268,11 @@ def judge_prompt(
     run_dir: Path,
     case_name: str,
     scenario: dict[str, Any],
-    grade: dict[str, Any],
+    profile: dict[str, Any],
+    rubric: dict[str, Any],
 ) -> str:
     case_dir = run_dir / "cases" / case_name
-    return f"""You are the golden evaluator for a completed Cascade harness run.
+    return f"""You are an independent {profile['judge_type']} judge for a completed Cascade harness run.
 
 Load `.codex/agents/harness-evaluator/AGENT.md`,
 `.codex/agents/harness-evaluator/skills.yaml`, and
@@ -1131,16 +1281,27 @@ Load `.codex/agents/harness-evaluator/AGENT.md`,
 Rules:
 - Evaluate only the completed evidence packet listed below.
 - Do not execute the target scenario, edit files, use the network, or delegate.
-- Deterministic hard gates remain authoritative for mechanical facts.
+- Do not read eligibility.json, summary.json, another judge's prompt, or another
+  judge's result. Those artifacts could anchor your independent judgment.
 - You may mark INVALID_SCENARIO when the expectation is ambiguous,
   contradictory, or unsupported by the harness contract.
 - Missing evidence cannot become a pass.
+- Rate every rubric dimension exactly once with an integer from 0 through 4.
+- Use the rubric anchors as written. Do not invent an overall numeric score;
+  the harness computes it from your ratings.
 - Return only JSON matching the supplied judgment schema.
 
 Run ID: {read_json(run_dir / 'run.json')['run_id']}
+Run repetitions: {read_json(run_dir / 'run.json').get('repetitions', 1)}
 Scenario ID: {scenario['id']}
 Case name: {case_name}
-Deterministic verdict: {grade['verdict']}
+Judge profile ID: {profile['id']}
+Judge type: {profile['judge_type']}
+Rubric ID: {rubric['rubric_id']}
+Rubric version: {rubric['version']}
+
+Rubric:
+{json.dumps(rubric, indent=2, sort_keys=True)}
 
 Evidence packet:
 - `{rel(run_dir / 'run.json')}`
@@ -1149,10 +1310,12 @@ Evidence packet:
 - `{rel(case_dir / 'stdout.jsonl')}`
 - `{rel(case_dir / 'stderr.log')}`
 - `{rel(case_dir / 'normalized.json')}`
-- `{rel(case_dir / 'grade.json')}`
 - the exact skill, role, AGENTS.md, and CODEX.md sources referenced by those files
 
 The replay command is recorded in `{rel(case_dir / 'command.json')}`.
+Use `target-behavior` for a semantic failure directly observed in this trace.
+Use `model-variance` only when repeated identical target runs demonstrate
+inconsistent behavior.
 """
 
 
@@ -1169,21 +1332,18 @@ def select_scenarios(catalog: dict[str, Any], args: argparse.Namespace) -> list[
     return selected
 
 
-def summarize_grades(grades: list[dict[str, Any]]) -> dict[str, Any]:
+def summarize_eligibilities(eligibilities: list[dict[str, Any]]) -> dict[str, Any]:
     verdicts = {name: 0 for name in ("PASS", "FAIL", "BLOCKED")}
-    scores: list[int] = []
-    for grade in grades:
-        verdicts[grade["verdict"]] = verdicts.get(grade["verdict"], 0) + 1
-        scores.append(grade["score"])
+    for eligibility in eligibilities:
+        verdicts[eligibility["verdict"]] = verdicts.get(eligibility["verdict"], 0) + 1
     return {
-        "total": len(grades),
+        "total": len(eligibilities),
         "verdicts": verdicts,
-        "mean_score": round(sum(scores) / len(scores), 2) if scores else 0,
     }
 
 
-def summary_markdown(metadata: dict[str, Any], grades: list[dict[str, Any]]) -> str:
-    summary = summarize_grades(grades)
+def summary_markdown(metadata: dict[str, Any], eligibilities: list[dict[str, Any]]) -> str:
+    summary = summarize_eligibilities(eligibilities)
     lines = [
         "# Harness Evaluation Run",
         "",
@@ -1198,17 +1358,16 @@ def summary_markdown(metadata: dict[str, Any], grades: list[dict[str, Any]]) -> 
         f"- PASS: {summary['verdicts'].get('PASS', 0)}",
         f"- FAIL: {summary['verdicts'].get('FAIL', 0)}",
         f"- BLOCKED: {summary['verdicts'].get('BLOCKED', 0)}",
-        f"- Mean score: {summary['mean_score']}",
         "",
         "## Cases",
         "",
-        "| Scenario | Verdict | Score | Hard Failures |",
-        "|---|---|---:|---|",
+        "| Scenario | Eligibility | Hard Failures |",
+        "|---|---|---|",
     ]
-    for grade in grades:
-        failures = ", ".join(grade["hard_failures"]) or "none"
+    for eligibility in eligibilities:
+        failures = ", ".join(eligibility["hard_failures"]) or "none"
         lines.append(
-            f"| `{grade['scenario_id']}` | {grade['verdict']} | {grade['score']} | {failures} |"
+            f"| `{eligibility['scenario_id']}` | {eligibility['verdict']} | {failures} |"
         )
     return "\n".join(lines) + "\n"
 
@@ -1241,10 +1400,12 @@ def command_run(args: argparse.Namespace) -> int:
         print(f"ERROR: run directory already exists: {rel(run_dir)}", file=sys.stderr)
         return 2
     run_dir.mkdir(parents=True)
+    source_manifest = harness_source_manifest()
     metadata = {
         "run_id": run_id,
         "started_at": utc_now(),
         "catalog_digest": catalog["catalog_digest"],
+        "harness_source_digest": source_manifest["digest"],
         "model": model,
         "model_profile": model_profile,
         "reasoning_effort": args.reasoning_effort,
@@ -1255,9 +1416,10 @@ def command_run(args: argparse.Namespace) -> int:
         "runner": rel(Path(__file__)),
     }
     write_json(run_dir / "run.json", metadata)
+    write_json(run_dir / "source-manifest.json", source_manifest)
     write_json(run_dir / "selected-scenarios.json", selected)
 
-    grades: list[dict[str, Any]] = []
+    eligibilities: list[dict[str, Any]] = []
     total = len(selected) * args.repetitions
     counter = 0
     for scenario in selected:
@@ -1309,25 +1471,31 @@ def command_run(args: argparse.Namespace) -> int:
             trace = normalize_trace(
                 scenario, stdout, stderr, exit_code, duration, timed_out
             )
-            grade = grade_trace(scenario, trace)
-            grade["case_dir"] = rel(case_dir)
-            grade["replay"] = replay
+            eligibility = check_eligibility(scenario, trace)
+            eligibility["case_dir"] = rel(case_dir)
+            eligibility["replay"] = replay
             write_json(case_dir / "normalized.json", trace)
-            write_json(case_dir / "grade.json", grade)
-            grades.append(grade)
+            write_json(case_dir / "eligibility.json", eligibility)
+            eligibilities.append(eligibility)
             print(
-                f"[{counter}/{total}] {case_name} verdict={grade['verdict']} "
-                f"score={grade['score']} hard={','.join(grade['hard_failures']) or 'none'}",
+                f"[{counter}/{total}] {case_name} eligibility={eligibility['verdict']} "
+                f"hard={','.join(eligibility['hard_failures']) or 'none'}",
                 flush=True,
             )
 
     metadata["completed_at"] = utc_now()
-    summary = {"run": metadata, "summary": summarize_grades(grades), "grades": grades}
+    summary = {
+        "run": metadata,
+        "summary": summarize_eligibilities(eligibilities),
+        "eligibilities": eligibilities,
+    }
     write_json(run_dir / "summary.json", summary)
-    (run_dir / "summary.md").write_text(summary_markdown(metadata, grades), encoding="utf-8")
+    (run_dir / "summary.md").write_text(
+        summary_markdown(metadata, eligibilities), encoding="utf-8"
+    )
     print(f"run_dir={rel(run_dir)}")
     print(json.dumps(summary["summary"], sort_keys=True))
-    return 1 if any(item["verdict"] == "FAIL" for item in grades) else 0
+    return 1 if any(item["verdict"] == "FAIL" for item in eligibilities) else 0
 
 
 def command_evaluate(args: argparse.Namespace) -> int:
@@ -1335,10 +1503,21 @@ def command_evaluate(args: argparse.Namespace) -> int:
     if not run_dir.is_absolute():
         run_dir = ROOT / run_dir
     metadata = read_json(run_dir / "run.json")
+    source_manifest = read_json(run_dir / "source-manifest.json")
+    current_source_manifest = harness_source_manifest()
+    if (
+        source_manifest.get("digest") != current_source_manifest["digest"]
+        or metadata.get("harness_source_digest") != current_source_manifest["digest"]
+    ):
+        print(
+            "ERROR: run evidence uses stale harness sources; execute a new target run",
+            file=sys.stderr,
+        )
+        return 2
     scenarios = {
         item["id"]: item for item in read_json(run_dir / "selected-scenarios.json")
     }
-    grades: list[dict[str, Any]] = []
+    eligibilities: list[dict[str, Any]] = []
     for case_dir in sorted((run_dir / "cases").iterdir()):
         if not case_dir.is_dir():
             continue
@@ -1357,17 +1536,23 @@ def command_evaluate(args: argparse.Namespace) -> int:
             float(old_trace.get("duration_seconds", 0)),
             bool(old_trace.get("timed_out", False)),
         )
-        grade = grade_trace(scenario, trace)
-        grade["case_dir"] = rel(case_dir)
-        grade["replay"] = read_json(case_dir / "command.json").get("replay", "")
+        eligibility = check_eligibility(scenario, trace)
+        eligibility["case_dir"] = rel(case_dir)
+        eligibility["replay"] = read_json(case_dir / "command.json").get("replay", "")
         write_json(case_dir / "normalized.json", trace)
-        write_json(case_dir / "grade.json", grade)
-        grades.append(grade)
-    summary = {"run": metadata, "summary": summarize_grades(grades), "grades": grades}
+        write_json(case_dir / "eligibility.json", eligibility)
+        eligibilities.append(eligibility)
+    summary = {
+        "run": metadata,
+        "summary": summarize_eligibilities(eligibilities),
+        "eligibilities": eligibilities,
+    }
     write_json(run_dir / "summary.json", summary)
-    (run_dir / "summary.md").write_text(summary_markdown(metadata, grades), encoding="utf-8")
+    (run_dir / "summary.md").write_text(
+        summary_markdown(metadata, eligibilities), encoding="utf-8"
+    )
     print(json.dumps(summary["summary"], indent=2, sort_keys=True))
-    return 1 if any(item["verdict"] == "FAIL" for item in grades) else 0
+    return 1 if any(item["verdict"] == "FAIL" for item in eligibilities) else 0
 
 
 def command_judge(args: argparse.Namespace) -> int:
@@ -1376,6 +1561,7 @@ def command_judge(args: argparse.Namespace) -> int:
         run_dir = ROOT / run_dir
     required = [
         run_dir / "run.json",
+        run_dir / "source-manifest.json",
         run_dir / "selected-scenarios.json",
         run_dir / "summary.json",
     ]
@@ -1385,29 +1571,48 @@ def command_judge(args: argparse.Namespace) -> int:
         return 2
 
     metadata = read_json(run_dir / "run.json")
+    source_manifest = read_json(run_dir / "source-manifest.json")
+    current_source_manifest = harness_source_manifest()
+    if (
+        source_manifest.get("digest") != current_source_manifest["digest"]
+        or metadata.get("harness_source_digest") != current_source_manifest["digest"]
+    ):
+        print(
+            "ERROR: run evidence uses stale harness sources; execute a new target run",
+            file=sys.stderr,
+        )
+        return 2
     scenarios = {
         item["id"]: item for item in read_json(run_dir / "selected-scenarios.json")
     }
-    grades = read_json(run_dir / "summary.json").get("grades", [])
+    eligibilities = read_json(run_dir / "summary.json").get("eligibilities", [])
     selected: list[dict[str, Any]] = []
     requested = set(args.scenario or [])
-    for grade in grades:
-        if requested and grade["scenario_id"] not in requested:
+    for eligibility in eligibilities:
+        if requested and eligibility["scenario_id"] not in requested:
             continue
-        if not requested and not args.all and grade["verdict"] == "PASS" and grade["score"] == 100:
+        if eligibility["verdict"] != "PASS" or eligibility.get("hard_failures"):
             continue
-        selected.append(grade)
+        selected.append(eligibility)
     if not selected:
-        print("ERROR: no judgment candidates matched; use --all or --scenario", file=sys.stderr)
+        print("ERROR: no eligible judgment candidates matched", file=sys.stderr)
         return 2
 
-    model = args.model or PLANNING_MODEL
+    profiles = judge_profiles()
+    selected_profile_ids = args.judge_profile or [
+        profile["id"] for profile in required_judge_profiles()
+    ]
+    unknown_profiles = sorted(set(selected_profile_ids) - set(profiles))
+    if unknown_profiles:
+        print(f"ERROR: unknown judge profiles: {unknown_profiles}", file=sys.stderr)
+        return 2
     judgment_root = run_dir / "judgments"
     judgment_root.mkdir(exist_ok=True)
     existing_outputs = [
-        (judgment_root / Path(grade["case_dir"]).name)
-        for grade in selected
-        if (judgment_root / Path(grade["case_dir"]).name).exists()
+        judgment_root / Path(eligibility["case_dir"]).name / profile_id
+        for eligibility in selected
+        for profile_id in selected_profile_ids
+        if (judgment_root / Path(eligibility["case_dir"]).name / profile_id).exists()
     ]
     if existing_outputs:
         print(
@@ -1418,21 +1623,32 @@ def command_judge(args: argparse.Namespace) -> int:
         return 2
     judgments: list[dict[str, Any]] = []
     execution_errors = 0
-    for index, grade in enumerate(selected, start=1):
-        scenario_id = grade["scenario_id"]
+    candidates = [
+        (eligibility, profiles[profile_id])
+        for eligibility in selected
+        for profile_id in selected_profile_ids
+    ]
+    for index, (eligibility, profile) in enumerate(candidates, start=1):
+        scenario_id = eligibility["scenario_id"]
         scenario = scenarios[scenario_id]
-        case_dir = ROOT / grade["case_dir"]
+        case_dir = ROOT / eligibility["case_dir"]
         case_name = case_dir.name
-        output_dir = judgment_root / case_name
+        rubric = load_rubric(profile)
+        output_dir = judgment_root / case_name / profile["id"]
         output_dir.mkdir(parents=True, exist_ok=True)
-        prompt = judge_prompt(run_dir, case_name, scenario, grade)
+        prompt = judge_prompt(run_dir, case_name, scenario, profile, rubric)
         (output_dir / "prompt.txt").write_text(prompt, encoding="utf-8")
-        command = codex_command(model, args.reasoning_effort, prompt, schema=JUDGE_SCHEMA)
+        model = args.model or MODEL_PROFILES[profile["model_profile"]]
+        effort = args.reasoning_effort or profile["reasoning_effort"]
+        command = codex_command(model, effort, prompt, schema=JUDGE_SCHEMA)
         write_json(
             output_dir / "command.json",
             {"argv": command[:-1] + ["<prompt-in-prompt.txt>"]},
         )
-        print(f"[{index}/{len(selected)}] judging {case_name}", flush=True)
+        print(
+            f"[{index}/{len(candidates)}] judging {case_name} profile={profile['id']}",
+            flush=True,
+        )
         env = os.environ.copy()
         env["NO_COLOR"] = "1"
         env["TERM"] = "xterm-256color"
@@ -1478,54 +1694,76 @@ def command_judge(args: argparse.Namespace) -> int:
         )
         if not valid:
             execution_errors += 1
-            print(f"[{index}/{len(selected)}] {case_name} judgment=INVALID_OUTPUT", flush=True)
+            print(
+                f"[{index}/{len(candidates)}] {case_name} "
+                f"profile={profile['id']} judgment=INVALID_OUTPUT",
+                flush=True,
+            )
             continue
-        judgment["case_name"] = case_name
-        judgment["model"] = model
-        judgment["duration_seconds"] = trace["duration_seconds"]
-        judgment["usage"] = trace["usage"]
-        judgments.append(judgment)
+        validated = validate_judgment(
+            judgment,
+            profile,
+            rubric,
+            metadata["run_id"],
+            scenario_id,
+            int(metadata.get("repetitions", 1)),
+        )
+        validated["case_name"] = case_name
+        validated["model"] = model
+        validated["reasoning_effort"] = effort
+        validated["duration_seconds"] = trace["duration_seconds"]
+        validated["usage"] = trace["usage"]
+        write_json(output_dir / "judgment.json", validated)
+        judgments.append(validated)
         print(
-            f"[{index}/{len(selected)}] {case_name} judgment={judgment['verdict']} "
-            f"root={judgment['root_cause']}",
+            f"[{index}/{len(candidates)}] {case_name} profile={profile['id']} "
+            f"judgment={validated['verdict']} score={validated['computed_score']} "
+            f"accepted={validated['accepted']}",
             flush=True,
         )
 
     summary = {
         "run_id": metadata["run_id"],
-        "model": model,
-        "reasoning_effort": args.reasoning_effort,
-        "candidate_count": len(selected),
+        "judge_profile_ids": selected_profile_ids,
+        "candidate_count": len(candidates),
         "completed_count": len(judgments),
         "execution_errors": execution_errors,
         "judgments": judgments,
     }
     write_json(judgment_root / "summary.json", summary)
     print(f"judgment_summary={rel(judgment_root / 'summary.json')}")
-    return 1 if execution_errors else 0
+    judged_failures = sum(not item.get("accepted", False) for item in judgments)
+    return 1 if execution_errors or judged_failures else 0
 
 
 def accepted_coverage_candidate(
-    grade: dict[str, Any], judgment: dict[str, Any] | None
+    eligibility: dict[str, Any], judgments: dict[str, dict[str, Any]]
 ) -> tuple[bool, str]:
-    if grade.get("verdict") != "PASS":
-        return False, f"deterministic-{str(grade.get('verdict', 'missing')).lower()}"
-    if grade.get("hard_failures"):
-        return False, "hard-failure"
-    if int(grade.get("score", 0)) == 100:
-        return True, "deterministic-100"
-    if judgment and judgment.get("verdict") == "PASS":
-        return True, "golden-pass"
-    return False, "golden-judgment-required"
+    if eligibility.get("verdict") != "PASS":
+        return False, f"eligibility-{str(eligibility.get('verdict', 'missing')).lower()}"
+    if eligibility.get("hard_failures"):
+        return False, "eligibility-hard-failure"
+    required_ids = [profile["id"] for profile in required_judge_profiles()]
+    missing = [profile_id for profile_id in required_ids if profile_id not in judgments]
+    if missing:
+        return False, "missing-judge:" + ",".join(missing)
+    failed = [
+        profile_id
+        for profile_id in required_ids
+        if judgments[profile_id].get("accepted") is not True
+    ]
+    if failed:
+        return False, "judge-fail:" + ",".join(failed)
+    return True, "judged-pass"
 
 
 def trace_artifacts_complete(
-    run_dir: Path, case_name: str, grade: dict[str, Any]
+    run_dir: Path, case_name: str, eligibility: dict[str, Any]
 ) -> bool:
     case_dir = run_dir / "cases" / case_name
     required = (
         "command.json",
-        "grade.json",
+        "eligibility.json",
         "normalized.json",
         "prompt.txt",
         "stderr.log",
@@ -1534,19 +1772,50 @@ def trace_artifacts_complete(
     if not all((case_dir / name).is_file() for name in required):
         return False
     try:
-        stored_grade = read_json(case_dir / "grade.json")
+        stored_eligibility = read_json(case_dir / "eligibility.json")
         normalized = read_json(case_dir / "normalized.json")
     except (json.JSONDecodeError, OSError, TypeError, UnicodeError):
         return False
-    if not isinstance(stored_grade, dict) or not isinstance(normalized, dict):
+    if not isinstance(stored_eligibility, dict) or not isinstance(normalized, dict):
         return False
     trace_check_passed = any(
         check.get("name") == "trace-integrity" and check.get("passed")
-        for check in grade.get("checks", [])
+        for check in eligibility.get("checks", [])
     )
     return bool(
-        stored_grade == grade
+        stored_eligibility == eligibility
         and trace_check_passed
+        and normalized.get("terminal_event") == "turn.completed"
+        and normalized.get("exit_code") == 0
+        and normalized.get("thread_id")
+        and not normalized.get("timed_out")
+    )
+
+
+def judgment_artifacts_complete(
+    run_dir: Path,
+    case_name: str,
+    profile_id: str,
+    judgment: dict[str, Any],
+) -> bool:
+    judgment_dir = run_dir / "judgments" / case_name / profile_id
+    required = (
+        "command.json",
+        "judgment.json",
+        "normalized.json",
+        "prompt.txt",
+        "stderr.log",
+        "stdout.jsonl",
+    )
+    if not all((judgment_dir / name).is_file() for name in required):
+        return False
+    try:
+        stored_judgment = read_json(judgment_dir / "judgment.json")
+        normalized = read_json(judgment_dir / "normalized.json")
+    except (json.JSONDecodeError, OSError, TypeError, UnicodeError):
+        return False
+    return bool(
+        stored_judgment == judgment
         and normalized.get("terminal_event") == "turn.completed"
         and normalized.get("exit_code") == 0
         and normalized.get("thread_id")
@@ -1568,8 +1837,14 @@ def command_coverage(args: argparse.Namespace) -> int:
     candidates: dict[str, list[dict[str, Any]]] = {key: [] for key in current}
     skipped_runs: list[dict[str, str]] = []
     stale_candidates = 0
+    stale_source_runs = 0
     unsupported_candidates = 0
+    judge_observations: dict[str, list[dict[str, Any]]] = {
+        profile["id"]: [] for profile in required_judge_profiles()
+    }
     supported_models = set(MODEL_PROFILES.values())
+    current_source_manifest = harness_source_manifest()
+    required_profile_ids = [profile["id"] for profile in required_judge_profiles()]
 
     run_dirs = (
         sorted(path for path in ARTIFACT_ROOT.iterdir() if path.is_dir())
@@ -1579,6 +1854,7 @@ def command_coverage(args: argparse.Namespace) -> int:
     for run_dir in run_dirs:
         required = [
             run_dir / "run.json",
+            run_dir / "source-manifest.json",
             run_dir / "selected-scenarios.json",
             run_dir / "summary.json",
         ]
@@ -1591,36 +1867,61 @@ def command_coverage(args: argparse.Namespace) -> int:
                 item["id"]: item
                 for item in read_json(run_dir / "selected-scenarios.json")
             }
-            grades = read_json(run_dir / "summary.json").get("grades", [])
+            source_manifest = read_json(run_dir / "source-manifest.json")
+            eligibilities = read_json(run_dir / "summary.json").get("eligibilities", [])
         except (json.JSONDecodeError, KeyError, TypeError) as exc:
             skipped_runs.append({"run_id": run_dir.name, "reason": str(exc)})
             continue
 
+        if (
+            source_manifest.get("digest") != current_source_manifest["digest"]
+            or metadata.get("harness_source_digest") != current_source_manifest["digest"]
+        ):
+            stale_source_runs += 1
+            stale_candidates += len(eligibilities)
+            skipped_runs.append({"run_id": run_dir.name, "reason": "stale-harness-source"})
+            continue
+
         model = metadata.get("model")
         if model not in supported_models:
-            unsupported_candidates += len(grades)
+            unsupported_candidates += len(eligibilities)
             skipped_runs.append({"run_id": run_dir.name, "reason": "unsupported-model"})
             continue
 
-        judgments: dict[str, dict[str, Any]] = {}
+        judgments: dict[str, dict[str, dict[str, Any]]] = {}
         judgment_summary = run_dir / "judgments" / "summary.json"
         if judgment_summary.is_file():
             for judgment in read_json(judgment_summary).get("judgments", []):
                 case_name = judgment.get("case_name")
-                if case_name:
-                    judgments[str(case_name)] = judgment
+                profile_id = judgment.get("judge_profile_id")
+                if case_name and profile_id:
+                    judgments.setdefault(str(case_name), {})[str(profile_id)] = judgment
 
-        for grade in grades:
-            scenario_id = grade.get("scenario_id")
+        for eligibility in eligibilities:
+            scenario_id = eligibility.get("scenario_id")
             scenario = selected.get(scenario_id)
             current_scenario = current.get(scenario_id)
             if not scenario or not current_scenario or scenario != current_scenario:
                 stale_candidates += 1
                 continue
-            case_name = Path(str(grade.get("case_dir", scenario_id))).name
-            judgment = judgments.get(case_name)
-            accepted, acceptance = accepted_coverage_candidate(grade, judgment)
-            trace_executed = trace_artifacts_complete(run_dir, case_name, grade)
+            case_name = Path(str(eligibility.get("case_dir", scenario_id))).name
+            raw_case_judgments = judgments.get(case_name, {})
+            case_judgments = {
+                profile_id: judgment
+                for profile_id, judgment in raw_case_judgments.items()
+                if judgment_artifacts_complete(
+                    run_dir, case_name, profile_id, judgment
+                )
+            }
+            for profile_id, judgment in case_judgments.items():
+                if profile_id in judge_observations:
+                    judge_observations[profile_id].append(judgment)
+            accepted, acceptance = accepted_coverage_candidate(
+                eligibility, case_judgments
+            )
+            trace_executed = trace_artifacts_complete(
+                run_dir, case_name, eligibility
+            )
             if accepted and not trace_executed:
                 accepted = False
                 acceptance = "incomplete-trace-artifacts"
@@ -1629,16 +1930,30 @@ def command_coverage(args: argparse.Namespace) -> int:
                     "run_id": metadata.get("run_id", run_dir.name),
                     "started_at": metadata.get("started_at", ""),
                     "case_name": case_name,
-                    "case_dir": grade.get("case_dir", ""),
+                    "case_dir": eligibility.get("case_dir", ""),
                     "model": model,
                     "model_profile": metadata.get("model_profile", "custom"),
                     "reasoning_effort": metadata.get("reasoning_effort", ""),
-                    "verdict": grade.get("verdict"),
-                    "score": grade.get("score", 0),
-                    "hard_failures": grade.get("hard_failures", []),
-                    "root_cause": grade.get("root_cause", ""),
-                    "judgment_verdict": judgment.get("verdict") if judgment else None,
-                    "judgment_root_cause": judgment.get("root_cause") if judgment else None,
+                    "eligibility_verdict": eligibility.get("verdict"),
+                    "hard_failures": eligibility.get("hard_failures", []),
+                    "failure_class": eligibility.get("failure_class", ""),
+                    "judgments": {
+                        profile_id: {
+                            "verdict": case_judgments[profile_id].get("verdict"),
+                            "computed_score": case_judgments[profile_id].get("computed_score"),
+                            "accepted": case_judgments[profile_id].get("accepted"),
+                            "root_cause": case_judgments[profile_id].get("root_cause"),
+                        }
+                        for profile_id in sorted(case_judgments)
+                    },
+                    "effectiveness_score": (
+                        min(
+                            float(case_judgments[profile_id]["computed_score"])
+                            for profile_id in required_profile_ids
+                        )
+                        if all(profile_id in case_judgments for profile_id in required_profile_ids)
+                        else None
+                    ),
                     "accepted": accepted,
                     "acceptance": acceptance,
                     "executed": trace_executed,
@@ -1656,7 +1971,7 @@ def command_coverage(args: argparse.Namespace) -> int:
         chosen = max(
             accepted,
             key=lambda item: (
-                int(item.get("score", 0)),
+                float(item.get("effectiveness_score") or 0),
                 str(item.get("started_at", "")),
                 str(item.get("run_id", "")),
             ),
@@ -1707,10 +2022,39 @@ def command_coverage(args: argparse.Namespace) -> int:
             for value in values
         ]
 
+    judge_score_summary: list[dict[str, Any]] = []
+    profiles_by_id = judge_profiles()
+    for profile_id in required_profile_ids:
+        observations = judge_observations[profile_id]
+        scores = [
+            float(item["computed_score"])
+            for item in observations
+            if isinstance(item.get("computed_score"), (int, float))
+        ]
+        rubric = load_rubric(profiles_by_id[profile_id])
+        judge_score_summary.append(
+            {
+                "judge_profile_id": profile_id,
+                "judge_type": profiles_by_id[profile_id]["judge_type"],
+                "rubric_version": rubric["version"],
+                "pass_threshold": rubric["pass_threshold"],
+                "minimum_dimension_score": rubric["minimum_dimension_score"],
+                "evaluated": len(observations),
+                "accepted": sum(item.get("accepted") is True for item in observations),
+                "rejected": sum(item.get("accepted") is not True for item in observations),
+                "mean_computed_score": (
+                    round(sum(scores) / len(scores), 2) if scores else None
+                ),
+                "minimum_computed_score": min(scores) if scores else None,
+                "maximum_computed_score": max(scores) if scores else None,
+            }
+        )
+
     result = {
         "schema_version": 1,
         "generated_at": utc_now(),
         "catalog_digest": catalog["catalog_digest"],
+        "harness_source_digest": current_source_manifest["digest"],
         "total": len(rows),
         "executed": len(rows) - len(unexecuted_ids),
         "unexecuted": len(unexecuted_ids),
@@ -1722,8 +2066,11 @@ def command_coverage(args: argparse.Namespace) -> int:
         "executed_unaccepted_ids": executed_unaccepted_ids,
         "coverage_by_kind": grouped("kind"),
         "coverage_by_owner": grouped("owner"),
+        "judge_score_summary": judge_score_summary,
+        "judge_calibration_status": "NOT_RUN",
         "chosen_models": chosen_models,
         "stale_candidates_ignored": stale_candidates,
+        "stale_harness_source_runs_ignored": stale_source_runs,
         "unsupported_model_candidates_ignored": unsupported_candidates,
         "skipped_runs": skipped_runs,
         "scenarios": rows,
@@ -1750,13 +2097,14 @@ def synthetic_trace(
     *,
     primary: str,
     loaded: list[str],
+    supporting: list[str] | None = None,
     mutation: bool = False,
     terminal: str = "turn.completed",
 ) -> dict[str, Any]:
     final = {
         "scenario_id": scenario["id"],
         "primary_skill": primary,
-        "supporting_skills": [],
+        "supporting_skills": supporting or [],
         "rejected_skills": [],
         "status": "PASS",
         "decision": "Synthetic self-test decision.",
@@ -1800,27 +2148,36 @@ def command_self_test(_: argparse.Namespace) -> int:
         "target_skill": "context",
         "expectation": scenario_expectation("context", target_skill="context"),
     }
-    good = grade_trace(
+    good = check_eligibility(
         scenario,
         synthetic_trace(scenario, primary="context", loaded=["context"]),
     )
-    wrong_route = grade_trace(
+    wrong_route = check_eligibility(
         scenario,
         synthetic_trace(scenario, primary="plan-change", loaded=["context"]),
     )
-    mutation = grade_trace(
+    mutation = check_eligibility(
         scenario,
         synthetic_trace(
             scenario, primary="context", loaded=["context"], mutation=True
         ),
     )
-    incomplete = grade_trace(
+    incomplete = check_eligibility(
         scenario,
         synthetic_trace(
             scenario,
             primary="context",
             loaded=["context"],
             terminal="turn.failed",
+        ),
+    )
+    unexpected_support = check_eligibility(
+        scenario,
+        synthetic_trace(
+            scenario,
+            primary="context",
+            loaded=["context"],
+            supporting=["plan-change"],
         ),
     )
     safe_redirection = classify_command("rg -n token . 2>/dev/null")
@@ -1834,19 +2191,56 @@ def command_self_test(_: argparse.Namespace) -> int:
         "design-system",
         "functional-qa",
     )
-    perfect_accepted = accepted_coverage_candidate(good, None)
-    soft_grade = {**good, "score": 95}
-    soft_unjudged = accepted_coverage_candidate(soft_grade, None)
-    soft_judged = accepted_coverage_candidate(soft_grade, {"verdict": "PASS"})
-    failed_judged = accepted_coverage_candidate(
-        wrong_route, {"verdict": "PASS"}
+    judgments: dict[str, dict[str, Any]] = {}
+    for profile in required_judge_profiles():
+        rubric = load_rubric(profile)
+        raw_judgment = {
+            "run_id": "self-test-run",
+            "scenario_id": scenario["id"],
+            "judge_profile_id": profile["id"],
+            "judge_type": profile["judge_type"],
+            "rubric_id": rubric["rubric_id"],
+            "rubric_version": rubric["version"],
+            "verdict": "PASS",
+            "dimensions": [
+                {
+                    "id": dimension["id"],
+                    "score": 4,
+                    "rationale": "Synthetic maximum rating.",
+                    "evidence": [{"path": "normalized.json", "observation": "Synthetic."}],
+                }
+                for dimension in rubric["dimensions"]
+            ],
+        }
+        judgments[profile["id"]] = validate_judgment(
+            raw_judgment, profile, rubric, "self-test-run", scenario["id"]
+        )
+    premature_variance = validate_judgment(
+        {**raw_judgment, "root_cause": "model-variance"},
+        profile,
+        rubric,
+        "self-test-run",
+        scenario["id"],
+        repetitions=1,
     )
+    missing_judge = dict(judgments)
+    missing_judge.pop(next(iter(missing_judge)))
+    invalid_judgments = dict(judgments)
+    failed_profile = required_judge_profiles()[0]
+    invalid_judgments[failed_profile["id"]] = {
+        **judgments[failed_profile["id"]],
+        "accepted": False,
+    }
+    fully_judged = accepted_coverage_candidate(good, judgments)
+    incomplete_judges = accepted_coverage_candidate(good, missing_judge)
+    failed_judges = accepted_coverage_candidate(good, invalid_judgments)
+    failed_eligibility = accepted_coverage_candidate(wrong_route, judgments)
     with tempfile.TemporaryDirectory() as temp_root:
         test_run = Path(temp_root)
         test_case = test_run / "cases" / "trace-case"
         test_case.mkdir(parents=True)
         write_json(test_case / "command.json", {})
-        write_json(test_case / "grade.json", good)
+        write_json(test_case / "eligibility.json", good)
         write_json(
             test_case / "normalized.json",
             {
@@ -1866,16 +2260,29 @@ def command_self_test(_: argparse.Namespace) -> int:
         (good["verdict"] == "PASS", "good trace must pass"),
         ("primary-route" in wrong_route["hard_failures"], "wrong route must fail"),
         ("read-only-safety" in mutation["hard_failures"], "mutation must fail"),
+        (
+            "supporting-route" in unexpected_support["hard_failures"],
+            "an unallowed supporting route must fail",
+        ),
         (incomplete["verdict"] == "BLOCKED", "failed terminal event must block"),
         (not safe_redirection["mutation"], "/dev/null redirection must be safe"),
         (not quoted_redirection["mutation"], "quoted > must not be a mutation"),
         (write_redirection["mutation"], "file redirection must be a mutation"),
         (chained_handoff, "source-prefixed immediate handoff must pass"),
         (not wrong_handoff, "non-immediate handoff must fail"),
-        (perfect_accepted[0], "perfect deterministic pass must cover a scenario"),
-        (not soft_unjudged[0], "soft pass must require golden judgment"),
-        (soft_judged[0], "golden PASS must accept a soft deterministic pass"),
-        (not failed_judged[0], "golden judgment cannot override a hard failure"),
+        (fully_judged[0], "both required judges must accept eligible evidence"),
+        (not incomplete_judges[0], "a missing required judge must reject coverage"),
+        (not failed_judges[0], "a failed required judge must reject coverage"),
+        (not failed_eligibility[0], "judges cannot override failed eligibility"),
+        (
+            all(item.get("computed_score") == 100 for item in judgments.values()),
+            "the harness must recompute weighted judge scores",
+        ),
+        (
+            "model-variance-requires-repeated-run"
+            in premature_variance["validation_errors"],
+            "model variance must require repeated target runs",
+        ),
         (complete_trace, "complete trace artifact set must count as executed"),
         (not incomplete_trace, "missing trace artifacts must not count as executed"),
     ]
@@ -1885,7 +2292,7 @@ def command_self_test(_: argparse.Namespace) -> int:
             print(f"ERROR: {message}")
         print(f"harness_eval_self_test=FAIL errors={len(failed)}")
         return 1
-    print("harness_eval_self_test=PASS cases=15")
+    print(f"harness_eval_self_test=PASS cases={len(assertions)}")
     return 0
 
 
@@ -1930,21 +2337,23 @@ def build_parser() -> argparse.ArgumentParser:
     run.add_argument("--run-id")
     run.set_defaults(func=command_run)
 
-    evaluate = subparsers.add_parser("evaluate", help="Re-normalize and re-grade a run")
+    evaluate = subparsers.add_parser(
+        "evaluate", help="Re-normalize a run and recompute mechanical eligibility"
+    )
     evaluate.add_argument("--run-dir", required=True)
     evaluate.set_defaults(func=command_evaluate)
 
     judge = subparsers.add_parser(
-        "judge", help="Run the Sol golden evaluator on completed run evidence"
+        "judge", help="Run independent outcome and trajectory judges"
     )
     judge.add_argument("--run-dir", required=True)
     judge.add_argument("--scenario", action="append")
-    judge.add_argument("--all", action="store_true")
+    judge.add_argument("--judge-profile", action="append")
     judge.add_argument("--model")
     judge.add_argument(
         "--reasoning-effort",
         choices=("minimal", "low", "medium", "high", "xhigh"),
-        default="high",
+        default=None,
     )
     judge.add_argument("--timeout", type=int, default=300)
     judge.set_defaults(func=command_judge)
@@ -1960,7 +2369,9 @@ def build_parser() -> argparse.ArgumentParser:
     coverage.add_argument("--allow-incomplete", action="store_true")
     coverage.set_defaults(func=command_coverage)
 
-    self_test = subparsers.add_parser("self-test", help="Test the deterministic grader")
+    self_test = subparsers.add_parser(
+        "self-test", help="Test eligibility and judged-evaluation contracts"
+    )
     self_test.set_defaults(func=command_self_test)
     return parser
 

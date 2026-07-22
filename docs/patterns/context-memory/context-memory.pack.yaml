@@ -3,11 +3,11 @@ entry_id: context-memory
 title: Context Memory Core Pattern Pack
 kind: pattern-context-pack
 owner: Cascade maintainers
-summary: "Selectable context and memory rules for source identity, retrieval, semantic-core packages, handoff, memory writes, research memory, and observability."
-description: "Use this pack when prompt assembly, retrieval, memory, semantic packages, or context-pack behavior is in scope."
+summary: "Selectable context and memory rules for source identity, retrieval, planning preservation, semantic-core packages, handoff, memory writes, research memory, and observability."
+description: "Use this pack when prompt assembly, retrieval, planning rehydration, memory, semantic packages, or context-pack behavior is in scope."
 routing:
   use_when:
-    - "A task needs source-context selection, memory routing, semantic-core package rules, compaction handoff, research memory, or context observability."
+    - "A task needs source-context selection, planning rehydration, memory routing, semantic-core package rules, compaction handoff, research memory, or context observability."
   do_not_use_when:
     - "The task only needs lane orchestration, architecture boundaries, or functional testing rules."
   load_when:
@@ -17,15 +17,19 @@ routing:
       use_when: "Several specs, prompts, policies, scripts, documents, or packets compile into one model context."
     - route: memory-routing
       use_when: "Durable work, research, lessons, or rejected scope need a narrow owner."
+    - route: planning-rehydration
+      use_when: "A plan or set of worklines must survive compaction, handoff, or material replanning without losing definitions or evidence meaning."
     - route: observability
       use_when: "Context size, duplicate context, source count, tool result size, or retry behavior should be tracked."
   write_when:
-    - "A reusable context selection, memory routing, package, compaction, research-memory, or observability rule changes."
+    - "A reusable context selection, planning-preservation, memory routing, package, compaction, research-memory, or observability rule changes."
     - "Research-heavy closeout needs a compact research-memory row."
   defer_when:
     - "The fact is an active lane detail better stored in docs/work/active.md or docs/work/lanes."
   primary_skills:
     - context
+    - plan-change
+    - orchestrate-work
     - pattern-context
     - adapt-harness
     - validate-change
@@ -41,9 +45,9 @@ selection_rules:
 documents:
   - path: docs/patterns/context-memory/index.md
     kind: pattern-entry
-    description: "Durable context, retrieval, semantic-core, memory, and observability rules."
+    description: "Durable context, retrieval, planning-preservation, semantic-core, memory, and observability rules."
     trigger_when:
-      - "Prompt assembly, retrieval, source identity, memory routing, semantic packages, handoff, or context observability is in scope."
+      - "Prompt assembly, retrieval, source identity, planning rehydration, memory routing, semantic packages, handoff, or context observability is in scope."
     sections:
       - id: source-identity
         title: Source Identity
@@ -81,6 +85,17 @@ documents:
           - handoff
           - compaction
           - memory
+      - id: planning-context-preservation
+        title: Planning Context Preservation
+        anchor: "## Planning Context Preservation"
+        summary: "Preserves compact source, definition, boundary, workline, evidence, and revision ledgers while treating snapshots as derived projections."
+        routing_description: "Use when authoring, compressing, resuming, or replanning non-atomic work."
+        tags:
+          - planning
+          - context
+          - compaction
+          - handoff
+          - replanning
       - id: memory-write-routing
         title: Memory Write Routing
         anchor: "## Memory Write Routing"
@@ -110,9 +125,9 @@ documents:
           - validation
   - path: .codex/skills/context/SKILL.md
     kind: skill
-    description: "Task-start and resume source order includes compact research memory."
+    description: "Task-start, resume, replan, and handoff rehydration of compact source, decision, workline, evidence, and drift state."
     trigger_when:
-      - "A task starts, resumes, or needs a current-state snapshot before planning."
+      - "A task starts, resumes, replans, or needs a current-state snapshot before planning or execution."
   - path: .codex/skills/pattern-context/SKILL.md
     kind: skill
     description: "Pattern entry and context-pack retrieval owner."

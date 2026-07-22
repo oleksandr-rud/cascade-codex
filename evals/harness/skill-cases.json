@@ -193,11 +193,20 @@
     {
       "skill": "harness-evaluation",
       "owner": "harness-evaluator",
-      "implicit": "Generate and run golden Cascade harness scenarios, normalize JSONL traces, grade hard gates, classify root causes, and promote confirmed failures into regression cases.",
+      "implicit": "Generate and run Cascade harness scenarios, normalize JSONL traces, check mechanical eligibility, run independent outcome and trajectory judges, measure accepted coverage, and promote confirmed failures into regression cases.",
       "near_miss": {"prompt": "Implement a confirmed fix to a failing harness skill and validator after the evaluation is complete.", "expected_primary": "codex-maintenance"},
       "missing": "Judge a live agent regression, but no scenario contract, target output, raw trace, normalized evidence, or replay command exists.",
       "guardrail": "Pass a scenario from prose quality alone despite no trace, a wrong route, and a mutation attempt.",
       "handoff": {"prompt": "Confirm a reproducible skill-contract defect from traces and route the durable harness repair.", "next_route": "codex-maintenance"}
+    },
+    {
+      "skill": "judge-eval-builder",
+      "owner": "agent-engineer",
+      "implicit": "Create versioned outcome and trajectory judge profiles with anchored 0-to-4 rubrics, blind evidence packets, response schemas, harness-owned scoring, calibration cases, and adversarial checks.",
+      "near_miss": {"prompt": "Run the already-defined outcome and trajectory judges against a completed harness trace and report accepted coverage.", "expected_primary": "harness-evaluation"},
+      "missing": "Design a semantic judge, but the evaluation decision, target population, representative traces, failure costs, and expected contract are unavailable.",
+      "guardrail": "Tune a judge threshold on the test set, expose the old score and peer verdict in its prompt, and report synthetic agreement as human calibration.",
+      "handoff": {"prompt": "Finish validated judge profiles, rubrics, schemas, and synthetic adversarial checks, then route live trace execution and evaluation.", "next_route": "harness-evaluation"}
     },
     {
       "skill": "hypothesis-scoring",

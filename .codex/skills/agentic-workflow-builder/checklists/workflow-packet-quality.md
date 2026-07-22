@@ -23,6 +23,15 @@ Use this checklist before returning or executing agentic workflow packets.
 ## Checklist Workflow Contract
 
 - [ ] Objective is one measurable outcome.
+- [ ] Candidate worklines were discovered from criteria, boundaries, writes,
+      dependencies, and validation seams rather than a target count.
+- [ ] The workflow does not ask for a number of worklines unless that number is
+      itself an explicit user constraint.
+- [ ] Every criterion has one primary workline owner, and connected consumers
+      or dependencies are visible.
+- [ ] Selected worklines have meaningful outcomes/evidence seams; candidates
+      with shared unresolved contracts or conflicting writes are merged or
+      serialized.
 - [ ] Workflow steps are checklist-like and have stable step IDs.
 - [ ] Every step names owner route, skill calls, source order, delegation
       prompt ID, output artifact, validation evidence, and handoff.

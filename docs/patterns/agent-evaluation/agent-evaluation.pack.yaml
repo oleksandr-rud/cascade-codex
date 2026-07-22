@@ -3,7 +3,7 @@ entry_id: agent-evaluation
 title: Agent Evaluation Core Pattern Pack
 kind: pattern-context-pack
 owner: Cascade maintainers
-summary: "Selectable rules for harness scenarios, read-only target runs, trace evidence, deterministic hard gates, golden evaluation, and regression promotion."
+summary: "Selectable rules for harness scenarios, read-only target runs, trace evidence, mechanical eligibility, independent judges, and regression promotion."
 description: "Use this pack when designing, running, or reviewing Cascade harness evaluations and agent traces."
 routing:
   use_when:
@@ -12,13 +12,14 @@ routing:
     - "The task only validates product-visible runtime behavior or repairs a normal automated test."
   load_when:
     - route: harness-evaluation
-      use_when: "Scenario generation, live harness experiments, trace grading, or golden adjudication is in scope."
+      use_when: "Scenario generation, live harness experiments, eligibility checks, or judged evaluation is in scope."
   write_when:
-    - "A reusable scenario, trace, grading, or regression-promotion rule changes."
+    - "A reusable scenario, trace, eligibility, judgment, or regression-promotion rule changes."
   defer_when:
-    - "No target trace or scenario contract exists; gather evidence before semantic grading."
+    - "No target trace or scenario contract exists; gather evidence before semantic judgment."
   primary_skills:
     - harness-evaluation
+    - judge-eval-builder
     - agents-best-practices
     - codex-maintenance
   related_roles:
@@ -26,19 +27,19 @@ routing:
     - agent-engineer
     - orchestrator
 selection_rules:
-  - "Load deterministic hard-gate rules before semantic evaluator guidance."
+  - "Load binary eligibility rules before independent semantic judge guidance."
 documents:
   - path: docs/patterns/agent-evaluation/index.md
     kind: pattern-entry
-    description: "Durable scenario, trace, grading, root-cause, and regression-promotion rules."
+    description: "Durable scenario, trace, eligibility, judgment, root-cause, and regression-promotion rules."
     trigger_when:
       - "Harness evaluation or agent trace analysis is in scope."
     sections:
       - id: evaluation-architecture
         title: Evaluation Architecture
         anchor: "## Evaluation Architecture"
-        summary: "Separates target execution, raw evidence, deterministic grading, and semantic adjudication."
-        routing_description: "Use when designing the evaluation loop or preventing grader leakage."
+        summary: "Separates target execution, raw evidence, eligibility, and independent semantic judgments."
+        routing_description: "Use when designing the evaluation loop or preventing judge leakage."
         tags:
           - evals
           - traces
@@ -61,13 +62,13 @@ documents:
           - traces
           - evidence
           - observability
-      - id: grading-order
-        title: Grading Order
-        anchor: "## Grading Order"
-        summary: "Runs mechanical hard gates before semantic judgment."
-        routing_description: "Use when scoring outputs or resolving conflicts between deterministic and model grades."
+      - id: evaluation-order
+        title: Evaluation Order
+        anchor: "## Evaluation Order"
+        summary: "Runs mechanical eligibility before outcome and trajectory judgments."
+        routing_description: "Use when evaluating outputs or resolving conflicts between eligibility and model judgments."
         tags:
-          - grading
+          - judged-evals
           - hard-gates
           - safety
       - id: root-cause
@@ -81,16 +82,16 @@ documents:
           - flakiness
   - path: .codex/skills/harness-evaluation/SKILL.md
     kind: skill
-    description: "Harness scenario generation, execution, trace normalization, and grading workflow."
+    description: "Harness scenario generation, execution, trace normalization, eligibility, and judgment workflow."
     trigger_when:
       - "A Cascade harness evaluation is requested."
   - path: .codex/agents/harness-evaluator/AGENT.md
     kind: agent-role
-    description: "Read-only golden semantic evaluator role."
+    description: "Read-only independent outcome or trajectory judge role."
     trigger_when:
       - "A completed target run needs semantic adjudication."
   - path: scripts/run_harness_evals.py
     kind: script
-    description: "Generates catalogs, audits the harness, executes live cases, grades traces, and runs Sol golden adjudication."
+    description: "Generates catalogs, audits the harness, executes live cases, checks eligibility, and runs independent judged evaluations."
     trigger_when:
       - "Deterministic or live harness evaluation commands need to run."

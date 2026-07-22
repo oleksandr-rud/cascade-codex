@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "rubric_id": "outcome-v1",
+  "judge_type": "outcome",
+  "version": 1,
+  "pass_threshold": 80,
+  "minimum_dimension_score": 2,
+  "score_anchors": {
+    "0": "Absent, unsafe, invented, or fundamentally wrong.",
+    "1": "Mostly wrong or unusable with major contract failures.",
+    "2": "Partially useful but materially incomplete or weakly grounded.",
+    "3": "Correct and useful with only minor shortcomings.",
+    "4": "Complete, correct, grounded, and directly usable."
+  },
+  "dimensions": [
+    {"id": "outcome_correctness", "weight": 25, "description": "The response solves the requested problem and reaches the correct user-facing result."},
+    {"id": "contract_fulfillment", "weight": 20, "description": "The response satisfies the selected skill output, guardrail, and status contract."},
+    {"id": "evidence_grounding", "weight": 15, "description": "Material claims are supported by the supplied trace and exact repository sources."},
+    {"id": "coverage_completeness", "weight": 15, "description": "The response covers required details, edge cases, blockers, and requested outputs without material omission."},
+    {"id": "decision_quality", "weight": 10, "description": "Assumptions, uncertainty, tradeoffs, and blocker decisions are appropriate and explicit."},
+    {"id": "handoff_recovery", "weight": 10, "description": "The next route or recovery action is immediate, correct, and evidence-backed."},
+    {"id": "clarity_actionability", "weight": 5, "description": "The response is concise, clear, and actionable for the intended maintainer."
+    }
+  ]
+}

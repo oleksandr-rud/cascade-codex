@@ -16,8 +16,8 @@ config; keep reusable workflow rules in skills, agents, and patterns.
 | `docs/patterns/` | Reusable workflow, boundary, testing, context rules, and selectable context packs | `pattern-context`, `closeout`, `adapt-harness`, Agent Engineer skills |
 | `.codex/skills/` | Reusable workflow skills | `develop-skill`, Agent Engineer skills |
 | `.codex/agents/` | Role contracts and skill maps | Agent Engineer skills |
-| `evals/harness/` | Canonical Cascade scenario sources, generated catalog, target schema, and golden-judge schema | `harness-evaluation`, Agent Engineer skills |
-| `.artifacts/harness-evals/` | Ignored raw JSONL traces, normalized runs, grades, and local reports | `scripts/run_harness_evals.py` |
+| `evals/harness/` | Canonical scenarios, generated catalog, target schema, judge profiles, anchored rubrics, and judgment schema | `harness-evaluation`, `judge-eval-builder` |
+| `.artifacts/harness-evals/` | Ignored raw JSONL traces, normalized runs, eligibility, judgments, and local reports | `scripts/run_harness_evals.py` |
 
 ## Active Work Paths
 
@@ -131,7 +131,8 @@ Use `docs/patterns/context-pack-schema.yaml` for the metadata contract and
 - Cross-skill collisions: `evals/harness/interactions.json`
 - Generated catalog: `evals/harness/scenarios.generated.json`
 - Target response schema: `evals/harness/response.schema.json`
-- Golden judgment schema: `evals/harness/judge-response.schema.json`
-- Runner and deterministic grader: `scripts/run_harness_evals.py`
+- Judgment schema: `evals/harness/judge-response.schema.json`
+- Judge profiles and rubrics: `evals/harness/judge-profiles.json`, `evals/harness/rubrics/`
+- Runner, eligibility checks, scoring, and aggregation: `scripts/run_harness_evals.py`
 - Ignored live run evidence: `.artifacts/harness-evals/<run-id>/`
 - Durable scenario and trace rules: `docs/patterns/agent-evaluation/index.md`

@@ -1,13 +1,14 @@
 ---
 name: harness-evaluation
-description: Use when Cascade skills, routes, agents, outputs, or execution traces need scenario generation, live harness experiments, deterministic grading, golden semantic evaluation, regression analysis, or eval-lab maintenance.
+description: Use when Cascade skills, routes, agents, outputs, or execution traces need scenario generation, live harness experiments, mechanical eligibility checks, independent outcome and trajectory judgments, regression analysis, coverage measurement, or eval-lab maintenance.
 ---
 
 # Harness Evaluation
 
 Use this skill to evaluate Cascade itself. It creates scenario coverage,
-executes target agents in read-only mode, normalizes their JSONL traces, grades
-mechanical contracts, and prepares evidence for the `harness-evaluator` role.
+executes target agents in read-only mode, normalizes their JSONL traces, checks
+mechanical eligibility, and runs independent judged evaluations through the
+`harness-evaluator` role.
 
 It does not repair a failing skill, edit runtime/product code, or treat a model
 judge as proof of a mechanical invariant.
@@ -17,7 +18,7 @@ judge as proof of a mechanical invariant.
 1. Latest evaluation request and selected run or scenario IDs.
 2. `evals/harness/skill-cases.json`, `evals/harness/interactions.json`,
    `evals/harness/scenarios.generated.json`, and
-   `evals/harness/response.schema.json`.
+   `evals/harness/response.schema.json`, judge profiles, and rubrics.
 3. Raw run evidence under `.artifacts/harness-evals/<run-id>/`.
 4. Target `.codex/skills/{skill}/SKILL.md`, owning role contract, and
    `skills.yaml`.
@@ -36,7 +37,7 @@ Use for:
 - cross-skill collision and route-order tests;
 - static skill, resource, role, config, docs, and validator audits;
 - serial read-only `codex exec --json` experiments;
-- trace normalization, deterministic scoring, semantic adjudication, and
+- trace normalization, binary eligibility, semantic adjudication, and
   regression promotion;
 - evaluator quality checks and replayable failure reports.
 
@@ -63,24 +64,29 @@ code review, or test repair. Route those to `functional-qa`,
    harness findings even when a model answer looks correct.
 5. Execute target cases read-only and serially by default. Use
    `gpt-5.6-terra` for read-heavy target probes and `gpt-5.6-sol` for planning,
-   synthesis, and golden adjudication. Keep timeout bounded and capture
+   synthesis, and semantic judgment. Keep timeout bounded and capture
    structured output plus the JSONL trace.
-6. Keep golden expectations out of target prompts. Target agents may not read
+6. Keep expected answers out of target prompts. Target agents may not read
    eval source files or prior run artifacts.
 7. Normalize tool calls, skill and role loads, final output, usage, errors,
    mutation attempts, and completion state.
-8. Apply deterministic hard gates before semantic evaluation.
-9. Send only the completed evidence packet to `harness-evaluator` for semantic
-   adjudication when deterministic checks cannot decide the contract.
-10. Re-run suspected flaky cases before classifying a regression.
-11. Route confirmed harness fixes through `codex-maintenance`,
+8. Apply binary mechanical eligibility before semantic evaluation. Eligibility
+   has no quality score and cannot establish effectiveness.
+9. For every eligible case, run the required outcome and trajectory profiles
+   independently. Neither judge may read eligibility, legacy grades, run
+   summaries, or the other judge's result.
+10. Let the runner validate judge identity and ratings, recompute weighted
+    scores, and require every configured judge for accepted coverage.
+11. Re-run suspected flaky cases before classifying a regression.
+12. Route judge-contract creation or calibration to `judge-eval-builder` and
+    confirmed harness fixes through `codex-maintenance`,
     `develop-skill`, `plan-change`, and `implement-change` as appropriate.
 
 ## Hard Gates
 
 - A live case without `thread.started`, a terminal turn event, and parseable
   final structured output cannot pass.
-- The primary route must match the golden expectation.
+- The primary route must match the scenario expectation.
 - A near-miss case must not select its target skill as primary.
 - Required skill contracts must be loaded in the trace.
 - Read-only cases must not attempt mutation, delegation, external writes, or
@@ -104,25 +110,26 @@ python3 scripts/run_harness_evals.py judge --run-dir .artifacts/harness-evals/<r
 python3 scripts/run_harness_evals.py coverage --list-missing
 ```
 
-Coverage accepts a trace only when its complete selected-scenario object still
-matches the current catalog. A 100-point deterministic pass is sufficient; a
-sub-100 pass requires a recorded golden `PASS`. Hard failures, blocked runs,
-unsupported models, changed prompts, incomplete runs, and missing case evidence
-never satisfy current accepted coverage. The ledger reports executed coverage
-separately so a
+Coverage accepts a trace only when its complete selected-scenario object and
+recorded harness source digest still match current sources. Mechanical
+eligibility plus accepted outcome and trajectory judgments are all required.
+Hard failures, blocked runs, missing judges, invalid ratings, unsupported
+models, changed prompts, incomplete runs, and missing case evidence never
+satisfy current accepted coverage. The ledger reports executed coverage separately so a
 reproducible failing trace is visible as executed-but-unaccepted rather than
 being mislabeled as not run.
 
-Use `checklists/golden-eval-quality.md` before accepting a corpus or report.
+Use `checklists/judged-eval-quality.md` before accepting a corpus or report.
 Use `templates/evaluation-report.md` for durable findings.
 
 ## Output
 
 - catalog and discovered-surface coverage;
 - run identity, model, sandbox, timeout, and replay command;
-- per-scenario score, hard gates, verdict, and earliest failing event;
+- per-scenario eligibility, judge dimension ratings, harness-computed scores,
+  verdicts, and earliest failing event;
 - route, activation, output, safety, evidence, trace, cost, and latency metrics;
-- root-cause class: `harness-defect`, `model-variance`, `scenario-defect`, or
-  `environment-blocker`;
+- root-cause class: `harness-defect`, `target-behavior`, `model-variance`,
+  `scenario-defect`, or `environment-blocker`;
 - confirmed gaps and regression cases to add;
 - next route and residual risk.

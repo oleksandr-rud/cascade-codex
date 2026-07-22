@@ -24,14 +24,29 @@ Use this section before selecting the workflow. Do not invent dynamic agents.
 |---|---|---|---|
 | `<skill>` | `.codex/skills/<skill>/SKILL.md` | `<why-this-skill-loads>` | `<step-ids>` |
 
+## Workline Discovery
+
+Do not begin with a requested or default count. Derive candidates from the
+objective, criteria, boundaries, writes, dependencies, and evidence seams.
+
+| Candidate | Outcome | Primary Criteria | Write / Contract Boundary | Dependencies | Validation Seam | Disposition / Reason |
+|---|---|---|---|---|---|---|
+| `C-01` | `<OUTCOME>` | `<IDS>` | `<BOUNDARY>` | `<IDS_OR_NONE>` | `<CHECK>` | `<SELECT_MERGE_SERIALIZE_DEFER>` |
+
+## Selected Worklines
+
+| Workline | Outcome | Primary Criteria | Requires / Produces | Owner Route | Execution Mode | Merge / Handoff |
+|---|---|---|---|---|---|---|
+| `WL-01` | `<OUTCOME>` | `<IDS>` | `<INPUTS_OUTPUTS>` | `<AGENT_OR_LOCAL>` | `<SERIAL_PARALLEL_UNASSIGNED>` | `<OWNER_TARGET>` |
+
 ## Workflow Checklist
 
 Each step should point to existing agents or authorized subagents and the
 global skills to use at that step.
 
-| Step | Status | Owner Route | Skill Calls | Source Order | Delegation Prompt | Output | Validation | Handoff |
-|---|---|---|---|---|---|---|---|---|
-| `WF-01` | `<open>` | `<agent-or-subagent>` | `<skill-a, skill-b>` | `<paths-inputs>` | `P-01` | `<artifact>` | `<check>` | `<next-step>` |
+| Step | Workline | Status | Owner Route | Skill Calls | Source Order | Delegation Prompt | Output | Validation | Handoff |
+|---|---|---|---|---|---|---|---|---|---|
+| `WF-01` | `WL-01` | `<open>` | `<agent-or-subagent>` | `<skill-a, skill-b>` | `<paths-inputs>` | `P-01` | `<artifact>` | `<check>` | `<next-step>` |
 
 ## Global Orchestration Skill Calls
 

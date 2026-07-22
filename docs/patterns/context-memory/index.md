@@ -66,12 +66,53 @@ card tables.
 Do not let compaction erase:
 
 - active work lanes;
+- authoritative source IDs, versions, and freshness;
+- accepted definitions, decisions, negative constraints, and non-goals;
+- assumptions, open questions, deferred decisions, and superseded facts with
+  their status;
+- workline ownership, dependencies, outputs, and validation seams;
 - approval state;
 - changed artifacts;
 - loaded rules;
 - validation evidence;
 - dependencies and blockers;
 - budget or goal state.
+
+## Planning Context Preservation
+
+Planning context may be compressed, but its meaning must remain
+reconstructable. Preserve compact ledgers and references rather than copying
+long source bodies into every plan:
+
+This section owns compaction, rehydration, and drift classification. The
+`Planning Knowledge Contract` and `Adaptive Workline Planning` sections in
+`docs/patterns/workflow/index.md` own plan content and decomposition semantics.
+
+| Knowledge | Preserve | May Compress |
+|---|---|---|
+| Sources | identity, authority, version/freshness, relevant ranges, supported decisions | repeated excerpts and discovery narrative |
+| Definitions and decisions | stable ID, precise statement, owner, source, consumers, status, invalidation rule | repeated rationale already present in the owner source |
+| Boundaries | producer, consumer, contract, ownership, compatibility and invalidation | broad architecture explanation not needed for the slice |
+| Worklines | outcome, primary criteria, dependencies, writes, evidence seam, merge owner, status | completed step narration |
+| Evidence | evidence ID or command, subject, result, freshness, blocker, acceptance meaning | raw logs already stored in an artifact or report |
+| Replanning | revision, trigger, preserved/changed/invalidated IDs, downstream impact | unchanged prose from earlier revisions |
+
+A context snapshot is a derived projection. The request, owner docs, current
+code, active lane, evidence artifacts, and revision history remain
+authoritative. On resume or replanning:
+
+1. load the latest request and active plan/lane revision;
+2. resolve the compact source and definition ledgers to their owners;
+3. compare source freshness, changed files, blockers, and evidence with the
+   saved projection;
+4. mark preserved knowledge as current and conflicting knowledge as
+   invalidated, superseded, blocked, or unknown;
+5. reconstruct the current workline map and next gate before acting.
+
+Compression must not upgrade `NOT_RUN`, `GAP`, `BLOCKED`, authored-only, or
+historical evidence into acceptance. If space is tight, keep identities,
+statuses, constraints, dependencies, and evidence meaning before rationale or
+chronological narration.
 
 ## Memory Write Routing
 
@@ -80,7 +121,7 @@ Write memory to the narrowest durable owner:
 | Memory type | Target |
 |---|---|
 | Active execution state | `docs/work/active.md` |
-| Lane-specific criteria, examples, dependencies, evidence | `docs/work/lanes/` |
+| Lane-specific criteria, definitions/decisions, worklines, dependencies, evidence, and replanning history | `docs/work/lanes/` |
 | Copyable lane examples | `docs/work/examples/` |
 | Durable research memory summary and research-to-spec wiring | `docs/patterns/context-memory/index.md` |
 | Durable handoff or blocked/deferred report | `docs/work/reports/` |
