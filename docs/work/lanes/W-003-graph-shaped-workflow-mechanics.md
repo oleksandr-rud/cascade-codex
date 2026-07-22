@@ -6,7 +6,7 @@ Plan Revision: `4`
 Owner: `agent-engineer`
 Created: 2026-07-22
 Lane Model: `orchestrator-workers-dependency-waves`
-Next Gate: `AG-01` durable semantics and selective context
+Next Gate: parallel `AG-02`, `AG-03`, and `AG-04` workline gates
 Graph Revision: `3`
 
 ## Request
@@ -402,10 +402,10 @@ none becomes downstream-ready until the root integration join `JG-CORE` passes.
 
 | Workline | Outcome | Primary Criteria | Requires Gates | External Conditions | Produces | Ownership / Writes | Acceptance Gate | Attempt / Max | Status |
 |---|---|---|---|---|---|---|---|---|---|
-| `WL-01` | One selectively retrievable graph semantic authority | reusable semantics; atomic bypass; typed dependencies; state/evidence authority | `DG-00` | plan revision 4 and graph revision 3 remain current | `graph-shaped-work.md` plus pack routing | thread `W003-WL01`; workflow pattern/pack only | `AG-01` | `1/3` | `READY` |
-| `WL-02` | Optional lane representation that can express and demonstrate the contract | operational state, identity, frontier, gates, repair, history | `AG-01` | common wave-2 base current | lane-template sections and valid non-active example | thread `W003-WL02`; work template/example | `AG-02` | `0/3` | `PENDING` |
-| `WL-03` | Existing skills create, resume, plan, and execute only ready obligations | creation/resume/execution authority; permissions/write scope | `AG-01` | common wave-2 base current | graph-aware context/orchestration/planning/implementation contracts | thread `W003-WL03`; named creation/execution skill files | `AG-03` | `0/3` | `PENDING` |
-| `WL-04` | Existing skills accept evidence, repair minimally, exhaust safely, and close only terminal work | evidence identity, gate lifecycle, partial repair, retry/exhaustion | `AG-01` | common wave-2 base current | graph-aware functional/review/validation/repair/closeout contracts | thread `W003-WL04`; named evidence/repair skill files | `AG-04` | `0/3` | `PENDING` |
+| `WL-01` | One selectively retrievable graph semantic authority | reusable semantics; atomic bypass; typed dependencies; state/evidence authority | `DG-00` | plan revision 4 and graph revision 3 remain current | `graph-shaped-work.md` plus pack routing | thread `W003-WL01`; workflow pattern/pack only | `AG-01` | `1/3` | `ACCEPTED` |
+| `WL-02` | Optional lane representation that can express and demonstrate the contract | operational state, identity, frontier, gates, repair, history | `AG-01` | common wave-2 base current | lane-template sections and valid non-active example | thread `W003-WL02`; work template/example | `AG-02` | `1/3` | `READY` |
+| `WL-03` | Existing skills create, resume, plan, and execute only ready obligations | creation/resume/execution authority; permissions/write scope | `AG-01` | common wave-2 base current | graph-aware context/orchestration/planning/implementation contracts | thread `W003-WL03`; named creation/execution skill files | `AG-03` | `1/3` | `READY` |
+| `WL-04` | Existing skills accept evidence, repair minimally, exhaust safely, and close only terminal work | evidence identity, gate lifecycle, partial repair, retry/exhaustion | `AG-01` | common wave-2 base current | graph-aware functional/review/validation/repair/closeout contracts | thread `W003-WL04`; named evidence/repair skill files | `AG-04` | `1/3` | `READY` |
 | `WL-05` | Current judged harness distinguishes safe graph behavior from plausible unsafe prose | `GW-001` through `GW-022`; W-002 compatibility | `JG-CORE` | `EXT-01` W-002 contract reinspection current | authored cases, current catalog, deterministic and focused evidence | thread `W003-WL05`; eval surfaces after reinspection | `AG-05` | `0/2` | `PENDING` |
 | `WL-06` | Integrated change is documented, validated, and honestly closed | all request criteria and residual-risk reporting | `JG-CORE`, `AG-05` | required commands/environment available or explicitly blocked | docs-impact disposition, final validation, handoff | thread `W003-WL06`; conditional public docs; root owns lane state | `AG-06` | `0/2` | `PENDING` |
 
@@ -496,17 +496,19 @@ flowchart LR
 
 ## Current Frontier
 
-- Ready: `WL-01` (`SL-01A` then `SL-01B`) on the accepted integration base.
+- Ready: `WL-02`, `WL-03`, and `WL-04` on one common accepted `AG-01` base.
 - In progress: none.
 - In review: none.
 - Blocked: none at the current frontier.
-- Pending: `WL-02` through `WL-06`.
-- Accepted gates: `DG-00`.
-- Open gates: `AG-01` through `AG-06`, `JG-CORE`, and `TG-01`.
+- Accepted worklines: `WL-01`.
+- Pending: `WL-05` and `WL-06`.
+- Accepted gates: `DG-00` and `AG-01`.
+- Open gates: `AG-02` through `AG-06`, `JG-CORE`, and `TG-01`.
 - External conditions: `EXT-01` is expected satisfiable because W-002 is
   complete, but `SL-05A` must refresh it before `WL-05` becomes ready.
-- Next executable action: root dispatches thread `W003-WL01` for `SL-01A` and
-  `SL-01B`, then evaluates `AG-01` on the integrated result.
+- Next executable action: root creates `W003-WL02`, `W003-WL03`, and
+  `W003-WL04` from the same accepted integration tip and dispatches the three
+  disjoint worklines in parallel.
 
 Current Frontier is a derived projection. On resume, `context` must reconstruct
 it from the Selected Workline Map, gate table, external conditions, and latest
@@ -517,7 +519,7 @@ replanning/repair records before recommending execution.
 | Gate | Type | Subject / Inputs | Required Evidence | Acceptance Rule | Status | Failure / Reopen Route |
 |---|---|---|---|---|---|---|
 | `DG-00` | dispatch gate | integration base for all worktrees | `R-DG00`: base `28d69ec70396a31125b7b989e5066149eff8a8ae`; approved 54-file W-002/W-003/planning inventory; clean detached checkout; validator `PASS` (7 agents, 39 skills); catalog `PASS` (299 scenarios, digest `89076ff0f1a51bec91eaa413131cfebe41daed3da525316c11452cc6548e2c0d`); self-test `PASS` (18); diff hygiene `PASS` | every required W-002/W-003/planning input is reproducible from one commit and no unresolved user-owned dependency is omitted | `ACCEPTED` | invalidate on source-inventory or lineage change and refresh before new dispatch |
-| `AG-01` | per-workline | `WL-01` | semantic fixed-point review; full/selected pack compilation; existing section compatibility | all required evidence passes and graph rules have one authority | `OPEN` | reopen `WL-01` |
+| `AG-01` | per-workline | `WL-01` | `R-01A`/`R-01B` at `70c7c3323e92eef43ccd53cb364fe72d68ddaf84`; two owned commits from base `3e9d35b37aa6be4b2d3c815a37141da728f09d8f`; three-path scope audit; independent Standards `PASS`; independent Spec `PASS` after four repaired findings; full pack `PASS` (15 sections); six filtered packs `PASS`; prior sections 9/9; validator/catalog/self-test/diff `PASS` on integrated tip | all required evidence passes and graph rules have one authority | `ACCEPTED` | reopen `WL-01` and affected consumers if semantics, routing, or evidence binding changes |
 | `AG-02` | per-workline | `WL-02` | template review; cycle-free example walk; `GW-001` through `GW-018` representability | schema and example implement accepted `AG-01` semantics without active-state duplication | `OPEN` | reopen `WL-02` or `WL-01` if semantic |
 | `AG-03` | per-workline | `WL-03` | skill fixed-point review; creation/readiness/frontier/authority scenarios | all changed skills use the same authoritative state and readiness contracts | `OPEN` | reopen affected `WL-03` slice or upstream gate |
 | `AG-04` | per-workline | `WL-04` | skill fixed-point review; gate/repair/exhaustion/terminal scenarios | evidence, invalidation, repair, retries, and terminal behavior agree | `OPEN` | reopen affected `WL-04` slice or upstream gate |
@@ -628,21 +630,21 @@ resumes.
 | Check | Command Or Evidence | Intended Stage | Status |
 |---|---|---|---|
 | Dispatch-base reproducibility | `R-DG00`; base `28d69ec70396a31125b7b989e5066149eff8a8ae`; clean detached checkout; source inventory; validator/catalog/self-test/diff results | `DG-00` | `PASS`; `DG-00 ACCEPTED` |
-| Compile full workflow pack | `python3 scripts/build_pattern_context_pack.py --pack workflow` | `WL-01` and final | `NOT_RUN` |
-| Compile graph applicability section | `python3 scripts/build_pattern_context_pack.py --pack workflow --section graph-shaped-work` | `WL-01` | `NOT_RUN` |
-| Compile state/authority section | `python3 scripts/build_pattern_context_pack.py --pack workflow --section graph-state-authority` | `WL-01` | `NOT_RUN` |
-| Compile readiness section | `python3 scripts/build_pattern_context_pack.py --pack workflow --section dependency-readiness` | `WL-01` | `NOT_RUN` |
-| Compile evidence-gate section | `python3 scripts/build_pattern_context_pack.py --pack workflow --section evidence-gates` | `WL-01` | `NOT_RUN` |
-| Compile repair/retry section | `python3 scripts/build_pattern_context_pack.py --pack workflow --section partial-repair` | `WL-01` | `NOT_RUN` |
-| Compile revision/cross-lane section | `python3 scripts/build_pattern_context_pack.py --pack workflow --section graph-revision-cross-lane` | `WL-01` | `NOT_RUN` |
+| Compile full workflow pack | `python3 scripts/build_pattern_context_pack.py --pack workflow` | `WL-01` and final | `PASS` on integrated `70c7c33`; 15 sections, 750 lines |
+| Compile graph applicability section | `python3 scripts/build_pattern_context_pack.py --pack workflow --section graph-shaped-work` | `WL-01` | `PASS`; 1 section, 127 lines |
+| Compile state/authority section | `python3 scripts/build_pattern_context_pack.py --pack workflow --section graph-state-authority` | `WL-01` | `PASS`; 1 section, 150 lines |
+| Compile readiness section | `python3 scripts/build_pattern_context_pack.py --pack workflow --section dependency-readiness` | `WL-01` | `PASS`; 1 section, 131 lines |
+| Compile evidence-gate section | `python3 scripts/build_pattern_context_pack.py --pack workflow --section evidence-gates` | `WL-01` | `PASS`; 1 section, 132 lines |
+| Compile repair/retry section | `python3 scripts/build_pattern_context_pack.py --pack workflow --section partial-repair` | `WL-01` | `PASS`; 1 section, 124 lines |
+| Compile revision/cross-lane section | `python3 scripts/build_pattern_context_pack.py --pack workflow --section graph-revision-cross-lane` | `WL-01` | `PASS`; 1 section, 125 lines |
 | Walk non-active example from initial nodes through terminal gate | fixed-point graph inspection plus focused scenario | `WL-02` | `NOT_RUN` |
 | Review skill consumers for one authority and legal transitions | Standards/Spec fixed-point review | `WL-03` and `WL-04` | `NOT_RUN` |
 | Wave-2 integration compatibility | root merge lineage, disjoint-write audit, lane-schema/skill fixed point, focused readiness/evidence/repair trajectories | `JG-CORE` | `NOT_RUN` |
-| Cascade structural validation | `python3 scripts/validate_cascade_codex.py` | each coherent slice and final | `NOT_RUN` |
+| Cascade structural validation | `python3 scripts/validate_cascade_codex.py` | each coherent slice and final | `PASS` at `AG-01`; 7 agents, 39 skills, zero leakage |
 | Catalog freshness | `python3 scripts/run_harness_evals.py catalog --check` | `WL-05` and final | `NOT_RUN` |
 | Harness evaluator self-test | `python3 scripts/run_harness_evals.py self-test` | `WL-05` and final | `NOT_RUN` |
 | Runtime audit | `python3 scripts/run_harness_evals.py audit --runtime` | final | `NOT_RUN` |
-| Diff hygiene | `git diff --check` | each coherent slice and final | `NOT_RUN` |
+| Diff hygiene | `git diff --check` | each coherent slice and final | `PASS` at `AG-01` |
 | Focused behavioral evidence | Current eligibility/target/judge commands pinned during `SL-05A` | `WL-05` | `NOT_RUN` |
 
 Passing structural and compilation checks will prove artifact shape and routing
@@ -744,12 +746,13 @@ validation remain lower-level structural checks.
 - Accepted definitions/decisions: `DEF-01` through `DEF-20`, `AQ-01`, `AQ-02`,
   `AQ-06`, and `AQ-07`; preserve rejected `AQ-03`/`AQ-04`, deferred `AQ-05`,
   and resolved historical dispatch constraint `AQ-08`.
-- Current worklines: `WL-01` is ready; `WL-02` through `WL-06` are pending.
-  `WL-02`/`WL-03`/`WL-04` become the parallel wave only after `AG-01`.
-- Current evidence: planning/context foundation plus accepted dispatch receipt
-  `R-DG00`; no graph-mechanics workline gate is accepted.
-- Next executable action: dispatch `W003-WL01` from the accepted integration
-  tip and collect `R-01A`/`R-01B` for root review and `AG-01`.
+- Current worklines: `WL-01` is accepted; `WL-02`, `WL-03`, and `WL-04` are
+  ready for the parallel wave; `WL-05` and `WL-06` remain pending.
+- Current evidence: accepted `R-DG00`, `R-01A`, `R-01B`, independent
+  Standards/Spec fixed points, and integrated pack/validator evidence for
+  `AG-01`.
+- Next executable action: dispatch the three wave-2 threads from one common
+  accepted base and collect `R-02*`, `R-03*`, and `R-04*` before `JG-CORE`.
 - Merge and lane-state owner: root `agent-engineer`.
 - Merge target: root integration branch created from the accepted `DG-00` base,
   later merged to the current branch only after `TG-01`.

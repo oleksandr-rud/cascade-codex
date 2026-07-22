@@ -7,7 +7,7 @@ Authority: `W-003` plan revision `4`, graph revision `3`
 Execution Model: `orchestrator-workers-dependency-waves`
 Lane And Merge Owner: root `agent-engineer`
 Delegation Authorized: `YES` — separate workline threads/worktrees; root control only
-Current Task: `T-01A / SL-01A` durable graph semantics
+Current Task: parallel `T-02A`, `T-03A`, and `T-04A`
 Created: 2026-07-22
 
 ## Purpose And Authority
@@ -167,13 +167,13 @@ lane state. Reconcile them with W-003 before every task.
 | Task / Slice | Wave / Thread | State | Owner Skills | Source Order / Prompt | Requires / Output | Validation / Handoff |
 |---|---|---|---|---|---|---|
 | `DG-00` | root / control | `ACCEPTED` | `context`, `orchestrate-work`, `plan-change`, `validate-change` | user -> git state -> W-002/W-003 -> checks / `P-ROOT-CONTROL` | approved reproducible base / `R-DG00` | base `28d69ec70396a31125b7b989e5066149eff8a8ae`; clean checkout and all required deterministic checks passed |
-| `T-01A / SL-01A` | 1 / `W003-WL01` | `READY` | `context`, `pattern-context`, `codex-maintenance`, `implement-change` | `SB-BASE -> SB-SEM -> skills -> targets` / `P-WL01` | `DG-00` / `R-01A`, semantic document | semantic fixed point, validator, diff; continue `T-01B` |
-| `T-01B / SL-01B` | 1 / `W003-WL01` | `PENDING` | prior plus `validate-change`, `review-change` | `SB-BASE -> R-01A -> SB-SEM -> pack` / `P-WL01` | `R-01A` / `R-01B`, pack previews | full/selected compilation, validator, diff; root `MQ-01`/`AG-01` |
-| `T-02A / SL-02A` | 2 / `W003-WL02` | `PENDING` | `context`, `codex-maintenance`, `implement-change` | `SB-BASE -> AG-01 -> SB-LANE -> template` / `P-WL02` | common wave base / `R-02A`, lane template | completeness, validator, diff; continue `T-02B` |
+| `T-01A / SL-01A` | 1 / `W003-WL01` | `ACCEPTED` | `context`, `pattern-context`, `codex-maintenance`, `implement-change` | `SB-BASE -> SB-SEM -> skills -> targets` / `P-WL01` | `DG-00` / `R-01A`, semantic document | accepted at head `70c7c3323e92eef43ccd53cb364fe72d68ddaf84` after independent review and repair |
+| `T-01B / SL-01B` | 1 / `W003-WL01` | `ACCEPTED` | prior plus `validate-change`, `review-change` | `SB-BASE -> R-01A -> SB-SEM -> pack` / `P-WL01` | `R-01A` / `R-01B`, pack previews | `MQ-01` merged; integrated full/selected pack and structural checks passed; `AG-01 ACCEPTED` |
+| `T-02A / SL-02A` | 2 / `W003-WL02` | `READY` | `context`, `codex-maintenance`, `implement-change` | `SB-BASE -> AG-01 -> SB-LANE -> template` / `P-WL02` | common wave base / `R-02A`, lane template | completeness, validator, diff; continue `T-02B` |
 | `T-02B / SL-02B` | 2 / `W003-WL02` | `PENDING` | prior plus `review-change`, `validate-change` | `SB-BASE -> R-02A -> SB-LANE -> example` / `P-WL02` | `R-02A` / `R-02B`, example walk | acyclic fixed point, validator, diff; root `MQ-02`/`AG-02` after merge |
-| `T-03A / SL-03A` | 2 / `W003-WL03` | `PENDING` | `context`, `codex-maintenance`, `implement-change` | `SB-BASE -> AG-01 -> SB-EXEC -> target skills` / `P-WL03` | common wave base / `R-03A`, creation/resume rules | source trajectories, validator, diff; continue `T-03B` |
+| `T-03A / SL-03A` | 2 / `W003-WL03` | `READY` | `context`, `codex-maintenance`, `implement-change` | `SB-BASE -> AG-01 -> SB-EXEC -> target skills` / `P-WL03` | common wave base / `R-03A`, creation/resume rules | source trajectories, validator, diff; continue `T-03B` |
 | `T-03B / SL-03B` | 2 / `W003-WL03` | `PENDING` | prior plus `review-change`, `validate-change` | `SB-BASE -> R-03A -> SB-EXEC -> implement skill` / `P-WL03` | `R-03A` / `R-03B`, execution receipt rules | Standards/Spec review, trajectories, validator, diff; root `MQ-03`/`AG-03` after merge |
-| `T-04A / SL-04A` | 2 / `W003-WL04` | `PENDING` | `context`, `codex-maintenance`, `implement-change` | `SB-BASE -> AG-01 -> SB-EVIDENCE -> evidence skills` / `P-WL04` | common wave base / `R-04A`, evidence-gate rules | source trajectories, validator, diff; continue `T-04B` |
+| `T-04A / SL-04A` | 2 / `W003-WL04` | `READY` | `context`, `codex-maintenance`, `implement-change` | `SB-BASE -> AG-01 -> SB-EVIDENCE -> evidence skills` / `P-WL04` | common wave base / `R-04A`, evidence-gate rules | source trajectories, validator, diff; continue `T-04B` |
 | `T-04B / SL-04B` | 2 / `W003-WL04` | `PENDING` | prior plus `review-change`, `validate-change` | `SB-BASE -> R-04A -> SB-EVIDENCE -> repair skills` / `P-WL04` | `R-04A` / `R-04B`, repair/terminal rules | Standards/Spec review, trajectories, validator, diff; root `MQ-04`/`AG-04` after merge |
 | `JG-CORE` | root / integration | `PENDING` | `context`, `review-change`, `validate-change` | W-003 -> merged receipts/commits -> integrated diff / `P-ROOT-CONTROL` | merged wave-2 receipts / `R-JGCORE` | lineage, disjoint writes, validator/diff, compatibility trajectories; dispatch `W003-WL05` |
 | `T-05A / SL-05A` | 3 / `W003-WL05` | `PENDING` | `context`, `harness-evaluation`, `codex-maintenance` | `SB-BASE -> JG-CORE -> SB-EVAL -> runner/schema` / `P-WL05` | W-002 complete / `R-05A`, refreshed impact | read-only contract/CLI inspection; root records `EXT-01` |
@@ -222,10 +222,10 @@ flowchart LR
 | Wave | Thread | Branch | Base | Workline State | Root Control | Receipt | Merge / Gate |
 |---:|---|---|---|---|---|---|---|
 | 0 | root | `agent/w003-integration-r4-g3` | `28d69ec70396a31125b7b989e5066149eff8a8ae` | `ACCEPTED` | `GATE_ACCEPTED` | `R-DG00` | `DG-00 ACCEPTED` |
-| 1 | `W003-WL01` | `agent/w003-wl01-r4-g3` | accepted integration tip after this state record | `READY` | `DISPATCH` | pending | `AG-01 OPEN` |
-| 2 | `W003-WL02` | `agent/w003-wl02-r4-g3` | accepted `AG-01` tip | `PENDING` | `HOLD` | none | `AG-02 OPEN` |
-| 2 | `W003-WL03` | `agent/w003-wl03-r4-g3` | accepted `AG-01` tip | `PENDING` | `HOLD` | none | `AG-03 OPEN` |
-| 2 | `W003-WL04` | `agent/w003-wl04-r4-g3` | accepted `AG-01` tip | `PENDING` | `HOLD` | none | `AG-04 OPEN` |
+| 1 | `W003-WL01` | `agent/w003-wl01-r4-g3` | `3e9d35b37aa6be4b2d3c815a37141da728f09d8f` | `ACCEPTED` | `GATE_ACCEPTED` | `R-01A`, `R-01B` at `70c7c33` | `MQ-01 MERGED`; `AG-01 ACCEPTED` |
+| 2 | `W003-WL02` | `agent/w003-wl02-r4-g3` | common accepted `AG-01` tip after this state record | `READY` | `DISPATCH` | pending | `AG-02 OPEN` |
+| 2 | `W003-WL03` | `agent/w003-wl03-r4-g3` | common accepted `AG-01` tip after this state record | `READY` | `DISPATCH` | pending | `AG-03 OPEN` |
+| 2 | `W003-WL04` | `agent/w003-wl04-r4-g3` | common accepted `AG-01` tip after this state record | `READY` | `DISPATCH` | pending | `AG-04 OPEN` |
 | join | root | integration branch assigned at `DG-00` | merged wave-2 receipts | `PENDING` | `HOLD` | none | `JG-CORE OPEN` |
 | 3 | `W003-WL05` | `agent/w003-wl05-r4-g3` | accepted `JG-CORE` tip | `PENDING` | `HOLD` | none | `AG-05 OPEN` |
 | 4 | `W003-WL06` | `agent/w003-wl06-r4-g3` | accepted `AG-05` tip | `PENDING` | `HOLD` | none | `AG-06`, `TG-01 OPEN` |
@@ -254,7 +254,7 @@ Root replies with exactly one control state: `HOLD`, `CONTINUE`, `REPAIR`,
 
 | Queue Item | Preconditions | Root Checks | Initial State |
 |---|---|---|---|
-| `MQ-01 WL-01` | `R-01A`, `R-01B`; branch frozen | lineage, scoped diff, review, pack/validator checks, post-merge evidence | `HOLD` |
+| `MQ-01 WL-01` | `R-01A`, `R-01B`; branch frozen | lineage, scoped diff, review, pack/validator checks, post-merge evidence | `MERGED`; `AG-01 ACCEPTED` |
 | `MQ-02 WL-02` | `R-02A`, `R-02B` | lineage, lane/example checks, post-merge evidence | `HOLD` |
 | `MQ-03 WL-03` | `R-03A`, `R-03B` | lineage, skill review/trajectories, post-merge evidence | `HOLD` |
 | `MQ-04 WL-04` | `R-04A`, `R-04B` | lineage, skill review/trajectories, post-merge evidence | `HOLD` |
@@ -312,6 +312,24 @@ git diff --check
   `89076ff0f1a51bec91eaa413131cfebe41daed3da525316c11452cc6548e2c0d`);
   self-test `PASS` (18); diff hygiene `PASS`.
 - Proposed transition: `DG-00 -> ACCEPTED`; `T-01A / SL-01A -> READY`.
+
+### R-AG01 Acceptance Receipt — 2026-07-22
+
+- Worker branch/base/head: `agent/w003-wl01-r4-g3` /
+  `3e9d35b37aa6be4b2d3c815a37141da728f09d8f` /
+  `70c7c3323e92eef43ccd53cb364fe72d68ddaf84`; two owned commits and exactly
+  three allowed workflow-pattern paths.
+- `R-01A` and `R-01B`: complete and refreshed after repair; worker worktree
+  clean and frozen.
+- Independent review: Standards `PASS`; initial Spec review found four
+  semantic binding/transfer/invalidation/exhaustion gaps; repair verification
+  resolved 4/4 with no new findings.
+- Integration: fast-forward merge preserved both worker SHAs. Full pack
+  compiled 15 sections/750 lines; each of the six graph selectors compiled one
+  section; all nine prior selectors remained; validator, catalog, self-test,
+  and diff hygiene passed on the integrated tip.
+- Transition: `WL-01`, `SL-01A`, `SL-01B`, and `AG-01 -> ACCEPTED`;
+  `WL-02`, `WL-03`, and `WL-04 -> READY` on one common wave-2 base.
 
 ### Root Acceptance Join
 
@@ -876,8 +894,9 @@ serialized root-controlled boundaries.
 | Tracked and untracked plan diff hygiene | `PASS` | No whitespace errors in the current diff or either untracked W-003 plan artifact. |
 | Deterministic graph-state enforcement | `DECLARED_RESIDUAL_RISK` | Semantics remain instruction/evaluation driven; executable Markdown parsing/validation stays deferred under `AQ-05`. |
 | Reproducible worker dispatch base | `PASS` | `R-DG00` binds the approved inventory and clean-checkout evidence to `28d69ec70396a31125b7b989e5066149eff8a8ae`; `W003-WL01` is dispatchable from the accepted integration tip. |
-| W-003 implementation evidence | `NOT_RUN` | Packet preparation does not accept `DG-00`, execute a worker, or accept `AG-01` through `TG-01`/`JG-CORE`. |
+| W-003 implementation evidence | `PARTIAL_PASS` | `DG-00` and `AG-01` are accepted with head-bound receipts, independent reviews, merge lineage, and integrated checks; `AG-02` through `TG-01`/`JG-CORE` remain open. |
 
-The next executable action is `P-WL01`: create its branch/worktree from the
-accepted integration tip, execute `T-01A` then `T-01B`, and return `R-01A` and
-`R-01B` without editing root-owned lane state.
+The next executable action is the parallel wave: create `P-WL02`, `P-WL03`,
+and `P-WL04` branches/worktrees from one accepted `AG-01` integration tip,
+execute each workline internally in order, and return their receipts without
+editing root-owned lane state.
