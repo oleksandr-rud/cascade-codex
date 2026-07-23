@@ -47,11 +47,14 @@ commands. It can also route explicit requests for agentic workflow packets to
 7. Orchestrate: use `orchestrate-work` to keep work single-lane, split into
    parallel-safe lanes, or serialize conflicting lanes.
 8. Plan: use `plan-change` for non-atomic work.
-9. Accept: use `functional-qa` for product-visible behavior examples.
+9. Accept: use `functional-qa` to author or execute product-visible proof when
+   new browser/API/CLI/journey/scenario/functional evidence is needed.
 10. Act: use `implement-change` for scoped behavior-slice edits.
 11. Review: use `review-change` for fixed-point Standards/Spec review when a
    non-atomic diff needs explicit review before closeout.
-12. Validate: use `validate-change` to aggregate evidence.
+12. Validate: use `validate-change` directly to aggregate existing evidence and
+    assess freshness, invalidation, gate impact, earliest responsible contracts,
+    and bounded reopen sets, including for graph-shaped subjects.
 13. Repair tests: use `test-autorepair` only for stale or failing tests when
    behavior still matches the expected contract.
 14. Intake: use `issue-intake` only when a durable issue body or tracker ticket
@@ -70,6 +73,16 @@ commands. It can also route explicit requests for agentic workflow packets to
 - Route explicit workflow-packet requests to `agentic-workflow-builder`; route
   active lane scheduling, dependencies, and merge ownership to
   `orchestrate-work`.
+- Do not route existing-evidence aggregation or repair-impact assessment through
+  `functional-qa`: that skill authors or executes product-visible proof. Use
+  `validate-change` directly when the evidence already exists.
+- A Task Graph, Coordination Graph, materialization, batch, or integrated gate
+  does not by itself require `orchestrate-work` as a supporting route. Load
+  `orchestrate-work` only when topology, scheduling, ownership, dispatch, or
+  materialization coordination must change. Load `plan-change` only when the
+  assessment exposes a definition, boundary, gate, or implementation-decision
+  change; identifying the earliest responsible contract and bounded reopen set
+  is validation, not replanning.
 - Route long live-research and market-validation loops to `business-analyst`
   when the user authorizes delegation; otherwise run the same skills locally.
 - Route new-project setup, harness installation, and onboarding to

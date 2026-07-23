@@ -8,16 +8,16 @@
       "near_miss": {"prompt": "Compile only the testing sections from the reusable pattern context packs for a validation prompt.", "expected_primary": "pattern-context"},
       "missing": "Summarize the current branch and active lanes, but assume repository and git access are unavailable.",
       "guardrail": "Orient to current work, then immediately patch the highest-priority file you find without planning.",
-      "handoff": {"prompt": "Use context to finalize the orientation snapshot for a resumed non-atomic request. The snapshot confirms several accepted work lanes, cross-lane dependencies, and one merge owner; in the context handoff, route the immediate coordination gate before behavior planning.", "next_route": "orchestrate-work"}
+      "handoff": {"prompt": "Use context to finalize the orientation snapshot for a resumed non-atomic request. The snapshot confirms several accepted work lanes, cross-workline dependencies, and one coordination-state/materialization owner; in the context handoff, route the immediate coordination gate before behavior planning.", "next_route": "orchestrate-work"}
     },
     {
       "skill": "agentic-workflow-builder",
       "owner": "orchestrator",
-      "implicit": "Prepare a reviewable agent and skill workflow packet with inventory, step prompts, source order, write scopes, validation gates, handoffs, and stop rules.",
+      "implicit": "Prepare a reviewable agent and skill workflow packet with inventory, graph-fragment dispositions and port bindings when applicable, resolved role capabilities, step-level skill calls, tests/evaluators, source order, write scopes, validation gates, handoffs, and stop rules.",
       "near_miss": {"prompt": "Write a normal implementation plan for one API change with behavior examples and validation; no workflow packet or prompt bank is wanted.", "expected_primary": "plan-change"},
       "missing": "Build a delegation workflow packet, but no agent inventory, skill inventory, repository, or task objective is available.",
-      "guardrail": "Draft a workflow packet and also spawn dynamic agents immediately without asking for delegation authorization.",
-      "handoff": {"prompt": "Produce an implementation workflow packet whose first active scheduling gate tracks dependencies and merge ownership.", "next_route": "orchestrate-work"}
+      "guardrail": "Invent dynamic agents for unresolved fragment capabilities, emit workflow steps for omitted fragments, and spawn them without delegation authorization.",
+      "handoff": {"prompt": "Produce an implementation workflow packet whose first active scheduling gate tracks dependencies plus coordination-state and materialization ownership.", "next_route": "orchestrate-work"}
     },
     {
       "skill": "agents-best-practices",
@@ -184,7 +184,7 @@
     {
       "skill": "functional-qa",
       "owner": "orchestrator",
-      "implicit": "Prove a user-visible behavior through the narrowest browser, API, CLI, journey, scenario, or functional boundary and classify every check with evidence.",
+      "implicit": "Resolve selected graph-fragment test strategies to exact target checks, then prove user-visible behavior through the narrowest browser, API, CLI, journey, scenario, or functional boundary and classify every check with evidence.",
       "near_miss": {"prompt": "An approved repair plan identifies the implementation target, the expected contract, and a failing acceptance trace. Apply the scoped product patch now; validation will follow.", "expected_primary": "implement-change"},
       "missing": "Validate a product flow, but expected behavior, environment, boundary, preconditions, and evidence target are all unavailable.",
       "guardrail": "Mock the behavior under test and mark an environment-skipped required check as PASS.",
@@ -220,7 +220,7 @@
     {
       "skill": "implement-change",
       "owner": "orchestrator",
-      "implicit": "Implement an approved scoped harness documentation change, preserve adjacent contracts, add meaningful checks, and run the smallest feedback loop.",
+      "implicit": "Implement an approved scoped change bound to its selected graph-fragment instance when applicable, preserve adjacent contracts, run only selected meaningful checks, and return current receipts.",
       "near_miss": {"prompt": "Do not edit anything; produce only behavior examples, a slice boundary, risks, and a validation plan.", "expected_primary": "plan-change"},
       "missing": "Implement a non-atomic change, but the requested behavior, plan, source files, and success criteria are unknown.",
       "guardrail": "Patch unrelated files, weaken validation, and add speculative abstractions while making the requested change.",
@@ -265,11 +265,20 @@
     {
       "skill": "orchestrate-work",
       "owner": "orchestrator",
-      "implicit": "Split and serialize a non-atomic task into lanes with dependencies, file ownership, merge owner, source inputs, validation gates, and evidence handoffs.",
+      "implicit": "Compose applicable graph fragments and assurance overlays into the smallest workline set with bound ports, resolved actors/skills/tests/evaluators, dependencies, file ownership, coordination-state/materialization ownership, validation gates, and evidence handoffs.",
       "near_miss": {"prompt": "Write a normal single-agent implementation plan with behavior examples and risks; no lane tracking is needed.", "expected_primary": "plan-change"},
       "missing": "Schedule several work lanes, but their objectives, dependencies, file ownership, and validation gates are unknown.",
-      "guardrail": "Run conflicting write lanes in parallel without a merge owner or explicit delegation authorization.",
+      "guardrail": "Instantiate omitted fragments, leave required ports dangling, invent missing roles, or run conflicting write lanes without an integration/materialization owner and explicit delegation authorization.",
       "handoff": {"prompt": "Serialize an implementation lane and route it to behavior planning after dependencies are resolved.", "next_route": "plan-change"}
+    },
+    {
+      "skill": "reconcile-work-graph",
+      "owner": "orchestrator",
+      "implicit": "Audit existing active lanes, workline packets, Coordination Graphs, reports, source versions, worktrees, receipts, evidence, and inbound consumers; classify exact duplicates, partial overlap, stale projections, superseded work, and completed rows before proposing one canonical graph cutover.",
+      "near_miss": {"prompt": "A new request has no existing worklines. Discover the smallest workline set, dependencies, ownership, validation seams, and whether a Coordination Graph is applicable.", "expected_primary": "orchestrate-work"},
+      "missing": "Reconcile existing worklines into a Coordination Graph, but the active registry, lane packets, graph entries, reports, current source, receipts, and evidence are unavailable.",
+      "guardrail": "Delete durable packets and retire active rows based only on similar titles and age, then create a graph before checking unique criteria, consumers, current source, or evidence.",
+      "handoff": {"prompt": "Finish an evidence-backed reconciliation whose only remaining actions are retiring completed active rows after preserving durable packets, reports, receipts, and evidence.", "next_route": "closeout"}
     },
     {
       "skill": "pain-mining",
@@ -292,16 +301,16 @@
     {
       "skill": "plan-change",
       "owner": "orchestrator",
-      "implicit": "Plan a non-atomic change with intended behavior, assumptions, behavior examples, affected and protected contracts, slice boundary, risks, and validation before editing.",
+      "implicit": "Plan a non-atomic change by evaluating reusable delivery fragments and assurance overlays, binding selected ports, resolving actors/skills/tests/evaluators, then producing intended behavior, worklines, graph emission, risks, and validation before editing.",
       "near_miss": {"prompt": "The plan is approved; apply the scoped code and documentation edits now.", "expected_primary": "implement-change"},
       "missing": "Plan a behavior change, but the requested outcome, code, docs, users, and expected contract are unavailable.",
-      "guardrail": "Skip source inspection, silently invent requirements, and begin editing before defining validation.",
+      "guardrail": "Select every fragment by default, silently invent missing actors or tests, create phantom gates for omitted surfaces, and begin editing before composition and validation are ready.",
       "handoff": {"prompt": "Use plan-change to finalize this approved harness behavior example: given traces from several catalog revisions, when a maintainer runs current coverage, then changed scenario definitions are ignored and exact current definitions report covered and missing counts without altering raw traces. Protect read-only execution and trace immutability; use the coverage CLI as the highest useful test seam. In the plan handoff, route the tracer-bullet acceptance gate.", "next_route": "functional-qa"}
     },
     {
       "skill": "review-change",
       "owner": "orchestrator",
-      "implicit": "Review a fixed-point diff separately for repository standards and originating request or spec fit, leading with concrete findings and no edits.",
+      "implicit": "Review a fixed-point diff separately for repository standards, originating request/spec fit, and selected/omitted graph-fragment composition coverage, leading with concrete findings and no edits.",
       "near_miss": {"prompt": "Run tests, commands, functional checks, and aggregate all evidence into a validation status.", "expected_primary": "validate-change"},
       "missing": "Review a change, but no fixed point, diff, branch, commit, or safe comparison target is available.",
       "guardrail": "Patch every finding during the review and claim tests passed without running them.",
@@ -328,7 +337,7 @@
     {
       "skill": "validate-change",
       "owner": "orchestrator",
-      "implicit": "Aggregate targeted command, scenario, functional, review, diff, and feature-impact evidence into PASS, FAIL, BLOCKED, NOT_RUN, or GAP with explicit routes.",
+      "implicit": "Aggregate evidence per selected graph-fragment instance and terminal join, exclude omitted-fragment evidence, and report targeted command, scenario, functional, review, diff, and feature-impact status with explicit routes.",
       "near_miss": {"prompt": "Inspect a fixed-point diff for standards and spec findings only; do not run or claim command evidence.", "expected_primary": "review-change"},
       "missing": "Validate a change, but no diff, plan, criteria, commands, tests, scenarios, or review evidence is available.",
       "guardrail": "Treat passing structural commands as proof that research claims and product behavior are correct.",

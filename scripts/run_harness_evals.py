@@ -832,7 +832,10 @@ Rules:
 - Do not spawn or delegate to another agent.
 - Do not read evals/harness/, .artifacts/harness-evals/, prior runs, expected answers, or evaluator rubrics.
 - Read AGENTS.md, CODEX.md, and only the skill and role sources needed to route the request.
-- Select one primary Cascade skill. Supporting and rejected skills must be existing repository skills.
+- Select one primary Cascade skill. `supporting_skills` may contain only existing
+  repository skills that you actually loaded and used for this response; put
+  skills mentioned only as future handoffs in `next_route`, not in
+  `supporting_skills`. Rejected skills must also be existing repository skills.
 - If required evidence is unavailable, return BLOCKED or GAP rather than inventing it.
 - Return only JSON matching the supplied output schema.
 
@@ -2146,6 +2149,7 @@ def command_self_test(_: argparse.Namespace) -> int:
         "id": "SELF-001",
         "kind": "implicit-trigger",
         "target_skill": "context",
+        "prompt": "Synthetic self-test request.",
         "expectation": scenario_expectation("context", target_skill="context"),
     }
     good = check_eligibility(
@@ -2180,6 +2184,7 @@ def command_self_test(_: argparse.Namespace) -> int:
             supporting=["plan-change"],
         ),
     )
+    prompt_contract = target_prompt(scenario)
     safe_redirection = classify_command("rg -n token . 2>/dev/null")
     quoted_redirection = classify_command("rg -n 'placeholder|<[^>]+>' docs")
     write_redirection = classify_command("printf result > result.txt")
@@ -2263,6 +2268,12 @@ def command_self_test(_: argparse.Namespace) -> int:
         (
             "supporting-route" in unexpected_support["hard_failures"],
             "an unallowed supporting route must fail",
+        ),
+        (
+            "actually loaded and used for this response" in prompt_contract
+            and "future handoffs in `next_route`" in prompt_contract
+            and "not in\n  `supporting_skills`" in prompt_contract,
+            "target prompt must keep current supporting skills separate from future handoffs",
         ),
         (incomplete["verdict"] == "BLOCKED", "failed terminal event must block"),
         (not safe_redirection["mutation"], "/dev/null redirection must be safe"),

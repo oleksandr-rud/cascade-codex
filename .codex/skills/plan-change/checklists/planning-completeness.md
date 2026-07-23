@@ -57,9 +57,10 @@ Use before marking a non-atomic plan `DEFINITION_READY`, before marking it
       external conditions, permissions/tools, write or merge ownership,
       attempts, repair/exhaustion routes, and paid/live bounds when applicable.
 - [ ] Cross-lane readiness names the producer lane, accepted producer gate,
-      current evidence/version, merge owner, and invalidation route.
+      current evidence/version, integration/materialization owner, and
+      invalidation route.
 - [ ] Concurrent actors cannot mutate the same authoritative state without one
-      declared state or merge owner.
+      declared state or integration/materialization owner.
 - [ ] Ownership transfer increments graph revision and blocks both prior and
       incoming owners from authoritative mutation until explicit handoff
       acceptance records the incoming owner and new revision.
@@ -74,6 +75,32 @@ Use before marking a non-atomic plan `DEFINITION_READY`, before marking it
 
 ## Adaptive Workline Discovery
 
+- [ ] Non-atomic work evaluated the reusable fragment catalog; atomic work
+      records why catalog and graph emission add no useful structure.
+- [ ] Every materially plausible delivery fragment and assurance overlay is
+      `SELECTED`, `MERGED`, `NOT_APPLICABLE`, or `BLOCKED` with activation
+      evidence and an omission consequence.
+- [ ] Every selected required port binds a selected producer, authoritative
+      external source, or explicit conditional omission; no dangling required
+      port remains.
+- [ ] Every provided port and request criterion has one primary owner; named
+      consumers do not create duplicate authority.
+- [ ] Actor capabilities resolve to existing roles or explicitly authorized
+      worker routes; planning does not invent dynamic agents.
+- [ ] Required skill calls exist and are wired to the selected role, or an
+      explicit cross-role support exception is recorded.
+- [ ] Selected test strategies resolve to exact commands/checks, fixtures,
+      environments, evidence locus, and evaluator/reviewer authority from the
+      target repository.
+- [ ] Assurance overlays attach only to selected affected fragments and become
+      separate worklines only for independent ownership, writes, handoff, or
+      evidence.
+- [ ] The assembled flow contains only selected or merged obligations and its
+      terminal join contains no evidence from omitted fragments.
+- [ ] Composition rejects duplicate ownership, dangling ports, unsupported
+      required capabilities, contradictory dispositions, unresolved required
+      tests, and cycles before readiness.
+
 - [ ] Candidate worklines were derived from outcomes, criteria, boundaries,
       writes, dependencies, and validation seams rather than a target count.
 - [ ] The planner did not ask for a number of worklines unless the number itself
@@ -81,7 +108,7 @@ Use before marking a non-atomic plan `DEFINITION_READY`, before marking it
 - [ ] Candidates that share unresolved decisions, state machines, public
       contracts, or conflicting writes were merged or serialized.
 - [ ] Selected worklines have independently meaningful outputs or validation
-      seams and a deterministic merge owner.
+      seams and a deterministic integration/materialization owner.
 - [ ] Every request criterion has exactly one primary workline owner; protected
       consumers and cross-workline dependencies are visible.
 - [ ] Creating several worklines does not imply delegation or parallel
@@ -95,8 +122,8 @@ Use before marking a non-atomic plan `DEFINITION_READY`, before marking it
       trajectories, and boundaries it implements.
 - [ ] Inputs, changed files/contracts, expected output, validation, and
       repair/stop boundary are explicit for each slice.
-- [ ] File ownership, merge ownership, tool/permission needs, and conflicts are
-      known before edits.
+- [ ] File ownership, integration/materialization ownership, actor/skill
+      bindings, tool/permission needs, and conflicts are known before edits.
 - [ ] Required validation is defined before implementation and missing required
       evidence cannot pass.
 - [ ] A traceability pass found no orphan request criterion, accepted

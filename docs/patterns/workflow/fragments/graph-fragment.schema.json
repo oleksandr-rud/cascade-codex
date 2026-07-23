@@ -1,0 +1,118 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://cascade.local/schemas/workflow-graph-fragment.json",
+  "title": "Cascade Workflow Graph Fragment",
+  "type": "object",
+  "required": [
+    "fragment_id",
+    "version",
+    "title",
+    "kind",
+    "activation",
+    "requires",
+    "provides",
+    "actor",
+    "skill_calls",
+    "nodes",
+    "tests",
+    "gates",
+    "workline_policy",
+    "omission_rule",
+    "repair"
+  ],
+  "properties": {
+    "fragment_id": {"type": "string", "pattern": "^GF-[0-9]{3}$"},
+    "version": {"type": "integer", "minimum": 1},
+    "title": {"type": "string", "minLength": 1},
+    "kind": {"enum": ["delivery", "assurance-overlay"]},
+    "activation": {
+      "type": "object",
+      "required": ["any"],
+      "properties": {
+        "any": {"type": "array", "minItems": 1, "items": {"type": "string"}},
+        "all": {"type": "array", "items": {"type": "string"}},
+        "unless": {"type": "array", "items": {"type": "string"}}
+      },
+      "additionalProperties": false
+    },
+    "attach_to": {
+      "type": "array",
+      "items": {"type": "string", "pattern": "^GF-[0-9]{3}$"}
+    },
+    "requires": {"type": "array", "items": {"$ref": "#/$defs/port"}},
+    "provides": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/port"}},
+    "actor": {
+      "type": "object",
+      "required": ["capabilities", "preferred_existing_roles"],
+      "properties": {
+        "capabilities": {"type": "array", "minItems": 1, "items": {"type": "string"}},
+        "preferred_existing_roles": {"type": "array", "items": {"type": "string"}}
+      },
+      "additionalProperties": false
+    },
+    "skill_calls": {"type": "array", "items": {"$ref": "#/$defs/skillCall"}},
+    "nodes": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/node"}},
+    "tests": {"type": "array", "items": {"$ref": "#/$defs/test"}},
+    "gates": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/gate"}},
+    "workline_policy": {"type": "string", "minLength": 1},
+    "omission_rule": {"type": "string", "minLength": 1},
+    "repair": {"type": "array", "minItems": 1, "items": {"type": "string"}}
+  },
+  "$defs": {
+    "port": {
+      "type": "object",
+      "required": ["port", "binding"],
+      "properties": {
+        "port": {"type": "string", "pattern": "^[a-z][a-z0-9.-]+$"},
+        "binding": {"enum": ["selected-producer", "external-authority", "conditional"]},
+        "when": {"type": "string"},
+        "cardinality": {"enum": ["one", "one-or-more", "zero-or-more"]}
+      },
+      "additionalProperties": false
+    },
+    "skillCall": {
+      "type": "object",
+      "required": ["skill", "when", "required"],
+      "properties": {
+        "skill": {"type": "string"},
+        "when": {"type": "string"},
+        "required": {"type": "boolean"}
+      },
+      "additionalProperties": false
+    },
+    "node": {
+      "type": "object",
+      "required": ["local_id", "obligation", "output"],
+      "properties": {
+        "local_id": {"type": "string", "pattern": "^[a-z][a-z0-9-]+$"},
+        "obligation": {"type": "string", "minLength": 1},
+        "output": {"type": "string", "minLength": 1}
+      },
+      "additionalProperties": false
+    },
+    "test": {
+      "type": "object",
+      "required": ["strategy", "requirement", "when", "evidence", "command_source"],
+      "properties": {
+        "strategy": {"type": "string"},
+        "requirement": {"enum": ["required", "conditional"]},
+        "when": {"type": "string"},
+        "evidence": {"type": "string"},
+        "command_source": {"type": "string"}
+      },
+      "additionalProperties": false
+    },
+    "gate": {
+      "type": "object",
+      "required": ["local_id", "accepts", "evaluator_capability"],
+      "properties": {
+        "local_id": {"type": "string", "pattern": "^[a-z][a-z0-9-]+$"},
+        "accepts": {"type": "array", "minItems": 1, "items": {"type": "string"}},
+        "evaluator_capability": {"type": "string"}
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}
+

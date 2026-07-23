@@ -30,6 +30,7 @@ Supporting skills:
 - `adapt-harness`
 - `issue-intake`
 - `orchestrate-work`
+- `reconcile-work-graph`
 - `review-change`
 - `ingest-spec`
 - `codebase-audit`

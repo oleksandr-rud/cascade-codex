@@ -27,6 +27,9 @@ judge as proof of a mechanical invariant.
 6. `docs/patterns/agent-evaluation/index.md` and
    `references/trace-schema.md`.
 7. Current diff and repeated-run evidence when diagnosing a regression.
+8. `docs/patterns/workflow/graph-shaped-work.md` and the authoritative
+   `docs/work/graphs/CG-XXX-*.md` entry when harness evidence feeds a
+   Coordination Graph batch or integrated terminal gate.
 
 ## Scope
 
@@ -82,6 +85,43 @@ code review, or test repair. Route those to `functional-qa`,
     confirmed harness fixes through `codex-maintenance`,
     `develop-skill`, `plan-change`, and `implement-change` as appropriate.
 
+## Coordination Graph Batch Evidence
+
+When a harness evaluation feeds a Coordination Graph, treat it as a
+version-bound batch evidence producer, not as graph-state authority. Before a
+run, bind the Batch Evaluation Matrix row and record:
+
+- batch and Coordination Graph IDs/revisions plus subject gate;
+- required workline/materialization gates and immutable producer transports;
+- evidence locus (`worker-local` or `active-worktree-integrated`), designated
+  target worktree/branch, target HEAD, materialization IDs, and combined diff
+  fingerprint for integrated runs;
+- scenario/catalog, schema, profile, rubric, prompt, and relevant source
+  digests;
+- runner, target model, evaluator/judge model, sandbox, timeout, environment,
+  and applicable cost/permission bounds;
+- shard membership, expected coverage, required/optional evidence,
+  missing/duplicate-result policy, aggregation rule, and failure/repair route.
+
+Run integrated batches against the combined active-worktree source state. An
+uncommitted target is bound by its HEAD plus combined diff fingerprint; producer
+commit or patch/diff transports remain separate lineage identities. A
+worker-local or pre-materialization run is provisional and cannot satisfy a
+required integrated gate.
+
+Preserve authored, deterministic, executed, mechanically eligible,
+outcome-judged, trajectory-judged, calibrated, historical, materialized, and
+accepted states. A missing required shard, stale binding, duplicate evidence ID
+and subject, or required `FAIL`, `BLOCKED`, `GAP`, or `NOT_RUN` prevents batch
+acceptance. Deduplicate explicitly; never silently average or replace duplicate
+receipts.
+
+Return a stable batch receipt with every binding, per-shard results, coverage,
+aggregation result, invalidation rule, earliest responsible workline or
+contract, affected materializations/consumers/batches, preserved accepted work,
+and proposed gate transition. Only the coordination-state owner records the
+batch or terminal transition.
+
 ## Hard Gates
 
 - A live case without `thread.started`, a terminal turn event, and parseable
@@ -129,6 +169,10 @@ Use `templates/evaluation-report.md` for durable findings.
 - per-scenario eligibility, judge dimension ratings, harness-computed scores,
   verdicts, and earliest failing event;
 - route, activation, output, safety, evidence, trace, cost, and latency metrics;
+- graph/batch identity, evidence locus, producer transports, materialization
+  set, target HEAD/combined diff, source/runner/model/environment versions,
+  shard completeness, duplicate disposition, aggregation, and proposed gate/
+  repair transition when feeding a Coordination Graph;
 - root-cause class: `harness-defect`, `target-behavior`, `model-variance`,
   `scenario-defect`, or `environment-blocker`;
 - confirmed gaps and regression cases to add;

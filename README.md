@@ -42,7 +42,7 @@ compatibility name. Treat that as a path/API label, not the product name.
 | `harness.config.example.yaml` | Target-repository adapter template for stack, roots, validation commands, routing, functional acceptance, memory, tracker, and pattern paths. |
 | `docs/structure.md` | Folder/write-target map for specs, product, design, brand, active work, backlog, patterns, and architecture facts. |
 | `docs/patterns/` | Reusable workflow, boundary, testing, and context-memory entries with YAML metadata and selectable context packs. |
-| `docs/work/` | Active work registry, lane template, examples, lane packets, reports, and handoffs. |
+| `docs/work/` | Active work registry, lane and Coordination Graph templates, first-class graph entries, examples, lane packets, reports, and handoffs. |
 | `docs/specs/`, `docs/product/`, `docs/design/`, `docs/brand/` | Durable owner docs for source material, per-slice spec packets, product intent, design constraints, and naming/content direction. |
 | `docs/backlog/`, `docs/glossary.md` | Follow-up candidates and shared codebase/product vocabulary. |
 | `scripts/validate_cascade_codex.py` | Packaging and consistency validator for a complete Cascade distribution. |
@@ -64,14 +64,28 @@ Use `issue-intake` only for issue bodies or tracker tickets. Use
 the product behavior still matches the intended contract.
 
 Broad work is split by `orchestrate-work` only when lanes have independent
-source inputs, disjoint file ownership or one merge owner, acceptance checks,
-and merge evidence. Shared product/design/security decisions stay serialized.
+source inputs, disjoint file ownership or one integration/materialization
+owner, acceptance checks, and version-bound integration/materialization
+evidence. Shared product/design/security decisions stay serialized.
 
-Complex lanes with typed dependencies, evidence joins, bounded partial repair,
-or revision-aware handoff can use the graph-shaped protocol in
-`docs/patterns/workflow/graph-shaped-work.md`. The lane packet remains the
-authoritative task state, atomic work may omit the graph sections, and Cascade
-does not add a graph runtime or replace the agent's reasoning and tool loop.
+Complex lanes can use lane-local Task Graphs. Cross-workline dependencies,
+evidence or batch joins, materialization/integrated-validation boundaries,
+invalidation, or partial repair use a separate
+`docs/work/graphs/CG-XXX-*.md` Coordination Graph. Existing work records are
+audited by `reconcile-work-graph` before direct cutover; product/spec/design/
+brand documents retain rich definitions and reference the graph only when
+needed. Atomic work and unrelated worklines bypass Coordination Graphs.
+Cascade does not add a graph runtime or replace the agent's reasoning and tool
+loop, and graph materialization never implies committing or publishing the
+active worktree.
+
+Planning composes these flows from reusable definitions under
+`docs/patterns/workflow/fragments/`. Product, design, prototype, contract,
+backend, frontend, data, integration, E2E, security, accessibility, and visual
+fragments are selected only when impact evidence activates them. Their ports,
+roles or authorized workers, skill calls, test strategies, evaluator authority,
+and repair routes are resolved into the plan; omitted fragments generate no
+workline, node, test, or terminal-gate requirement.
 
 At closeout, the shared Doc Routing Decision Matrix records whether durable
 product, design, brand, spec, architecture, stack, glossary, or backlog facts
@@ -89,7 +103,10 @@ Explicit workflow-packet requests are routed separately from active execution.
 Use `agentic-workflow-builder` when the requested output is an agentic
 workflow, workflow checklist, prompt bank, delegation workflow, or multi-agent
 workflow packet. Use `orchestrate-work` when the work is already accepted and
-needs active lanes, serialization, merge ownership, or validation scheduling.
+needs active lanes, serialization, coordination/materialization ownership, or
+validation scheduling. Use `reconcile-work-graph` first when existing
+worklines need evidence-backed deduplication, stale-state reconciliation, or
+canonical graph cutover.
 
 ## Roles And Skills
 
@@ -114,12 +131,12 @@ When those decisions require product/runtime code changes, the implementation
 still routes through planning, architecture or secure-design review when
 needed, `implement-change`, and validation.
 
-The 39 registered skills cluster into:
+The 40 registered skills cluster into:
 
 - Core execution and workflow packets: `context`, `agentic-workflow-builder`,
-  `orchestrate-work`, `plan-change`, `functional-qa`, `implement-change`,
-  `review-change`, `validate-change`, `test-autorepair`, `issue-intake`,
-  `closeout`.
+  `orchestrate-work`, `reconcile-work-graph`, `plan-change`, `functional-qa`,
+  `implement-change`, `review-change`, `validate-change`, `test-autorepair`,
+  `issue-intake`, `closeout`.
 - Spec and product routing: `ingest-spec`, `discover`, `docs-impact-map`,
   `synthesis-to-spec`, `compose-spec`, `brand-positioning`, `design-system`.
 - Market and business analysis: `market-validation`, `pain-mining`,

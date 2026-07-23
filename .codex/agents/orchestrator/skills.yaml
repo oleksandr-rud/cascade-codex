@@ -5,6 +5,8 @@ skills:
     source: .codex/skills/agentic-workflow-builder/SKILL.md
   - name: orchestrate-work
     source: .codex/skills/orchestrate-work/SKILL.md
+  - name: reconcile-work-graph
+    source: .codex/skills/reconcile-work-graph/SKILL.md
   - name: plan-change
     source: .codex/skills/plan-change/SKILL.md
   - name: functional-qa

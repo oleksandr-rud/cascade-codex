@@ -1,0 +1,34 @@
+{
+  "fragment_id": "GF-006",
+  "version": 1,
+  "title": "Frontend client implementation",
+  "kind": "delivery",
+  "activation": {"any": ["frontend source or visible behavior changes", "a component, route, form, or client state changes", "a backend contract has an affected UI consumer"]},
+  "requires": [
+    {"port": "product.acceptance", "binding": "conditional", "when": "behavior is product-visible", "cardinality": "one"},
+    {"port": "design.interaction-contract", "binding": "conditional", "when": "visible flow or state behavior changes", "cardinality": "one"},
+    {"port": "shared.contract", "binding": "conditional", "when": "the client consumes a changed contract", "cardinality": "one"},
+    {"port": "design.prototype-evidence", "binding": "conditional", "when": "GF-003 is selected", "cardinality": "one"}
+  ],
+  "provides": [{"port": "implementation.output", "binding": "selected-producer", "cardinality": "one"}],
+  "actor": {"capabilities": ["frontend-implementation", "component-testing"], "preferred_existing_roles": ["orchestrator"]},
+  "skill_calls": [
+    {"skill": "implement-change", "when": "frontend changes are authorized and ready", "required": true},
+    {"skill": "functional-qa", "when": "component, route, or browser behavior must be proven", "required": true},
+    {"skill": "validate-change", "when": "command and functional evidence are ready to aggregate", "required": true}
+  ],
+  "nodes": [
+    {"local_id": "implement-frontend", "obligation": "Implement the bounded client behavior and required interaction states.", "output": "frontend implementation receipt"},
+    {"local_id": "validate-frontend", "obligation": "Run selected component, route, and browser checks at current inputs.", "output": "frontend evidence receipt"}
+  ],
+  "tests": [
+    {"strategy": "component-interaction", "requirement": "required", "when": "component behavior changes", "evidence": "events, validation, state transitions, and protected behavior", "command_source": "harness.config.yaml validation_commands.unit or targeted"},
+    {"strategy": "ui-state-coverage", "requirement": "required", "when": "visible asynchronous or conditional behavior changes", "evidence": "loading, empty, error, partial, disabled, and success behavior", "command_source": "target component or browser runner"},
+    {"strategy": "route-mocked-browser", "requirement": "conditional", "when": "deterministic route behavior is the narrowest useful seam", "evidence": "observable browser behavior with only true boundaries mocked", "command_source": "target browser runner"}
+  ],
+  "gates": [{"local_id": "frontend-ready", "accepts": ["frontend implementation receipt", "frontend evidence receipt"], "evaluator_capability": "independent-code-and-functional-review"}],
+  "workline_policy": "Split when frontend writes and local evidence are independently owned; keep design assurance as overlays unless separately accepted.",
+  "omission_rule": "NOT_APPLICABLE when no client source, visible state, route, component, or changed-contract consumer is affected.",
+  "repair": ["Functional failure reopens implement-frontend.", "Locator or fixture drift routes to test-autorepair only after product behavior remains proven.", "Contract drift reopens only affected client consumers."]
+}
+

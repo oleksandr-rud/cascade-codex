@@ -1,13 +1,14 @@
 # Active Work
 
-Use this table as the single thin registry of active lanes. For graph-shaped
-lanes it is a derived projection: the lane Task Graph, gates, amendments, and
-transition/repair history remain authoritative. Keep completed rows only while
-they are useful for handoff; move durable details into reports.
+Use this table as the single thin registry of active lanes. It is a derived
+projection: lane-local state comes from a lane Task Graph when present, while
+cross-workline state comes from the referenced first-class Coordination Graph.
+Keep completed rows only while useful for handoff; preserve durable details in
+lane packets, graphs, and reports.
 
 | Lane | Status | Request | Owner | Next Gate | Files/Areas | Dependencies | Evidence |
 |---|---|---|---|---|---|---|---|
-| `W-003` | `BLOCKED` | Add graph-shaped workflow mechanics through reusable context rules and lane state, without a graph runtime | root `agent-engineer` | explicit authority for required `AG-05` bounded canary | `WL-01` through `WL-04` accepted; authored/deterministic WL-05 and merged WL-06 outputs preserved; `AG-06`/`TG-01` are affected consumers | `DG-00`, `AG-01` through `AG-04`, and `JG-CORE ACCEPTED`; required target/evaluate/judge evidence is `NOT_RUN` without spend authority; coverage 0 executed/accepted and 309 missing; plan revision 4 / graph revision 3 unchanged | canonical lane and task packet; partial `R-05C`; `R-06A`/`R-06B`; closeout report; blocked-handoff reviews `EV-W003-BLOCKED-STANDARDS-6D88300` and `EV-W003-BLOCKED-SPEC-6D88300` pass; refresh after the blocker clears |
+| `W-003` | `BLOCKED` | First-class graph-shaped workflow coordination without a graph runtime | root `agent-engineer`; cross-workline authority `CG-001@3` | explicit authority/amendment for another bounded WL-12 repair/review; canary prohibited meanwhile | legacy evidence preserved; `CG-AG-07..10`, `CG-AG-13..14`, `CG-MQ-13..14`, and `CG-BATCH-03` preserved; WL-12 review attempt `3/3` failed | W-003 plan 6; `CG-AM-03`; `CG-RP-05`; exact transports/materializations/batches/terminal owned only by `docs/work/graphs/CG-001-w003-coordination-graph.md` | final Spec review failed at `5c1fe931...`; `CG-AG-15`, `CG-AG-16`, and `CG-TG-03` remain blocked |
 
 `W-003` is the only active lane. Completed W-001 and W-002 evidence remains in
 their lane packets and indexed work reports.
@@ -18,7 +19,10 @@ unless copied into `docs/work/lanes/` and registered above.
 ## Parallel Safety
 
 - Independent lanes may proceed concurrently.
-- Dependent lanes wait for the producer lane to reach `READY_TO_MERGE` or
-  `COMPLETE`.
+- Dependent work waits for the producer's named accepted gate, current evidence,
+  immutable transport, and required consumer presence proof.
 - Conflicting file writes require one owner or serialization.
 - Shared product/design uncertainty blocks all lanes that depend on it.
+- Dedicated-worktree changes enter the active worktree only through the
+  Coordination Graph's root-owned Materialization Queue; materialization does
+  not authorize a current-branch commit.

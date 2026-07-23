@@ -2,34 +2,96 @@
 
 Artifact Type: `DERIVED_IMPLEMENTATION_TASK_PACKET`
 Status: `BLOCKED`
-Task Revision: `2`
-Authority: `W-003` plan revision `4`, graph revision `3`
-Execution Model: `orchestrator-workers-dependency-waves`
-Lane And Merge Owner: root `agent-engineer`
+Task Revision: `4`
+Authority: `W-003` plan revision `6` for definitions and
+`docs/work/graphs/CG-001-w003-coordination-graph.md` revision `3` for
+cross-workline state
+Execution Model: `coordination-graph-dedicated-worktrees-materialization`
+Coordination-State And Materialization Owner: root `agent-engineer`
 Delegation Authorized: `YES` — separate workline threads/worktrees; root control only
-Current Task: obtain explicit authority for required `T-05C / SL-05C` canary
+Current Task: blocked after WL-12 review attempt `3/3`; explicit authority or a
+plan/graph amendment is required before another repair/review, and the canary
+must not run
 Created: 2026-07-22
+
+## Revision 4 Repair Tasks
+
+This task revision projects W-003 plan 6 and `CG-001@3`; it does not replace
+their authority.
+
+| Task | Workline / Gate | Bound Worktree / Base | Allowed Writes | Checks | Handoff |
+|---|---|---|---|---|---|
+| `T-13 / SL-13` | `WL-13 / CG-AG-13` | `/private/tmp/cascade-w003-wl09-r5-cg1` at `578451eaf13f06fe3d4b4fd8663ae2ba860b103c` | route skill/role bridge only | validator, catalog check, focused route-source audit, diff check | immutable commit plus receipt; propose `REVIEW` |
+| `T-14 / SL-14` | `WL-14 / CG-AG-14` | `/private/tmp/cascade-w003-wl11-r5-cg1` at `0772244f206a3c4e0dab2e280dbff536a8c126a5` | runner plus exact active-root `skill-cases.json`, interaction source, and generated catalog | catalog check, self-test with output-contract assertion, runtime audit, validator, diff check | immutable commit plus receipt; propose `REVIEW` |
+| `T-15 / SL-15` | root `WL-12 / CG-AG-15` | active HEAD `a14a9bc...` plus accepted repair transports | exact WL-13/WL-14 paths and CG-001 state | dirty-target preflight, materialization checks, deterministic batch, fixed-point Standards/Spec reviews | root records `CG-MQ-13/14`, `CG-BATCH-03`, `CG-IV-02` |
+| `T-16 / SL-16` | `WL-05 / CG-AG-16` | accepted `CG-AG-15` fixed point | artifact run directory only | one HX-031 target; evaluate and both judges only if eligible; current coverage | root terminal proposal to `CG-TG-03` |
+
+`T-13` and `T-14` may run concurrently. `T-15` waits for both accepted
+producer transports. `T-16` waits for accepted `T-15`. No task authorizes an
+active-branch commit, broad stage, push, or cleanup.
+
+```mermaid
+flowchart LR
+    A13["CG-AG-13 accepted"] --> MQ13["CG-MQ-13 accepted"]
+    A14["CG-AG-14 accepted"] --> MQ14["CG-MQ-14 accepted"]
+    MQ13 --> B03["CG-BATCH-03 pass"]
+    MQ14 --> B03
+    B03 --> IV02["CG-IV-02 review join"]
+    IV02 --> A15["CG-AG-15 open"]
+    A15 --> A16["CG-AG-16 replacement canary"]
+    A16 --> TG03["CG-TG-03"]
+```
+
+Current projection: transports `bd8104ac...` and `36a067c5...` plus
+`CG-MQ-13/14` remain accepted. The repaired `CG-BATCH-03` rerun passes;
+`WL-12` is on fixed-point review attempt `3/3`; the canary remains pending.
 
 ## Purpose And Authority
 
-This packet converts the six selected W-003 worklines and thirteen implementation
-slices into directly executable worker-thread contracts plus a root status and
-merge protocol. It does not create another active lane, redefine graph
-semantics, or own authoritative status.
+Task revision 4 preserves the earlier workline contracts as frozen history and
+adds executable repair contracts for `WL-13`, `WL-14`, root `WL-12`, and the
+replacement `WL-05` canary. It does not create another active lane, redefine
+graph semantics, or own authoritative status.
 
-- `docs/work/lanes/W-003-graph-shaped-workflow-mechanics.md` remains the
-  definition, topology, gate, repair, and lane-status authority.
+- W-003 remains the definition, criteria, planning, traceability, and retained
+  evidence authority.
+- `CG-001@3` exclusively owns current topology, readiness, dispatch,
+  materialization, batches, repair, frontier, and terminal state after accepted
+  `OH-W003-CG001-01`.
 - This packet owns task-level source bundles, allowed writes, output receipts,
   commands, stop rules, and handoff requirements.
 - `docs/work/active.md` remains a derived registry projection.
 - If this packet conflicts with W-003, stop and route the conflict through
   `plan-change`; do not silently reinterpret either artifact.
-- Task completion proposes a transition. Only the lane owner records node or
-  gate state in W-003.
+- Task completion proposes a transition. Only the applicable lane-state or
+  CG-001 coordination-state/materialization owner records authoritative state.
 
 No source, definition, criterion, workline, or gate counts are rediscovered in
-this packet. Task revision 2 implements W-003 revision 4's worker topology:
-serialized wave 1, parallel wave 2, and serialized evaluation/closeout waves.
+this packet. Task revisions 2/3 and all earlier merge/branch receipts remain
+immutable history. Task revision 4 projects the revision-6 `CG-001@3` repair,
+no-commit materialization, fixed-point review, and canary contract without
+becoming a second authority.
+
+## Retained Revision 3 Direct-Cutover Contract
+
+- Embedded W-003 graph revision 4 is `FROZEN` and `SUPERSEDED_BY CG-001@1`.
+- `OH-W003-CG001-01` is the accepted authority handoff; partial application of
+  the cutover file set blocks mutation.
+- Accepted `WL-01` through `WL-04` evidence remains historical/current only for
+  its original inputs. Legacy `WL-05 / AG-05` remains `BLOCKED`; the required
+  canary exhausted two mechanically failed target attempts and both judges are
+  `NOT_RUN`.
+- `WL-06 SUPERSEDED_BY WL-12`; `R-06A`/`R-06B` remain evidence, while legacy
+  `AG-06` and `TG-01` were never accepted.
+- `WL-07` through `WL-10` remain accepted. `WL-11`, `CG-MQ-11`, and root-owned
+  `WL-12` are blocked because the current 331-scenario catalog exceeds the
+  accepted 326-scenario transport and fixed-point evidence.
+- Worker commits are immutable transports only. Root materialization makes
+  their scoped deltas appear in the active worktree without automatically
+  merging branches or committing the current branch.
+
+These are historical revision-5 facts. Current repair authority, readiness,
+and completion flow are the revision-4 task table above and `CG-001@3`.
 
 ## Intended Outcome
 
@@ -38,9 +100,12 @@ lane representation, a non-active example, and focused harness evidence. Keep
 the mechanism instruction-driven: no graph runtime, scheduler, compiler,
 database, parser, or automatic state mutation is introduced.
 
-Completion requires all six per-workline acceptance gates, `AG-01` through
-`AG-06`, and terminal gate `TG-01` to be accepted in W-003. Structural checks
-alone never substitute for required focused behavioral evidence.
+Completion now follows sole authority `CG-001@3`: preserved `CG-AG-07` through
+`CG-AG-10`, accepted repair gates `CG-AG-13/14`, accepted `CG-MQ-13/14`,
+`CG-BATCH-03`, `CG-IV-02`, matching reviews at `CG-AG-15`, and the replacement
+canary at `CG-AG-16` must all accept before `CG-TG-03`. Frozen legacy
+`AG-06`/`TG-01` and superseded `CG-TG-02` cannot close revision 6. Structural
+checks alone never substitute for required model-backed evidence.
 
 ## Execution Role And Skill Contract
 
@@ -127,7 +192,7 @@ revision.
 1. Execute exactly one task at a time inside each workline thread. Root may run
    multiple workline threads only when the dependency-wave chart marks them
    parallel and their dispatch receipts name disjoint writes.
-2. Reconstruct readiness from authoritative W-003 graph/gate state before
+2. Reconstruct readiness from authoritative `CG-001` graph/gate state before
    editing; do not trust this packet's Current Task after a handoff without
    reconciliation.
 3. Touch only the task's allowed writes. Existing dirty changes are user-owned
@@ -178,17 +243,55 @@ lane state. Reconcile them with W-003 before every task.
 | `JG-CORE` | root / integration | `ACCEPTED` | `context`, `review-change`, `validate-change` | W-003 -> merged receipts/commits -> integrated diff / `P-ROOT-CONTROL` | merged wave-2 receipts / `R-JGCORE` | attempt 2 accepted at `ce737f2`; lineage/mechanical/Standards/Spec joins passed |
 | `T-05A / SL-05A` | 3 / `W003-WL05` | `ACCEPTED` | `context`, `harness-evaluation`, `codex-maintenance` | `SB-BASE -> JG-CORE -> SB-EVAL -> runner/schema` / `P-WL05` | W-002 complete / `R-05A`, refreshed impact | current CLI and protected evidence contracts inspected at `0e6ba3c`; `EXT-01 SATISFIED` |
 | `T-05B / SL-05B` | 3 / `W003-WL05` | `ACCEPTED` | prior plus `implement-change`, `validate-change` | `SB-BASE -> R-05A -> SB-EVAL -> eval sources` / `P-WL05` | `EXT-01` / `R-05B`, cases/catalog | ten interactions authored; catalog/audit/self-test/validator/diff passed; 309-scenario digest recorded |
-| `T-05C / SL-05C` | 3 / `W003-WL05` | `BLOCKED` | `context`, `harness-evaluation`, `review-change`, `validate-change` | `SB-BASE -> R-05A/B -> permission -> CLI` / `P-WL05` | authored canary / `R-05C`, evidence or blocker | required target/evaluate/judge evidence is `NOT_RUN`; obtain explicit model-spend authority; 0 executed/accepted and 309 missing preserved |
+| `T-05C / SL-05C` | 3 / `W003-WL05` | `BLOCKED` | `context`, `harness-evaluation`, `review-change`, `validate-change` | `SB-BASE -> R-05A/B -> permission -> CLI` / `P-WL05` | authored canary / `R-05C`, evidence or blocker | attempts `1/2` and `2/2` failed mechanical eligibility; judges `NOT_RUN`; explicit replan and new spend authority required |
 | `T-06A / SL-06A` | 4 / `W003-WL06` | `BLOCKED` | `context`, `docs-impact-map`, `codex-maintenance`, `implement-change` | `SB-BASE -> JG-CORE/AG-05 -> SB-CLOSE -> docs` / `P-WL06` | prior gates / `R-06A`, impact disposition | two thin public docs updated and all sibling targets dispositioned; merged at `6c4e33e`; `AG-05` predecessor reopened |
 | `T-06B / SL-06B` | 4 / `W003-WL06` | `BLOCKED` | `context`, `review-change`, `validate-change`, `closeout` | `SB-BASE -> R-06A -> SB-CLOSE -> full evidence` / `P-WL06` | all prior evidence / `R-06B`, final result | deterministic commands pass; terminal acceptance waits for `AG-05` and refreshed reviews |
+| `T-07 / SL-07` | R5 wave 1 / `W003-WL07` | `ACCEPTED` | `context`, `plan-change`, `codex-maintenance`, `implement-change` | W-003 rev 5 request -> semantic/schema surfaces / `P-WL07` | base `a14a9bc...` / accepted transport `4c6b3041...` | root accepted `CG-AG-07`; exact producer identity retained |
+| `T-08 / SL-08` | R5 wave 2 / `W003-WL08` | `ACCEPTED` | `context`, `reconcile-work-graph`, `develop-skill`, `implement-change` | `CG-AG-07` -> reconciliation surfaces / `P-WL08` | semantic producer / source `494649b...`, repaired dependent transport through `6c073ba` | root accepted `CG-AG-08` |
+| `T-09 / SL-09` | R5 wave 2 / `W003-WL09` | `ACCEPTED` | `context`, `orchestrate-work`, `implement-change`, `validate-change` | `CG-AG-07` -> graph-aware execution surfaces / `P-WL09` | semantic producer / source `6ff0966...`, repaired dependent transport through `d6763d7` | root accepted `CG-AG-09` |
+| `T-10 / SL-10` | R5 wave 3 / `W003-WL10` | `ACCEPTED` | `context`, `reconcile-work-graph`, `plan-change`, `implement-change` | accepted producers -> W-003/CG/report surfaces / `P-WL10` | `CG-AG-08`, `CG-AG-09` / transport `1539836...` | `CG-AG-10 ACCEPTED`; exact delta materialized without commit |
+| `T-11 / SL-11` | R5 wave 3 / `W003-WL11` | `HISTORICAL_BLOCKED` | `context`, `codex-maintenance`, `harness-evaluation`, `validate-change` | accepted producers -> validator/harness surfaces / `P-WL11` | `CG-AG-08`, `CG-AG-09` / transport `0772244...` | superseded by accepted revision-6 `T-14 / CG-AG-14`; retain the 326-scenario mismatch as repair history |
+| `T-12 / SL-12` | R5 wave 4 / root | `HISTORICAL_BLOCKED` | `context`, `orchestrate-work`, `review-change`, `validate-change`, `closeout` | accepted WL-10 plus historical WL-11 transport -> old CG queue/batches/active root / `P-WL12` | `CG-AG-10`, historical `CG-AG-11` / old materialization and integrated receipts | superseded by current `T-15 / CG-AG-15`; do not resume the old 326-scenario route |
 
-Every worker row uses its `P-WLNN` dispatch prompt below. Blocked rows hand off
-to root and the Stop, Repair, And Replan Matrix instead of advancing locally.
+The rows above this paragraph are retained revision-4/5 history. Current
+revision-6 dispatch and handoff are defined only by `T-13` through `T-16` at
+the top of this packet and `CG-001@3`.
 
-## Root Thread Control Chart
+## Retained Revision 5 Root Coordination Chart
 
-This chart is a derived operational view. Worker messages flow into this root
-thread; only root updates the chart, W-003, gate state, and merge queue.
+This is a historical projection of `CG-001@2`; it is not current state or a
+resume route. Current authority is `CG-001@3`.
+
+```mermaid
+flowchart LR
+    W7["WL-07 accepted"] --> W8["WL-08 accepted"]
+    W7 --> W9["WL-09 accepted"]
+    W8 --> W10["WL-10 cutover"]
+    W9 --> W10
+    W8 --> W11["WL-11 validation"]
+    W9 --> W11
+    W10 --> W12["WL-12 root materialization"]
+    W11 --> W12
+    W12 --> A12["CG-AG-12"]
+    A5["Legacy AG-05 BLOCKED"] --> TG["CG-TG-02 BLOCKED"]
+    A12 --> TG
+```
+
+| Wave | Workline / Thread | Immutable Transport | Historical Graph Gate | Historical Materialization | Retained Projection |
+|---:|---|---|---|---|---|
+| 1 | `WL-07 / W003-WL07` | `4c6b3041...` | `CG-AG-07 ACCEPTED` | producer delta visible in active root; root receipt/fingerprint still required | accepted producer |
+| 2 | `WL-08 / W003-WL08` | source `494649b...`; repaired dependent transport through `6c073ba` | `CG-AG-08 ACCEPTED` | producer delta visible in active root; root receipt/fingerprint still required | accepted producer |
+| 2 | `WL-09 / W003-WL09` | source `6ff0966...`; repaired dependent transport through `d6763d7` | `CG-AG-09 ACCEPTED` | producer delta visible in active root; root receipt/fingerprint still required | accepted producer |
+| 3 | `WL-10 / W003-WL10` | immutable receipt `1539836...` from dependent head `d6763d7` | `CG-AG-10 ACCEPTED` | `CG-MQ-10 ACCEPTED` | materialized |
+| 3 | `WL-11 / W003-WL11` | immutable receipt `0772244...` from dependent head `073e3ed` | `CG-AG-11 ACCEPTED` | `CG-MQ-11 ACCEPTED` | materialized |
+| 4 | `WL-12 / root` | consumes exact accepted WL-10/WL-11 transports | `CG-AG-12 OPEN` | root no-commit materialization and deterministic combined checks pass | review |
+| terminal | legacy `WL-05` | required `HX-031` execution absent | legacy `AG-05 BLOCKED` | none | `CG-TG-02 BLOCKED` |
+
+## Frozen Revision 2 Root Thread Control Chart
+
+This chart and the following merge queue are frozen revision-4 history. They
+preserve branch/commit lineage but are not current state or authorization to
+merge/commit after `OH-W003-CG001-01`.
 
 ```mermaid
 flowchart LR
@@ -250,7 +353,7 @@ Root replies with exactly one control state: `HOLD`, `CONTINUE`, `REPAIR`,
 `REBASE_AUTHORIZED`, `MERGE_QUEUED`, `MERGED_PENDING_GATE`, `GATE_ACCEPTED`,
 `BLOCKED_REPLAN`, or `CLOSED`.
 
-### Root Merge Queue
+### Frozen Legacy Root Merge Queue
 
 | Queue Item | Preconditions | Root Checks | Initial State |
 |---|---|---|---|
@@ -269,6 +372,22 @@ worker SHAs, then binds `JG-CORE` to the integrated merge tip. An authorized
 rebase, conflict resolution, amended commit, or changed source version
 invalidates the old receipt and requires a new head-bound receipt plus affected
 checks.
+
+### Retained Revision 5 Materialization Queue Projection
+
+This table is historical `CG-001@2` evidence, not current readiness. The
+authoritative current queue is in `CG-001@3`. The designated active worktree is
+`/Users/royrud1902/Documents/cascade-codex` on
+`agent/w003-integration-r4-g3`, HEAD `a14a9bc...`. Root applies accepted scoped
+transports without automatically committing, preserves unrelated dirty paths,
+and records target HEAD before/after plus the combined diff fingerprint.
+
+| Queue | Workline | Gate / Receipt Requirement | Projection | Next Root Action |
+|---|---|---|---|---|
+| `CG-MQ-07..09` | `WL-07..09` | accepted producer gates and exact transports | `ACCEPTED`; combined receipt `CG-MR-ROOT-R5-COMBINED` | requeue only on bound transport/payload invalidation |
+| `CG-MQ-10` | `WL-10` | accepted `CG-AG-10` and immutable WL-10 receipt | `ACCEPTED`; unchanged active-root HEAD | requeue on source/cutover/combined-state drift |
+| `CG-MQ-11` | `WL-11` | accepted `CG-AG-11` and immutable WL-11 receipt | `ACCEPTED`; unchanged active-root HEAD | requeue on validator/harness/combined-state drift |
+| integrated | historical `WL-12` attempt | all old queue receipts for one target HEAD/diff | superseded 326-scenario fixed point | do not resume; use `CG-AG-15` |
 
 ### DG-00 Dispatch-Base Procedure
 
@@ -773,8 +892,10 @@ Every task returns exactly one receipt using this structure:
 Receipt ID: R-<task>
 Thread ID / Task / Slice / Workline:
 Plan Revision / Graph Revision / Attempt:
+Coordination Graph / Dispatch / Queue / Target Gate:
 Branch / Worktree:
 Base SHA / Head SHA / Commit IDs:
+Immutable Transport Identity / Producer Presence Proof:
 Source And Input Versions:
 Allowed Write Scope:
 Actual Changed Paths:
@@ -789,6 +910,14 @@ Proposed Node/Gate Transition:
 Repair Or Replan Route:
 Next Candidate Task:
 ```
+
+Root materialization receipts additionally bind source receipt/transport,
+target active worktree/branch, target HEAD before/after, active baseline and
+pre-existing dirty paths, allowed/applied paths, applied delta and combined
+diff fingerprints, transport method/conflicts, staged state, focused checks,
+queue lifecycle proposal, and rollback/rematerialization route. Equal target
+HEAD before/after is expected; the diff binding proves presence. No receipt
+authorizes commit, push, cleanup, publication, or broad staging.
 
 A receipt with missing required evidence cannot propose acceptance. Rebase,
 conflict resolution, amended commits, or source-version changes invalidate the
@@ -808,16 +937,18 @@ Every worker uses the existing `agent-engineer` route:
 ```text
 CONTROL: DISPATCH
 Execute only the assigned W-003 workline in its assigned thread, branch, and
-worktree from the exact Base SHA. W-003 plan revision 4 / graph revision 3 is
-authoritative. Load AGENTS.md, CODEX.md, W-003, this packet, the workline source
-bundle, named skills, and exact target files in that order.
+worktree from the exact Base SHA. W-003 plan revision 6 owns definitions and
+CG-001 revision 3 owns cross-workline state. Load AGENTS.md, CODEX.md, W-003,
+CG-001, this packet, the workline source bundle, named skills, and exact target
+files in that order.
 
 You are not alone in the repository. Preserve all inherited/user-owned work and
 do not revert or absorb another workline's edits. Write only the assigned paths.
-Do not edit docs/work/active.md, either W-003 plan artifact, root status/merge
-state, another workline's files, graph topology, ownership, permissions, or
-external systems. Do not delegate further, merge, rebase, or mark a gate
-ACCEPTED. Root is the sole state and merge owner.
+Do not edit docs/work/active.md, either W-003 plan artifact, CG-001 queue/state,
+another workline's files, graph topology, ownership, permissions, or external
+systems unless the exact dispatch assigns that root-owned path. Do not delegate
+further, materialize, merge, rebase, or mark a gate accepted. Root is the sole
+coordination-state/materialization owner.
 
 Run the declared task sequence and checks. Send THREAD_EVENT messages for start,
 material progress, receipt readiness, or blockage. Freeze the branch at
@@ -837,6 +968,12 @@ model-backed spend without explicit authority.
 | `P-WL04` | `W003-WL04` | `T-04A -> T-04B` | `SB-BASE`, `SB-EVIDENCE` | functional/review/validation/autorepair/closeout skill folders exactly as task scopes declare | `R-04A`, `R-04B` to root `MQ-04` |
 | `P-WL05` | `W003-WL05` | `T-05A -> T-05B -> T-05C` | `SB-BASE`, `SB-EVAL` | refreshed W-002-authorized eval sources and generated/local evidence only | `R-05A` through `R-05C` to root `MQ-05` |
 | `P-WL06` | `W003-WL06` | `T-06A -> T-06B` | `SB-BASE`, `SB-CLOSE` | conditional public docs only; root retains lane/active state | `R-06A`, `R-06B` to root `MQ-06` |
+| `P-WL07` | `W003-WL07` | `T-07 / SL-07` | W-003 rev-5 request plus workflow/work-folder sources | assigned semantic/template/index/example/routing paths | immutable transport `4c6b3041...`; accepted `CG-AG-07` |
+| `P-WL08` | `W003-WL08` | `T-08 / SL-08` | accepted `CG-AG-07` plus reconciliation sources | reconciliation skill/checklist/role wiring only | source `494649b...`; repaired dependent transport through `6c073ba`; accepted `CG-AG-08` |
+| `P-WL09` | `W003-WL09` | `T-09 / SL-09` | accepted `CG-AG-07` plus graph-aware execution sources | assigned workflow-skill/pack paths only | source `6ff0966...`; repaired dependent transport through `d6763d7`; accepted `CG-AG-09` |
+| `P-WL10` | `W003-WL10` | `T-10 / SL-10` | accepted `CG-AG-08`, `CG-AG-09`, W-003/packet/active/report sources | W-003 mechanics/packet, active row, CG-001, reconciliation report/index only | immutable WL-10 receipt to `CG-MQ-10`; propose `CG-AG-10 REVIEW` |
+| `P-WL11` | `W003-WL11` | `T-11 / SL-11` | accepted `CG-AG-08`, `CG-AG-09`, current validators/evals | assigned validator/harness paths only | immutable WL-11 receipt to `CG-MQ-11`; `CG-AG-11` remains root-owned |
+| `P-WL12` | root | `T-12 / SL-12` | accepted WL-10/WL-11 receipts plus CG-001 queue/batches | active-root materialization and root-owned graph/report state only | target HEAD/diff-bound materialization/integrated receipts; terminal proposal |
 
 Each binding appends its workline task details, branch/worktree/Base SHA,
 attempt, predecessor gates, and exact required checks to `P-WORKER`. Skills are
@@ -869,13 +1006,20 @@ packet's binding, task checklist, and stop matrix are the workline checklists.
       receipt IDs, and stop routes are included.
 - [ ] No active worker has overlapping writes or an unresolved shared decision.
 - [ ] Worker acknowledges `STARTED`; root updates only the derived status board.
-- [ ] At `RECEIPT_READY`, root freezes/inspects lineage and scope, obtains
-      separate review evidence, queues merge, reruns integrated checks, and only
-      then records a gate decision.
+- [ ] At `RECEIPT_READY`, root freezes/inspects lineage, immutable transport,
+      producer-presence proof, and scope; obtains separate review evidence;
+      records the gate; then queues no-commit materialization.
+- [ ] Before materialization, root inventories target HEAD, staged/unstaged and
+      tracked/untracked dirty paths, blocks on unexplained overlap, and applies
+      only the accepted transport's allowed paths.
+- [ ] Root records every queue lifecycle transition and target HEAD/combined
+      diff-bound receipt, then runs focused and aggregate checks before any
+      integrated or terminal gate decision.
 
-Wave 2 is the only writable parallel wave. Tasks remain serialized inside each
-thread. `WL-01`, `JG-CORE`, `WL-05`, `WL-06`, and terminal closeout remain
-serialized root-controlled boundaries.
+Revision-4 wave 2 and revision-5 WL-08/WL-09 then WL-10/WL-11 remain frozen
+history. In revision 6, WL-13/WL-14 were the parallel-safe repair wave; tasks
+remained serialized inside each thread, and root-owned WL-12 materialization,
+fixed-point review, and terminal evaluation remain serialized boundaries.
 
 ## Stop, Repair, And Replan Matrix
 
@@ -896,7 +1040,12 @@ serialized root-controlled boundaries.
 | Topology, dependency, actor, owner, or gate must change | `BLOCKED` | New graph revision before execution. |
 | W-002 evaluation contract differs from packet assumptions | `BLOCKED` | Refresh `T-05A`; replan `WL-05` if material. |
 
-## Packet Preparation Evidence
+## Frozen Revision-4 Packet Preparation Evidence
+
+The following rows preserve the preparation fixed point for task revision 2
+and the embedded revision-4 graph. Counts, merge terminology, and legacy
+`AG-06`/`TG-01` state are historical only; they do not route revision-5 work.
+Current revision-5 evidence begins at the direct-cutover row below.
 
 | Check | State | Meaning |
 |---|---|---|
@@ -916,8 +1065,14 @@ serialized root-controlled boundaries.
 | Deterministic graph-state enforcement | `DECLARED_RESIDUAL_RISK` | Semantics remain instruction/evaluation driven; executable Markdown parsing/validation stays deferred under `AQ-05`. |
 | Reproducible worker dispatch base | `PASS` | `R-DG00` binds the approved inventory and clean-checkout evidence to `28d69ec70396a31125b7b989e5066149eff8a8ae`; all six worker branches were dispatched and merged under root ownership. |
 | W-003 implementation evidence | `BLOCKED` | `DG-00`, `AG-01` through `AG-04`, and `JG-CORE` are accepted; all implementation/public-doc outputs are merged; `AG-05` awaits required bounded live evidence, so `AG-06` and `TG-01` remain open. |
+| Historical revision-5 direct-cutover contract | `PASS` | Plan 5, task 3, frozen embedded graph 4, historical `CG-001@2`, accepted handoff/amendment, canonical reconciliation, and derived projection remain retained at unchanged root HEAD. |
+| Revision-5 producer inputs | `PASS` | WL-07 transport `4c6b3041...`, repaired WL-08 dependent transport through `6c073ba`, and repaired WL-09 dependent transport through `d6763d7` are bound to the WL-10 consumer. |
+| Historical WL-11 validator/harness gate | `BLOCKED` | Transport `0772244...` proves 326 scenarios; its mismatch is retained as the cause of revision-6 repair. |
+| Revision-6 repair producers | `PASS` | `CG-AG-13`/`CG-AG-14` accepted at `bd8104ac...`/`36a067c5...`; current catalog is 40 skills / 331 scenarios. |
+| Revision-6 active-root materialization | `PASS` | `CG-MQ-13/14` and `CG-MR-ROOT-R6-REPAIRS` bind eight exact paths at unchanged HEAD with cached diff empty. |
+| Revision-6 integrated review | `IN_PROGRESS` | `CG-BATCH-03` passes with 19 self-tests; attempt-2 projection findings are repaired and final matching reviews are required for `CG-AG-15`. |
 
-The next executable action is to obtain explicit model-spend authority for the
-bounded `HX-031` canary, run target/evaluate/judge/coverage, and reevaluate
-`AG-05`. Without that authority, preserve all merged work and keep the terminal
-consumers blocked.
+The next action is the final matching Standards/Spec review for `CG-AG-15`.
+Only after it accepts may root run the single authorized `HX-031`
+target/evaluate/judge attempt for `CG-AG-16`. Preserve unrelated work and keep
+`CG-TG-03` open until both current gates accept.

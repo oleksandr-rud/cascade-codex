@@ -31,7 +31,7 @@ If docs and code disagree, follow current code and report the drift.
 
 Use this cascade for non-atomic work:
 
-`context -> ingest-spec/discover/market-validation/synthesis-to-spec/compose-spec if needed -> docs-impact-map when durable docs may affect sibling rules -> pattern-context when reusable pattern packs are needed -> orchestrate-work -> plan-change -> functional-qa -> implement-change -> review-change -> validate-change -> test-autorepair only if stale tests -> closeout`
+`context -> ingest-spec/discover/market-validation/synthesis-to-spec/compose-spec if needed -> docs-impact-map when durable docs may affect sibling rules -> pattern-context when reusable pattern packs are needed -> orchestrate-work -> plan-change -> functional-qa when new product-visible proof is needed -> implement-change -> review-change -> validate-change -> test-autorepair only if stale tests -> closeout`
 
 - `context`: re-orient to branch, active work lanes, recent handoff state, and
   backlog.
@@ -59,17 +59,22 @@ Use this cascade for non-atomic work:
 - `pattern-context`: retrieve, compile, create, or update bounded
   `docs/patterns/{entry}/` metadata and context packs when reusable pattern
   memory is in scope.
-- `orchestrate-work`: split, serialize, track, or merge work lanes when the
-  work can run in parallel or needs dependency management.
+- `orchestrate-work`: discover, split, connect, serialize, schedule, or track
+  worklines and their coordination/materialization gates.
+- `reconcile-work-graph`: audit and canonicalize existing lanes, worklines,
+  and graph records before graph creation, cutover, deduplication, or
+  active-row retirement proposals.
 - `plan-change`: capture product/design intent, codebase vocabulary, behavior
   examples, slice boundary, risks, and validation plan.
-- `functional-qa`: primary product-visible acceptance gate for browser, API,
-  journey, scenario, and functional-test evidence.
+- `functional-qa`: execute or author product-visible browser, API, journey,
+  scenario, and functional-test proof when new acceptance evidence is needed.
 - `implement-change`: scoped behavior-slice implementation.
 - `review-change`: fixed-point Standards/Spec review for WIP, branch, or PR
   changes.
-- `validate-change`: command, test, type, diff, link, scenario, and functional
-  evidence aggregator.
+- `validate-change`: directly aggregate existing command, test, type, diff,
+  link, scenario, functional, review, materialization, batch, and graph evidence;
+  assess freshness, invalidation, gate impact, the earliest responsible
+  contract, and bounded reopen sets.
 - `test-autorepair`: repair stale, flaky, or failing tests only when product
   behavior still matches the expected contract.
 - `closeout`: persist validation evidence, work memory, reusable lessons,
@@ -79,6 +84,25 @@ Use this cascade for non-atomic work:
 `issue-intake` is an explicit exception path for issue bodies or tracker
 tickets. Human review is an explicit open-question or exception path, not a
 standalone workflow router.
+
+### Acceptance And Validation Route Boundary
+
+- Use `functional-qa` when the task must author, execute, or collect new
+  product-visible proof through a browser, API, CLI, journey, scenario, or
+  functional test boundary.
+- Use `validate-change` directly when evidence already exists and the task is to
+  aggregate it, assess freshness or invalidation, determine gate impact,
+  identify the earliest responsible node/workline/contract, or calculate the
+  bounded reopen set. This remains a direct validation route when the evidence
+  subject is a Task Graph, Coordination Graph, materialization, batch, or
+  integrated active-worktree state.
+- Do not load `functional-qa` merely because existing evidence is functional,
+  and do not load `orchestrate-work` merely because the validation subject is
+  graph-shaped. Route to `functional-qa` only when new product-visible proof is
+  required. Route to `orchestrate-work` only when workline topology, scheduling,
+  ownership, dispatch, or materialization coordination must change; route to
+  `plan-change` only when a definition, boundary, gate, or implementation
+  decision must change.
 
 ## Optional Escalations
 
@@ -182,21 +206,33 @@ Create a lane packet only when a row is not enough:
 - `docs/work/_index.md`
 - `docs/work/active.md`
 - `docs/work/lane-template.md`
+- `docs/work/graph-template.md`
 - `docs/work/examples/`
 - `docs/work/lanes/*.md`
+- `docs/work/graphs/CG-XXX-*.md`
 - `docs/work/reports/`
 
 Completed or unrelated work lanes are historical context. Example lanes are
 copyable guidance only and are not active work unless copied into
 `docs/work/lanes/` and registered in `docs/work/active.md`.
 
-For a complex lane with typed dependencies, evidence joins, bounded partial
-repair, or revision-aware handoff, load
-`docs/patterns/workflow/graph-shaped-work.md`. The lane packet owns
-authoritative task and gate state; `docs/work/active.md` and status boards are
-derived projections. Atomic work may omit the graph sections, and the protocol
-does not add a scheduler, compiler, or replacement for the agent's reasoning
-and tool loop.
+For a complex lane with typed dependencies, use its lane-local Task Graph. When
+two or more canonical worklines also have a cross-workline dependency,
+evidence/batch join, materialization or integrated-validation boundary,
+invalidation relationship, or partial-repair route, use a first-class
+`docs/work/graphs/CG-XXX-*.md` Coordination Graph. Existing worklines route
+through `reconcile-work-graph` before cutover. Rich definitions remain in
+their source/spec/lane owners; `docs/work/active.md` and status boards remain
+derived projections. Atomic work and unrelated worklines omit the Coordination
+Graph. The protocol adds no scheduler, compiler, automatic worktree action,
+commit, push, or replacement for the agent's reasoning and tool loop.
+
+For non-atomic product or implementation planning, evaluate reusable graph
+fragments under `docs/patterns/workflow/fragments/` before finalizing
+worklines. Record selected, merged, not-applicable, and blocked fragments; bind
+ports; resolve existing roles or authorized workers, skill calls, target test
+commands, fixtures/environments, and evaluator authority; then emit only the
+smallest applicable flow. Reusable fragment files are not active work state.
 
 ## Write Targets
 

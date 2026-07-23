@@ -7,7 +7,7 @@ config; keep reusable workflow rules in skills, agents, and patterns.
 
 | Folder | Purpose | Written By |
 |---|---|---|
-| `docs/work/` | Active work lanes, copyable lane examples, lane packets, reports, handoffs | `orchestrate-work`, `market-validation`, `plan-change`, `validate-change`, `closeout` |
+| `docs/work/` | Active work lanes, first-class Coordination Graphs, copyable examples, lane packets, reports, handoffs | `orchestrate-work`, `market-validation`, `plan-change`, `validate-change`, `closeout` |
 | `docs/specs/` | Incoming and spec packets | `ingest-spec`, `synthesis-to-spec`, `compose-spec`, `discover`, `docs-impact-map`, `adapt-harness` |
 | `docs/product/` | Product intent, requirements, journeys, personas, scenarios | `discover`, `market-validation`, `synthesis-to-spec`, `compose-spec`, `ingest-spec`, `docs-impact-map` |
 | `docs/design/` | Interaction model, tokens, components, design constraints | `discover`, `design-system`, `ingest-spec`, `docs-impact-map` |
@@ -23,9 +23,19 @@ config; keep reusable workflow rules in skills, agents, and patterns.
 
 - Active registry: `docs/work/active.md`
 - Lane template: `docs/work/lane-template.md`
+- Coordination Graph template: `docs/work/graph-template.md`
+- Coordination Graph index: `docs/work/graphs/_index.md`
+- Coordination Graph entries: `docs/work/graphs/CG-XXX-slug.md`
 - Lane examples: `docs/work/examples/`
 - Lane packets: `docs/work/lanes/W-XXX-slug.md`
 - Durable reports: `docs/work/reports/YYYY-MM-DD-slug.md`
+
+Coordination Graph entries are separate work entities that connect two or more
+canonical worklines across real dependencies, joins, worktree materialization,
+integrated validation, invalidation, or partial repair. They are not worklines,
+lanes, specs, generated documents, or runtimes. Lane packets keep lane-local
+Task Graph authority and read-only graph references after direct cutover;
+`active.md` remains a derived projection.
 
 ## Spec Translation Paths
 
@@ -46,6 +56,11 @@ config; keep reusable workflow rules in skills, agents, and patterns.
   `docs/design/`
 - Naming, tone, content, and visual direction: `docs/brand/`
 - Active work lane: `docs/work/active.md` or `docs/work/lanes/W-XXX-slug.md`
+- Cross-workline coordination state: `docs/work/graphs/CG-XXX-slug.md`; never
+  embed Coordination Graph boilerplate in product/source/generated specs
+- Reusable planning-time graph fragments:
+  `docs/patterns/workflow/fragments/GF-*.fragment.json`; these are pattern
+  definitions, not active work or generated product/spec documents
 - Codebase vocabulary: `docs/glossary.md`
 
 ## Business Analysis Paths
@@ -121,6 +136,12 @@ Required files per entry:
 
 - `index.md`
 - `*.pack.yaml`
+
+The workflow entry may additionally contain
+`fragments/graph-fragment.schema.json`, `fragments/_index.md`, and versioned
+`fragments/GF-*.fragment.json` definitions. Planning and orchestration assemble
+only applicable fragments; active instances remain in the owning plan, lane
+Task Graph, or Coordination Graph.
 
 Use `docs/patterns/context-pack-schema.yaml` for the metadata contract and
 `scripts/build_pattern_context_pack.py` to build filtered text from packs.

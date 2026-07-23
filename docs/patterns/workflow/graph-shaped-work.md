@@ -1,25 +1,31 @@
 # Graph-Shaped Work
 
-Use these rules when one active lane contains connected obligations whose
-readiness, evidence, repair, or handoff state cannot be represented safely as a
-linear checklist. The lane packet owns each instantiated graph. This document
-owns reusable semantics only; it is never active task state.
+Use these rules when connected obligations or worklines have readiness,
+evidence, repair, handoff, or integration state that cannot be represented
+safely as a linear checklist. A lane packet may own one lane-local Task Graph;
+a separate `docs/work/graphs/CG-XXX-slug.md` entry may own one cross-workline
+Coordination Graph. This document owns reusable semantics only; it is never
+active task state.
 
 ## Graph-Shaped Work
 
 Graph-shaped coordination augments Cascade's existing skill routes and local
 model/tool loops. Skills still plan, implement, review, validate, repair, and
-close work. The graph-shaped lane state records which bounded obligations may
-run, which evidence gates must accept them, and which work must reopen after a
-failure. Context-pack metadata selects these rules but does not redefine them
-or store live state. Changing reusable graph semantics invalidates affected
-skill, lane-template, pack-metadata, and evaluation consumers; refresh those
-consumers against this document before relying on them again. Retrieval
-metadata never becomes semantic authority.
+close work. A Task Graph records bounded obligations inside one lane. A
+Coordination Graph connects two or more worklines across ownership, evidence,
+worktree, materialization, invalidation, or terminal-acceptance boundaries.
+Neither graph is a scheduler, worker, source spec, or substitute for a lane.
 
-A lane is one independently tracked workstream with one owner, scope, merge
-boundary, and terminal validation boundary. Use graph-shaped sections when a
-lane has several connected obligations and at least one of these conditions:
+Context-pack metadata selects these rules but does not redefine them or store
+live state. Changing reusable graph semantics invalidates affected skill,
+template, pack-metadata, and evaluation consumers; refresh those consumers
+against this document before relying on them again. Retrieval metadata never
+becomes semantic authority.
+
+A lane is one independently tracked workstream with one owner, scope,
+integration boundary, and terminal validation boundary. Use a lane-local Task
+Graph when a lane has several connected obligations and at least one of these
+conditions:
 
 - work has prerequisite, evidence-gate, or external-condition dependencies;
 - independent work may proceed in parallel but must join before a consumer;
@@ -28,10 +34,17 @@ lane has several connected obligations and at least one of these conditions:
 - topology, ownership, or evidence bindings may change across handoff;
 - the current frontier would otherwise be ambiguous after compaction or resume.
 
-Atomic work may omit graph-shaped lane sections. A one-file mechanical edit or
+Atomic work may omit graph-shaped sections. A one-file mechanical edit or
 another single obligation with no useful dependency or repair structure still
 follows normal planning, permission, review, validation, and closeout rules.
 Do not create nodes merely to mirror every skill invocation or prose step.
+
+Use a Coordination Graph only when there are at least two real worklines and
+at least one cross-workline dependency, evidence join, materialization or
+integrated-validation boundary, invalidation relationship, or partial-repair
+route. Several unrelated worklines do not justify a graph. Product, design,
+brand, source, and generated spec documents never receive graph boilerplate;
+the graph references their stable IDs, versions, and owner paths instead.
 
 These mechanics are instruction-driven. They do not schedule work, lock state,
 parse Markdown into an executable graph, provide transactions, or replace
@@ -53,7 +66,8 @@ per-node acceptance gate. Gate IDs are also stable and never reused.
 One lane-state owner records authoritative transitions. Workers and evidence
 producers return version-bound receipts or proposed transitions; producing an
 artifact or reporting completion does not authorize them to mutate shared lane
-state, accept a node or gate, update a derived status board, or merge work.
+state, accept a node or gate, update a derived status board, or materialize or
+integrate work.
 Conflicting proposals remain evidence/history while the owner records one
 reconciled transition.
 
@@ -71,10 +85,12 @@ but neither prior nor incoming owner may record transitions before that
 handoff completes.
 
 The lane's Task Graph, evidence-gate records, latest graph amendment, and
-transition/repair history are authoritative active state. Current Frontier,
-status boards, merge queues, and the active-work registry are derived
-projections. Recompute a drifting projection from authoritative state before
-execution.
+transition/repair history are authoritative lane-local state. Current
+Frontier, status boards, and the active-work registry are derived projections.
+When a Coordination Graph exists, its cross-workline records and
+materialization queue are authoritative only in the separate `CG-XXX` entry;
+lane rows and the active registry reference that authority. Recompute a
+drifting projection from authoritative state before execution.
 
 Node states and legal next states are:
 
@@ -129,7 +145,7 @@ A node is `READY` only when all of the following are true:
    attempt/maximum, repair route, and exhaustion route are defined;
 5. no unresolved product, design, ownership, permission, or environment
    blocker applies;
-6. write scope is disjoint from active work or one merge owner is declared;
+6. write scope is disjoint from active work or one integration owner is declared;
 7. required tools and permissions are available;
 8. paid/live or externally mutating work has explicit tool, cost, permission,
    idempotency, and cleanup bounds;
@@ -234,17 +250,26 @@ reuse a node or gate ID from an earlier or superseded revision. Preserve
 revision and repair history so a handoff can restore graph revision, current
 frontier, unresolved joins, blockers, and next executable node from authority.
 
-A cross-lane consumer records the producer lane ID, accepted producer gate and
-current evidence reference, compatible version/freshness, merge owner, and
-invalidation route. The producer gate—not a completion claim or worker
-receipt—controls readiness. If producer evidence reopens or changes version,
-recalculate consumer readiness and reopen only consumer work whose inputs are
-no longer current. Conflicting merge ownership blocks the dependency.
+A cross-lane consumer without a Coordination Graph records the producer lane
+ID, accepted producer gate and current evidence reference, compatible
+version/freshness, integration owner, and invalidation route. The producer
+gate—not a completion claim or worker receipt—controls readiness. If producer
+evidence reopens or changes version, recalculate consumer readiness and reopen
+only consumer work whose inputs are no longer current. Conflicting integration
+ownership blocks the dependency.
+
+When a Coordination Graph is created, migrate every cross-workline edge,
+aggregate gate, materialization record, and terminal gate to that graph in one
+recorded cutover. Lane packets then keep read-only references to the graph and
+their own workline row. Do not operate dual authoritative copies or a fallback
+path. Lane-local Task Graphs may remain authoritative for obligations inside
+their lane, but they must not restate cross-workline transitions.
 
 Parallel work may consume the same accepted producer gate when write scopes
-are disjoint. Local receipts remain provisional until the merge owner reviews
-and integrates them and any required compatibility join passes. An integration
-failure reopens only responsible producers and affected consumers.
+are disjoint. Local receipts remain provisional until the coordination owner
+accepts them, materializes required changes into the designated active
+worktree, and the required compatibility or evaluation join passes. An
+integration failure reopens only responsible producers and affected consumers.
 
 Terminal aggregate gates consume accepted per-node or workline gates and have
 no downstream consumer in the same graph. Lane completion does not itself
@@ -253,3 +278,192 @@ or terminal gate and reports residual instruction-driven risk.
 
 Definition coverage: `DEF-06`, `DEF-07`, `DEF-10`, `DEF-11`, `DEF-13`.
 Boundary coverage: `BND-01`, `BND-02`, `BND-03`, `BND-06`.
+
+## Coordination Graph Authority And Applicability
+
+A Coordination Graph is a first-class work entity stored at
+`docs/work/graphs/CG-XXX-slug.md`. It connects existing worklines; it is not a
+workline, lane, worker, generated spec, implementation plan, or execution
+runtime. Its stable `CG-XXX` ID is never reused. `docs/work/graphs/_index.md`
+indexes current and retained graphs, while `docs/work/active.md` remains a
+derived projection that points to the graph and active worklines.
+
+Create a Coordination Graph only when all of these are true:
+
+1. at least two canonical worklines exist or are selected by planning; and
+2. at least one typed cross-workline dependency, evidence or batch join,
+   materialization/integrated-validation boundary, invalidation relationship,
+   or partial-repair route exists; and
+3. the graph reduces ambiguity that lane rows and direct references cannot
+   safely represent.
+
+Do not create a graph for atomic work, one workline, several unrelated
+worklines, or merely to visualize prose. Keep rich product and implementation
+definitions in their narrow authoritative owners. A Coordination Graph stores
+stable source/criterion IDs, versions, paths, and dependency-relevant
+projections only, so source and generated documents do not acquire unused graph
+sections.
+
+One coordination-state and materialization owner records every authoritative
+cross-workline transition. Workers, workline owners, reviewers, test runners,
+and evaluation shards return version-bound receipts or transition proposals;
+they do not mutate the Coordination Graph, its derived frontier, the
+materialization queue, or the active registry. A workline row in the graph is
+a reference to the owning lane packet and current accepted gate, not a copy of
+its definitions or lane-local Task Graph.
+
+The authoritative Coordination Graph records are:
+
+- applicability decision, source and boundary references, and graph revision;
+- canonical workline registry and typed edge list;
+- accepted workline gates and cross-workline evidence/aggregate gates;
+- worktree dispatch ledger and accepted worker receipts;
+- materialization queue and materialization receipts;
+- batch-evaluation matrix and integrated active-worktree evidence;
+- transition, repair, amendment, reconciliation, and ownership-handoff
+  history; and
+- terminal aggregate gate.
+
+Current Frontier, active-registry rows, status boards, summaries, and queue
+views are derived projections. Reconcile them from the authoritative graph
+before dispatch, materialization, repair, handoff, or terminal acceptance.
+The same state and gate transition semantics used by lane-local graphs apply
+unless this section defines a workline- or materialization-specific state.
+
+Creating a graph is a direct authority cutover. Record the prior authority,
+new graph ID/revision, migrated edges and gates, preserved/invalidated evidence,
+and cutover time. After cutover, no lane packet, plan, report, or status board
+may remain a second authoritative source for the migrated state. Retained prior
+records are historical evidence only.
+
+## Coordination Graph Reconciliation And Retention
+
+Before creating a graph from existing work, inventory the active registry,
+lane packets, prior graphs, reports, source versions, current implementation,
+worktrees/branches, receipts, evidence, and inbound consumers. Normalize IDs,
+aliases, owners, revisions, and current gate subjects before comparing work.
+Duplicate detection uses outcome, acceptance criteria, write scope, produced
+artifacts, consumers, and evidence boundaries—not title similarity.
+
+Give every inspected workline one explicit disposition:
+
+- `KEEP`: current and independently necessary;
+- `UPDATE`: still active but its projection or bindings are stale;
+- `MERGE_INTO <W-ID>`: a true duplicate whose unique requirements,
+  dependencies, evidence, and consumers must migrate to the named survivor;
+- `SUPERSEDE_BY <W-ID>`: replaced by a newer authority while retained as
+  historical evidence;
+- `RETIRE_ACTIVE_ROW`: complete, with durable packet/report/evidence already
+  preserved; or
+- `BLOCKED_REVIEW`: ownership, authority, evidence, or overlap cannot yet be
+  resolved safely.
+
+Do not delete durable lane packets, graph revisions, reports, receipts, or
+evidence merely because a row is duplicate, stale, superseded, or complete.
+Retire an active row only through the owning closeout route after checking
+inbound references and preserving durable evidence. Do not invent a permanent
+`CLOSED` active state. A `BLOCKED_REVIEW` disposition prevents graph cutover
+for the unresolved workline.
+
+Reconciliation outputs a version-bound inventory, disposition map, canonical
+survivor map, migrated-reference ledger, graph delta, invalidation set,
+proposed transitions, and next gate. Only the coordination-state owner applies
+the authoritative graph changes. Reject cutover with duplicate IDs, dangling
+consumers, undefined gates, cycles, conflicting state/materialization owners,
+or evidence whose subject/version cannot be established.
+
+Plan and graph revisions remain distinct. Discovery, definitions, workline
+boundaries, or implementation decisions change Plan Revision. Topology,
+dependencies, canonical workline identity, gates, owner, or materialization
+contract change Coordination Graph Revision. An ordinary retry changes attempt
+and history only. Retain amendment and reconciliation history so later owners
+can distinguish current state from superseded or historical evidence.
+
+## Dedicated Worktrees, Batch Evaluation, And Materialization
+
+When worklines execute in dedicated worktrees, the Coordination Graph owns the
+cross-worktree dispatch and integration contract. The coordination owner
+assigns each workline a thread, branch, worktree, base SHA, allowed writes,
+producer gate, attempt, and invalidation rule. The worker verifies the binding,
+edits only its assigned worktree, runs lane-local checks, and returns a receipt
+with base/head SHA, owned commits when used, actual changed paths, exact check
+results, evidence versions, worktree cleanliness, blockers, and a proposed
+transition.
+
+A worker commit is an optional immutable transport artifact. It does not
+authorize a merge, commit, or broad staging operation in the active worktree.
+Worker completion, local checks, and workline acceptance remain distinct. A
+receipt is ready for materialization only after its workline gate is accepted,
+its producer/input bindings remain current, and active-worktree overlap checks
+pass.
+
+An uncommitted active-worktree materialization is not a Git base and must not
+be named as the source of dependent-worktree readiness. Bind each producer to
+one immutable transport identity: preferably the accepted worker commit set,
+otherwise a content-addressed patch or diff digest. Before a consumer worktree
+runs, prove that the exact producer transport is present there and record the
+consumer base SHA plus that proof. A later amended commit, rebased transport,
+patch digest, or consumer-base change invalidates the dependent readiness and
+its evidence.
+
+The **Materialization Queue** orders accepted workline results whose changes
+must appear together in the designated current active worktree. Materialize
+one scoped result at a time using an explicit transport method, without
+automatically committing the current branch. Record target HEAD before/after,
+active-worktree baseline fingerprint, pre-existing dirty paths, applied paths,
+transport method, conflicts, resulting diff fingerprint, staged/unstaged state,
+focused checks, and rollback/repair route. For no-commit materialization,
+target HEAD may remain unchanged; the bound diff proves the result appeared.
+
+Materialization states are:
+
+| State | Meaning | Legal next states |
+|---|---|---|
+| `QUEUED` | Accepted workline result awaits current target checks. | `APPLYING`, `BLOCKED`, `SUPERSEDED` |
+| `APPLYING` | The coordination owner is applying the scoped result. | `APPLIED`, `FAILED`, `BLOCKED` |
+| `APPLIED` | The bound change is present in the active worktree. | `VALIDATING`, `FAILED` |
+| `VALIDATING` | Focused or integrated checks run against the combined active-worktree state. | `ACCEPTED`, `FAILED`, `BLOCKED` |
+| `ACCEPTED` | Current required post-materialization evidence passed. | `QUEUED` only after input/evidence invalidation; otherwise terminal |
+| `FAILED` | Application or validation failed with a responsible route. | `QUEUED`, `BLOCKED`, `SUPERSEDED` |
+| `BLOCKED` | Conflict, dirty-path overlap, stale input, or missing authority prevents safe materialization. | `QUEUED` after resolution/recalculation, or `SUPERSEDED` |
+| `SUPERSEDED` | A later graph revision replaced this queue item. | terminal |
+
+Never overwrite unexplained active-worktree changes. Overlapping worker and
+pre-existing dirty paths block materialization until one owner resolves the
+conflict. Do not clean, reset, commit, push, or broadly stage the active
+worktree as an implied graph action. Those operations require their own user
+authority. Apply dependent results only after their producer materialization
+and focused gate are accepted.
+
+Batch evaluation is an aggregate evidence join, not a synonym for worker or
+materialization success. Each batch records its batch ID, required workline and
+materialization gates, exact source/input versions, target HEAD and combined
+diff fingerprint, immutable producer transport identities, test/evaluation
+definition digest, runner/model/environment and rubric versions where
+applicable, shard membership, expected coverage,
+required/optional evidence, missing/duplicate-result policy, aggregation rule,
+and failure/repair route. Deduplicate receipts by stable evidence ID and
+subject; never average duplicate evidence silently.
+
+Required `FAIL`, `BLOCKED`, `GAP`, or `NOT_RUN`, a missing required shard, or a
+stale binding prevents batch acceptance. Keep authored, deterministic,
+executed, reviewed, judged, calibrated, historical, materialized, and accepted
+evidence meanings distinct. Pre-materialization results remain provisional and
+cannot prove the combined active-worktree state.
+
+The terminal gate accepts only after every required workline gate,
+materialization gate, integrated active-worktree test/evaluation, and residual
+risk input is current for the same Coordination Graph revision and combined
+state. Integrated evidence binds the active target HEAD plus the combined diff
+fingerprint separately from each producer transport identity; neither binding
+substitutes for the other. An integrated failure identifies the earliest
+responsible workline or contract, reopens only its invalidated materialization
+and downstream
+consumers/batches, and preserves unrelated accepted work. Repair returns
+affected items through readiness and queue recalculation; it never patches the
+derived frontier directly.
+
+These contracts remain instruction-driven. They define assignments, evidence,
+state ownership, and safe handoffs but do not create worktrees, run agents,
+apply patches, schedule batches, mutate Markdown, merge branches, or commit
+changes automatically.

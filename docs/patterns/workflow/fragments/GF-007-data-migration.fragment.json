@@ -1,0 +1,25 @@
+{
+  "fragment_id": "GF-007",
+  "version": 1,
+  "title": "Data model and migration",
+  "kind": "delivery",
+  "activation": {"any": ["database schema or persisted representation changes", "backfill or compatibility migration is needed", "stored data lifecycle changes"]},
+  "requires": [{"port": "shared.contract", "binding": "conditional", "when": "stored shape is externally consumed", "cardinality": "one"}],
+  "provides": [{"port": "data.migration-ready", "binding": "selected-producer", "cardinality": "one"}],
+  "actor": {"capabilities": ["data-migration-implementation", "compatibility-validation"], "preferred_existing_roles": ["orchestrator"]},
+  "skill_calls": [
+    {"skill": "architecture-review", "when": "schema, lifecycle, or compatibility boundaries change", "required": true},
+    {"skill": "implement-change", "when": "migration work is ready", "required": true},
+    {"skill": "validate-change", "when": "migration evidence is available", "required": true}
+  ],
+  "nodes": [{"local_id": "implement-migration", "obligation": "Implement forward, compatibility, backfill, and rollback behavior as applicable.", "output": "migration receipt"}],
+  "tests": [
+    {"strategy": "migration-forward-and-compatibility", "requirement": "required", "when": "fragment is selected", "evidence": "old and new data states have an explicit supported path", "command_source": "target data test runner"},
+    {"strategy": "migration-rollback-or-recovery", "requirement": "conditional", "when": "rollback or resumable recovery is supported", "evidence": "failure leaves data in a defined recoverable state", "command_source": "target data test runner"}
+  ],
+  "gates": [{"local_id": "migration-ready", "accepts": ["migration receipt", "migration-forward-and-compatibility"], "evaluator_capability": "independent-data-review"}],
+  "workline_policy": "Separate when migration order, deployment, environment, or recovery evidence differs from application implementation.",
+  "omission_rule": "NOT_APPLICABLE when no persisted schema, representation, lifecycle, backfill, or compatibility behavior changes.",
+  "repair": ["Migration failure reopens only the migration and consumers bound to the invalid stored shape."]
+}
+

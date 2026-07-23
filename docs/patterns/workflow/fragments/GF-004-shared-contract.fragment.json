@@ -1,0 +1,21 @@
+{
+  "fragment_id": "GF-004",
+  "version": 1,
+  "title": "Shared API, schema, or component contract",
+  "kind": "delivery",
+  "activation": {"any": ["a public API or schema changes", "multiple implementation surfaces share a contract", "generated clients or reusable components change"]},
+  "requires": [{"port": "product.acceptance", "binding": "conditional", "when": "product-visible behavior changes", "cardinality": "one"}],
+  "provides": [{"port": "shared.contract", "binding": "selected-producer", "cardinality": "one"}],
+  "actor": {"capabilities": ["architecture-contract-ownership", "compatibility-analysis"], "preferred_existing_roles": ["orchestrator", "agent-engineer"]},
+  "skill_calls": [
+    {"skill": "architecture-review", "when": "the change crosses module or public-contract boundaries", "required": true},
+    {"skill": "plan-change", "when": "producer and consumer changes need one versioned plan", "required": true}
+  ],
+  "nodes": [{"local_id": "define-contract", "obligation": "Define producer, consumers, compatibility, versioning, and invalidation.", "output": "versioned shared contract"}],
+  "tests": [{"strategy": "contract-compatibility", "requirement": "required", "when": "fragment is selected", "evidence": "producer and every named consumer agree on current schema and failure behavior", "command_source": "target contract tests and harness.config.yaml"}],
+  "gates": [{"local_id": "contract-ready", "accepts": ["versioned shared contract", "contract-compatibility"], "evaluator_capability": "independent-architecture-review"}],
+  "workline_policy": "Use a separate workline when one authority must stabilize the contract before multiple consumers implement against it.",
+  "omission_rule": "NOT_APPLICABLE when no public, shared, generated, or cross-surface contract changes.",
+  "repair": ["Contract drift reopens define-contract and only consumers bound to the changed version."]
+}
+

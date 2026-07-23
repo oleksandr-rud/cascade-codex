@@ -1,0 +1,32 @@
+{
+  "fragment_id": "GF-005",
+  "version": 1,
+  "title": "Backend service implementation",
+  "kind": "delivery",
+  "activation": {"any": ["backend source or service behavior changes", "persistence, queue, or server-side state changes", "an API producer changes"]},
+  "requires": [
+    {"port": "product.acceptance", "binding": "conditional", "when": "behavior is product-visible", "cardinality": "one"},
+    {"port": "shared.contract", "binding": "conditional", "when": "a public or shared contract changes", "cardinality": "one"}
+  ],
+  "provides": [{"port": "implementation.output", "binding": "selected-producer", "cardinality": "one"}],
+  "actor": {"capabilities": ["backend-implementation", "service-testing"], "preferred_existing_roles": ["orchestrator"]},
+  "skill_calls": [
+    {"skill": "implement-change", "when": "backend changes are authorized and ready", "required": true},
+    {"skill": "functional-qa", "when": "API or observable service behavior must be proven", "required": true},
+    {"skill": "validate-change", "when": "command and functional evidence are ready to aggregate", "required": true}
+  ],
+  "nodes": [
+    {"local_id": "implement-backend", "obligation": "Implement the bounded server-side behavior and preserve protected contracts.", "output": "backend implementation receipt"},
+    {"local_id": "validate-backend", "obligation": "Run the selected backend test strategy at current source and environment versions.", "output": "backend evidence receipt"}
+  ],
+  "tests": [
+    {"strategy": "backend-unit", "requirement": "required", "when": "logic or state transition changes", "evidence": "focused logic and failure behavior", "command_source": "harness.config.yaml validation_commands.unit or targeted"},
+    {"strategy": "api-contract", "requirement": "conditional", "when": "an API boundary changes", "evidence": "request, response, error, authorization, and idempotency behavior", "command_source": "target API contract runner"},
+    {"strategy": "service-integration", "requirement": "conditional", "when": "database, queue, adapter, or service wiring changes", "evidence": "real boundary integration at a controlled environment", "command_source": "harness.config.yaml validation_commands.targeted or functional"}
+  ],
+  "gates": [{"local_id": "backend-ready", "accepts": ["backend implementation receipt", "backend evidence receipt"], "evaluator_capability": "independent-code-and-functional-review"}],
+  "workline_policy": "Split when backend ownership, writes, environment, or evidence can be accepted independently from consumers.",
+  "omission_rule": "NOT_APPLICABLE when no server, service, persistence, queue, adapter, or backend contract behavior changes.",
+  "repair": ["Product regression reopens implement-backend.", "Test drift routes to test-autorepair only after behavior remains proven.", "Contract drift reopens the shared-contract producer and affected consumers."]
+}
+

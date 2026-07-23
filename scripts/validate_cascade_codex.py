@@ -38,13 +38,18 @@ REQUIRED_FILES = [
     "docs/work/_index.md",
     "docs/work/active.md",
     "docs/work/lane-template.md",
+    "docs/work/graph-template.md",
     "docs/work/examples/_index.md",
+    "docs/work/examples/coordination-graph.md",
+    "docs/work/graphs/_index.md",
     "docs/work/lanes/.gitkeep",
     "docs/work/reports/_index.md",
     "docs/patterns/_index.md",
     "docs/patterns/context-pack-schema.yaml",
     "docs/patterns/workflow/index.md",
     "docs/patterns/workflow/workflow.pack.yaml",
+    "docs/patterns/workflow/fragments/_index.md",
+    "docs/patterns/workflow/fragments/graph-fragment.schema.json",
     "docs/patterns/boundaries/index.md",
     "docs/patterns/boundaries/boundaries.pack.yaml",
     "docs/patterns/testing/index.md",
@@ -95,6 +100,7 @@ REQUIRED_FILES = [
     ".codex/skills/test-autorepair/checklists/semantic-repair-checklist.md",
     ".codex/skills/test-autorepair/templates/repair-report.md",
     ".codex/skills/context/templates/snapshot.md",
+    ".codex/skills/reconcile-work-graph/checklists/reconciliation.md",
     ".codex/skills/develop-skill/templates/skill-design-brief.md",
     ".codex/skills/closeout/templates/learn-routing.md",
     ".codex/skills/closeout/templates/doc-routing-decision.md",
@@ -150,6 +156,7 @@ SKILLS = [
     "context",
     "agentic-workflow-builder",
     "orchestrate-work",
+    "reconcile-work-graph",
     "plan-change",
     "architecture-review",
     "codebase-audit",
@@ -243,8 +250,10 @@ REQUIRED_FOLDERS = [
     "docs/brand",
     "docs/work",
     "docs/work/examples",
+    "docs/work/graphs",
     "docs/work/lanes",
     "docs/work/reports",
+    "docs/patterns/workflow/fragments",
 ]
 
 ALLOWED_DOC_FOLDERS = {
@@ -253,12 +262,14 @@ ALLOWED_DOC_FOLDERS = {
     "docs/brand",
     "docs/design",
     "docs/patterns",
+    "docs/patterns/workflow/fragments",
     "docs/product",
     "docs/product/personas",
     "docs/specs",
     "docs/specs/source",
     "docs/work",
     "docs/work/examples",
+    "docs/work/graphs",
     "docs/work/lanes",
     "docs/work/reports",
 }
@@ -287,6 +298,7 @@ CASCADE_SURFACES = [
 ]
 
 REQUIRED_WIRING_SKILLS = {
+    "reconcile-work-graph",
     "review-change",
     "functional-qa",
     "test-autorepair",
@@ -494,8 +506,12 @@ SKILL_TRIGGER_REQUIREMENTS = {
         r"create|update|retrieve|compile|planning|onboarding",
     ],
     "orchestrate-work": [
-        r"split|schedule|track|merge",
+        r"split|schedule|track|connect",
         r"serialized|dependencies|conflicts",
+    ],
+    "reconcile-work-graph": [
+        r"existing active lanes|existing.*worklines|Coordination Graphs",
+        r"audit|deduplicat|reconcil|migrat|retir",
     ],
     "plan-change": [
         r"non-atomic",
@@ -587,6 +603,8 @@ REQUIRED_SKILL_SURFACES = {
         ".codex/skills/{skill}/SKILL.md",
         ".codex/agents/{agent}/checklists/",
         "docs/patterns/workflow/index.md",
+        "docs/patterns/workflow/fragments/_index.md",
+        "GF-*.fragment.json",
         "docs/patterns/boundaries/index.md",
         "docs/patterns/testing/index.md",
         "templates/agentic-workflow-packet.md",
@@ -780,15 +798,71 @@ REQUIRED_SKILL_SURFACES = {
     ],
     "orchestrate-work": [
         "docs/work/active.md",
+        "docs/work/graphs/",
+        "docs/work/graph-template.md",
         "docs/work/lanes/",
         "docs/work/examples/",
+        "docs/patterns/workflow/fragments/",
+        "SELECTED",
+        "NOT_APPLICABLE",
+        "actor capabilities",
+        "test strategy",
         "source inputs",
         "file ownership",
         "MCP",
         "Tool And MCP Context",
-        "merge owner",
-        "merge evidence",
+        "coordination-state/materialization owner",
+        "Materialization Queue",
+        "Batch Evaluation Matrix",
+        "immutable producer transport",
         "parallel-safe",
+    ],
+    "plan-change": [
+        "docs/patterns/workflow/fragments/",
+        "SELECTED",
+        "MERGED",
+        "NOT_APPLICABLE",
+        "BLOCKED",
+        "required ports",
+        "actor capabilities",
+        "test strategy",
+        "terminal gate",
+    ],
+    "implement-change": [
+        "fragment instance",
+        "source fragment ID/version",
+        "bound input and output ports",
+        "selected test strategies",
+    ],
+    "functional-qa": [
+        "selected graph-fragment test strategies",
+        "test-resolution ledger",
+        "omitted fragment contributes no test",
+    ],
+    "review-change": [
+        "graph-fragment selection",
+        "fragment composition coverage",
+        "assurance overlay",
+    ],
+    "validate-change": [
+        "graph-fragment selection ledger",
+        "fragment evidence matrix",
+        "Evidence from omitted fragments",
+    ],
+    "reconcile-work-graph": [
+        "docs/work/graph-template.md",
+        "docs/work/graphs/_index.md",
+        "docs/work/graphs/CG-*.md",
+        "docs/work/active.md",
+        "docs/work/lanes/*.md",
+        "docs/work/reports/",
+        "KEEP",
+        "UPDATE",
+        "MERGE_INTO",
+        "SUPERSEDE_BY",
+        "RETIRE_ACTIVE_ROW",
+        "BLOCKED_REVIEW",
+        "closeout",
     ],
     "closeout": [
         "Current diff",
@@ -924,6 +998,107 @@ SPEC_SLICE_DIR = re.compile(r"^[a-z0-9][a-z0-9-]*$")
 PACKAGE_LANE_ID = re.compile(r"^\s*-\s+id:\s*(L\d+)\b")
 LANE_TOPOLOGY_ROW = re.compile(r"^\|\s*(L\d+)\b")
 LEGACY_SPEC_SLICE_NAMES = {"transformed", "incoming"}
+
+COORDINATION_GRAPH_FILENAME = re.compile(
+    r"^(?P<id>CG-\d{3})-[a-z0-9][a-z0-9-]*\.md$"
+)
+COORDINATION_GRAPH_HEADING = re.compile(
+    r"(?m)^# Coordination Graph: (?P<id>CG-\d{3})(?:\s+-\s+.+)?\s*$"
+)
+COORDINATION_GRAPH_INDEX_LINK = re.compile(
+    r"\]\((?P<target>CG-\d{3}-[a-z0-9][a-z0-9-]*\.md)(?:#[^)]+)?\)"
+)
+COORDINATION_GRAPH_REQUIRED_HEADINGS = [
+    "## Goal, Scope, And Non-Goals",
+    "## Applicability Decision",
+    "## Source And Definition References",
+    "## Boundary Contracts",
+    "## Authority And Direct Cutover",
+    "## Canonical Workline Registry",
+    "## Typed Coordination Edges",
+    "## Coordination Gates And Evidence Joins",
+    "## Dedicated Worktree Dispatch",
+    "### Worker Receipts",
+    "## Materialization Queue",
+    "### Materialization Receipts",
+    "## Batch Evaluation Matrix",
+    "## Integrated Active-Worktree Validation",
+    "## Reconciliation And Dispositions",
+    "## Transition And Repair History",
+    "## Amendment And Ownership-Handoff History",
+    "## Current Frontier (Derived)",
+    "## Terminal Gate",
+    "## Validation And Retention",
+]
+COORDINATION_GRAPH_TEMPLATE_TOKENS = [
+    "at least two canonical worklines",
+    "If `NO_GRAPH`, stop here",
+    "not a workline",
+    "Do not copy this template into generated or source documents",
+    "Coordination-State / Materialization Owner:",
+    "Only the named Coordination-State / Materialization Owner",
+    "read-only references/projections only",
+    "Reject duplicate IDs, dangling subjects, undefined gates, and cycles",
+    "Required Producer Transport / Presence Proof",
+    "Local evidence remains",
+    "provisional until the required materialization and integrated gates",
+    "Target HEAD Before / After",
+    "Block on unexplained overlap",
+    "broadly stage, commit, push, or publish",
+    "Shards / Expected Coverage",
+    "Missing / Duplicate Policy",
+    "Pre-materialization results cannot prove combined-state acceptance",
+    "Reopened Worklines / Gates / Queue / Batches",
+    "Preserved Accepted IDs",
+    "Required Batch / Integrated Evidence",
+]
+COORDINATION_GRAPH_REFERENCE_ONLY_ROOTS = [
+    "docs/product",
+    "docs/specs",
+    "docs/design",
+    "docs/brand",
+]
+
+GRAPH_FRAGMENT_FILENAME = re.compile(
+    r"^(?P<id>GF-\d{3})-[a-z0-9][a-z0-9-]*\.fragment\.json$"
+)
+REQUIRED_GRAPH_FRAGMENT_IDS = {
+    "GF-001",
+    "GF-002",
+    "GF-003",
+    "GF-004",
+    "GF-005",
+    "GF-006",
+    "GF-007",
+    "GF-008",
+    "GF-009",
+    "GF-101",
+    "GF-102",
+    "GF-103",
+}
+GRAPH_FRAGMENT_REQUIRED_FIELDS = {
+    "fragment_id",
+    "version",
+    "title",
+    "kind",
+    "activation",
+    "requires",
+    "provides",
+    "actor",
+    "skill_calls",
+    "nodes",
+    "tests",
+    "gates",
+    "workline_policy",
+    "omission_rule",
+    "repair",
+}
+GRAPH_FRAGMENT_KINDS = {"delivery", "assurance-overlay"}
+GRAPH_FRAGMENT_PORT_BINDINGS = {
+    "selected-producer",
+    "external-authority",
+    "conditional",
+}
 
 
 def rel(path: Path) -> str:
@@ -1305,7 +1480,13 @@ def check_pattern_shape(errors: list[str]) -> None:
     for entry_dir in sorted(path for path in patterns_root.iterdir() if path.is_dir()):
         for nested in entry_dir.iterdir():
             if nested.is_dir():
-                errors.append(f"nested pattern folders are not allowed: {rel(nested)}")
+                if not (
+                    entry_dir.name == "workflow" and nested.name == "fragments"
+                ):
+                    errors.append(
+                        f"nested pattern folders are not allowed: {rel(nested)}"
+                    )
+                continue
             if nested.name in {
                 "summary.yaml",
                 "routing.yaml",
@@ -1436,6 +1617,357 @@ def _check_refs(
             continue
         if item not in known:
             errors.append(f"unknown {label} reference {item} in {rel(path)}")
+
+
+def check_graph_fragment_contracts(errors: list[str]) -> None:
+    """Validate reusable planning fragments without treating them as runtime state."""
+    fragment_root = ROOT / "docs" / "patterns" / "workflow" / "fragments"
+    schema_path = fragment_root / "graph-fragment.schema.json"
+    index_path = fragment_root / "_index.md"
+
+    if schema_path.is_file():
+        try:
+            schema = json.loads(read_text(schema_path))
+        except json.JSONDecodeError as exc:
+            errors.append(f"graph fragment schema JSON parse error: {exc}")
+        else:
+            required = schema.get("required")
+            if not isinstance(required, list) or not GRAPH_FRAGMENT_REQUIRED_FIELDS.issubset(
+                set(required)
+            ):
+                errors.append("graph fragment schema does not require the canonical fields")
+
+    if index_path.is_file():
+        index_text = read_text(index_path)
+        for token in [
+            "SELECTED",
+            "MERGED",
+            "NOT_APPLICABLE",
+            "BLOCKED",
+            "Bind every selected `requires` port",
+            "Resolve actor capabilities",
+            "Resolve test strategies",
+            "Synthesize one terminal evidence join",
+        ]:
+            if token not in index_text:
+                errors.append(f"graph fragment index missing composition contract: {token}")
+
+    fragment_paths = sorted(fragment_root.glob("GF-*.fragment.json"))
+    fragments: dict[str, dict[str, object]] = {}
+    fragment_sources: dict[str, Path] = {}
+    provided_ports: set[str] = set()
+    known_skills = set(SKILLS)
+    known_roles = set(AGENTS)
+
+    for path in fragment_paths:
+        filename_match = GRAPH_FRAGMENT_FILENAME.fullmatch(path.name)
+        if filename_match is None:
+            errors.append(f"invalid graph fragment filename: {rel(path)}")
+            continue
+        try:
+            data = json.loads(read_text(path))
+        except json.JSONDecodeError as exc:
+            errors.append(f"graph fragment JSON parse error in {rel(path)}: {exc}")
+            continue
+        if not isinstance(data, dict):
+            errors.append(f"graph fragment must be an object: {rel(path)}")
+            continue
+
+        missing = GRAPH_FRAGMENT_REQUIRED_FIELDS - set(data)
+        if missing:
+            errors.append(
+                f"graph fragment {rel(path)} missing fields: {', '.join(sorted(missing))}"
+            )
+
+        fragment_id = data.get("fragment_id")
+        if not isinstance(fragment_id, str):
+            errors.append(f"graph fragment missing string fragment_id: {rel(path)}")
+            continue
+        if filename_match.group("id") != fragment_id:
+            errors.append(
+                f"graph fragment filename/id mismatch in {rel(path)}: "
+                f"{filename_match.group('id')} != {fragment_id}"
+            )
+        if fragment_id in fragments:
+            errors.append(
+                f"duplicate graph fragment id {fragment_id}: "
+                f"{rel(fragment_sources[fragment_id])} and {rel(path)}"
+            )
+            continue
+        fragments[fragment_id] = data
+        fragment_sources[fragment_id] = path
+
+        if not isinstance(data.get("version"), int) or data.get("version", 0) < 1:
+            errors.append(f"graph fragment has invalid version: {rel(path)}")
+        kind = data.get("kind")
+        if kind not in GRAPH_FRAGMENT_KINDS:
+            errors.append(f"graph fragment has invalid kind in {rel(path)}: {kind}")
+
+        activation = data.get("activation")
+        if not isinstance(activation, dict) or not isinstance(activation.get("any"), list) or not activation.get("any"):
+            errors.append(f"graph fragment has no activation.any signals: {rel(path)}")
+
+        for field in ["requires", "provides"]:
+            ports = data.get(field)
+            if not isinstance(ports, list):
+                errors.append(f"graph fragment {field} must be a list: {rel(path)}")
+                continue
+            if field == "provides" and not ports:
+                errors.append(f"graph fragment must provide at least one port: {rel(path)}")
+            for port in ports:
+                if not isinstance(port, dict):
+                    errors.append(f"graph fragment {field} port must be an object: {rel(path)}")
+                    continue
+                port_name = port.get("port")
+                binding = port.get("binding")
+                if not isinstance(port_name, str) or not re.fullmatch(
+                    r"[a-z][a-z0-9.-]+", port_name
+                ):
+                    errors.append(f"graph fragment has invalid port in {rel(path)}: {port_name}")
+                elif field == "provides":
+                    provided_ports.add(port_name)
+                if binding not in GRAPH_FRAGMENT_PORT_BINDINGS:
+                    errors.append(
+                        f"graph fragment has invalid port binding in {rel(path)}: {binding}"
+                    )
+                if binding == "conditional" and not port.get("when"):
+                    errors.append(
+                        f"conditional graph fragment port missing when in {rel(path)}"
+                    )
+
+        actor = data.get("actor")
+        if not isinstance(actor, dict):
+            errors.append(f"graph fragment actor must be an object: {rel(path)}")
+        else:
+            capabilities = actor.get("capabilities")
+            roles = actor.get("preferred_existing_roles")
+            if not isinstance(capabilities, list) or not capabilities:
+                errors.append(f"graph fragment actor capabilities missing: {rel(path)}")
+            if not isinstance(roles, list):
+                errors.append(f"graph fragment preferred roles must be a list: {rel(path)}")
+            else:
+                for role in roles:
+                    if role not in known_roles:
+                        errors.append(
+                            f"graph fragment references unknown preferred role {role}: {rel(path)}"
+                        )
+
+        skill_calls = data.get("skill_calls")
+        if not isinstance(skill_calls, list):
+            errors.append(f"graph fragment skill_calls must be a list: {rel(path)}")
+        else:
+            for call in skill_calls:
+                if not isinstance(call, dict):
+                    errors.append(f"graph fragment skill call must be an object: {rel(path)}")
+                    continue
+                skill = call.get("skill")
+                if skill not in known_skills:
+                    errors.append(
+                        f"graph fragment references unknown skill {skill}: {rel(path)}"
+                    )
+                if not isinstance(call.get("required"), bool) or not call.get("when"):
+                    errors.append(f"graph fragment skill call is incomplete: {rel(path)}")
+
+        local_ids: set[str] = set()
+        for field in ["nodes", "gates"]:
+            records = data.get(field)
+            if not isinstance(records, list) or not records:
+                errors.append(f"graph fragment {field} must be a non-empty list: {rel(path)}")
+                continue
+            for record in records:
+                if not isinstance(record, dict) or not isinstance(record.get("local_id"), str):
+                    errors.append(f"graph fragment {field} record missing local_id: {rel(path)}")
+                    continue
+                local_id = record["local_id"]
+                if local_id in local_ids:
+                    errors.append(f"duplicate graph fragment local_id {local_id}: {rel(path)}")
+                local_ids.add(local_id)
+
+        tests = data.get("tests")
+        if not isinstance(tests, list):
+            errors.append(f"graph fragment tests must be a list: {rel(path)}")
+        else:
+            for test in tests:
+                if not isinstance(test, dict) or not all(
+                    test.get(key)
+                    for key in ["strategy", "requirement", "when", "evidence", "command_source"]
+                ):
+                    errors.append(f"graph fragment test strategy is incomplete: {rel(path)}")
+                    continue
+                if test.get("requirement") not in {"required", "conditional"}:
+                    errors.append(f"graph fragment test requirement is invalid: {rel(path)}")
+
+        if kind == "assurance-overlay":
+            attach_to = data.get("attach_to")
+            if not isinstance(attach_to, list) or not attach_to:
+                errors.append(f"assurance overlay missing attach_to: {rel(path)}")
+
+    missing_ids = REQUIRED_GRAPH_FRAGMENT_IDS - set(fragments)
+    unexpected_ids = set(fragments) - REQUIRED_GRAPH_FRAGMENT_IDS
+    if missing_ids:
+        errors.append(
+            "missing required graph fragments: " + ", ".join(sorted(missing_ids))
+        )
+    if unexpected_ids:
+        errors.append(
+            "graph fragments exist but are not registered: "
+            + ", ".join(sorted(unexpected_ids))
+        )
+
+    for fragment_id, data in fragments.items():
+        path = fragment_sources[fragment_id]
+        if data.get("kind") == "assurance-overlay":
+            for target in data.get("attach_to", []):
+                target_data = fragments.get(target)
+                if target_data is None:
+                    errors.append(
+                        f"graph fragment overlay {fragment_id} references missing target {target}"
+                    )
+                elif target_data.get("kind") != "delivery":
+                    errors.append(
+                        f"graph fragment overlay {fragment_id} target is not delivery: {target}"
+                    )
+        for requirement in data.get("requires", []):
+            if not isinstance(requirement, dict):
+                continue
+            port_name = requirement.get("port")
+            binding = requirement.get("binding")
+            if (
+                binding == "selected-producer"
+                and isinstance(port_name, str)
+                and port_name not in provided_ports
+            ):
+                errors.append(
+                    f"graph fragment {fragment_id} requires unknown selected-producer port "
+                    f"{port_name}: {rel(path)}"
+                )
+
+
+def check_coordination_graph_contracts(errors: list[str]) -> None:
+    """Check the first-class graph document boundary without parsing graph state."""
+    graph_root = ROOT / "docs" / "work" / "graphs"
+    template_path = ROOT / "docs" / "work" / "graph-template.md"
+    index_path = graph_root / "_index.md"
+
+    if template_path.is_file():
+        template_text = read_text(template_path)
+        for heading in COORDINATION_GRAPH_REQUIRED_HEADINGS:
+            if heading not in template_text:
+                errors.append(
+                    f"coordination graph template missing heading: {heading}"
+                )
+        for token in COORDINATION_GRAPH_TEMPLATE_TOKENS:
+            if token not in template_text:
+                errors.append(
+                    f"coordination graph template missing contract: {token}"
+                )
+
+    graph_paths = (
+        sorted(path for path in graph_root.glob("*.md") if path.name != "_index.md")
+        if graph_root.is_dir()
+        else []
+    )
+    graph_ids: dict[str, Path] = {}
+    graph_names = {path.name for path in graph_paths}
+
+    index_targets: set[str] = set()
+    if index_path.is_file():
+        index_text = read_text(index_path)
+        index_targets = {
+            match.group("target")
+            for match in COORDINATION_GRAPH_INDEX_LINK.finditer(index_text)
+        }
+        for target in sorted(index_targets - graph_names):
+            errors.append(
+                f"coordination graph index references missing entry: {target}"
+            )
+
+    for path in graph_paths:
+        filename_match = COORDINATION_GRAPH_FILENAME.fullmatch(path.name)
+        if filename_match is None:
+            errors.append(f"invalid coordination graph filename: {rel(path)}")
+            continue
+
+        text = read_text(path)
+        heading_match = COORDINATION_GRAPH_HEADING.search(text)
+        if heading_match is None:
+            errors.append(f"coordination graph missing canonical heading: {rel(path)}")
+            continue
+
+        filename_id = filename_match.group("id")
+        heading_id = heading_match.group("id")
+        if filename_id != heading_id:
+            errors.append(
+                f"coordination graph filename/heading id mismatch in {rel(path)}: "
+                f"{filename_id} != {heading_id}"
+            )
+        prior = graph_ids.get(heading_id)
+        if prior is not None:
+            errors.append(
+                f"duplicate coordination graph id {heading_id}: "
+                f"{rel(prior)} and {rel(path)}"
+            )
+        else:
+            graph_ids[heading_id] = path
+
+        if path.name not in index_targets:
+            errors.append(f"coordination graph entry missing from index: {rel(path)}")
+        if PLACEHOLDER.search(text):
+            errors.append(f"coordination graph contains unresolved placeholder: {rel(path)}")
+        if "`CREATE_GRAPH`" not in text:
+            errors.append(f"coordination graph missing CREATE_GRAPH decision: {rel(path)}")
+        workline_ids = set(re.findall(r"\bWL-\d{2,3}\b", text))
+        if len(workline_ids) < 2:
+            errors.append(
+                f"coordination graph must reference at least two worklines: {rel(path)}"
+            )
+        for metadata in [
+            "Status:",
+            "Planning Status:",
+            "Plan Revision:",
+            "Coordination Graph Revision:",
+            "Coordination-State / Materialization Owner:",
+            "Execution Mode:",
+            "Terminal Gate:",
+            "Next Gate:",
+        ]:
+            if not re.search(rf"(?m)^{re.escape(metadata)}\s+", text):
+                errors.append(
+                    f"coordination graph {rel(path)} missing metadata: {metadata}"
+                )
+        for heading in COORDINATION_GRAPH_REQUIRED_HEADINGS:
+            if heading not in text:
+                errors.append(
+                    f"coordination graph {rel(path)} missing heading: {heading}"
+                )
+
+    docs_root = ROOT / "docs"
+    if docs_root.is_dir():
+        for path in docs_root.rglob("CG-*.md"):
+            if path.parent != graph_root:
+                errors.append(
+                    f"coordination graph entry outside docs/work/graphs: {rel(path)}"
+                )
+
+    for root_name in COORDINATION_GRAPH_REFERENCE_ONLY_ROOTS:
+        root = ROOT / root_name
+        if not root.is_dir():
+            continue
+        for path in root.rglob("*.md"):
+            text = read_text(path)
+            has_graph_heading = COORDINATION_GRAPH_HEADING.search(text) is not None
+            has_graph_authority = (
+                re.search(r"(?m)^Coordination Graph Revision:\s+", text) is not None
+                and re.search(
+                    r"(?m)^Coordination-State / Materialization Owner:\s+", text
+                )
+                is not None
+            )
+            if has_graph_heading or has_graph_authority:
+                errors.append(
+                    "product/spec/design/brand docs may reference but not own a "
+                    f"Coordination Graph: {rel(path)}"
+                )
 
 
 def check_traceability_contracts(errors: list[str]) -> None:
@@ -1772,6 +2304,8 @@ def main() -> int:
     check_thin_agents(errors)
     check_pattern_shape(errors)
     check_no_project_leakage(errors)
+    check_graph_fragment_contracts(errors)
+    check_coordination_graph_contracts(errors)
     check_traceability_contracts(errors)
     check_harness_eval_contracts(errors)
 

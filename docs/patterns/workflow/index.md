@@ -163,6 +163,52 @@ before replacing current projections. Re-evaluate affected worklines, checks,
 and evidence; preserve unrelated accepted knowledge whose sources and
 boundaries remain current.
 
+## Composable Graph Fragments
+
+Use the reusable catalog under
+[`fragments/`](fragments/) when a non-atomic plan may affect product
+definition, design, prototypes, shared contracts, backend, frontend, data,
+integration, E2E, security, accessibility, or visual assurance. Fragment
+evaluation is a planning activity; fragment files are not active worklines,
+Coordination Graphs, implementation plans, or runtime definitions.
+
+Planning must evaluate applicable delivery fragments and assurance overlays
+before finalizing worklines. Record every inspected candidate as `SELECTED`,
+`MERGED`, `NOT_APPLICABLE`, or `BLOCKED` with an evidence-backed reason. Do not
+instantiate nodes, gates, skills, actors, or tests from `NOT_APPLICABLE`
+fragments.
+
+For every selected fragment:
+
+1. bind required input ports to selected producers, authoritative external
+   sources, or an explicit conditional omission;
+2. bind each provided port to one primary owning workline, while allowing
+   named consumers to depend on it;
+3. resolve actor capabilities to existing roles or an explicitly authorized
+   worker route without inventing dynamic agents;
+4. resolve required and conditional skill calls against current role wiring;
+5. resolve abstract test strategies to current commands, fixtures,
+   environments, evidence locations, and evaluator authority from the target
+   repository and `harness.config.yaml`;
+6. merge fragments that share one outcome, owner, write scope, and acceptance
+   seam, and split only where independent ownership, writes, handoff, or
+   evidence makes a separate workline meaningful; and
+7. synthesize the smallest legal graph: no graph for atomic work, a lane-local
+   Task Graph for connected obligations inside one lane, or a first-class
+   Coordination Graph only for genuinely connected worklines.
+
+Assurance overlays attach obligations to delivery fragments. They become
+separate worklines only when their ownership, access, writes, execution, or
+acceptance evidence is independently meaningful. A terminal gate consumes
+only required evidence from selected fragments and overlays; an omitted
+fragment must never create phantom evidence requirements.
+
+Before `IMPLEMENTATION_READY`, reject duplicate primary ownership, dangling
+required ports, unsupported required skills or actor capabilities, dependency
+cycles, contradictory dispositions, unresolved required test commands or
+environments, and a graph whose selected fragments cannot reconstruct every
+request criterion and required evidence route.
+
 ## Adaptive Workline Planning
 
 Derive worklines from inspected work; do not begin with a requested, default,
@@ -181,10 +227,11 @@ write boundary, validation seam, and merge route.
    that cannot be accepted independently.
 4. Give every request criterion one primary workline owner. Other worklines may
    protect or consume that criterion, but ownership must remain unambiguous.
-5. Record cross-workline inputs, outputs, blockers, validation, and one merge
-   owner. Several worklines do not imply parallel execution or delegation.
+5. Record cross-workline inputs, outputs, blockers, validation, and one
+   integration/materialization owner. Several worklines do not imply parallel
+   execution or delegation.
 6. Materialize a workline as a separate active lane only when it needs its own
-   status, owner, dependency, validation, merge, or handoff boundary.
+   status, owner, dependency, validation, integration, or handoff boundary.
 7. Repeat the boundary pass when new evidence changes scope. Add, merge,
    serialize, or supersede worklines through a plan revision rather than
    preserving the original count.

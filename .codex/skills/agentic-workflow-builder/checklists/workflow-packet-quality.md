@@ -23,6 +23,16 @@ Use this checklist before returning or executing agentic workflow packets.
 ## Checklist Workflow Contract
 
 - [ ] Objective is one measurable outcome.
+- [ ] Non-atomic implementation workflows consume or produce a graph-fragment
+      disposition ledger before selecting roles and steps.
+- [ ] Selected fragment instances preserve source fragment ID/version, bound
+      ports, owning workline, resolved actor/role, skill calls, tests,
+      evaluator authority, and repair route.
+- [ ] Omitted fragments have evidence-backed reasons and create no workflow
+      steps, gates, tests, or terminal evidence requirements.
+- [ ] Required fragment skills are wired to the selected role or marked as an
+      explicit cross-role support exception; missing capabilities block rather
+      than create invented agents.
 - [ ] Candidate worklines were discovered from criteria, boundaries, writes,
       dependencies, and validation seams rather than a target count.
 - [ ] The workflow does not ask for a number of worklines unless that number is
@@ -57,10 +67,11 @@ Use this checklist before returning or executing agentic workflow packets.
 
 ## Lane Safety
 
-- [ ] Parallel lanes have disjoint writes or a single merge owner.
+- [ ] Parallel lanes have disjoint writes or a single
+      integration/materialization owner.
 - [ ] Shared product, design, architecture, or security decisions are serialized.
 - [ ] File ownership and conflict paths are named.
-- [ ] Handoff evidence can be merged deterministically.
+- [ ] Handoff evidence can be joined and materialized deterministically.
 
 ## Research Coverage
 

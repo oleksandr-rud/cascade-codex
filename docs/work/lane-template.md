@@ -103,10 +103,27 @@ shape lives in the `plan-change` definition-ready template.
 |---|---|---|---|---|---|
 | `DEP-01` | `<NODE_GATE_EXTERNAL>` | `<IDS>` | `<ID>` | `<RULE>` | `<RULE>` |
 
-### Optional Graph-Shaped Lane State
+### Coordination Graph Reference (When Applicable)
 
-Use this block only when connected obligations need typed readiness, evidence
-joins, bounded repair, revision-aware handoff, or cross-lane invalidation. The
+Use a separate `docs/work/graphs/CG-XXX-slug.md` when at least two worklines
+have a real cross-workline dependency, evidence/batch join, materialization or
+integrated-validation boundary, invalidation relationship, or partial-repair
+route. The Coordination Graph is the sole authority for those cross-workline
+records; this lane keeps a read-only reference and its own workline projection.
+Do not copy graph tables into product, design, brand, source, or generated spec
+documents, and do not retain an embedded authoritative fallback after cutover.
+
+| Coordination Graph | Plan / Graph Revision | This Lane / Workline | Coordination-State / Materialization Owner | Accepted Producer / Consumer Gates | Projection Status |
+|---|---|---|---|---|---|
+| `<CG-XXX_AND_PATH_OR_NOT_APPLICABLE>` | `<PLAN_GRAPH_REVISION>` | `<W_ID_WL_ID>` | `<SOLE_OWNER>` | `<GATE_IDS_OR_NONE>` | `<CURRENT_STALE_RECONCILE>` |
+
+Several unrelated worklines do not require a Coordination Graph. When no graph
+applies, record `NOT_APPLICABLE` and keep direct lane references.
+
+### Optional Lane-Local Task Graph State
+
+Use this block only when connected obligations inside this lane need typed
+readiness, evidence joins, bounded repair, or revision-aware handoff. The
 lane's Task Graph, Evidence Gates, latest accepted Graph Amendment and
 ownership-handoff record, and lane-owner-recorded transition/repair history are
 authoritative. Worker and proposed-transition receipts are supporting bound
@@ -114,7 +131,9 @@ evidence, proposals, and history; they are never authoritative active state by
 themselves. Current Frontier and `docs/work/active.md` are derived projections;
 reconcile them from the authoritative records before execution. These records
 remain instruction-driven and do not create a graph runtime or automatic state
-mutation.
+mutation. Cross-workline edges, batch joins, materialization, integrated
+validation, and terminal coordination belong only in the referenced
+Coordination Graph after cutover.
 
 For atomic work, record the bypass and omit the remaining graph-shaped tables:
 
@@ -126,7 +145,17 @@ When graph-shaped state applies, record its authority before creating nodes:
 
 | Graph Revision | Plan Revision | Lane-State Owner | Authoritative Records | Derived Projections | Instruction-Driven Limit |
 |---|---|---|---|---|---|
-| `<1>` | `<PLAN_REVISION>` | `<SOLE_TRANSITION_OWNER>` | `Task Graph; Evidence Gates; latest accepted Graph Amendment and Ownership Handoff; lane-owner-recorded Transition and Repair History` | `Current Frontier; active registry; status boards; merge queues` | `No scheduler, parser, locking, transactions, or automatic transitions` |
+| `<1>` | `<PLAN_REVISION>` | `<SOLE_TRANSITION_OWNER>` | `Task Graph; Evidence Gates; latest accepted Graph Amendment and Ownership Handoff; lane-owner-recorded Transition and Repair History` | `Current Frontier; active registry; status boards` | `No scheduler, parser, locking, transactions, or automatic transitions` |
+
+#### Graph Fragment Instances
+
+Reference the plan's composition ledger and instantiate only selected or merged
+obligations. Fragment definitions remain reusable pattern sources, not active
+state.
+
+| Fragment Instance | Source Fragment / Version | Disposition | Bound Ports | Actor / Skills | Required Tests / Evaluator | Owning Workline | Invalidation / Omission Rule |
+|---|---|---|---|---|---|---|---|
+| `FI-01` | `GF-001@1` | `<SELECTED_MERGED>` | `<REQUIRES_PROVIDES_BINDINGS>` | `<ROLE_SKILLS>` | `<TESTS_AUTHORITY>` | `<WL-ID>` | `<RULE>` |
 
 #### Ownership Handoff Record
 
@@ -148,9 +177,9 @@ supersession. Producing the expected receipt proposes `IN_PROGRESS -> REVIEW`;
 the lane-state owner's recorded transition moves the node to `REVIEW`, and only
 its accepted per-node gate permits `REVIEW -> ACCEPTED`.
 
-| Node ID | Obligation | Actor / Type | Requires Nodes | Requires Gates | External Conditions | Named / Versioned Inputs | Expected Receipt | Write Scope | Tools / Permissions | Per-Node Gate | Attempt / Max | Repair Route | Exhaustion Route | Status | Last Transition | Evidence |
-|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| `N-01` | `<BOUNDED_OUTCOME>` | `<OWNER_AND_TYPE>` | `<NODE_IDS_OR_NONE>` | `<GATE_IDS_OR_NONE>` | `<CONDITION_IDS_OR_NONE>` | `<INPUT_ID_AT_VERSION>` | `<RECEIPT_ID_AND_OUTPUT>` | `<PATHS_OR_NONE>` | `<TOOLS_APPROVAL_COST_IDEMPOTENCY_CLEANUP_BOUNDS>` | `AG-01` | `<1/3>` | `<EARLIEST_REPAIR_AND_AFFECTED_CONSUMERS>` | `<BLOCKED_REPLAN_OR_ESCALATION_DESTINATION>` | `<PENDING_READY_IN_PROGRESS_REVIEW_ACCEPTED_FAILED_BLOCKED_SUPERSEDED>` | `<TRANSITION_ID>` | `<EVIDENCE_IDS_OR_GAP>` |
+| Node ID | Fragment Instance | Obligation | Actor / Type | Requires Nodes | Requires Gates | External Conditions | Named / Versioned Inputs | Expected Receipt | Write Scope | Tools / Permissions | Per-Node Gate | Attempt / Max | Repair Route | Exhaustion Route | Status | Last Transition | Evidence |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| `N-01` | `<FI-ID_OR_NONE>` | `<BOUNDED_OUTCOME>` | `<OWNER_AND_TYPE>` | `<NODE_IDS_OR_NONE>` | `<GATE_IDS_OR_NONE>` | `<CONDITION_IDS_OR_NONE>` | `<INPUT_ID_AT_VERSION>` | `<RECEIPT_ID_AND_OUTPUT>` | `<PATHS_OR_NONE>` | `<TOOLS_APPROVAL_COST_IDEMPOTENCY_CLEANUP_BOUNDS>` | `AG-01` | `<1/3>` | `<EARLIEST_REPAIR_AND_AFFECTED_CONSUMERS>` | `<BLOCKED_REPLAN_OR_ESCALATION_DESTINATION>` | `<PENDING_READY_IN_PROGRESS_REVIEW_ACCEPTED_FAILED_BLOCKED_SUPERSEDED>` | `<TRANSITION_ID>` | `<EVIDENCE_IDS_OR_GAP>` |
 
 #### Worker And Proposed-Transition Receipts
 
@@ -163,16 +192,18 @@ active state by itself.
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | `R-N01-v1` | `<NODE_WORKLINE_GATE_IDS>` | `<PLAN_AND_GRAPH_REVISIONS>` | `<ATTEMPT_MAX>` | `<INPUT_IDS_AT_VERSIONS>` | `<COMMIT_OR_DIGEST>` | `<ROLE_THREAD_TIMESTAMP>` | `<PRIOR_STATE_TO_PROPOSED_STATE>` | `<ALLOWED_AND_ACTUAL_PATHS>` | `<TOOLS_APPROVAL_COST_IDEMPOTENCY_CLEANUP_BOUNDS>` | `<OUTPUT_IDS_AT_VERSIONS>` | `<CHECK_AND_EVIDENCE_IDS>` | `<SOURCE_INPUT_CONTRACT_OR_COMMIT_CHANGE>` | `<DETERMINISTIC_STOP_OR_REPAIR_DESTINATION>` |
 
-#### External And Cross-Lane Conditions
+#### External Conditions And Coordination References
 
-Cross-lane readiness requires the producer lane, an accepted producer gate,
-current evidence, compatible version/freshness, and non-conflicting merge
-ownership. Keep ordinary permissions, decisions, and environment conditions
-typed here as well.
+Keep ordinary permissions, decisions, and environment conditions typed here.
+Before Coordination Graph cutover, a direct cross-lane condition also requires
+the producer lane, accepted producer gate, current evidence, compatible
+version/freshness, and non-conflicting integration ownership. After cutover,
+record only the `CG-XXX` edge/gate reference here; the Coordination Graph owns
+its transition and invalidation state.
 
-| Condition ID | Type | Authority / Producer Lane | Required Gate / Evidence | Consumer Nodes | Version / Freshness | Merge Owner | Satisfaction State | Invalidation / Block Route |
+| Condition ID | Type | Authority / Producer Lane / Coordination Graph | Required Gate / Evidence | Consumer Nodes | Version / Freshness | Integration Owner | Satisfaction State | Invalidation / Block Route |
 |---|---|---|---|---|---|---|---|---|
-| `EXT-01` | `<APPROVAL_DECISION_ENVIRONMENT_CROSS_LANE>` | `<AUTHORITY_OR_LANE_ID>` | `<GATE_AND_EVIDENCE_OR_NA>` | `<NODE_IDS>` | `<VERSION_AND_FRESHNESS_RULE>` | `<OWNER_OR_NA>` | `<SATISFIED_BLOCKED_STALE>` | `<RECALCULATE_REOPEN_OR_RESOLUTION_ROUTE>` |
+| `EXT-01` | `<APPROVAL_DECISION_ENVIRONMENT_CROSS_LANE_REFERENCE>` | `<AUTHORITY_LANE_OR_CG_ID>` | `<GATE_AND_EVIDENCE_OR_NA>` | `<NODE_IDS>` | `<VERSION_AND_FRESHNESS_RULE>` | `<OWNER_OR_NA>` | `<SATISFIED_BLOCKED_STALE>` | `<RECALCULATE_REOPEN_OR_RESOLUTION_ROUTE>` |
 
 #### Evidence Gates
 
@@ -297,12 +328,13 @@ Rules:
 - Must wait for:
 - Conflicts with:
 
-## Handoff And Merge Contract
+## Handoff And Integration Contract
 
 - Handoff summary:
 - Required output:
-- Merge owner:
-- Merge target:
+- Integration or materialization owner:
+- Target active worktree or consumer:
+- Immutable producer transport identity (commit set or patch/diff digest):
 - Evidence to preserve:
 - Stop condition:
 
@@ -330,6 +362,6 @@ Rules:
 
 ## Closeout
 
-- Merge evidence:
+- Handoff, materialization, or integration evidence:
 - Report:
 - Remaining risk:

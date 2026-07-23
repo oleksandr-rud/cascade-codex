@@ -111,10 +111,11 @@ producer lane.
 ### Readiness And Cross-Lane Inputs
 
 Readiness must cover typed accepted dependencies, current versioned inputs,
-external conditions, permissions/tools, write or merge ownership, attempt and
+external conditions, permissions/tools, write or integration/materialization
+ownership, attempt and
 exhaustion bounds, and any paid/live cost, idempotency, and cleanup bounds.
 
-| Subject | Ready-State Authority | Input / Source Versions | Permissions / Tools / Write Scope | Cross-Lane Producer Lane / Gate / Evidence / Merge Owner | Block / Invalidation Route |
+| Subject | Ready-State Authority | Input / Source Versions | Permissions / Tools / Write Scope | Cross-Lane Producer Lane / Gate / Evidence / Integration Owner | Block / Invalidation Route |
 |---|---|---|---|---|---|
 | `<NODE_OR_WORKLINE>` | `<AUTHORITATIVE_STATE_SOURCE>` | `<VERSIONS>` | `<BOUNDS>` | `<IDS_OR_NONE>` | `<ROUTE>` |
 
@@ -123,6 +124,41 @@ exhaustion bounds, and any paid/live cost, idempotency, and cleanup bounds.
 | ID | Given / Starting State | When | Expected Outcome | Failure Or Adjacent Mode | Evidence |
 |---|---|---|---|---|---|
 | `TR-01` | `<STATE>` | `<ACTION>` | `<OUTCOME>` | `<NEGATIVE_STALE_AUTHORIZATION_RESUME_CONCURRENT>` | `<CHECK>` |
+
+## Graph Fragment Composition
+
+Evaluate the reusable catalog in `docs/patterns/workflow/fragments/`. This is a
+planning ledger, not active graph state. Atomic work may record one explicit
+catalog-bypass reason. Non-atomic work must disposition every materially
+plausible delivery fragment and assurance overlay.
+
+### Delivery Surface And Assurance Audit
+
+| Fragment / Version | Activation Evidence | Disposition / Reason | Requires | Provides | Omission Consequence |
+|---|---|---|---|---|---|
+| `GF-001@1` | `<REQUEST_SOURCE_BOUNDARY_IDS>` | `<SELECTED_MERGED_NOT_APPLICABLE_BLOCKED>` | `<PORTS>` | `<PORTS>` | `<NONE_OR_RISK_GAP>` |
+
+### Fragment Port Bindings
+
+| Binding ID | Consumer Fragment / Port | Producer Fragment / Port Or External Authority | Condition / Version | Owning Workline | Invalidation / Reopen Rule |
+|---|---|---|---|---|---|
+| `FP-01` | `<GF-ID/PORT>` | `<GF-ID/PORT_OR_SOURCE_ID>` | `<RULE>` | `<WL-ID_OR_PENDING>` | `<RULE>` |
+
+### Actor, Skill, Test, And Assurance Resolution
+
+| Fragment Instance | Actor Capability | Resolved Role / Worker Route | Skill Calls And Conditions | Test Strategies -> Commands / Fixtures / Environment | Evaluator / Reviewer | Status |
+|---|---|---|---|---|---|---|
+| `FI-01` | `<CAPABILITY>` | `<EXISTING_ROLE_AUTHORIZED_WORKER_BLOCKED>` | `<SKILL_WHEN_REQUIRED>` | `<STRATEGY_COMMAND_DATA_ENV>` | `<INDEPENDENT_AUTHORITY>` | `<READY_BLOCKED_GAP>` |
+
+### Assembled Flow
+
+- Emission: `<ATOMIC_NO_GRAPH | LANE_LOCAL_TASK_GRAPH | COORDINATION_GRAPH>`
+- Composition rationale:
+- Selected fragment instances:
+- Merged fragment obligations:
+- Synthesized nodes and gates:
+- Terminal evidence join:
+- Rejected topology or unresolved bindings:
 
 ## Workline Discovery
 
@@ -135,9 +171,9 @@ start from a requested or default number.
 
 ## Selected Workline Map
 
-| Workline | Outcome | Primary Criteria | Requires | Produces | Ownership / Writes | Validation | Materialization | Status |
-|---|---|---|---|---|---|---|---|---|
-| `WL-01` | `<OUTCOME>` | `<CRITERION_IDS>` | `<WORKLINE_GATE_OR_SOURCE_IDS>` | `<ARTIFACT_OR_DECISION>` | `<OWNER_PATHS>` | `<CHECK>` | `<SAME_LANE_NEW_LANE>` | `<OPEN_BLOCKED_READY>` |
+| Workline | Fragment Instances | Outcome | Primary Criteria | Requires / Produces Ports | Ownership / Writes | Actor / Skills | Validation / Evaluator | Materialization | Status |
+|---|---|---|---|---|---|---|---|---|---|
+| `WL-01` | `<FI-IDS>` | `<OUTCOME>` | `<CRITERION_IDS>` | `<BOUND_PORTS>` | `<OWNER_PATHS>` | `<ROLE_SKILLS>` | `<CHECK_AUTHORITY>` | `<SAME_LANE_NEW_LANE>` | `<OPEN_BLOCKED_READY>` |
 
 Every request criterion must have one primary workline owner. Protected
 consumers may reference the same criterion, but ownership must not be
@@ -146,9 +182,9 @@ needs independent status, ownership, dependencies, validation, or handoff.
 
 ## Implementation Slices
 
-| Slice | Workline | Implements | Inputs | Files / Contracts | Output | Acceptance Evidence | Repair / Stop Boundary |
+| Slice | Workline / Fragment | Implements | Inputs | Files / Contracts | Output | Acceptance Evidence | Repair / Stop Boundary |
 |---|---|---|---|---|---|---|---|
-| `SL-01` | `WL-01` | `<DEF_CRITERION_TRAJECTORY_IDS>` | `<SOURCE_BOUNDARY_IDS>` | `<PATHS>` | `<OUTPUT>` | `<EVIDENCE>` | `<ROUTE>` |
+| `SL-01` | `WL-01 / FI-01` | `<DEF_CRITERION_TRAJECTORY_IDS>` | `<SOURCE_BOUNDARY_PORT_IDS>` | `<PATHS>` | `<OUTPUT>` | `<EVIDENCE>` | `<ROUTE>` |
 
 ## Traceability
 
