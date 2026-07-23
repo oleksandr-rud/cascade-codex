@@ -253,7 +253,8 @@ becoming a second authority.
 - `OH-W003-CG001-01` is the accepted authority handoff; partial application of
   the cutover file set blocks mutation.
 - Accepted `WL-01` through `WL-04` evidence remains historical/current only for
-  its original inputs. Legacy `WL-05 / AG-05` remains `BLOCKED`; the required
+  its original inputs. Legacy `WL-05 / AG-05` remains
+  `HISTORICAL_BLOCKED; SUPERSEDED; NO_RESUME`; the historical required
   canary exhausted two mechanically failed target attempts and both judges are
   `NOT_RUN`.
 - `WL-06 SUPERSEDED_BY WL-12`; `R-06A`/`R-06B` remain evidence, while legacy
@@ -266,7 +267,7 @@ becoming a second authority.
   merging branches or committing the current branch.
 
 These are historical revision-5 facts. Current repair authority, readiness,
-and completion flow are the Current Task Revision 13 table above and
+and completion flow are the Current Task Revision 14 table above and
 `CG-001@4`.
 
 ## Intended Outcome
@@ -281,7 +282,7 @@ Completion now follows sole authority `CG-001@4`: preserved `CG-AG-07` through
 current `CG-BATCH-05`, `CG-IV-03`, matching independent architecture,
 Standards, and Spec reviews at `CG-AG-17`, and the replacement canary at
 `CG-AG-18` must all accept before `CG-TG-04`. Frozen legacy `AG-06`/`TG-01`
-and superseded `CG-TG-02/03` cannot close plan 15. Structural checks alone
+and superseded `CG-TG-02/03` cannot close plan 16. Structural checks alone
 never substitute for required model-backed evidence.
 
 ## Execution Role And Skill Contract
@@ -316,7 +317,7 @@ only through the thread bindings and prompts in this packet.
 | `implement-change` | `.codex/skills/implement-change/SKILL.md` | Apply the bounded task slice. | Every implementation task. |
 | `review-change` | `.codex/skills/review-change/SKILL.md` | Separate fixed-point Standards and Spec review. | Every per-workline acceptance gate. |
 | `validate-change` | `.codex/skills/validate-change/SKILL.md` | Aggregate structural, command, scenario, and evidence state. | Every per-workline acceptance gate and terminal gate. |
-| `harness-evaluation` | `.codex/skills/harness-evaluation/SKILL.md` | Extend current W-002-compatible scenarios and judged evidence. | `T-05A` through `T-05C`. |
+| `harness-evaluation` | `.codex/skills/harness-evaluation/SKILL.md` | Preserve the historical W-002-compatible scenario/judge lineage and execute the current canary only through T-18. | Historical `T-05A` through `T-05C` are `NO_RESUME`; current invocation is root `T-18 / CG-AG-18` only after `CG-AG-17`. |
 | `docs-impact-map` | `.codex/skills/docs-impact-map/SKILL.md` | Check public and sibling documentation consistency. | Current use is root-owned under `SB-CURRENT-CLOSE` and `T-17`; historical `T-06A` is `NO_RESUME`. |
 | `closeout` | `.codex/skills/closeout/SKILL.md` | Preserve final evidence and update durable lane/report state. | Current `T-18` after `CG-AG-17`, `CG-AG-18`, and every `CG-TG-04` input accept. |
 | `functional-qa` | `.codex/skills/functional-qa/SKILL.md` | Plausible acceptance route. | `NOT_INVOKED`; it is a contract target in `WL-04`, and Cascade has no product runtime. |
@@ -336,9 +337,9 @@ contract remains correct.
 | `SB-LANE` | W-003 operational semantics and graph; `docs/work/lane-template.md`; `docs/work/_index.md`; `docs/work/examples/_index.md` if present | `WL-02`; representation and non-active example. |
 | `SB-EXEC` | `.codex/skills/{context,orchestrate-work,plan-change,implement-change}/SKILL.md`; current planning/context foundation changes | `WL-03`; graph creation, resume, readiness, and execution. |
 | `SB-EVIDENCE` | `.codex/skills/{functional-qa,review-change,validate-change,test-autorepair,closeout}/SKILL.md`; W-003 gate and repair contracts | `WL-04`; evidence, invalidation, repair, retry, and terminal behavior. |
-| `SB-EVAL` | completed W-002 lane and report; `evals/harness/README.md`; interactions, skill cases, generated catalog, schemas, judge profiles/rubrics; runner; `harness-evaluation` skill | `WL-05`; current scenario and judge architecture. Refresh before writes. |
+| `SB-EVAL` | completed W-002 lane and report; `evals/harness/README.md`; interactions, skill cases, generated catalog, schemas, judge profiles/rubrics; runner; `harness-evaluation` skill | historical `WL-05 / T-05A-C` source lineage only; `NO_RESUME`. Current T-18 reads the current W-002 contract through `SB-CURRENT-CLOSE`. |
 | `SB-CLOSE` | retained final diff; `CODEX.md`; `README.md`; `docs/structure.md`; `docs/work/_index.md`; validator; W-003; `active.md` | historical `WL-06` closeout evidence only; `HISTORICAL_BLOCKED`; `SUPERSEDED`; `NO_RESUME`. |
-| `SB-CURRENT-CLOSE` | W-003 plan 15; `CG-001@4`; task revision 13; `active.md`; current completion report; runner and judge contracts | current root `T-17`/`T-18` validation, documentation-impact disposition, evidence recording, and terminal proposal only. |
+| `SB-CURRENT-CLOSE` | W-003 plan 16; `CG-001@4`; task revision 14; `active.md`; current completion report; runner and judge contracts | current root `T-17`/`T-18` validation, documentation-impact disposition, evidence recording, and terminal proposal only. |
 
 For each task, source order is: `SB-BASE`, the workline-specific bundle, named
 skill instructions, then the exact target files. Record source versions or the
@@ -347,7 +348,7 @@ working-tree commit/diff identity in the task receipt.
 ## Historical Imported Workline Discovery And Selection
 
 This section preserves W-003 revision-4 discovery lineage. It is not a current
-dispatch or resume route; Current Task Revision 13 and `CG-001@4` control
+dispatch or resume route; Current Task Revision 14 and `CG-001@4` control
 present execution.
 
 | W-003 Candidates | Disposition | Packet Workline | Serialization Reason |
@@ -395,15 +396,18 @@ handoff. They do not authorize a new dispatch.
 | routing | `orchestrate-work` | A task exposes a new owner, write conflict, dependency, or independent validation seam. | Preserve serialization or propose a W-003 replan; never split silently. |
 | planning | `plan-change` | A definition, topology, gate, boundary, or permission contract must change. | Revised authoritative lane before implementation resumes. |
 | impact | `docs-impact-map` | Current final implementation may make sibling/public docs inaccurate. | Root-owned current disposition under `SB-CURRENT-CLOSE` and `T-17`; historical `R-06A` is evidence only and `NO_RESUME`. |
-| acceptance | `functional-qa` | Product-visible runtime behavior exists. | `NOT_APPLICABLE` for this harness-only change; focused harness evidence is owned by `WL-05`. |
+| acceptance | `functional-qa` | Product-visible runtime behavior exists. | `NOT_APPLICABLE` for this harness-only change; current focused harness evidence is owned only by `T-18 / CG-AG-18`; legacy T-05A-C/AG-05 is `NO_RESUME`. |
 | review | `review-change` | A workline has produced all planned receipts. | Separate Standards and Spec fixed-point findings. |
 | validation | `validate-change` | A per-workline or terminal gate is evaluated. | Evidence aggregate with explicit pass/fail/blocked/not-run states. |
 | closeout | `closeout` | Current `CG-AG-17` and `CG-AG-18` accept and every other `CG-TG-04` input is current. | Durable handoff, terminal decision, residual risks, and lane/active disposition by owner. |
 
-## Workline And Task Checklist
+## Historical Workline And Task Checklist
 
-Task states in this table are an initial execution projection, not authoritative
-lane state. Reconcile them with W-003 before every task.
+Every row from `DG-00` through `T-12` is retained revision-4/5 execution
+history. The table is `NO_DISPATCH` and `NO_RESUME`; it cannot authorize a
+write, model spend, gate transition, or task restart. Current execution exists
+only in Current Task Revision 14 through T-17 and, after CG-AG-17 accepts,
+T-18.
 
 | Task / Slice | Wave / Thread | State | Owner Skills | Source Order / Prompt | Requires / Output | Validation / Handoff |
 |---|---|---|---|---|---|---|
@@ -417,9 +421,9 @@ lane state. Reconcile them with W-003 before every task.
 | `T-04A / SL-04A` | 2 / `W003-WL04` | `ACCEPTED` | `context`, `codex-maintenance`, `implement-change` | `SB-BASE -> AG-01 -> SB-EVIDENCE -> evidence skills` / `P-WL04` | common wave base / `R-04A`, evidence-gate rules | refreshed receipt at `c6583ff`; merged and accepted by `AG-04` |
 | `T-04B / SL-04B` | 2 / `W003-WL04` | `ACCEPTED` | prior plus `review-change`, `validate-change` | `SB-BASE -> R-04A -> SB-EVIDENCE -> repair skills` / `P-WL04` | `R-04A` / `R-04B`, repair/terminal rules | repaired fixed point, integrated checks, independent review `PASS` |
 | `JG-CORE` | root / integration | `ACCEPTED` | `context`, `review-change`, `validate-change` | W-003 -> merged receipts/commits -> integrated diff / `P-ROOT-CONTROL` | merged wave-2 receipts / `R-JGCORE` | attempt 2 accepted at `ce737f2`; lineage/mechanical/Standards/Spec joins passed |
-| `T-05A / SL-05A` | 3 / `W003-WL05` | `ACCEPTED` | `context`, `harness-evaluation`, `codex-maintenance` | `SB-BASE -> JG-CORE -> SB-EVAL -> runner/schema` / `P-WL05` | W-002 complete / `R-05A`, refreshed impact | current CLI and protected evidence contracts inspected at `0e6ba3c`; `EXT-01 SATISFIED` |
-| `T-05B / SL-05B` | 3 / `W003-WL05` | `ACCEPTED` | prior plus `implement-change`, `validate-change` | `SB-BASE -> R-05A -> SB-EVAL -> eval sources` / `P-WL05` | `EXT-01` / `R-05B`, cases/catalog | ten interactions authored; catalog/audit/self-test/validator/diff passed; 309-scenario digest recorded |
-| `T-05C / SL-05C` | 3 / `W003-WL05` | `BLOCKED` | `context`, `harness-evaluation`, `review-change`, `validate-change` | `SB-BASE -> R-05A/B -> permission -> CLI` / `P-WL05` | authored canary / `R-05C`, evidence or blocker | attempts `1/2` and `2/2` failed mechanical eligibility; judges `NOT_RUN`; explicit replan and new spend authority required |
+| `T-05A / SL-05A` | historical 3 / `W003-WL05` | `HISTORICAL_ACCEPTED; NO_RESUME` | historical `context`, `harness-evaluation`, `codex-maintenance` | retained `SB-BASE -> JG-CORE -> SB-EVAL -> runner/schema` / inert `P-WL05` | retained W-002 complete / `R-05A`, refreshed impact | historical CLI/contracts inspection at `0e6ba3c`; no current dispatch, write, replan, or spend authority |
+| `T-05B / SL-05B` | historical 3 / `W003-WL05` | `HISTORICAL_ACCEPTED; NO_RESUME` | historical `implement-change`, `validate-change` | retained `SB-BASE -> R-05A -> SB-EVAL -> eval sources` / inert `P-WL05` | retained `EXT-01` / `R-05B`, cases/catalog | historical 309-scenario receipt only; no current dispatch, write, replan, or spend authority |
+| `T-05C / SL-05C` | historical 3 / `W003-WL05` | `HISTORICAL_BLOCKED; SUPERSEDED; NO_RESUME` | historical `context`, `harness-evaluation`, `review-change`, `validate-change` | retained `SB-BASE -> R-05A/B -> permission -> CLI` / inert `P-WL05` | retained canary / `R-05C` blocker | attempts `1/2` and `2/2` failed mechanical eligibility; judges `NOT_RUN`; current canary authority is only T-18/CG-AG-18 after CG-AG-17 |
 | `T-06A / SL-06A` | historical 4 / `W003-WL06` | `HISTORICAL_BLOCKED; SUPERSEDED; NO_RESUME` | historical `context`, `docs-impact-map`, `codex-maintenance`, `implement-change` | retained `SB-BASE -> JG-CORE/AG-05 -> SB-CLOSE -> docs` / inert `P-WL06` | retained prior gates / `R-06A`, impact disposition | two thin public docs were updated and all sibling targets dispositioned; materialized at `6c4e33e`; no current wait or dispatch |
 | `T-06B / SL-06B` | historical 4 / `W003-WL06` | `HISTORICAL_BLOCKED; SUPERSEDED; NO_RESUME` | historical `context`, `review-change`, `validate-change`, `closeout` | retained `SB-BASE -> R-06A -> SB-CLOSE -> full evidence` / inert `P-WL06` | retained prior evidence / `R-06B`, final result | deterministic commands passed historically; terminal route is superseded and has no current wait or dispatch |
 | `T-07 / SL-07` | R5 wave 1 / `W003-WL07` | `ACCEPTED` | `context`, `plan-change`, `codex-maintenance`, `implement-change` | W-003 rev 5 request -> semantic/schema surfaces / `P-WL07` | base `a14a9bc...` / accepted transport `4c6b3041...` | root accepted `CG-AG-07`; exact producer identity retained |
@@ -430,7 +434,7 @@ lane state. Reconcile them with W-003 before every task.
 | `T-12 / SL-12` | R5 wave 4 / root | `HISTORICAL_BLOCKED` | `context`, `orchestrate-work`, `review-change`, `validate-change`, `closeout` | accepted WL-10 plus historical WL-11 transport -> old CG queue/batches/active root / `P-WL12` | `CG-AG-10`, historical `CG-AG-11` / old materialization and integrated receipts | historically superseded by `T-15 / CG-AG-15`, which was later superseded; current route is `T-17 / CG-AG-17` |
 
 The rows above this paragraph are retained revision-4/5 history. Current
-plan-15/task-revision-13 dispatch and handoff are defined only by `T-17` and `T-18` at
+plan-16/task-revision-14 dispatch and handoff are defined only by `T-17` and `T-18` at
 the top of this packet and `CG-001@4`.
 
 ## Retained Revision 5 Root Coordination Chart
