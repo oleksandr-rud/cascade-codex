@@ -8,7 +8,7 @@ lane packets, graphs, and reports.
 
 | Lane | Status | Request | Owner | Next Gate | Files/Areas | Dependencies | Evidence |
 |---|---|---|---|---|---|---|---|
-| `W-003` | `BLOCKED` | First-class graph-shaped workflow coordination without a graph runtime | root `agent-engineer`; cross-workline authority `CG-001@3` | explicit authority/amendment for another bounded WL-12 repair/review; canary prohibited meanwhile | legacy evidence preserved; `CG-AG-07..10`, `CG-AG-13..14`, `CG-MQ-13..14`, and `CG-BATCH-03` preserved; WL-12 review attempt `3/3` failed | W-003 plan 6; `CG-AM-03`; `CG-RP-05`; exact transports/materializations/batches/terminal owned only by `docs/work/graphs/CG-001-w003-coordination-graph.md` | final Spec review failed at `5c1fe931...`; `CG-AG-15`, `CG-AG-16`, and `CG-TG-03` remain blocked |
+| `W-003` | `IN_PROGRESS` | First-class graph-shaped workflow coordination without a graph runtime | root `agent-engineer`; cross-workline authority `CG-001@4` | complete current-head `CG-AG-17`; then execute the one gated `HX-031` target and both judges under `CG-AG-18` | legacy evidence preserved; `CG-AG-07..10`, `CG-AG-13..14`, and `CG-MQ-13..14` accepted; WL-12 attempt `12/12` binds HEAD `230d67a...` plus current repair digest | W-003 plan 15; `CG-AM-12`; `CG-RP-14`; exact gates, batches, integration, terminal, and transitions owned only by `docs/work/graphs/CG-001-w003-coordination-graph.md` | plan-14 architecture/Spec PASS and Standards FAIL retained historically; current `CG-BATCH-05`, `CG-IV-03`, three reviews, `CG-BATCH-06`, and `CG-TG-04` pending |
 
 `W-003` is the only active lane. Completed W-001 and W-002 evidence remains in
 their lane packets and indexed work reports.
