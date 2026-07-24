@@ -8,6 +8,7 @@ config; keep reusable workflow rules in skills, agents, and patterns.
 | Folder | Purpose | Written By |
 |---|---|---|
 | `docs/work/` | Active work lanes, first-class Coordination Graphs, copyable examples, lane packets, reports, handoffs | `orchestrate-work`, `market-validation`, `plan-change`, `validate-change`, `closeout` |
+| `docs/archive/work-reports/` | Compact archive capsules and relocated frozen lane, graph, and report history | `archive-work` after explicit archive approval |
 | `docs/specs/` | Incoming and spec packets | `ingest-spec`, `synthesis-to-spec`, `compose-spec`, `discover`, `docs-impact-map`, `adapt-harness` |
 | `docs/product/` | Product intent, requirements, journeys, personas, scenarios | `discover`, `market-validation`, `synthesis-to-spec`, `compose-spec`, `ingest-spec`, `docs-impact-map` |
 | `docs/design/` | Interaction model, tokens, components, design constraints | `discover`, `design-system`, `ingest-spec`, `docs-impact-map` |
@@ -29,6 +30,11 @@ config; keep reusable workflow rules in skills, agents, and patterns.
 - Lane examples: `docs/work/examples/`
 - Lane packets: `docs/work/lanes/W-XXX-slug.md`
 - Durable reports: `docs/work/reports/YYYY-MM-DD-slug.md`
+- Completed-work archive index: `docs/archive/work-reports/_index.md`
+- Compact archive capsules:
+  `docs/archive/work-reports/YYYY-MM-DD-scope-archive.md`
+- Relocated frozen work artifacts:
+  `docs/archive/work-reports/YYYY-MM-DD-original-filename.md`
 
 Coordination Graph entries are separate work entities that connect two or more
 canonical worklines across real dependencies, joins, worktree materialization,
@@ -36,6 +42,13 @@ integrated validation, invalidation, or partial repair. They are not worklines,
 lanes, specs, generated documents, or runtimes. Lane packets keep lane-local
 Task Graph authority and read-only graph references after direct cutover;
 `active.md` remains a derived projection.
+
+`docs/work/` is the live and recent execution surface. `archive-work` may move
+an explicitly requested, fully completed or superseded set to
+`docs/archive/work-reports/` only after terminal evidence, dependency closure,
+index consistency, inbound references, and pre/post file digests pass. The
+compact archive capsule is the rehydration entrypoint; relocated originals
+remain detailed historical authority and are not rewritten.
 
 ## Spec Translation Paths
 

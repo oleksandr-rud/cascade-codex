@@ -112,7 +112,10 @@ Use when work is done, blocked, or ready for handoff.
 19. Preserve Coordination Graph entries, revisions, receipts, and evidence as
    durable history. Retire only derived active projections through the owning
    closeout route; do not invent a permanent `CLOSED` state or delete graph
-   authority merely because the goal completed.
+   authority merely because the goal completed. When the user explicitly asks
+   to compact or archive completed lane, graph, and report artifacts, hand the
+   already-closed set to `archive-work`; closeout itself does not move frozen
+   authority.
 20. Treat commit, push, publication, broad staging, cleanup, or reset as
    separate authority. An accepted uncommitted active-worktree state may satisfy
    an implementation goal; report unrequested Git publication actions as
@@ -164,6 +167,9 @@ Every thin doc diff must include:
 - Completed active registry cleanup: remove `COMPLETE` rows from
   `docs/work/active.md` only after evidence is preserved in a report and the
   cleanup scope is explicit
+- Completed lane/graph/report compaction:
+  `archive-work -> docs/archive/work-reports/` only after explicit intent and
+  archive readiness
 - Durable rejected scope: existing backlog, pattern, decision, or work report,
   only when it prevents repeat bad suggestions
 - Durable workflow lessons: `.codex/skills/`, `.codex/agents/`, or

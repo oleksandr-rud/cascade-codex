@@ -28,7 +28,9 @@ where the work stands.
    worklines use a Coordination Graph, or applicability must be re-evaluated.
 9. Research memory entries under `docs/patterns/context-memory/index.md` when present.
 10. Recent reports under `docs/work/reports/` when present.
-11. High-priority backlog notes under `docs/backlog/` when configured.
+11. Relevant archive capsules under `docs/archive/work-reports/` only when the
+    request names historical completed work or a live source points there.
+12. High-priority backlog notes under `docs/backlog/` when configured.
 
 ## Rehydration And Compression Rules
 
@@ -49,6 +51,9 @@ where the work stands.
 - On replanning, report the latest revision plus preserved, changed, added, and
   invalidated definitions/worklines/evidence. Do not reconstruct the plan only
   from conversation memory.
+- Treat an archive capsule as the compact historical entrypoint and its
+  relocated originals as detailed frozen authority. Do not scan archived work
+  as active context or mutate it to resume work.
 
 ## Graph-Shaped Rehydration
 

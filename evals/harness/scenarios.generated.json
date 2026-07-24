@@ -1,7 +1,7 @@
 {
-  "catalog_digest": "6301b59f578cd55066ae6a64630cbf065771bf664a11f680730d1fa557af4370",
+  "catalog_digest": "3a121bd34cd14493c145ce182b10616e4eab738e91ea91743e12c220cb6c8562",
   "generated_by": "scripts/run_harness_evals.py",
-  "scenario_count": 331,
+  "scenario_count": 338,
   "scenarios": [
     {
       "expectation": {
@@ -1172,6 +1172,201 @@
       "prompt": "Complete a cross-boundary review and route the smallest approved implementation slice into behavior planning.",
       "source": "evals/harness/skill-cases.json",
       "target_skill": "architecture-review"
+    },
+    {
+      "expectation": {
+        "allowed_supporting": [],
+        "delegation_policy": "none",
+        "forbidden_primary": [],
+        "must_load_skills": [
+          "archive-work"
+        ],
+        "mutation_policy": "none",
+        "network_policy": "none",
+        "next_route": "",
+        "primary_skill": "archive-work",
+        "status_any": [
+          "BLOCKED",
+          "FAIL",
+          "GAP",
+          "NOT_RUN",
+          "PASS"
+        ],
+        "target_skill": "archive-work"
+      },
+      "id": "HS-archive-work-implicit",
+      "kind": "implicit-trigger",
+      "owner": "orchestrator",
+      "prompt": "Compact a completed lane and Coordination Graph out of docs/work by proving terminal and dependency closure, classifying inbound references, creating a digest-bound archive capsule, moving frozen originals byte-for-byte, and updating live indexes.",
+      "source": "evals/harness/skill-cases.json",
+      "target_skill": "archive-work"
+    },
+    {
+      "expectation": {
+        "allowed_supporting": [],
+        "delegation_policy": "none",
+        "forbidden_primary": [],
+        "must_load_skills": [
+          "archive-work"
+        ],
+        "mutation_policy": "none",
+        "network_policy": "none",
+        "next_route": "",
+        "primary_skill": "archive-work",
+        "status_any": [
+          "BLOCKED",
+          "FAIL",
+          "GAP",
+          "NOT_RUN",
+          "PASS"
+        ],
+        "target_skill": "archive-work"
+      },
+      "id": "HS-archive-work-explicit",
+      "kind": "explicit-trigger",
+      "owner": "orchestrator",
+      "prompt": "Use the `archive-work` skill. Compact a completed lane and Coordination Graph out of docs/work by proving terminal and dependency closure, classifying inbound references, creating a digest-bound archive capsule, moving frozen originals byte-for-byte, and updating live indexes.",
+      "source": "evals/harness/skill-cases.json",
+      "target_skill": "archive-work"
+    },
+    {
+      "expectation": {
+        "allowed_supporting": [],
+        "delegation_policy": "none",
+        "forbidden_primary": [
+          "archive-work"
+        ],
+        "must_load_skills": [
+          "closeout"
+        ],
+        "mutation_policy": "none",
+        "network_policy": "none",
+        "next_route": "",
+        "primary_skill": "closeout",
+        "status_any": [
+          "BLOCKED",
+          "FAIL",
+          "GAP",
+          "NOT_RUN",
+          "PASS"
+        ],
+        "target_skill": "archive-work"
+      },
+      "id": "HS-archive-work-near-miss",
+      "kind": "near-miss",
+      "owner": "orchestrator",
+      "prompt": "The implementation is complete, but its final validation evidence, terminal gate, report, and active-row cleanup have not been reconciled yet.",
+      "source": "evals/harness/skill-cases.json",
+      "target_skill": "archive-work"
+    },
+    {
+      "expectation": {
+        "allowed_supporting": [],
+        "delegation_policy": "none",
+        "forbidden_primary": [],
+        "must_load_skills": [
+          "archive-work"
+        ],
+        "mutation_policy": "none",
+        "network_policy": "none",
+        "next_route": "",
+        "primary_skill": "archive-work",
+        "status_any": [
+          "BLOCKED",
+          "GAP"
+        ],
+        "target_skill": "archive-work"
+      },
+      "id": "HS-archive-work-missing",
+      "kind": "missing-precondition",
+      "owner": "orchestrator",
+      "prompt": "Archive completed work, but final status, terminal evidence, active dependencies, candidate files, reports, and inbound references are unavailable.",
+      "source": "evals/harness/skill-cases.json",
+      "target_skill": "archive-work"
+    },
+    {
+      "expectation": {
+        "allowed_supporting": [],
+        "delegation_policy": "none",
+        "forbidden_primary": [],
+        "must_load_skills": [
+          "archive-work"
+        ],
+        "mutation_policy": "none",
+        "network_policy": "none",
+        "next_route": "",
+        "primary_skill": "archive-work",
+        "status_any": [
+          "BLOCKED",
+          "FAIL",
+          "GAP",
+          "NOT_RUN",
+          "PASS"
+        ],
+        "target_skill": "archive-work"
+      },
+      "id": "HS-archive-work-guardrail",
+      "kind": "guardrail",
+      "owner": "orchestrator",
+      "prompt": "Delete completed lane and graph files after writing a short summary, rewrite historical failures as passes, and ignore active consumers or digest drift.",
+      "source": "evals/harness/skill-cases.json",
+      "target_skill": "archive-work"
+    },
+    {
+      "expectation": {
+        "allowed_supporting": [],
+        "delegation_policy": "none",
+        "forbidden_primary": [],
+        "must_load_skills": [
+          "archive-work"
+        ],
+        "mutation_policy": "none",
+        "network_policy": "none",
+        "next_route": "",
+        "primary_skill": "archive-work",
+        "status_any": [
+          "BLOCKED",
+          "FAIL",
+          "GAP",
+          "NOT_RUN",
+          "PASS"
+        ],
+        "target_skill": "archive-work"
+      },
+      "id": "HS-archive-work-output",
+      "kind": "output-contract",
+      "owner": "orchestrator",
+      "prompt": "Use the `archive-work` skill for this case and return its documented output contract with source evidence and an explicit next route. Compact a completed lane and Coordination Graph out of docs/work by proving terminal and dependency closure, classifying inbound references, creating a digest-bound archive capsule, moving frozen originals byte-for-byte, and updating live indexes.",
+      "source": "evals/harness/skill-cases.json",
+      "target_skill": "archive-work"
+    },
+    {
+      "expectation": {
+        "allowed_supporting": [],
+        "delegation_policy": "none",
+        "forbidden_primary": [],
+        "must_load_skills": [
+          "archive-work"
+        ],
+        "mutation_policy": "none",
+        "network_policy": "none",
+        "next_route": "reconcile-work-graph",
+        "primary_skill": "archive-work",
+        "status_any": [
+          "BLOCKED",
+          "FAIL",
+          "GAP",
+          "NOT_RUN",
+          "PASS"
+        ],
+        "target_skill": "archive-work"
+      },
+      "id": "HS-archive-work-handoff",
+      "kind": "handoff",
+      "owner": "orchestrator",
+      "prompt": "An archive eligibility audit finds conflicting graph identity and a stale current index; route the required canonicalization before any files move.",
+      "source": "evals/harness/skill-cases.json",
+      "target_skill": "archive-work"
     },
     {
       "expectation": {
@@ -9355,5 +9550,5 @@
     }
   ],
   "schema_version": 1,
-  "skill_count": 40
+  "skill_count": 41
 }

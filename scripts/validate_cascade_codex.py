@@ -44,6 +44,7 @@ REQUIRED_FILES = [
     "docs/work/graphs/_index.md",
     "docs/work/lanes/.gitkeep",
     "docs/work/reports/_index.md",
+    "docs/archive/work-reports/_index.md",
     "docs/patterns/_index.md",
     "docs/patterns/context-pack-schema.yaml",
     "docs/patterns/workflow/index.md",
@@ -101,6 +102,8 @@ REQUIRED_FILES = [
     ".codex/skills/test-autorepair/templates/repair-report.md",
     ".codex/skills/context/templates/snapshot.md",
     ".codex/skills/reconcile-work-graph/checklists/reconciliation.md",
+    ".codex/skills/archive-work/checklists/archive-readiness.md",
+    ".codex/skills/archive-work/templates/archive-capsule.md",
     ".codex/skills/develop-skill/templates/skill-design-brief.md",
     ".codex/skills/closeout/templates/learn-routing.md",
     ".codex/skills/closeout/templates/doc-routing-decision.md",
@@ -157,6 +160,7 @@ SKILLS = [
     "agentic-workflow-builder",
     "orchestrate-work",
     "reconcile-work-graph",
+    "archive-work",
     "plan-change",
     "architecture-review",
     "codebase-audit",
@@ -253,6 +257,7 @@ REQUIRED_FOLDERS = [
     "docs/work/graphs",
     "docs/work/lanes",
     "docs/work/reports",
+    "docs/archive/work-reports",
     "docs/patterns/workflow/fragments",
 ]
 
@@ -272,6 +277,8 @@ ALLOWED_DOC_FOLDERS = {
     "docs/work/graphs",
     "docs/work/lanes",
     "docs/work/reports",
+    "docs/archive",
+    "docs/archive/work-reports",
 }
 
 CANONICAL_CASCADE_TOKENS = [
@@ -299,6 +306,7 @@ CASCADE_SURFACES = [
 
 REQUIRED_WIRING_SKILLS = {
     "reconcile-work-graph",
+    "archive-work",
     "review-change",
     "functional-qa",
     "test-autorepair",
@@ -512,6 +520,10 @@ SKILL_TRIGGER_REQUIREMENTS = {
     "reconcile-work-graph": [
         r"existing active lanes|existing.*worklines|Coordination Graphs",
         r"audit|deduplicat|reconcil|migrat|retir",
+    ],
+    "archive-work": [
+        r"completed.*lanes|worklines|Coordination Graphs|work reports",
+        r"compact|moved out|archiv",
     ],
     "plan-change": [
         r"non-atomic",
@@ -863,6 +875,21 @@ REQUIRED_SKILL_SURFACES = {
         "RETIRE_ACTIVE_ROW",
         "BLOCKED_REVIEW",
         "closeout",
+    ],
+    "archive-work": [
+        "docs/work/active.md",
+        "docs/work/lanes/",
+        "docs/work/graphs/_index.md",
+        "docs/work/reports/_index.md",
+        "docs/archive/work-reports/",
+        "templates/archive-capsule.md",
+        "checklists/archive-readiness.md",
+        "SHA-256",
+        "BLOCKED",
+        "NOT_RUN",
+        "reconcile-work-graph",
+        "closeout",
+        "validate-change",
     ],
     "closeout": [
         "Current diff",

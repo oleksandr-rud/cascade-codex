@@ -31,6 +31,7 @@ Supporting skills:
 - `issue-intake`
 - `orchestrate-work`
 - `reconcile-work-graph`
+- `archive-work`
 - `review-change`
 - `ingest-spec`
 - `codebase-audit`

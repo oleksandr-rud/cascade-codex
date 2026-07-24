@@ -17,6 +17,8 @@ Use this folder as the active work memory for Orchestrator.
   index; these are separate work entities, not lanes or specs.
 - `examples/`: optional non-active lane examples when the harness ships any.
 - `reports/`: durable reports and blocked/deferred handoffs.
+- `../archive/work-reports/`: compact archive capsules and relocated frozen
+  lane, graph, and report artifacts after explicit archive maintenance.
 
 ## Rules
 
@@ -50,3 +52,7 @@ Use this folder as the active work memory for Orchestrator.
   reconcile its derived `active.md` projection before closeout.
 - For research-heavy work, add detailed evidence to `reports/` and add compact
   durable research-memory entries to `docs/patterns/context-memory/index.md`.
+- Do not accumulate completed history indefinitely in the live work tree.
+  After closeout and only on explicit archive intent, use `archive-work` to
+  prove terminal/dependency/reference readiness, create a digest-bound capsule,
+  and move frozen originals to `docs/archive/work-reports/`.

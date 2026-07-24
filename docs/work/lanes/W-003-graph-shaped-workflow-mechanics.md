@@ -1,17 +1,132 @@
 # Work Lane: W-003
 
-Status: `IN_PROGRESS`
-Planning Status: `IMPLEMENTATION_READY`
-Plan Revision: `16`
+Status: `COMPLETE`
+Planning Status: `IMPLEMENTED`
+Plan Revision: `24`
 Owner: `agent-engineer`
 Created: 2026-07-22
 Lane Model: `orchestrator-workers-dependency-waves`
-Next Gate: complete `WL-12` attempt `13/13` and obtain the independent
-architecture, Standards, and Spec evidence required by `CG-AG-17`
+Next Gate: none; `CG-TG-04` accepted
 Graph Revision: `4` — final embedded revision, `FROZEN` and `SUPERSEDED_BY CG-001`
 Coordination Graph: `docs/work/graphs/CG-001-w003-coordination-graph.md`, revision `4`
 
-## Revision 16 Legacy-WL05 Isolation And T17 Binding Amendment
+## Revision 24 Complete Current-Fragment Disposition Amendment
+
+At the plan-23 fixed point `5f384aa4...`, Standards and Spec passed, but
+architecture found that the top-level current ledger delegated omitted
+fragment dispositions back to the Historical Revision 6 table.
+
+The user's standing instruction authorizes bounded WL-12 review attempt
+`21/21`. `CG-AM-21` leaves graph revision 4, current IDs, producer evidence,
+actors, topology, validation authority, transition quarantine, and canary
+budget unchanged. `CG-RP-23` invalidates all three plan-23 reviews for
+acceptance, enumerates every current fragment disposition in the top-level
+Plan-24 ledger, and marks every Historical Revision 6 fragment row explicitly
+event-time and `NO_RESUME`.
+
+## Historical Revision 23 Historical-Fragment Repair-Authority Amendment
+
+At the plan-22 fixed point `4a3aeaf6...`, Standards and Spec passed, but
+architecture found one residual present-tense reopen rule in the Historical
+Revision 6 fragment narrative.
+
+The user's standing instruction authorizes bounded WL-12 review attempt
+`20/20`. `CG-AM-20` leaves graph revision 4, current IDs, producer evidence,
+actors, topology, validation authority, transition quarantine, and canary
+budget unchanged. `CG-RP-22` invalidates all three plan-22 reviews for
+acceptance, converts the residual rule and table heading to event-time history,
+and routes every present fragment drift/reopen decision only through the
+top-level current ledger and `CG-AG-17`.
+
+## Historical Revision 22 Fragment-Ledger Direct-Cutover Amendment
+
+At the plan-21 fixed point `5ac3d93f...`, Spec passed, but architecture and
+Standards found that the current `GF-004@1`/`GF-008@1` actor, test, evaluator,
+and gate bindings still lived inside the Historical Revision 6 fragment
+ledger.
+
+The user's standing instruction authorizes bounded WL-12 review attempt
+`19/19`. `CG-AM-19` left graph revision 4, current IDs, producer evidence,
+actors, topology, validation authority, transition quarantine, and canary
+budget unchanged. `CG-RP-21` invalidated all three plan-21 reviews for
+acceptance and directly cut current fragment authority over to a new
+top-level Plan-22 ledger. The Historical Revision 6 rows retain only their
+event-time `CG-AG-15/16` bindings.
+
+## Historical Revision 21 Historical-Scope Bridge Removal Amendment
+
+At the plan-20 fixed point `9b17c012...`, all three independent reviews
+rejected one redundant present-tense “current Plan-19 route” bridge still
+nested beneath Historical Revision 6.
+
+The user's standing instruction authorizes bounded WL-12 review attempt
+`18/18`. `CG-AM-18` left graph revision 4, current IDs, producer evidence,
+actors, topology, validation authority, transition quarantine, and canary
+budget unchanged. `CG-RP-20` invalidated all three plan-20 reviews for
+acceptance and deleted that redundant bridge. Current routing remained
+authoritative only in the top-level current contract and `CG-001` Current
+Frontier.
+
+## Historical Revision 20 Drift-Proof Current-Route Pointer Amendment
+
+At the plan-19 fixed point `844818ee...`, the independent Spec review passed,
+but architecture and Standards rejected one stale Plan-18 qualifier in the
+otherwise quarantined `CG-TR-15` current-route pointer.
+
+The user's standing instruction authorizes bounded WL-12 review attempt
+`17/17`. `CG-AM-17` left graph revision 4, current IDs, producer evidence,
+actors, topology, validation authority, transition quarantine, and canary
+budget unchanged. `CG-RP-19` invalidated all three plan-19 reviews for
+acceptance and removes the drift-prone plan number: the row now points only to
+the canonical Current Frontier route.
+
+## Historical Revision 19 Current-Validation Authority Amendment
+
+At the plan-18 fixed point `946a3760...`, the transition-history quarantine
+passed, but all three independent reviews rejected stale Plan-17 labels in the
+current exact-test and Validation Plan authority. Standards also found that
+the live command contract was nested beneath Historical Revision 6 and that
+Compact Resume still named task revision 15.
+
+The user's standing instruction authorizes bounded WL-12 review attempt
+`16/16`. `CG-AM-16` left graph revision 4, current IDs, producer evidence,
+actors, topology, and canary budget unchanged. `CG-RP-18` invalidates all
+three plan-18 reviews for acceptance, promoted the exact current test/evaluator
+binding to a top-level Plan-19 section, and bound Validation Plan and Compact
+Resume to Plan 19 / task revision 17.
+
+## Historical Revision 18 Transition-History Quarantine Amendment
+
+At the plan-17 fixed point `5b51ff82...`, the deterministic batch passed and
+the independent architecture and Spec reviews passed, but the required
+Standards review failed. Three event-time rows in the authoritative
+Coordination Graph transition table still exposed actionable-looking legacy
+routes: `CG-BR-01`, `CG-TR-09`, and `CG-TR-15`.
+
+The user's standing instruction authorizes bounded WL-12 review attempt
+`15/15`. `CG-AM-15` left graph revision 4, current IDs, producer evidence,
+actors, topology, and canary budget unchanged. `CG-RP-17` invalidates all
+three plan-17 reviews for acceptance and changed only those retained
+transition-history projections: each is explicitly historical and
+`NO_RESUME`, and present execution is routed only through
+`CG-AG-17 -> CG-AG-18 -> CG-TG-04`.
+
+## Historical Revision 17 Residual Legacy-Slice Quarantine Amendment
+
+At the plan-16 fixed point `89ed364c...`, all deterministic checks passed, but
+all three independent reviews rejected the remaining current-looking
+`SL-05A/B/C` implementation, traceability, repair, and risk routes.
+Architecture also found `CG-BATCH-02` still exposing a repair route, while
+Spec found revision 7 still describing HEAD `230d67a...` as current.
+
+The user's standing instruction authorizes bounded WL-12 review attempt
+`14/14`. `CG-AM-14` left graph revision 4, current IDs, producer evidence,
+actors, topology, and canary budget unchanged. `CG-RP-16` invalidates all
+three plan-16 reviews for acceptance, froze SL-05A-C and CG-BATCH-02 as
+historical/superseded/`NO_RESUME`, creates current slice projection `SL-18`
+for T-18/CG-AG-18 only, and marked revision 7 historical.
+
+## Historical Revision 16 Legacy-WL05 Isolation And T17 Binding Amendment
 
 At the plan-15 fixed point `c66faf80...`, all deterministic checks passed, but
 architecture and Spec found that the current T-17 ownership row still bound
@@ -26,6 +141,14 @@ plan-15 reviews for acceptance, binds T-17 to plan 16/task revision 14, and
 marks every legacy T-05A/B/C, WL-05, MQ-05, and AG-05 projection as historical,
 superseded where applicable, and `NO_RESUME`. The sole current WL-05 route is
 `T-18 / CG-AG-18` after `CG-AG-17`.
+
+Before the plan-16 fixed point was reviewed, the active branch advanced through
+existing commits `0e59787...` and `40433de...`, which materialized the prior
+W-003 documentation state on the branch and its remote. Plan 16 preserves
+those commits, changes no topology or canary budget, and binds all current
+T-17 evidence to HEAD `40433dea641b32b964e314ce37dc024f6da5b79e` plus one
+current unstaged diff digest. Historical receipts remain bound to their
+original HEADs.
 
 ## Historical Revision 15 Current Validation Authority Amendment
 
@@ -144,7 +267,7 @@ revision remains 4 because no workline, dependency, actor, owner, gate, or
 topology changes. `CG-AM-05` preserves `CG-AG-17/18`, `CG-BATCH-05/06`,
 `CG-IV-03`, and `CG-TG-04`; failed plan-7 reviews remain historical evidence.
 
-## Revision 7 Current-Head Recovery Amendment
+## Historical Revision 7 Current-Head Recovery Amendment
 
 The user explicitly authorized continuation through the terminal gate after
 revision-6 attempt `3/3` exhausted. `CG-AM-04` advances the plan to revision 7
@@ -153,18 +276,18 @@ test, evaluator, and terminal-gate contracts are now complete and the active
 fixed point changed from HEAD `a14a9bc...` plus an unstaged materialization to
 clean committed HEAD `230d67a15db0d9e2fc25df8e0772ff506862d265`.
 
-Revision 7 preserves all accepted producer transports and historical failures.
+Revision 7 historically preserved all accepted producer transports and failures.
 It creates never-reused replacement gates `CG-AG-17`, `CG-AG-18`,
 `CG-BATCH-05`, `CG-BATCH-06`, `CG-IV-03`, and `CG-TG-04`. `WL-12` receives
-one final bounded repair/review attempt `4/4`; `WL-05` receives one current
-canary attempt `4/4` only after `CG-AG-17` accepts.
+one then-current bounded repair/review attempt `4/4`; `WL-05` received one
+then-current canary attempt `4/4` only after `CG-AG-17` accepted.
 
-The committed fixed point does not retroactively authorize the earlier commit
+That historical committed fixed point does not retroactively authorize the earlier commit
 or convert historical no-commit receipts into current evidence. Revision-7
-integrated evidence binds current HEAD `230d67a...` plus the current unstaged
+integrated evidence bound then-current HEAD `230d67a...` plus the then-current unstaged
 repair digest, proves the accepted producer content/preserved adaptations, and
-uses the active root as the evidence locus. Commit and push remain outside this
-amendment.
+used the active root as the evidence locus. Revision 7 is `NO_RESUME`; current
+authority is Plan 24/task revision 22 at HEAD `40433de...`.
 
 ## Historical Revision 6 Repair Amendment
 
@@ -206,28 +329,42 @@ without retroactively rewriting revision-4/5 history.
 
 | Fragment | Disposition | Activation / Omission Reason | Port Bindings | Actor / Skills | Tests / Evaluator / Gate |
 |---|---|---|---|---|---|
-| `GF-004@1` shared contract | `SELECTED` | Route ownership and target-output semantics are shared by skill/role consumers and the harness runner. | conditional `product.acceptance` is explicitly not activated because Cascade has no product runtime; provides `shared.contract = R6-ROUTE-OUTPUT-CONTRACT` to WL-13, WL-14, and the canary | root `agent-engineer` resolves `architecture-contract-ownership` and `compatibility-analysis`; required `architecture-review` is activated because the change crosses shared public harness contracts; required `plan-change`; implementation remains through the existing `implement-change` route | exact contract-compatibility commands are the six workflow-pack builds, validator, catalog check, self-test, runtime audit, Python compile, and diff hygiene listed below; evidence locus is the active root; an independent architecture reviewer plus independent Standards/Spec reviewers provide `independent-architecture-review`; root alone evaluates `CG-AG-17` |
-| `GF-008@1` integration wiring | `SELECTED` | Two independently reviewed producer outputs must coexist in one current active-root fixed point and be validated together. | requires `implementation.output = {bd8104ac..., 36a067c5...}` with reviewed overlap adaptation; provides `integration.accepted = CG-AG-17` | the authorized root `agent-engineer` explicitly satisfies preferred-orchestrator capabilities `integration-ownership` and `combined-state-validation` as sole coordination/materialization owner; required `implement-change` and `validate-change`; conditional `architecture-review` is activated through `GF-004@1` | exact current-head batch commands listed below plus integrated architecture, Standards, and Spec review; evidence locus is active-root HEAD `230d67a...` plus repair digest; independent reviewers satisfy `independent-integration-review`; root alone evaluates `CG-AG-17` |
-| `GF-001@1`, `GF-002@1`, `GF-003@1` | `NOT_APPLICABLE` | No new product definition, UI/UX design, or prototype/mockup is created by this harness-contract repair. | no ports emitted or required | none | no product/design/mockup tests or gates |
-| `GF-005@1`, `GF-006@1`, `GF-007@1` | `NOT_APPLICABLE` | No backend service, frontend client, or data migration surface exists in Cascade. | no ports emitted or required | none | no backend/frontend/migration tests or gates |
-| `GF-009@1` | `NOT_APPLICABLE` | HX-031 is an agent-harness canary under the preserved W-002 contract, not a public-start product journey. | no ports emitted or required | none | no E2E-fragment test or gate; canary details exist only in the separate W-002 non-fragment contract below |
-| `GF-101@1`, `GF-102@1`, `GF-103@1` | `NOT_APPLICABLE` | No security, accessibility, or visual surface changed; no activation condition is present. | no assurance overlay ports | none | no phantom assurance gates |
+| `GF-004@1` shared contract | `SELECTED; EVENT_TIME; NO_RESUME` | Event-time Revision 6 route ownership and target-output semantics were shared by skill/role consumers and the harness runner. | conditional `product.acceptance` was not activated because Cascade has no product runtime; provided `shared.contract = R6-ROUTE-OUTPUT-CONTRACT` to WL-13, WL-14, and the historical canary | event-time root `agent-engineer`; historical `architecture-review`, `plan-change`, and `implement-change` routes | retained Revision 6 commands/reviews; event-time root evaluated historical `CG-AG-15/16`; `NO_RESUME` |
+| `GF-008@1` integration wiring | `SELECTED; EVENT_TIME; NO_RESUME` | Event-time Revision 6 producer outputs were combined and validated together. | required historical `implementation.output = {bd8104ac..., 36a067c5...}`; provided historical `integration.accepted = CG-AG-15` | event-time root `agent-engineer`; historical `implement-change`, `validate-change`, and conditional `architecture-review` | retained Revision 6 fixed-point evidence; event-time root evaluated historical `CG-AG-15`; `NO_RESUME` |
+| `GF-001@1`, `GF-002@1`, `GF-003@1` | `NOT_APPLICABLE; EVENT_TIME; NO_RESUME` | Event-time Revision 6 decision: no new product definition, UI/UX design, or prototype/mockup was created by this harness-contract repair. | no ports emitted or required | none | no product/design/mockup tests or gates; `NO_RESUME` |
+| `GF-005@1`, `GF-006@1`, `GF-007@1` | `NOT_APPLICABLE; EVENT_TIME; NO_RESUME` | Event-time Revision 6 decision: no backend service, frontend client, or data migration surface existed in Cascade. | no ports emitted or required | none | no backend/frontend/migration tests or gates; `NO_RESUME` |
+| `GF-009@1` | `NOT_APPLICABLE; EVENT_TIME; NO_RESUME` | Event-time Revision 6 decision: HX-031 was an agent-harness canary under the preserved W-002 contract, not a public-start product journey. | no ports emitted or required | none | no E2E-fragment test or gate; retained canary details exist only in the separate W-002 non-fragment contract below; `NO_RESUME` |
+| `GF-101@1`, `GF-102@1`, `GF-103@1` | `NOT_APPLICABLE; EVENT_TIME; NO_RESUME` | Event-time Revision 6 decision: no security, accessibility, or visual surface changed and no activation condition was present. | no assurance overlay ports | none | no phantom assurance gates; `NO_RESUME` |
 
-Selected required ports are fully bound; omitted fragments contribute no
-actors, skills, tests, evidence, or gates. Transport or shared-contract drift
-reopens only its selected fragment instance and named consumers.
+At event time, selected required ports were fully bound and omitted fragments
+contributed no actors, skills, tests, evidence, or gates. Event-time transport
+or shared-contract drift would have reopened only the selected fragment and
+named consumers. This ledger is `NO_RESUME`; every present fragment
+drift/reopen decision belongs only to the top-level current ledger and
+`CG-AG-17`.
 
-| Selected Instance / Explicit Non-Fragment Gate | Primary Workline | Criteria / Boundary Trace | Produced Evidence / Consumer |
+| Historical Selected Instance / Explicit Non-Fragment Gate | Event-Time Primary Workline | Criteria / Boundary Trace | Historical Produced Evidence / Consumer |
 |---|---|---|---|
 | `GF-004@1 / R6-ROUTE-OUTPUT-CONTRACT` | `WL-13`, `WL-14` | `GW-005`, `GW-011`, `GW-016`, `GW-022`; `BND-05`, `BND-08` | accepted producer reviews -> `GF-008@1` and `CG-AG-16` |
 | `GF-008@1` | `WL-12` | `CR-17`, `CR-18`, `CR-20`; `BND-09`; `DEF-23..25` | materialization and integrated evidence -> `CG-AG-15` |
 | W-002 harness canary contract | `WL-05` | `GW-005`, `GW-011`, `GW-016`, `GW-022`; `BND-05` | eligible target plus two judge receipts -> `CG-AG-16` and `CG-TG-03` |
 
-The current Plan-16 route retains `GF-008@1 -> CG-AG-17` and the W-002 canary
-contract -> `CG-AG-18 -> CG-TG-04`; the revision-6 rows above remain
-historical lineage and are not a resume path.
+## Current Plan 24 Fragment Composition Ledger
 
-### Current Plan 16 Exact Test And Evaluator Binding
+| Fragment | Disposition | Current Port Bindings | Current Actor / Skills | Current Tests / Evaluator / Gate |
+|---|---|---|---|---|
+| `GF-004@1` shared contract | `SELECTED` | `product.acceptance` remains not activated because Cascade has no product runtime; `shared.contract = R6-ROUTE-OUTPUT-CONTRACT` feeds current WL-12 and gated WL-05 canary consumers | root `agent-engineer`; `architecture-review`, `plan-change`, and `implement-change` only as bound by the current repair/validation route | six workflow-pack builds, validator, catalog, self-test, runtime audit, Python compile, diff hygiene, and independent architecture/Standards/Spec reviews; root evaluates `CG-AG-17` |
+| `GF-008@1` integration wiring | `SELECTED` | requires accepted `implementation.output = {bd8104ac..., 36a067c5...}` plus materialization lineage; provides `integration.accepted = CG-AG-17` | root `agent-engineer` as sole coordination/materialization owner; current `implement-change`, `validate-change`, and `architecture-review` bindings | active-root HEAD `40433de...` plus current repair digest; exact current batch and three independent review axes; root evaluates `CG-AG-17` |
+| `GF-001@1`, `GF-002@1`, `GF-003@1` | `NOT_APPLICABLE` | no current product-definition, UI/UX-design, or prototype/mockup activation; no ports emitted or required | none | no product/design/mockup tests, evaluators, or gates |
+| `GF-005@1`, `GF-006@1`, `GF-007@1` | `NOT_APPLICABLE` | Cascade still has no backend service, frontend client, or data-migration surface; no ports emitted or required | none | no backend/frontend/migration tests, evaluators, or gates |
+| `GF-009@1` | `NOT_APPLICABLE` | the current HX-031 obligation remains a separately governed W-002 agent-harness canary, not a public-start product journey; no fragment ports emitted or required | none | no E2E-fragment test or gate; the explicit non-fragment canary contract is `CG-AG-18 -> CG-TG-04` |
+| `GF-101@1`, `GF-102@1`, `GF-103@1` | `NOT_APPLICABLE` | no current security, accessibility, or visual activation condition is present; no assurance-overlay ports emitted or required | none | no security/accessibility/visual evaluators or gates |
+
+This top-level ledger is the complete current disposition authority. It does
+not inherit any disposition, actor, port, test, evaluator, gate, or repair
+rule from Historical Revision 6.
+
+## Current Plan 24 Exact Test And Evaluator Binding
 
 All commands run from `/Users/royrud1902/Documents/cascade-codex` with Python
 from the current shell, no application server, no browser fixture, no external
@@ -244,7 +381,7 @@ service, and read-only model target/judges except ignored artifacts under
 
 `OH-W003-CG001-01` is the accepted direct handoff from this lane's final
 embedded graph revision 4 to the first-class Coordination Graph `CG-001`;
-current authority is `CG-001@4` after plan-16 amendment `CG-AM-13`.
+current authority is `CG-001@4` after plan-24 amendment `CG-AM-21`.
 The complete cutover and worker transport set is materialized by root, so CG-001 exclusively
 owns cross-workline topology, readiness, dispatch, gates, the Materialization
 Queue, batches, integrated evidence, repair propagation, amendments, Current
@@ -413,11 +550,11 @@ The mechanics must provide:
 | `DEF-17` | A dispatch base is one immutable commit/digest containing every approved prerequisite and no unresolved user-owned change needed by a worker. All workline branches record this exact base before edits. | root coordination owner | every worker dispatch | A different or incomplete base blocks dispatch or invalidates the worker receipt. | `ACCEPTED` |
 | `DEF-18` | A workline thread owns one branch/worktree, declared paths, local commits, checks, and receipts. Its commit may transport the result but never authorizes active-root merge or commit. | root assignment plus worker receipt | parallel implementation and materialization | Overlap, changed transport, or unapproved base blocks materialization and routes to root reconciliation. | `ACCEPTED`; revised by plan 5 |
 | `DEF-19` | Status boards are derived; the authoritative Materialization Queue lives only in CG-001. Root alone records coordination state, queue order, batches, terminal decisions, and repair propagation. | `CG-001` owner | every worker and handoff | Worker-side board/queue edits or unbound status messages are rejected as state mutations. | `ACCEPTED`; revised by plan 5 |
-| `DEF-20` | Parallel worklines may consume accepted producer gates when writes are disjoint. Local receipts remain provisional until exact transports are materialized and combined active-worktree checks pass. | current `CG-001@4` | retained producers and plan-15 current-head join | Failure reopens only responsible worklines, affected materializations, batches, and consumers. | `ACCEPTED`; current through plan 15 |
+| `DEF-20` | Parallel worklines may consume accepted producer gates when writes are disjoint. Local receipts remain provisional until exact transports are materialized and combined active-worktree checks pass. | current `CG-001@4` | retained producers and plan-24 current-head join | Failure reopens only responsible worklines, affected materializations, batches, and consumers. | `ACCEPTED`; current through plan 24 |
 | `DEF-21` | A Coordination Graph is a first-class `docs/work/graphs/CG-XXX-*.md` entity, not a workline, lane, source/spec document, worker, or runtime. | workflow pattern | work routing and CG-001 | Any second current cross-workline authority invalidates cutover. | `ACCEPTED` |
 | `DEF-22` | Reconciliation precedes graph creation and gives every inspected record exactly one canonical disposition. Titles/age are hints, not duplicate or closure evidence. | `reconcile-work-graph` | CG-001 and closeout | `BLOCKED_REVIEW` or an unmigrated consumer prevents cutover. | `ACCEPTED` |
 | `DEF-23` | Materialization makes an accepted transport appear in the designated active worktree without implying branch merge or current-branch commit. | workflow and implementation skills | root owner and WL-12 | Overlap, missing transport, changed target baseline, or missing diff binding blocks acceptance. | `ACCEPTED` |
-| `DEF-24` | Integrated evidence binds graph revision, producer transports, materialization IDs, target HEAD, and combined diff fingerprint. Worker-local evidence cannot prove the combined state. | validation contract | current `CG-AG-17` and `CG-TG-04`; historical `CG-AG-12/15` retained | Any binding change invalidates affected evidence. | `ACCEPTED`; current through plan 16 |
+| `DEF-24` | Integrated evidence binds graph revision, producer transports, materialization IDs, target HEAD, and combined diff fingerprint. Worker-local evidence cannot prove the combined state. | validation contract | current `CG-AG-17` and `CG-TG-04`; historical `CG-AG-12/15` retained | Any binding change invalidates affected evidence. | `ACCEPTED`; current through plan 24 |
 | `DEF-25` | A Batch Evaluation Matrix binds gates, transports, target/diff, definition and runner versions, shards, requirement levels, missing/duplicate policy, aggregation, and repair. | coordination graph | batch and terminal evaluators | Required missing, stale, duplicate, failed, blocked, gap, or not-run input prevents acceptance. | `ACCEPTED` |
 | `DEF-26` | Direct cutover freezes prior graph authority and activates one new graph in one complete file set; historical evidence remains evidence, not current state. | `OH-W003-CG001-01` | W-003, packet, active row, context | Partial application blocks authoritative mutation until root restores one complete authority. | `ACCEPTED` |
 
@@ -582,7 +719,7 @@ goal; the root owner confirms all required terminal gates.
 | `SRC-08` | workflow skill contracts | `.codex/skills/{context,orchestrate-work,plan-change,implement-change,functional-qa,review-change,validate-change,test-autorepair,closeout}/SKILL.md` | current working tree | graph creation, execution, evidence, repair, resume, closeout consumers | `AUTHORITATIVE` |
 | `SRC-09` | completed W-002 evaluation contract | `docs/work/lanes/W-002-judged-harness-evals.md`; `docs/work/reports/2026-07-22-judged-harness-evaluations.md`; `evals/harness/`; `scripts/run_harness_evals.py` | completed lane; working-tree implementation | eligibility, judge, scenario, catalog, and evidence boundaries | `AUTHORITATIVE`; reinspect before `WL-05` |
 | `SRC-10` | original graph proposal | `/Users/royrud1902/.codex/attachments/75f59569-bac3-4e95-ab37-3b4377419e6e/pasted-text.txt` | historical input | original direction and examples | `SUPPORTING`; shared phase-join example superseded |
-| `SRC-11` | derived implementation packet | `docs/work/lanes/W-003-graph-shaped-workflow-implementation-packet.md` | task revision 14; derived from plan revision 16 and `CG-001@4`; task revisions 2 through 13 retained as history | plan-16 current-head integration/canary projection plus retained earlier receipts and materialization history | `SUPPORTING`; W-003 owns definitions and CG-001 owns current coordination state |
+| `SRC-11` | derived implementation packet | `docs/work/lanes/W-003-graph-shaped-workflow-implementation-packet.md` | task revision 22; derived from plan revision 24 and `CG-001@4`; task revisions 2 through 21 retained as history | plan-24 current-head integration/canary projection plus retained earlier receipts and materialization history | `SUPPORTING`; W-003 owns definitions and CG-001 owns current coordination state |
 | `SRC-12` | user | current parallel-thread request | current, 2026-07-22 | separate workline threads/worktrees, root-thread orchestration, and status chart | `AUTHORITATIVE` |
 | `SRC-13` | user | revision-5 graph-placement and reconciliation request | current, 2026-07-23 | first-class work-folder graph, clean source/spec boundary, audit/dedupe/stale retirement skill | `AUTHORITATIVE` |
 | `SRC-14` | user | dedicated-worktree batch/materialization clarification | current, 2026-07-23 | root-owned no-commit materialization into current active worktree, combined validation, batch joins | `AUTHORITATIVE` |
@@ -604,7 +741,7 @@ goal; the root owner confirms all required terminal gates.
 | `AQ-09` | decision | Cross-workline state moves to first-class `CG-001`; W-003's embedded graph receives one final frozen amendment and no fallback authority remains. | Prevents dual state, duplicated frontiers, and divergent gate decisions. | `OH-W003-CG001-01` | `ACCEPTED` |
 | `AQ-10` | decision | Existing work is reconciled with the six canonical dispositions before cutover; no title/age-only closure or deletion is allowed. | Preserves unique obligations, inbound consumers, and durable evidence. | `reconcile-work-graph` | `ACCEPTED` |
 | `AQ-11` | decision | Worker commits are immutable transports; root materializes accepted deltas into the current active worktree without automatically committing it. | Makes workline changes visible together while preserving user control of the active branch. | `CG-001` | `ACCEPTED` |
-| `AQ-12` | decision | Legacy `AG-05` failures remain required repair-lineage inputs; the current terminal consumes only replacement `CG-AG-18`, and no deterministic check retroactively accepts either canary gate. | Preserves the W-002 evidence contract and honest terminal boundary. | root owner | `ACCEPTED`; current through plan 16 |
+| `AQ-12` | decision | Legacy `AG-05` failures remain required repair-lineage inputs; the current terminal consumes only replacement `CG-AG-18`, and no deterministic check retroactively accepts either canary gate. | Preserves the W-002 evidence contract and honest terminal boundary. | root owner | `ACCEPTED`; current through plan 24 |
 
 ## Behavior Examples
 
@@ -649,15 +786,15 @@ goal; the root owner confirms all required terminal gates.
 | Lane orchestration | current request | `orchestrate-work`; `docs/work/lane-template.md`; `docs/work/active.md` | yes | Small lanes remain lightweight; examples remain non-active. | targeted scenario and validator | `PASS` | complete in `WL-02`/`WL-03` |
 | Planning and execution | current request | `plan-change`; `implement-change`; `functional-qa`; `review-change` | yes | Existing behavior examples, Feature Impact Matrix, and fixed-point review remain distinct. | skill contract review and harness cases | `PASS` | complete in `WL-03`/`JG-CORE` |
 | Validation and repair | current request | `validate-change`; `test-autorepair`; `closeout` | yes | Product defects never route to stale-test repair; required missing evidence never passes. | partial-repair and blocked-join cases | `PASS` | complete in `WL-04`/`JG-CORE` |
-| Harness evaluation | W-002 plus current request | `evals/harness/`; runner; judge contracts | yes | Completed W-002 eligibility/judge contracts remain authoritative and unchanged. | reinspect W-002, catalog check, self-test, focused case and judgments | `PENDING` | current `CG-AG-18` attempt `4/4` is authorized but remains gated by `CG-AG-17` |
+| Harness evaluation | W-002 plus current request | `evals/harness/`; runner; judge contracts | yes | Completed W-002 eligibility/judge contracts remain authoritative and unchanged. | reinspect W-002, catalog check, self-test, focused case and judgments | `PASS` | `CG-AG-18` accepted: eligible target, outcome `100`, trajectory `95`, focused coverage `1/331` |
 | Runtime bridge and package docs | existing public docs | `CODEX.md`; `README.md`; `docs/structure.md` | yes | Canonical task route and thin-entrypoint policy remain unchanged. | impact scan after implementation | `PASS` | merged `R-06A` at `6c4e33e` |
 
 ## Documentation Impact And Routing
 
 | Fact | Source | Owner Target | Action | Bloat Check | Evidence | Next Gate |
 |---|---|---|---|---|---|---|
-| Active implementation plan for graph-shaped workflow mechanics | plan-16 legacy-WL05 isolation and T17 binding repair | W-003 plan; `CG-001`; `docs/work/active.md` | `UPDATED` | W-003 owns definitions/history, CG-001 exclusively owns cross-workline state, and active remains thin. | plan revision 16, `CG-001@4`, accepted WL-13/WL-14 transports, current HEAD `230d67a...` | current-head fixed-point review for `CG-AG-17` |
-| Derived workline implementation packet | W-003 revision 16 plus `CG-001@4` | `docs/work/lanes/W-003-graph-shaped-workflow-implementation-packet.md` | `UPDATED` | Task/thread detail and derived status stay separate from CG authority; all legacy WL-05/T-05A-C/AG-05 execution instructions are frozen and `NO_RESUME`. | task revision 14; accepted WL-13/WL-14 receipts; pending `CG-BATCH-05` | current-head fixed-point review for `CG-AG-17` |
+| Active implementation plan for graph-shaped workflow mechanics | plan-24 complete current-fragment dispositions | W-003 plan; `CG-001`; `docs/work/active.md` | `UPDATED` | W-003 owns definitions/history, CG-001 exclusively owns cross-workline state, and active remains thin. | plan revision 24, `CG-001@4`, accepted terminal `CG-TG-04` | done |
+| Derived workline implementation packet | W-003 revision 24 plus `CG-001@4` | `docs/work/lanes/W-003-graph-shaped-workflow-implementation-packet.md` | `UPDATED` | Task/thread detail and derived status stay separate from CG authority; all legacy WL-05/SL-05A-C/T-05A-C/AG-05 execution instructions are frozen and `NO_RESUME`. | task revision 22; accepted `CG-AG-17`, `CG-AG-18`, and `CG-TG-04` | done |
 | First-class Coordination Graph | W-003 revision 5 and reconciliation audit | `docs/work/graphs/CG-001-w003-coordination-graph.md` | `UPDATED` | Separate work-folder entity prevents graph boilerplate in specs and avoids duplicate lane authority. | `OH-W003-CG001-01`; canonical disposition ledger | WL-12 materialization/integrated validation |
 | Reconciliation report | audit-first cutover | `docs/work/reports/2026-07-23-w003-coordination-graph-reconciliation.md` | `UPDATED` | Decision-heavy inventory/evidence disposition is durable without bloating product/spec docs. | canonical survivor, migration map, materialized transport bindings | independent review |
 | Reusable graph semantics | W-003 | `docs/patterns/workflow/graph-shaped-work.md` | `UPDATED` | Dedicated document inside the existing workflow pattern preserves one semantic authority without creating another pack. | accepted `AG-01` semantic review | done |
@@ -678,7 +815,7 @@ goal; the root owner confirms all required terminal gates.
 | `BND-07` | all accepted workline gates | terminal integration gate | Docs-impact result, structural checks, eval evidence, explicit residual risks. | Required `BLOCKED`, `FAIL`, `GAP`, or `NOT_RUN` cannot close the lane. | final validation and closeout audit |
 | `BND-08` | workline worker thread | root coordination-state/materialization owner | Typed event plus receipt bound to thread, branch/worktree, base/head SHA, immutable transport, plan/graph revision, attempt, writes, checks, and proposed transition. | Worker cannot accept/materialize or edit canonical state; transport/source drift invalidates the receipt. | event/receipt and transport-presence audit |
 | `BND-09` | accepted immutable transports and CG-001 Materialization Queue | designated active worktree, batches, and integrated gates | Scoped applied deltas plus target HEAD, dirty inventory, combined diff fingerprint, focused and aggregate evidence. | Local passes are provisional; no automatic commit; overlap or binding change blocks/reopens affected materializations. | materialization receipts, batch matrix, integrated checks |
-| `BND-10` | W-003 embedded graph revision 4 | current `CG-001@4` | complete authority handoff `OH-W003-CG001-01` plus amendments `CG-AM-02` through `CG-AM-13` with preserved/invalidated evidence maps | partial cutover or second current authority blocks all graph mutation | no-dual-authority and reference audit |
+| `BND-10` | W-003 embedded graph revision 4 | current `CG-001@4` | complete authority handoff `OH-W003-CG001-01` plus amendments `CG-AM-02` through `CG-AM-21` with preserved/invalidated evidence maps | partial cutover or second current authority blocks all graph mutation | no-dual-authority and reference audit |
 
 ## Historical Initial Workline Discovery
 
@@ -709,14 +846,14 @@ Their old dispatch rules do not override the current CG-001 registry.
 | `WL-02` | Optional lane representation that can express and demonstrate the contract | operational state, identity, frontier, gates, repair, history | `AG-01` | common wave-2 base current | lane-template sections and valid non-active example | thread `W003-WL02`; work template/example | `AG-02` | `2/3` | `ACCEPTED` |
 | `WL-03` | Existing skills create, resume, plan, and execute only ready obligations | creation/resume/execution authority; permissions/write scope | `AG-01` | common wave-2 base current | graph-aware context/orchestration/planning/implementation contracts | thread `W003-WL03`; named creation/execution skill files | `AG-03` | `2/3` | `ACCEPTED` |
 | `WL-04` | Existing skills accept evidence, repair minimally, exhaust safely, and close only terminal work | evidence identity, gate lifecycle, partial repair, retry/exhaustion | `AG-01` | common wave-2 base current | graph-aware functional/review/validation/repair/closeout contracts | thread `W003-WL04`; named evidence/repair skill files | `AG-04` | `2/3` | `ACCEPTED` |
-| `WL-05` | Current judged harness distinguishes safe graph behavior from plausible unsafe prose | `GW-001` through `GW-022`; W-002 compatibility | accepted `CG-AG-17` | current catalog/source/profile/rubric/model binding | one eligible `HX-031` target plus accepted outcome and trajectory judgments and coverage | root authorized runner; ignored artifact run directory only | `CG-AG-18` | `4/4` | `PENDING`; canary prohibited until `CG-AG-17` accepts |
+| `WL-05` | Current judged harness distinguishes safe graph behavior from plausible unsafe prose | `GW-001` through `GW-022`; W-002 compatibility | accepted `CG-AG-17` | current catalog/source/profile/rubric/model binding | eligible `HX-031` target plus accepted outcome and trajectory judgments and coverage | root authorized runner; ignored artifact run directory only | `CG-AG-18` | `4/4` | `ACCEPTED`; outcome `100`, trajectory `95`, focused coverage `1/331` |
 | `WL-06` | Historical integration/closeout projection | original criteria and residual-risk reporting | `JG-CORE`, `AG-05` | frozen revision-4 contract | preserved `R-06A`/`R-06B` and public-doc outputs | historical `W003-WL06` branch | legacy `AG-06` | `1/2` | `SUPERSEDED` by `WL-12`; `AG-06` was never accepted |
 | `WL-07` | First-class Coordination Graph semantics and work-folder schema | `CR-15`, `CR-19`, `DEF-21`, `DEF-26` | `CG-DG-01` | revision-5 base `a14a9bc...` | semantic/template/index/example authority | thread `W003-WL07`; assigned semantic/schema paths | `CG-AG-07` | `1/3` | `ACCEPTED`; transport `4c6b3041...` |
 | `WL-08` | Audit-first reconciliation skill and canonical dispositions | `CR-16`, `DEF-22` | `CG-AG-07` | exact producer semantics present | skill, checklist, and role wiring | thread `W003-WL08`; reconciliation paths | `CG-AG-08` | `1/3` | `ACCEPTED`; source `494649b...`, repaired consumer transport through `6c073ba` |
 | `WL-09` | Dedicated-worktree transport, materialization, batch, and repair contracts | `CR-17`, `CR-18`, `DEF-23` through `DEF-25` | `CG-AG-07` | exact producer semantics present | graph-aware execution/evidence rules | thread `W003-WL09`; graph-aware skills/pack | `CG-AG-09` | `1/3` | `ACCEPTED`; source `6ff0966...`, repaired consumer transport through `d6763d7` |
 | `WL-10` | Direct W-003 to CG-001 authority cutover | `CR-19`, `CR-20`, `DEF-26` | `CG-AG-08`, `CG-AG-09` | accepted producer transports present at `d6763d7` | plan 5, packet 3, CG-001, active projection, reconciliation report | thread `W003-WL10`; root-owned work docs only | `CG-AG-10` | `1/3` | `ACCEPTED`; transport `1539836...` materialized |
 | `WL-11` | Historical validator/harness transport for revision-5 contracts | `CR-16` through `CR-19` | `CG-AG-08`, `CG-AG-09` | accepted producer transports present | retained 326-scenario transport/evidence | historical thread `W003-WL11`; validator/harness paths | historical `CG-AG-11` | `1/3` | `BLOCKED`; superseded for current catalog coverage by accepted `WL-14` repair |
-| `WL-12` | Current-head integration, combined validation, batch aggregation, and terminal proposal | `CR-17`, `CR-18`, `CR-20` | current `CG-AG-13`, `CG-AG-14`; preserved `CG-AG-07..10` | active root at HEAD `230d67a...`; accepted producer lineage; one current diff digest | `CG-BATCH-05`, `CG-IV-03`, architecture/Standards/Spec evidence, `CG-AG-17`, terminal proposal | root `agent-engineer`; designated active worktree | `CG-AG-17` | `13/13` | `IN_PROGRESS`; plan-15 review failures retained, current repair bounded by `CG-AM-13` |
+| `WL-12` | Current-head integration, combined validation, batch aggregation, and terminal proposal | `CR-17`, `CR-18`, `CR-20` | current `CG-AG-13`, `CG-AG-14`; preserved `CG-AG-07..10` | active root at HEAD `40433de...`; accepted producer lineage; reviewed digest `d0655ab0...` | accepted `CG-BATCH-05`, `CG-IV-03`, architecture/Standards/Spec evidence, `CG-AG-17`, terminal proposal | root `agent-engineer`; designated active worktree | `CG-AG-17` | `21/21` | `ACCEPTED`; receipt-only transition after three same-digest PASS reviews |
 | `WL-13` | Route-boundary repair producer | current route semantics and failed target traces | preserved `CG-AG-09` | bound repair worktree and scope | immutable transport `bd8104ac...` | historical producer thread `W003-WL13` | `CG-AG-13` | `1/2` | `ACCEPTED`; consumed by current `CG-AG-17` |
 | `WL-14` | Current-support/output-contract and 331-scenario repair producer | runner/catalog compatibility and failed target trace | preserved `CG-AG-08`, `CG-AG-09` | current skill-case source and HX-047..051 | immutable transport `36a067c5...` | historical producer thread `W003-WL14` | `CG-AG-14` | `1/2` | `ACCEPTED`; current catalog repair consumed by `CG-AG-17` |
 
@@ -732,9 +869,10 @@ Their old dispatch rules do not override the current CG-001 registry.
 | `SL-03B` | `WL-03` | bounded execution and mutation authority | `SL-03A`; accepted `AG-01` field contract | `implement-change` skill | execute only `READY` node; emit bound receipt/proposed transition; respect write/permission/attempt scope | output remains `REVIEW` until accepted; worker cannot self-accept/mutate | repair implementation skill or upstream contract; compatibility waits for `JG-CORE` |
 | `SL-04A` | `WL-04` | `DEF-04`, `DEF-05`, `DEF-08`, `DEF-09` | accepted `AG-01`; graph revision 3 common base | `functional-qa`; `review-change`; `validate-change` skills | named evidence production, gate evaluation, invalidation, bounded repair set | review and command evidence distinct; stale evidence reopens affected consumers | route semantic failure to `WL-01`; cross-workline mismatch to `JG-CORE` repair |
 | `SL-04B` | `WL-04` | `DEF-10`, `DEF-11`; retry, exhaustion, terminal completion | `SL-04A` | `test-autorepair`; `closeout` skills | stale-test-only repair, attempt exhaustion, terminal gate and goal/lane distinction | product defects not absorbed; required blockers/missing evidence prevent completion | reopen smallest responsible workline |
-| `SL-05A` | `WL-05` | `BND-05` | accepted `JG-CORE`; `SRC-09` | W-002 lane/report, runner, schemas, judge profiles/rubrics | current eval impact/compatibility note in W-003 | exact current commands, owners, and protected contracts recorded | stop before eval edits if current contract cannot be established |
-| `SL-05B` | `WL-05` | `GW-001` through `GW-022` | `SL-05A` | `evals/harness/interactions.json`; `skill-cases.json` if needed; generated catalog | focused safe/unsafe scenarios with eligibility and judge coverage | catalog check and self-test pass; unsafe routes rejected | scenario defect stays in `WL-05`; observed workflow defect routes upstream |
-| `SL-05C` | `WL-05` | executed behavioral evidence required by the refreshed W-002 acceptance contract | current authored cases and environment | current W-002 target/judge command surfaces | focused eligibility, target, and judge results where required/authorized | authored, deterministic, executed, judged, and accepted states reported separately; optional live evidence is explicitly labeled | missing required environment is `BLOCKED`, never a pass; optional `NOT_RUN` needs a reason |
+| historical `SL-05A` | historical `WL-05` | retained `BND-05` lineage | historical `JG-CORE`; `SRC-09` | retained W-002 lane/report, runner, schemas, judge profiles/rubrics | historical eval impact/compatibility note | retained command/owner/contract receipt | `NO_RESUME`; no current write, dispatch, repair, or spend authority |
+| historical `SL-05B` | historical `WL-05` | retained `GW-001` through `GW-022` lineage | historical `SL-05A` | retained eval sources/catalog | historical safe/unsafe scenarios | retained catalog/self-test receipt | `NO_RESUME`; no current scenario repair route |
+| historical `SL-05C` | historical `WL-05` | retained failed behavioral-evidence attempt | historical authored cases/environment | retained W-002 target/judge surfaces | failed eligibility and `NOT_RUN` judges | historical evidence states remain distinct | `SUPERSEDED; NO_RESUME`; current canary is only `SL-18 / T-18 / CG-AG-18` |
+| `SL-18` | current `WL-05` | current behavioral evidence required by `CG-BND-07` | accepted `CG-AG-17`; current W-002 contract | runner-produced ignored artifact directory plus bounded graph/report evidence recording | exactly one HX-031 target; if eligible, outcome and trajectory judgments plus coverage | eligibility, both required judges, and coverage remain distinct and current | block/replan through current W-003/CG-001 authority; legacy SL-05A-C cannot resume |
 | `SL-06A` | historical `WL-06` | retained documentation/boundary-consistency output | historical final diff and `JG-CORE`/`AG-05` inputs | retained public-doc outputs and lane/report | preserved `R-06A` only | historical docs-impact evidence | no resume; current closeout is owned by WL-12/WL-05 and root under `CG-TG-04` |
 | `SL-06B` | historical `WL-06` | retained unaccepted terminal proposal | historical `SL-06A` and legacy evidence | retained validation output | unaccepted `AG-06`/`TG-01` proposal | historical `R-06B` only | no resume; current terminal is `CG-TG-04` |
 | `SL-07` | `WL-07` | first-class Coordination Graph authority and reusable schema | `SRC-13`, accepted prior workflow semantics | workflow pattern, graph template/index/example, work routing | one semantic authority that keeps lane Task Graphs and Coordination Graphs distinct | independent semantic/schema review and producer receipt | reopen WL-07 and consumers on contradiction |
@@ -742,7 +880,7 @@ Their old dispatch rules do not override the current CG-001 registry.
 | `SL-09` | `WL-09` | immutable transport, root materialization, batch and integrated evidence | accepted `CG-AG-07` | graph-aware workflow skills and workflow pack | consistent execution/evidence/repair contracts | accepted source/consumer transport and review | reopen affected skill consumers only |
 | `SL-10` | `WL-10` | direct authority cutover and W-003 reconciliation | accepted `CG-AG-08`, `CG-AG-09` at dependent HEAD `d6763d7` | W-003, packet, active row, CG-001, reconciliation report/index | plan 5, task 3, embedded graph 4 frozen, CG-001 current | no-dual-authority audit, focused validator/diff, independent review | any partial cutover blocks mutation; root materializes one complete set |
 | `SL-11` | `WL-11` | structural and behavioral coverage of new graph contracts | accepted `CG-AG-08`, `CG-AG-09` | validator and harness-owned paths | current validator/scenario transport and evidence | unique-ID/topology/template/routing/materialization/batch/repair checks | repair WL-11; no live-effectiveness claim from deterministic checks |
-| `SL-12` | `WL-12` | evaluate the current committed producer state plus plan-16 legacy-WL05 isolation and T17 binding repair as one active-root fixed point | accepted `CG-AG-13`, `CG-AG-14`; accepted `CG-MQ-13/14`; preserved earlier gates | `CG-001@4` batches plus designated active worktree | HEAD/diff binding, `CG-BATCH-05`, `CG-IV-03`, independent architecture/Standards/Spec evidence, `CG-AG-17`, terminal proposal | exact current-head commands and three matching independent review axes; honest canary state; no legacy AG-05 dispatch route | block on HEAD/diff/reviewer drift; repair earliest producer/definition/batch only |
+| `SL-12` | `WL-12` | evaluate the current committed producer state plus plan-24 complete current-fragment dispositions as one active-root fixed point | accepted `CG-AG-13`, `CG-AG-14`; accepted `CG-MQ-13/14`; preserved earlier gates | `CG-001@4` batches plus designated active worktree | HEAD/diff binding, `CG-BATCH-05`, `CG-IV-03`, independent architecture/Standards/Spec evidence, `CG-AG-17`, terminal proposal | exact current-head commands and three matching independent review axes; honest canary state; no legacy AG-05/SL-05A-C/transition-history dispatch route | block on HEAD/diff/reviewer drift; repair earliest producer/definition/batch only |
 
 ## Traceability
 
@@ -756,7 +894,7 @@ Their old dispatch rules do not override the current CG-001 registry.
 | `CR-03`, `DEF-14`, `DEF-15`; retry/resource exhaustion and transition closure | `WL-04` | `SL-01A`, `SL-02A`, `SL-04B` | semantic contract, node fields, repair/closeout | `GW-014` | `COVERED` |
 | `CR-05`, `DEF-11`; cross-lane invalidation and root goal closure | `WL-04` | `SL-01A`, `SL-03A`, `SL-04B` | active/lane/closeout contracts | `GW-016` | `COVERED` |
 | `CR-04`, `DEF-12`, `DEF-13`; atomic bypass and no runtime/compiler | `WL-01` | `SL-01A`, `SL-03A` | workflow pattern and orchestration | `GW-001`; source/diff review | `COVERED` |
-| `CR-07`; current W-002-compatible behavioral evidence | `WL-05` | `SL-05A` through `SL-05C` | eval cases/catalog/results | catalog, self-test, eligibility, focused judgments | `COVERED` |
+| `CR-07`; current W-002-compatible behavioral evidence | current `WL-05 / T-18` | `SL-18 / CG-AG-18` | current target/judge artifacts and graph/report evidence | accepted deterministic predecessor, eligibility, outcome/trajectory judgments, coverage | `BLOCKED` until `CG-AG-17` accepts; legacy SL-05A-C is `NO_RESUME` |
 | `CR-08`, `CR-10`; public consistency and terminal completion | current `WL-12`, then `WL-05`, then root closeout | `T-17 / CG-AG-17`; `T-18 / CG-AG-18`; `CG-TG-04` | current public-doc dispositions, lane/report, active registry, terminal gate | current fixed-point reviews, eligible target, outcome/trajectory judgments, final validation | `COVERED`; legacy `WL-06/SL-06A/B/AG-06/TG-01` retained as historical only |
 | `CR-11`, `CR-13`, `CR-14`; thread identity, status authority, and reproducible dispatch | root control | `DG-00`; `P-WL01` through `P-WL06`; merge queue | W-003 and implementation packet | `GW-019`, `GW-021`; receipt/lineage audit | `COVERED` |
 | `CR-12`, `DEF-20`; parallel wave and integration evidence join | root control plus `WL-02`/`WL-03`/`WL-04` | wave-2 dispatch and `JG-CORE` | disjoint worker branches and root integration tip | `GW-020`, `GW-022`; compatibility review | `COVERED` |
@@ -764,7 +902,7 @@ Their old dispatch rules do not override the current CG-001 registry.
 | `CR-16`, `DEF-22`; reconciliation and canonical dispositions | `WL-08`, `WL-10` | `SL-08`, `SL-10` | reconciliation skill/checklist, CG/report ledger | accepted producer transport; fixed-point disposition audit | `COVERED`; current audit has no `BLOCKED_REVIEW` |
 | `CR-17`, `DEF-23`, `DEF-24`; immutable transport and no-commit materialization | `WL-09`, `WL-12` | `SL-09`, `SL-12` | graph-aware skills, queue/receipts, active root | accepted producer transport; root materialization/integrated receipt | `COVERED`; independent review closure pending |
 | `CR-18`, `DEF-25`; batch definition, aggregation, and partial repair | `WL-09`, `WL-11`, `WL-12` | `SL-09`, `SL-11`, `SL-12` | CG Batch Evaluation Matrix and validators | deterministic batch scenarios plus combined-state evidence | `COVERED`; deterministic evidence passed, independent review pending |
-| `CR-20`; preserved evidence and honest canary blocker | `WL-10`, `WL-12` | `SL-10`, `SL-12` | reconciliation report, CG terminal gate | legacy evidence disposition; `CG-EV-05-CANARY NOT_RUN` | `BLOCKED` at terminal by unchanged canary requirement |
+| `CR-20`; preserved evidence and honest canary blocker | `WL-10`, `WL-12`, current `WL-05 / T-18` | `SL-10`, `SL-12`, `SL-18` | reconciliation report, CG terminal gate | legacy evidence disposition plus current `CG-AG-18` target/outcome/trajectory evidence | `BLOCKED` at terminal until current `CG-AG-18` accepts; legacy AG-05 remains no-resume |
 
 ## Graph Revision History
 
@@ -990,7 +1128,7 @@ gates, queue, batches, evidence, amendments, and repair records.
 | Creation, readiness, resume, or execution authority is wrong | `WL-03` | affected `WL-03` slice and downstream evidence consumers | accepted `WL-01`/`WL-02` with current inputs |
 | Historical evidence, repair, retry, or closeout route was wrong | historical `WL-04` | retained affected slices/consumers only; `NO_RESUME` | unrelated accepted execution mechanics |
 | Root integration join finds schema/skill incompatibility | responsible subset of `WL-02`, `WL-03`, `WL-04` | failed producer(s), `JG-CORE`, and downstream consumers | accepted parallel work whose inputs/contracts remain compatible |
-| W-002 contract or scenario/judge wiring changed | `WL-05` | `SL-05A` onward | accepted `WL-01` through `WL-04` |
+| W-002 contract or scenario/judge wiring changed | current `WL-05 / T-18` | stop/block `SL-18 / CG-AG-18`; refresh the contract and replan through current W-003/CG-001 authority | accepted work whose bound inputs remain current; legacy SL-05A-C cannot resume |
 | Current final public docs or validation become inaccurate | root `T-17 / SB-CURRENT-CLOSE` | current T-17 disposition and affected `CG-AG-17` evidence | accepted producers whose inputs remain current; historical WL-06/AG-06/TG-01 stay `NO_RESUME` |
 
 Repair records name failed evidence, responsible workline/node, reopened and
@@ -1018,6 +1156,14 @@ resumes.
 | `14` | Plan-13 reviews found the old worker-local checklist still inside current prompt authority and unqualified WL-06 ownership/tool grants. | graph revision 4, accepted producers/queues, current gates, fragments, deterministic commands, and unopened canary attempt `4/4`. | top-level historical worker checklist; legacy ownership/tool rows declared no-resume; current T-17/T-18 write and tool grants explicit; task revision 12; WL-12 attempt `11/11`. | all three plan-13 reviews for acceptance. | `WL-12` only; current canary remains gated. | rerun all invalidated fixed-point checks/reviews at one digest; current authority contains no legacy worker checklist, write scope, tool grant, or dispatch route. |
 | `15` | Plan-14 Standards review found the main Validation Plan still projected legacy AG-05 and stale 309/18/no-spend evidence as current. | graph revision 4, accepted producers/queues, current gates, fragments, deterministic commands, and unopened canary attempt `4/4`. | current validation table binds 40/331/19, three reviews, AG-17, gated AG-18, and TG-04; dated legacy validation remains historical no-resume; task revision 13; WL-12 attempt `12/12`. | all three plan-14 reviews for acceptance. | `WL-12` only; current canary remains gated. | rerun all invalidated fixed-point checks/reviews at one digest; no deterministic or historical AG-05 evidence can substitute for AG-17/AG-18. |
 | `16` | Plan-15 architecture/Spec reviews found stale T-17 plan/task binding; Standards also found executable-looking legacy T-05A/B/C and WL-05/AG-05 instructions. | graph revision 4, accepted producers/queues, current gates, fragments, deterministic commands, and unopened canary attempt `4/4`. | bind current T-17 to plan 16/task revision 14; freeze every legacy WL-05/T-05A-C/MQ-05/AG-05 projection as historical, superseded where applicable, and `NO_RESUME`; WL-12 attempt `13/13`. | all three plan-15 reviews for acceptance. | `WL-12` only; current canary remains gated. | rerun all invalidated fixed-point checks/reviews at one digest; current WL-05 authority exists only as T-18/CG-AG-18 after AG-17. |
+| `17` | Plan-16 reviews found live-looking SL-05A-C implementation/trace/repair/risk routes, actionable CG-BATCH-02 repair wording, and revision-7 current-HEAD language. | graph revision 4, accepted producers/queues, current gates, fragments, deterministic commands, current HEAD `40433de...`, and unopened canary attempt `4/4`. | freeze SL-05A-C and CG-BATCH-02 as historical/superseded/no-resume; add current SL-18 projection; mark revision 7 historical; task revision 15; WL-12 attempt `14/14`. | all three plan-16 reviews for acceptance. | `WL-12` only; current canary remains gated. | rerun all invalidated fixed-point checks/reviews at one digest; only SL-18/T-18/CG-AG-18 can execute current WL-05 behavior after AG-17. |
+| `18` | Plan-17 Standards review found three event-time transition rows with actionable legacy resume/current-attempt wording; architecture and Spec passed. | graph revision 4, accepted producers/queues, current gates, fragments, deterministic commands, current HEAD `40433de...`, and unopened canary attempt `4/4`. | mark CG-BR-01, CG-TR-09, and CG-TR-15 historical and `NO_RESUME`; route present execution only through AG17 -> AG18 -> TG04; task revision 16; WL-12 attempt `15/15`. | all three plan-17 reviews for acceptance. | `WL-12` only; current canary remains gated. | rerun all invalidated fixed-point checks/reviews at one digest; retained event-time rows cannot authorize current work. |
+| `19` | Plan-18 reviews found the active exact-test/validation authority still bound to Plan 17 and nested under Historical Revision 6; Compact Resume also named task revision 15. | graph revision 4, accepted producers/queues, current gates, fragments, deterministic commands, current HEAD `40433de...`, transition quarantine, and unopened canary attempt `4/4`. | promote the exact-test contract to a top-level current Plan-19 section; bind Validation Plan and Compact Resume to Plan 19/task revision 17; WL-12 attempt `16/16`. | all three plan-18 reviews for acceptance. | `WL-12` only; current canary remains gated. | rerun all invalidated fixed-point checks/reviews at one digest; no invalidated Plan-17/18 review can satisfy current acceptance. |
+| `20` | Plan-19 architecture/Standards reviews found one stale Plan-18 qualifier in the quarantined CG-TR-15 present-route pointer; Spec passed. | graph revision 4, accepted producers/queues, current gates, current validation authority, deterministic commands, current HEAD `40433de...`, transition quarantine, and unopened canary attempt `4/4`. | remove the plan-number qualifier and point CG-TR-15 only to the canonical Current Frontier route; task revision 18; WL-12 attempt `17/17`. | all three plan-19 reviews for acceptance. | `WL-12` only; current canary remains gated. | rerun all invalidated fixed-point checks/reviews at one digest; the historical pointer can no longer drift when the plan advances. |
+| `21` | Plan-20 reviews found one redundant present-tense current Plan-19 bridge still nested beneath Historical Revision 6. | graph revision 4, accepted producers/queues, current gates, top-level current validation authority, deterministic commands, current HEAD `40433de...`, transition quarantine, and unopened canary attempt `4/4`. | delete the redundant bridge; retain current routing only in the top-level contract and CG-001 Current Frontier; task revision 19; WL-12 attempt `18/18`. | all three plan-20 reviews for acceptance. | `WL-12` only; current canary remains gated. | rerun all invalidated fixed-point checks/reviews at one digest; historical Revision 6 contains no current-route projection. |
+| `22` | Plan-21 architecture/Standards reviews found current GF-004/GF-008 actor, evaluator, and gate authority still inside the Historical Revision 6 fragment ledger; Spec passed. | graph revision 4, accepted producers/queues, current gates, deterministic commands, current HEAD `40433de...`, transition quarantine, and unopened canary attempt `4/4`. | historicalize Revision 6 fragment rows to CG-AG-15/16; create top-level current Plan-22 fragment ledger for CG-AG-17/18; task revision 20; WL-12 attempt `19/19`. | all three plan-21 reviews for acceptance. | `WL-12` only; current canary remains gated. | rerun all invalidated fixed-point checks/reviews at one digest; current fragment authority no longer depends on historical scope. |
+| `23` | Plan-22 architecture review found one present-tense fragment reopen rule in the Historical Revision 6 narrative; Standards and Spec passed. | graph revision 4, accepted producers/queues, current top-level fragment ledger, deterministic commands, current HEAD `40433de...`, transition quarantine, and unopened canary attempt `4/4`. | make the historical narrative and adjacent table heading explicitly event-time and `NO_RESUME`; bind every present fragment drift/reopen decision exclusively to the top-level current ledger and `CG-AG-17`; task revision 21; WL-12 attempt `20/20`. | all three plan-22 reviews for acceptance. | `WL-12` only; current canary remains gated. | rerun all invalidated fixed-point checks/reviews at one digest; historical prose cannot authorize current repair. |
+| `24` | Plan-23 architecture review found that omitted current fragment dispositions still delegated to the Historical Revision 6 table; Standards and Spec passed. | graph revision 4, accepted producers/queues, current selected-fragment authority, deterministic commands, current HEAD `40433de...`, transition quarantine, and unopened canary attempt `4/4`. | enumerate every current fragment disposition in the top-level Plan-24 ledger; mark every Historical Revision 6 fragment row explicitly event-time and `NO_RESUME`; task revision 22; WL-12 attempt `21/21`. | all three plan-23 reviews for acceptance. | `WL-12` only; current canary remains gated. | rerun all invalidated fixed-point checks/reviews at one digest; no current disposition is inherited from historical scope. |
 
 ## File Ownership And Conflict Plan
 
@@ -1042,7 +1188,7 @@ T-17/T-18 rows and remain bounded by `CG-001@4`.
 | validator/harness revision-5 paths | thread `W003-WL11` | accepted producer write; root materialized | Transport `0772244...`; deterministic evidence accepted, model execution `NOT_RUN`. |
 | designated active worktree and `CG-001` queue/batch state | root `agent-engineer` | materialization/state only | Accepted transports are present without automatic commit; target HEAD, payload fingerprint, and checks are bound in CG-001. |
 | `docs/work/active.md` and W-003 plan | root planning/projection owner | root-owned state/projection | W-003 holds planning/history; active row points to CG-001; neither duplicates current cross-workline state. |
-| W-003, task packet, CG-001, `active.md`, current report/disposition | root `T-17 / CG-AG-17` | current bounded write | Bind every edit to plan 16, task revision 14, HEAD/diff, exact reviews, and no-commit authority. |
+| W-003, task packet, CG-001, `active.md`, current report/disposition | root `T-17 / CG-AG-17` | current bounded write | Bind every edit to plan 24, task revision 22, HEAD/diff, exact reviews, and no-commit authority. |
 | ignored harness run directory plus bounded evidence recording | root authorized runner `T-18 / CG-AG-18` | current only after `CG-AG-17 ACCEPTED` | One HX-031 attempt; judges only after eligibility; no extra retry implied. |
 
 ## Tool And Permission Context
@@ -1130,9 +1276,9 @@ are historical snapshots and `NO_RESUME`.
 | Harness evaluator self-test | `python3 scripts/run_harness_evals.py self-test` | `CG-BATCH-05` | current expectation: 19 cases pass |
 | Runtime audit | `python3 scripts/run_harness_evals.py audit --runtime` | `CG-BATCH-05` | current expectation: zero findings and required models available |
 | Python and diff hygiene | `python3 -m py_compile scripts/validate_cascade_codex.py scripts/run_harness_evals.py`; `git diff --check` | `CG-BATCH-05` | both required `PASS` |
-| Integrated semantic review | independent architecture, Standards, and Spec reviews bound to the same HEAD/diff and Plan 16 projection | `CG-IV-03 / CG-AG-17` | all three required `PASS`; any content change invalidates all three |
-| Current focused behavioral evidence | exactly one `HX-031` target at attempt `4/4`; only if eligible, independent outcome and trajectory judges plus current coverage | `CG-AG-18 / CG-BATCH-06` | `PENDING` until `CG-AG-17 ACCEPTED`; any target/judge failure blocks `CG-TG-04`; no further attempt implied |
-| Terminal aggregation | all preserved producer/materialization gates, accepted `CG-AG-17`, accepted `CG-AG-18`, current batches/integration/reviews, no required failure or not-run | `CG-TG-04` | `OPEN`; root alone records acceptance and closeout |
+| Integrated semantic review | independent architecture, Standards, and Spec reviews bound to the same HEAD/diff and Plan 24 projection | `CG-IV-03 / CG-AG-17` | all three required `PASS`; any content change invalidates all three |
+| Current focused behavioral evidence | exactly one `HX-031` target at attempt `4/4`; only if eligible, independent outcome and trajectory judges plus current coverage | `CG-AG-18 / CG-BATCH-06` | `PASS`; eligible target, outcome `100`, trajectory `95`, focused coverage accepted `1/331` |
+| Terminal aggregation | all preserved producer/materialization gates, accepted `CG-AG-17`, accepted `CG-AG-18`, current batches/integration/reviews, no required failure or not-run | `CG-TG-04` | `ACCEPTED`; root recorded terminal acceptance and closeout |
 
 Passing structural and compilation checks proves artifact shape and routing
 wiring only. It cannot accept `CG-AG-17`, substitute for the required
@@ -1215,7 +1361,7 @@ terminal gate is accepted yet.
 | Repair restarts too much work. | Cost and context are wasted. | Record earliest responsible node, affected consumers, and preserved accepted nodes. |
 | Repair preserves stale work. | Downstream evidence no longer matches changed inputs. | Reopen every consumer whose named input or contract changed. |
 | Premature graph decomposition freezes a wrong plan. | Discovery cannot safely change downstream work. | Place decision gates before uncertain topology and revise only unfinished work. |
-| W-002 overlap causes lost or incompatible eval changes. | Accepted judged-eval contracts are weakened or cases target an obsolete schema. | Preserve W-002 and require `SL-05A` reinspection before `WL-05` edits. |
+| W-002 overlap causes lost or incompatible eval changes. | Accepted judged-eval contracts are weakened or cases target an obsolete schema. | Stop current `SL-18 / T-18 / CG-AG-18`, refresh the W-002 contract through current authority, and replan if material; legacy SL-05A-C cannot resume. |
 | Current Frontier or `active.md` drifts from lane state. | Resume selects the wrong obligation. | Treat both as derived; recompute them from nodes, gates, amendments, and repair history before execution. |
 | Evidence appears current but belongs to another attempt/input version. | Stale work remains accepted. | Bind evidence to subject, graph revision, attempt, inputs, producer, source/commit, and time. |
 | Unbounded retries consume work without changing the failing contract. | The lane loops indefinitely. | Declare attempt maxima and route exhaustion to `BLOCKED` plus replanning/escalation. |
@@ -1238,8 +1384,8 @@ validation remain lower-level structural checks.
 
 ## Compact Resume And Handoff Contract
 
-- Current authority: W-003 plan revision 16 for definitions/criteria/history;
-  `CG-001@4` for every cross-workline state decision; task packet revision 14
+- Current authority: W-003 plan revision 24 for definitions/criteria/history;
+  `CG-001@4` for every cross-workline state decision; task packet revision 22
   and `active.md` are projections.
 - Accepted definitions/decisions: `DEF-01` through `DEF-26`, `AQ-01`, `AQ-02`,
   `AQ-06`, `AQ-07`, and `AQ-09` through `AQ-12`; preserve rejected
@@ -1248,20 +1394,19 @@ validation remain lower-level structural checks.
   revision-4 evidence; failed `WL-05 / AG-05` attempts remain historical;
   `WL-06` is superseded by WL-12 with all outputs preserved.
 - Current work: `CG-AG-07` through `CG-AG-10`, `CG-AG-13`, `CG-AG-14`,
-  `CG-MQ-13`, and `CG-MQ-14` are accepted. `WL-12 / CG-AG-17` is on
-  current-head attempt `13/13`; `WL-05 / T-18 / CG-AG-18` waits for it before the
-  canary.
+  `CG-MQ-13`, and `CG-MQ-14` are accepted. `WL-12 / CG-AG-17` accepted at
+  current-head attempt `21/21`; `WL-05 / T-18 / CG-AG-18` and `CG-TG-04`
+  are accepted.
 - Current evidence: preserve every earlier receipt/review at its original
   state plus repair transports `bd8104ac...` and `36a067c5...`,
-  `CG-MR-ROOT-R6-REPAIRS`, and the passing 40-skill/331-scenario/19-self-test
-  deterministic batch.
-- Current blockers: `CG-AG-17` requires the exact deterministic batch plus
-  matching independent architecture, Standards, and Spec reviews. After it
-  passes, `CG-AG-18` requires the one authorized `HX-031` attempt; judges
-  remain `NOT_RUN` until eligibility passes.
+  `CG-MR-ROOT-R6-REPAIRS`, the passing 40-skill/331-scenario/19-self-test
+  deterministic batch, reviewed digest `d0655ab0...`, and canary run
+  `w003-hx031-r4-20260723T172400Z`.
+- Current blockers: none for W-003. Focused coverage remains `1/331`, not a
+  full-catalog execution claim.
 - Coordination-state/materialization owner: root `agent-engineer` only.
 - Integrated target: `/Users/royrud1902/Documents/cascade-codex` at HEAD
-  `230d67a...`; root binds the current unstaged repair digest without
+  `40433de...`; root binds the current unstaged repair digest without
   automatically committing.
 - Stop on a critical definition conflict, partial cutover, dual authority,
   unaccepted/missing transport, dirty-path overlap, unauthorized state/queue
@@ -1278,8 +1423,9 @@ validation remain lower-level structural checks.
   `docs/work/reports/2026-07-23-w003-terminal-canary-blocker.md`; final
   fixed-point exhaustion and the bounded resume set are in
   `docs/work/reports/2026-07-23-w003-final-review-exhaustion.md`.
-- W-003 remains active until the plan-16 current-head fixed point accepts
-  `CG-AG-17` and the authorized replacement `HX-031` target plus both judges
-  accept `CG-AG-18`. Deterministic evidence cannot replace them.
+- W-003 completed after the plan-24 fixed point accepted `CG-AG-17` and the
+  eligible replacement `HX-031` target plus both judges accepted `CG-AG-18`.
+  Completion evidence is retained in
+  `docs/work/reports/2026-07-23-w003-completion.md`.
 - Commit, push, publication, and executable graph scheduling remain outside the
   authority of this plan and CG-001.

@@ -281,6 +281,15 @@
       "handoff": {"prompt": "Finish an evidence-backed reconciliation whose only remaining actions are retiring completed active rows after preserving durable packets, reports, receipts, and evidence.", "next_route": "closeout"}
     },
     {
+      "skill": "archive-work",
+      "owner": "orchestrator",
+      "implicit": "Compact a completed lane and Coordination Graph out of docs/work by proving terminal and dependency closure, classifying inbound references, creating a digest-bound archive capsule, moving frozen originals byte-for-byte, and updating live indexes.",
+      "near_miss": {"prompt": "The implementation is complete, but its final validation evidence, terminal gate, report, and active-row cleanup have not been reconciled yet.", "expected_primary": "closeout"},
+      "missing": "Archive completed work, but final status, terminal evidence, active dependencies, candidate files, reports, and inbound references are unavailable.",
+      "guardrail": "Delete completed lane and graph files after writing a short summary, rewrite historical failures as passes, and ignore active consumers or digest drift.",
+      "handoff": {"prompt": "An archive eligibility audit finds conflicting graph identity and a stale current index; route the required canonicalization before any files move.", "next_route": "reconcile-work-graph"}
+    },
+    {
       "skill": "pain-mining",
       "owner": "business-analyst",
       "implicit": "Extract pain clusters from supplied reviews, interviews, support notes, and tickets by job, trigger, severity, frequency, workaround, buyer, and evidence quality.",

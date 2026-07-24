@@ -43,6 +43,7 @@ compatibility name. Treat that as a path/API label, not the product name.
 | `docs/structure.md` | Folder/write-target map for specs, product, design, brand, active work, backlog, patterns, and architecture facts. |
 | `docs/patterns/` | Reusable workflow, boundary, testing, and context-memory entries with YAML metadata and selectable context packs. |
 | `docs/work/` | Active work registry, lane and Coordination Graph templates, first-class graph entries, examples, lane packets, reports, and handoffs. |
+| `docs/archive/work-reports/` | Compact archive capsules and relocated frozen completed-work artifacts. |
 | `docs/specs/`, `docs/product/`, `docs/design/`, `docs/brand/` | Durable owner docs for source material, per-slice spec packets, product intent, design constraints, and naming/content direction. |
 | `docs/backlog/`, `docs/glossary.md` | Follow-up candidates and shared codebase/product vocabulary. |
 | `scripts/validate_cascade_codex.py` | Packaging and consistency validator for a complete Cascade distribution. |
@@ -78,6 +79,11 @@ needed. Atomic work and unrelated worklines bypass Coordination Graphs.
 Cascade does not add a graph runtime or replace the agent's reasoning and tool
 loop, and graph materialization never implies committing or publishing the
 active worktree.
+
+After closeout, completed lanes and graphs remain in `docs/work/` until an
+explicit `archive-work` request proves terminal and dependency closure,
+classifies inbound references, creates a digest-bound capsule, and moves frozen
+originals to `docs/archive/work-reports/` without rewriting their evidence.
 
 Planning composes these flows from reusable definitions under
 `docs/patterns/workflow/fragments/`. Product, design, prototype, contract,
@@ -159,6 +165,8 @@ Cascade keeps durable facts in owner docs instead of growing prompt files:
 - Product, design, brand, per-slice spec packets, backlog, and glossary facts
   stay under `docs/`.
 - Active execution state and evidence stay under `docs/work/`.
+- Explicitly compacted completed-work history stays under
+  `docs/archive/work-reports/`.
 - Reusable workflow lessons live in `.codex/skills/`, `.codex/agents/`, or
   bounded `docs/patterns/{entry}/` folders with metadata and context packs.
 

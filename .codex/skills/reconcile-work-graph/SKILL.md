@@ -43,6 +43,7 @@ records, and live branch/worktree state take precedence over stale projections.
 | Change outcomes, criterion ownership, workline boundaries, topology, gates, or owner contracts | `plan-change` |
 | Dispatch ready work, coordinate worktrees, or run materialization and batch gates | `orchestrate-work` |
 | Remove a completed row from `docs/work/active.md` after evidence retention | `closeout` |
+| Compact and move an already closed lane/graph/report set out of `docs/work/` | `archive-work` |
 | Repair stale automated tests while product behavior is correct | `test-autorepair` |
 | Remove duplicate code or runtime pathways | `architecture-review -> plan-change -> implement-change` |
 
@@ -133,6 +134,9 @@ authoritative transitions and graph revisions.
 - Route actual `RETIRE_ACTIVE_ROW` actions through `closeout`. That route must
   prove completion, resolve dependencies, preserve durable evidence, and
   remove the row instead of inventing a permanent `CLOSED` status.
+- Route physical compaction of an already closed artifact set through
+  `archive-work`. Reconciliation must resolve duplicate, stale, superseded, or
+  conflicting identity before archival eligibility can pass.
 - Preserve unrelated accepted work and current evidence. Invalidate only the
   consumers whose named inputs, authority, bindings, or versions changed.
 - Never turn an untrusted worker receipt, stale projection, or completion

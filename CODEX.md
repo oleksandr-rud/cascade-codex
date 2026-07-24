@@ -80,6 +80,10 @@ Use this cascade for non-atomic work:
 - `closeout`: persist validation evidence, work memory, reusable lessons,
   thin product/spec/architecture doc diffs when the final diff changed durable
   facts, and final handoff.
+- `archive-work`: on explicit archive intent after closeout, prove that a
+  completed lane/graph/report set has no active dependency, create a compact
+  digest-bound capsule, and move frozen originals out of `docs/work/` without
+  rewriting their evidence.
 
 `issue-intake` is an explicit exception path for issue bodies or tracker
 tickets. Human review is an explicit open-question or exception path, not a
@@ -211,10 +215,18 @@ Create a lane packet only when a row is not enough:
 - `docs/work/lanes/*.md`
 - `docs/work/graphs/CG-XXX-*.md`
 - `docs/work/reports/`
+- `docs/archive/work-reports/` for compact capsules and relocated frozen
+  history only when completed work is explicitly in scope
 
 Completed or unrelated work lanes are historical context. Example lanes are
 copyable guidance only and are not active work unless copied into
 `docs/work/lanes/` and registered in `docs/work/active.md`.
+
+Completed artifacts stay in `docs/work/` through closeout. Use `archive-work`
+only on explicit compaction intent: reconcile stale identities first, require
+terminal/dependency/reference readiness, write one archive capsule, and move
+frozen originals byte-for-byte to `docs/archive/work-reports/`. Archived work
+does not become active by being read or referenced.
 
 For a complex lane with typed dependencies, use its lane-local Task Graph. When
 two or more canonical worklines also have a cross-workline dependency,

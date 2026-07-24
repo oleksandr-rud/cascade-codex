@@ -3,14 +3,15 @@ entry_id: workflow
 title: Workflow Core Pattern Pack
 kind: pattern-context-pack
 owner: Cascade maintainers
-summary: "Selectable workflow rules for routing, composable graph fragments, lanes, lane-local Task Graphs, cross-workline Coordination Graphs, worktree materialization, adaptive worklines, planning knowledge, coverage, doc impact, research coverage, closeout, and memory."
-description: "Use this pack when a prompt or skill needs workflow, graph-fragment composition, graph-shaped work, planning-preservation, workline, reconciliation, or materialization rules without loading every pattern entry."
+summary: "Selectable workflow rules for routing, composable graph fragments, lanes, lane-local Task Graphs, cross-workline Coordination Graphs, worktree materialization, adaptive worklines, planning knowledge, coverage, doc impact, research coverage, closeout, archive compaction, and memory."
+description: "Use this pack when a prompt or skill needs workflow, graph-fragment composition, graph-shaped work, planning-preservation, workline, reconciliation, materialization, closeout, or completed-work archive rules without loading every pattern entry."
 routing:
   use_when:
     - "A task needs lane/workline routing, dependency handling, planning preservation, work-to-source coverage, or closeout memory."
     - "Planning must select and compose product, design, implementation, integration, test, or assurance fragments into the smallest request-specific flow."
     - "A complex lane needs typed dependency readiness, evidence joins, bounded repair, revision history, or cross-lane invalidation rules."
     - "Two or more connected worklines need a separate Coordination Graph, dedicated-worktree dispatch, batch evaluation, materialization, or integrated acceptance."
+    - "Completed lanes, graphs, or reports need explicit compaction into a digest-bound archive without losing frozen evidence."
     - "A skill references the Doc Routing Decision Matrix or trajectory coverage."
   do_not_use_when:
     - "The task only needs architecture boundary rules, functional testing rules, or source-context retrieval rules."
@@ -31,8 +32,10 @@ routing:
       use_when: "Durable facts may require product, design, brand, spec, backlog, glossary, or pattern updates."
     - route: research
       use_when: "Research or source discovery may become durable rules or specs."
+    - route: archive-work
+      use_when: "Completed lane, graph, or report artifacts should be compacted and moved out of the live work tree."
   write_when:
-    - "A repeated workflow, graph fragment, graph-shaped coordination, Coordination Graph, worktree materialization, planning-knowledge, adaptive-workline, routing, closeout, or research-coverage rule changes."
+    - "A repeated workflow, graph fragment, graph-shaped coordination, Coordination Graph, worktree materialization, planning-knowledge, adaptive-workline, routing, closeout, archive-compaction, or research-coverage rule changes."
     - "A validated harness change updates the Doc Routing Decision Matrix, lane model, or memory routing."
   defer_when:
     - "The fact is product-specific and belongs in docs/product, docs/design, docs/brand, docs/specs, or docs/backlog."
@@ -43,6 +46,7 @@ routing:
     - docs-impact-map
     - validate-change
     - closeout
+    - archive-work
   related_roles:
     - orchestrator
     - project-onboarder
@@ -70,12 +74,13 @@ documents:
       - id: active-work
         title: Active Work
         anchor: "## Active Work"
-        summary: "Defines active registry, lane packets, lane examples, and completed-row cleanup rules."
-        routing_description: "Use when opening, updating, splitting, or closing active work lanes."
+        summary: "Defines active registry, lane packets, lane examples, completed-row cleanup, and explicit digest-bound archive compaction."
+        routing_description: "Use when opening, updating, splitting, closing, or explicitly archiving work lanes."
         tags:
           - lanes
           - orchestration
           - memory
+          - archive
       - id: doc-routing-decision-matrix
         title: Doc Routing Decision Matrix
         anchor: "## Doc Routing Decision Matrix"
@@ -294,6 +299,11 @@ documents:
     description: "Final evidence, memory, and thin doc diffs."
     trigger_when:
       - "Work is finishing and needs validation evidence, memory routing, or handoff recorded."
+  - path: .codex/skills/archive-work/SKILL.md
+    kind: skill
+    description: "Explicit completed-work eligibility audit, compact archive capsule, immutable relocation, and reference maintenance."
+    trigger_when:
+      - "Completed lane, workline, Coordination Graph, or report artifacts should be compacted or moved out of docs/work."
   - path: scripts/build_pattern_context_pack.py
     kind: script
     description: "Builds selected text previews from pack metadata."

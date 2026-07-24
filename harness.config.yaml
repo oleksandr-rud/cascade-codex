@@ -79,6 +79,7 @@ paths:
   work_lane_examples: "docs/work/examples"
   work_lanes: "docs/work/lanes"
   work_reports: "docs/work/reports"
+  work_archive: "docs/archive/work-reports"
   patterns: "docs/patterns"
   graph_fragment_schema: "docs/patterns/workflow/fragments/graph-fragment.schema.json"
   graph_fragments: "docs/patterns/workflow/fragments"
@@ -156,6 +157,7 @@ memory:
   lane_packets: "docs/work/lanes"
   lane_examples: "docs/work/examples"
   work_reports: "docs/work/reports"
+  work_archive: "docs/archive/work-reports"
   product_facts:
     - "docs/product"
     - "docs/design"
