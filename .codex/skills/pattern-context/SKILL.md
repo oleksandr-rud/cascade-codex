@@ -20,7 +20,7 @@ brand, spec, backlog, glossary, or pattern fact may affect sibling docs.
 3. Relevant entry folder under `docs/patterns/{entry}/`:
    - `index.md`
    - `*.pack.yaml`
-4. `scripts/build_pattern_context_pack.py` for deterministic text previews.
+4. `scripts/cascade/patterns.ts` for deterministic text previews.
 5. Relevant skill or agent that requested context.
 6. `docs/structure.md`, `harness.config.yaml`, and validator rules when a
    pattern entry, pack, or required path changes.
@@ -63,7 +63,7 @@ are reusable, bounded by a topic, and have metadata plus at least one pack file.
 3. Compile a context preview with:
 
    ```bash
-   python3 scripts/build_pattern_context_pack.py --pack <pack-id-or-path>
+   bun scripts/cascade.ts patterns --pack <pack-id-or-path>
    ```
 
 4. Use `--section`, `--tag`, or `--query` to select only the relevant sections.
@@ -81,7 +81,7 @@ are reusable, bounded by a topic, and have metadata plus at least one pack file.
 - Update `*.pack.yaml` when the entry purpose, owner, pack kind, use/avoid cues,
   skill or role routing, document graph, trigger descriptions, context
   assembly, section selection, tags, or inclusion rules change.
-- Update `scripts/build_pattern_context_pack.py` and the validator when the
+- Update `scripts/cascade/patterns.ts` and the validator when the
   pack schema changes.
 
 ## Onboarding Rules

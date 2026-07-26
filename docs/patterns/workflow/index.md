@@ -19,6 +19,7 @@ implementation, validation, review, delegation, or product-flow steps.
 | Security review of a feature, workflow, architecture, or agent/tool plan | `secure-design` |
 | Market/product validation workflow or experiments | `market-validation` plus focused lane skills |
 | Final evidence, status, or handoff | `validate-change` or `closeout` |
+| Completed lane/graph closeout and automatic compaction, or direct historical cleanup | `closeout -> archive-work` |
 
 ## Active Work
 
@@ -31,6 +32,8 @@ Create a lane packet when the workstream needs its own:
 
 - acceptance criteria;
 - behavior examples;
+- compact source, definition/decision, constraint, and boundary ledgers;
+- connected workline discovery, ownership, and replanning history;
 - dependency/conflict tracking;
 - validation commands;
 - source inputs and freshness;
@@ -38,11 +41,29 @@ Create a lane packet when the workstream needs its own:
 - MCP/tool context policy;
 - blocked/deferred handoff.
 
+For a complex lane with typed dependencies, evidence joins, bounded repair, or
+revision-aware handoff, load the reusable semantics in
+[`graph-shaped-work.md`](graph-shaped-work.md). Atomic work may omit that graph
+state without bypassing normal planning, permission, validation, or closeout.
+
 Completed rows should leave `docs/work/active.md` only after durable evidence
 has been preserved under `docs/work/reports/` and the cleanup scope is
 explicit. Do not create a permanent `CLOSED` active-row status; remove completed
 rows from the active registry and keep the report or lane packet as historical
 evidence.
+
+For every newly completed lane or Coordination Graph, `closeout` preserves the
+report and retires active projections, then automatically invokes
+`archive-work` for the exact closed set. Archival requires accepted terminal
+or supersession authority, no active dependency, consistent indexes, a
+classified inbound-reference inventory, and matching pre/post SHA-256 for every
+moved original. Write one compact capsule under
+`docs/archive/work-reports/`, move frozen originals without editing their
+execution-era contents, and update only live indexes and non-frozen references.
+If readiness fails, retain live files and record `ARCHIVE_DEFERRED`; this does
+not invalidate completion. Atomic work without a lane/graph/report set returns
+`NOT_APPLICABLE`. An archive capsule indexes detailed history; it does not
+replace or relabel it.
 
 ## Parallel Rules
 
@@ -106,6 +127,133 @@ result loose enough to preserve every major and minor detail inspected or
 analyzed by the trajectories, including edge cases, contradictions, rejected
 paths, open questions, and follow-up gaps. Mark uncertain details instead of
 omitting them.
+
+## Planning Knowledge Contract
+
+A plan is a compact index of implementation knowledge, not a replacement for
+its authoritative sources. Planning and replanning must preserve the minimum
+information needed to reconstruct why the work is shaped as it is:
+
+- source identity, authority, version or freshness, and the claims it supports;
+- accepted definitions and decisions, plus assumptions and unresolved
+  questions with explicit status;
+- negative constraints, rejected paths, and non-goals when losing them would
+  enable an unsafe or repeatedly rejected implementation;
+- producer/consumer boundaries, ownership, compatibility, and invalidation
+  rules;
+- for stateful work, stable identity, source of truth, mutation authority,
+  legal transitions, typed dependencies/gates/external conditions, retry and
+  resource bounds, and exhaustion behavior;
+- request-to-workline-to-artifact-to-evidence traceability;
+- current workline dependencies, blockers, changed artifacts, evidence status,
+  and next gate;
+- revision history showing what was preserved, changed, added, invalidated, or
+  superseded.
+
+This section owns what planning must preserve. `Planning Context Preservation`
+in `docs/patterns/context-memory/index.md` owns how that knowledge is compressed,
+rehydrated, and checked for drift.
+
+Compress repeated explanation and long evidence bodies into summaries with
+stable references. Never compress away identity, provenance, status, negative
+constraints, ownership, acceptance meaning, or the difference between
+authored, executed, blocked, and accepted evidence. A compact projection must
+not become a second authority.
+
+Use planning states deliberately:
+
+- `DRAFT`: coverage or definitions remain open;
+- `DEFINITION_READY`: important terms, boundaries, authority, lifecycle, and
+  failure behavior are coherent;
+- `IMPLEMENTATION_READY`: worklines, slices, writes, dependencies, validation,
+  and stop conditions are mapped;
+- `BLOCKED`: a required source, decision, permission, or validation
+  precondition is unavailable;
+- `SUPERSEDED`: a later revision replaced this plan while retaining its
+  identity and disposition.
+
+For material replanning, increment the plan revision and record the delta
+before replacing current projections. Re-evaluate affected worklines, checks,
+and evidence; preserve unrelated accepted knowledge whose sources and
+boundaries remain current.
+
+## Composable Graph Fragments
+
+Use the reusable catalog under
+[`fragments/`](fragments/) when a non-atomic plan may affect product
+definition, design, prototypes, shared contracts, backend, frontend, data,
+integration, E2E, security, accessibility, or visual assurance. Fragment
+evaluation is a planning activity; fragment files are not active worklines,
+Coordination Graphs, implementation plans, or runtime definitions.
+
+Planning must evaluate applicable delivery fragments and assurance overlays
+before finalizing worklines. Record every inspected candidate as `SELECTED`,
+`MERGED`, `NOT_APPLICABLE`, or `BLOCKED` with an evidence-backed reason. Do not
+instantiate nodes, gates, skills, actors, or tests from `NOT_APPLICABLE`
+fragments.
+
+For every selected fragment:
+
+1. bind required input ports to selected producers, authoritative external
+   sources, or an explicit conditional omission;
+2. bind each provided port to one primary owning workline, while allowing
+   named consumers to depend on it;
+3. resolve actor capabilities to existing roles or an explicitly authorized
+   worker route without inventing dynamic agents;
+4. resolve required and conditional skill calls against current role wiring;
+5. resolve abstract test strategies to current commands, fixtures,
+   environments, evidence locations, and evaluator authority from the target
+   repository and `harness.config.yaml`;
+6. merge fragments that share one outcome, owner, write scope, and acceptance
+   seam, and split only where independent ownership, writes, handoff, or
+   evidence makes a separate workline meaningful; and
+7. synthesize the smallest legal graph: no graph for atomic work, a lane-local
+   Task Graph for connected obligations inside one lane, or a first-class
+   Coordination Graph only for genuinely connected worklines.
+
+Assurance overlays attach obligations to delivery fragments. They become
+separate worklines only when their ownership, access, writes, execution, or
+acceptance evidence is independently meaningful. A terminal gate consumes
+only required evidence from selected fragments and overlays; an omitted
+fragment must never create phantom evidence requirements.
+
+Before `IMPLEMENTATION_READY`, reject duplicate primary ownership, dangling
+required ports, unsupported required skills or actor capabilities, dependency
+cycles, contradictory dispositions, unresolved required test commands or
+environments, and a graph whose selected fragments cannot reconstruct every
+request criterion and required evidence route.
+
+## Adaptive Workline Planning
+
+Derive worklines from inspected work; do not begin with a requested, default,
+or aesthetically convenient number. One request may remain one coherent
+workline or produce several connected worklines. The planner chooses the
+smallest set that gives every obligation a clear owner, dependency path,
+write boundary, validation seam, and merge route.
+
+1. Enumerate candidate obligations from request criteria, behavior and failure
+   trajectories, boundaries, source ownership, expected outputs, write scopes,
+   and validation seams.
+2. Select a separate workline when it has an independently meaningful outcome
+   or evidence boundary and can be tracked without hiding a shared decision.
+3. Merge or serialize candidates that share unresolved product/design intent,
+   state-machine or public-contract decisions, conflicting writes, or evidence
+   that cannot be accepted independently.
+4. Give every request criterion one primary workline owner. Other worklines may
+   protect or consume that criterion, but ownership must remain unambiguous.
+5. Record cross-workline inputs, outputs, blockers, validation, and one
+   integration/materialization owner. Several worklines do not imply parallel
+   execution or delegation.
+6. Materialize a workline as a separate active lane only when it needs its own
+   status, owner, dependency, validation, integration, or handoff boundary.
+7. Repeat the boundary pass when new evidence changes scope. Add, merge,
+   serialize, or supersede worklines through a plan revision rather than
+   preserving the original count.
+
+Do not ask the user how many worklines or plans to create unless the number is
+itself an explicit product, organizational, or delivery constraint. Ask only
+when an undiscoverable boundary decision would materially change ownership or
+outcome.
 
 ## Research Coverage
 
@@ -223,9 +371,10 @@ Guardrails:
 | Type | Location | Write When |
 |---|---|---|
 | Active work registry | `docs/work/active.md` | A lane opens, changes status, blocks, or closes |
-| Lane packet | `docs/work/lanes/W-XXX-slug.md` | A row needs criteria, examples, dependencies, or validation detail |
+| Lane packet | `docs/work/lanes/W-XXX-slug.md` | A row needs criteria, definitions, connected worklines, dependencies, replanning history, or validation detail |
 | Lane examples | `docs/work/examples/` | First-time adaptation needs copyable non-active lane examples |
 | Durable report | `docs/work/reports/` | Requested, multi-turn, durable decision, blocked handoff, or complex merge |
+| Completed-work archive | `docs/archive/work-reports/` | Automatic post-closeout compaction, or direct historical cleanup, after terminal/dependency closure, reference audit, and digest equality |
 | Thin product/spec/architecture diff | Existing owner doc in `docs/product/`, `docs/design/`, `docs/brand/`, `docs/specs/`, `docs/patterns/boundaries/index.md`, `harness.config.yaml`, or `docs/glossary.md` | Closeout detects a validated durable fact not already documented |
 | Durable skill rule | `.codex/skills/` | Repeated workflow lesson |
 | Durable role rule | `.codex/agents/` | Delegation or role-boundary lesson |

@@ -12,4 +12,6 @@ Cascade harness vocabulary.
 | Skill contract | `.codex/skills/` | Reusable workflow instruction bundle with triggers, source order, outputs, and validation rules. |
 | Role contract | `.codex/agents/` | Local agent role definition, manifest, and skill wiring. |
 | Work lane | `docs/work/` | Tracked execution packet for non-atomic work, ownership, checks, and handoff evidence. |
-| Cascade validator | `scripts/validate_cascade_codex.py` | Python check for required harness files, wiring, docs structure, and stale references. |
+| Cascade validator | `scripts/cascade/validate.ts` | Bun/TypeScript check for required harness files, wiring, docs structure, and stale references. |
+| Campaign | `evals/campaigns/*.json` | A versioned execution plan over typed tasks; authored status is not execution evidence. |
+| Campaign task | `evals/tasks/*.json` | A reusable command, browser, or agent-response execution unit with explicit evidence expectations. |

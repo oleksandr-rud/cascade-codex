@@ -1,0 +1,27 @@
+{
+  "id": "BROWSER-TASK",
+  "kind": "browser",
+  "command": [
+    "bun",
+    "run",
+    "--cwd",
+    ".codex/harness-tooling",
+    "playwright",
+    "test",
+    "--config",
+    "playwright.config.ts",
+    "browser-task.spec.ts"
+  ],
+  "required": true,
+  "timeout_ms": 120000,
+  "inputs": [
+    ".codex/harness-tooling/package.json",
+    ".codex/harness-tooling/bun.lock",
+    ".codex/harness-tooling/playwright.config.ts",
+    ".codex/harness-tooling/browser-task.spec.ts",
+    "evals/simulations/browser-fixture.html"
+  ],
+  "evidence": [
+    ".artifacts/playwright/browser-task/evidence.json"
+  ]
+}

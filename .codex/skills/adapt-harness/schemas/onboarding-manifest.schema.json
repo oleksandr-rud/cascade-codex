@@ -1,0 +1,200 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://cascade.local/schemas/onboarding-manifest.schema.json",
+  "title": "Cascade onboarding evidence manifest",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "status",
+    "project",
+    "config",
+    "inventory",
+    "phases",
+    "project_parts",
+    "documentation",
+    "preserved_files",
+    "source_snapshot",
+    "validation"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "status": {
+      "enum": [
+        "draft",
+        "current",
+        "blocked",
+        "superseded"
+      ]
+    },
+    "project": {
+      "type": "object",
+      "required": [
+        "name",
+        "root",
+        "source_revision"
+      ]
+    },
+    "config": {
+      "type": "object",
+      "required": [
+        "path",
+        "sha256"
+      ]
+    },
+    "inventory": {
+      "type": "object",
+      "required": [
+        "digest",
+        "source_revision"
+      ]
+    },
+    "phases": {
+      "type": "array",
+      "minItems": 10,
+      "maxItems": 10,
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "status",
+          "evidence",
+          "outputs",
+          "blockers"
+        ],
+        "properties": {
+          "id": {
+            "pattern": "^ON-0[0-9]$"
+          },
+          "status": {
+            "enum": [
+              "PASS",
+              "BLOCKED",
+              "GAP",
+              "SKIPPED"
+            ]
+          },
+          "evidence": {
+            "type": "array"
+          },
+          "outputs": {
+            "type": "array"
+          },
+          "blockers": {
+            "type": "array"
+          }
+        }
+      }
+    },
+    "project_parts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "area",
+          "status",
+          "source_paths"
+        ],
+        "properties": {
+          "status": {
+            "enum": [
+              "current",
+              "skipped",
+              "blocked"
+            ]
+          },
+          "source_paths": {
+            "type": "array"
+          }
+        },
+        "allOf": [
+          {
+            "if": {
+              "properties": {
+                "status": {
+                  "const": "current"
+                }
+              }
+            },
+            "then": {
+              "required": [
+                "path"
+              ]
+            },
+            "else": {
+              "required": [
+                "reason"
+              ]
+            }
+          }
+        ]
+      }
+    },
+    "documentation": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "fact",
+          "source",
+          "owner_target",
+          "action",
+          "evidence"
+        ],
+        "properties": {
+          "action": {
+            "enum": [
+              "UPDATED",
+              "NO_CHANGE",
+              "DEFERRED",
+              "BLOCKED",
+              "GAP",
+              "NO_DOC_NEEDED"
+            ]
+          }
+        }
+      }
+    },
+    "preserved_files": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "path",
+          "sha256"
+        ]
+      }
+    },
+    "source_snapshot": {
+      "type": "object",
+      "required": [
+        "algorithm",
+        "digest",
+        "files"
+      ]
+    },
+    "validation": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "command",
+          "status",
+          "evidence"
+        ],
+        "properties": {
+          "status": {
+            "enum": [
+              "PASS",
+              "FAIL",
+              "BLOCKED",
+              "NOT_RUN",
+              "GAP"
+            ]
+          }
+        }
+      }
+    }
+  }
+}

@@ -3,11 +3,15 @@ entry_id: workflow
 title: Workflow Core Pattern Pack
 kind: pattern-context-pack
 owner: Cascade maintainers
-summary: "Selectable workflow rules for routing, lanes, coverage, doc impact, research coverage, closeout, and memory."
-description: "Use this pack when a prompt or skill needs the workflow rules without loading every pattern entry."
+summary: "Selectable workflow rules for routing, composable graph fragments, lanes, lane-local Task Graphs, cross-workline Coordination Graphs, worktree materialization, adaptive worklines, planning knowledge, coverage, doc impact, research coverage, closeout, archive compaction, and memory."
+description: "Use this pack when a prompt or skill needs workflow, graph-fragment composition, graph-shaped work, planning-preservation, workline, reconciliation, materialization, closeout, or completed-work archive rules without loading every pattern entry."
 routing:
   use_when:
-    - "A task needs lane routing, dependency handling, work-to-source coverage, or closeout memory."
+    - "A task needs lane/workline routing, dependency handling, planning preservation, work-to-source coverage, or closeout memory."
+    - "Planning must select and compose product, design, implementation, integration, test, or assurance fragments into the smallest request-specific flow."
+    - "A complex lane needs typed dependency readiness, evidence joins, bounded repair, revision history, or cross-lane invalidation rules."
+    - "Two or more connected worklines need a separate Coordination Graph, dedicated-worktree dispatch, batch evaluation, materialization, or integrated acceptance."
+    - "A completed lane or graph needs automatic post-closeout compaction into a digest-bound archive without losing frozen evidence."
     - "A skill references the Doc Routing Decision Matrix or trajectory coverage."
   do_not_use_when:
     - "The task only needs architecture boundary rules, functional testing rules, or source-context retrieval rules."
@@ -16,21 +20,33 @@ routing:
       use_when: "Opening, splitting, serializing, merging, or closing work lanes."
     - route: planning
       use_when: "Turning a request, gap, or requirement into behavior examples and validation routes."
+    - route: planning-knowledge
+      use_when: "Planning or replanning must preserve definitions, boundaries, traceability, and an adaptive workline map."
+    - route: graph-fragment-composition
+      use_when: "A non-atomic change needs affected delivery and assurance surfaces selected, merged, omitted, or blocked before workline and graph emission."
+    - route: graph-shaped-work
+      use_when: "A complex lane needs graph applicability, authoritative state, readiness, evidence gates, partial repair, revision, or cross-lane rules."
+    - route: coordination-graph
+      use_when: "Two or more worklines need cross-workline authority, reconciliation, worktree dispatch, materialization, batch evaluation, integrated validation, or terminal aggregation."
     - route: doc-routing
       use_when: "Durable facts may require product, design, brand, spec, backlog, glossary, or pattern updates."
     - route: research
       use_when: "Research or source discovery may become durable rules or specs."
+    - route: archive-work
+      use_when: "Completed lane, graph, or report artifacts should be compacted and moved out of the live work tree."
   write_when:
-    - "A repeated workflow, routing, closeout, or research-coverage rule changes."
+    - "A repeated workflow, graph fragment, graph-shaped coordination, Coordination Graph, worktree materialization, planning-knowledge, adaptive-workline, routing, closeout, archive-compaction, or research-coverage rule changes."
     - "A validated harness change updates the Doc Routing Decision Matrix, lane model, or memory routing."
   defer_when:
     - "The fact is product-specific and belongs in docs/product, docs/design, docs/brand, docs/specs, or docs/backlog."
   primary_skills:
+    - context
     - orchestrate-work
     - plan-change
     - docs-impact-map
     - validate-change
     - closeout
+    - archive-work
   related_roles:
     - orchestrator
     - project-onboarder
@@ -42,9 +58,9 @@ selection_rules:
 documents:
   - path: docs/patterns/workflow/index.md
     kind: pattern-entry
-    description: "Durable workflow rules and matrices."
+    description: "Durable workflow, planning-knowledge, adaptive-workline, and routing rules and matrices."
     trigger_when:
-      - "Workflow routing, active lanes, planning coverage, doc impact, research coverage, closeout, or memory routing is in scope."
+      - "Workflow routing, active lanes, adaptive worklines, planning knowledge, doc impact, research coverage, closeout, or memory routing is in scope."
     sections:
       - id: workflow-prompt-routing
         title: Workflow Prompt Routing
@@ -58,12 +74,13 @@ documents:
       - id: active-work
         title: Active Work
         anchor: "## Active Work"
-        summary: "Defines active registry, lane packets, lane examples, and completed-row cleanup rules."
-        routing_description: "Use when opening, updating, splitting, or closing active work lanes."
+        summary: "Defines active registry, lane packets, lane examples, completed-row cleanup, and automatic post-closeout digest-bound archive compaction."
+        routing_description: "Use when opening, updating, splitting, closing, automatically archiving, or directly cleaning historical work lanes."
         tags:
           - lanes
           - orchestration
           - memory
+          - archive
       - id: doc-routing-decision-matrix
         title: Doc Routing Decision Matrix
         anchor: "## Doc Routing Decision Matrix"
@@ -82,6 +99,37 @@ documents:
           - planning
           - coverage
           - behavior-examples
+      - id: planning-knowledge-contract
+        title: Planning Knowledge Contract
+        anchor: "## Planning Knowledge Contract"
+        summary: "Preserves authoritative sources, definitions, constraints, boundaries, traceability, evidence meaning, and revision deltas in compact plans."
+        routing_description: "Use before non-atomic planning or replanning when implementation knowledge must survive handoff or compaction."
+        tags:
+          - planning
+          - context
+          - traceability
+          - replanning
+      - id: adaptive-workline-planning
+        title: Adaptive Workline Planning
+        anchor: "## Adaptive Workline Planning"
+        summary: "Derives the smallest coherent set of connected worklines from outcomes and boundaries without requiring a target count."
+        routing_description: "Use when one request may need one or several worklines, lanes, or implementation slices."
+        tags:
+          - planning
+          - worklines
+          - lanes
+          - orchestration
+      - id: composable-graph-fragments
+        title: Composable Graph Fragments
+        anchor: "## Composable Graph Fragments"
+        summary: "Selects delivery fragments and assurance overlays by impact, resolves ports, actors, skills, tests, and workline boundaries, then emits the smallest legal task or coordination graph."
+        routing_description: "Use during non-atomic planning before final workline selection, workflow skill calls, test assignment, or graph emission."
+        tags:
+          - planning
+          - graph-fragments
+          - composition
+          - skills
+          - testing
       - id: research-coverage
         title: Research Coverage
         anchor: "## Research Coverage"
@@ -109,16 +157,133 @@ documents:
           - memory
           - closeout
           - routing
+  - path: docs/patterns/workflow/graph-shaped-work.md
+    kind: pattern-entry
+    description: "Durable semantics for lane-local Task Graphs and separate cross-workline Coordination Graphs, including readiness, evidence gates, reconciliation, worktree materialization, batch evaluation, repair, and revision."
+    trigger_when:
+      - "A complex lane has connected obligations, typed dependencies, evidence joins, partial repair, revision-aware handoff, or cross-lane invalidation."
+      - "A graph-aware skill needs one semantic authority without loading task-specific lane state."
+      - "Two or more connected worklines need a first-class Coordination Graph or dedicated-worktree integration contract."
+    sections:
+      - id: graph-shaped-work
+        title: Graph-Shaped Work
+        anchor: "## Graph-Shaped Work"
+        summary: "Applies graph-shaped coordination only where connected obligations need it, preserves atomic bypass, and keeps the mechanism instruction-driven."
+        routing_description: "Use when deciding whether a lane needs graph-shaped state or may follow the atomic-work path."
+        tags:
+          - workflow
+          - graph
+          - routing
+          - atomic-work
+      - id: graph-state-authority
+        title: Graph State Authority
+        anchor: "## Graph State Authority"
+        summary: "Defines stable node and gate identity, legal node transitions, one lane-state writer, authoritative records, and receipt-only worker output."
+        routing_description: "Use when creating, resuming, handing off, or reconciling graph-shaped lane state and transition authority."
+        tags:
+          - graph
+          - state
+          - authority
+          - handoff
+      - id: dependency-readiness
+        title: Dependency Readiness
+        anchor: "## Dependency Readiness"
+        summary: "Separates node, gate, and external dependencies and requires current inputs, bounds, permissions, tools, and cycle-free topology before readiness."
+        routing_description: "Use before dispatching or executing a node, or when reviewing dependency typing, permissions, resource bounds, or cycles."
+        tags:
+          - graph
+          - dependencies
+          - readiness
+          - permissions
+      - id: evidence-gates
+        title: Evidence Gates
+        anchor: "## Evidence Gates"
+        summary: "Binds required and optional evidence to current subjects and evaluator authority so output remains in review until its gate accepts it."
+        routing_description: "Use when producing, reviewing, evaluating, accepting, blocking, failing, or reopening graph evidence and gates."
+        tags:
+          - graph
+          - evidence
+          - gates
+          - review
+      - id: partial-repair
+        title: Partial Repair
+        anchor: "## Partial Repair"
+        summary: "Reopens the earliest responsible node and affected consumers, preserves unrelated accepted work, and bounds retries and exhaustion."
+        routing_description: "Use after failed, blocked, stale, or invalid evidence to calculate a bounded repair set and deterministic resume route."
+        tags:
+          - graph
+          - repair
+          - retry
+          - validation
+      - id: graph-revision-cross-lane
+        title: Graph Revision And Cross-Lane Work
+        anchor: "## Graph Revision And Cross-Lane Work"
+        summary: "Separates plan and graph revision, records amendment impact, propagates producer invalidation across lanes, and keeps terminal aggregation non-cyclic."
+        routing_description: "Use when topology changes, work crosses lane or merge boundaries, parallel outputs join, or terminal acceptance is evaluated."
+        tags:
+          - graph
+          - revision
+          - cross-lane
+          - integration
+      - id: coordination-graph-authority-applicability
+        title: Coordination Graph Authority And Applicability
+        anchor: "## Coordination Graph Authority And Applicability"
+        summary: "Defines a Coordination Graph as a separate docs/work entity for two or more genuinely connected worklines, with one state/materialization owner, derived lane rows, and direct cutover without dual authority."
+        routing_description: "Use when deciding whether connected worklines need a Coordination Graph, assigning its authority, or migrating cross-workline state out of lane packets."
+        tags:
+          - coordination-graph
+          - worklines
+          - authority
+          - cutover
+      - id: coordination-graph-reconciliation-retention
+        title: Coordination Graph Reconciliation And Retention
+        anchor: "## Coordination Graph Reconciliation And Retention"
+        summary: "Audits existing worklines before graph creation, classifies duplicate or stale state, migrates unique references, preserves durable evidence, and separates active-row retirement from deletion."
+        routing_description: "Use before creating or revising a graph from existing lanes, deduplicating worklines, retiring stale projections, or retaining superseded evidence."
+        tags:
+          - coordination-graph
+          - reconciliation
+          - deduplication
+          - retention
+      - id: dedicated-worktrees-batch-materialization
+        title: Dedicated Worktrees, Batch Evaluation, And Materialization
+        anchor: "## Dedicated Worktrees, Batch Evaluation, And Materialization"
+        summary: "Binds dependent worktrees to immutable producer transport, materializes accepted changes into the active worktree without automatic commits, and accepts batches only against the exact combined state."
+        routing_description: "Use when worklines run in dedicated worktrees, results must appear in the current active worktree, or batch and integrated evidence must join before terminal acceptance."
+        tags:
+          - coordination-graph
+          - worktrees
+          - materialization
+          - evaluation
+          - evidence-join
+  - path: docs/patterns/workflow/fragments/_index.md
+    kind: pattern-entry
+    description: "Reusable planning-time graph-fragment catalog and composition contract."
+    trigger_when:
+      - "Planning must select only affected product, design, backend, frontend, data, integration, E2E, or assurance obligations."
+      - "A workflow packet must resolve fragment-specific roles, skills, tests, gates, and repair routes."
+    sections:
+      - id: graph-fragment-composition-contract
+        title: Composition Contract
+        anchor: "## Composition Contract"
+        summary: "Evaluates fragment dispositions, binds ports, resolves capabilities and tests, merges compatible fragments, and emits only the minimal active graph."
+        routing_description: "Use before plan-change or orchestrate-work finalizes worklines and graph topology."
+        tags:
+          - planning
+          - graph-fragments
+          - roles
+          - skills
+          - testing
   - path: .codex/skills/orchestrate-work/SKILL.md
     kind: skill
-    description: "Lane orchestration source order and routing."
+    description: "Adaptive workline discovery, lane materialization, dependency, scheduling, and merge routing."
     trigger_when:
-      - "Work needs to be split, serialized, scheduled, tracked, or merged across lanes."
+      - "A request may need one or several connected worklines, lanes, dependencies, or merge boundaries."
   - path: .codex/skills/plan-change/SKILL.md
     kind: skill
-    description: "Planning examples, risks, and validation plan."
+    description: "Definition-ready planning, compact knowledge preservation, workline coverage, implementation slices, and validation."
     trigger_when:
-      - "A non-atomic implementation, bug fix, refactor, or product-visible change needs a plan."
+      - "A non-atomic implementation, bug fix, refactor, contract change, or material replan needs an implementation-ready plan."
   - path: .codex/skills/docs-impact-map/SKILL.md
     kind: skill
     description: "Cross-folder impact and doc routing."
@@ -134,7 +299,12 @@ documents:
     description: "Final evidence, memory, and thin doc diffs."
     trigger_when:
       - "Work is finishing and needs validation evidence, memory routing, or handoff recorded."
-  - path: scripts/build_pattern_context_pack.py
+  - path: .codex/skills/archive-work/SKILL.md
+    kind: skill
+    description: "Explicit completed-work eligibility audit, compact archive capsule, immutable relocation, and reference maintenance."
+    trigger_when:
+      - "Completed lane, workline, Coordination Graph, or report artifacts should be compacted or moved out of docs/work."
+  - path: scripts/cascade/patterns.ts
     kind: script
     description: "Builds selected text previews from pack metadata."
     trigger_when:

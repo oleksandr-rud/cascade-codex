@@ -88,7 +88,7 @@ documents:
     description: "Stale, flaky, or failing test repair workflow."
     trigger_when:
       - "Tests fail while product behavior is believed correct and expectations may be stale."
-  - path: scripts/build_pattern_context_pack.py
+  - path: scripts/cascade/patterns.ts
     kind: script
     description: "Builds selected text previews from pack metadata."
     trigger_when:

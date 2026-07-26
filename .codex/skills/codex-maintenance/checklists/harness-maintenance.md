@@ -52,8 +52,8 @@ templates.
 
 - [ ] Reference inventory or handoff artifacts were written only when useful.
 - [ ] Durable lessons went to the narrowest owner.
-- [ ] `scripts/validate_cascade_codex.py` covers new required files, skills,
+- [ ] `scripts/cascade/validate.ts` covers new required files, skills,
       wiring, and surface contracts.
-- [ ] `python3 scripts/validate_cascade_codex.py` passed.
+- [ ] `bun scripts/cascade.ts validate` passed.
 - [ ] `git diff --check` passed.
 - [ ] Residual risks and skipped checks are named.

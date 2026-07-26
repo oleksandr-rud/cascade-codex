@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "profiles": [
+    {
+      "id": "outcome-v1",
+      "judge_type": "outcome",
+      "rubric": "evals/harness/rubrics/outcome-v1.json",
+      "model_profile": "planning",
+      "reasoning_effort": "high",
+      "required_for_acceptance": true
+    },
+    {
+      "id": "trajectory-v1",
+      "judge_type": "trajectory",
+      "rubric": "evals/harness/rubrics/trajectory-v1.json",
+      "model_profile": "planning",
+      "reasoning_effort": "high",
+      "required_for_acceptance": true
+    }
+  ]
+}

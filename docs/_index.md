@@ -8,6 +8,8 @@ and work references.
 
 - `docs/work/`: active work lanes, lane examples, lane packets, reports, and
   handoffs.
+- `docs/archive/work-reports/`: compact archive capsules and relocated frozen
+  work history from automatic post-closeout or direct historical maintenance.
 - `docs/specs/`: source and spec packets.
 - `docs/product/`: product intent, journeys, personas, scenarios, requirements.
 - `docs/design/`: interaction model, design references, tokens, components.

@@ -1,0 +1,22 @@
+{
+  "fragment_id": "GF-102",
+  "version": 1,
+  "title": "Accessibility assurance overlay",
+  "kind": "assurance-overlay",
+  "activation": {"any": ["a visible interaction, form, navigation path, status message, focus path, or responsive control changes"]},
+  "attach_to": ["GF-002", "GF-003", "GF-006", "GF-009"],
+  "requires": [{"port": "design.interaction-contract", "binding": "conditional", "when": "design changes", "cardinality": "one"}, {"port": "implementation.output", "binding": "conditional", "when": "frontend implementation exists", "cardinality": "one-or-more"}],
+  "provides": [{"port": "assurance.accessibility", "binding": "selected-producer", "cardinality": "one"}],
+  "actor": {"capabilities": ["accessibility-review", "keyboard-and-semantics-validation"], "preferred_existing_roles": ["designer"]},
+  "skill_calls": [
+    {"skill": "accessibility-review", "when": "visible interaction or semantics change", "required": true},
+    {"skill": "functional-qa", "when": "keyboard or observable accessibility behavior can be executed", "required": false}
+  ],
+  "nodes": [{"local_id": "review-accessibility", "obligation": "Review semantics, labels, keyboard, focus, contrast, target size, status, motion, and narrow viewport behavior as applicable.", "output": "accessibility assurance receipt"}],
+  "tests": [{"strategy": "automated-and-manual-accessibility", "requirement": "required", "when": "overlay is selected", "evidence": "automated findings and non-automatable keyboard/focus behavior are separately dispositioned", "command_source": "target accessibility runner plus manual browser checks"}],
+  "gates": [{"local_id": "accessibility-ready", "accepts": ["accessibility assurance receipt"], "evaluator_capability": "independent-accessibility-review"}],
+  "workline_policy": "Attach to design or frontend; split only when independent review ownership or a separate evidence batch is required.",
+  "omission_rule": "NOT_APPLICABLE when no visible interaction, content, semantics, focus, keyboard, status, target, motion, or responsive behavior changes.",
+  "repair": ["Accessibility failure reopens the affected design or frontend state, not unrelated backend work."]
+}
+

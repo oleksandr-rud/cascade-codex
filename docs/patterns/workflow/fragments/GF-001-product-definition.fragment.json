@@ -1,0 +1,25 @@
+{
+  "fragment_id": "GF-001",
+  "version": 1,
+  "title": "Product definition and acceptance",
+  "kind": "delivery",
+  "activation": {"any": ["product intent is missing or changing", "a new user-visible capability or journey is introduced", "acceptance criteria are ambiguous"]},
+  "requires": [{"port": "request.objective", "binding": "external-authority", "cardinality": "one"}],
+  "provides": [{"port": "product.acceptance", "binding": "selected-producer", "cardinality": "one"}],
+  "actor": {"capabilities": ["product-definition", "acceptance-authoring"], "preferred_existing_roles": ["orchestrator", "business-analyst"]},
+  "skill_calls": [
+    {"skill": "discover", "when": "product or journey intent is missing", "required": false},
+    {"skill": "compose-spec", "when": "validated intent needs durable requirements or scenarios", "required": false},
+    {"skill": "functional-qa", "when": "behavior examples need an executable acceptance route", "required": true}
+  ],
+  "nodes": [
+    {"local_id": "define-outcome", "obligation": "Define user outcome, criteria, non-goals, and failure trajectories.", "output": "versioned acceptance contract"},
+    {"local_id": "define-acceptance", "obligation": "Map behavior examples to observable evidence seams.", "output": "acceptance ledger"}
+  ],
+  "tests": [{"strategy": "scenario-acceptance-ledger", "requirement": "required", "when": "fragment is selected", "evidence": "every criterion has an observable PASS/FAIL route", "command_source": "target scenarios and harness.config.yaml"}],
+  "gates": [{"local_id": "product-ready", "accepts": ["versioned acceptance contract", "acceptance ledger"], "evaluator_capability": "product-spec-review"}],
+  "workline_policy": "Keep inside planning unless durable product ownership or independent approval requires its own workline.",
+  "omission_rule": "NOT_APPLICABLE only when current authoritative criteria and behavior examples already cover the change.",
+  "repair": ["Missing intent reopens define-outcome.", "Missing observable evidence reopens define-acceptance without invalidating unrelated accepted definitions."]
+}
+

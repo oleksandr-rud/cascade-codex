@@ -21,3 +21,14 @@
 - [ ] Required gated checks are `BLOCKED` when preconditions are missing.
 - [ ] Skipped or environment-gated checks are not reported as `PASS`.
 - [ ] Optional or out-of-scope checks are `NOT_RUN` with a reason.
+- [ ] Graph-shaped evidence has a stable ID, subject, graph revision, attempt,
+      input/source versions, source commit or digest, producer, production
+      time, requirement level, evaluator authority, acceptance criteria,
+      invalidation condition, and failure route.
+- [ ] Functional evidence remains distinct from command, Standards/Spec, and
+      semantic-judgment evidence.
+- [ ] Required non-passing or not-run evidence prevents a pass; optional
+      `NOT_RUN` records optionality and reason.
+- [ ] Stale evidence proposes reopening its subject, gate, and affected
+      consumers only; the evidence producer does not record authoritative
+      transitions.

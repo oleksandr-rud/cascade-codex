@@ -7,7 +7,8 @@ config; keep reusable workflow rules in skills, agents, and patterns.
 
 | Folder | Purpose | Written By |
 |---|---|---|
-| `docs/work/` | Active work lanes, copyable lane examples, lane packets, reports, handoffs | `orchestrate-work`, `market-validation`, `plan-change`, `validate-change`, `closeout` |
+| `docs/work/` | Active work lanes, first-class Coordination Graphs, copyable examples, lane packets, reports, handoffs | `orchestrate-work`, `market-validation`, `plan-change`, `validate-change`, `closeout` |
+| `docs/archive/work-reports/` | Compact archive capsules and relocated frozen lane, graph, and report history | `archive-work` automatically after closeout or for direct historical cleanup |
 | `docs/specs/` | Incoming and spec packets | `ingest-spec`, `synthesis-to-spec`, `compose-spec`, `discover`, `docs-impact-map`, `adapt-harness` |
 | `docs/product/` | Product intent, requirements, journeys, personas, scenarios | `discover`, `market-validation`, `synthesis-to-spec`, `compose-spec`, `ingest-spec`, `docs-impact-map` |
 | `docs/design/` | Interaction model, tokens, components, design constraints | `discover`, `design-system`, `ingest-spec`, `docs-impact-map` |
@@ -16,16 +17,49 @@ config; keep reusable workflow rules in skills, agents, and patterns.
 | `docs/patterns/` | Reusable workflow, boundary, testing, context rules, and selectable context packs | `pattern-context`, `closeout`, `adapt-harness`, Agent Engineer skills |
 | `.codex/skills/` | Reusable workflow skills | `develop-skill`, Agent Engineer skills |
 | `.codex/agents/` | Role contracts and skill maps | Agent Engineer skills |
-| `evals/harness/` | Canonical Cascade scenario sources, generated catalog, target schema, and golden-judge schema | `harness-evaluation`, Agent Engineer skills |
-| `.artifacts/harness-evals/` | Ignored raw JSONL traces, normalized runs, grades, and local reports | `scripts/run_harness_evals.py` |
+| `.codex/harness-tooling/` | Isolated pinned browser-simulation dependencies and Playwright runner files | Harness maintainers |
+| `evals/harness/` | Canonical scenarios, generated catalog, target schema, judge profiles, anchored rubrics, and judgment schema | `harness-evaluation`, `judge-eval-builder` |
+| `evals/tasks/` | Reusable typed command, browser, and agent-response task definitions | Harness maintainers |
+| `evals/campaigns/` | Versioned execution plans that compose inline or reusable tasks | Harness maintainers |
+| `evals/simulations/` | Controlled browser fixtures and Playwright probes | Harness maintainers |
+| `.artifacts/harness-evals/` | Ignored raw JSONL traces, normalized runs, eligibility, judgments, and local reports | `scripts/cascade/evals.ts` |
+| `.artifacts/campaigns/` | Ignored campaign manifests, task logs, evidence digests, and summaries | `scripts/cascade/campaigns.ts` |
 
 ## Active Work Paths
 
 - Active registry: `docs/work/active.md`
+- Deep-onboarding evidence: `docs/work/onboarding-manifest.json` in target
+  repositories only; it binds phase dispositions, project-part/doc-routing
+  decisions, preserved collision backups, config/source digests, validation,
+  and drift.
 - Lane template: `docs/work/lane-template.md`
+- Coordination Graph template: `docs/work/graph-template.md`
+- Coordination Graph index: `docs/work/graphs/_index.md`
+- Coordination Graph entries: `docs/work/graphs/CG-XXX-slug.md`
 - Lane examples: `docs/work/examples/`
 - Lane packets: `docs/work/lanes/W-XXX-slug.md`
 - Durable reports: `docs/work/reports/YYYY-MM-DD-slug.md`
+- Completed-work archive index: `docs/archive/work-reports/_index.md`
+- Compact archive capsules:
+  `docs/archive/work-reports/YYYY-MM-DD-scope-archive.md`
+- Relocated frozen work artifacts:
+  `docs/archive/work-reports/YYYY-MM-DD-original-filename.md`
+
+Coordination Graph entries are separate work entities that connect two or more
+canonical worklines across real dependencies, joins, worktree materialization,
+integrated validation, invalidation, or partial repair. They are not worklines,
+lanes, specs, generated documents, or runtimes. Lane packets keep lane-local
+Task Graph authority and read-only graph references after direct cutover;
+`active.md` remains a derived projection.
+
+`docs/work/` is the live and recent execution surface. After a lane or graph
+completes, `closeout` automatically hands its exact closed set to
+`archive-work`. The skill moves it to `docs/archive/work-reports/` only after
+terminal evidence, dependency closure, index consistency, inbound references,
+and pre/post file digests pass; otherwise it returns `ARCHIVE_DEFERRED` and
+leaves live files in place. The compact archive capsule is the rehydration
+entrypoint; relocated originals remain detailed historical authority and are
+not rewritten.
 
 ## Spec Translation Paths
 
@@ -46,6 +80,11 @@ config; keep reusable workflow rules in skills, agents, and patterns.
   `docs/design/`
 - Naming, tone, content, and visual direction: `docs/brand/`
 - Active work lane: `docs/work/active.md` or `docs/work/lanes/W-XXX-slug.md`
+- Cross-workline coordination state: `docs/work/graphs/CG-XXX-slug.md`; never
+  embed Coordination Graph boilerplate in product/source/generated specs
+- Reusable planning-time graph fragments:
+  `docs/patterns/workflow/fragments/GF-*.fragment.json`; these are pattern
+  definitions, not active work or generated product/spec documents
 - Codebase vocabulary: `docs/glossary.md`
 
 ## Business Analysis Paths
@@ -55,7 +94,7 @@ config; keep reusable workflow rules in skills, agents, and patterns.
 - Durable research memory summaries and research-to-spec wiring:
   `docs/patterns/context-memory/index.md`.
 - Pattern context packs: `docs/patterns/{entry}/*.pack.yaml`; build selected
-  text with `scripts/build_pattern_context_pack.py`.
+  text with `scripts/cascade.ts patterns`.
 - Plan-ready product synthesis and authoring: existing owner docs under
   `docs/product/`, `docs/specs/{slice-slug}/`, and `docs/backlog/_index.md`.
 - Source preservation: `docs/specs/source/` only when `ingest-spec` decides a
@@ -83,6 +122,11 @@ decision-heavy; otherwise update the smallest existing owner docs.
   and memory locations: `harness.config.yaml`
 - Project-specific architecture facts: `harness.config.yaml`,
   `docs/patterns/boundaries/index.md`, or `docs/glossary.md`
+- Deterministic target inventory, manifest initialization/refresh, config/path
+  checks, fixture acceptance, and drift:
+  `scripts/cascade.ts target`
+- Target analysis schemas:
+  `.codex/skills/adapt-harness/schemas/`
 
 ## Closeout Thin Diffs
 
@@ -122,8 +166,14 @@ Required files per entry:
 - `index.md`
 - `*.pack.yaml`
 
+The workflow entry may additionally contain
+`fragments/graph-fragment.schema.json`, `fragments/_index.md`, and versioned
+`fragments/GF-*.fragment.json` definitions. Planning and orchestration assemble
+only applicable fragments; active instances remain in the owning plan, lane
+Task Graph, or Coordination Graph.
+
 Use `docs/patterns/context-pack-schema.yaml` for the metadata contract and
-`scripts/build_pattern_context_pack.py` to build filtered text from packs.
+`scripts/cascade.ts patterns` to build filtered text from packs.
 
 ## Harness Evaluation Paths
 
@@ -131,7 +181,17 @@ Use `docs/patterns/context-pack-schema.yaml` for the metadata contract and
 - Cross-skill collisions: `evals/harness/interactions.json`
 - Generated catalog: `evals/harness/scenarios.generated.json`
 - Target response schema: `evals/harness/response.schema.json`
-- Golden judgment schema: `evals/harness/judge-response.schema.json`
-- Runner and deterministic grader: `scripts/run_harness_evals.py`
+- Judgment schema: `evals/harness/judge-response.schema.json`
+- Judge profiles and rubrics: `evals/harness/judge-profiles.json`, `evals/harness/rubrics/`
+- Runner, eligibility checks, scoring, and aggregation: `scripts/cascade/evals.ts`
 - Ignored live run evidence: `.artifacts/harness-evals/<run-id>/`
 - Durable scenario and trace rules: `docs/patterns/agent-evaluation/index.md`
+
+## Campaign And Simulation Paths
+
+- Reusable task schema and definitions: `evals/tasks/`
+- Campaign schema and execution plans: `evals/campaigns/`
+- Deterministic browser fixtures and probes: `evals/simulations/`
+- Isolated Playwright package and configuration: `.codex/harness-tooling/`
+- Campaign runner: `scripts/cascade/campaigns.ts`
+- Immutable local execution evidence: `.artifacts/campaigns/<run-id>/`

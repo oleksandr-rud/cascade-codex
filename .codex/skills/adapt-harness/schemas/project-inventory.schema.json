@@ -1,0 +1,103 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://cascade.local/schemas/project-inventory.schema.json",
+  "title": "Cascade project inventory",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "root",
+    "vcs",
+    "roots",
+    "languages",
+    "manifests",
+    "entrypoints",
+    "public_contracts",
+    "feature_surfaces",
+    "commands",
+    "source_snapshot",
+    "digest"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "root": {
+      "const": "."
+    },
+    "vcs": {
+      "type": "object",
+      "required": [
+        "head",
+        "branch",
+        "dirty"
+      ]
+    },
+    "roots": {
+      "type": "object",
+      "required": [
+        "source",
+        "test",
+        "docs"
+      ]
+    },
+    "languages": {
+      "type": "array"
+    },
+    "manifests": {
+      "type": "array"
+    },
+    "entrypoints": {
+      "type": "array"
+    },
+    "public_contracts": {
+      "type": "array"
+    },
+    "feature_surfaces": {
+      "type": "object",
+      "required": [
+        "routes",
+        "ui",
+        "jobs"
+      ]
+    },
+    "commands": {
+      "type": "array"
+    },
+    "source_snapshot": {
+      "$ref": "#/$defs/source_snapshot"
+    },
+    "digest": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    }
+  },
+  "$defs": {
+    "source_snapshot": {
+      "type": "object",
+      "required": [
+        "algorithm",
+        "digest",
+        "files"
+      ],
+      "properties": {
+        "algorithm": {
+          "const": "sha256"
+        },
+        "digest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "files": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "path",
+              "sha256"
+            ]
+          }
+        }
+      }
+    }
+  }
+}

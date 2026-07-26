@@ -3,6 +3,7 @@
 Date: YYYY-MM-DD
 Run ID: `<run-id>`
 Catalog digest: `<sha256>`
+Harness source digest: `<sha256>`
 
 ## Scope
 
@@ -14,7 +15,7 @@ Catalog digest: `<sha256>`
 
 ## Coverage
 
-| Surface | Discovered | Covered | Executed | Passed | Failed | Blocked |
+| Surface | Discovered | Executed | Eligible | Outcome Pass | Trajectory Pass | Accepted |
 |---|---:|---:|---:|---:|---:|---:|
 | Skills | | | | | | |
 | Agents | | | | | | |
@@ -34,6 +35,11 @@ Catalog digest: `<sha256>`
 - Structured-output rate:
 - Read-only safety rate:
 - Trace completeness rate:
+- Outcome judge score distribution:
+- Trajectory judge score distribution:
+- Required-judge completion rate:
+- Human-label agreement, false-pass, and false-fail rate or `NOT_RUN`:
+- Repeated-judgment stability or `NOT_RUN`:
 - Median duration and token usage:
 
 ## Decisions

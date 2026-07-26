@@ -11,13 +11,16 @@ Use an evaluator-optimizer loop with two distinct responsibilities:
 scenario contract
   -> read-only target run
   -> raw JSONL and stderr
-  -> deterministic normalization and hard gates
-  -> semantic golden evaluator when judgment remains
+  -> deterministic normalization and binary eligibility
+  -> independent outcome and trajectory judges
+  -> harness-computed scores and acceptance
   -> regression case or routed harness fix
 ```
 
 The target agent must not receive the expected route, rubric rationale, or
-prior result. The evaluator receives those only after target execution.
+prior result. Each judge receives only its assigned rubric and unscored
+evidence after target execution; it does not receive eligibility or the peer
+judge's result.
 
 ## Scenario Coverage
 
@@ -46,7 +49,7 @@ No trace means no pass for a live scenario. A final answer that appears correct
 cannot override a wrong route, missing required skill load, malformed output,
 or disallowed mutation attempt.
 
-## Grading Order
+## Evaluation Order
 
 1. Schema and catalog integrity.
 2. Runtime and trace integrity.
@@ -55,23 +58,27 @@ or disallowed mutation attempt.
 5. Permission and mutation safety.
 6. Status and handoff contract.
 7. Grounding and evidence.
-8. Semantic quality.
+8. Outcome quality through an anchored 0–4 rubric.
+9. Trajectory quality through a separate anchored 0–4 rubric.
+10. Harness-owned score calculation and required-judge aggregation.
 
-Mechanical failures are not overridable by an LLM judge. Semantic judgment is
-for ambiguity that remains after deterministic checks.
+Mechanical failures are not overridable by an LLM judge, and mechanical checks
+do not award quality points. Every eligible case still requires both semantic
+judges before it can satisfy accepted coverage.
 
 ## Root Cause
 
 Classify the earliest causal failure as:
 
 - `harness-defect`;
+- `target-behavior`;
 - `model-variance`;
 - `scenario-defect`;
 - `environment-blocker`.
 
 Repeat identical runs before using `model-variance` or `FLAKY`. Promote a
 confirmed harness failure into a regression scenario before repairing it, and
-do not weaken the golden expectation to accept the current behavior.
+do not weaken the scenario expectation to accept the current behavior.
 
 ## Run Storage
 

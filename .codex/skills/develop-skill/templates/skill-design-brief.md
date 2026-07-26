@@ -14,7 +14,7 @@ Source: `<REQUEST_OR_REPORT_OR_EXISTING_SKILL>`
 | adjacent skills | `<rg-query>` | trigger overlap | `<finding>` |
 | owning agents | `<path>` | wiring | `<finding>` |
 | route docs | `<path>` | workflow fit | `<finding>` |
-| validator | `scripts/validate_cascade_codex.py` | invariants | `<finding>` |
+| validator | `scripts/cascade/validate.ts` | invariants | `<finding>` |
 | Context7 MCP | `<library-id + topic-or-n/a>` | latest version-specific technology docs | `<finding>` |
 | Perplexity/web | `<query-or-n/a>` | first-pass approaches and best practices only | `<finding>` |
 
