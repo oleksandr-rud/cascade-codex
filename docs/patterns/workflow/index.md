@@ -19,7 +19,7 @@ implementation, validation, review, delegation, or product-flow steps.
 | Security review of a feature, workflow, architecture, or agent/tool plan | `secure-design` |
 | Market/product validation workflow or experiments | `market-validation` plus focused lane skills |
 | Final evidence, status, or handoff | `validate-change` or `closeout` |
-| Compact or move completed lanes, worklines, graphs, or reports out of the live work tree | `archive-work` |
+| Completed lane/graph closeout and automatic compaction, or direct historical cleanup | `closeout -> archive-work` |
 
 ## Active Work
 
@@ -52,14 +52,18 @@ explicit. Do not create a permanent `CLOSED` active-row status; remove completed
 rows from the active registry and keep the report or lane packet as historical
 evidence.
 
-Completed lane packets, Coordination Graphs, and reports remain in `docs/work/`
-until an explicit archive request invokes `archive-work`. Archival requires
-accepted terminal or supersession authority, no active dependency, consistent
-indexes, a classified inbound-reference inventory, and matching pre/post
-SHA-256 for every moved original. Write one compact capsule under
+For every newly completed lane or Coordination Graph, `closeout` preserves the
+report and retires active projections, then automatically invokes
+`archive-work` for the exact closed set. Archival requires accepted terminal
+or supersession authority, no active dependency, consistent indexes, a
+classified inbound-reference inventory, and matching pre/post SHA-256 for every
+moved original. Write one compact capsule under
 `docs/archive/work-reports/`, move frozen originals without editing their
 execution-era contents, and update only live indexes and non-frozen references.
-An archive capsule indexes detailed history; it does not replace or relabel it.
+If readiness fails, retain live files and record `ARCHIVE_DEFERRED`; this does
+not invalidate completion. Atomic work without a lane/graph/report set returns
+`NOT_APPLICABLE`. An archive capsule indexes detailed history; it does not
+replace or relabel it.
 
 ## Parallel Rules
 
@@ -370,7 +374,7 @@ Guardrails:
 | Lane packet | `docs/work/lanes/W-XXX-slug.md` | A row needs criteria, definitions, connected worklines, dependencies, replanning history, or validation detail |
 | Lane examples | `docs/work/examples/` | First-time adaptation needs copyable non-active lane examples |
 | Durable report | `docs/work/reports/` | Requested, multi-turn, durable decision, blocked handoff, or complex merge |
-| Completed-work archive | `docs/archive/work-reports/` | Explicit compaction after closeout, terminal/dependency closure, reference audit, and digest equality |
+| Completed-work archive | `docs/archive/work-reports/` | Automatic post-closeout compaction, or direct historical cleanup, after terminal/dependency closure, reference audit, and digest equality |
 | Thin product/spec/architecture diff | Existing owner doc in `docs/product/`, `docs/design/`, `docs/brand/`, `docs/specs/`, `docs/patterns/boundaries/index.md`, `harness.config.yaml`, or `docs/glossary.md` | Closeout detects a validated durable fact not already documented |
 | Durable skill rule | `.codex/skills/` | Repeated workflow lesson |
 | Durable role rule | `.codex/agents/` | Delegation or role-boundary lesson |

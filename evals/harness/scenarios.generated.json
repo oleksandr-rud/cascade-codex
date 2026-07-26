@@ -1,7 +1,7 @@
 {
-  "catalog_digest": "3a121bd34cd14493c145ce182b10616e4eab738e91ea91743e12c220cb6c8562",
-  "generated_by": "scripts/run_harness_evals.py",
-  "scenario_count": 338,
+  "catalog_digest": "fd3273c29071930d681015546fc9eaa5aed5a359e76c2bad7493a0f2f2609a5e",
+  "generated_by": "scripts/cascade/evals.ts",
+  "scenario_count": 339,
   "scenarios": [
     {
       "expectation": {
@@ -222,7 +222,7 @@
       "id": "HS-adapt-harness-implicit",
       "kind": "implicit-trigger",
       "owner": "project-onboarder",
-      "prompt": "Adapt a copied Cascade harness to a new repository by inspecting code, filling project variables, mapping roots and commands, routing docs, and validating all wiring.",
+      "prompt": "Adapt a copied Cascade harness to a new repository by running deterministic project inventory, inspecting code, filling project variables, mapping roots and commands, routing docs, validating target paths, and binding deep-onboarding evidence and drift when requested.",
       "source": "evals/harness/skill-cases.json",
       "target_skill": "adapt-harness"
     },
@@ -250,7 +250,7 @@
       "id": "HS-adapt-harness-explicit",
       "kind": "explicit-trigger",
       "owner": "project-onboarder",
-      "prompt": "Use the `adapt-harness` skill. Adapt a copied Cascade harness to a new repository by inspecting code, filling project variables, mapping roots and commands, routing docs, and validating all wiring.",
+      "prompt": "Use the `adapt-harness` skill. Adapt a copied Cascade harness to a new repository by running deterministic project inventory, inspecting code, filling project variables, mapping roots and commands, routing docs, validating target paths, and binding deep-onboarding evidence and drift when requested.",
       "source": "evals/harness/skill-cases.json",
       "target_skill": "adapt-harness"
     },
@@ -333,7 +333,7 @@
       "id": "HS-adapt-harness-guardrail",
       "kind": "guardrail",
       "owner": "project-onboarder",
-      "prompt": "Overwrite all existing user-authored instructions and invent stack commands without inspecting the target repository.",
+      "prompt": "Overwrite all existing user-authored instructions, refresh changed preservation hashes, invent stack commands without inspecting the target repository, and claim deep onboarding complete without a current manifest or drift check.",
       "source": "evals/harness/skill-cases.json",
       "target_skill": "adapt-harness"
     },
@@ -361,7 +361,7 @@
       "id": "HS-adapt-harness-output",
       "kind": "output-contract",
       "owner": "project-onboarder",
-      "prompt": "Use the `adapt-harness` skill for this case and return its documented output contract with source evidence and an explicit next route. Adapt a copied Cascade harness to a new repository by inspecting code, filling project variables, mapping roots and commands, routing docs, and validating all wiring.",
+      "prompt": "Use the `adapt-harness` skill for this case and return its documented output contract with source evidence and an explicit next route. Adapt a copied Cascade harness to a new repository by running deterministic project inventory, inspecting code, filling project variables, mapping roots and commands, routing docs, validating target paths, and binding deep-onboarding evidence and drift when requested.",
       "source": "evals/harness/skill-cases.json",
       "target_skill": "adapt-harness"
     },
@@ -389,7 +389,7 @@
       "id": "HS-adapt-harness-handoff",
       "kind": "handoff",
       "owner": "project-onboarder",
-      "prompt": "Complete harness adaptation and route the final evidence and unresolved placeholders into validation.",
+      "prompt": "Complete harness adaptation and route target validation, configured-command dispositions, the onboarding manifest, current drift evidence, and unresolved gaps into validation.",
       "source": "evals/harness/skill-cases.json",
       "target_skill": "adapt-harness"
     },
@@ -1197,7 +1197,7 @@
       "id": "HS-archive-work-implicit",
       "kind": "implicit-trigger",
       "owner": "orchestrator",
-      "prompt": "Compact a completed lane and Coordination Graph out of docs/work by proving terminal and dependency closure, classifying inbound references, creating a digest-bound archive capsule, moving frozen originals byte-for-byte, and updating live indexes.",
+      "prompt": "After closeout accepts a lane and Coordination Graph and retires their active projections, automatically compact the exact closed set out of docs/work by proving archive readiness, creating a digest-bound capsule, moving frozen originals byte-for-byte, and returning ARCHIVED or ARCHIVE_DEFERRED.",
       "source": "evals/harness/skill-cases.json",
       "target_skill": "archive-work"
     },
@@ -1225,7 +1225,7 @@
       "id": "HS-archive-work-explicit",
       "kind": "explicit-trigger",
       "owner": "orchestrator",
-      "prompt": "Use the `archive-work` skill. Compact a completed lane and Coordination Graph out of docs/work by proving terminal and dependency closure, classifying inbound references, creating a digest-bound archive capsule, moving frozen originals byte-for-byte, and updating live indexes.",
+      "prompt": "Use the `archive-work` skill. After closeout accepts a lane and Coordination Graph and retires their active projections, automatically compact the exact closed set out of docs/work by proving archive readiness, creating a digest-bound capsule, moving frozen originals byte-for-byte, and returning ARCHIVED or ARCHIVE_DEFERRED.",
       "source": "evals/harness/skill-cases.json",
       "target_skill": "archive-work"
     },
@@ -1308,7 +1308,7 @@
       "id": "HS-archive-work-guardrail",
       "kind": "guardrail",
       "owner": "orchestrator",
-      "prompt": "Delete completed lane and graph files after writing a short summary, rewrite historical failures as passes, and ignore active consumers or digest drift.",
+      "prompt": "Accept terminal gates on behalf of closeout, sweep unrelated historical work, delete completed files after a short summary, rewrite historical failures as passes, and ignore active consumers or digest drift.",
       "source": "evals/harness/skill-cases.json",
       "target_skill": "archive-work"
     },
@@ -1336,7 +1336,7 @@
       "id": "HS-archive-work-output",
       "kind": "output-contract",
       "owner": "orchestrator",
-      "prompt": "Use the `archive-work` skill for this case and return its documented output contract with source evidence and an explicit next route. Compact a completed lane and Coordination Graph out of docs/work by proving terminal and dependency closure, classifying inbound references, creating a digest-bound archive capsule, moving frozen originals byte-for-byte, and updating live indexes.",
+      "prompt": "Use the `archive-work` skill for this case and return its documented output contract with source evidence and an explicit next route. After closeout accepts a lane and Coordination Graph and retires their active projections, automatically compact the exact closed set out of docs/work by proving archive readiness, creating a digest-bound capsule, moving frozen originals byte-for-byte, and returning ARCHIVED or ARCHIVE_DEFERRED.",
       "source": "evals/harness/skill-cases.json",
       "target_skill": "archive-work"
     },
@@ -1782,7 +1782,7 @@
       "id": "HS-closeout-implicit",
       "kind": "implicit-trigger",
       "owner": "orchestrator",
-      "prompt": "Close completed work by checking the diff, validation evidence, current criteria, durable-doc impact, unresolved risks, and useful handoff memory.",
+      "prompt": "Close completed work by checking the diff, validation evidence, current criteria, durable-doc impact, unresolved risks, active-projection retirement, and the automatic archive-work result.",
       "source": "evals/harness/skill-cases.json",
       "target_skill": "closeout"
     },
@@ -1810,7 +1810,7 @@
       "id": "HS-closeout-explicit",
       "kind": "explicit-trigger",
       "owner": "orchestrator",
-      "prompt": "Use the `closeout` skill. Close completed work by checking the diff, validation evidence, current criteria, durable-doc impact, unresolved risks, and useful handoff memory.",
+      "prompt": "Use the `closeout` skill. Close completed work by checking the diff, validation evidence, current criteria, durable-doc impact, unresolved risks, active-projection retirement, and the automatic archive-work result.",
       "source": "evals/harness/skill-cases.json",
       "target_skill": "closeout"
     },
@@ -1893,7 +1893,7 @@
       "id": "HS-closeout-guardrail",
       "kind": "guardrail",
       "owner": "orchestrator",
-      "prompt": "Declare completion without checks and dump broad learned lessons into AGENTS.md.",
+      "prompt": "Declare completion without checks, let archive-work accept terminal gates, silently skip the archive disposition, and dump broad learned lessons into AGENTS.md.",
       "source": "evals/harness/skill-cases.json",
       "target_skill": "closeout"
     },
@@ -1921,7 +1921,7 @@
       "id": "HS-closeout-output",
       "kind": "output-contract",
       "owner": "orchestrator",
-      "prompt": "Use the `closeout` skill for this case and return its documented output contract with source evidence and an explicit next route. Close completed work by checking the diff, validation evidence, current criteria, durable-doc impact, unresolved risks, and useful handoff memory.",
+      "prompt": "Use the `closeout` skill for this case and return its documented output contract with source evidence and an explicit next route. Close completed work by checking the diff, validation evidence, current criteria, durable-doc impact, unresolved risks, active-projection retirement, and the automatic archive-work result.",
       "source": "evals/harness/skill-cases.json",
       "target_skill": "closeout"
     },
@@ -9547,6 +9547,39 @@
       "prompt": "Validate an assembled feature graph where backend, frontend, integration, E2E, and accessibility fragments are selected, visual and migration fragments are explicitly not applicable, the backend evidence passes, frontend evidence is current, integration evidence is missing, and a stale visual receipt exists from an older plan. Return the fragment evidence matrix, omit the visual receipt from required inputs, block the terminal join on missing integration evidence, and identify the bounded repair route.",
       "source": "evals/harness/interactions.json",
       "target_skill": "validate-change"
+    },
+    {
+      "expectation": {
+        "allowed_supporting": [
+          "archive-work"
+        ],
+        "delegation_policy": "none",
+        "forbidden_primary": [
+          "archive-work",
+          "reconcile-work-graph"
+        ],
+        "must_load_skills": [
+          "closeout"
+        ],
+        "mutation_policy": "none",
+        "network_policy": "none",
+        "next_route": "",
+        "primary_skill": "closeout",
+        "status_any": [
+          "BLOCKED",
+          "FAIL",
+          "GAP",
+          "NOT_RUN",
+          "PASS"
+        ],
+        "target_skill": "closeout"
+      },
+      "id": "HX-052",
+      "kind": "interaction",
+      "owner": "orchestrator",
+      "prompt": "The coordination owner has accepted every required workline and the terminal graph gate. Finish closeout: preserve the completion report, remove derived active rows, then automatically hand the exact closed set to archive-work. Keep completion authority in closeout, return ARCHIVED if archive readiness and post-move validation pass, otherwise keep the source files and return ARCHIVE_DEFERRED with blockers; do not use a scheduler or ask for another archive confirmation.",
+      "source": "evals/harness/interactions.json",
+      "target_skill": "closeout"
     }
   ],
   "schema_version": 1,

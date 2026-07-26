@@ -53,7 +53,7 @@ output instead of silently following stale docs.
 
 1. State the audit objective, assumptions, and success criteria.
 2. Run or reproduce a local stack inventory. Prefer the read-only helper:
-   `python3 .codex/agents/security/scripts/security_stack_scan.py`.
+   `bun .codex/agents/security/scripts/security_stack_scan.ts`.
 3. Pick only the trajectories relevant to the request.
 4. For each trajectory, create a spec using
    `templates/trajectory-spec.md` and the checklist in

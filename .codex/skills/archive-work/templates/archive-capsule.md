@@ -4,8 +4,10 @@ Archive ID: `<AR-XXX>`
 Archived: `YYYY-MM-DD`  
 Scope: `<lane-graph-report-set>`  
 Final Status: `<COMPLETE|SUPERSEDED>`  
+Archive Result: `ARCHIVED`
 Archive Owner: `<role-or-owner>`  
-Reason: `<explicit-request-and-maintenance-benefit>`
+Trigger: `<automatic-post-closeout|direct-historical-cleanup>`
+Reason: `<closeout-scope-or-maintenance-benefit>`
 
 ## Compact Outcome
 
@@ -51,8 +53,8 @@ Reason: `<explicit-request-and-maintenance-benefit>`
 |---|---|---|
 | source/archive digest equality | `<sha-command>` | `<PASS|FAIL>` |
 | stale live-path scan | `<rg-command>` | `<PASS|BLOCKED>` |
-| Cascade validator | `python3 scripts/validate_cascade_codex.py` | `<PASS|FAIL>` |
-| harness catalog | `python3 scripts/run_harness_evals.py catalog --check` | `<PASS|NOT_RUN>` |
+| Cascade validator | `bun scripts/cascade.ts validate` | `<PASS|FAIL>` |
+| harness catalog | `bun scripts/cascade.ts eval catalog --check` | `<PASS|NOT_RUN>` |
 | whitespace | `git diff --check` | `<PASS|FAIL>` |
 
 ## Rehydration

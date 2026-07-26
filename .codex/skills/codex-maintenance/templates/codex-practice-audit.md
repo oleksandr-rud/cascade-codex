@@ -40,7 +40,7 @@ Date: YYYY-MM-DD
 | Command rules | `rules/*.rules` beside an active config layer | `<ok-gap>` |
 | MCP or tools | `<tool-contract>` | `<ok-gap>` |
 | Plugin package | `.codex-plugin/plugin.json` and optional `.agents/plugins/marketplace.json` | `<ok-gap>` |
-| Validator | `scripts/validate_cascade_codex.py` | `<ok-gap>` |
+| Validator | `scripts/cascade/validate.ts` | `<ok-gap>` |
 
 ## Official Codex Evidence
 

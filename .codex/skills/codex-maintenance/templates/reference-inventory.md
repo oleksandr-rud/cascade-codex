@@ -38,7 +38,7 @@ Date: YYYY-MM-DD
 | Agents | `.codex/agents/*` | `<reason>` | `<yes-no>` |
 | Docs map | `docs/structure.md` | `<reason>` | `<yes-no>` |
 | Patterns | `docs/patterns/*` | `<reason>` | `<yes-no>` |
-| Validator | `scripts/validate_cascade_codex.py` | `<reason>` | `<yes-no>` |
+| Validator | `scripts/cascade/validate.ts` | `<reason>` | `<yes-no>` |
 
 ## Reference Searches
 

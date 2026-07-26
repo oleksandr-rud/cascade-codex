@@ -32,7 +32,7 @@ Date: YYYY-MM-DD
 
 | Command | Result | Notes |
 |---|---|---|
-| `python3 scripts/validate_cascade_codex.py` | `<PASS_FAIL_BLOCKED_NOT_RUN>` | `<note>` |
+| `bun scripts/cascade.ts validate` | `<PASS_FAIL_BLOCKED_NOT_RUN>` | `<note>` |
 | `git diff --check` | `<PASS_FAIL_BLOCKED_NOT_RUN>` | `<note>` |
 
 ## Follow-Up

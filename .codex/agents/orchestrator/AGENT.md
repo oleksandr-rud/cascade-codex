@@ -60,8 +60,9 @@ commands. It can also route explicit requests for agentic workflow packets to
 14. Intake: use `issue-intake` only when a durable issue body or tracker ticket
    is requested.
 15. Close: use `closeout` for final evidence and memory.
-16. Archive: only on explicit compaction intent, use `archive-work` after
-    closeout to move an eligible frozen work set behind a digest-bound capsule.
+16. Archive: after a lane or graph completes, automatically use `archive-work`
+    for the exact closed set and record `ARCHIVED`, `ARCHIVE_DEFERRED`, or
+    `NOT_APPLICABLE`.
 
 ## Rules
 
@@ -78,6 +79,8 @@ commands. It can also route explicit requests for agentic workflow packets to
 - Route completed-work compaction to `archive-work`, not to `closeout` or
   `reconcile-work-graph`; those routes must finish registry cleanup and
   identity reconciliation before archival can pass.
+- Keep completion authority in `closeout`. `archive-work` consumes accepted
+  state and must never close a workline or terminal graph gate itself.
 - Do not route existing-evidence aggregation or repair-impact assessment through
   `functional-qa`: that skill authors or executes product-visible proof. Use
   `validate-change` directly when the evidence already exists.

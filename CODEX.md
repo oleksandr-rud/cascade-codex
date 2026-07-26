@@ -80,10 +80,10 @@ Use this cascade for non-atomic work:
 - `closeout`: persist validation evidence, work memory, reusable lessons,
   thin product/spec/architecture doc diffs when the final diff changed durable
   facts, and final handoff.
-- `archive-work`: on explicit archive intent after closeout, prove that a
-  completed lane/graph/report set has no active dependency, create a compact
-  digest-bound capsule, and move frozen originals out of `docs/work/` without
-  rewriting their evidence.
+- `archive-work`: automatically after a lane/graph closeout, or directly for
+  scoped historical cleanup, prove that the completed set has no active
+  dependency, create a digest-bound capsule, and move frozen originals out of
+  `docs/work/` without rewriting their evidence.
 
 `issue-intake` is an explicit exception path for issue bodies or tracker
 tickets. Human review is an explicit open-question or exception path, not a
@@ -144,7 +144,11 @@ standalone workflow router.
 - `pattern-context`: use when a task needs selected pattern context, or when
   onboarding, planning, validation, or closeout creates or updates a pattern
   entry or `*.pack.yaml` context pack.
-- `adapt-harness`: use when wiring this harness into a new repository.
+- `adapt-harness`: use when wiring this harness into a new repository. Begin
+  with `bun scripts/cascade.ts target inventory`; validate adapted config
+  with `bun scripts/cascade.ts validate --target`; and require the
+  schema-backed onboarding manifest plus current drift for deep-onboarding
+  completion.
 - `project-onboarder`: use for new-project setup, harness installation,
   onboarding, or migration of existing instructions into the Cascade
   structure.
@@ -222,11 +226,14 @@ Completed or unrelated work lanes are historical context. Example lanes are
 copyable guidance only and are not active work unless copied into
 `docs/work/lanes/` and registered in `docs/work/active.md`.
 
-Completed artifacts stay in `docs/work/` through closeout. Use `archive-work`
-only on explicit compaction intent: reconcile stale identities first, require
-terminal/dependency/reference readiness, write one archive capsule, and move
-frozen originals byte-for-byte to `docs/archive/work-reports/`. Archived work
-does not become active by being read or referenced.
+When a lane or Coordination Graph completes, `closeout` writes the durable
+report and retires its active projection, then automatically invokes
+`archive-work` for that exact set. The archive step requires
+terminal/dependency/reference readiness, writes one capsule, and moves frozen
+originals byte-for-byte to `docs/archive/work-reports/`. It returns
+`ARCHIVED`, `ARCHIVE_DEFERRED`, or `NOT_APPLICABLE`; deferral does not undo
+valid completion. This is a same-turn skill chain, not a background scheduler
+or hook. Archived work does not become active by being read or referenced.
 
 For a complex lane with typed dependencies, use its lane-local Task Graph. When
 two or more canonical worklines also have a cross-workline dependency,
@@ -299,7 +306,7 @@ backlog, glossary, or pattern rules.
 
 Use `docs/patterns/workflow/index.md` for scoped coverage from current work-lane
 criteria to changed code and validation. Use
-`scripts/build_pattern_context_pack.py` to compile selected pattern-pack text
+`scripts/cascade.ts patterns` to compile selected pattern-pack text
 from `docs/patterns/*/*.pack.yaml` when prompt context should include only
 specific rules. At closeout, scan the final diff for
 durable product, design, brand, spec, architecture, stack/runtime, or glossary
@@ -311,11 +318,20 @@ avoid decorative documentation churn.
 
 Canonical harness scenarios and schemas live under `evals/harness/`. Generate
 and check the 7-case-per-skill catalog with
-`python3 scripts/run_harness_evals.py catalog --write` and `catalog --check`.
+`bun scripts/cascade.ts eval catalog --write` and `catalog --check`.
 Live target runs are read-only and store raw JSONL, normalized traces,
 eligibility, a source manifest, judgments, and reports under ignored
 `.artifacts/harness-evals/`. Use the `harness-evaluator` role only after target
 execution and eligibility; no live trace means no live scenario pass. Run
-`python3 scripts/run_harness_evals.py judge --run-dir
+`bun scripts/cascade.ts eval judge --run-dir
 .artifacts/harness-evals/<run-id>` for independent outcome and trajectory
 judgments of every eligible case. Accepted coverage requires both.
+
+## Campaign Execution
+
+Typed reusable tasks live in `evals/tasks/`; versioned execution plans live in
+`evals/campaigns/`. Run them through `bun scripts/cascade.ts campaign`.
+Campaigns preserve task logs and source digests under `.artifacts/campaigns/`
+but do not convert authored tasks into execution evidence. `browser` tasks use
+Playwright; autonomous agent browsing remains a separate permissioned
+browser-tool capability.

@@ -1,6 +1,6 @@
 ---
 name: archive-work
-description: Use when completed Cascade lanes, worklines, Coordination Graphs, or work reports should be compacted, moved out of docs/work, archived under docs/archive/work-reports, or audited for safe historical retention.
+description: Use automatically after closeout or directly for historical cleanup when completed Cascade lanes, worklines, Coordination Graphs, or work reports should be compacted, moved out of docs/work, archived under docs/archive/work-reports, or audited for safe retention.
 ---
 
 # Archive Work
@@ -10,13 +10,45 @@ attempts, receipts, or graph evidence. Keep active and recent execution under
 `docs/work/`; move only eligible frozen artifacts to
 `docs/archive/work-reports/`.
 
-This is an explicit maintenance route after `closeout`, not an automatic part
-of every closeout. It does not complete work, accept gates, resolve stale
+This is the default post-closeout maintenance route for a newly completed lane
+or Coordination Graph. It may also be invoked directly for explicitly scoped
+historical cleanup. It does not complete work, accept gates, resolve stale
 projections, delete evidence, rewrite frozen records, commit, or publish.
+
+## Automatic Post-Closeout Chain
+
+Run in the same closeout turn after the completion owner has accepted the
+terminal state, written the completion report, and removed derived active
+rows:
+
+```text
+terminal acceptance
+  -> closeout
+  -> active projection retirement
+  -> archive-work preflight
+  -> ARCHIVED | ARCHIVE_DEFERRED | NOT_APPLICABLE
+```
+
+This chain is instruction-driven. It is not a background scheduler, hook, or
+separate runtime.
+
+Use these outcomes:
+
+| Outcome | Meaning |
+|---|---|
+| `ARCHIVED` | Every eligibility, move, reference, digest, and validation check passed. |
+| `ARCHIVE_DEFERRED` | Work remains complete, but one or more archive requirements are blocked; retain the live files and record exact blockers and the resume route. |
+| `NOT_APPLICABLE` | The closeout created no lane, graph, or durable work-report set to archive. |
+
+Do not ask for another archive confirmation for the exact lane/graph set being
+closed. An explicit user request to keep the completed set in `docs/work/`, an
+active consumer, unresolved identity, or unsafe overlap produces
+`ARCHIVE_DEFERRED`; it does not authorize overriding the blocker.
 
 ## Source Order
 
-1. Latest user request and exact requested archive scope.
+1. Latest user request plus the exact closeout scope or direct historical
+   archive scope.
 2. Current branch, diff, untracked files, and archive-target overlap.
 3. `docs/work/active.md`.
 4. Candidate lane packets under `docs/work/lanes/`.
@@ -33,9 +65,10 @@ Use `templates/archive-capsule.md` for every archive set. Use
 
 ## Scope And Anti-Scope
 
-Archive one coherent completed set: a lane and its reports, or a completed
-Coordination Graph plus its connected completed lane packets and reports.
-Several unrelated completed lanes require separate capsules.
+Archive one coherent completed set from the current closeout: a lane and its
+reports, or a completed Coordination Graph plus its connected completed lane
+packets and reports. Several unrelated completed lanes require separate
+capsules. A direct historical-cleanup invocation must still name its scope.
 
 Route elsewhere when:
 
@@ -109,11 +142,14 @@ detailed records.
 
 ## Workflow
 
-1. Inventory candidate files, statuses, gates, dependencies, reports, dirty
-   state, and all inbound references.
+1. Consume the exact completed scope from `closeout`, or resolve the named
+   scope for a direct historical-cleanup invocation. Inventory its files,
+   statuses, gates, dependencies, reports, dirty state, and inbound references.
 2. Reconcile stale projections before evaluating archive eligibility. Do not
    silently repair conflicting authority inside the archive operation.
-3. Fill the readiness checklist and stop on any required `BLOCKED` row.
+3. Fill the readiness checklist. On any required `BLOCKED` row, leave the
+   source files in place and return `ARCHIVE_DEFERRED` with the blocker and
+   deterministic resume route.
 4. Select the smallest coherent archive set and assign an `AR-XXX` ID.
 5. Compute SHA-256 for every source file before moving it.
 6. Create the archive capsule and add its row to
@@ -127,13 +163,18 @@ detailed records.
 11. Recompute SHA-256 after the move and require exact equality.
 12. Run the Cascade validator, harness catalog check when skill routing
     changed, and `git diff --check`.
-13. Report files moved, capsule path, hashes, preserved historical failures,
-    checks, and any publication action as `NOT_REQUESTED`.
+13. Return `ARCHIVED` with files moved, capsule path, hashes, preserved
+    historical failures, checks, and any publication action as
+    `NOT_REQUESTED`. Return `ARCHIVE_DEFERRED` without partial movement when
+    preflight does not pass.
 
 ## Safety Rules
 
-- Require explicit archive or compaction intent; never archive merely because
-  a status says `COMPLETE`.
+- Automatically archive only the exact set completed by the current closeout.
+  Do not sweep unrelated historical `COMPLETE` files; direct historical
+  cleanup still requires an explicit scope.
+- A `COMPLETE` label alone is insufficient. Require the accepted terminal or
+  supersession authority and every eligibility check.
 - Prefer a move over copy-and-delete so history remains reviewable.
 - Do not archive ignored runtime evidence unless the user explicitly requests
   it and retention policy permits it.
@@ -146,9 +187,14 @@ detailed records.
 - Rehydrating archived work does not make it active. A new lane or graph
   revision must explicitly reference the archive capsule and establish current
   authority.
+- Archive failure or deferral never grants permission to reopen or relabel
+  completed product work. Keep completion status and archive-maintenance status
+  separate.
 
 ## Output
 
+- archive lifecycle result: `ARCHIVED`, `ARCHIVE_DEFERRED`, or
+  `NOT_APPLICABLE`;
 - archive eligibility verdict and blocker table;
 - archive ID and compact capsule path;
 - exact source-to-destination map with pre/post SHA-256;

@@ -126,7 +126,7 @@ documents:
     description: "Current scaffold source roots, public contracts, and memory paths."
     trigger_when:
       - "Harness source roots, public contracts, memory paths, or validation commands are changing."
-  - path: scripts/build_pattern_context_pack.py
+  - path: scripts/cascade/patterns.ts
     kind: script
     description: "Builds selected text previews from pack metadata."
     trigger_when:

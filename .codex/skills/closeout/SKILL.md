@@ -1,6 +1,6 @@
 ---
 name: closeout
-description: Use at task finish or handoff to record validation evidence, durable lessons, work reports, memory-routing decisions, thin doc diffs, and final status.
+description: Use at task finish or handoff to record validation evidence, durable lessons, work reports, memory-routing decisions, thin doc diffs, final status, and the automatic archive-work disposition for completed lanes or graphs.
 ---
 
 # Closeout
@@ -25,6 +25,8 @@ Use when work is done, blocked, or ready for handoff.
    - `docs/patterns/boundaries/index.md`
    - `docs/glossary.md`
 7. Session memory and durable lesson locations.
+8. `.codex/skills/archive-work/SKILL.md` and
+   `docs/archive/work-reports/_index.md` when a lane or graph can complete.
 
 ## Checklist
 
@@ -102,25 +104,31 @@ Use when work is done, blocked, or ready for handoff.
    compact research-memory row that points to owner reports, specs, packages,
    prompts, reusable rules, and validation evidence.
 17. Do not create a generic learned-lessons dump.
-18. For active work cleanup, prune completed rows only when the user explicitly
-   asks for cleanup or the closeout scope includes registry maintenance; first
-   preserve durable evidence in `docs/work/reports/`, confirm the row is
-   complete, confirm dependencies are resolved, and remove the active row
-   instead of re-marking it as `CLOSED`.
+18. For every lane or graph that becomes complete in this closeout, first
+   preserve durable evidence in `docs/work/reports/`, confirm dependencies are
+   resolved, and remove its derived active row instead of re-marking it as
+   `CLOSED`. Incomplete or blocked work retains its current state and is not
+   archive-eligible.
    Route unresolved duplicate, stale, superseded, or conflicting workline/graph
    identity through `reconcile-work-graph` before applying a cleanup proposal.
 19. Preserve Coordination Graph entries, revisions, receipts, and evidence as
    durable history. Retire only derived active projections through the owning
    closeout route; do not invent a permanent `CLOSED` state or delete graph
-   authority merely because the goal completed. When the user explicitly asks
-   to compact or archive completed lane, graph, and report artifacts, hand the
-   already-closed set to `archive-work`; closeout itself does not move frozen
-   authority.
-20. Treat commit, push, publication, broad staging, cleanup, or reset as
+   authority merely because the goal completed.
+20. After completion evidence, report, and active-projection retirement are
+   fixed, automatically invoke `archive-work` for the exact completed set.
+   `archive-work` may return:
+   - `ARCHIVED`: the frozen set moved and validated;
+   - `ARCHIVE_DEFERRED`: completion remains valid, but archive blockers keep
+     the source set in `docs/work/`; record blocker and resume route; or
+   - `NOT_APPLICABLE`: no lane, graph, or durable work-report set exists.
+   Closeout establishes completion; `archive-work` cannot accept worklines or
+   terminal gates on its behalf.
+21. Treat commit, push, publication, broad staging, cleanup, or reset as
    separate authority. An accepted uncommitted active-worktree state may satisfy
    an implementation goal; report unrequested Git publication actions as
    `NOT_REQUESTED`, not as missing implementation evidence.
-21. Keep final handoff concise and honest about checks that did not run.
+22. Keep final handoff concise and honest about checks that did not run.
 
 ## Thin Doc Diff Rules
 
@@ -165,11 +173,11 @@ Every thin doc diff must include:
 - Durable research memory: `docs/patterns/context-memory/index.md`
 - Durable work handoff: `docs/work/reports/`
 - Completed active registry cleanup: remove `COMPLETE` rows from
-  `docs/work/active.md` only after evidence is preserved in a report and the
-  cleanup scope is explicit
+  `docs/work/active.md` in the completing closeout after evidence is preserved
+  in a report
 - Completed lane/graph/report compaction:
-  `archive-work -> docs/archive/work-reports/` only after explicit intent and
-  archive readiness
+  automatic `archive-work -> docs/archive/work-reports/` after closeout;
+  otherwise record `ARCHIVE_DEFERRED` or `NOT_APPLICABLE`
 - Durable rejected scope: existing backlog, pattern, decision, or work report,
   only when it prevents repeat bad suggestions
 - Durable workflow lessons: `.codex/skills/`, `.codex/agents/`, or
@@ -204,4 +212,5 @@ decisions, or learned lessons into `AGENTS.md`.
 - doc routing decisions;
 - thin doc diffs written or why none were needed;
 - unresolved risks or blocked checks;
+- archive result, capsule or deferral evidence, and archive resume route;
 - memory written.

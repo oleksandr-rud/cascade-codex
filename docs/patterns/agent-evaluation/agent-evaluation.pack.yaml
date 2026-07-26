@@ -90,7 +90,7 @@ documents:
     description: "Read-only independent outcome or trajectory judge role."
     trigger_when:
       - "A completed target run needs semantic adjudication."
-  - path: scripts/run_harness_evals.py
+  - path: scripts/cascade/evals.ts
     kind: script
     description: "Generates catalogs, audits the harness, executes live cases, checks eligibility, and runs independent judged evaluations."
     trigger_when:

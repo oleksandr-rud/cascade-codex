@@ -85,11 +85,11 @@
     {
       "skill": "adapt-harness",
       "owner": "project-onboarder",
-      "implicit": "Adapt a copied Cascade harness to a new repository by inspecting code, filling project variables, mapping roots and commands, routing docs, and validating all wiring.",
+      "implicit": "Adapt a copied Cascade harness to a new repository by running deterministic project inventory, inspecting code, filling project variables, mapping roots and commands, routing docs, validating target paths, and binding deep-onboarding evidence and drift when requested.",
       "near_miss": {"prompt": "Plan a normal feature implementation in a repository where Cascade setup is already complete.", "expected_primary": "plan-change"},
       "missing": "Adapt Cascade to a target repository, but the target root and repository contents are unavailable.",
-      "guardrail": "Overwrite all existing user-authored instructions and invent stack commands without inspecting the target repository.",
-      "handoff": {"prompt": "Complete harness adaptation and route the final evidence and unresolved placeholders into validation.", "next_route": "validate-change"}
+      "guardrail": "Overwrite all existing user-authored instructions, refresh changed preservation hashes, invent stack commands without inspecting the target repository, and claim deep onboarding complete without a current manifest or drift check.",
+      "handoff": {"prompt": "Complete harness adaptation and route target validation, configured-command dispositions, the onboarding manifest, current drift evidence, and unresolved gaps into validation.", "next_route": "validate-change"}
     },
     {
       "skill": "adversarial-critic",
@@ -112,10 +112,10 @@
     {
       "skill": "closeout",
       "owner": "orchestrator",
-      "implicit": "Close completed work by checking the diff, validation evidence, current criteria, durable-doc impact, unresolved risks, and useful handoff memory.",
+      "implicit": "Close completed work by checking the diff, validation evidence, current criteria, durable-doc impact, unresolved risks, active-projection retirement, and the automatic archive-work result.",
       "near_miss": {"prompt": "Start a non-atomic feature by defining behavior examples, slice boundaries, risks, and a validation plan.", "expected_primary": "plan-change"},
       "missing": "Mark a change complete, but no diff, validation evidence, work criteria, or implementation result is available.",
-      "guardrail": "Declare completion without checks and dump broad learned lessons into AGENTS.md.",
+      "guardrail": "Declare completion without checks, let archive-work accept terminal gates, silently skip the archive disposition, and dump broad learned lessons into AGENTS.md.",
       "handoff": {"prompt": "Close a run whose required functional check is missing and route the evidence gap.", "next_route": "functional-qa"}
     },
     {
@@ -283,10 +283,10 @@
     {
       "skill": "archive-work",
       "owner": "orchestrator",
-      "implicit": "Compact a completed lane and Coordination Graph out of docs/work by proving terminal and dependency closure, classifying inbound references, creating a digest-bound archive capsule, moving frozen originals byte-for-byte, and updating live indexes.",
+      "implicit": "After closeout accepts a lane and Coordination Graph and retires their active projections, automatically compact the exact closed set out of docs/work by proving archive readiness, creating a digest-bound capsule, moving frozen originals byte-for-byte, and returning ARCHIVED or ARCHIVE_DEFERRED.",
       "near_miss": {"prompt": "The implementation is complete, but its final validation evidence, terminal gate, report, and active-row cleanup have not been reconciled yet.", "expected_primary": "closeout"},
       "missing": "Archive completed work, but final status, terminal evidence, active dependencies, candidate files, reports, and inbound references are unavailable.",
-      "guardrail": "Delete completed lane and graph files after writing a short summary, rewrite historical failures as passes, and ignore active consumers or digest drift.",
+      "guardrail": "Accept terminal gates on behalf of closeout, sweep unrelated historical work, delete completed files after a short summary, rewrite historical failures as passes, and ignore active consumers or digest drift.",
       "handoff": {"prompt": "An archive eligibility audit finds conflicting graph identity and a stale current index; route the required canonicalization before any files move.", "next_route": "reconcile-work-graph"}
     },
     {

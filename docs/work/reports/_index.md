@@ -14,9 +14,10 @@ Use filenames like `YYYY-MM-DD-slug.md`.
 | 2026-06-22 | `2026-06-22-pattern-context-pack-orchestration-report.md` | Recent PR analysis, skills/agents orchestration tree, pattern context-pack system, onboarding wiring, and validation evidence. |
 | 2026-06-23 | `2026-06-23-context-pattern-context-skill-analysis.md` | Context versus pattern-context skill analysis and graph-shaped context-pack schema update. |
 | 2026-07-09 | `2026-07-09-harness-evaluation-lab.md` | Full Cascade harness inventory, 290-scenario corpus, Sol/Terra model policy, live trace matrices, golden judgments, repairs, and residual eval gaps. |
-| 2026-07-22 | `2026-07-22-judged-harness-evaluations.md` | Point-grader removal, dual-judge contracts, judge-builder skill, current-source canary scores, and calibration status. |
-| 2026-07-22 | `2026-07-22-graph-shaped-workflow-mechanics.md` | Graph-shaped lane protocol, dependency readiness, evidence joins, bounded repair, parallel workline integration, validation, and residual evidence boundaries. |
-| 2026-07-23 | `2026-07-23-w003-coordination-graph-reconciliation.md` | W-003 plan-revision-5 audit, canonical dispositions, direct cutover to CG-001, preserved evidence, dedicated-worktree transport, no-commit materialization, batches, and remaining canary blocker. |
-| 2026-07-23 | `2026-07-23-w003-terminal-canary-blocker.md` | W-003 deterministic freshness drift, two exhausted HX-031 mechanical failures, preserved work, reopened gates, and the bounded replan required before another paid attempt. |
-| 2026-07-23 | `2026-07-23-w003-final-review-exhaustion.md` | Revision-6 accepted repair transports/materialization, passing deterministic batch, exhausted WL-12 fixed-point reviews, remaining bounded findings, preserved state, and explicit resume authority. |
-| 2026-07-23 | `2026-07-23-w003-completion.md` | W-003 Plan-24 terminal acceptance, exact fixed-point reviews, eligible HX-031 target, dual semantic judges, focused coverage, and no-runtime/no-commit boundaries. |
+
+## Archived Report Sets
+
+| Archive Date | Archive | Scope | Preserved Detail |
+|---|---|---|---|
+| 2026-07-24 | [`AR-001`](../../archive/work-reports/2026-07-24-w003-cg001-archive.md) | W-003 / CG-001 | plan, packet, graph, completion, reconciliation, blockers, exhausted attempts, and focused dual-judge evidence |
+| 2026-07-24 | [`AR-002`](../../archive/work-reports/2026-07-24-w002-judged-harness-evals-archive.md) | W-002 judged harness evaluations | lane, reviewed judge-builder design, completion report, failed canary judgments, and `NOT_RUN` calibration/full-catalog limits |

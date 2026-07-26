@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "id": "browser-simulation-smoke",
+  "title": "Browser task simulation smoke",
+  "purpose": "Execute a deterministic browser task against a controlled fixture and preserve Playwright evidence.",
+  "mode": "deterministic",
+  "tasks": [
+    {
+      "task_file": "evals/tasks/browser-task-smoke.json"
+    }
+  ]
+}

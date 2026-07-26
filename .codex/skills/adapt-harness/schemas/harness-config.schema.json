@@ -1,0 +1,100 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://cascade.local/schemas/harness-config.schema.json",
+  "title": "Cascade target harness configuration",
+  "type": "object",
+  "required": [
+    "project",
+    "models",
+    "paths",
+    "validation_commands",
+    "routing",
+    "functional_acceptance",
+    "memory",
+    "patterns"
+  ],
+  "properties": {
+    "project": {
+      "type": "object",
+      "required": [
+        "name",
+        "kind",
+        "primary_users",
+        "stack"
+      ]
+    },
+    "models": {
+      "type": "object",
+      "required": [
+        "default",
+        "planning",
+        "judged_evaluation",
+        "subagent_execution",
+        "read_heavy"
+      ],
+      "properties": {
+        "default": {
+          "type": "string"
+        },
+        "planning": {
+          "type": "string"
+        },
+        "judged_evaluation": {
+          "type": "string"
+        },
+        "subagent_execution": {
+          "type": "string"
+        },
+        "read_heavy": {
+          "type": "string"
+        }
+      },
+      "not": {
+        "required": [
+          "golden_evaluation"
+        ]
+      }
+    },
+    "paths": {
+      "type": "object",
+      "required": [
+        "source_roots",
+        "test_roots",
+        "app_entrypoints",
+        "public_contracts",
+        "docs_root",
+        "structure",
+        "glossary",
+        "active_work",
+        "patterns",
+        "pattern_context_builder",
+        "harness_eval_runner"
+      ]
+    },
+    "validation_commands": {
+      "type": "object",
+      "required": [
+        "install",
+        "targeted",
+        "unit",
+        "lint",
+        "typecheck",
+        "build",
+        "functional",
+        "e2e"
+      ]
+    },
+    "routing": {
+      "type": "object"
+    },
+    "functional_acceptance": {
+      "type": "object"
+    },
+    "memory": {
+      "type": "object"
+    },
+    "patterns": {
+      "type": "object"
+    }
+  }
+}

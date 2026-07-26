@@ -143,7 +143,7 @@ documents:
     description: "Closeout route for durable memory decisions."
     trigger_when:
       - "A completed task needs durable lessons, memory routing, or thin doc diffs."
-  - path: scripts/build_pattern_context_pack.py
+  - path: scripts/cascade/patterns.ts
     kind: script
     description: "Builds selected text previews from pack metadata."
     trigger_when:

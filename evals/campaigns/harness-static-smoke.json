@@ -1,0 +1,114 @@
+{
+  "schema_version": 1,
+  "id": "harness-static-smoke",
+  "title": "Harness deterministic static smoke",
+  "purpose": "Prove Bun validator, catalog, self-test, and context-pack behavior without model or browser execution.",
+  "mode": "deterministic",
+  "tasks": [
+    {
+      "id": "VALIDATE",
+      "kind": "command",
+      "command": [
+        "bun",
+        "scripts/cascade.ts",
+        "validate"
+      ],
+      "required": true,
+      "inputs": [
+        "scripts/cascade.ts",
+        "scripts/cascade/validate.ts",
+        "harness.config.yaml",
+        ".codex/config.toml"
+      ],
+      "timeout_ms": 30000
+    },
+    {
+      "id": "CATALOG",
+      "kind": "command",
+      "command": [
+        "bun",
+        "scripts/cascade.ts",
+        "eval",
+        "catalog",
+        "--check"
+      ],
+      "required": true,
+      "inputs": [
+        "scripts/cascade.ts",
+        "scripts/cascade/evals.ts",
+        "evals/harness/skill-cases.json",
+        "evals/harness/interactions.json",
+        "evals/harness/scenarios.generated.json"
+      ],
+      "timeout_ms": 30000
+    },
+    {
+      "id": "SELF-TEST",
+      "kind": "command",
+      "command": [
+        "bun",
+        "scripts/cascade.ts",
+        "eval",
+        "self-test"
+      ],
+      "required": true,
+      "inputs": [
+        "scripts/cascade.ts",
+        "scripts/cascade/evals.ts",
+        "evals/harness/response.schema.json",
+        "evals/harness/judge-response.schema.json"
+      ],
+      "timeout_ms": 30000
+    },
+    {
+      "id": "TARGET-SELF-TEST",
+      "kind": "command",
+      "command": [
+        "bun",
+        "scripts/cascade.ts",
+        "target",
+        "self-test"
+      ],
+      "required": true,
+      "inputs": [
+        "scripts/cascade.ts",
+        "scripts/cascade/target.ts",
+        ".codex/skills/adapt-harness/schemas/onboarding-manifest.schema.json",
+        "evals/harness/fixtures/onboarding/basic-project/harness.config.yaml"
+      ],
+      "timeout_ms": 30000
+    },
+    {
+      "id": "UNIT-TEST",
+      "kind": "command",
+      "command": [
+        "bun",
+        "test",
+        "scripts/cascade"
+      ],
+      "required": true,
+      "inputs": [
+        "scripts/cascade/common.ts",
+        "scripts/cascade/common.test.ts"
+      ],
+      "timeout_ms": 30000
+    },
+    {
+      "id": "PATTERN-PACKS",
+      "kind": "command",
+      "command": [
+        "bun",
+        "scripts/cascade.ts",
+        "patterns",
+        "--list-packs"
+      ],
+      "required": true,
+      "inputs": [
+        "scripts/cascade.ts",
+        "scripts/cascade/patterns.ts",
+        "docs/patterns/context-pack-schema.yaml"
+      ],
+      "timeout_ms": 30000
+    }
+  ]
+}

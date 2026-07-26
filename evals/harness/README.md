@@ -24,16 +24,16 @@ to prove it is current.
 ## Commands
 
 ```bash
-python3 scripts/run_harness_evals.py catalog --write
-python3 scripts/run_harness_evals.py catalog --check
-python3 scripts/run_harness_evals.py audit
-python3 scripts/run_harness_evals.py self-test
-python3 scripts/run_harness_evals.py run \
+bun scripts/cascade.ts eval catalog --write
+bun scripts/cascade.ts eval catalog --check
+bun scripts/cascade.ts eval audit
+bun scripts/cascade.ts eval self-test
+bun scripts/cascade.ts eval run \
   --case-kind implicit-trigger \
   --case-kind near-miss
-python3 scripts/run_harness_evals.py judge \
+bun scripts/cascade.ts eval judge \
   --run-dir .artifacts/harness-evals/<run-id>
-python3 scripts/run_harness_evals.py coverage --list-missing
+bun scripts/cascade.ts eval coverage --list-missing
 ```
 
 Live runs are serial by default. Use `--scenario`, `--skill`, `--limit`, and
@@ -50,6 +50,12 @@ blocked or failed traces, missing judges, invalid ratings, and any required
 judge failure before claiming accepted coverage.
 It reports trace-complete execution separately from acceptance so confirmed
 regressions remain counted as executed without being converted into passes.
+
+The deterministic `self-test` also copies
+`fixtures/onboarding/basic-project/` into a temporary target and proves project
+inventory, target-config/path rejection, complete onboarding evidence,
+project-part/doc-routing checks, preservation hashes, and source drift without
+running a live model or configured target commands.
 
 The default `execution` profile pins read-heavy target probes to
 `gpt-5.6-terra`. Use `--model-profile planning` to pin planning or synthesis

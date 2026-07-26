@@ -12,7 +12,7 @@ Current scaffold boundaries:
 | Harness skills | `.codex/skills/` | Cascade maintainers | Reusable workflow contracts and templates. |
 | Harness agents | `.codex/agents/` | Cascade maintainers | Role manifests, instructions, and skill maps. |
 | Durable docs | `docs/` | Project maintainers | Product, design, spec, work, glossary, and pattern memory. |
-| Validation script | `scripts/validate_cascade_codex.py` | Project maintainers | Primary executable check for the current scaffold. |
+| Validation script | `scripts/cascade/validate.ts` | Project maintainers | Primary executable check for the current scaffold. |
 | Public contracts | `AGENTS.md`; `CODEX.md`; `harness.config.yaml`; `.codex/config.toml` | Project maintainers | Agent boot contract, runtime bridge, adapter config, and harness registry. |
 | UI/features | none yet | Project maintainers | Add source roots and ownership when application implementation starts. |
 | State/store | `docs/work/` | Project maintainers | Active work state, lane packets, examples, and reports. |

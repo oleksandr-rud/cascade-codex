@@ -23,7 +23,7 @@ judge as proof of a mechanical invariant.
 4. Target `.codex/skills/{skill}/SKILL.md`, owning role contract, and
    `skills.yaml`.
 5. `AGENTS.md`, `CODEX.md`, `.codex/config.toml`, `docs/structure.md`, and
-   `scripts/validate_cascade_codex.py`.
+   `scripts/cascade/validate.ts`.
 6. `docs/patterns/agent-evaluation/index.md` and
    `references/trace-schema.md`.
 7. Current diff and repeated-run evidence when diagnosing a regression.
@@ -139,15 +139,15 @@ batch or terminal transition.
 ## Commands
 
 ```bash
-python3 scripts/run_harness_evals.py catalog --write
-python3 scripts/run_harness_evals.py catalog --check
-python3 scripts/run_harness_evals.py audit
-python3 scripts/run_harness_evals.py self-test
-python3 scripts/run_harness_evals.py run --case-kind implicit-trigger --case-kind near-miss
-python3 scripts/run_harness_evals.py run --model-profile planning --skill plan-change --skill orchestrate-work
-python3 scripts/run_harness_evals.py evaluate --run-dir .artifacts/harness-evals/<run-id>
-python3 scripts/run_harness_evals.py judge --run-dir .artifacts/harness-evals/<run-id>
-python3 scripts/run_harness_evals.py coverage --list-missing
+bun scripts/cascade.ts eval catalog --write
+bun scripts/cascade.ts eval catalog --check
+bun scripts/cascade.ts eval audit
+bun scripts/cascade.ts eval self-test
+bun scripts/cascade.ts eval run --case-kind implicit-trigger --case-kind near-miss
+bun scripts/cascade.ts eval run --model-profile planning --skill plan-change --skill orchestrate-work
+bun scripts/cascade.ts eval evaluate --run-dir .artifacts/harness-evals/<run-id>
+bun scripts/cascade.ts eval judge --run-dir .artifacts/harness-evals/<run-id>
+bun scripts/cascade.ts eval coverage --list-missing
 ```
 
 Coverage accepts a trace only when its complete selected-scenario object and

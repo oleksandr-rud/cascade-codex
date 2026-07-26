@@ -5,6 +5,8 @@ Created: YYYY-MM-DD
 Workflow: `<target-project-onboarding>`
 Workflow model: `sequential-pipeline`
 Merge owner: `project-onboarder`
+Inventory digest: `<sha256>`
+Onboarding manifest: `docs/work/onboarding-manifest.json`
 
 ## Objective
 
@@ -13,6 +15,23 @@ feature, stack, architecture, security, design, brand, visual, validation, and
 context-memory specs without inventing facts or creating broad dump folders.
 When reusable pattern memory is needed, create bounded pattern entries through
 `pattern-context` with metadata and pack YAML.
+
+## Mechanical Evidence Commands
+
+```bash
+bun scripts/cascade.ts target inventory --root .
+bun scripts/cascade.ts validate --target
+bun scripts/cascade.ts target init-manifest
+bun scripts/cascade.ts target probe-commands
+# Fill phase, project-part, documentation, and validation dispositions.
+bun scripts/cascade.ts target refresh-manifest
+bun scripts/cascade.ts validate --target \
+  --require-onboarding-complete
+bun scripts/cascade.ts target drift
+```
+
+`refresh-manifest` may accept intentional config/source changes made during
+onboarding, but it must never alter or bless a changed preservation hash.
 
 ## Agent And Global Skill Inventory
 
@@ -56,8 +75,8 @@ When reusable pattern memory is needed, create bounded pattern entries through
 
 | Step | Status | Owner Route | Skill Calls | Source Order | Output | Validation | Handoff |
 |---|---|---|---|---|---|---|---|
-| `ON-00` | `<open>` | `project-onboarder` | `context`, `adapt-harness` | request, repo root, branch, existing harness/docs/manifests | source inventory and blockers | no writes before inventory | `ON-01` |
-| `ON-01` | `<open>` | `project-onboarder` | `adapt-harness` | manifests, build files, test config, README, entrypoints | stack, roots, commands, runners | paths and commands are real or marked blocked | `ON-02` |
+| `ON-00` | `<open>` | `project-onboarder` | `context`, `adapt-harness` | request, deterministic inventory, repo root, branch, existing harness/docs/manifests | inventory digest, source snapshot, source inventory, blockers | `bun scripts/cascade.ts target inventory`; no writes before inventory | `ON-01` |
+| `ON-01` | `<open>` | `project-onboarder` | `adapt-harness` | inventory, manifests, build files, test config, README, entrypoints | stack, roots, commands, runners, initialized manifest | target config passes; `.pre-cascade` hashes captured | `ON-02` |
 | `ON-02` | `<open>` | `project-onboarder` | `adapt-harness`, `architecture-review` | source roots, tests, public contracts | project-part spec list and first packets | one packet per justified area, skipped areas explained | `ON-03` |
 | `ON-03` | `<open>` | `project-onboarder` | `architecture-review`, `docs-impact-map`, `pattern-context` | project-part packets, boundaries, glossary | boundary, vocabulary, and pattern-entry updates | Doc Routing Decision Matrix rows and pack metadata when changed | `ON-04` |
 | `ON-04` | `<open>` | `security` or `project-onboarder` | `codebase-audit`, `auth-analysis`, `secure-design`, `pattern-context` | auth, data, config, API, adapters, logs docs | security/data notes and validation probes | sensitive data omitted, risks separated from evidence; no broad security dump | `ON-05` |
@@ -65,7 +84,7 @@ When reusable pattern memory is needed, create bounded pattern entries through
 | `ON-06` | `<open>` | `designer` or `project-onboarder` | `visual-qa`, `ux-flow-review`, `design-system`, `brand-positioning` | running app, screenshots, UI code, design and brand docs | visual/design/brand/product deltas | viewport/state evidence or blocked reason | `ON-07` |
 | `ON-07` | `<open>` | `project-onboarder` | `functional-qa`, `docs-impact-map`, `pattern-context` | feature specs, scenarios, public contracts, runners | acceptance and test map | no missing required check marked pass; reusable validation packs updated only when durable | `ON-08` |
 | `ON-08` | `<open>` | `project-onboarder` | `docs-impact-map`, `pattern-context`, `closeout` | all durable facts and owner docs | context-memory, pattern context, and doc routing matrix | narrow owner for every retained fact | `ON-09` |
-| `ON-09` | `<open>` | `project-onboarder` | `validate-change`, `closeout` | changed files, validator, target checks | validation and handoff | validator and available target checks recorded | done |
+| `ON-09` | `<open>` | `project-onboarder` | `validate-change`, `closeout` | changed files, refreshed manifest, preservation hashes, drift report, validator, target checks | validation and handoff | target validator requires a complete current manifest; available target checks recorded | done |
 
 ## Write Scope
 
@@ -84,6 +103,7 @@ Allowed:
 - `docs/patterns/{entry}/index.md`
 - `docs/patterns/{entry}/*.pack.yaml`
 - `docs/work/active.md`
+- `docs/work/onboarding-manifest.json`
 - `docs/work/lanes/`
 - `docs/work/reports/`
 
@@ -101,12 +121,16 @@ Forbidden:
 
 ```text
 Use project-onboarder with adapt-harness as the merge owner. Inspect the target
-repository before writing. Fill configuration and docs only from observed
-sources. Produce project-part specs with templates/project-part-spec.md when a
+repository before writing. Run the deterministic project inventory first and
+bind deep-onboarding evidence to docs/work/onboarding-manifest.json. Fill
+configuration and docs only from observed sources. Produce project-part specs
+with templates/project-part-spec.md when a
 project area has independent behavior or validation risk. Route durable facts
 through docs-impact-map and the existing owner docs. Keep AGENTS.md thin. Run
 the Cascade validator and available target checks before closeout. Use
-pattern-context for bounded pattern entries and context packs.
+pattern-context for bounded pattern entries and context packs. Preserve
+.pre-cascade hashes, refresh only intentional source/config changes, and
+require current drift plus target-mode validation before completion.
 ```
 
 ### P-02: Designer Support
@@ -139,7 +163,7 @@ validator, workflow, source context, connector, memory-routing, observability,
 or eval changes. Keep prompt rules separate from mechanical validator, schema,
 permission, hook, or test invariants. Preserve project-neutral Cascade
 surfaces and update validators when a new required artifact is added. Use
-scripts/build_pattern_context_pack.py to verify pattern-pack previews when
+`bun scripts/cascade.ts patterns` to verify pattern-pack previews when
 pack metadata changes.
 ```
 
@@ -158,5 +182,7 @@ Onboarding is done when the harness points at real project roots and commands,
 project facts have narrow owner docs, project-part specs are written or skipped
 with reasons, feature specs and acceptance routes are recorded, visual/design
 and brand evidence is routed when available, security and architecture facts
-have owners, context-memory and pattern-context routing are explicit, and
-validation evidence or blockers are recorded.
+have owners, context-memory and pattern-context routing are explicit, the
+schema-backed manifest covers all phases and routing decisions, preserved-file
+hashes match, drift is current, and target-mode validation evidence or blockers
+are recorded.

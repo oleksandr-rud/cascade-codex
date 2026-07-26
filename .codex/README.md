@@ -2,11 +2,22 @@
 
 This directory contains reusable workflow skills and role contracts.
 
+## Harness Tooling
+
+`.codex/harness-tooling/` is the isolated dependency boundary for browser
+simulations. Install it with
+`bun install --cwd .codex/harness-tooling --frozen-lockfile`; do not replace or
+merge a target application's root package manifest or lockfile.
+
 ## Skills
 
 Core cascade:
 
 `context -> ingest-spec/discover/market-validation/synthesis-to-spec/compose-spec if needed -> docs-impact-map -> pattern-context when reusable pattern packs are needed -> orchestrate-work -> plan-change -> functional-qa -> implement-change -> review-change -> validate-change -> test-autorepair only if stale tests -> closeout`
+
+When a lane or Coordination Graph completes, `closeout` automatically chains
+`archive-work` for the exact closed set. The archive result is `ARCHIVED`,
+`ARCHIVE_DEFERRED`, or `NOT_APPLICABLE`; this is not a background scheduler.
 
 Supporting skills:
 
@@ -45,7 +56,8 @@ Supporting skills:
 
 - `orchestrator`: orchestrates the cascade.
 - `project-onboarder`: orchestrates new-project setup, harness adaptation,
-  config/docs migration, validation, and setup handoff.
+  deterministic project inventory, config/docs migration, schema-backed
+  onboarding evidence, preservation/drift validation, and setup handoff.
 - `agent-engineer`: owns Cascade maintenance plus target-project agent/LLM
   system design, Codex surface best practices, agentic workflow checklists,
   source-context, skill, tool-contract, observability, and eval guidance.

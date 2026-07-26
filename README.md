@@ -13,20 +13,24 @@ harness combines a thin boot contract, a runtime bridge, adapter
 configuration, role contracts, reusable skills, documentation write targets,
 work-lane tracking, and release validation into one reusable package.
 
+The harness tooling runtime is Bun, but the target repository is stack-neutral.
+Inventory, configured checks, and campaign tasks may describe Node, Bun,
+Python, Go, Rust, Java, or mixed systems. Bun improves startup, direct
+TypeScript execution, and distribution simplicity; model calls and browser
+runs remain the dominant latency in live evaluations.
+
 ## Current Snapshot
 
 - Harness name: `cascade`
 - Runtime bridge: `CODEX.md`
 - Adapter template: `harness.config.example.yaml`
 - Local role contracts: 7
-- Registered skills: 39
+- Registered skills: 41
 - Canonical skill and role source: `.codex/skills/` and `.codex/agents/`
 - Planning and judge model: `gpt-5.6-sol`
 - Read-heavy execution model: `gpt-5.6-terra`
-- Validator: `python3 scripts/validate_cascade_codex.py`
-
-The validator filename and output label still use `cascade_codex` as a stable
-compatibility name. Treat that as a path/API label, not the product name.
+- Tooling runtime: Bun `1.3.3`
+- Validator: `bun scripts/cascade.ts validate`
 
 ## What It Ships
 
@@ -35,10 +39,14 @@ compatibility name. Treat that as a path/API label, not the product name.
 | `AGENTS.md` | Thin boot contract for coding agents: project identity, hard guardrails, validation commands, operating rules, and pointers only. |
 | `CODEX.md` | Runtime bridge: load order, canonical task route, optional escalations, role references, work packets, write targets, and closeout evidence rules. |
 | `.codex/config.toml` | Harness registry: name, bridge path, config template, canonical route, memory roots, MCP server config, and role registry. |
+| `.codex/harness-tooling/` | Isolated pinned Bun/Playwright package; installing it never mutates the target application's root package manifest or lockfile. |
 | `.codex/skills/` | Reusable workflow skills with trigger-focused frontmatter, source order, output contracts, templates, checklists, and references where needed. |
 | `.codex/agents/` | Codex-compatible custom-agent TOML files plus local role contracts, skill maps, delegation policy, and specialist checklists. |
 | `evals/harness/` | Curated per-skill cases, cross-skill collisions, a generated catalog, judge profiles, anchored rubrics, and response schemas. |
+| `evals/tasks/`, `evals/campaigns/` | Reusable typed execution tasks and immutable campaign plans for deterministic commands, browser simulations, or agent-response evaluations. |
+| `evals/simulations/` | Controlled product-like browser fixtures and Playwright task probes. |
 | `.artifacts/harness-evals/` | Ignored local JSONL traces, normalized runs, deterministic grades, and reports. |
+| `.artifacts/campaigns/` | Ignored immutable campaign manifests, task logs, evidence digests, and summaries. |
 | `harness.config.example.yaml` | Target-repository adapter template for stack, roots, validation commands, routing, functional acceptance, memory, tracker, and pattern paths. |
 | `docs/structure.md` | Folder/write-target map for specs, product, design, brand, active work, backlog, patterns, and architecture facts. |
 | `docs/patterns/` | Reusable workflow, boundary, testing, and context-memory entries with YAML metadata and selectable context packs. |
@@ -46,7 +54,8 @@ compatibility name. Treat that as a path/API label, not the product name.
 | `docs/archive/work-reports/` | Compact archive capsules and relocated frozen completed-work artifacts. |
 | `docs/specs/`, `docs/product/`, `docs/design/`, `docs/brand/` | Durable owner docs for source material, per-slice spec packets, product intent, design constraints, and naming/content direction. |
 | `docs/backlog/`, `docs/glossary.md` | Follow-up candidates and shared codebase/product vocabulary. |
-| `scripts/validate_cascade_codex.py` | Packaging and consistency validator for a complete Cascade distribution. |
+| `scripts/cascade.ts` | Bun entrypoint for validation, target inventory, pattern packs, harness evals, and campaigns. |
+| `scripts/cascade/` | Focused TypeScript modules for each harness-tooling responsibility. |
 
 `CODEX.md`, `docs/structure.md`, `docs/patterns/`, and the validator also
 reserve `.codex/skills/` and `.codex/agents/` as the canonical locations for
@@ -80,10 +89,11 @@ Cascade does not add a graph runtime or replace the agent's reasoning and tool
 loop, and graph materialization never implies committing or publishing the
 active worktree.
 
-After closeout, completed lanes and graphs remain in `docs/work/` until an
-explicit `archive-work` request proves terminal and dependency closure,
-classifies inbound references, creates a digest-bound capsule, and moves frozen
-originals to `docs/archive/work-reports/` without rewriting their evidence.
+After a lane or graph completes, `closeout` retires its active projection and
+automatically chains `archive-work`. Eligible frozen originals move to
+`docs/archive/work-reports/` behind a digest-bound capsule; blocked archive
+maintenance returns `ARCHIVE_DEFERRED` without undoing completion. This is an
+instruction-driven same-turn chain, not a background scheduler.
 
 Planning composes these flows from reusable definitions under
 `docs/patterns/workflow/fragments/`. Product, design, prototype, contract,
@@ -173,7 +183,7 @@ Cascade keeps durable facts in owner docs instead of growing prompt files:
 Pattern entries include `index.md` and one or more `*.pack.yaml` files. Pack
 YAML owns `summary`, `routing`, graph-like `documents`, and selectable
 document `sections`. Use
-`python3 scripts/build_pattern_context_pack.py --list-packs` to inspect
+`bun scripts/cascade.ts patterns --list-packs` to inspect
 available packs and `--pack`, `--section`, `--tag`, or `--query` to compile
 only the needed rule text.
 
@@ -189,6 +199,14 @@ Start from a clean Cascade checkout or release bundle, then copy the harness
 into the target repository root. Review collisions first if the target already
 has `AGENTS.md`, `CODEX.md`, `.codex/`, `docs/`, or `scripts/`.
 
+Prerequisites are Bun `1.3.3` and, only for browser-task campaigns, a
+Playwright browser installed with
+`bun run --cwd .codex/harness-tooling playwright install chromium`.
+
+Cascade's browser dependency is isolated under `.codex/harness-tooling/`.
+Never replace or merge the target application's root `package.json` or lockfile
+to install Cascade.
+
 ```bash
 export CASCADE_SRC=/path/to/cascade
 export TARGET_REPO=/path/to/target-repo
@@ -196,17 +214,21 @@ export TARGET_REPO=/path/to/target-repo
 rsync -a --backup --suffix=.pre-cascade \
   --exclude '.git/' \
   --exclude '.DS_Store' \
+  --exclude 'node_modules/' \
   "$CASCADE_SRC"/AGENTS.md \
   "$CASCADE_SRC"/CODEX.md \
   "$CASCADE_SRC"/harness.config.example.yaml \
   "$CASCADE_SRC"/.codex \
   "$CASCADE_SRC"/docs \
+  "$CASCADE_SRC"/evals \
   "$CASCADE_SRC"/scripts \
   "$TARGET_REPO"/
 
 cd "$TARGET_REPO"
 cp harness.config.example.yaml harness.config.yaml
-python3 scripts/validate_cascade_codex.py
+bun install --cwd .codex/harness-tooling --frozen-lockfile
+bun scripts/cascade.ts validate
+bun scripts/cascade.ts target inventory --root .
 ```
 
 Keep the target project's existing `README.md` unless you intentionally want
@@ -217,15 +239,16 @@ After copying, ask Codex to adapt the harness from the target repository root.
 For a normal setup pass:
 
 ```text
-/goal Adapt Cascade to this repository. Inspect the current code, docs,
+/goal Adapt Cascade to this repository. Run the deterministic project inventory,
+then inspect the current code, docs,
 AGENTS.md, CODEX.md, .codex/, package files, build files, test config,
 entrypoints, public contracts, and README files before writing. Use
 project-onboarder with adapt-harness to fill AGENTS.md, CODEX.md,
 harness.config.yaml, docs/structure.md, docs/glossary.md, validation commands,
 and doc routing. Preserve user-authored instructions unless replacement is
 required. Keep AGENTS.md thin, route project facts to the narrowest owner docs,
-run python3 scripts/validate_cascade_codex.py, run available target checks, and
-close with files changed, skipped, blockers, and next routes.
+run bun scripts/cascade.ts validate --target, run available target
+checks, and close with files changed, skipped, blockers, and next routes.
 ```
 
 For a deeper onboarding pass that builds future planning context:
@@ -240,8 +263,12 @@ Catalog product features from routes, UI surfaces, APIs, tests, specs, docs,
 and user-facing copy. Use visual-qa when the UI can run or screenshots/design
 evidence exists. Route product, design, brand, spec, security, architecture,
 testing, glossary, and context-memory facts to the narrowest existing owner
-docs. Do not create broad dump folders. Validate and close out with evidence,
-blocked checks, and follow-up routes.
+docs. Create docs/work/onboarding-manifest.json after target configuration is
+valid, preserve .pre-cascade hashes, record every ON-00 through ON-09,
+project-part, doc-routing, and validation disposition, then refresh the
+intentional source snapshot without changing preservation hashes. Do not create
+broad dump folders. Require target validation, complete current onboarding
+evidence, and a current drift result before closeout.
 ```
 
 Manual setup still works when an agent is unavailable:
@@ -254,8 +281,10 @@ Manual setup still works when an agent is unavailable:
    guide future work.
 3. Add the release-bundle `.codex/skills/` and `.codex/agents/` assets when the
    target runtime should load reusable Cascade skills or role contracts.
-4. Run `python3 scripts/validate_cascade_codex.py` from the repository root
-   after the full package is present.
+4. Run `bun scripts/cascade.ts validate --target` from the repository
+   root after configuration is adapted. For deep onboarding, initialize and
+   complete `docs/work/onboarding-manifest.json`, then add
+   `--require-onboarding-complete`.
 
 ## Validation
 
@@ -265,26 +294,65 @@ references, stale naming, project-specific leakage, and product traceability. A
 complete Cascade release should pass:
 
 ```bash
-python3 scripts/validate_cascade_codex.py
+bun install --cwd .codex/harness-tooling --frozen-lockfile
+bun scripts/cascade.ts validate
+bun scripts/cascade.ts target self-test
 ```
 
 Expected output includes:
 
 ```text
-cascade_codex_status=PASS
+cascade_status=PASS
 agents=7
-skills=39
+skills=41
 project_specific_leakage=0
-standalone_qa_refs=0
 ```
 
 Run deterministic harness-eval checks with:
 
 ```bash
-python3 scripts/run_harness_evals.py catalog --check
-python3 scripts/run_harness_evals.py self-test
-python3 scripts/run_harness_evals.py audit --runtime
+bun scripts/cascade.ts eval catalog --check
+bun scripts/cascade.ts eval self-test
+bun scripts/cascade.ts eval audit --runtime
 ```
 
 Run repository-specific install, test, typecheck, lint, build, functional, and
 end-to-end commands from the values filled into `harness.config.yaml`.
+
+The target-project analysis CLI never executes configured install or test
+commands implicitly:
+
+```bash
+bun scripts/cascade.ts target inventory --root .
+bun scripts/cascade.ts target init-manifest
+bun scripts/cascade.ts target probe-commands
+bun scripts/cascade.ts target refresh-manifest
+bun scripts/cascade.ts validate --target \
+  --require-onboarding-complete
+bun scripts/cascade.ts target drift
+```
+
+## Campaigns And Browser Simulations
+
+A campaign is a versioned execution plan, not a test result. It groups typed
+tasks, records the exact campaign and reusable-task digests, executes argv
+arrays without a shell, and writes immutable local evidence under
+`.artifacts/campaigns/<run-id>/`.
+
+- `command` tasks run deterministic harness or target commands.
+- `browser` tasks run Playwright against a controlled fixture or application.
+- `agent-response` tasks invoke the read-only harness-eval runner and retain its
+  separate trace and judge evidence.
+
+Playwright is required only for `browser` tasks. It supplies isolated browser
+contexts, user-visible locators, screenshots/traces, and repeatable UI state;
+it does not by itself give an autonomous agent browser-tool permission. An
+agent that must explore an arbitrary live UI still needs a separately
+configured, permissioned browser-tool adapter.
+
+```bash
+bun scripts/cascade.ts campaign list
+bun scripts/cascade.ts campaign validate harness-static-smoke
+bun scripts/cascade.ts campaign run harness-static-smoke
+bun scripts/cascade.ts campaign run browser-simulation-smoke
+```

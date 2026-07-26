@@ -9,11 +9,11 @@ project:
     - "Coding agents working in this repository"
   stack:
     backend:
-      language: "Python for harness validation only"
+      language: "TypeScript for harness tooling only"
       framework: "none yet"
-      package_manager: "none yet"
+      package_manager: "Bun"
       runtime:
-        - "Python 3.14+"
+        - "Bun 1.3.3"
     frontend:
       language: "none yet"
       framework: "none yet"
@@ -28,8 +28,8 @@ project:
       - "GitHub repository"
     test:
       unit: "none yet"
-      functional: "Cascade validator and judged harness evals"
-      e2e: "none yet"
+      functional: "Cascade validator, deterministic campaigns, and judged harness evals"
+      e2e: "Playwright browser-task simulations"
 
 models:
   default: "gpt-5.6-sol"
@@ -53,8 +53,12 @@ paths:
   public_contracts:
     - "harness.config.yaml"
     - ".codex/config.toml"
-    - "scripts/validate_cascade_codex.py"
-    - "scripts/run_harness_evals.py"
+    - "package.json"
+    - "scripts/cascade.ts"
+    - "scripts/cascade/validate.ts"
+    - "scripts/cascade/target.ts"
+    - "scripts/cascade/evals.ts"
+    - "scripts/cascade/campaigns.ts"
     - "evals/harness/scenarios.generated.json"
     - "evals/harness/response.schema.json"
     - "evals/harness/judge-response.schema.json"
@@ -83,29 +87,44 @@ paths:
   patterns: "docs/patterns"
   graph_fragment_schema: "docs/patterns/workflow/fragments/graph-fragment.schema.json"
   graph_fragments: "docs/patterns/workflow/fragments"
-  pattern_context_builder: "scripts/build_pattern_context_pack.py"
+  pattern_context_builder: "scripts/cascade/patterns.ts"
+  project_analysis_runner: "scripts/cascade/target.ts"
+  project_inventory_schema: ".codex/skills/adapt-harness/schemas/project-inventory.schema.json"
+  onboarding_manifest_schema: ".codex/skills/adapt-harness/schemas/onboarding-manifest.schema.json"
   harness_evals: "evals/harness"
   harness_eval_catalog: "evals/harness/scenarios.generated.json"
   harness_eval_response_schema: "evals/harness/response.schema.json"
   harness_eval_judge_schema: "evals/harness/judge-response.schema.json"
   harness_eval_judge_profiles: "evals/harness/judge-profiles.json"
   harness_eval_rubrics: "evals/harness/rubrics"
-  harness_eval_runner: "scripts/run_harness_evals.py"
+  harness_eval_runner: "scripts/cascade/evals.ts"
   harness_eval_artifacts: ".artifacts/harness-evals"
+  campaign_registry: "evals/campaigns"
+  campaign_schema: "evals/campaigns/schema.json"
+  campaign_runner: "scripts/cascade/campaigns.ts"
+  campaign_artifacts: ".artifacts/campaigns"
+  browser_simulations: "evals/simulations"
+  browser_runner: ".codex/harness-tooling/playwright.config.ts"
 
 validation_commands:
-  install: []
+  install:
+    - "bun install --cwd .codex/harness-tooling --frozen-lockfile"
   targeted:
-    - "python3 scripts/validate_cascade_codex.py"
-    - "python3 scripts/run_harness_evals.py catalog --check"
-    - "python3 scripts/run_harness_evals.py self-test"
-  unit: []
+    - "bun scripts/cascade.ts validate"
+    - "bun scripts/cascade.ts validate --target"
+    - "bun scripts/cascade.ts eval catalog --check"
+    - "bun scripts/cascade.ts eval self-test"
+    - "bun scripts/cascade.ts target self-test"
+  unit:
+    - "bun test scripts/cascade"
   lint: []
   typecheck: []
   build: []
   functional:
-    - "python3 scripts/validate_cascade_codex.py"
-  e2e: []
+    - "bun scripts/cascade.ts validate"
+    - "bun scripts/cascade.ts campaign run harness-static-smoke"
+  e2e:
+    - "bun scripts/cascade.ts campaign run browser-simulation-smoke"
 
 routing:
   model_policy: "Use gpt-5.6-sol for planning, synthesis, security reasoning, and independent judged evaluation; use gpt-5.6-terra for read-heavy scans and target execution probes."
@@ -140,7 +159,7 @@ vocabulary:
 
 functional_acceptance:
   primary_gate: true
-  browser_or_e2e_runner: "none yet"
+  browser_or_e2e_runner: "Playwright via typed campaign tasks"
   api_check_runner: "none yet"
   visual_check_runner: "none yet"
   source_blind_product_checks: true
@@ -152,6 +171,7 @@ functional_acceptance:
 
 memory:
   active_work: "docs/work/active.md"
+  onboarding_manifest: "docs/work/onboarding-manifest.json"
   research_memory: "docs/patterns/context-memory/index.md"
   pattern_context_packs: "docs/patterns/*/*.pack.yaml"
   lane_packets: "docs/work/lanes"
@@ -182,7 +202,7 @@ issue_tracker:
 patterns:
   root: "docs/patterns"
   schema: "docs/patterns/context-pack-schema.yaml"
-  builder: "scripts/build_pattern_context_pack.py"
+  builder: "scripts/cascade/patterns.ts"
   workflow: "docs/patterns/workflow/index.md"
   boundaries: "docs/patterns/boundaries/index.md"
   testing: "docs/patterns/testing/index.md"

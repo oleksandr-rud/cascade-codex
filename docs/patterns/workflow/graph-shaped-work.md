@@ -360,10 +360,13 @@ Give every inspected workline one explicit disposition:
 
 Do not delete durable lane packets, graph revisions, reports, receipts, or
 evidence merely because a row is duplicate, stale, superseded, or complete.
-Retire an active row only through the owning closeout route after checking
-inbound references and preserving durable evidence. Do not invent a permanent
-`CLOSED` active state. A `BLOCKED_REVIEW` disposition prevents graph cutover
-for the unresolved workline.
+Retire a completed active row only through the owning closeout route after
+checking inbound references and preserving durable evidence. The same closeout
+then automatically invokes `archive-work` for the exact completed graph set:
+eligible frozen records move behind a digest-bound archive capsule;
+`ARCHIVE_DEFERRED` leaves them in place with blockers. Do not invent a
+permanent `CLOSED` active state. A `BLOCKED_REVIEW` disposition prevents graph
+cutover and archival for the unresolved workline.
 
 Reconciliation outputs a version-bound inventory, disposition map, canonical
 survivor map, migrated-reference ledger, graph delta, invalidation set,

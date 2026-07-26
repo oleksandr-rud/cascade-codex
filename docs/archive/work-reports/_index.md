@@ -3,9 +3,10 @@
 This folder stores compact archive capsules and relocated frozen execution
 artifacts for completed or explicitly superseded Cascade work.
 
-Use `docs/work/` for active and recent execution. Use this archive only after
-`closeout` has preserved final evidence and `archive-work` has passed its
-eligibility, dependency, reference, and digest checks.
+Use `docs/work/` for active and recent execution. After a lane or graph
+completes, `closeout` automatically invokes `archive-work`; this archive is
+written only when eligibility, dependency, reference, and digest checks pass.
+Blocked maintenance remains in `docs/work/` as `ARCHIVE_DEFERRED`.
 
 ## Rules
 
@@ -22,3 +23,5 @@ eligibility, dependency, reference, and digest checks.
 
 | Archive | Date | Scope | Final Status | Capsule | Detailed Artifacts |
 |---|---|---|---|---|---|
+| `AR-001` | 2026-07-24 | W-003 / CG-001 graph-shaped workflow mechanics | `COMPLETE`; `CG-TG-04 ACCEPTED` | [`2026-07-24-w003-cg001-archive.md`](2026-07-24-w003-cg001-archive.md) | [`W-003 plan`](2026-07-24-W-003-graph-shaped-workflow-mechanics.md), [`implementation packet`](2026-07-24-W-003-graph-shaped-workflow-implementation-packet.md), [`CG-001`](2026-07-24-CG-001-w003-coordination-graph.md), [`completion`](2026-07-24-2026-07-23-w003-completion.md), [`reconciliation`](2026-07-24-2026-07-23-w003-coordination-graph-reconciliation.md), [`canary blocker`](2026-07-24-2026-07-23-w003-terminal-canary-blocker.md), [`review exhaustion`](2026-07-24-2026-07-23-w003-final-review-exhaustion.md), [`revision-4 report`](2026-07-24-2026-07-22-graph-shaped-workflow-mechanics.md) |
+| `AR-002` | 2026-07-24 | W-002 judged harness evaluations | `COMPLETE`; residual campaign limits preserved | [`2026-07-24-w002-judged-harness-evals-archive.md`](2026-07-24-w002-judged-harness-evals-archive.md) | [`lane`](2026-07-24-W-002-judged-harness-evals.md), [`judge-builder design`](2026-07-24-W-002-judge-eval-builder-design.md), [`completion report`](2026-07-24-2026-07-22-judged-harness-evaluations.md) |

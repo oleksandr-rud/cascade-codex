@@ -2,7 +2,8 @@
 
 ## Authority
 
-- [ ] Archive scope and user intent are explicit.
+- [ ] Archive scope is bound to the exact current closeout set, or a direct
+      historical-cleanup request names the scope.
 - [ ] Candidate lane, workline, graph, report, revision, and owner identities
       are known.
 - [ ] Final lane and graph source files agree with their live indexes.
@@ -42,3 +43,5 @@
 - [ ] Harness catalog passes when skill or route wiring changed.
 - [ ] `git diff --check` passes.
 - [ ] Commit, push, and publication remain separate authority.
+- [ ] Final closeout reports `ARCHIVED`, `ARCHIVE_DEFERRED`, or
+      `NOT_APPLICABLE` separately from lane/graph completion.

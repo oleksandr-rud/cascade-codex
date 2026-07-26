@@ -5,6 +5,8 @@ Created: YYYY-MM-DD
 Source project: `<PROJECT_NAME>`
 Area: `<backend | frontend | shared | data | integration | auth | runtime | tooling | other>`
 Owner route: `<project-onboarder | designer | security | agent-engineer | other>`
+Onboarding manifest: `docs/work/onboarding-manifest.json`
+Source snapshot digest: `<sha256>`
 
 ## Source Identity
 

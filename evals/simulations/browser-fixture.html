@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Cascade browser task fixture</title>
+  </head>
+  <body>
+    <main>
+      <h1>Maintenance task</h1>
+      <label>
+        Resolution
+        <input name="resolution" />
+      </label>
+      <button type="button">Complete task</button>
+      <p role="status">Waiting</p>
+    </main>
+    <script>
+      const input = document.querySelector('input[name="resolution"]');
+      const status = document.querySelector('[role="status"]');
+      document.querySelector("button").addEventListener("click", () => {
+        status.textContent = input.value
+          ? `Completed: ${input.value}`
+          : "Resolution required";
+      });
+    </script>
+  </body>
+</html>

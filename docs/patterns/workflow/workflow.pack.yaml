@@ -11,7 +11,7 @@ routing:
     - "Planning must select and compose product, design, implementation, integration, test, or assurance fragments into the smallest request-specific flow."
     - "A complex lane needs typed dependency readiness, evidence joins, bounded repair, revision history, or cross-lane invalidation rules."
     - "Two or more connected worklines need a separate Coordination Graph, dedicated-worktree dispatch, batch evaluation, materialization, or integrated acceptance."
-    - "Completed lanes, graphs, or reports need explicit compaction into a digest-bound archive without losing frozen evidence."
+    - "A completed lane or graph needs automatic post-closeout compaction into a digest-bound archive without losing frozen evidence."
     - "A skill references the Doc Routing Decision Matrix or trajectory coverage."
   do_not_use_when:
     - "The task only needs architecture boundary rules, functional testing rules, or source-context retrieval rules."
@@ -74,8 +74,8 @@ documents:
       - id: active-work
         title: Active Work
         anchor: "## Active Work"
-        summary: "Defines active registry, lane packets, lane examples, completed-row cleanup, and explicit digest-bound archive compaction."
-        routing_description: "Use when opening, updating, splitting, closing, or explicitly archiving work lanes."
+        summary: "Defines active registry, lane packets, lane examples, completed-row cleanup, and automatic post-closeout digest-bound archive compaction."
+        routing_description: "Use when opening, updating, splitting, closing, automatically archiving, or directly cleaning historical work lanes."
         tags:
           - lanes
           - orchestration
@@ -304,7 +304,7 @@ documents:
     description: "Explicit completed-work eligibility audit, compact archive capsule, immutable relocation, and reference maintenance."
     trigger_when:
       - "Completed lane, workline, Coordination Graph, or report artifacts should be compacted or moved out of docs/work."
-  - path: scripts/build_pattern_context_pack.py
+  - path: scripts/cascade/patterns.ts
     kind: script
     description: "Builds selected text previews from pack metadata."
     trigger_when:

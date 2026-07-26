@@ -35,7 +35,7 @@ less context-heavy, and easier to validate.
    framework, library, SDK, API, protocol, toolchain, or version-specific
    technique.
 7. Validator and packaging surfaces:
-   - `scripts/validate_cascade_codex.py`
+   - `scripts/cascade/validate.ts`
    - `.codex/config.toml`
    - native Codex skill/plugin metadata only when the output is a packaged or
      mirrored skill.

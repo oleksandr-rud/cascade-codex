@@ -3,13 +3,15 @@
 Use this table as the single thin registry of active lanes. It is a derived
 projection: lane-local state comes from a lane Task Graph when present, while
 cross-workline state comes from the referenced first-class Coordination Graph.
-Keep completed rows only while useful for handoff; preserve durable details in
-lane packets, graphs, and reports.
+Remove completed rows in their owning closeout. Preserve durable details in
+the completion report and the automatic `archive-work` result.
 
 | Lane | Status | Request | Owner | Next Gate | Files/Areas | Dependencies | Evidence |
 |---|---|---|---|---|---|---|---|
-No lanes are active. Completed W-001, W-002, and W-003 evidence remains in
-their lane packets, Coordination Graph, and indexed work reports.
+No lanes are active. W-002 and W-003 were archived through the scoped
+historical-cleanup route in `docs/archive/work-reports/`. W-001 predates the
+automatic archive chain and remains retained pending explicit disposition of
+its failed full-catalog acceptance gate.
 
 When example lanes exist under `docs/work/examples/`, they are not active work
 unless copied into `docs/work/lanes/` and registered above.

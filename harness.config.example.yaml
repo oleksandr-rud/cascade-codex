@@ -32,25 +32,19 @@ project:
 models:
   default: "gpt-5.6-sol"
   planning: "gpt-5.6-sol"
-  golden_evaluation: "gpt-5.6-sol"
+  judged_evaluation: "gpt-5.6-sol"
   subagent_execution: "gpt-5.6-terra"
   read_heavy: "gpt-5.6-terra"
 
 paths:
   source_roots:
     - "<SRC_ROOT>"
-    - "evals"
   test_roots:
     - "<TEST_ROOT>"
-    - "evals/harness"
   app_entrypoints:
     - "<APP_ENTRYPOINT>"
   public_contracts:
     - "<API_OR_SCHEMA_OR_UI_CONTRACT>"
-    - "scripts/run_harness_evals.py"
-    - "evals/harness/scenarios.generated.json"
-    - "evals/harness/response.schema.json"
-    - "evals/harness/judge-response.schema.json"
   docs_root: "docs"
   structure: "docs/structure.md"
   glossary: "docs/glossary.md"
@@ -73,21 +67,31 @@ paths:
   patterns: "docs/patterns"
   graph_fragment_schema: "docs/patterns/workflow/fragments/graph-fragment.schema.json"
   graph_fragments: "docs/patterns/workflow/fragments"
-  pattern_context_builder: "scripts/build_pattern_context_pack.py"
+  pattern_context_builder: "scripts/cascade/patterns.ts"
+  project_analysis_runner: "scripts/cascade/target.ts"
+  project_inventory_schema: ".codex/skills/adapt-harness/schemas/project-inventory.schema.json"
+  onboarding_manifest_schema: ".codex/skills/adapt-harness/schemas/onboarding-manifest.schema.json"
   harness_evals: "evals/harness"
   harness_eval_catalog: "evals/harness/scenarios.generated.json"
   harness_eval_response_schema: "evals/harness/response.schema.json"
   harness_eval_judge_schema: "evals/harness/judge-response.schema.json"
-  harness_eval_runner: "scripts/run_harness_evals.py"
+  harness_eval_runner: "scripts/cascade/evals.ts"
   harness_eval_artifacts: ".artifacts/harness-evals"
+  campaign_registry: "evals/campaigns"
+  campaign_schema: "evals/campaigns/schema.json"
+  campaign_runner: "scripts/cascade/campaigns.ts"
+  campaign_artifacts: ".artifacts/campaigns"
+  browser_simulations: "evals/simulations"
+  browser_runner: ".codex/harness-tooling/playwright.config.ts"
 
 validation_commands:
   install:
     - "<INSTALL_COMMAND>"
   targeted:
     - "<TARGETED_TEST_COMMAND>"
-    - "python3 scripts/run_harness_evals.py catalog --check"
-    - "python3 scripts/run_harness_evals.py self-test"
+    - "bun scripts/cascade.ts validate --target"
+    - "bun scripts/cascade.ts eval catalog --check"
+    - "bun scripts/cascade.ts eval self-test"
   unit:
     - "<UNIT_TEST_COMMAND>"
   lint:
@@ -102,7 +106,7 @@ validation_commands:
     - "<E2E_COMMAND>"
 
 routing:
-  model_policy: "Use gpt-5.6-sol for planning, synthesis, security reasoning, and golden evaluation; use gpt-5.6-terra for read-heavy scans and target execution probes."
+  model_policy: "Use gpt-5.6-sol for planning, synthesis, security reasoning, and judged evaluation; use gpt-5.6-terra for read-heavy scans and target execution probes."
   new_task_path:
     - "context"
     - "ingest-spec, discover, market-validation, synthesis-to-spec, or compose-spec when source material, missing intent, long business-analysis research, evidence synthesis, or product/spec authoring exists"
@@ -146,6 +150,7 @@ functional_acceptance:
 
 memory:
   active_work: "docs/work/active.md"
+  onboarding_manifest: "docs/work/onboarding-manifest.json"
   research_memory: "docs/patterns/context-memory/index.md"
   pattern_context_packs: "docs/patterns/*/*.pack.yaml"
   lane_packets: "docs/work/lanes"
@@ -176,7 +181,7 @@ issue_tracker:
 patterns:
   root: "docs/patterns"
   schema: "docs/patterns/context-pack-schema.yaml"
-  builder: "scripts/build_pattern_context_pack.py"
+  builder: "scripts/cascade/patterns.ts"
   workflow: "docs/patterns/workflow/index.md"
   boundaries: "docs/patterns/boundaries/index.md"
   testing: "docs/patterns/testing/index.md"
