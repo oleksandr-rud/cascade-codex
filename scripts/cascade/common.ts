@@ -209,6 +209,22 @@ export async function walkFiles(
   return result;
 }
 
+export function parseFrontmatter(text: string): Record<string, string> {
+  if (!text.startsWith("---\n")) return {};
+  const end = text.indexOf("\n---\n", 4);
+  if (end < 0) return {};
+  const result: Record<string, string> = {};
+  for (const line of text.slice(4, end).split("\n")) {
+    const separator = line.indexOf(":");
+    if (separator < 0) continue;
+    result[line.slice(0, separator).trim()] = line
+      .slice(separator + 1)
+      .trim()
+      .replace(/^["']|["']$/g, "");
+  }
+  return result;
+}
+
 export interface ParsedArgs {
   positionals: string[];
   flags: Map<string, string[]>;
@@ -243,6 +259,10 @@ export function flag(
   fallback?: string,
 ): string | undefined {
   return args.flags.get(name)?.at(-1) ?? fallback;
+}
+
+export function flags(args: ParsedArgs, name: string): string[] {
+  return args.flags.get(name) ?? [];
 }
 
 export function boolFlag(args: ParsedArgs, name: string): boolean {

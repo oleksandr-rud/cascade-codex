@@ -17,11 +17,11 @@ Run this locally unless the user explicitly authorizes parallel agents.
 
 ## Source Order
 
-1. Fixed point supplied by the user, or a safe default only when the user asks
-   for one.
+1. Comparison Base and Reviewed Head/Digest supplied by the user, or safe
+   defaults only when the user asks for them.
 2. Current diff and commit list:
-   - `git diff <fixed-point>...HEAD`
-   - `git log <fixed-point>..HEAD --oneline`
+   - `git diff <comparison-base>...<reviewed-head>`
+   - `git log <comparison-base>..<reviewed-head> --oneline`
 3. Originating request/spec source:
    - latest user request or current plan;
    - referenced issue, PRD, work lane, scenario, product/spec doc, or design
@@ -33,13 +33,25 @@ Run this locally unless the user explicitly authorizes parallel agents.
    - relevant `docs/patterns/*`;
    - lint/type/test configs only as standards inventory, not as a substitute
      for running tools.
+5. `docs/patterns/workflow/graph-shaped-work.md` plus the applicable lane-local
+   Task Graph and/or authoritative `docs/work/graphs/CG-XXX-*.md` Coordination
+   Graph when review evidence feeds a graph gate.
+6. The plan's graph-fragment selection, port bindings, actor/skill/test
+   resolution, and applicable source fragments when the reviewed change was
+   composed from reusable fragments.
 
 ## Checklist
 
-1. Pin the fixed point. If none is provided and there is no safe default, ask:
-   "Review against what: a branch, commit, tag, or main?"
-2. Capture the diff command and commit list once. Use the three-dot diff so the
-   comparison is against the merge base.
+1. Pin the Comparison Base and the distinct Reviewed Head/Digest. If no safe
+   comparison base exists, ask: "Review against what: a branch, commit, tag,
+   or main?" If the review target is ambiguous, also ask which head, commit,
+   digest, or work-in-progress state is being reviewed.
+2. Capture the diff command and commit list once when the reviewed state is
+   committed. Use the three-dot diff so comparison is against the merge base,
+   while the Reviewed Head records the exact committed state. For an
+   uncommitted active-worktree fixed point, record the comparison base, target
+   HEAD, working-tree diff command, and fixed Reviewed Digest instead; do not
+   invent a commit list for materialized changes.
 3. Identify the spec source. If none exists, keep the Standards review and mark
    Spec as `NO_SPEC_AVAILABLE`.
 4. Identify standards sources and read only files relevant to touched areas.
@@ -48,12 +60,55 @@ Run this locally unless the user explicitly authorizes parallel agents.
    - Spec findings cite the request/spec row and missing, partial, wrong, or
      extra behavior.
    - Keep judgment calls separate from hard violations.
+6. When fragment composition applies, review its coverage separately: every
+   selected fragment obligation is implemented or explicitly pending; merged
+   obligations remain traceable; omitted fragments have current reasons; bound
+   ports match the diff and contracts; and no unplanned affected surface or
+   assurance overlay was silently omitted. Record a missing or stale fragment
+   obligation as a Spec finding, not command evidence.
+7. For graph-shaped work, emit separate Standards and Spec evidence records,
+   even when one reviewer produces both. Each record names a stable evidence
+   ID; subject node/workline/materialization/batch/gate; graph revision; attempt;
+   input/source versions and producer transports; Comparison Base; Reviewed
+   Head/Digest; evidence locus; producer/reviewer; production time; required/
+   optional level; acceptance criteria; invalidation condition; and failure
+   route. Missing identity or reviewer authority is `GAP`.
+8. For `active-worktree-integrated` review of uncommitted materialized changes,
+   bind the designated worktree/branch, target HEAD, materialization IDs,
+   combined diff fingerprint, staged/unstaged state, and protected pre-existing
+   dirty paths. A fixed working-tree digest is the Reviewed Digest; equal HEAD
+   before/after does not make the review unbound.
+9. Treat the assigned reviewer as the review-evidence producer and the
+   gate-named independent reviewer/evaluator as acceptance authority. When
+   independence is required, self-review cannot satisfy that input. Only the
+   lane-state or coordination-state owner records gate transitions.
+10. Keep worker-local and integrated Standards/Spec evidence separate. Local
+   review cannot satisfy a required combined-state review unless the
+   Coordination Graph explicitly declares that integrated review is optional.
+11. Apply requirement levels without collapsing outcomes: required `PASS` may
+   contribute to acceptance; required `FAIL`, `BLOCKED`, `GAP`, or `NOT_RUN`
+   prevents it; optional `NOT_RUN` records optionality and reason.
+12. `NO_SPEC_AVAILABLE` cannot satisfy a required Spec-review input. Record that
+   evidence as `GAP` and route the missing contract; when Spec review is
+   explicitly optional, record optional `NOT_RUN` and its reason.
+13. Key freshness to the Reviewed Head/Digest, fragment source/version and port
+    bindings when applicable, not only the Comparison Base.
+    When the reviewed head/digest, comparison base, revision, attempt, inputs,
+    producer transport, materialization set, target HEAD/combined diff, or
+    governing sources change, mark affected review evidence stale and propose
+    reopening its subject, gate, earliest responsible workline/materialization,
+    and consumers/batches that relied on it. Preserve unrelated accepted work.
 
 ## Output
 
-- fixed point, diff command, and commit count;
+- Comparison Base, Reviewed Head/Digest, diff command, and commit count or
+  `NOT_APPLICABLE` for an uncommitted fixed point;
 - Standards findings, or `PASS`;
 - Spec findings, `PASS`, or `NO_SPEC_AVAILABLE`;
+- fragment composition coverage findings or `NOT_APPLICABLE`;
+- graph evidence identities, requirement levels, evidence locus,
+  materialization/target-diff bindings, reviewer/evaluator authority,
+  freshness, and proposed gate/reopen state when applicable;
 - worst issue per axis when findings exist;
 - routes for follow-up: `implement-change`, `functional-qa`,
   `test-autorepair`, `validate-change`, or `issue-intake`.
@@ -62,5 +117,10 @@ Run this locally unless the user explicitly authorizes parallel agents.
 
 - Do not edit files from this skill.
 - Do not treat a review as validation evidence for commands that did not run.
+- Keep review output findings-only; binding the reviewed head does not turn a
+  review into command or test evidence.
 - Do not let missing spec context block Standards review.
 - Do not use completed or unrelated work packets as the spec source.
+- Do not self-accept a node/workline/materialization or mutate authoritative
+  gate state; return evidence and a proposed transition to the applicable
+  lane-state or coordination-state owner.

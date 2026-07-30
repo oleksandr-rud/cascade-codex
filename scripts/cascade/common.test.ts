@@ -4,7 +4,9 @@ import {
   CascadeError,
   boundedPath,
   flag,
+  flags,
   parseArgs,
+  parseFrontmatter,
   stableJson,
   valueDigest,
 } from "./common";
@@ -24,8 +26,27 @@ describe("Cascade common tooling", () => {
     expect(flag(parsed, "check")).toBe("true");
   });
 
+  test("arguments retain repeated flags", () => {
+    const parsed = parseArgs([
+      "run",
+      "--skill",
+      "context",
+      "--skill=plan-change",
+      "--runtime",
+    ]);
+    expect(flags(parsed, "skill")).toEqual(["context", "plan-change"]);
+    expect(flag(parsed, "runtime")).toBe("true");
+  });
+
   test("bounded paths reject traversal", () => {
     expect(() => boundedPath("../../outside")).toThrow(CascadeError);
     expect(boundedPath("evals/harness", "evals/")).toContain("evals/harness");
+  });
+
+  test("frontmatter parsing is bounded to the leading block", () => {
+    expect(
+      parseFrontmatter('---\nname: example\ndescription: "Useful example"\n---\n# Body'),
+    ).toEqual({ name: "example", description: "Useful example" });
+    expect(parseFrontmatter("# No frontmatter")).toEqual({});
   });
 });

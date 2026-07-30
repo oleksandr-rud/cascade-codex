@@ -244,7 +244,7 @@ topology remains `PROOF_REQUIRED`; do not collapse those gates.
 Load the dedicated pack with:
 
 ```bash
-python3 scripts/build_pattern_context_pack.py \
+bun scripts/cascade.ts patterns \
   --pack frontend-architecture-defaults \
   --query <frontend-topic>
 ```

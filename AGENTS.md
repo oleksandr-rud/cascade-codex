@@ -37,7 +37,7 @@ Prefer the repository's current harness vocabulary over generic modeling
 labels. Until application source exists, treat this repository as a scaffold:
 
 - Agent instructions -> `CODEX.md` runtime bridge -> `.codex/` role and skill
-  contracts -> `docs/` memory targets -> `scripts/validate_cascade_codex.py`.
+  contracts -> `docs/` memory targets -> `scripts/cascade.ts`.
 - Keep `AGENTS.md` thin; route durable project facts to
   `harness.config.yaml`, `docs/`, `.codex/skills/`, or `.codex/agents/`.
 - Treat `.codex/skills/` and `.codex/agents/` as canonical harness assets.
@@ -72,16 +72,19 @@ cleanup, or single-line changes with no behavior or contract impact.
 ## Validation Commands
 
 ```bash
-python3 scripts/validate_cascade_codex.py
-python3 scripts/run_harness_evals.py catalog --check
-python3 scripts/run_harness_evals.py self-test
-bun test scripts/cascade
+bun scripts/cascade.ts validate
+bun scripts/cascade.ts eval catalog --check
+bun scripts/cascade.ts eval self-test
+bun scripts/cascade.ts target self-test
 bun scripts/cascade.ts campaign catalog --check
 bun scripts/cascade.ts campaign self-test
+bun test scripts/cascade
 ```
 
-No application install, lint, typecheck, build, or end-to-end command exists;
-Bun 1.3.3 runs the simulation campaign tooling and unit tests.
+Install harness tooling with
+`bun install --cwd .codex/harness-tooling --frozen-lockfile`. Playwright
+browser checks are available through the isolated tooling package; no
+application build command exists until application source is added.
 
 ## Codebase Vocabulary
 

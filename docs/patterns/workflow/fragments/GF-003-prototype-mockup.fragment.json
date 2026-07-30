@@ -1,0 +1,20 @@
+{
+  "fragment_id": "GF-003",
+  "version": 1,
+  "title": "Prototype or mockup evidence",
+  "kind": "delivery",
+  "activation": {"any": ["visual hierarchy cannot be decided from existing design rules", "a novel interaction needs pre-implementation evidence", "the user explicitly requests a mockup or prototype"]},
+  "requires": [{"port": "design.interaction-contract", "binding": "selected-producer", "cardinality": "one"}],
+  "provides": [{"port": "design.prototype-evidence", "binding": "selected-producer", "cardinality": "one"}],
+  "actor": {"capabilities": ["prototype-authoring", "mockup-review"], "preferred_existing_roles": ["designer"]},
+  "skill_calls": [
+    {"skill": "design-system", "when": "prototype introduces reusable rules", "required": false},
+    {"skill": "visual-qa", "when": "prototype evidence must be reviewed against design intent", "required": true}
+  ],
+  "nodes": [{"local_id": "produce-prototype", "obligation": "Create the smallest mockup or prototype needed to decide unresolved interaction or visual behavior.", "output": "prototype artifact and decision notes"}],
+  "tests": [{"strategy": "prototype-state-review", "requirement": "required", "when": "fragment is selected", "evidence": "artifact covers named viewports, states, and decisions without being treated as runtime proof", "command_source": "design artifact and visual review tooling"}],
+  "gates": [{"local_id": "prototype-ready", "accepts": ["prototype artifact and decision notes", "prototype-state-review"], "evaluator_capability": "independent-design-review"}],
+  "workline_policy": "Usually merge into design; split only for an independently reviewed artifact or external handoff.",
+  "omission_rule": "NOT_APPLICABLE when existing design rules and implemented patterns already decide the affected UI behavior.",
+  "repair": ["Review findings reopen only the affected prototype states or decision notes."]
+}

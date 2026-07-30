@@ -1,0 +1,76 @@
+project:
+  name: "Fixture Project"
+  kind: "fixture service"
+  primary_users:
+    - "Fixture maintainers"
+  stack:
+    backend:
+      language: "TypeScript"
+      framework: "none"
+      package_manager: "npm"
+      runtime:
+        - "Node.js"
+    frontend:
+      language: "none"
+      framework: "none"
+      build_tool: "none"
+      package_manager: "none"
+    data:
+      database: "none"
+      cache: "none"
+      storage: "none"
+    integrations:
+      - "none"
+    test:
+      unit: "node:test"
+      functional: "CLI fixture checks"
+      e2e: "none"
+
+models:
+  default: "gpt-5.6-sol"
+  planning: "gpt-5.6-sol"
+  judged_evaluation: "gpt-5.6-sol"
+  subagent_execution: "gpt-5.6-terra"
+  read_heavy: "gpt-5.6-terra"
+
+paths:
+  source_roots:
+    - "src"
+  test_roots:
+    - "tests"
+  app_entrypoints:
+    - "src/index.ts"
+  public_contracts:
+    - "src/routes/health.ts"
+  docs_root: "docs"
+  structure: "docs/structure.md"
+  glossary: "docs/glossary.md"
+  active_work: "docs/work/active.md"
+  patterns: "docs/patterns"
+  pattern_context_builder: "scripts/cascade.ts"
+  harness_eval_runner: "scripts/cascade.ts"
+
+validation_commands:
+  install: []
+  targeted:
+    - "bun scripts/cascade.ts validate --target"
+  unit:
+    - "npm run test"
+  lint: []
+  typecheck: []
+  build: []
+  functional:
+    - "bun scripts/cascade.ts target validate --require-complete"
+  e2e: []
+
+routing:
+  model_policy: "Use pinned fixture models."
+
+functional_acceptance:
+  primary_gate: true
+
+memory:
+  active_work: "docs/work/active.md"
+
+patterns:
+  root: "docs/patterns"

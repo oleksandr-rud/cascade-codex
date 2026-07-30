@@ -1,0 +1,20 @@
+{
+  "fragment_id": "GF-002",
+  "version": 1,
+  "title": "UX flow and interaction design",
+  "kind": "delivery",
+  "activation": {"any": ["a screen, flow, component, or interaction state changes", "responsive or accessibility behavior is undecided", "a visible journey is added"]},
+  "requires": [{"port": "product.acceptance", "binding": "selected-producer", "cardinality": "one"}],
+  "provides": [{"port": "design.interaction-contract", "binding": "selected-producer", "cardinality": "one"}],
+  "actor": {"capabilities": ["ux-design", "interaction-state-review"], "preferred_existing_roles": ["designer"]},
+  "skill_calls": [
+    {"skill": "ux-flow-review", "when": "a user flow or UI state changes", "required": true},
+    {"skill": "design-system", "when": "reusable component, token, layout, or interaction rules change", "required": false}
+  ],
+  "nodes": [{"local_id": "design-flow", "obligation": "Define flow, state coverage, responsive behavior, and reusable design implications.", "output": "interaction contract"}],
+  "tests": [{"strategy": "interaction-state-coverage", "requirement": "required", "when": "fragment is selected", "evidence": "loading, empty, error, partial, disabled, and success states are dispositioned", "command_source": "design sources and target UI test inventory"}],
+  "gates": [{"local_id": "design-ready", "accepts": ["interaction contract", "interaction-state-coverage"], "evaluator_capability": "independent-design-review"}],
+  "workline_policy": "Split only when design decisions need independent ownership, approval, or artifacts before implementation.",
+  "omission_rule": "NOT_APPLICABLE for changes with no visible flow, component, state, responsive, or interaction effect.",
+  "repair": ["Unresolved flow or state behavior reopens design-flow.", "Reusable-rule gaps route to design-system before dependent frontend readiness."]
+}

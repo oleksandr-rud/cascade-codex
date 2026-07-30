@@ -39,8 +39,11 @@ portability.
   mutable execution to `simulation-operator` and independent cross-contour
   evaluation to `simulation-evaluator`.
 - Use `harness-evaluation` to generate and execute Cascade scenarios, capture
-  JSONL traces, apply deterministic hard gates, and prepare evidence for the
-  read-only `harness-evaluator` role.
+  JSONL traces, apply mechanical eligibility, and run independent outcome and
+  trajectory judgments through the read-only `harness-evaluator` role.
+- Use `judge-eval-builder` to create or revise judge profiles, anchored
+  rubrics, schemas, calibration cases, aggregation rules, and adversarial
+  checks. Keep this authoring route separate from evaluating a completed run.
 - Use `architecture-review` when agent/runtime work touches module boundaries,
   public contracts, state machines, adapters, or data flow.
 - Use `secure-design` when agent tools, connectors, external writes, memory,

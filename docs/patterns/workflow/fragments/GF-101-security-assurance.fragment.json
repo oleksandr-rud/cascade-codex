@@ -1,0 +1,22 @@
+{
+  "fragment_id": "GF-101",
+  "version": 1,
+  "title": "Security assurance overlay",
+  "kind": "assurance-overlay",
+  "activation": {"any": ["authentication, authorization, tenant, secret, sensitive data, external write, or tool permission changes", "a new trust boundary or abuse path is introduced"]},
+  "attach_to": ["GF-004", "GF-005", "GF-006", "GF-007", "GF-008", "GF-009"],
+  "requires": [{"port": "implementation.output", "binding": "conditional", "when": "implementation exists", "cardinality": "one-or-more"}],
+  "provides": [{"port": "assurance.security", "binding": "selected-producer", "cardinality": "one"}],
+  "actor": {"capabilities": ["independent-security-review", "abuse-case-validation"], "preferred_existing_roles": ["security"]},
+  "skill_calls": [
+    {"skill": "secure-design", "when": "design or architecture risk exists before implementation", "required": true},
+    {"skill": "auth-analysis", "when": "authentication, session, role, or tenant behavior changes", "required": false},
+    {"skill": "validate-change", "when": "security evidence is ready", "required": true}
+  ],
+  "nodes": [{"local_id": "review-security", "obligation": "Review trust boundaries and execute applicable authorization, isolation, abuse, or secret-handling probes.", "output": "security assurance receipt"}],
+  "tests": [{"strategy": "risk-selected-security-probes", "requirement": "required", "when": "overlay is selected", "evidence": "backend enforcement and affected trust boundaries have explicit results", "command_source": "target security tests and review tooling"}],
+  "gates": [{"local_id": "security-ready", "accepts": ["security assurance receipt"], "evaluator_capability": "independent-security-review"}],
+  "workline_policy": "Attach as an overlay; split only for independent ownership, restricted access, separate writes, or a distinct acceptance gate.",
+  "omission_rule": "NOT_APPLICABLE only after the impact audit finds no changed trust, permission, identity, tenant, secret, sensitive-data, or external-write boundary.",
+  "repair": ["Security failure reopens the earliest affected design, contract, or implementation fragment and preserves unrelated assurance evidence."]
+}

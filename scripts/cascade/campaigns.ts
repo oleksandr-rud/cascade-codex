@@ -1082,6 +1082,16 @@ async function commandCatalog(argv: string[]): Promise<number> {
   return 0;
 }
 
+async function commandList(): Promise<number> {
+  const catalog = await buildCampaignCatalog();
+  for (const entry of catalog.entries as Array<Record<string, unknown>>) {
+    console.log(
+      `${entry.id}\t${entry.tier}\t${entry.task_ids instanceof Array ? entry.task_ids.length : 0}\t${entry.title}`,
+    );
+  }
+  return 0;
+}
+
 async function commandValidate(value: string): Promise<number> {
   const path = await findCampaignPath(value);
   const resolved = await resolveCampaign(path);
@@ -1449,11 +1459,13 @@ async function commandSelfTest(): Promise<number> {
 
 export async function main(argv: string[]): Promise<number> {
   const [command, value, ...rest] = argv;
+  if (command === "list") return commandList();
   if (command === "catalog") return commandCatalog([...(value ? [value] : []), ...rest]);
   if (command === "validate" && value) return commandValidate(value);
   if (command === "run" && value) return commandRun(value, rest);
   if (command === "self-test") return commandSelfTest();
   console.log(`Usage:
+  bun scripts/cascade.ts campaign list
   bun scripts/cascade.ts campaign catalog [--check|--write]
   bun scripts/cascade.ts campaign validate <campaign-id-or-path>
   bun scripts/cascade.ts campaign run <campaign-id-or-path> [--run-id ID]

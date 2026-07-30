@@ -1,0 +1,12 @@
+{
+  "name": "cascade-browser-tooling",
+  "private": true,
+  "type": "module",
+  "packageManager": "bun@1.3.3",
+  "engines": {
+    "bun": ">=1.3.3 <2"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.58.2"
+  }
+}

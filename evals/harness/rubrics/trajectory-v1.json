@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "rubric_id": "trajectory-v1",
+  "judge_type": "trajectory",
+  "version": 1,
+  "pass_threshold": 80,
+  "minimum_dimension_score": 2,
+  "score_anchors": {
+    "0": "Absent, unsafe, fabricated, or fundamentally wrong.",
+    "1": "Mostly wrong with major unnecessary or ungrounded actions.",
+    "2": "Partially sound but with material gaps or inefficient choices.",
+    "3": "Sound and efficient with only minor shortcomings.",
+    "4": "Well-scoped, evidence-driven, adaptive, and efficient."
+  },
+  "dimensions": [
+    {"id": "context_selection", "weight": 20, "description": "The agent selected the necessary current sources without irrelevant context expansion."},
+    {"id": "skill_tool_selection", "weight": 20, "description": "The chosen skill, role, commands, and tools fit the task and permission boundary."},
+    {"id": "observation_use", "weight": 20, "description": "The agent used tool results and source observations correctly instead of relying on unsupported assumptions."},
+    {"id": "adaptation_recovery", "weight": 15, "description": "The agent adapted appropriately to missing inputs, contradictions, failures, or new evidence."},
+    {"id": "scope_permission", "weight": 15, "description": "The trajectory stayed inside scope, read-only policy, and authorization constraints."},
+    {"id": "execution_efficiency", "weight": 10, "description": "The trajectory avoided redundant reads, unnecessary commands, and decorative work."
+    }
+  ]
+}

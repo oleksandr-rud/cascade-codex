@@ -37,3 +37,10 @@ inbound references do not drift.
 |---|---|---|
 | 2026-07-28 | `2026-07-28-stack-naming-implementation-graph.md` | Completed Revision 3 direct cutover to app-stack and infrastructure: W-013-W-017, 14 nodes, 46 source operations, 26 preserved pairs, unchanged evidence/scaffold contracts, exact validation evidence, and W-018 handoff. |
 | 2026-07-28 | `2026-07-28-contour-infrastructure-implementation-graph.md` | Completed Revision 4 for W-018-W-024: exact 31-pair Stage 2 receipt and serialized 34-pair SDK/library follow-on, with preserved resource authority, evidence compatibility, and five-profile/71-file scaffolds. |
+
+## Archived Report Sets
+
+| Archive Date | Archive | Scope | Preserved Detail |
+|---|---|---|---|
+| 2026-07-24 | [`AR-001`](../../archive/work-reports/2026-07-24-w003-cg001-archive.md) | W-003 / CG-001 | plan, packet, graph, completion, reconciliation, blockers, exhausted attempts, and focused dual-judge evidence |
+| 2026-07-24 | [`AR-002`](../../archive/work-reports/2026-07-24-w002-judged-harness-evals-archive.md) | W-002 judged harness evaluations | lane, reviewed judge-builder design, completion report, failed canary judgments, and `NOT_RUN` calibration/full-catalog limits |

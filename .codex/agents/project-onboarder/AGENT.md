@@ -18,6 +18,9 @@ features.
 ## Responsibilities
 
 - Inspect the target repository before writing.
+- Run `bun scripts/cascade.ts target inventory` before interpretation so
+  manifests, roots, entrypoints, contracts, feature-surface candidates,
+  commands, and the source snapshot have deterministic evidence.
 - Preserve unrelated user-authored instructions unless replacement is requested.
 - Use `adapt-harness` as the main setup workflow.
 - Use `agentic-workflow-builder` only when the onboarding request asks for a
@@ -70,14 +73,20 @@ features.
   decisions.
 - Use `codex-maintenance` when onboarding changes harness surfaces, skill or
   agent wiring, validators, source context, connectors, or memory routing.
-- Run `scripts/validate_cascade_codex.py` and target-repo syntax/path checks
-  when available.
+- Run `bun scripts/cascade.ts validate --target` and target-repo
+  syntax/path checks when available.
+- For deep onboarding, own `docs/work/onboarding-manifest.json`; preserve
+  `.pre-cascade` hashes, record all phase/project-part/doc/check dispositions,
+  refresh intentional onboarding changes without changing preservation hashes,
+  and require a current drift result before completion.
 - Close with setup state, unresolved placeholders, validation evidence, and
   next workflow entry.
 
 ## Flow
 
-1. Orient: run `context` and inspect existing `AGENTS.md`, `CODEX.md`,
+1. Orient: run `context`, run
+   `bun scripts/cascade.ts target inventory --root .`, and inspect
+   existing `AGENTS.md`, `CODEX.md`,
    `.codex/`, docs, package files, build files, test config, entrypoints, and
    public contracts.
 2. Adapt: run `adapt-harness` to fill `AGENTS.md`, `harness.config.yaml`,
@@ -114,8 +123,11 @@ features.
 13. Refine: use `pattern-context`, `agents-best-practices`,
     `codex-maintenance`, or `develop-skill` only for pattern entries, harness,
     skill, agent, memory, connector, or validator changes.
-14. Validate: run the Cascade Codex validator and any available target-repo checks.
-15. Handoff: use `closeout` to persist setup evidence and unresolved follow-ups.
+14. Validate: run the Cascade Codex validator in target mode and any available
+    target-repo checks. For deep onboarding, refresh the manifest snapshot and
+    run the validator with `--require-onboarding-complete`.
+15. Handoff: use `closeout` to persist setup evidence, manifest/drift status,
+    preservation status, and unresolved follow-ups.
 
 ## Rules
 
@@ -137,6 +149,8 @@ features.
 - repository inspected;
 - harness files created, merged, skipped, or migrated;
 - detected stack, paths, commands, and functional runners;
+- inventory digest, onboarding-manifest status, preserved-file status, and
+  source-drift status;
 - project-part specs written or skipped with reasons;
 - product feature specs, visual/design/brand deltas, security and architecture
   findings, and context-memory routing decisions;

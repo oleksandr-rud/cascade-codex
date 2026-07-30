@@ -8,10 +8,15 @@
   },
   "scripts": {
     "cascade": "bun scripts/cascade.ts",
+    "validate": "bun scripts/cascade.ts validate",
+    "eval:catalog": "bun scripts/cascade.ts eval catalog --check",
+    "eval:self-test": "bun scripts/cascade.ts eval self-test",
     "campaign": "bun scripts/cascade.ts campaign",
     "campaign:catalog": "bun scripts/cascade.ts campaign catalog --check",
     "campaign:self-test": "bun scripts/cascade.ts campaign self-test",
     "simulation:init": "bun scripts/cascade.ts simulation init",
+    "tooling:install": "bun install --cwd .codex/harness-tooling --frozen-lockfile",
+    "test:browser": "bun run --cwd .codex/harness-tooling playwright test --config playwright.config.ts browser-task.spec.ts",
     "test": "bun test scripts/cascade"
   }
 }

@@ -92,11 +92,11 @@ pressure.
 Load `docs/patterns/boundaries/index.md` for folder mapping, layer rules, API
 contracts, adapters, seams, and agentic runtime invariants.
 
-Use `python3 scripts/build_pattern_context_pack.py --pack
+Use `bun scripts/cascade.ts patterns --pack
 architecture-defaults --query <pair-topic>` to retrieve a matching reference
 spec section before loading the graph and spec together.
 
-For frontend work, use `python3 scripts/build_pattern_context_pack.py --pack
+For frontend work, use `bun scripts/cascade.ts patterns --pack
 frontend-architecture-defaults --query <frontend-topic>` so backend, native,
 CLI, experiment, and library archetypes are not loaded into the selection
 context.

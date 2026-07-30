@@ -52,7 +52,7 @@ permissions, tool guidance, or repository file-tree contract.
    - `docs/design/`
    - `docs/brand/`
    - `docs/backlog/_index.md`
-   - `scripts/validate_cascade_codex.py`
+   - `scripts/cascade/validate.ts`
 5. Official Codex guidance when Codex behavior or file placement matters:
    - best practices;
    - skills;
@@ -130,7 +130,7 @@ Apply these rules before approving a harness design or file change:
   enforce.
 - Do not rely on prompt text for a rule that must always hold. Put durable
   enforcement in `.codex/config.toml`, a hook, a tool contract, or
-  `scripts/validate_cascade_codex.py`.
+  `scripts/cascade/validate.ts`.
 - Keep tool contracts narrow: typed inputs, typed results, explicit error
   states, permission checks, and source links for live or private data.
 - Make each skill trigger-focused. The description should say when to load it,
@@ -170,7 +170,7 @@ Apply these rules before approving a harness design or file change:
 - Every Cascade agent has Codex-compatible standalone TOML identity,
   `AGENT.md`, `skills.yaml`, delegation policy, use scope, and avoid scope.
 - Skill, agent, config, hook, MCP, plugin, subagent, and docs changes update
-  `scripts/validate_cascade_codex.py` when they add a required surface or
+  `scripts/cascade/validate.ts` when they add a required surface or
   invariant.
 - File-tree and reference inventories are required for changes that can miss
   skills, agents, templates, docs, specs, work lanes, tools, or validator
@@ -247,7 +247,7 @@ documented source unless the requested output is explicitly a layout migration.
    - add templates, checklists, references, or scripts only when they prevent a
      real missed step;
    - wire the skill into the owning agent's `skills.yaml`;
-   - register it in `scripts/validate_cascade_codex.py`.
+   - register it in `scripts/cascade/validate.ts`.
 6. For agent changes:
    - distinguish the Cascade `AGENT.md` role contract from its Codex custom
      agent TOML packaging surface;

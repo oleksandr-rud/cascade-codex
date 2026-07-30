@@ -1,0 +1,27 @@
+{
+  "fragment_id": "GF-009",
+  "version": 1,
+  "title": "Public-start end-to-end acceptance",
+  "kind": "delivery",
+  "activation": {"any": ["the outcome crosses runtime boundaries", "a complete user journey changes", "local tests cannot prove the accepted outcome"]},
+  "requires": [
+    {"port": "product.acceptance", "binding": "conditional", "when": "the outcome is product-visible", "cardinality": "one"},
+    {"port": "integration.accepted", "binding": "conditional", "when": "GF-008 is selected", "cardinality": "one"},
+    {"port": "implementation.output", "binding": "conditional", "when": "one implementation fragment supplies the complete runnable outcome", "cardinality": "one-or-more"}
+  ],
+  "provides": [{"port": "e2e.accepted", "binding": "selected-producer", "cardinality": "one"}],
+  "actor": {"capabilities": ["independent-product-qa", "end-to-end-validation"], "preferred_existing_roles": ["orchestrator"]},
+  "skill_calls": [
+    {"skill": "functional-qa", "when": "a public-start journey must be executed", "required": true},
+    {"skill": "validate-change", "when": "E2E and related evidence are ready to join", "required": true}
+  ],
+  "nodes": [{"local_id": "run-e2e", "obligation": "Execute the smallest public-start journey and required negative or recovery trajectory.", "output": "version-bound E2E receipt"}],
+  "tests": [
+    {"strategy": "public-start-e2e", "requirement": "required", "when": "fragment is selected", "evidence": "the complete outcome is observable without seeded internal state unless explicitly scoped", "command_source": "harness.config.yaml validation_commands.e2e or functional"},
+    {"strategy": "e2e-negative-or-recovery", "requirement": "conditional", "when": "the changed journey has a material failure or resume path", "evidence": "failure is observable and recovery preserves required state", "command_source": "target E2E runner"}
+  ],
+  "gates": [{"local_id": "e2e-ready", "accepts": ["version-bound E2E receipt"], "evaluator_capability": "independent-product-qa"}],
+  "workline_policy": "Prefer an independent validation workline or graph batch when acceptance must remain independent from implementers.",
+  "omission_rule": "NOT_APPLICABLE when a lower test seam proves the complete outcome and no cross-runtime or journey risk remains.",
+  "repair": ["E2E failure reopens the earliest responsible fragment and only consumers whose named inputs depend on it."]
+}

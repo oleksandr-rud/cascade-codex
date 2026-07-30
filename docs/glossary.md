@@ -18,7 +18,7 @@ Cascade harness vocabulary.
 | Internal subagent | current Codex task tree | Bounded child agent that reports to its parent and does not appear as a separate user-visible Codex task. |
 | User-visible task | Codex task list | Separately created Codex task with its own conversation. Creation requires an explicit user request and a recorded task ID. |
 | Agent execution slot | `.codex/config.toml` `max_threads` | Concurrency capacity for the root agent and internal subagents; not a user-visible task count or automatic dispatch rule. |
-| Cascade validator | `scripts/validate_cascade_codex.py` | Python check for required harness files, wiring, docs structure, and stale references. |
+| Cascade validator | `scripts/cascade/validate.ts` | Bun/TypeScript check for required harness files, wiring, docs structure, and stale references. |
 | Architecture default pair | `docs/patterns/architecture-defaults/` | A machine-readable decision or topology graph plus a same-ID explanatory spec. It is a reference to evaluate, not automatic backend structure or permission to generate source. |
 | Stack selection evidence | `stack-selection-evidence.schema.json` | Source-linked claims, policies, application units, infrastructure scopes/resources, independent candidate dispositions, proofs, and final selections used by the `stack-selection` extension tree. |
 | Application contour | `stack-selection.{graph.yaml,spec.md}` | One independently deployed, versioned, or distributed application or package unit: backend service, backend worker, web frontend, native app, CLI, experiment, or library. This is distinct from a simulation contour. |
@@ -39,3 +39,5 @@ Cascade harness vocabulary.
 | Evaluation receipt | `.codex/skills/simulation-evaluation/` | Digest-bound read-only judgment record containing mechanical gates, applicable policies and oracles, semantic judgments, claim support, uncertainty, and next route. |
 | Receipt chain | simulation campaign run container | Digest-linked, append-only execution, optional specialized-evaluation, general-evaluation, and aggregation receipts whose producer identities and input artifacts must match before claim projection. |
 | Run container | `.artifacts/campaigns/<run-id>/` | Atomically reserved parent for one immutable execution namespace and later append-only specialized-evaluation, general-evaluation, and aggregation namespaces. |
+| Campaign | `evals/campaigns/*.json` | A versioned simulation execution plan over typed tasks, claims, policies, oracles, metrics, treatments, and evaluation profiles; authored status is not execution evidence. |
+| Campaign task | `evals/tasks/*.json` | A reusable command, terminal, browser, desktop, mobile, or agent-response execution unit with an explicit driver, policy, oracle, and evidence contract. |

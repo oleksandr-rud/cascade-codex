@@ -3,6 +3,8 @@ skills:
     source: .codex/skills/simulation-campaigns/SKILL.md
   - name: harness-evaluation
     source: .codex/skills/harness-evaluation/SKILL.md
+  - name: judge-eval-builder
+    source: .codex/skills/judge-eval-builder/SKILL.md
   - name: agentic-workflow-builder
     source: .codex/skills/agentic-workflow-builder/SKILL.md
   - name: agents-best-practices

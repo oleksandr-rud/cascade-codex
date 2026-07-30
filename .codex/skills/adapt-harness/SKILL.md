@@ -33,17 +33,20 @@ questions.
    `frontend-architecture-defaults` for a detected browser client and the core
    `architecture-defaults` pack for other archetypes and cross-cutting work.
 8. `docs/patterns/_index.md`, `.codex/skills/pattern-context/SKILL.md`, and
-   `scripts/build_pattern_context_pack.py` when onboarding writes or retrieves
+   `scripts/cascade/patterns.ts` when onboarding writes or retrieves
    pattern entries, metadata, or context packs.
-9. `checklists/project-onboarding-analysis.md` when onboarding requires a
+9. `scripts/cascade/target.ts` and `schemas/` for deterministic
+   inventory, target-config validation, onboarding evidence, preservation
+   hashes, and source-drift checks.
+10. `checklists/project-onboarding-analysis.md` when onboarding requires a
    full project scan, project-part specs, feature cataloging, visual evidence,
    or durable context routing.
-10. `templates/project-onboarding-workflow.md` and
+11. `templates/project-onboarding-workflow.md` and
    `templates/project-part-spec.md` when the request needs a repeatable
    agent/skill workflow packet or one spec per meaningful project area.
-11. `simulation-campaigns` and its tracked starter template when the target
+12. `simulation-campaigns` and its tracked starter template when the target
     project has an approved simulation/evaluation scope.
-12. `scripts/validate_cascade_codex.py`.
+13. `scripts/cascade/validate.ts`.
 
 ## Scope
 
@@ -60,7 +63,10 @@ their owning skills are needed and delegation is authorized.
 
 ## Adaptation Checklist
 
-1. Inventory existing harness files before writing.
+1. Inventory existing harness files before writing. Run
+   `bun scripts/cascade.ts target inventory --root .` and use its
+   deterministic output as the initial source map; do not treat it as semantic
+   product truth.
 2. Decide whether to merge, replace, or leave existing instructions untouched.
    Ask before overwriting unrelated user-authored instructions.
 3. Fill project variables in `AGENTS.md`, `CODEX.md`, `harness.config.yaml`,
@@ -117,9 +123,22 @@ their owning skills are needed and delegation is authorized.
     - active state or handoff memory -> `docs/work/`.
 12. Refuse to leave placeholder values, stale cascade lines, or standalone
     review/triage routes in active harness docs; fix them or report a blocker.
-13. Run the Cascade Codex validator.
-14. Run target-repo syntax/path checks when available.
-15. Report files written, skipped, merged, or requiring user review.
+13. Run
+    `bun scripts/cascade.ts validate --target` so unresolved
+    placeholders, stale config keys, invalid config shapes, and missing
+    configured paths fail setup.
+14. For deep onboarding, create
+    `docs/work/onboarding-manifest.json` with
+    `bun scripts/cascade.ts target init-manifest`, preserve every
+    `.pre-cascade` backup hash, record every `ON-00` through `ON-09`
+    disposition, project-part decision, doc-routing decision, and validation
+    result, then refresh the intentional source/config snapshot without
+    changing preservation hashes.
+15. Run target-repo syntax/path checks when available.
+    Use `bun scripts/cascade.ts target probe-commands` to verify
+    configured executables and repository script paths without executing those
+    commands; record every configured command as `PASS`, `FAIL`, `BLOCKED`,
+    `NOT_RUN`, or `GAP` in the manifest.
 16. When the user explicitly requests a new source structure and the target
     has no conflicting architecture, preview a selected
     `architecture-scaffold-profiles.json` profile with
@@ -132,6 +151,11 @@ their owning skills are needed and delegation is authorized.
     review all generated paths, then initialize. Do not create a generic
     simulation when no target scenario or owner exists, and never overwrite an
     existing package.
+18. For completed deep onboarding, run
+    `bun scripts/cascade.ts validate --target
+    --require-onboarding-complete`; do not claim completion while the manifest
+    is missing, incomplete, drifted, or has stale preservation hashes.
+19. Report files written, skipped, merged, or requiring user review.
 
 ## Deep Onboarding Workflow
 
@@ -142,10 +166,14 @@ when writes are disjoint and Project Onboarder is the merge owner.
 
 Required phase outcomes:
 
-1. Context and harness inventory: record source identity, existing harness
-   files, app entry points, package/build/test files, docs roots, and blockers.
+1. Context and harness inventory: run the deterministic inventory command and
+   record source identity, existing harness files, app entry points,
+   package/build/test files, docs roots, commands, feature-surface candidates,
+   source snapshot, and blockers.
 2. Stack and command map: fill `harness.config.yaml` with source roots, test
-   roots, commands, runners, tracker settings, and memory locations.
+   roots, commands, runners, tracker settings, and memory locations; validate
+   it in target mode, then initialize the onboarding manifest so collision
+   backups are hash-bound before later documentation writes.
 3. Code area specs: create one `templates/project-part-spec.md`-shaped packet
    per meaningful backend, frontend, shared, data, integration, tool, or
    runtime area when the target repo is large enough to benefit from separate
@@ -187,9 +215,12 @@ Required phase outcomes:
    `docs/product/`, `docs/design/`, `docs/brand/`, `docs/specs/`,
    `docs/patterns/`, `docs/glossary.md`, `harness.config.yaml`, or
    `docs/work/`.
-10. Validation and closeout: run the Cascade validator, target checks when
-    available, stale-reference searches, and close with files written,
-    skipped, blocked, and next routes.
+10. Validation and closeout: refresh the manifest snapshot after intentional
+    onboarding writes without changing preserved-file hashes; record all phase,
+    project-part, documentation, and check outcomes; run the target validator
+    with `--require-onboarding-complete`, available target checks,
+    stale-reference searches, and a separate drift command; close with files
+    written, skipped, blocked, and next routes.
 
 Do not create broad security, backend, frontend, or memory dump folders.
 Controlled pattern entries are allowed only when `pattern-context` is used and
@@ -219,12 +250,14 @@ routing, graph-like documents, and selectable sections.
 ## Output
 
 - target repo inspected;
+- deterministic inventory digest and source revision;
 - detected stack and codebase vocabulary;
 - harness files copied, merged, or skipped;
 - project-part specs written or explicitly skipped;
 - product feature specs, scenarios, journeys, design, brand, security, stack,
   architecture, and context-memory routing decisions;
 - doc routing decisions;
+- onboarding manifest status, preservation check, and source-drift status;
 - validation commands run;
 - unresolved placeholders or blocker questions;
 - next recommended skill.

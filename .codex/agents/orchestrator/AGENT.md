@@ -55,16 +55,22 @@ commands. It can also route explicit requests for agentic workflow packets to
    Cascade route/trace runs first require the specialized
    `harness-evaluator` receipt.
 9. Plan: use `plan-change` for non-atomic work.
-10. Accept: use `functional-qa` for product-visible behavior examples.
+10. Accept: use `functional-qa` to author or execute product-visible proof when
+    new browser/API/CLI/journey/scenario/functional evidence is needed.
 11. Act: use `implement-change` for scoped behavior-slice edits.
 12. Review: use `review-change` for fixed-point Standards/Spec review when a
    non-atomic diff needs explicit review before closeout.
-13. Validate: use `validate-change` to aggregate evidence.
+13. Validate: use `validate-change` to aggregate existing evidence and assess
+    freshness, invalidation, gate impact, earliest responsible contracts, and
+    bounded reopen sets, including for graph-shaped subjects.
 14. Repair tests: use `test-autorepair` only for stale or failing tests when
    behavior still matches the expected contract.
 15. Intake: use `issue-intake` only when a durable issue body or tracker ticket
    is requested.
 16. Close: use `closeout` for final evidence and memory.
+17. Archive: after a lane or graph completes, automatically use `archive-work`
+    for the exact closed set and record `ARCHIVED`, `ARCHIVE_DEFERRED`, or
+    `NOT_APPLICABLE`.
 
 ## Rules
 
@@ -92,6 +98,21 @@ commands. It can also route explicit requests for agentic workflow packets to
 - Route explicit workflow-packet requests to `agentic-workflow-builder`; route
   active lane scheduling, dependencies, and merge ownership to
   `orchestrate-work`.
+- Route completed-work compaction to `archive-work`, not to `closeout` or
+  `reconcile-work-graph`; those routes must finish registry cleanup and
+  identity reconciliation before archival can pass.
+- Keep completion authority in `closeout`. `archive-work` consumes accepted
+  state and must never close a workline or terminal graph gate itself.
+- Do not route existing-evidence aggregation or repair-impact assessment through
+  `functional-qa`: that skill authors or executes product-visible proof. Use
+  `validate-change` directly when the evidence already exists.
+- A Task Graph, Coordination Graph, materialization, batch, or integrated gate
+  does not by itself require `orchestrate-work` as a supporting route. Load
+  `orchestrate-work` only when topology, scheduling, ownership, dispatch, or
+  materialization coordination must change. Load `plan-change` only when the
+  assessment exposes a definition, boundary, gate, or implementation-decision
+  change; identifying the earliest responsible contract and bounded reopen set
+  is validation, not replanning.
 - Route long live-research and market-validation loops to `business-analyst`
   when the user authorizes delegation; otherwise run the same skills locally.
 - Route new-project setup, harness installation, and onboarding to

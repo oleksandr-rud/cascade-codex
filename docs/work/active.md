@@ -1,8 +1,11 @@
 # Active Work
 
-Use this table as the single source of active work state. Keep only active
-worklines and active work-graph projections here; retain completed evidence in
-lane packets and durable reports.
+Use this table as the single thin registry of active work. It is a derived
+projection: lane-local state comes from a lane Task Graph when present, while
+cross-workline state comes from the referenced work graph or first-class
+Coordination Graph. Keep only active worklines and active graph projections
+here; retain completed evidence in lane packets, durable reports, and archive
+capsules.
 
 | Lane | Status | Request | Owner | Next Gate | Files/Areas | Dependencies | Evidence |
 |---|---|---|---|---|---|---|---|
@@ -32,13 +35,20 @@ evidence but does not promote the lane to complete. Required cross-surface,
 recovery, handoff, redaction, composition, and live/platform evidence remains
 `OPEN`/`NOT_RUN`, so all eight lanes correctly remain `OPEN`.
 
+Completed rows leave this registry in their owning closeout after durable
+evidence is preserved and `archive-work` records `ARCHIVED`,
+`ARCHIVE_DEFERRED`, or `NOT_APPLICABLE`.
+
 When example lanes exist under `docs/work/examples/`, they are not active work
 unless copied into `docs/work/lanes/` and registered above.
 
 ## Parallel Safety
 
 - Independent lanes may proceed concurrently.
-- Dependent lanes wait for the producer lane to reach `READY_TO_MERGE` or
-  `COMPLETE`.
+- Dependent work waits for the producer's named accepted gate, current evidence,
+  immutable transport, and required consumer presence proof.
 - Conflicting file writes require one owner or serialization.
 - Shared product/design uncertainty blocks all lanes that depend on it.
+- Dedicated-worktree changes enter the active worktree only through the
+  Coordination Graph's root-owned Materialization Queue; materialization does
+  not authorize a current-branch commit.

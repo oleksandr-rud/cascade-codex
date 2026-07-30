@@ -36,14 +36,44 @@ Use this section before selecting the workflow. Do not invent dynamic agents.
 |---|---|---|---|
 | `<skill>` | `.codex/skills/<skill>/SKILL.md` | `<why-this-skill-loads>` | `<step-ids>` |
 
+## Graph Fragment Composition
+
+Use the selected planning ledger when available. Otherwise evaluate materially
+plausible definitions under `docs/patterns/workflow/fragments/`. This packet
+projects selected obligations into skill calls; it does not become active graph
+authority.
+
+| Fragment Instance / Source Version | Disposition / Reason | Bound Requires / Provides | Owning Workline | Resolved Role / Worker | Skill Calls | Tests / Evaluator | Omission Consequence |
+|---|---|---|---|---|---|---|---|
+| `FI-01 / GF-001@1` | `<SELECTED_MERGED_NOT_APPLICABLE_BLOCKED>` | `<PORT_BINDINGS>` | `<WL-ID>` | `<ROLE_OR_ROUTE>` | `<SKILLS_AND_CONDITIONS>` | `<TESTS_AUTHORITY>` | `<NONE_OR_GAP>` |
+
+- Emission handoff: `<ATOMIC_NO_GRAPH | LANE_LOCAL_TASK_GRAPH | COORDINATION_GRAPH>`
+- Active graph authority path or next owner: `<PATH_OWNER_OR_NONE>`
+- Rejected bindings or unsupported capabilities:
+
+## Workline Discovery
+
+Do not begin with a requested or default count. Derive candidates from the
+objective, criteria, boundaries, writes, dependencies, and evidence seams.
+
+| Candidate | Outcome | Primary Criteria | Write / Contract Boundary | Dependencies | Validation Seam | Disposition / Reason |
+|---|---|---|---|---|---|---|
+| `C-01` | `<OUTCOME>` | `<IDS>` | `<BOUNDARY>` | `<IDS_OR_NONE>` | `<CHECK>` | `<SELECT_MERGE_SERIALIZE_DEFER>` |
+
+## Selected Worklines
+
+| Workline | Fragment Instances | Outcome | Primary Criteria | Requires / Produces | Owner Route | Execution Mode | Integration / Handoff |
+|---|---|---|---|---|---|---|---|
+| `WL-01` | `<FI-IDS>` | `<OUTCOME>` | `<IDS>` | `<INPUTS_OUTPUTS>` | `<AGENT_OR_LOCAL>` | `<SERIAL_PARALLEL_UNASSIGNED>` | `<OWNER_TARGET>` |
+
 ## Workflow Checklist
 
 Each step should point to existing agents or authorized subagents and the
 global skills to use at that step.
 
-| Step | Status | Owner Route | Execution Surface | Dispatch State | Skill Calls | Source Order | Delegation Prompt | Output | Validation | Handoff |
-|---|---|---|---|---|---|---|---|---|---|---|
-| `WF-01` | `<open>` | `<agent-or-subagent>` | `<surface>` | `<dispatch-state>` | `<skill-a, skill-b>` | `<paths-inputs>` | `P-01` | `<artifact>` | `<check>` | `<next-step>` |
+| Step | Workline | Status | Owner Route | Execution Surface | Dispatch State | Skill Calls | Source Order | Delegation Prompt | Output | Validation | Handoff |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| `WF-01` | `WL-01 / FI-01` | `<open>` | `<agent-or-subagent>` | `<surface>` | `<dispatch-state>` | `<skill-a, skill-b>` | `<paths-inputs>` | `P-01` | `<artifact>` | `<check>` | `<next-step>` |
 
 ## Global Orchestration Skill Calls
 
@@ -118,8 +148,8 @@ Forbidden:
 
 - Output artifacts:
 - Status terms: `DONE`, `DONE_WITH_CONCERNS`, `NEEDS_CONTEXT`, `BLOCKED`
-- Merge owner:
-- Merge target:
+- Integration/materialization owner:
+- Integration target:
 - Conflict paths:
 
 ## Stop Rules
@@ -134,6 +164,6 @@ Forbidden:
 
 - Serialized steps:
 - Parallel-safe steps:
-- Merge owner:
+- Integration/materialization owner:
 - Approval points:
 - Next route:

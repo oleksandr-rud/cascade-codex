@@ -1,0 +1,18 @@
+{
+  "fragment_id": "GF-103",
+  "version": 1,
+  "title": "Visual and responsive assurance overlay",
+  "kind": "assurance-overlay",
+  "activation": {"any": ["layout, typography, spacing, visual hierarchy, tokens, responsive behavior, overflow, or state rendering changes", "a mockup or Figma comparison is required"]},
+  "attach_to": ["GF-002", "GF-003", "GF-006", "GF-009"],
+  "requires": [{"port": "design.interaction-contract", "binding": "conditional", "when": "design intent exists", "cardinality": "one"}, {"port": "implementation.output", "binding": "conditional", "when": "rendered implementation exists", "cardinality": "one-or-more"}],
+  "provides": [{"port": "assurance.visual", "binding": "selected-producer", "cardinality": "one"}],
+  "actor": {"capabilities": ["visual-qa", "responsive-validation"], "preferred_existing_roles": ["designer"]},
+  "skill_calls": [{"skill": "visual-qa", "when": "rendered or prototype visual evidence is available", "required": true}],
+  "nodes": [{"local_id": "review-visual", "obligation": "Compare named viewports and states against current design, brand, token, and layout rules.", "output": "visual assurance receipt"}],
+  "tests": [{"strategy": "screenshot-viewport-state-review", "requirement": "required", "when": "overlay is selected", "evidence": "named viewports and states have screenshot-backed findings without blind snapshot acceptance", "command_source": "target browser and screenshot tooling"}],
+  "gates": [{"local_id": "visual-ready", "accepts": ["visual assurance receipt"], "evaluator_capability": "independent-visual-review"}],
+  "workline_policy": "Attach to design, prototype, or frontend; split only for a separate visual evidence batch or approval boundary.",
+  "omission_rule": "NOT_APPLICABLE when rendering, layout, hierarchy, responsive behavior, tokens, states, and visual evidence expectations are unchanged.",
+  "repair": ["Visual failure reopens only affected viewport/state implementation or design decisions."]
+}

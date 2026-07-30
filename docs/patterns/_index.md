@@ -31,18 +31,18 @@ Current entries:
   compaction, context bounds, compact research-memory entries, and
   observability.
 - `agent-evaluation/`: harness scenario coverage, trace evidence,
-  deterministic hard gates, golden evaluation, root cause, and regression
+  mechanical eligibility, independent judged evaluation, root cause, and regression
   promotion.
 
 Use `context-pack-schema.yaml` for the pack metadata contract and
-`scripts/build_pattern_context_pack.py` to build text previews.
+`scripts/cascade.ts patterns` to build text previews.
 
 ## Routing Rules
 
 1. Start from the active skill.
 2. Check pack `summary`, `routing`, documents, document descriptions, and
    triggers before loading long Markdown bodies.
-3. Build selected context with `scripts/build_pattern_context_pack.py` when a
+3. Build selected context with `scripts/cascade.ts patterns` when a
    prompt needs only specific pack sections.
 4. Follow current code when docs conflict and report the drift.
 5. Persist new rules only when durable, repeated, or requested.

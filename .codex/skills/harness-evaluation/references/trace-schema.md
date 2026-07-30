@@ -26,11 +26,13 @@ Required fields:
 - agent messages and parseable final structured response;
 - usage fields when emitted: input, cached input, output, and reasoning tokens;
 - errors and environment warnings;
-- deterministic grade and hard-gate failures.
+- mechanical eligibility and hard-gate failures.
 
-Golden judgments are separate traces under `<run>/judgments/<case>/`. They
-must preserve the judge prompt, command, raw JSONL, stderr, normalized trace,
-and schema-valid verdict. A judge trace never replaces target evidence.
+Judgments are separate traces under `<run>/judgments/<case>/<profile>/`. Each
+must preserve the profile-specific prompt, command, raw JSONL, stderr,
+normalized trace, validated judgment, dimension ratings, and harness-computed
+score. A judge trace never replaces target evidence, and one judge never reads
+another judge's artifacts.
 
 ## Failure Taxonomy
 

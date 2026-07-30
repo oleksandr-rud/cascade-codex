@@ -18,7 +18,7 @@ If docs and code disagree, follow current code and report the drift.
 ## Model Routing
 
 - Pin `gpt-5.6-sol` for the default runtime, orchestration, planning,
-  synthesis, security reasoning, and golden harness evaluation.
+  synthesis, security reasoning, and independent harness judgment.
 - Pin `gpt-5.6-terra` for bounded read-heavy scans, onboarding inventory,
   design evidence review, and target-agent execution probes.
 - Keep model choices in `.codex/config.toml`, custom-agent TOML files, and the
@@ -31,7 +31,7 @@ If docs and code disagree, follow current code and report the drift.
 
 Use this cascade for non-atomic work:
 
-`context -> ingest-spec/discover/market-validation/synthesis-to-spec/compose-spec if needed -> docs-impact-map when durable docs may affect sibling rules -> pattern-context when reusable pattern packs are needed -> orchestrate-work -> plan-change -> functional-qa -> implement-change -> review-change -> validate-change -> test-autorepair only if stale tests -> closeout`
+`context -> ingest-spec/discover/market-validation/synthesis-to-spec/compose-spec if needed -> docs-impact-map when durable docs may affect sibling rules -> pattern-context when reusable pattern packs are needed -> orchestrate-work -> plan-change -> functional-qa when new product-visible proof is needed -> implement-change -> review-change -> validate-change -> test-autorepair only if stale tests -> closeout`
 
 - `context`: re-orient to branch, active work lanes, recent handoff state, and
   backlog.
@@ -59,26 +59,54 @@ Use this cascade for non-atomic work:
 - `pattern-context`: retrieve, compile, create, or update bounded
   `docs/patterns/{entry}/` metadata and context packs when reusable pattern
   memory is in scope.
-- `orchestrate-work`: split, serialize, track, or merge work lanes when the
-  work can run in parallel or needs dependency management.
+- `orchestrate-work`: discover, split, connect, serialize, schedule, or track
+  worklines and their coordination/materialization gates.
+- `reconcile-work-graph`: audit and canonicalize existing lanes, worklines,
+  and graph records before graph creation, cutover, deduplication, or
+  active-row retirement proposals.
 - `plan-change`: capture product/design intent, codebase vocabulary, behavior
   examples, slice boundary, risks, and validation plan.
-- `functional-qa`: primary product-visible acceptance gate for browser, API,
-  journey, scenario, and functional-test evidence.
+- `functional-qa`: execute or author product-visible browser, API, journey,
+  scenario, and functional-test proof when new acceptance evidence is needed.
 - `implement-change`: scoped behavior-slice implementation.
 - `review-change`: fixed-point Standards/Spec review for WIP, branch, or PR
   changes.
-- `validate-change`: command, test, type, diff, link, scenario, and functional
-  evidence aggregator.
+- `validate-change`: directly aggregate existing command, test, type, diff,
+  link, scenario, functional, review, materialization, batch, and graph evidence;
+  assess freshness, invalidation, gate impact, the earliest responsible
+  contract, and bounded reopen sets.
 - `test-autorepair`: repair stale, flaky, or failing tests only when product
   behavior still matches the expected contract.
 - `closeout`: persist validation evidence, work memory, reusable lessons,
   thin product/spec/architecture doc diffs when the final diff changed durable
   facts, and final handoff.
+- `archive-work`: automatically after a lane/graph closeout, or directly for
+  scoped historical cleanup, prove that the completed set has no active
+  dependency, create a digest-bound capsule, and move frozen originals out of
+  `docs/work/` without rewriting their evidence.
 
 `issue-intake` is an explicit exception path for issue bodies or tracker
 tickets. Human review is an explicit open-question or exception path, not a
 standalone workflow router.
+
+### Acceptance And Validation Route Boundary
+
+- Use `functional-qa` when the task must author, execute, or collect new
+  product-visible proof through a browser, API, CLI, journey, scenario, or
+  functional test boundary.
+- Use `validate-change` directly when evidence already exists and the task is to
+  aggregate it, assess freshness or invalidation, determine gate impact,
+  identify the earliest responsible node/workline/contract, or calculate the
+  bounded reopen set. This remains a direct validation route when the evidence
+  subject is a Task Graph, Coordination Graph, materialization, batch, or
+  integrated active-worktree state.
+- Do not load `functional-qa` merely because existing evidence is functional,
+  and do not load `orchestrate-work` merely because the validation subject is
+  graph-shaped. Route to `functional-qa` only when new product-visible proof is
+  required. Route to `orchestrate-work` only when workline topology, scheduling,
+  ownership, dispatch, or materialization coordination must change; route to
+  `plan-change` only when a definition, boundary, gate, or implementation
+  decision must change.
 
 ## Optional Escalations
 
@@ -116,7 +144,11 @@ standalone workflow router.
 - `pattern-context`: use when a task needs selected pattern context, or when
   onboarding, planning, validation, or closeout creates or updates a pattern
   entry or `*.pack.yaml` context pack.
-- `adapt-harness`: use when wiring this harness into a new repository.
+- `adapt-harness`: use when wiring this harness into a new repository. Begin
+  with `bun scripts/cascade.ts target inventory`; validate adapted config
+  with `bun scripts/cascade.ts validate --target`; and require the
+  schema-backed onboarding manifest plus current drift for deep-onboarding
+  completion.
 - `project-onboarder`: use for new-project setup, harness installation,
   onboarding, or migration of existing instructions into the Cascade
   structure.
@@ -140,8 +172,11 @@ standalone workflow router.
 - `simulation-evaluation`: use after an immutable run exists to independently
   validate evidence, policies, oracles, semantic judgments, and claim support.
 - `harness-evaluation`: use for generated Cascade scenarios, read-only live
-  experiments, JSONL trace capture, deterministic grading, golden semantic
-  evaluation, and regression promotion.
+  experiments, JSONL trace capture, mechanical eligibility, independent
+  outcome and trajectory judgments, coverage measurement, and regression
+  promotion.
+- `judge-eval-builder`: use to create or calibrate judge profiles, anchored
+  rubrics, schemas, aggregation rules, and adversarial judge tests.
 - `develop-skill`: use for creating or refactoring reusable skills.
 - `issue-intake`: use only when a user asks for an issue body, tracker ticket,
   or durable bug-report artifact.
@@ -169,8 +204,8 @@ delegate only when the user explicitly authorizes parallel agents.
   validation planning.
 - `designer`: UX flow review, reusable design-system routing, accessibility
   review, screenshot-backed visual validation, and design handoff planning.
-- `harness-evaluator`: read-only golden evaluation of completed Cascade
-  scenario outputs and traces after deterministic hard gates run.
+- `harness-evaluator`: read-only outcome or trajectory judgment of eligible
+  Cascade scenario outputs and traces after deterministic hard gates run.
 - `simulation-operator`: bounded mutable execution of one approved campaign
   with immutable evidence, verified cleanup, and an execution receipt.
 - `simulation-evaluator`: independent read-only evaluation of frozen
@@ -183,7 +218,7 @@ intake remain skills in the cascade rather than separate agents.
 `business-analyst`, `security`, `designer`, `harness-evaluator`,
 `simulation-operator`, and `simulation-evaluator` exist because long
 discovery, specialist review, mutable campaign operation, independent evidence
-judgment, and golden trace adjudication need role boundaries that are separate
+judgment, and trace adjudication need role boundaries that are separate
 from implementation.
 
 ## Work Packet
@@ -194,9 +229,13 @@ Create a lane packet only when a row is not enough:
 - `docs/work/_index.md`
 - `docs/work/active.md`
 - `docs/work/lane-template.md`
+- `docs/work/graph-template.md`
 - `docs/work/examples/`
 - `docs/work/lanes/*.md`
+- `docs/work/graphs/CG-XXX-*.md`
 - `docs/work/reports/`
+- `docs/archive/work-reports/` for compact capsules and relocated frozen
+  history only when completed work is explicitly in scope
 
 Completed or unrelated work lanes are historical context. Example lanes are
 copyable guidance only and are not active work unless copied into
@@ -252,6 +291,33 @@ coordination. Work graphs use `DRAFT`, `PLANNED`, `ACTIVE`, `BLOCKED`,
 `COMPLETE`, or `SUPERSEDED` lifecycle status. After terminal closeout, remove
 their active projection and retain the durable report and receipts.
 
+When a lane or Coordination Graph completes, `closeout` writes the durable
+report and retires its active projection, then automatically invokes
+`archive-work` for that exact set. The archive step requires
+terminal/dependency/reference readiness, writes one capsule, and moves frozen
+originals byte-for-byte to `docs/archive/work-reports/`. It returns
+`ARCHIVED`, `ARCHIVE_DEFERRED`, or `NOT_APPLICABLE`; deferral does not undo
+valid completion. This is a same-turn skill chain, not a background scheduler
+or hook. Archived work does not become active by being read or referenced.
+
+For a complex lane with typed dependencies, use its lane-local Task Graph. When
+two or more canonical worklines also have a cross-workline dependency,
+evidence/batch join, materialization or integrated-validation boundary,
+invalidation relationship, or partial-repair route, use a first-class
+`docs/work/graphs/CG-XXX-*.md` Coordination Graph. Existing worklines route
+through `reconcile-work-graph` before cutover. Rich definitions remain in
+their source/spec/lane owners; `docs/work/active.md` and status boards remain
+derived projections. Atomic work and unrelated worklines omit the Coordination
+Graph. The protocol adds no scheduler, compiler, automatic worktree action,
+commit, push, or replacement for the agent's reasoning and tool loop.
+
+For non-atomic product or implementation planning, evaluate reusable graph
+fragments under `docs/patterns/workflow/fragments/` before finalizing
+worklines. Record selected, merged, not-applicable, and blocked fragments; bind
+ports; resolve existing roles or authorized workers, skill calls, target test
+commands, fixtures/environments, and evaluator authority; then emit only the
+smallest applicable flow. Reusable fragment files are not active work state.
+
 ## Write Targets
 
 Use `docs/structure.md` as the folder map for skills that write or translate
@@ -305,7 +371,7 @@ backlog, glossary, or pattern rules.
 
 Use `docs/patterns/workflow/index.md` for scoped coverage from current work-lane
 criteria to changed code and validation. Use
-`scripts/build_pattern_context_pack.py` to compile selected pattern-pack text
+`scripts/cascade.ts patterns` to compile selected pattern-pack text
 from `docs/patterns/*/*.pack.yaml` when prompt context should include only
 specific rules. Architecture work uses the matching graph/spec pairs in
 `docs/patterns/architecture-defaults/`. Extract source-linked project claims
@@ -380,7 +446,7 @@ Missing target adapters or real reference data remain `GAP` or `NOT_RUN`.
 Use `functional-qa` for product-visible behavior examples and acceptance
 oracles inside a campaign. Use `harness-evaluation` and `harness-evaluator`
 for Cascade scenario, route, response, JSONL trace, deterministic-grade, and
-golden-judge work; the general simulation evaluator consumes that receipt
+independent judged-trace work; the general simulation evaluator consumes that receipt
 without re-judging the trace. Use `codex-maintenance` when the shared campaign
 schema, runner, validator, skill/agent wiring, tool guidance, or file-tree
 contract must change.
@@ -394,10 +460,20 @@ self-review independent.
 
 Canonical harness scenarios and schemas live under `evals/harness/`. Generate
 and check the 7-case-per-skill catalog with
-`python3 scripts/run_harness_evals.py catalog --write` and `catalog --check`.
-Live target runs are read-only and store raw JSONL, normalized traces, grades,
-and reports under ignored `.artifacts/harness-evals/`. Use the
-`harness-evaluator` role only after target execution; no live trace means no
-live scenario pass. Run `python3 scripts/run_harness_evals.py judge --run-dir
-.artifacts/harness-evals/<run-id>` for Sol-pinned semantic adjudication of
-failed or non-perfect cases.
+`bun scripts/cascade.ts eval catalog --write` and `catalog --check`.
+Live target runs are read-only and store raw JSONL, normalized traces,
+eligibility, a source manifest, judgments, and reports under ignored
+`.artifacts/harness-evals/`. Use the `harness-evaluator` role only after target
+execution and eligibility; no live trace means no live scenario pass. Run
+`bun scripts/cascade.ts eval judge --run-dir
+.artifacts/harness-evals/<run-id>` for independent outcome and trajectory
+judgments of every eligible case. Accepted coverage requires both.
+
+## Campaign Execution
+
+Typed reusable tasks live in `evals/tasks/`; versioned execution plans live in
+`evals/campaigns/`. Run them through `bun scripts/cascade.ts campaign`.
+Campaigns preserve task logs and source digests under `.artifacts/campaigns/`
+but do not convert authored tasks into execution evidence. `browser` tasks use
+Playwright; autonomous agent browsing remains a separate permissioned
+browser-tool capability.

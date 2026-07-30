@@ -1,0 +1,24 @@
+{
+  "fragment_id": "GF-008",
+  "version": 1,
+  "title": "Cross-surface wiring and integration",
+  "kind": "delivery",
+  "activation": {"any": ["two or more selected implementation producers must interact", "an adapter, provider, queue, or generated client is wired", "combined behavior cannot be accepted locally"]},
+  "requires": [{"port": "implementation.output", "binding": "selected-producer", "cardinality": "one-or-more"}],
+  "provides": [{"port": "integration.accepted", "binding": "selected-producer", "cardinality": "one"}],
+  "actor": {"capabilities": ["integration-ownership", "combined-state-validation"], "preferred_existing_roles": ["orchestrator"]},
+  "skill_calls": [
+    {"skill": "architecture-review", "when": "wiring crosses public or runtime boundaries", "required": false},
+    {"skill": "implement-change", "when": "integration code or configuration is required", "required": true},
+    {"skill": "validate-change", "when": "combined implementation outputs are available", "required": true}
+  ],
+  "nodes": [
+    {"local_id": "wire-surfaces", "obligation": "Connect selected producers without duplicating contract authority.", "output": "integration implementation receipt"},
+    {"local_id": "validate-integration", "obligation": "Validate combined behavior against exact producer versions and environment.", "output": "integrated evidence receipt"}
+  ],
+  "tests": [{"strategy": "cross-surface-integration", "requirement": "required", "when": "fragment is selected", "evidence": "combined producers exchange current contract data and preserve failure behavior", "command_source": "harness.config.yaml validation_commands.targeted, functional, or e2e"}],
+  "gates": [{"local_id": "integration-ready", "accepts": ["integration implementation receipt", "integrated evidence receipt"], "evaluator_capability": "independent-integration-review"}],
+  "workline_policy": "Use a distinct workline when wiring has separate writes, ownership, environment, or integrated evidence; otherwise synthesize an aggregate gate.",
+  "omission_rule": "NOT_APPLICABLE when one selected implementation producer can prove the complete outcome without a cross-boundary join.",
+  "repair": ["Integration failure identifies the earliest responsible producer or wiring node and preserves unrelated accepted producers."]
+}
