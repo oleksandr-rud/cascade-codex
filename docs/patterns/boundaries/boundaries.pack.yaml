@@ -52,6 +52,15 @@ documents:
           - onboarding
           - folders
           - write-targets
+      - id: reference-architecture-defaults
+        title: Reference Architecture Defaults
+        anchor: "## Reference Architecture Defaults"
+        summary: "Routes work to the core or dedicated frontend architecture-default pack, then to selected composable graph/spec pairs after target inspection."
+        routing_description: "Use when general boundary rules need a concrete reusable architecture starting point."
+        tags:
+          - architecture
+          - defaults
+          - graph-spec
       - id: layer-discipline
         title: Layer Discipline
         anchor: "## Layer Discipline"

@@ -9,11 +9,12 @@ project:
     - "Coding agents working in this repository"
   stack:
     backend:
-      language: "Python for harness validation only"
+      language: "Python and TypeScript for harness tooling only"
       framework: "none yet"
-      package_manager: "none yet"
+      package_manager: "Bun 1.3.3"
       runtime:
         - "Python 3.14+"
+        - "Bun 1.3.3"
     frontend:
       language: "none yet"
       framework: "none yet"
@@ -27,8 +28,8 @@ project:
       - "Codex runtime"
       - "GitHub repository"
     test:
-      unit: "none yet"
-      functional: "Cascade validator and deterministic harness evals"
+      unit: "Bun test for campaign tooling"
+      functional: "Cascade validator, deterministic harness evals, and simulation campaign self-test"
       e2e: "none yet"
 
 models:
@@ -40,24 +41,40 @@ models:
 
 paths:
   source_roots:
+    - ".github"
     - ".codex"
     - "docs"
     - "evals"
     - "scripts"
   test_roots:
     - "evals/harness"
+    - "evals/campaigns"
+    - "evals/simulations"
     - "scripts"
   app_entrypoints:
     - "AGENTS.md"
     - "CODEX.md"
   public_contracts:
+    - ".github/pull_request_template.md"
+    - ".github/copilot-instructions.md"
     - "harness.config.yaml"
     - ".codex/config.toml"
     - "scripts/validate_cascade_codex.py"
     - "scripts/run_harness_evals.py"
+    - "scripts/cascade.ts"
     - "evals/harness/scenarios.generated.json"
     - "evals/harness/response.schema.json"
     - "evals/harness/judge-response.schema.json"
+    - "evals/campaigns/catalog.generated.json"
+    - "evals/campaigns/schema.json"
+    - "evals/simulations/schema.json"
+    - "evals/calibrations/schema.json"
+    - "evals/rubrics/evaluation-profile.schema.json"
+    - "evals/rubrics/simulation-evaluation-output.schema.json"
+    - "evals/rubrics/evaluation-receipt.schema.json"
+    - "evals/rubrics/deterministic-fixture-v1.json"
+    - "evals/rubrics/codex-independent-v1.json"
+    - ".codex/skills/simulation-campaigns/templates/starter/package.template.json"
   docs_root: "docs"
   structure: "docs/structure.md"
   glossary: "docs/glossary.md"
@@ -84,6 +101,15 @@ paths:
   harness_eval_judge_schema: "evals/harness/judge-response.schema.json"
   harness_eval_runner: "scripts/run_harness_evals.py"
   harness_eval_artifacts: ".artifacts/harness-evals"
+  simulation_campaigns: "evals/campaigns"
+  simulation_catalog: "evals/campaigns/catalog.generated.json"
+  simulation_runner: "scripts/cascade.ts"
+  simulation_evaluator_runner: "scripts/cascade/evaluations.ts"
+  simulation_evaluation_profiles: "evals/rubrics"
+  simulation_evaluation_receipt_schema: "evals/rubrics/evaluation-receipt.schema.json"
+  simulation_artifacts: ".artifacts/campaigns"
+  simulation_starter_template: ".codex/skills/simulation-campaigns/templates/starter/package.template.json"
+  simulation_design_template: ".codex/skills/simulation-campaigns/templates/campaign-design.md"
 
 validation_commands:
   install: []
@@ -91,12 +117,16 @@ validation_commands:
     - "python3 scripts/validate_cascade_codex.py"
     - "python3 scripts/run_harness_evals.py catalog --check"
     - "python3 scripts/run_harness_evals.py self-test"
-  unit: []
+    - "bun scripts/cascade.ts campaign catalog --check"
+    - "bun scripts/cascade.ts campaign self-test"
+  unit:
+    - "bun test scripts/cascade"
   lint: []
   typecheck: []
   build: []
   functional:
     - "python3 scripts/validate_cascade_codex.py"
+    - "bun scripts/cascade.ts campaign self-test"
   e2e: []
 
 routing:

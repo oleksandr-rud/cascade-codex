@@ -1,0 +1,150 @@
+schema_id: architecture-default-graph-v1
+graph_id: service-api-worker
+pair_kind: archetype
+title: Vertical-Slice Backend API And Worker Default
+status: reference-default
+spec_path: docs/patterns/architecture-defaults/service-api-worker.spec.md
+default_when:
+  - "One repository contains a backend API, worker, or other server-side apps with independently deployable startup boundaries."
+  - "Each app benefits from product-aligned vertical slices while database, cache, messaging, observability, and third-party client primitives are reusable."
+do_not_use_when:
+  - "The target is a single atomic script with no durable public, data, or asynchronous contract."
+  - "Existing package or service ownership makes shared source-level infrastructure unsafe or independently versioned."
+nodes:
+  - id: app-startup
+    kind: composition-root
+    owns: "Configuration, initialization order, dependency assembly, module registration, entrypoints, and graceful shutdown for one app."
+  - id: module-entrypoint
+    kind: slice-public-surface
+    owns: "The module factory or registration contract and its intentionally exported API."
+  - id: interface-layer
+    kind: inbound-boundary
+    owns: "HTTP or RPC routes, CLI commands, job handlers, schemas, and transport mapping."
+  - id: application-layer
+    kind: use-case-layer
+    owns: "Commands, queries, orchestration, authorization decisions, transactions, and module use cases."
+  - id: domain-layer
+    kind: policy-layer
+    owns: "Entities, values, invariants, domain services, domain events, and repository semantics."
+  - id: module-ports
+    kind: slice-outbound-contract
+    owns: "Module-specific repository, cache, provider, event, and other outbound contracts owned by domain or application."
+  - id: module-models
+    kind: persistence-model
+    owns: "Module or entity-specific database and cache model definitions plus mapping."
+  - id: module-repositories
+    kind: module-adapter
+    owns: "Entity-specific repository implementations that satisfy module contracts using shared data primitives."
+  - id: module-provider-adapters
+    kind: semantic-adapter
+    owns: "Module-specific translation between product concepts and shared third-party client primitives."
+  - id: event-emitters
+    kind: outbound-boundary
+    owns: "Application or domain event publication contracts and post-commit dispatch intent."
+  - id: event-subscribers
+    kind: inbound-boundary
+    owns: "Versioned event or job envelope translation into application commands."
+  - id: shared-lib-ports
+    kind: technical-contract
+    owns: "Reusable database, transaction, cache, messaging, provider-client, clock, and observability contracts."
+  - id: shared-lib-adapters
+    kind: technical-adapter
+    owns: "Reusable clients, connection lifecycle, base models, base repository mechanics, codecs, retries, and provider SDK integration."
+  - id: external-resources
+    kind: external-boundary
+    owns: "Databases, caches, brokers, and third-party services."
+  - id: observability
+    kind: evidence
+    owns: "Structured logs, metrics, traces, correlation, startup health, and failed-work evidence."
+edges:
+  - from: app-startup
+    to: shared-lib-adapters
+    relation: initializes
+  - from: app-startup
+    to: module-entrypoint
+    relation: registers
+  - from: module-entrypoint
+    to: interface-layer
+    relation: exposes
+  - from: interface-layer
+    to: application-layer
+    relation: invokes
+  - from: event-subscribers
+    to: application-layer
+    relation: translates_and_invokes
+  - from: application-layer
+    to: domain-layer
+    relation: enforces
+  - from: application-layer
+    to: module-ports
+    relation: depends_on
+  - from: application-layer
+    to: event-emitters
+    relation: publishes_after_owned_state_transition
+  - from: application-layer
+    to: shared-lib-ports
+    relation: uses_generic_technical_contracts
+  - from: module-repositories
+    to: module-ports
+    relation: implements_repository_contract
+  - from: module-repositories
+    to: module-models
+    relation: maps
+  - from: module-repositories
+    to: shared-lib-adapters
+    relation: composes_or_extends_data_primitives
+  - from: module-models
+    to: shared-lib-adapters
+    relation: composes_or_extends_model_primitives
+  - from: module-provider-adapters
+    to: module-ports
+    relation: implements_semantic_provider_contract
+  - from: module-provider-adapters
+    to: shared-lib-adapters
+    relation: translates_shared_client
+  - from: event-emitters
+    to: shared-lib-ports
+    relation: depends_on_message_or_outbox_port
+  - from: shared-lib-adapters
+    to: shared-lib-ports
+    relation: implements
+  - from: shared-lib-adapters
+    to: external-resources
+    relation: connects
+  - from: app-startup
+    to: event-subscribers
+    relation: registers
+  - from: app-startup
+    to: observability
+    relation: reports_lifecycle
+  - from: interface-layer
+    to: observability
+    relation: reports_request_or_delivery
+decisions:
+  - id: app-owned-vertical-slices
+    default: "Place each deployable app under src/<app-name> with product modules under src/<app-name>/modules."
+    exception_when: "The target already has an enforced package boundary that provides equivalent app and slice ownership."
+  - id: startup-composition
+    default: "Keep initialization scripts, dependency assembly, module registration, process entrypoints, health, and shutdown in src/<app-name>/startup."
+    exception_when: "A runtime requires a thin launcher elsewhere; the launcher still delegates immediately to the app startup contract."
+  - id: module-public-surface
+    default: "Expose each slice through one module entrypoint; startup and other modules must not import its internal layers directly."
+    exception_when: "Generated framework registration requires an additional explicit public surface."
+  - id: shared-libs-scope
+    default: "Place reusable technical ports and adapters for database, cache, messaging, observability, and third-party clients under src/libs; keep product semantics inside app modules."
+    exception_when: "Independent deployment, versioning, security, or ownership requires a separately published package or service."
+  - id: repository-and-model-reuse
+    default: "Keep module-specific repository contracts, models, mappings, and implementations in the module; compose shared lib primitives and extend base classes only when the base owns stable mechanics or invariants."
+    exception_when: "The target data framework requires declarative inheritance; base types still remain free of module entities, table names, and product queries."
+  - id: event-flow
+    default: "Define domain events in the module, expose outbound emitter ports from application, place inbound subscribers in interface, and use shared messaging or outbox adapters from src/libs."
+    exception_when: "The operation is explicitly synchronous and no durable integration event or asynchronous delivery exists."
+  - id: cross-app-reuse
+    default: "Share technical capabilities through src/libs; do not move business slices into technical libs merely because API and worker both need them."
+    exception_when: "A real cross-app domain capability is extracted as an explicitly owned package with its own public contract and validation."
+validation:
+  - "Check dependency direction: startup may import modules and libs; libs never import apps or module internals."
+  - "Contract-test module entrypoints and every enabled HTTP, CLI, RPC, job, or event interface."
+  - "Test module repositories against real local database/cache substitutes and verify base-class reuse does not bypass entity invariants."
+  - "Test event publication, outbox atomicity where required, duplicate delivery, subscriber translation, and terminal failure handling."
+  - "Start API and worker apps independently and verify initialization order, health, graceful shutdown, and shared adapter isolation."

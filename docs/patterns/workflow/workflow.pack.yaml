@@ -3,7 +3,7 @@ entry_id: workflow
 title: Workflow Core Pattern Pack
 kind: pattern-context-pack
 owner: Cascade maintainers
-summary: "Selectable workflow rules for routing, lanes, coverage, doc impact, research coverage, closeout, and memory."
+summary: "Selectable workflow rules for routing, lanes, work graphs, execution surfaces, dispatch authorization, coverage, doc impact, research coverage, closeout, and memory."
 description: "Use this pack when a prompt or skill needs the workflow rules without loading every pattern entry."
 routing:
   use_when:
@@ -14,6 +14,12 @@ routing:
   load_when:
     - route: active-work
       use_when: "Opening, splitting, serializing, merging, or closing work lanes."
+    - route: work-graphs
+      use_when: "Coordinating several worklines through dependency nodes, gates, dispatch state, evidence joins, invalidation, and terminal closeout."
+    - route: dispatch
+      use_when: "Choosing root, internal-subagent, or user-visible-task execution and recording authorization or runtime handles."
+    - route: status-reconciliation
+      use_when: "Checking whether current implementation and evidence already satisfy a task or workline and synchronizing proven completion."
     - route: planning
       use_when: "Turning a request, gap, or requirement into behavior examples and validation routes."
     - route: doc-routing
@@ -64,6 +70,36 @@ documents:
           - lanes
           - orchestration
           - memory
+      - id: work-graphs
+        title: Work Graphs
+        anchor: "## Work Graphs"
+        summary: "Defines when a work graph is needed, its required defaults, lifecycle, closeout projection, and separation from architecture graphs or automatic scheduling."
+        routing_description: "Use when several worklines need dependency topology, gates, merge ownership, dispatch state, evidence joins, invalidation, or one terminal acceptance gate."
+        tags:
+          - work-graphs
+          - orchestration
+          - lifecycle
+          - evidence
+      - id: execution-surfaces-and-dispatch
+        title: Execution Surfaces And Dispatch
+        anchor: "## Execution Surfaces And Dispatch"
+        summary: "Separates lane readiness from dispatch authorization and distinguishes root, internal subagent, and user-visible task execution."
+        routing_description: "Use before dispatching a work-graph node or creating a separate Codex task for a workline."
+        tags:
+          - lanes
+          - orchestration
+          - dispatch
+          - delegation
+      - id: automatic-status-reconciliation
+        title: Automatic Status Reconciliation
+        anchor: "## Automatic Status Reconciliation"
+        summary: "Automatically closes checked lanes only when current-source criteria, dependencies, validation, and closeout evidence all pass."
+        routing_description: "Use when checking, refreshing, reconciling, or actualizing task or workline status."
+        tags:
+          - lanes
+          - validation
+          - closeout
+          - status
       - id: doc-routing-decision-matrix
         title: Doc Routing Decision Matrix
         anchor: "## Doc Routing Decision Matrix"

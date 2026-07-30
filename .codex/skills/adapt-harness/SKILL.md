@@ -26,16 +26,24 @@ questions.
 6. `docs/patterns/boundaries/index.md`, `docs/patterns/testing/index.md`, and
    `docs/patterns/context-memory/index.md` for reusable architecture, validation,
    and source-context routing.
-7. `docs/patterns/_index.md`, `.codex/skills/pattern-context/SKILL.md`, and
+7. `docs/patterns/architecture-defaults/index.md` plus only matching
+   graph/spec pairs when detected architecture, stack, cache, tenancy,
+   interface, service, event-driven, frontend, native app, CLI, experiment, or
+   SDK/library behavior needs a reference comparison. Use
+   `frontend-architecture-defaults` for a detected browser client and the core
+   `architecture-defaults` pack for other archetypes and cross-cutting work.
+8. `docs/patterns/_index.md`, `.codex/skills/pattern-context/SKILL.md`, and
    `scripts/build_pattern_context_pack.py` when onboarding writes or retrieves
    pattern entries, metadata, or context packs.
-8. `checklists/project-onboarding-analysis.md` when onboarding requires a
+9. `checklists/project-onboarding-analysis.md` when onboarding requires a
    full project scan, project-part specs, feature cataloging, visual evidence,
    or durable context routing.
-9. `templates/project-onboarding-workflow.md` and
+10. `templates/project-onboarding-workflow.md` and
    `templates/project-part-spec.md` when the request needs a repeatable
    agent/skill workflow packet or one spec per meaningful project area.
-10. `scripts/validate_cascade_codex.py`.
+11. `simulation-campaigns` and its tracked starter template when the target
+    project has an approved simulation/evaluation scope.
+12. `scripts/validate_cascade_codex.py`.
 
 ## Scope
 
@@ -66,8 +74,25 @@ their owning skills are needed and delegation is authorized.
    `docs/patterns/`; keep project facts in config, glossary, work lanes, and
    specs.
 8. Decide which generic pattern entries need target-specific updates:
-   workflow, boundaries, testing, context-memory, or a new bounded entry
-   created through `pattern-context`.
+   workflow, boundaries, architecture-defaults, testing, context-memory, or a
+   new bounded entry created through `pattern-context`. For a matching
+   architecture-default pair, record `ADOPTED`, `ADAPTED`, `REJECTED`, or
+   `GAP` from current target evidence. Resolve `architecture-selection`, then
+   extract source-linked claims and applicable policies for each backend
+   service, backend worker, web frontend, native app, CLI, experiment, or an
+   independently versioned/distributed library.
+   Resolve the complete `stack-selection` profile per application unit. Route
+   application runtimes, frameworks, libraries, UI, and transports through
+   `app-stack` plus the matching backend, frontend, native, CLI, experiment,
+   or library extension. Route each application unit through its matching
+   backend, frontend, native, CLI, experiment, or library infrastructure
+   profile, then
+   route compute, data, messaging, network, delivery, secrets, and
+   observability resource units through `infrastructure` plus only the
+   required resource extensions. If a required pair is absent or not yet
+   validated, record `GAP` or `NOT_RUN`; do not substitute another contour.
+   Validate the shared application and infrastructure evidence record with
+   `scripts/validate_stack_selection_evidence.py`.
 9. Translate current project architecture into exact paths:
    - `AGENTS.md` only for project identity, primary users, a tiny stack
      summary, hard guardrails, real validation commands, and pointers;
@@ -95,6 +120,18 @@ their owning skills are needed and delegation is authorized.
 13. Run the Cascade Codex validator.
 14. Run target-repo syntax/path checks when available.
 15. Report files written, skipped, merged, or requiring user review.
+16. When the user explicitly requests a new source structure and the target
+    has no conflicting architecture, preview a selected
+    `architecture-scaffold-profiles.json` profile with
+    `scripts/scaffold_architecture_default.py preview`. Use `write` only after
+    the path set is reviewed. Never add an overwrite mode or install packages
+    from this generator.
+17. When target behavior needs simulation, derive the simulation ID and owner
+    lane from approved project scope, preview
+    `bun scripts/cascade.ts simulation init <id> --owner-lane W-NNN --dry-run`,
+    review all generated paths, then initialize. Do not create a generic
+    simulation when no target scenario or owner exists, and never overwrite an
+    existing package.
 
 ## Deep Onboarding Workflow
 
@@ -115,8 +152,15 @@ Required phase outcomes:
    specs.
 4. Architecture and boundary synthesis: route reusable boundaries to
    `docs/patterns/boundaries/index.md` or a bounded pattern entry maintained
-   with `pattern-context`, codebase vocabulary to `docs/glossary.md`, and open
-   architecture questions to `docs/work/reports/` or backlog.
+   with `pattern-context`; compare detected architecture, stack, cache,
+   tenancy, interface, service, event-driven, frontend, native, CLI,
+   experiment, or SDK/library shapes against only matching
+   `docs/patterns/architecture-defaults/` pairs; resolve application contour
+   infrastructure before resource/provider extensions, and resolve
+   relationship and preservation constraints before recording `ADOPTED`,
+   `ADAPTED`, `REJECTED`, or `GAP`; route codebase vocabulary to
+   `docs/glossary.md`, and open architecture questions to
+   `docs/work/reports/` or backlog.
 5. Security and data handling: route current-code security inventory to
    `codebase-audit`, auth/session/role concerns to `auth-analysis`, proposed
    workflow risks to `secure-design`, and durable validation rules to
@@ -133,6 +177,10 @@ Required phase outcomes:
 8. Functional acceptance map: use `functional-qa` to connect discovered
    product scenarios and public contracts to executable or manual checks, then
    route durable test rules to `docs/patterns/testing/index.md`.
+   When approved scenarios need a campaign, use `simulation-campaigns` to
+   preview and initialize the target simulation package, then replace starter
+   assumptions with observed target boundaries before making calibration
+   claims.
 9. Context-memory routing and doc impact: use `docs-impact-map` before writing
    cross-folder facts, use `pattern-context` for pattern entries and packs, and
    write durable memory to the narrowest owner:

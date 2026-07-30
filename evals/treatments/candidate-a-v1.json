@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "id": "candidate-a-v1",
+  "baseline": false,
+  "target": {
+    "source_revision": "framework-candidate-a",
+    "model": "deterministic-fixture",
+    "prompt_digest": "2222222222222222222222222222222222222222222222222222222222222222",
+    "tool_digest": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+    "harness_digest": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
+  }
+}

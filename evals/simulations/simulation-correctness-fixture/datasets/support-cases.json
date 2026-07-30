@@ -1,0 +1,61 @@
+{
+  "schema_version": 1,
+  "id": "support-cases-v1",
+  "leakage_policy": "exclusive-case-identity",
+  "cases": [
+    {
+      "id": "support-dev-standard",
+      "scenario_id": "resolve-account-v1",
+      "actor_id": "standard-actor",
+      "partition": "development",
+      "slices": [
+        "standard"
+      ]
+    },
+    {
+      "id": "support-regression-risk",
+      "scenario_id": "resolve-account-v1",
+      "actor_id": "risk-actor",
+      "partition": "regression",
+      "slices": [
+        "risk"
+      ]
+    },
+    {
+      "id": "support-holdout-standard",
+      "scenario_id": "resolve-account-v1",
+      "actor_id": "standard-actor",
+      "partition": "holdout",
+      "slices": [
+        "standard"
+      ]
+    },
+    {
+      "id": "support-calibration-standard-a",
+      "scenario_id": "resolve-account-v1",
+      "actor_id": "standard-actor",
+      "partition": "calibration-reference",
+      "slices": [
+        "standard"
+      ]
+    },
+    {
+      "id": "support-calibration-risk-a",
+      "scenario_id": "resolve-account-v1",
+      "actor_id": "risk-actor",
+      "partition": "calibration-reference",
+      "slices": [
+        "risk"
+      ]
+    },
+    {
+      "id": "support-calibration-standard-b",
+      "scenario_id": "resolve-account-v1",
+      "actor_id": "standard-actor",
+      "partition": "calibration-reference",
+      "slices": [
+        "standard"
+      ]
+    }
+  ]
+}

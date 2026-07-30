@@ -1,0 +1,67 @@
+schema_id: architecture-default-graph-v1
+graph_id: infrastructure-data
+pair_kind: extension
+title: Data Infrastructure
+status: reference-default
+spec_path: docs/patterns/architecture-defaults/infrastructure-data.spec.md
+extends:
+  - infrastructure
+preserves:
+  - "infrastructure:scope-before-provider"
+  - "infrastructure:existing-platform-first"
+  - "infrastructure:managed-before-self-managed"
+  - "infrastructure:resource-ownership"
+  - "infrastructure:environment-contract"
+  - "infrastructure:least-privilege-and-isolation"
+  - "infrastructure:cost-and-lifecycle"
+  - "infrastructure:failure-and-recovery-proof"
+  - "infrastructure:infrastructure-as-code-authority"
+compatible_with:
+  - caching-strategy
+  - tenancy-strategy
+  - backend-stack
+default_when:
+  - "The system needs a database, cache service, object/blob store, search index, backup, or restore topology."
+do_not_use_when:
+  - "The concern is only an in-process data structure or browser-local cache."
+nodes:
+  - id: access-and-consistency
+    kind: evidence
+    owns: "Ownership, queries, writes, transactions, consistency, volume, retention, residency, and recovery needs."
+  - id: primary-data-system
+    kind: candidate-set
+    owns: "Relational, document, key-value, wide-column, time-series, graph, or adapted primary store."
+  - id: supporting-data-systems
+    kind: candidate-set
+    owns: "Cache service, object/blob storage, search index, analytics or derived read systems."
+  - id: data-lifecycle
+    kind: policy
+    owns: "Migrations, retention, archival, backup, restore, replication, residency, deletion, and exit."
+  - id: data-proof
+    kind: evidence
+    owns: "Query, write, consistency, isolation, failure, restore, migration, scale, cost, and deletion evidence."
+edges:
+  - from: access-and-consistency
+    to: primary-data-system
+    relation: constrains
+  - from: primary-data-system
+    to: supporting-data-systems
+    relation: may_project_to
+  - from: supporting-data-systems
+    to: data-lifecycle
+    relation: governed_by
+  - from: data-lifecycle
+    to: data-proof
+    relation: validated_by
+decisions:
+  - id: primary-store-before-specialists
+    default: "Start with the primary system that satisfies authoritative access and consistency needs; add specialist stores only for measured gaps."
+    exception_when: "The product inherently owns distinct data modalities with separate lifecycle and query needs."
+  - id: cache-is-not-authority
+    default: "A cache service follows caching-strategy and never silently becomes the system of record."
+    exception_when: "The selected data system is intentionally an authoritative key-value store with durability and recovery contracts."
+  - id: restore-is-evidence
+    default: "Treat configured backup and executed restore evidence as separate gates."
+    exception_when: "The data is explicitly disposable and reproducible from authoritative inputs."
+validation:
+  - "Access patterns, consistency, transactions, isolation, retention, residency, migration, backup, restore, scale, cost, and deletion are proved."

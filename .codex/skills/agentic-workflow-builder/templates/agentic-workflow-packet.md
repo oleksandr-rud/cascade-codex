@@ -4,6 +4,18 @@ Status: `<draft | ready | blocked | superseded>`
 Created: YYYY-MM-DD
 Workflow: `<workflow-or-lane-id>`
 
+## Dispatch Manifest
+
+Packet readiness is not execution authorization.
+
+| Step Or Lane | Execution Surface | Dispatch State | Authorization Evidence | Runtime Handle | Dependency Gate | Merge Owner |
+|---|---|---|---|---|---|---|
+| `WF-01` | `<root | internal-subagent | user-visible-task>` | `<NOT_AUTHORIZED | AUTHORIZED | DISPATCHED | RUNNING | BLOCKED | COMPLETE>` | `<request-or-approval-reference | none>` | `<agent-id | task-id | none>` | `<gate>` | `<owner>` |
+
+`internal-subagent` remains inside the current task tree.
+`user-visible-task` requires an explicit user request to create, open, or fork
+separate tasks or threads.
+
 ## Objective
 
 `<one measurable outcome>`
@@ -29,9 +41,9 @@ Use this section before selecting the workflow. Do not invent dynamic agents.
 Each step should point to existing agents or authorized subagents and the
 global skills to use at that step.
 
-| Step | Status | Owner Route | Skill Calls | Source Order | Delegation Prompt | Output | Validation | Handoff |
-|---|---|---|---|---|---|---|---|---|
-| `WF-01` | `<open>` | `<agent-or-subagent>` | `<skill-a, skill-b>` | `<paths-inputs>` | `P-01` | `<artifact>` | `<check>` | `<next-step>` |
+| Step | Status | Owner Route | Execution Surface | Dispatch State | Skill Calls | Source Order | Delegation Prompt | Output | Validation | Handoff |
+|---|---|---|---|---|---|---|---|---|---|---|
+| `WF-01` | `<open>` | `<agent-or-subagent>` | `<surface>` | `<dispatch-state>` | `<skill-a, skill-b>` | `<paths-inputs>` | `P-01` | `<artifact>` | `<check>` | `<next-step>` |
 
 ## Global Orchestration Skill Calls
 
@@ -114,7 +126,7 @@ Forbidden:
 
 - Stop for missing required source.
 - Stop for unauthorized external write, live delegation, dynamic agent
-  creation, or destructive action.
+  creation, user-visible task creation, or destructive action.
 - Stop when validation is blocked by missing preconditions.
 - Stop when the packet output contract is complete.
 

@@ -28,8 +28,14 @@ Use when work is done, blocked, or ready for handoff.
    behavior.
 2. Compare current request and directly relevant criteria against changed files
    and tests.
-3. Return to implementation if required behavior is missing and feasible.
-4. Run the closeout drift scan:
+3. When a status check proves every required criterion, dependency, and
+   validation gate complete against the current source identity, immediately
+   mark the in-scope lane and dispatch state `COMPLETE`, set its next gate to
+   `none`, synchronize the lane packet, work graph, report, and receipt, and
+   remove its completed active-registry projection
+   without requesting another confirmation.
+4. Return to implementation if required behavior is missing and feasible.
+5. Run the closeout drift scan:
    - identify whether the diff introduced or changed durable product behavior,
      design/brand constraints, normalized spec acceptance criteria,
      architecture/boundary rules, stack/runtime facts, or codebase vocabulary;
@@ -42,23 +48,22 @@ Use when work is done, blocked, or ready for handoff.
      useful for future planning or validation;
    - write `no durable doc diff needed` in the closeout output when the change
      is mechanical, refactor-only, test-only, or already documented.
-5. Mark deferred or blocked work with owner and next step.
-6. Persist durable rejected-scope decisions only when they would prevent future
+6. Mark deferred or blocked work with owner and next step.
+7. Persist durable rejected-scope decisions only when they would prevent future
    re-suggestion: record the concept, why it is out of scope, and any prior
    request/report links in the narrowest existing decision, backlog, pattern,
    or report location.
-7. Persist only reusable lessons, required handoff state, requested reports, or
+8. Persist only reusable lessons, required handoff state, requested reports, or
    required thin doc diffs.
    For research-heavy work, update `docs/patterns/context-memory/index.md` with a
    compact research-memory row that points to owner reports, specs, packages,
    prompts, reusable rules, and validation evidence.
-8. Do not create a generic learned-lessons dump.
-9. For active work cleanup, prune completed rows only when the user explicitly
-   asks for cleanup or the closeout scope includes registry maintenance; first
-   preserve durable evidence in `docs/work/reports/`, confirm the row is
-   complete, confirm dependencies are resolved, and remove the active row
-   instead of re-marking it as `CLOSED`.
-10. Keep final handoff concise and honest about checks that did not run.
+9. Do not create a generic learned-lessons dump.
+10. Keep `docs/work/active.md` active-only. First preserve durable evidence in
+   `docs/work/reports/`, confirm the row is terminal and dependencies are
+   resolved, then remove the completed or superseded projection instead of
+   retaining it or re-marking it as `CLOSED`.
+11. Keep final handoff concise and honest about checks that did not run.
 
 ## Thin Doc Diff Rules
 
@@ -101,9 +106,9 @@ Every thin doc diff must include:
 - Active work state: `docs/work/active.md` and `docs/work/lanes/`
 - Durable research memory: `docs/patterns/context-memory/index.md`
 - Durable work handoff: `docs/work/reports/`
-- Completed active registry cleanup: remove `COMPLETE` rows from
-  `docs/work/active.md` only after evidence is preserved in a report and the
-  cleanup scope is explicit
+- Completed active registry cleanup: preserve evidence in a report, then remove
+  `COMPLETE` or `SUPERSEDED` projections from `docs/work/active.md` in the same
+  closeout
 - Durable rejected scope: existing backlog, pattern, decision, or work report,
   only when it prevents repeat bad suggestions
 - Durable workflow lessons: `.codex/skills/`, `.codex/agents/`, or

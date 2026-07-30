@@ -1,0 +1,158 @@
+schema_id: architecture-default-graph-v1
+graph_id: library-infrastructure
+pair_kind: extension
+title: Library Infrastructure
+status: reference-default
+spec_path: docs/patterns/architecture-defaults/library-infrastructure.spec.md
+extends:
+  - infrastructure
+requires:
+  - sdk-library
+  - library-stack
+preserves:
+  - "infrastructure:scope-before-provider"
+  - "infrastructure:existing-platform-first"
+  - "infrastructure:managed-before-self-managed"
+  - "infrastructure:single-platform-default"
+  - "infrastructure:resource-ownership"
+  - "infrastructure:environment-contract"
+  - "infrastructure:least-privilege-and-isolation"
+  - "infrastructure:cost-and-lifecycle"
+  - "infrastructure:failure-and-recovery-proof"
+  - "infrastructure:infrastructure-as-code-authority"
+  - "infrastructure:application-profile-routing"
+  - "infrastructure:fullstack-is-composition"
+  - "infrastructure:shared-resource-contract"
+  - "infrastructure:client-resource-boundary"
+  - "infrastructure:tenant-isolation-enforcement"
+  - "infrastructure:workload-identity-lifecycle"
+  - "infrastructure:telemetry-data-boundary"
+compatible_with:
+  - infrastructure-compute
+  - infrastructure-delivery
+default_when:
+  - "A library has evidence-backed build, registry, artifact, signing, provenance, documentation, release, or browser-bundle resource needs."
+  - "A package distribution profile must be separated from the hosted APIs or services it consumes."
+do_not_use_when:
+  - "The library has no operated build or distribution resource; retain the explicit no-production-runtime result."
+  - "The concern is a hosted API, database, cache, queue, stream, pub/sub, telemetry receiver, developer control plane, or other operated service."
+nodes:
+  - id: library-infrastructure-scope
+    kind: application-resource-scope
+    owns: "One library release scope, supported consumers and targets, owners, channels, and evidence-linked infrastructure needs."
+  - id: no-production-runtime
+    kind: negative-selection
+    owns: "Default result that a distributed package runs inside consumers and owns no production service runtime."
+  - id: build-compute
+    kind: optional-compute
+    owns: "Evidence-backed clean, isolated, reproducible, multi-target, generator, documentation, and browser-bundle build execution."
+  - id: package-registry
+    kind: delivery-resource
+    owns: "Evidence-backed package publication, identity, namespace, access, integrity, retention, yanking, deprecation, and recovery."
+  - id: artifact-storage
+    kind: delivery-resource
+    owns: "Identified source, package, binary, symbol, documentation, manifest, and compatibility artifacts plus retention and deletion."
+  - id: signing-boundary
+    kind: trust-boundary
+    owns: "Build and release workload identity, signing keys or attestations, verification, rotation, revocation, audit, and recovery."
+  - id: provenance-records
+    kind: supply-chain-evidence
+    owns: "Source, dependency, toolchain, generator, build, test, artifact digest, signature, publication, and channel lineage."
+  - id: documentation-delivery
+    kind: delivery-resource
+    owns: "Version-mapped static documentation and examples, redirects, retention, security headers, and rollback."
+  - id: release-channels
+    kind: delivery-resource
+    owns: "Promotion, verification, staged availability, compatibility, rollback, yanking, deprecation, and retirement."
+  - id: browser-bundle-artifacts
+    kind: delivery-resource
+    owns: "Optional ESM, WASM, source-map, type, worker, or other browser-consumable artifacts and their integrity, size, compatibility, and sensitive-content checks."
+  - id: hosted-service-boundary
+    kind: ownership-boundary
+    owns: "Separately selected hosted APIs, data, caches, messaging, telemetry receivers, portals, and control planes without transferring ownership to the package."
+  - id: library-infrastructure-proof
+    kind: evidence
+    owns: "No-runtime, build, artifact, signing, provenance, registry, documentation, browser-bundle, release, failure, recovery, cost, and hosted-ownership validation."
+edges:
+  - from: library-infrastructure-scope
+    to: no-production-runtime
+    relation: defaults_to
+  - from: library-infrastructure-scope
+    to: build-compute
+    relation: includes_when_evidenced
+  - from: build-compute
+    to: artifact-storage
+    relation: produces
+  - from: build-compute
+    to: browser-bundle-artifacts
+    relation: may_produce
+  - from: artifact-storage
+    to: signing-boundary
+    relation: verified_by
+  - from: browser-bundle-artifacts
+    to: signing-boundary
+    relation: verified_by
+  - from: signing-boundary
+    to: provenance-records
+    relation: recorded_in
+  - from: provenance-records
+    to: package-registry
+    relation: published_with
+  - from: provenance-records
+    to: documentation-delivery
+    relation: published_with
+  - from: package-registry
+    to: release-channels
+    relation: supplies
+  - from: documentation-delivery
+    to: release-channels
+    relation: versioned_with
+  - from: browser-bundle-artifacts
+    to: release-channels
+    relation: distributed_through
+  - from: library-infrastructure-scope
+    to: hosted-service-boundary
+    relation: separates
+  - from: no-production-runtime
+    to: library-infrastructure-proof
+    relation: validated_by
+  - from: release-channels
+    to: library-infrastructure-proof
+    relation: validated_by
+  - from: hosted-service-boundary
+    to: library-infrastructure-proof
+    relation: validated_by
+decisions:
+  - id: no-production-runtime-default
+    default: "A library owns no production service runtime; add only evidence-backed build and distribution resources because its executable behavior runs inside consumers."
+    exception_when: "There is no hosted-runtime exception inside this profile; classify project-owned hosted behavior as a separate backend application unit."
+  - id: build-compute-from-evidence
+    default: "Select compute only for proved build, generation, testing, documentation, signing, or multi-target artifact work with approved dependency sources, integrity-verified resolution, private namespace protection, reviewed lock drift, isolated install hooks, and bounded egress that cannot remain in an existing pipeline."
+    exception_when: "An existing owned pipeline supplies the same isolated, reproducible, least-privilege, cost, and recovery contract."
+  - id: distribution-through-delivery
+    default: "Route registries, artifacts, documentation, release channels, secrets, observability, promotion, and rollback through infrastructure-delivery."
+    exception_when: "A true external package authority owns the resource; record it as an external dependency and verify its trust and recovery contract."
+  - id: signing-identity-lifecycle
+    default: "Use managed short-lived, role- and resource-scoped release identity where possible; isolate signing authority and prove rotation, emergency revocation, stale-credential rejection, and audit."
+    exception_when: "A platform requires a static signing key; isolate it, minimize access, rotate it, audit use, and record the platform limit and recovery path."
+  - id: provenance-and-reproducibility
+    default: "Link every released artifact to source, dependencies, toolchain, generator inputs, build, tests, digest, signature or attestation, publication, and channel evidence."
+    exception_when: "A build cannot be bit-for-bit reproducible; record normalized equivalence, environmental variance, and independent artifact verification."
+  - id: browser-bundle-is-artifact
+    default: "Treat browser bundles, WASM, types, workers, and source maps as versioned delivery artifacts; they do not grant server runtime, secret, data, cache, or messaging ownership."
+    exception_when: "Browser execution is part of a separately selected web-frontend unit; its runtime and delivery needs resolve through frontend-infrastructure."
+  - id: hosted-services-are-backend
+    default: "A project-owned hosted API, telemetry receiver, documentation control plane, developer portal, or update service is a separate backend application unit."
+    exception_when: "A static documentation artifact remains delivery-only; a true external hosted service is recorded as an external dependency."
+  - id: no-data-or-messaging-ownership
+    default: "Library infrastructure never selects production databases, cache services, object/search domain stores, queues, pub/sub, or streams for the package."
+    exception_when: "Build artifacts and release metadata remain delivery resources; any operated data or messaging capability belongs to a separately classified backend unit."
+validation:
+  - "SL-004: a package needing registry publication and documentation selects only justified compute and delivery resources and no production runtime, data, cache, or messaging."
+  - "A build-labeled compute resource with a production-service lifecycle is rejected; library compute uses a bounded typed lifecycle and explicit teardown."
+  - "SL-005: an SDK consuming a hosted API keeps client and artifact concerns here while a separate backend unit owns the API and operated resources."
+  - "Every build, registry, artifact, signing, provenance, documentation, release, and browser-bundle resource is evidence-backed or explicitly absent."
+  - "Release jobs prove least privilege, short-lived identity where supported, secret isolation, signature verification, rotation, emergency revocation, stale-credential rejection, and privileged audit."
+  - "Artifacts and telemetry prove allowlisted contents, secret and tenant-data exclusion, retention, deletion, cost, failure, rollback, and compromised-release recovery."
+  - "Dependency-confusion and typosquatting probes prove trusted registry/source mapping, private namespace reservation, integrity, lock/resolution review, install-hook isolation, and bounded build egress before signing."
+  - "Reject any library profile that invents production compute, database, cache, queue, pub/sub, stream, or hosted control-plane ownership."

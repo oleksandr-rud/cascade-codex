@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "id": "allow-fixture-state-actions-v1",
+  "effect": "ALLOW",
+  "action_types": [
+    "assert",
+    "set",
+    "increment"
+  ],
+  "reason": "The deterministic fixture permits declared in-memory state transitions only."
+}

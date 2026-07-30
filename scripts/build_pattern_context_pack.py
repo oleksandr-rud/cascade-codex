@@ -414,7 +414,8 @@ def render_pack(path: Path, args: argparse.Namespace) -> str:
             continue
         source = section_source(document)
         section_body = extract_section(source, str(section_meta.get("anchor", "")))
-        lines.extend(["", "```markdown", section_body, "```"])
+        fence = "````" if "```" in section_body else "```"
+        lines.extend(["", f"{fence}markdown", section_body, fence])
     return "\n".join(lines).rstrip() + "\n"
 
 

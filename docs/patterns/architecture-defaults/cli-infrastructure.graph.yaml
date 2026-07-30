@@ -1,0 +1,135 @@
+schema_id: architecture-default-graph-v1
+graph_id: cli-infrastructure
+pair_kind: extension
+title: CLI Infrastructure
+status: reference-default
+spec_path: docs/patterns/architecture-defaults/cli-infrastructure.spec.md
+extends:
+  - infrastructure
+requires:
+  - cli
+  - cli-stack
+preserves:
+  - "infrastructure:scope-before-provider"
+  - "infrastructure:resource-ownership"
+  - "infrastructure:cost-and-lifecycle"
+  - "infrastructure:failure-and-recovery-proof"
+  - "infrastructure:application-profile-routing"
+  - "infrastructure:shared-resource-contract"
+  - "infrastructure:client-resource-boundary"
+  - "infrastructure:least-privilege-and-isolation"
+  - "infrastructure:tenant-isolation-enforcement"
+  - "infrastructure:workload-identity-lifecycle"
+  - "infrastructure:telemetry-data-boundary"
+compatible_with:
+  - infrastructure-delivery
+default_when:
+  - "A CLI has evidence-backed artifact build, signing, registry, update, provenance, plugin distribution, or telemetry needs."
+  - "A CLI must distinguish its distribution resources from a separately operated remote control plane or API."
+do_not_use_when:
+  - "A local compiled or runtime-distributed CLI has no operated resource or distribution service; retain the no-infrastructure result."
+  - "The concern is a remote API, control plane, hosted plugin service, or telemetry service that owns operated behavior; classify it as a separate backend unit or true external boundary."
+nodes:
+  - id: cli-infrastructure-scope
+    kind: application-resource-scope
+    owns: "One CLI release scope, target platforms, installation channels, owners, and evidence-linked infrastructure needs."
+  - id: no-operated-infrastructure
+    kind: negative-selection
+    owns: "Explicit result for a local CLI that needs no operated resources."
+  - id: release-builds
+    kind: delivery-resource
+    owns: "Evidence-required target operating-system and architecture builds, packaging, and reproducible artifacts."
+  - id: signed-artifacts
+    kind: trust-boundary
+    owns: "Artifact signatures, signing identities, verification, rotation, revocation, and recovery."
+  - id: provenance-records
+    kind: supply-chain-evidence
+    owns: "Source, toolchain, dependency, build, artifact digest, and release-channel lineage."
+  - id: registry-channels
+    kind: delivery-resource
+    owns: "Evidence-backed package registries, release indexes, mirrors, retention, and access policy."
+  - id: update-channels
+    kind: delivery-resource
+    owns: "Version discovery, staged updates, compatibility, rollback, minimum versions, and channel retirement."
+  - id: plugin-distribution
+    kind: trust-boundary
+    owns: "Optional plugin catalog, compatibility, signing, permissions, isolation, revocation, and lifecycle evidence."
+  - id: cli-telemetry
+    kind: client-integration
+    owns: "Optional CLI telemetry purpose, consent, minimization, redaction, buffering, retention, access, and disablement."
+  - id: remote-control-plane-boundary
+    kind: ownership-boundary
+    owns: "References to separately selected remote APIs, control planes, hosted plugin services, or telemetry receivers without assigning operated behavior to the CLI."
+  - id: cli-infrastructure-proof
+    kind: evidence
+    owns: "No-resource, build, signing, provenance, registry, update, plugin, telemetry, failure, recovery, cost, and remote-ownership validation."
+edges:
+  - from: cli-infrastructure-scope
+    to: no-operated-infrastructure
+    relation: defaults_to
+  - from: cli-infrastructure-scope
+    to: release-builds
+    relation: includes_when_evidenced
+  - from: release-builds
+    to: signed-artifacts
+    relation: produces
+  - from: signed-artifacts
+    to: provenance-records
+    relation: recorded_in
+  - from: provenance-records
+    to: registry-channels
+    relation: published_with
+  - from: registry-channels
+    to: update-channels
+    relation: supplies
+  - from: cli-infrastructure-scope
+    to: plugin-distribution
+    relation: includes_when_evidenced
+  - from: cli-infrastructure-scope
+    to: cli-telemetry
+    relation: includes_when_evidenced
+  - from: plugin-distribution
+    to: remote-control-plane-boundary
+    relation: separates_hosted_service
+  - from: cli-telemetry
+    to: remote-control-plane-boundary
+    relation: separates_receiver_service
+  - from: no-operated-infrastructure
+    to: cli-infrastructure-proof
+    relation: validated_by
+  - from: update-channels
+    to: cli-infrastructure-proof
+    relation: validated_by
+  - from: remote-control-plane-boundary
+    to: cli-infrastructure-proof
+    relation: validated_by
+decisions:
+  - id: no-infrastructure-default
+    default: "A local CLI has no operated infrastructure unless distribution, updates, plugins, telemetry, or a remote dependency is established by evidence."
+    exception_when: "A required operated capability is explicitly identified with an owner, lifecycle, budget, and validation contract."
+  - id: local-files-are-application
+    default: "Treat local configuration, credentials, caches, state, and files as CLI adapters and public filesystem behavior, not infrastructure resources."
+    exception_when: "A separately operated remote data or configuration service exists; classify it outside the CLI profile."
+  - id: distribution-from-evidence
+    default: "Add release builds, registries, or update channels only for declared target environments and installation paths."
+    exception_when: "The CLI is embedded in another owned artifact whose release system already proves the same contract."
+  - id: signing-and-provenance
+    default: "Sign release artifacts where trust policy requires it and attach verifiable source, toolchain, dependency, build, digest, and channel provenance."
+    exception_when: "An external package authority provides equivalent signing and provenance evidence with a documented recovery route."
+  - id: registry-and-update-lifecycle
+    default: "Define access, integrity, mirrors, staged release, compatibility, rollback, retention, and retirement for every registry and update channel."
+    exception_when: "Artifacts are transferred manually inside one bounded trusted environment with no update channel."
+  - id: plugin-trust-and-lifecycle
+    default: "Add plugin distribution only with compatibility, signing, permission, isolation, revocation, update, and retirement contracts."
+    exception_when: "All extension behavior is compiled and released with the CLI."
+  - id: telemetry-from-evidence
+    default: "CLI telemetry is absent unless purpose and policy justify it; when present, provide notice or consent, minimization, redaction, disablement, retention, and failure isolation."
+    exception_when: "Mandatory operational telemetry is required in a controlled environment and its policy, access, and scope are explicit."
+  - id: remote-control-plane-is-backend
+    default: "An owned remote API, control plane, hosted plugin service, or telemetry receiver is a separate backend application unit with independent stack and infrastructure decisions."
+    exception_when: "The dependency is a true external service; record its provider boundary without claiming ownership."
+validation:
+  - "NCE-003: a local compiled CLI with no service dependency produces the explicit no-operated-infrastructure result."
+  - "NCE-004: an owned remote control plane resolves to a separate backend unit; the CLI profile owns only client integration and justified distribution."
+  - "Every artifact, signing identity, provenance record, registry, update channel, plugin route, and telemetry stream is evidence-backed or absent."
+  - "Validation covers clean installation, signature/provenance verification, upgrade and rollback, offline operation, plugin rejection and revocation, telemetry disablement and failure, and remote-service ownership."

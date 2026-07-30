@@ -1,0 +1,177 @@
+{
+  "schema_id": "architecture-scaffold-profiles-v1",
+  "description": "Bounded source structures generated only after an architecture and technology profile is explicitly selected.",
+  "rules": {
+    "default_mode": "preview",
+    "overwrite": false,
+    "install_dependencies": false,
+    "run_commands": false,
+    "required_placeholders": [
+      "__APP_NAME__",
+      "__MODULE_NAME__"
+    ]
+  },
+  "profiles": [
+    {
+      "profile_id": "backend-bun",
+      "description": "TypeScript backend/API starter with app-owned startup, vertical module slices, and shared technical ports.",
+      "pair_ids": [
+        "service-api-worker",
+        "stack-selection",
+        "app-stack",
+        "backend-stack"
+      ],
+      "technology_node": "bun-hono",
+      "structure_markers": [
+        "src/__APP_NAME__/startup/",
+        "src/__APP_NAME__/modules/__MODULE_NAME__/",
+        "src/libs/"
+      ],
+      "files": {
+        "ARCHITECTURE.md": "# __APP_NAME__ architecture\n\nAdopted defaults: `service-api-worker`, `stack-selection`, `app-stack`, and `backend-stack:bun-hono`.\n\n`src/__APP_NAME__/startup` composes the process. `src/__APP_NAME__/modules/__MODULE_NAME__` owns the vertical slice. `src/libs` owns reusable technical ports and adapters only. Record target-specific dependencies, versions, exceptions, and proof evidence here before production use.\n",
+        "src/__APP_NAME__/startup/container.ts": "import type { __MODULE_NAME_PASCAL__Repository } from \"../modules/__MODULE_NAME__/domain/repository\";\nimport { InMemory__MODULE_NAME_PASCAL__Repository } from \"../modules/__MODULE_NAME__/infrastructure/repository\";\n\nexport interface Container {\n  __MODULE_NAME_CAMEL__Repository: __MODULE_NAME_PASCAL__Repository;\n}\n\nexport function createContainer(): Container {\n  return {\n    __MODULE_NAME_CAMEL__Repository: new InMemory__MODULE_NAME_PASCAL__Repository(),\n  };\n}\n",
+        "src/__APP_NAME__/startup/main.ts": "import { Hono } from \"hono\";\nimport { create__MODULE_NAME_PASCAL__Routes } from \"../modules/__MODULE_NAME__/interface/http/routes\";\nimport { createContainer } from \"./container\";\n\nconst container = createContainer();\nconst app = new Hono();\n\napp.route(\"/__MODULE_NAME__\", create__MODULE_NAME_PASCAL__Routes(container));\n\nexport default app;\n",
+        "src/__APP_NAME__/modules/__MODULE_NAME__/index.ts": "export { create__MODULE_NAME_PASCAL__Routes } from \"./interface/http/routes\";\nexport type { __MODULE_NAME_PASCAL__, __MODULE_NAME_PASCAL__Id } from \"./domain/model\";\n",
+        "src/__APP_NAME__/modules/__MODULE_NAME__/interface/http/routes.ts": "import { Hono } from \"hono\";\nimport type { Container } from \"../../../../startup/container\";\nimport { list__MODULE_NAME_PASCAL__ } from \"../../application/list\";\n\nexport function create__MODULE_NAME_PASCAL__Routes(container: Container): Hono {\n  const routes = new Hono();\n  routes.get(\"/\", async (context) => {\n    const items = await list__MODULE_NAME_PASCAL__(container.__MODULE_NAME_CAMEL__Repository);\n    return context.json({ items });\n  });\n  return routes;\n}\n",
+        "src/__APP_NAME__/modules/__MODULE_NAME__/application/list.ts": "import type { __MODULE_NAME_PASCAL__Repository } from \"../domain/repository\";\n\nexport async function list__MODULE_NAME_PASCAL__(repository: __MODULE_NAME_PASCAL__Repository) {\n  return repository.list();\n}\n",
+        "src/__APP_NAME__/modules/__MODULE_NAME__/application/events/emitters.ts": "import type { EventBus, EventEnvelope } from \"../../../../../libs/messaging/eventBus\";\n\nexport function emit__MODULE_NAME_PASCAL__Event(bus: EventBus, event: EventEnvelope): Promise<void> {\n  return bus.publish([event]);\n}\n",
+        "src/__APP_NAME__/modules/__MODULE_NAME__/application/events/subscribers.ts": "import type { EventEnvelope } from \"../../../../../libs/messaging/eventBus\";\n\nexport async function on__MODULE_NAME_PASCAL__Event(event: EventEnvelope): Promise<void> {\n  // Validate the event contract, enforce idempotency, then invoke an application use case.\n  void event;\n}\n",
+        "src/__APP_NAME__/modules/__MODULE_NAME__/domain/events.ts": "import type { __MODULE_NAME_PASCAL__Id } from \"./model\";\n\nexport interface __MODULE_NAME_PASCAL__Created {\n  type: \"__MODULE_NAME__.created\";\n  entityId: __MODULE_NAME_PASCAL__Id;\n  occurredAt: string;\n}\n",
+        "src/__APP_NAME__/modules/__MODULE_NAME__/domain/model.ts": "export type __MODULE_NAME_PASCAL__Id = string & { readonly __brand: \"__MODULE_NAME_PASCAL__Id\" };\n\nexport interface __MODULE_NAME_PASCAL__ {\n  id: __MODULE_NAME_PASCAL__Id;\n  name: string;\n}\n",
+        "src/__APP_NAME__/modules/__MODULE_NAME__/domain/repository.ts": "import type { Repository } from \"../../../../libs/database/repository\";\nimport type { __MODULE_NAME_PASCAL__, __MODULE_NAME_PASCAL__Id } from \"./model\";\n\nexport interface __MODULE_NAME_PASCAL__Repository extends Repository<__MODULE_NAME_PASCAL__, __MODULE_NAME_PASCAL__Id> {}\n",
+        "src/__APP_NAME__/modules/__MODULE_NAME__/infrastructure/repository.ts": "import type { __MODULE_NAME_PASCAL__, __MODULE_NAME_PASCAL__Id } from \"../domain/model\";\nimport type { __MODULE_NAME_PASCAL__Repository } from \"../domain/repository\";\n\nexport class InMemory__MODULE_NAME_PASCAL__Repository implements __MODULE_NAME_PASCAL__Repository {\n  private readonly records = new Map<__MODULE_NAME_PASCAL__Id, __MODULE_NAME_PASCAL__>();\n\n  async get(id: __MODULE_NAME_PASCAL__Id): Promise<__MODULE_NAME_PASCAL__ | null> {\n    return this.records.get(id) ?? null;\n  }\n\n  async list(): Promise<readonly __MODULE_NAME_PASCAL__[]> {\n    return [...this.records.values()];\n  }\n}\n",
+        "src/libs/cache/cache.ts": "export interface CachePort {\n  get(key: string): Promise<Uint8Array | null>;\n  set(key: string, value: Uint8Array, ttlSeconds: number): Promise<void>;\n  delete(key: string): Promise<void>;\n}\n",
+        "src/libs/database/repository.ts": "export interface Repository<TEntity, TId> {\n  get(id: TId): Promise<TEntity | null>;\n  list(): Promise<readonly TEntity[]>;\n}\n",
+        "src/libs/messaging/eventBus.ts": "export interface EventEnvelope {\n  id: string;\n  type: string;\n  occurredAt: string;\n  payload: unknown;\n}\n\nexport interface EventBus {\n  publish(events: readonly EventEnvelope[]): Promise<void>;\n}\n",
+        "src/libs/thirdparty/client.ts": "export interface ThirdPartyClient<TRequest, TResponse> {\n  execute(request: TRequest, signal?: AbortSignal): Promise<TResponse>;\n}\n"
+      }
+    },
+    {
+      "profile_id": "backend-go",
+      "description": "Go backend/API starter with explicit startup composition, vertical module packages, and shared technical contracts.",
+      "pair_ids": [
+        "service-api-worker",
+        "stack-selection",
+        "app-stack",
+        "backend-stack"
+      ],
+      "technology_node": "go-standard-library",
+      "structure_markers": [
+        "src/__APP_NAME__/startup/",
+        "src/__APP_NAME__/modules/__MODULE_NAME__/",
+        "src/libs/"
+      ],
+      "files": {
+        "ARCHITECTURE.md": "# __APP_NAME__ architecture\n\nAdopted defaults: `service-api-worker`, `stack-selection`, `app-stack`, and `backend-stack:go-standard-library`.\n\nInitialize the Go module before wiring imports. `src/__APP_NAME__/startup` owns composition, `src/__APP_NAME__/modules/__MODULE_NAME__` owns the slice, and `src/libs` contains reusable technical contracts rather than business rules.\n",
+        "cmd/__APP_NAME__/main.go": "package main\n\n// Wire the target Go module path to src/__APP_NAME__/startup, then call startup.Run.\nfunc main() {}\n",
+        "src/__APP_NAME__/startup/run.go": "package startup\n\nimport \"net/http\"\n\n// Run is the process composition boundary. Inject concrete repositories and\n// register module interfaces here after the target Go module path is known.\nfunc Run(server *http.Server) error {\n\treturn server.ListenAndServe()\n}\n",
+        "src/__APP_NAME__/modules/__MODULE_NAME__/module.go": "package __MODULE_NAME_GO__\n\n// Module is the public slice entrypoint exposed to startup composition. Add\n// application and adapter fields after the target Go module path is known.\ntype Module struct{}\n",
+        "src/__APP_NAME__/modules/__MODULE_NAME__/interface/http/handler.go": "package httpinterface\n\nimport (\n\t\"encoding/json\"\n\t\"net/http\"\n)\n\n// Handler adapts HTTP to the module application service.\ntype Handler struct {\n\tList func() ([]any, error)\n}\n\nfunc (h Handler) ServeHTTP(writer http.ResponseWriter, request *http.Request) {\n\titems, err := h.List()\n\tif err != nil {\n\t\thttp.Error(writer, \"request failed\", http.StatusInternalServerError)\n\t\treturn\n\t}\n\t_ = json.NewEncoder(writer).Encode(map[string]any{\"items\": items})\n}\n",
+        "src/__APP_NAME__/modules/__MODULE_NAME__/application/service.go": "package application\n\n// Service owns module use cases. Add the consumer-owned domain repository\n// import after the target Go module path is initialized.\ntype Service struct{}\n\nfunc NewService() Service {\n\treturn Service{}\n}\n",
+        "src/__APP_NAME__/modules/__MODULE_NAME__/application/events/emitters.go": "package events\n\nimport \"context\"\n\n// Emitter is implemented by a shared messaging adapter after the target Go\n// module path is initialized.\ntype Emitter interface {\n\tPublish(context.Context, string, []byte) error\n}\n",
+        "src/__APP_NAME__/modules/__MODULE_NAME__/application/events/subscribers.go": "package events\n\nimport \"context\"\n\n// Subscriber adapts an external event envelope to a module use case. Add the\n// target module imports after its Go module path is initialized.\ntype Subscriber func(context.Context, []byte) error\n",
+        "src/__APP_NAME__/modules/__MODULE_NAME__/domain/event.go": "package domain\n\nimport \"time\"\n\ntype Created struct {\n\tEntityID   ID\n\tOccurredAt time.Time\n}\n",
+        "src/__APP_NAME__/modules/__MODULE_NAME__/domain/model.go": "package domain\n\ntype ID string\n\ntype Entity struct {\n\tID   ID\n\tName string\n}\n",
+        "src/__APP_NAME__/modules/__MODULE_NAME__/domain/repository.go": "package domain\n\nimport \"context\"\n\ntype Repository interface {\n\tGet(context.Context, ID) (Entity, bool, error)\n\tList(context.Context) ([]Entity, error)\n}\n",
+        "src/__APP_NAME__/modules/__MODULE_NAME__/infrastructure/memory_repository.go": "package infrastructure\n\n// MemoryRepository is a replaceable adapter placeholder. Bind it to the\n// module domain.Repository contract after the target Go module path is known.\ntype MemoryRepository struct {\n\trecords map[string]any\n}\n\nfunc NewMemoryRepository() *MemoryRepository {\n\treturn &MemoryRepository{records: make(map[string]any)}\n}\n\nfunc (repository *MemoryRepository) Get(id string) (any, bool) {\n\tentity, ok := repository.records[id]\n\treturn entity, ok\n}\n\nfunc (repository *MemoryRepository) List() []any {\n\titems := make([]any, 0, len(repository.records))\n\tfor _, entity := range repository.records {\n\t\titems = append(items, entity)\n\t}\n\treturn items\n}\n",
+        "src/libs/cache/cache.go": "package cache\n\nimport (\n\t\"context\"\n\t\"time\"\n)\n\ntype Port interface {\n\tGet(context.Context, string) ([]byte, bool, error)\n\tSet(context.Context, string, []byte, time.Duration) error\n\tDelete(context.Context, string) error\n}\n",
+        "src/libs/database/transaction.go": "package database\n\nimport \"context\"\n\n// Transactor is a shared technical port. Domain-specific repositories remain\n// in their owning module.\ntype Transactor interface {\n\tWithinTransaction(context.Context, func(context.Context) error) error\n}\n",
+        "src/libs/messaging/event.go": "package messaging\n\nimport (\n\t\"context\"\n\t\"time\"\n)\n\ntype Event struct {\n\tID         string\n\tType       string\n\tOccurredAt time.Time\n\tPayload    []byte\n}\n\ntype Publisher interface {\n\tPublish(context.Context, ...Event) error\n}\n",
+        "src/libs/thirdparty/client.go": "package thirdparty\n\nimport \"context\"\n\ntype Client[Request any, Response any] interface {\n\tExecute(context.Context, Request) (Response, error)\n}\n"
+      }
+    },
+    {
+      "profile_id": "backend-fastapi",
+      "description": "Python/FastAPI backend starter with startup composition, vertical modules, dependency ports, and shared technical libraries.",
+      "pair_ids": [
+        "service-api-worker",
+        "stack-selection",
+        "app-stack",
+        "backend-stack"
+      ],
+      "technology_node": "python-fastapi",
+      "structure_markers": [
+        "src/__APP_NAME__/startup/",
+        "src/__APP_NAME__/modules/__MODULE_NAME__/",
+        "src/libs/"
+      ],
+      "files": {
+        "ARCHITECTURE.md": "# __APP_NAME__ architecture\n\nAdopted defaults: `service-api-worker`, `stack-selection`, `app-stack`, and `backend-stack:python-fastapi`.\n\n`src/__APP_NAME__/startup` owns FastAPI composition. `src/__APP_NAME__/modules/__MODULE_NAME__` owns the slice. `src/libs` contains reusable technical ports/adapters. Pin FastAPI, Pydantic, the ASGI server, database, migrations, tests, and telemetry in the target.\n",
+        "src/__APP_NAME__/__init__.py": "",
+        "src/__APP_NAME__/startup/__init__.py": "",
+        "src/__APP_NAME__/startup/container.py": "from __APP_NAME__.modules.__MODULE_NAME__.infrastructure.repository import InMemory__MODULE_NAME_PASCAL__Repository\n\n\nclass Container:\n    def __init__(self) -> None:\n        self.__MODULE_NAME_SNAKE___repository = InMemory__MODULE_NAME_PASCAL__Repository()\n\n\ncontainer = Container()\n",
+        "src/__APP_NAME__/startup/main.py": "from fastapi import FastAPI\n\nfrom __APP_NAME__.modules.__MODULE_NAME__.interface.http.routes import router as __MODULE_NAME_SNAKE___router\n\napp = FastAPI()\napp.include_router(__MODULE_NAME_SNAKE___router, prefix=\"/__MODULE_NAME__\", tags=[\"__MODULE_NAME__\"])\n",
+        "src/__APP_NAME__/modules/__MODULE_NAME__/__init__.py": "from .domain.model import __MODULE_NAME_PASCAL__\n\n__all__ = [\"__MODULE_NAME_PASCAL__\"]\n",
+        "src/__APP_NAME__/modules/__MODULE_NAME__/interface/http/routes.py": "from fastapi import APIRouter, Depends\n\nfrom __APP_NAME__.modules.__MODULE_NAME__.application.list_items import list_items\nfrom __APP_NAME__.modules.__MODULE_NAME__.domain.repository import __MODULE_NAME_PASCAL__Repository\nfrom __APP_NAME__.startup.container import container\n\nrouter = APIRouter()\n\n\ndef get_repository() -> __MODULE_NAME_PASCAL__Repository:\n    return container.__MODULE_NAME_SNAKE___repository\n\n\n@router.get(\"\")\nasync def get_items(repository: __MODULE_NAME_PASCAL__Repository = Depends(get_repository)):\n    return {\"items\": await list_items(repository)}\n",
+        "src/__APP_NAME__/modules/__MODULE_NAME__/application/list_items.py": "from __APP_NAME__.modules.__MODULE_NAME__.domain.repository import __MODULE_NAME_PASCAL__Repository\n\n\nasync def list_items(repository: __MODULE_NAME_PASCAL__Repository):\n    return await repository.list()\n",
+        "src/__APP_NAME__/modules/__MODULE_NAME__/application/events/emitters.py": "from libs.messaging import EventBus\n\n\nasync def emit___MODULE_NAME_SNAKE___event(bus: EventBus, payload: object) -> None:\n    await bus.publish(\"__MODULE_NAME__.changed\", payload)\n",
+        "src/__APP_NAME__/modules/__MODULE_NAME__/application/events/subscribers.py": "from dataclasses import dataclass\n\n\n@dataclass(frozen=True)\nclass EventEnvelope:\n    id: str\n    type: str\n    payload: object\n\n\nasync def on___MODULE_NAME_SNAKE___event(event: EventEnvelope) -> None:\n    \"\"\"Validate idempotency, then invoke an application use case.\"\"\"\n    _ = event\n",
+        "src/__APP_NAME__/modules/__MODULE_NAME__/domain/events.py": "from dataclasses import dataclass\nfrom datetime import datetime\n\n\n@dataclass(frozen=True)\nclass __MODULE_NAME_PASCAL__Created:\n    entity_id: str\n    occurred_at: datetime\n",
+        "src/__APP_NAME__/modules/__MODULE_NAME__/domain/model.py": "from dataclasses import dataclass\n\n\n@dataclass(frozen=True)\nclass __MODULE_NAME_PASCAL__:\n    id: str\n    name: str\n",
+        "src/__APP_NAME__/modules/__MODULE_NAME__/domain/repository.py": "from typing import Protocol\n\nfrom libs.database.repository import Repository\nfrom .model import __MODULE_NAME_PASCAL__\n\n\nclass __MODULE_NAME_PASCAL__Repository(Repository[__MODULE_NAME_PASCAL__, str], Protocol):\n    pass\n",
+        "src/__APP_NAME__/modules/__MODULE_NAME__/infrastructure/repository.py": "from __APP_NAME__.modules.__MODULE_NAME__.domain.model import __MODULE_NAME_PASCAL__\n\n\nclass InMemory__MODULE_NAME_PASCAL__Repository:\n    def __init__(self) -> None:\n        self._records: dict[str, __MODULE_NAME_PASCAL__] = {}\n\n    async def get(self, entity_id: str) -> __MODULE_NAME_PASCAL__ | None:\n        return self._records.get(entity_id)\n\n    async def list(self) -> list[__MODULE_NAME_PASCAL__]:\n        return list(self._records.values())\n",
+        "src/libs/cache/__init__.py": "from typing import Protocol\n\n\nclass CachePort(Protocol):\n    async def get(self, key: str) -> bytes | None: ...\n\n    async def set(self, key: str, value: bytes, ttl_seconds: int) -> None: ...\n\n    async def delete(self, key: str) -> None: ...\n",
+        "src/libs/database/__init__.py": "\"\"\"Shared database ports and adapters; business repositories stay in modules.\"\"\"\n",
+        "src/libs/database/repository.py": "from typing import Generic, Protocol, TypeVar\n\nEntity = TypeVar(\"Entity\")\nEntityId = TypeVar(\"EntityId\")\n\n\nclass Repository(Protocol, Generic[Entity, EntityId]):\n    async def get(self, entity_id: EntityId) -> Entity | None: ...\n\n    async def list(self) -> list[Entity]: ...\n",
+        "src/libs/messaging/__init__.py": "from typing import Protocol\n\n\nclass EventBus(Protocol):\n    async def publish(self, event_type: str, payload: object) -> None: ...\n",
+        "src/libs/thirdparty/__init__.py": "from typing import Protocol, TypeVar\n\nRequest = TypeVar(\"Request\")\nResponse = TypeVar(\"Response\")\n\n\nclass ThirdPartyClient(Protocol[Request, Response]):\n    async def execute(self, request: Request) -> Response: ...\n"
+      }
+    },
+    {
+      "profile_id": "frontend-react-vite",
+      "description": "Client-rendered React starter with a thin app shell, feature entrypoint, feature-owned data boundary, and shared platform primitives.",
+      "pair_ids": [
+        "web-frontend",
+        "stack-selection",
+        "app-stack",
+        "frontend-stack"
+      ],
+      "technology_node": "react-vite",
+      "structure_markers": [
+        "src/app/",
+        "src/features/__MODULE_NAME__/",
+        "src/shared/"
+      ],
+      "files": {
+        "ARCHITECTURE.md": "# __APP_NAME__ frontend architecture\n\nAdopted defaults: `web-frontend`, `stack-selection`, `app-stack`, and `frontend-stack:react-vite`.\n\n`src/app` owns composition only. `src/features/__MODULE_NAME__` owns its public entrypoint, UI, application policy, and data adapters. `src/shared` owns stable cross-feature platform primitives. Add router, server-state, UI, tests, and versions only after their profiles are selected.\n",
+        "src/main.tsx": "import React from \"react\";\nimport ReactDOM from \"react-dom/client\";\nimport { App } from \"./app/App\";\n\nReactDOM.createRoot(document.getElementById(\"root\")!).render(\n  <React.StrictMode>\n    <App />\n  </React.StrictMode>,\n);\n",
+        "src/app/App.tsx": "import { __MODULE_NAME_PASCAL__Page } from \"../features/__MODULE_NAME__\";\n\nexport function App() {\n  return <__MODULE_NAME_PASCAL__Page />;\n}\n",
+        "src/features/__MODULE_NAME__/index.ts": "export { __MODULE_NAME_PASCAL__Page } from \"./interface/__MODULE_NAME_PASCAL__Page\";\n",
+        "src/features/__MODULE_NAME__/interface/__MODULE_NAME_PASCAL__Page.tsx": "import { use__MODULE_NAME_PASCAL__ } from \"../application/use__MODULE_NAME_PASCAL__\";\n\nexport function __MODULE_NAME_PASCAL__Page() {\n  const state = use__MODULE_NAME_PASCAL__();\n  return (\n    <main>\n      <h1>__MODULE_NAME_TITLE__</h1>\n      <p>{state.status}</p>\n    </main>\n  );\n}\n",
+        "src/features/__MODULE_NAME__/application/use__MODULE_NAME_PASCAL__.ts": "export interface __MODULE_NAME_PASCAL__ViewState {\n  status: \"ready\";\n}\n\nexport function use__MODULE_NAME_PASCAL__(): __MODULE_NAME_PASCAL__ViewState {\n  return { status: \"ready\" };\n}\n",
+        "src/features/__MODULE_NAME__/data/ports.ts": "export interface __MODULE_NAME_PASCAL__Gateway {\n  list(signal?: AbortSignal): Promise<readonly unknown[]>;\n}\n",
+        "src/features/__MODULE_NAME__/data/httpGateway.ts": "import { apiRequest } from \"../../../shared/api/apiRequest\";\nimport type { __MODULE_NAME_PASCAL__Gateway } from \"./ports\";\n\nexport const http__MODULE_NAME_PASCAL__Gateway: __MODULE_NAME_PASCAL__Gateway = {\n  list: (signal) => apiRequest(\"/__MODULE_NAME__\", { signal }),\n};\n",
+        "src/shared/api/apiRequest.ts": "export async function apiRequest<T>(path: string, init?: RequestInit): Promise<T> {\n  const response = await fetch(path, init);\n  if (!response.ok) throw new Error(`Request failed: ${response.status}`);\n  return response.json() as Promise<T>;\n}\n",
+        "src/shared/ui/README.md": "# Shared UI\n\nPlace selected accessible primitives, semantic tokens, and stable cross-feature components here. Feature-specific compositions stay in their feature.\n"
+      }
+    },
+    {
+      "profile_id": "frontend-nextjs",
+      "description": "Next.js App Router starter with a thin route, feature entrypoint, server-first boundary, and shared platform primitives.",
+      "pair_ids": [
+        "web-frontend",
+        "stack-selection",
+        "app-stack",
+        "frontend-stack"
+      ],
+      "technology_node": "nextjs",
+      "structure_markers": [
+        "src/app/",
+        "src/features/__MODULE_NAME__/",
+        "src/shared/"
+      ],
+      "files": {
+        "ARCHITECTURE.md": "# __APP_NAME__ frontend architecture\n\nAdopted defaults: `web-frontend`, `stack-selection`, `app-stack`, and `frontend-stack:nextjs`.\n\n`src/app` is a thin Next.js route/composition shell. `src/features/__MODULE_NAME__` owns the feature boundary. Prefer server components; add `use client` only where interaction or browser APIs require it. Record cache, revalidation, auth, hosting, and telemetry decisions in the target.\n",
+        "src/app/layout.tsx": "import type { ReactNode } from \"react\";\n\nexport default function RootLayout({ children }: { children: ReactNode }) {\n  return (\n    <html lang=\"en\">\n      <body>{children}</body>\n    </html>\n  );\n}\n",
+        "src/app/page.tsx": "import { __MODULE_NAME_PASCAL__Page } from \"../features/__MODULE_NAME__\";\n\nexport default function Page() {\n  return <__MODULE_NAME_PASCAL__Page />;\n}\n",
+        "src/features/__MODULE_NAME__/index.ts": "export { __MODULE_NAME_PASCAL__Page } from \"./interface/__MODULE_NAME_PASCAL__Page\";\n",
+        "src/features/__MODULE_NAME__/interface/__MODULE_NAME_PASCAL__Page.tsx": "import { load__MODULE_NAME_PASCAL__ } from \"../application/load__MODULE_NAME_PASCAL__\";\n\nexport async function __MODULE_NAME_PASCAL__Page() {\n  const items = await load__MODULE_NAME_PASCAL__();\n  return (\n    <main>\n      <h1>__MODULE_NAME_TITLE__</h1>\n      <p>{items.length} items</p>\n    </main>\n  );\n}\n",
+        "src/features/__MODULE_NAME__/application/load__MODULE_NAME_PASCAL__.ts": "import { server__MODULE_NAME_PASCAL__Gateway } from \"../data/serverGateway\";\n\nexport function load__MODULE_NAME_PASCAL__() {\n  return server__MODULE_NAME_PASCAL__Gateway.list();\n}\n",
+        "src/features/__MODULE_NAME__/data/ports.ts": "export interface __MODULE_NAME_PASCAL__Gateway {\n  list(): Promise<readonly unknown[]>;\n}\n",
+        "src/features/__MODULE_NAME__/data/serverGateway.ts": "import { serverApiRequest } from \"../../../shared/api/serverApiRequest\";\nimport type { __MODULE_NAME_PASCAL__Gateway } from \"./ports\";\n\nexport const server__MODULE_NAME_PASCAL__Gateway: __MODULE_NAME_PASCAL__Gateway = {\n  list: () => serverApiRequest(\"/__MODULE_NAME__\"),\n};\n",
+        "src/shared/api/serverApiRequest.ts": "export async function serverApiRequest<T>(path: string): Promise<T> {\n  const baseUrl = process.env.API_BASE_URL;\n  if (!baseUrl) throw new Error(\"API_BASE_URL is required\");\n  const response = await fetch(new URL(path, baseUrl), { cache: \"no-store\" });\n  if (!response.ok) throw new Error(`Request failed: ${response.status}`);\n  return response.json() as Promise<T>;\n}\n",
+        "src/shared/ui/README.md": "# Shared UI\n\nPlace selected accessible primitives, semantic tokens, and stable cross-feature components here. Feature-specific compositions stay in their feature.\n"
+      }
+    }
+  ]
+}

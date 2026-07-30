@@ -5,9 +5,17 @@ Owner: `<ORCHESTRATOR | ROLE | USER>`
 Created: YYYY-MM-DD
 Lane Model: `<single-lane | sequential-pipeline | parallel-sectioning | parallel-voting | orchestrator-workers | evaluator-optimizer>`
 Next Gate: `<SKILL_OR_COMMAND>`
+Execution Surface: `<root | internal-subagent | user-visible-task>`
+Dispatch State: `<NOT_AUTHORIZED | AUTHORIZED | DISPATCHED | RUNNING | BLOCKED | COMPLETE>`
+Dispatch Authorization: `<REQUEST_OR_APPROVAL_REFERENCE | none>`
+Runtime Handle: `<INTERNAL_AGENT_ID | CODEX_TASK_ID | none>`
 
 If `docs/work/examples/` contains a relevant packet, copy it as a starting
 point. Do not treat example lanes as active work.
+
+The lane is declarative until dispatch is authorized. `internal-subagent`
+stays inside the current task tree. `user-visible-task` requires an explicit
+user request to create, open, or fork separate tasks or threads.
 
 ## Request
 
@@ -113,6 +121,20 @@ Rules:
 | Check | Command Or Evidence | Status |
 |---|---|---|
 | `<CHECK>` | `<COMMAND_OR_EVIDENCE>` | `<OPEN>` |
+
+## Status Reconciliation
+
+- Last checked: `<YYYY-MM-DD | NOT_CHECKED>`
+- Source identity: `<BRANCH_COMMIT_OR_WORKTREE_IDENTITY>`
+- Completion disposition: `<KEEP_OPEN | COMPLETE | BLOCKED>`
+- Reason: `<CURRENT_IMPLEMENTATION_AND_REQUIRED_EVIDENCE_SUMMARY>`
+- Synchronized surfaces: `<LANE_ACTIVE_REGISTRY_GRAPH_RECEIPT_OR_NONE>`
+
+When a check proves every required criterion and gate complete against the
+current source identity, mark the lane and dispatch state `COMPLETE`
+immediately, preserve its report and receipt, synchronize the named surfaces,
+and remove its terminal projection from the active registry without another
+confirmation.
 
 ## Closeout
 

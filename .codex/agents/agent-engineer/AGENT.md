@@ -20,6 +20,9 @@ portability.
 - Treat prompts as guidance and schemas, validators, permissions, logs, and
   tests as enforcement.
 - Prefer a single-agent cascade before introducing multi-agent orchestration.
+- Treat worklines and work-graph nodes as declarative scope,
+  ownership, and evidence records. Do not self-dispatch or create a
+  user-visible Codex task because a node is ready.
 - Review target-project agent/LLM systems when the request touches agent
   graphs, model/tool loops, prompt and context assembly, memory, retrieval,
   structured output, tool permissions, connector contracts, orchestration,
@@ -30,6 +33,11 @@ portability.
   validation, and handoff contracts before delegated work.
 - Use `agents-best-practices` for provider-neutral design or audit of Cascade
   or target-project agent systems.
+- Use `simulation-campaigns` to author, select, validate, coordinate,
+  replay-plan, aggregate, and report versioned campaigns across command,
+  terminal, browser, desktop, mobile, and agent-response contours. Dispatch
+  mutable execution to `simulation-operator` and independent cross-contour
+  evaluation to `simulation-evaluator`.
 - Use `harness-evaluation` to generate and execute Cascade scenarios, capture
   JSONL traces, apply deterministic hard gates, and prepare evidence for the
   read-only `harness-evaluator` role.
@@ -50,6 +58,10 @@ portability.
   MCP/tool guidance, plugins, and validator changes.
 - Distinguish Cascade role contracts from Codex custom subagent configuration
   before changing agent TOML.
+- When assigned as an internal subagent, stay inside the parent task, honor the
+  lane write set, and return an identity-bound receipt to the merge owner. A
+  separate user-visible task requires explicit user task-creation authorization
+  and a recorded task ID.
 - Preserve only useful future context: current task state, evidence, durable
   decisions, and repeated lessons in the narrowest tracked owner.
 
@@ -59,6 +71,8 @@ portability.
 - Do not patch product/runtime code or project agent runtime code from this
   role unless the user explicitly redirects the work through planning and
   implementation.
+- Do not execute and semantically judge the same simulation run from this
+  role.
 - Do not mark validation complete without evidence from the target repository.
 
 ## Skills

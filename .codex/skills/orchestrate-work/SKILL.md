@@ -85,6 +85,89 @@ discipline:
 Serialize lanes when file ownership, public contracts, state-machine behavior,
 or product intent overlaps.
 
+## Execution Surface And Dispatch Rules
+
+A work lane or work-graph node is a planning and evidence unit. Its
+presence, readiness, or dependency gate never creates an agent, Codex task,
+worktree, branch, or external action by itself.
+
+Every executable lane or graph node must declare:
+
+- execution surface: `root`, `internal-subagent`, or `user-visible-task`;
+- dispatch state: `NOT_AUTHORIZED`, `AUTHORIZED`, `DISPATCHED`, `RUNNING`,
+  `BLOCKED`, or `COMPLETE`;
+- dependency gate and merge owner;
+- authorization evidence for delegation or task creation;
+- runtime handle after dispatch, such as an internal agent ID or Codex task ID.
+
+Use the surfaces as follows:
+
+- `root`: execute in the current task without delegation.
+- `internal-subagent`: use a bounded child agent inside the current task tree;
+  it is not a separate user-visible Codex task.
+- `user-visible-task`: create a separate Codex task only when the user
+  explicitly asks to create, open, or fork separate tasks or threads.
+
+An implementation request does not authorize `user-visible-task` creation.
+Parallel internal delegation also requires explicit user authorization. A
+request to author, update, actualize, or mark a graph ready is planning-only
+and leaves dispatch state `NOT_AUTHORIZED`. After authorization, dispatch only
+nodes whose gates and ownership constraints are satisfied. If the declared
+execution surface is unavailable, report `BLOCKED`; do not silently substitute
+another surface.
+
+`max_threads` is an internal agent-execution capacity limit. It is not a number
+of user-visible tasks and never triggers automatic dispatch.
+
+## Status Reconciliation Rules
+
+A request to check, refresh, reconcile, or actualize task/workline status
+authorizes evidence-based updates to the in-scope local work registry and graph.
+It does not authorize missing implementation, external tracker mutation,
+removal of open or unresolved rows, or fabrication of validation evidence.
+
+For each checked lane:
+
+1. freeze the current source identity and read its acceptance criteria,
+   required gates, validation table, dependencies, and closeout contract;
+2. inspect current implementation and run the smallest required checks that can
+   prove completion;
+3. if every required criterion is implemented, dependencies are satisfied, and
+   required validation passes, immediately mark the lane `COMPLETE`, set
+   dispatch state `COMPLETE`, set next gate to `none`, and synchronize the
+   lane packet, work graph, completion receipt, and durable report, then remove
+   its completed projection from the active registry;
+4. do not ask for a second confirmation before recording a proven completion;
+5. if implementation is partial, a required check is `NOT_RUN`, or evidence
+   belongs to another branch/source identity, keep the lane open and record the
+   exact next gate or blocker;
+6. never treat authored plans, tests that were not run, historical artifacts,
+   or candidate-branch code as current implementation evidence.
+
+Automatic completion removes only the proven terminal projection after durable
+evidence is preserved. It never removes partial, blocked, stale,
+candidate-branch, or `NOT_RUN` work.
+
+## Work Graph Rules
+
+Use `docs/work/work-graph-template.md` when several worklines need explicit
+dependency topology, merge ownership, dispatch surfaces, evidence joins,
+invalidation, or a terminal gate. Keep a single workline when one lane can own
+the complete slice without graph coordination.
+
+Work-graph lifecycle is:
+
+1. `DRAFT`: incomplete topology or ownership; not active.
+2. `PLANNED`: validated and registered, with dispatch still separately gated.
+3. `ACTIVE`: at least one authorized node is dispatched or running.
+4. `BLOCKED`: the current frontier cannot proceed.
+5. `COMPLETE`: the terminal gate accepts current-source evidence.
+6. `SUPERSEDED`: a named replacement owns the remaining scope.
+
+After `COMPLETE` or `SUPERSEDED`, preserve the durable report, receipts, source
+identity, failures, and invalidation history, then remove the terminal
+projection from the active registry in the same closeout.
+
 ## Lane Boundary Detection
 
 Split lanes by the smallest independently valid behavior slice. A lane boundary
@@ -142,14 +225,20 @@ planning implementation.
    `orchestrator-workers`, or `evaluator-optimizer`.
 2. Record lanes in `docs/work/active.md`.
 3. Create lane packets only for lanes that need more detail than a row.
-4. Use `docs/work/examples/` when a first-time lane needs a populated model.
-5. Assign each lane a next gate from the task routing table.
-6. Apply lane boundary detection before authoring Feature Impact Matrix rows.
-7. Track dependencies, file ownership, source inputs, and MCP/tool context
+4. Create a work graph from `docs/work/work-graph-template.md` only when the
+   lane model requires explicit graph coordination.
+5. Use `docs/work/examples/` when a first-time lane needs a populated model.
+6. Assign each lane a next gate from the task routing table.
+7. Apply lane boundary detection before authoring Feature Impact Matrix rows.
+8. Track dependencies, file ownership, source inputs, and MCP/tool context
    before starting edits.
-8. Merge evidence into `docs/work/active.md` before closeout.
-9. Write a report under `docs/work/reports/` only when requested, multi-turn,
-   blocked, or decision-heavy.
+9. Record execution surface, dispatch state, authorization evidence, and any
+   runtime handle before dispatch.
+10. Merge evidence into `docs/work/active.md` before closeout.
+11. Reconcile proven-complete checked lanes automatically and synchronize their
+    registry, graph, lane, and receipt state.
+12. Write a report under `docs/work/reports/` only when requested, multi-turn,
+    blocked, or decision-heavy.
 
 ## Output
 
@@ -158,6 +247,9 @@ planning implementation.
 - active lanes and dependencies;
 - parallel-safe lanes;
 - serialized lanes and reason;
+- execution surfaces, dispatch states, authorization evidence, and runtime
+  handles;
+- checked-lane completion dispositions and synchronized status changes;
 - next gates;
 - source inputs, file ownership, and MCP/tool context;
 - merge evidence plus validation plan.

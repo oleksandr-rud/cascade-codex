@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "id": "baseline-v1",
+  "baseline": true,
+  "target": {
+    "source_revision": "framework-baseline",
+    "model": "deterministic-fixture",
+    "prompt_digest": "1111111111111111111111111111111111111111111111111111111111111111",
+    "tool_digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "harness_digest": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
+  }
+}

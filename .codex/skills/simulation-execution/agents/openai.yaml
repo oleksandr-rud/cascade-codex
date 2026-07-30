@@ -1,0 +1,4 @@
+interface:
+  display_name: "Simulation Execution"
+  short_description: "Execute approved simulation campaigns safely"
+  default_prompt: "Use $simulation-execution to execute one approved simulation campaign, freeze its evidence, verify cleanup, and produce an execution receipt."

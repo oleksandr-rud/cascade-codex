@@ -1,0 +1,144 @@
+schema_id: architecture-default-graph-v1
+graph_id: stack-selection
+pair_kind: decision
+title: Stack Selection Strategy
+status: reference-default
+spec_path: docs/patterns/architecture-defaults/stack-selection.spec.md
+requires:
+  - architecture-selection
+compatible_with:
+  - service-api-worker
+  - web-frontend
+  - native-app
+  - cli
+  - experiment
+  - sdk-library
+  - tenancy-strategy
+  - interface-strategy
+default_when:
+  - "A selected architecture needs a language, framework, data, runtime, build, test, and deployment profile."
+  - "A team is comparing stacks for a new deployed, versioned, or distributed unit or substantial replacement."
+do_not_use_when:
+  - "The target stack is already coherent and the requested change does not challenge it."
+  - "The decision is only which small library to use inside an established stack."
+nodes:
+  - id: project-descriptions
+    kind: source-set
+    owns: "Project briefs, product requirements, architecture notes, operational constraints, platform mandates, and existing-stack evidence."
+  - id: extracted-claims
+    kind: evidence-set
+    owns: "Source-linked explicit, inferred, unknown, or conflicting claims about product, workload, data, interfaces, delivery, team, and lifecycle needs."
+  - id: selection-policies
+    kind: policy-set
+    owns: "Required, preferred, forbidden, and proof-required predicates that filter or qualify candidate profiles."
+  - id: application-units
+    kind: decision-set
+    owns: "Independently deployed, versioned, or distributed backend service, worker, web frontend, native app, CLI, experiment, or library units that require separate stack decisions."
+  - id: architecture-contract
+    kind: input
+    owns: "Selected topology, boundaries, interfaces, quality attributes, and constraints."
+  - id: team-capability
+    kind: evidence
+    owns: "Maintainer expertise, hiring, ownership, support horizon, and operational familiarity."
+  - id: candidate-profiles
+    kind: decision-set
+    owns: "Application/runtime classes plus data, messaging, build, test, observability, and delivery capability contracts."
+  - id: proof-slice
+    kind: experiment
+    owns: "Highest-risk vertical path used to test uncertain stack claims."
+  - id: selected-profile
+    kind: decision
+    owns: "Chosen capability profile, constraints, rejected profiles, and extension obligations."
+  - id: selection-extensions
+    kind: extension-set
+    owns: "Independent application-technology and infrastructure selection branches justified by the selected profile."
+  - id: implementation-map
+    kind: architecture-mapping
+    owns: "Mapping from logical graph responsibilities to idiomatic stack paths and packages."
+edges:
+  - from: project-descriptions
+    to: extracted-claims
+    relation: normalized_into
+  - from: extracted-claims
+    to: application-units
+    relation: classifies
+  - from: extracted-claims
+    to: candidate-profiles
+    relation: constrains
+  - from: selection-policies
+    to: candidate-profiles
+    relation: filters
+  - from: application-units
+    to: candidate-profiles
+    relation: scopes
+  - from: architecture-contract
+    to: candidate-profiles
+    relation: constrains
+  - from: team-capability
+    to: candidate-profiles
+    relation: constrains
+  - from: candidate-profiles
+    to: proof-slice
+    relation: tested_by
+  - from: proof-slice
+    to: selected-profile
+    relation: informs
+  - from: selected-profile
+    to: selection-extensions
+    relation: scopes
+  - from: selection-extensions
+    to: implementation-map
+    relation: augments
+  - from: selected-profile
+    to: implementation-map
+    relation: maps
+decisions:
+  - id: claim-traceability
+    default: "Every selection claim keeps its source path, source anchor, status, confidence, and affected application units."
+    exception_when: "A human decision introduces an unsourced mandate; record it as a decision source rather than pretending it came from project documentation."
+  - id: evidence-data-minimization
+    default: "Store source references, identifiers, digests, and redacted summaries in stack evidence; prohibit raw secrets, credentials, tenant/customer payloads, private source content, and unrestricted operational data."
+    exception_when: "A restricted evidence system is explicitly authorized for classified material; keep only an access-controlled reference and classification marker in repository evidence."
+  - id: explicit-over-inferred
+    default: "Explicit source claims outrank inferred claims; inference may open a proof question but cannot silently become a mandatory requirement."
+    exception_when: "The owner confirms an inference and promotes it to an explicit decision with source identity."
+  - id: policy-precedence
+    default: "Apply required and forbidden policies before scoring preferences; proof-required policies keep a candidate conditional."
+    exception_when: "Policies conflict; stop selection and resolve the owning sources instead of choosing by score."
+  - id: application-unit-scope
+    default: "Select a stack independently for each deployed, versioned, or distributed application or package unit, then evaluate justified cross-unit sharing."
+    exception_when: "Several units are one inseparable build, release, runtime or distribution, and ownership boundary."
+  - id: contradiction-blocks-selection
+    default: "Conflicting mandatory claims or policies block adoption and produce a GAP or proof task."
+    exception_when: "An authoritative owner supersedes one source and records the replacement."
+  - id: fit-before-novelty
+    default: "Prefer a supported stack the team can operate that satisfies the selected architecture."
+    exception_when: "A proven requirement cannot be met by the established stack."
+  - id: whole-profile
+    default: "Choose language, framework, data, testing, observability, build, and deployment as one operable profile."
+    exception_when: "A platform mandate fixes part of the profile; evaluate the remaining integration cost."
+  - id: risk-first-proof
+    default: "Prototype only the highest-risk boundary before committing to an unfamiliar profile."
+    exception_when: "All critical capabilities already have current production evidence."
+  - id: boundary-preservation
+    default: "Map the selected architecture to idiomatic stack constructs without changing its ownership or dependency direction."
+    exception_when: "The stack cannot express the boundary safely; reject the stack or explicitly adapt the architecture."
+  - id: lifecycle-cost
+    default: "Include upgrade cadence, security support, build time, runtime cost, observability, and hiring in the decision."
+    exception_when: "The artifact is a time-bounded experiment with no production promotion path."
+  - id: application-infrastructure-separation
+    default: "Select application runtimes, frameworks, and libraries separately from compute, data, messaging, network, delivery, and observability infrastructure."
+    exception_when: "A platform mandate fixes both; record the coupling, limits, and exit constraint."
+  - id: independent-extension-verdicts
+    default: "Keep technology and infrastructure candidate dispositions and proof gates independent even when they share claims and policies."
+    exception_when: "One inseparable managed platform candidate owns both and is evaluated as an explicit adapted profile."
+validation:
+  - "Every extracted claim references a real project-description source and identifies explicit, inferred, unknown, or conflicting status."
+  - "Evidence fields pass secret scanning and contain references or redacted summaries rather than raw credentials, tenant/customer payloads, or private source content."
+  - "Every application unit has a selected archetype or existing topology plus the claims and policies applicable to that unit."
+  - "Required and forbidden policies are evaluated before preferences, and conditional candidates name their required proof."
+  - "The profile satisfies every mandatory architecture constraint and quality attribute."
+  - "A highest-risk proof slice has evidence or is explicitly NOT_RUN with a blocker."
+  - "Build, test, dependency, security-update, observability, and deployment ownership are named."
+  - "Application technology and infrastructure selections use separate extension owners and candidate verdicts."
+  - "Logical graph responsibilities map to idiomatic paths without boundary collapse."

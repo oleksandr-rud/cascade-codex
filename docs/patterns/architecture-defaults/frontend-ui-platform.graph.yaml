@@ -1,0 +1,98 @@
+schema_id: architecture-default-graph-v1
+graph_id: frontend-ui-platform
+pair_kind: extension
+title: Frontend UI Platform And Component Library
+status: reference-default
+spec_path: docs/patterns/architecture-defaults/frontend-ui-platform.spec.md
+extends:
+  - web-frontend
+compatible_with:
+  - frontend-state-data
+  - frontend-cache
+  - frontend-realtime
+  - stack-selection
+preserves:
+  - "web-frontend:folder-ownership"
+  - "web-frontend:feature-public-surface"
+  - "web-frontend:shared-code"
+  - "web-frontend:rendering-boundary"
+default_when:
+  - "Multiple features or applications need shared tokens, accessible primitives, components, patterns, themes, or release governance."
+  - "A reusable component contract is more valuable than copying feature UI."
+do_not_use_when:
+  - "One small application has no repeated UI contract beyond local components."
+  - "The proposed library would contain product workflows rather than reusable presentation primitives."
+nodes:
+  - id: design-tokens
+    kind: design-contract
+    owns: "Semantic color, type, spacing, size, motion, elevation, density, and mode values."
+  - id: accessible-primitives
+    kind: interaction-contract
+    owns: "Keyboard, focus, semantics, overlays, forms, announcements, and reduced-motion behavior."
+  - id: components
+    kind: public-ui-api
+    owns: "Reusable anatomy, variants, states, slots, content, and responsive behavior."
+  - id: patterns
+    kind: composition-guidance
+    owns: "Reusable layout and interaction compositions that do not own product workflows."
+  - id: themes-locales
+    kind: platform-adapter
+    owns: "Theme modes, brand mapping, bidirectionality, localization expansion, and formatting."
+  - id: docs-evidence
+    kind: evidence
+    owns: "Examples, API docs, accessibility checks, visual states, and consumer guidance."
+  - id: package-lifecycle
+    kind: governance
+    owns: "Ownership, dependency policy, versioning, migrations, release, deprecation, and adoption evidence."
+  - id: feature-consumers
+    kind: consumer
+    owns: "Product composition and feature-specific content, state, permissions, and workflows."
+edges:
+  - from: design-tokens
+    to: accessible-primitives
+    relation: styles
+  - from: accessible-primitives
+    to: components
+    relation: composes
+  - from: components
+    to: patterns
+    relation: composes
+  - from: themes-locales
+    to: design-tokens
+    relation: maps
+  - from: components
+    to: docs-evidence
+    relation: documented_by
+  - from: patterns
+    to: docs-evidence
+    relation: documented_by
+  - from: package-lifecycle
+    to: components
+    relation: governs
+  - from: feature-consumers
+    to: components
+    relation: uses
+  - from: feature-consumers
+    to: patterns
+    relation: uses
+decisions:
+  - id: semantic-tokens
+    default: "Expose semantic tokens and mode mappings rather than feature-specific raw values."
+    exception_when: "A one-off branded surface is intentionally outside the shared platform."
+  - id: accessible-foundation
+    default: "Build components on tested semantic and keyboard primitives with visible focus and reduced-motion behavior."
+    exception_when: "A native platform control provides the complete required behavior and is wrapped without regression."
+  - id: stable-component-api
+    default: "Components own presentation and interaction contracts, while features own product data, permissions, and workflows."
+    exception_when: "A reusable product pattern has a separately owned domain contract."
+  - id: documented-states
+    default: "Document every variant, size, loading, empty, error, disabled, read-only, responsive, theme, and localization state that consumers can invoke."
+    exception_when: "The primitive has no visible state variation."
+  - id: governed-reuse
+    default: "Name owner, package boundary, dependency policy, versioning, migration, deprecation, and visual/accessibility release gates."
+    exception_when: "The platform is source-owned inside one app and released atomically."
+validation:
+  - "Component checks cover semantics, keyboard, focus, contrast, motion, zoom, touch target, responsive behavior, localization, and theme modes."
+  - "Visual evidence covers documented variants and states without replacing functional or accessibility checks."
+  - "Consumer tests prove feature code supplies product behavior rather than forking shared internals."
+  - "Package releases test compatibility, migration guidance, dependency bounds, and tree-shaking or payload impact where relevant."

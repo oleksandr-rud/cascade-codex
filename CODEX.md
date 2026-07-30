@@ -131,6 +131,14 @@ standalone workflow router.
   surface audits across `AGENTS.md`, `CODEX.md`, skills, agents, config,
   hooks, MCP/tools, plugins, subagents, permissions, memory, observability,
   evals, scope, handoffs, file-tree inventories, and validator changes.
+- `simulation-campaigns`: use for versioned command, terminal, browser,
+  desktop, mobile, or agent-response campaign definition, selection,
+  coordination, replay planning, receipt aggregation, claims, and reporting.
+- `simulation-execution`: use after selection and approval to preflight,
+  provision, seed, execute, observe, freeze evidence, clean up, and hand off
+  one bounded campaign run.
+- `simulation-evaluation`: use after an immutable run exists to independently
+  validate evidence, policies, oracles, semantic judgments, and claim support.
 - `harness-evaluation`: use for generated Cascade scenarios, read-only live
   experiments, JSONL trace capture, deterministic grading, golden semantic
   evaluation, and regression promotion.
@@ -152,7 +160,8 @@ delegate only when the user explicitly authorizes parallel agents.
   migration, validation, and setup handoff.
 - `agent-engineer`: Cascade maintenance, target-project agent/LLM system
   design, Codex surface best practices, agentic workflow checklists, skills,
-  source-context, tool contracts, observability, and evals.
+  source-context, tool contracts, simulation campaigns, observability, and
+  evals.
 - `business-analyst`: long business-analysis discovery, live market research,
   market validation lanes, evidence grading, and synthesis into specs.
 - `security`: security-sensitive review, auth/session/RBAC and
@@ -162,14 +171,20 @@ delegate only when the user explicitly authorizes parallel agents.
   review, screenshot-backed visual validation, and design handoff planning.
 - `harness-evaluator`: read-only golden evaluation of completed Cascade
   scenario outputs and traces after deterministic hard gates run.
+- `simulation-operator`: bounded mutable execution of one approved campaign
+  with immutable evidence, verified cleanup, and an execution receipt.
+- `simulation-evaluator`: independent read-only evaluation of frozen
+  cross-contour evidence and claim support.
 
 Cascade is intentionally skill-first except where a repeated long-running
 workflow or specialist review lane needs a durable role boundary. Architecture
 review, functional acceptance, scenario checks, product testing, and issue
 intake remain skills in the cascade rather than separate agents.
-`business-analyst`, `security`, `designer`, and `harness-evaluator` exist
-because long discovery, specialist review, and golden trace adjudication need
-role boundaries that are separate from implementation.
+`business-analyst`, `security`, `designer`, `harness-evaluator`,
+`simulation-operator`, and `simulation-evaluator` exist because long
+discovery, specialist review, mutable campaign operation, independent evidence
+judgment, and golden trace adjudication need role boundaries that are separate
+from implementation.
 
 ## Work Packet
 
@@ -186,6 +201,56 @@ Create a lane packet only when a row is not enough:
 Completed or unrelated work lanes are historical context. Example lanes are
 copyable guidance only and are not active work unless copied into
 `docs/work/lanes/` and registered in `docs/work/active.md`.
+
+### Workline And Work-Graph Execution
+
+Worklines and work-graph nodes are declarative planning, ownership, dependency,
+and evidence records. Creating, updating, actualizing, or marking one ready
+does not create an agent, Codex task, worktree, branch, or external action.
+
+Every executable lane or graph node declares an execution surface and dispatch
+state:
+
+- `root`: execute in the current Codex task;
+- `internal-subagent`: execute in a bounded child agent inside the current task
+  tree; it does not appear as a separate user-visible task;
+- `user-visible-task`: create a separate Codex task only after the user
+  explicitly asks to create, open, or fork separate tasks or threads.
+
+Use `NOT_AUTHORIZED`, `AUTHORIZED`, `DISPATCHED`, `RUNNING`, `BLOCKED`, and
+`COMPLETE` for dispatch state. Record the request or approval that authorized
+delegation or task creation and record the runtime agent ID or task ID after
+dispatch. Graph readiness and dependency gates establish eligibility only;
+they are not authorization. If the declared surface is unavailable, report
+`BLOCKED` instead of substituting another surface.
+
+The `.codex/config.toml` `max_threads` value limits internal agent-execution
+capacity. It neither counts user-visible Codex tasks nor causes automatic
+dispatch.
+
+### Automatic Status Reconciliation
+
+When the user asks to check, refresh, reconcile, or actualize a task, workline,
+or work graph, inspect current implementation and required evidence,
+not only its recorded status. If every required criterion, dependency, and
+validation gate passes against the current source identity, immediately mark
+the in-scope lane and dispatch state `COMPLETE`, set its next gate to `none`,
+and synchronize the lane packet, active registry, graph, and completion
+receipt. No second confirmation is required.
+
+Do not close partial work, required checks that remain `NOT_RUN`, historical
+artifacts, or implementation that exists only on another branch/source
+identity. Record the exact missing gate instead. Automatic completion does not
+authorize removing open or unresolved work. After terminal evidence is
+preserved in the lane packet, durable report, graph, and receipt, remove the
+completed active projection in the same closeout so `docs/work/active.md`
+contains active work only.
+
+Use `docs/work/work-graph-template.md` when several worklines, dependency gates,
+merge owners, dispatch surfaces, or evidence joins require explicit
+coordination. Work graphs use `DRAFT`, `PLANNED`, `ACTIVE`, `BLOCKED`,
+`COMPLETE`, or `SUPERSEDED` lifecycle status. After terminal closeout, remove
+their active projection and retain the durable report and receipts.
 
 ## Write Targets
 
@@ -242,11 +307,88 @@ Use `docs/patterns/workflow/index.md` for scoped coverage from current work-lane
 criteria to changed code and validation. Use
 `scripts/build_pattern_context_pack.py` to compile selected pattern-pack text
 from `docs/patterns/*/*.pack.yaml` when prompt context should include only
-specific rules. At closeout, scan the final diff for
+specific rules. Architecture work uses the matching graph/spec pairs in
+`docs/patterns/architecture-defaults/`. Extract source-linked project claims
+and applicable policies per application unit before `stack-selection`.
+Application runtime and library choices route through `app-stack`
+and one contour extension. Application resource needs route through the
+matching backend, frontend, native, CLI, experiment, or library infrastructure
+profile; each operated compute, data, messaging, delivery, secrets, or
+observability resource then routes separately through `infrastructure` and
+the resource extension that owns it. W-018-W-023 validated the first five
+profiles; W-024 adds the library profile with a no-production-runtime default.
+Validate the shared
+machine-readable selection evidence with
+`scripts/validate_stack_selection_evidence.py`. When
+an explicitly adopted backend or frontend profile needs new source structure,
+use `scripts/scaffold_architecture_default.py preview` before its no-overwrite
+`write` command. At closeout, scan the final diff for
 durable product, design, brand, spec, architecture, stack/runtime, or glossary
 changes and append only thin sourced doc diffs to the existing owner docs.
 Persist only reusable lessons, required handoff state, or required thin diffs;
 avoid decorative documentation churn.
+
+## Simulation Campaigns
+
+Use `simulation-campaigns` when a request concerns a versioned campaign across
+command, terminal, browser, desktop, mobile, or agent-response contours. The
+skill owns campaign manifests, selection, dispatch coordination, replay
+planning, receipt aggregation, claim projection, and reporting.
+
+After selection and authorization, `simulation-operator` uses
+`simulation-execution` for the mutable runtime lifecycle. It produces the
+immutable evidence package, cleanup result, and execution receipt but cannot
+semantically judge the run. `simulation-evaluator` then uses
+`simulation-evaluation` in a read-only sandbox to apply mechanical gates,
+consume specialized oracle or harness-evaluator receipts, judge only declared
+semantic claims, and return digestable evaluation-receipt content for the
+campaign layer to store in a separate append-only sibling namespace—never
+inside the finalized execution namespace. Campaign aggregation writes another
+identity-matched projection receipt; no stage overwrites another.
+
+The canonical runtime authorities are `evals/campaigns/`, `evals/tasks/`,
+`evals/simulations/`, `evals/claims/`, `evals/policies/`, `evals/oracles/`,
+`evals/metrics/`, `evals/treatments/`, `evals/calibrations/`,
+`evals/rubrics/`, and ignored `.artifacts/campaigns/<run-id>/` evidence.
+Every campaign binds a tracked `evaluation_profile_file`. Deterministic
+fixture campaigns use `deterministic-fixture-v1`; semantic-evaluation
+campaigns use the Sol-pinned `codex-independent-v1` profile and its versioned
+rubric. The Codex provider evaluates a copied frozen packet in a separate
+read-only `codex exec` context with plugins, apps, browser, Computer Use,
+image generation, and code-mode host access disabled. It preserves the
+request, input manifest, command, JSONL trace, stderr, attempt record, and
+schema-v2 receipt under `evaluations/<evaluation-id>/`; the model output and
+stored receipt both bind the frozen packet's manifest digest. A missing,
+failed, stale, identity-mismatched, packet-mismatched, or mechanically unsafe
+evaluation blocks the campaign before aggregation; there is no fixture
+fallback for semantic evaluation.
+
+Bootstrap a new collision-free target simulation with:
+
+```bash
+bun scripts/cascade.ts simulation init <simulation-id> --owner-lane W-NNN \
+  --dry-run
+bun scripts/cascade.ts simulation init <simulation-id> --owner-lane W-NNN
+```
+
+The initializer renders the tracked starter package, creates a co-located
+simulation design report, validates the complete definition graph, and
+regenerates the campaign catalog. It refuses every existing output path and
+never treats its framework calibration as target-project release evidence.
+Missing target adapters or real reference data remain `GAP` or `NOT_RUN`.
+
+Use `functional-qa` for product-visible behavior examples and acceptance
+oracles inside a campaign. Use `harness-evaluation` and `harness-evaluator`
+for Cascade scenario, route, response, JSONL trace, deterministic-grade, and
+golden-judge work; the general simulation evaluator consumes that receipt
+without re-judging the trace. Use `codex-maintenance` when the shared campaign
+schema, runner, validator, skill/agent wiring, tool guidance, or file-tree
+contract must change.
+
+Spawn or delegate the operator and evaluator only when the user authorizes
+delegation. If an independent semantic evaluation cannot run in a separate
+context, report that gate `BLOCKED` or `NOT_RUN`; do not label same-context
+self-review independent.
 
 ## Harness Evaluation
 

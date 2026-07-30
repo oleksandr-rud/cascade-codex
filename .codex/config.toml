@@ -26,10 +26,15 @@ conditional_discovery = "discover"
 conditional_business_analysis = "market-validation"
 conditional_spec_composition = "compose-spec"
 conditional_harness_evaluation = "harness-evaluation"
+conditional_simulation_campaigns = "simulation-campaigns"
+conditional_simulation_execution = "simulation-execution"
+conditional_simulation_evaluation = "simulation-evaluation"
 test_autorepair_condition = "only if stale tests"
 exception_paths = ["issue-intake"]
 
 [agents]
+# Internal root-plus-subagent execution capacity only. This value neither
+# counts user-visible Codex tasks nor authorizes automatic dispatch.
 max_threads = 6
 max_depth = 1
 
@@ -70,3 +75,5 @@ business_analysis = "business-analyst"
 security_review = "security"
 design_review = "designer"
 golden_evaluation = "harness-evaluator"
+simulation_execution = "simulation-operator"
+simulation_evaluation = "simulation-evaluator"

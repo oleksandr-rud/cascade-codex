@@ -1,0 +1,7 @@
+{
+  "schema_version": 1,
+  "id": "account-resolved-v1",
+  "type": "state-equals",
+  "path": "account.status",
+  "expected": "resolved"
+}

@@ -1,0 +1,80 @@
+schema_id: architecture-default-graph-v1
+graph_id: caching-strategy
+pair_kind: decision
+title: Caching Strategy Default
+status: reference-default
+spec_path: docs/patterns/architecture-defaults/caching-strategy.spec.md
+default_when:
+  - "A measured read path needs lower latency, fewer source reads, or bounded resilience during source pressure."
+  - "The owner can state freshness, invalidation, isolation, and failure behavior."
+do_not_use_when:
+  - "No measured need exists or source reads already satisfy the objective."
+  - "The data is authorization-sensitive and the key cannot encode the full access boundary."
+nodes:
+  - id: caller
+    kind: boundary
+    owns: "Requested data and required freshness."
+  - id: cache-policy
+    kind: application-policy
+    owns: "Eligibility, key, TTL, stale behavior, and failure mode."
+  - id: request-cache
+    kind: optional-local-cache
+    owns: "Request-scoped duplicate-read elimination."
+  - id: shared-cache
+    kind: optional-remote-cache
+    owns: "Cross-request reusable values with bounded lifetime."
+  - id: source-of-truth
+    kind: authoritative-store
+    owns: "Durable current value and owner writes."
+  - id: invalidation
+    kind: owner-write-policy
+    owns: "Eviction, version advance, or refresh after committed writes."
+  - id: observability
+    kind: evidence
+    owns: "Hit ratio, latency, age, errors, evictions, and stampede signals."
+edges:
+  - from: caller
+    to: cache-policy
+    relation: requests
+  - from: cache-policy
+    to: request-cache
+    relation: checks_first_when_enabled
+  - from: cache-policy
+    to: shared-cache
+    relation: checks_when_evidence_warrants
+  - from: cache-policy
+    to: source-of-truth
+    relation: loads_on_miss_or_bypass
+  - from: source-of-truth
+    to: shared-cache
+    relation: populates_after_success
+  - from: source-of-truth
+    to: invalidation
+    relation: emits_committed_owner_write
+  - from: invalidation
+    to: shared-cache
+    relation: evicts_or_versions
+  - from: cache-policy
+    to: observability
+    relation: records_decision_and_outcome
+decisions:
+  - id: shared-cache-admission
+    default: "Start without a shared cache; add cache-aside only after an access-pattern and freshness contract exists."
+    exception_when: "A platform-owned edge cache already provides the required contract or the source mandates another strategy."
+  - id: cache-location
+    default: "Own caching at the application query boundary, outside transport handlers and persistence entities."
+    exception_when: "HTTP edge semantics or a database-native materialized view is the actual public boundary."
+  - id: key-isolation
+    default: "Include tenant or owner scope, stable query shape, and schema or value version in every reusable key."
+    exception_when: "The value is proven public and identical across callers."
+  - id: expiry
+    default: "Use bounded TTL with jitter; stale-while-revalidate is opt-in per read path."
+    exception_when: "An owner-write invalidation contract is complete and still retains a safety expiry."
+  - id: failure-mode
+    default: "Treat cache unavailability as a source fallback for reads and never as authority for writes."
+    exception_when: "The cache is explicitly the product's ephemeral source of truth and the spec names its durability semantics."
+validation:
+  - "Prove tenant and permission isolation with negative cases."
+  - "Measure hit ratio, p50 and p95 latency, source load, item age, and cache error rate."
+  - "Test miss, stale, cache-down, invalidation-delay, and concurrent-fill behavior."
+  - "Verify a write cannot report success only because a cache write succeeded."

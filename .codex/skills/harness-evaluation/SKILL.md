@@ -12,6 +12,14 @@ mechanical contracts, and prepares evidence for the `harness-evaluator` role.
 It does not repair a failing skill, edit runtime/product code, or treat a model
 judge as proof of a mechanical invariant.
 
+When an agent-response evaluation runs inside a versioned simulation campaign,
+this skill owns Cascade scenario generation, trace normalization, deterministic
+grading, and semantic adjudication. `simulation-campaigns` owns campaign
+selection and aggregation; `simulation-execution` owns runtime identity,
+frozen artifact lineage, cleanup, and execution handoff;
+`simulation-evaluation` consumes the specialized harness-evaluator receipt
+without re-judging the Cascade trace.
+
 ## Source Order
 
 1. Latest evaluation request and selected run or scenario IDs.
@@ -44,6 +52,10 @@ Do not use for product acceptance, normal implementation validation, generic
 code review, or test repair. Route those to `functional-qa`,
 `validate-change`, `review-change`, or `test-autorepair`.
 
+Do not use it to author, execute, or aggregate a cross-surface campaign
+portfolio. Route those phases to `simulation-campaigns`,
+`simulation-execution`, and `simulation-evaluation`.
+
 ## Evaluation Loop
 
 1. Inventory all discovered skills and agents. The source case registry must
@@ -75,6 +87,9 @@ code review, or test repair. Route those to `functional-qa`,
 10. Re-run suspected flaky cases before classifying a regression.
 11. Route confirmed harness fixes through `codex-maintenance`,
     `develop-skill`, `plan-change`, and `implement-change` as appropriate.
+12. When a campaign supplied the scenario, return the exact campaign ID, run
+    ID, scenario identity, trace digest, verdict, and evidence location without
+    reducing unrelated campaign claims.
 
 ## Hard Gates
 

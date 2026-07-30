@@ -1,0 +1,80 @@
+schema_id: architecture-default-graph-v1
+graph_id: experiment
+pair_kind: archetype
+title: Experiment Project Default
+status: reference-default
+spec_path: docs/patterns/architecture-defaults/experiment.spec.md
+default_when:
+  - "A spike, benchmark, model trial, data analysis, or technical experiment needs reproducible evidence."
+  - "The work may later be compared, repeated, or promoted into production."
+do_not_use_when:
+  - "The task is already production implementation with owned runtime contracts."
+  - "The work is a disposable manual check whose result will not inform a decision."
+nodes:
+  - id: question
+    kind: decision-input
+    owns: "Hypothesis, success measure, baseline, constraints, and stop condition."
+  - id: protocol
+    kind: immutable-plan
+    owns: "Inputs, variants, seeds, environment, procedure, and metrics."
+  - id: runner
+    kind: execution
+    owns: "Repeatable orchestration of one protocol run."
+  - id: adapters
+    kind: external-boundary
+    owns: "Datasets, models, services, tools, and system-under-test access."
+  - id: raw-artifacts
+    kind: immutable-evidence
+    owns: "Inputs, config, logs, outputs, metrics, and environment manifest per run."
+  - id: analysis
+    kind: derived-evidence
+    owns: "Deterministic transforms, comparisons, uncertainty, and limitations."
+  - id: report
+    kind: decision-output
+    owns: "Claim, evidence links, result, limitations, and recommendation."
+  - id: promotion-gate
+    kind: lifecycle-boundary
+    owns: "Decision to discard, repeat, extend, or reimplement under production contracts."
+edges:
+  - from: question
+    to: protocol
+    relation: defines
+  - from: protocol
+    to: runner
+    relation: configures
+  - from: runner
+    to: adapters
+    relation: invokes
+  - from: runner
+    to: raw-artifacts
+    relation: writes_immutable_run
+  - from: raw-artifacts
+    to: analysis
+    relation: derives
+  - from: analysis
+    to: report
+    relation: supports
+  - from: report
+    to: promotion-gate
+    relation: informs
+decisions:
+  - id: artifact-authority
+    default: "Treat per-run raw artifacts and protocol config as immutable; regenerate analysis from them."
+    exception_when: "The check is explicitly ephemeral and no decision will rely on it."
+  - id: reproducibility
+    default: "Record source revision, dependency lock, environment, dataset identity, parameters, seeds, and command."
+    exception_when: "A dependency cannot be pinned; record the gap and observed version instead."
+  - id: code-boundary
+    default: "Experiments may call production public contracts but must not become a second production implementation."
+    exception_when: "The experiment's purpose is an isolated replacement prototype with an explicit promotion plan."
+  - id: evidence-language
+    default: "Separate observed result, derived metric, interpretation, and recommendation."
+    exception_when: "None."
+  - id: promotion
+    default: "Reimplement promoted behavior under production ownership, tests, operations, and security contracts."
+    exception_when: "The experimental code already satisfies those contracts and passes the production review gates."
+validation:
+  - "Repeat one run from recorded config and compare raw and derived outputs."
+  - "Verify analysis never overwrites raw artifacts."
+  - "Include baseline, failure, null, and resource-limit cases appropriate to the question."
+  - "Review evidence limits before promoting any result into product or architecture authority."

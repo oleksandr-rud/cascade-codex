@@ -1,0 +1,92 @@
+schema_id: architecture-default-graph-v1
+graph_id: frontend-stack
+pair_kind: extension
+title: Frontend Stack
+status: reference-default
+spec_path: docs/patterns/architecture-defaults/frontend-stack.spec.md
+extends:
+  - app-stack
+requires:
+  - web-frontend
+preserves:
+  - "app-stack:claims-drive-eligibility"
+  - "app-stack:policy-filter-before-score"
+  - "app-stack:application-type-branch"
+  - "app-stack:architecture-before-package"
+  - "app-stack:existing-stack-first"
+  - "app-stack:frontend-rendering-fit"
+  - "app-stack:state-by-authority"
+  - "app-stack:ui-ownership-fit"
+  - "app-stack:cheapest-realtime"
+  - "app-stack:proof-before-adoption"
+compatible_with:
+  - frontend-state-data
+  - frontend-cache
+  - frontend-realtime
+  - frontend-ui-platform
+  - infrastructure
+default_when:
+  - "A web frontend needs named framework, state/data, UI, styling, documentation, or realtime technologies."
+do_not_use_when:
+  - "The unit is backend, native, CLI, or experiment."
+nodes:
+  - id: web-unit
+    kind: application-scope
+    owns: "One web frontend and its selected rendering, state, UI, realtime, and delivery profile."
+  - id: react-vite
+    kind: framework-candidate
+    owns: "Client-rendered React application delivered as static assets with a separate or existing backend."
+  - id: nextjs
+    kind: framework-candidate
+    owns: "React application with a coordinated server/client boundary, server rendering, streaming, or server components."
+  - id: state-data-candidates
+    kind: library-set
+    owns: "React local state, TanStack Query, Zustand, Redux Toolkit, and XState."
+  - id: ui-candidates
+    kind: library-set
+    owns: "Radix, shadcn/ui, Material UI, Tailwind CSS, and Storybook."
+  - id: realtime-candidates
+    kind: transport-set
+    owns: "Refresh/polling, SSE, WebSocket, Socket.IO, or managed realtime."
+  - id: frontend-proof
+    kind: evidence
+    owns: "Rendering, caching, auth, navigation, accessibility, bundle/server cost, realtime recovery, and deployment proof."
+edges:
+  - from: web-unit
+    to: react-vite
+    relation: may_select
+  - from: web-unit
+    to: nextjs
+    relation: may_select
+  - from: react-vite
+    to: state-data-candidates
+    relation: may_compose
+  - from: nextjs
+    to: state-data-candidates
+    relation: may_compose
+  - from: state-data-candidates
+    to: ui-candidates
+    relation: independent_of
+  - from: state-data-candidates
+    to: realtime-candidates
+    relation: reconciles
+  - from: react-vite
+    to: frontend-proof
+    relation: validated_by
+  - from: nextjs
+    to: frontend-proof
+    relation: validated_by
+decisions:
+  - id: framework-before-libraries
+    default: "Resolve rendering and deployment boundary before selecting router, state, UI, or realtime libraries."
+    exception_when: "An established frontend platform fixes the framework and library baseline."
+  - id: policy-extension-gates
+    default: "Select state, cache, realtime, and UI technologies only after their matching frontend policy extension is adopted."
+    exception_when: "The capability is trivial and fully local to one feature."
+  - id: frontend-infrastructure-separation
+    default: "Select browser and application libraries here; select CDN, edge compute, hosting, network, and observability products through infrastructure extensions."
+    exception_when: "A full-stack host fixes both; record the coupling and exit constraint."
+validation:
+  - "The unit is web-frontend."
+  - "Every selected library has one state, UI, or transport authority."
+  - "Rendering, caching, auth, accessibility, bundle/server cost, realtime recovery, and deployment compatibility are proved."

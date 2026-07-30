@@ -1,0 +1,65 @@
+[
+  {
+    "case_id": "support-calibration-standard-a",
+    "treatment_id": "baseline-v1",
+    "metric_id": "task-success-v1",
+    "slice": "standard",
+    "value": 0.4
+  },
+  {
+    "case_id": "support-calibration-risk-a",
+    "treatment_id": "baseline-v1",
+    "metric_id": "task-success-v1",
+    "slice": "risk",
+    "value": 0.3
+  },
+  {
+    "case_id": "support-calibration-standard-b",
+    "treatment_id": "baseline-v1",
+    "metric_id": "task-success-v1",
+    "slice": "standard",
+    "value": 0.5
+  },
+  {
+    "case_id": "support-calibration-standard-a",
+    "treatment_id": "candidate-a-v1",
+    "metric_id": "task-success-v1",
+    "slice": "standard",
+    "value": 0.7
+  },
+  {
+    "case_id": "support-calibration-risk-a",
+    "treatment_id": "candidate-a-v1",
+    "metric_id": "task-success-v1",
+    "slice": "risk",
+    "value": 0.6
+  },
+  {
+    "case_id": "support-calibration-standard-b",
+    "treatment_id": "candidate-a-v1",
+    "metric_id": "task-success-v1",
+    "slice": "standard",
+    "value": 0.8
+  },
+  {
+    "case_id": "support-calibration-standard-a",
+    "treatment_id": "candidate-b-v1",
+    "metric_id": "task-success-v1",
+    "slice": "standard",
+    "value": 0.9
+  },
+  {
+    "case_id": "support-calibration-risk-a",
+    "treatment_id": "candidate-b-v1",
+    "metric_id": "task-success-v1",
+    "slice": "risk",
+    "value": 0.8
+  },
+  {
+    "case_id": "support-calibration-standard-b",
+    "treatment_id": "candidate-b-v1",
+    "metric_id": "task-success-v1",
+    "slice": "standard",
+    "value": 1.0
+  }
+]

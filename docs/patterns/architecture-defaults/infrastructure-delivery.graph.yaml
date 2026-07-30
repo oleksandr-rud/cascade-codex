@@ -1,0 +1,81 @@
+schema_id: architecture-default-graph-v1
+graph_id: infrastructure-delivery
+pair_kind: extension
+title: Delivery And Operations Infrastructure
+status: reference-default
+spec_path: docs/patterns/architecture-defaults/infrastructure-delivery.spec.md
+extends:
+  - infrastructure
+preserves:
+  - "infrastructure:scope-before-provider"
+  - "infrastructure:existing-platform-first"
+  - "infrastructure:single-platform-default"
+  - "infrastructure:resource-ownership"
+  - "infrastructure:environment-contract"
+  - "infrastructure:least-privilege-and-isolation"
+  - "infrastructure:cost-and-lifecycle"
+  - "infrastructure:failure-and-recovery-proof"
+  - "infrastructure:infrastructure-as-code-authority"
+compatible_with:
+  - frontend-stack
+  - backend-stack
+  - native-stack
+  - cli-stack
+  - experiment-stack
+default_when:
+  - "The system needs network/edge, DNS/TLS, CDN/WAF, artifacts, CI/CD, configuration/secrets, observability, or infrastructure-as-code selection."
+do_not_use_when:
+  - "The task is only local application code with no delivery or operational boundary change."
+nodes:
+  - id: exposure-and-delivery
+    kind: evidence
+    owns: "Consumers, ingress/egress, locality, latency, release, rollback, artifact, security, and operations claims."
+  - id: network-and-edge
+    kind: resource-set
+    owns: "Network segmentation, ingress/egress, DNS, TLS, load balancing, CDN, WAF, rate limits, and edge policy."
+  - id: artifact-and-pipeline
+    kind: resource-set
+    owns: "Build identities, artifacts, provenance, promotion, deployment, verification, rollback, and environment gates."
+  - id: config-and-secrets
+    kind: security-boundary
+    owns: "Configuration authority, secret storage, access, rotation, injection, audit, and break-glass."
+  - id: observability
+    kind: operations
+    owns: "Logs, metrics, traces, errors, dashboards, alerts, SLOs, retention, and incident routing."
+  - id: infrastructure-code
+    kind: control-plane
+    owns: "Reusable modules, environment composition, policy, review, plan, apply, state, drift, import, and teardown."
+  - id: delivery-proof
+    kind: evidence
+    owns: "Provision, release, verify, rollback, rotate, fail, observe, recover, drift, and teardown evidence."
+edges:
+  - from: exposure-and-delivery
+    to: network-and-edge
+    relation: constrains
+  - from: network-and-edge
+    to: artifact-and-pipeline
+    relation: receives
+  - from: artifact-and-pipeline
+    to: config-and-secrets
+    relation: uses
+  - from: config-and-secrets
+    to: observability
+    relation: audited_by
+  - from: observability
+    to: infrastructure-code
+    relation: monitors
+  - from: infrastructure-code
+    to: delivery-proof
+    relation: validated_by
+decisions:
+  - id: immutable-promotion
+    default: "Build once, identify the artifact, record provenance, and promote the same artifact through environments."
+    exception_when: "Platform-native packaging requires environment-specific signing or wrapping with equivalent provenance."
+  - id: rollback-before-release
+    default: "Define application, configuration, schema, and infrastructure rollback or forward-recovery before production release."
+    exception_when: "The change is irreversible by contract and has an explicit migration and recovery plan."
+  - id: observability-is-product-boundary
+    default: "Select telemetry and alerts from owned user and system failure modes, not from tool defaults."
+    exception_when: "A bounded experiment records only the evidence needed for its question and cleanup."
+validation:
+  - "Network, DNS/TLS, edge, artifacts, provenance, CI/CD, configuration, secrets, observability, IaC, release, rollback, drift, recovery, and teardown are proved."

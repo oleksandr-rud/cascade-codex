@@ -1,0 +1,107 @@
+schema_id: architecture-default-graph-v1
+graph_id: web-frontend
+pair_kind: archetype
+title: Web Frontend Default
+status: reference-default
+spec_path: docs/patterns/architecture-defaults/web-frontend.spec.md
+compatible_with:
+  - frontend-state-data
+  - frontend-realtime
+  - frontend-cache
+  - frontend-ui-platform
+  - stack-selection
+  - tenancy-strategy
+  - interface-strategy
+default_when:
+  - "A browser client has multiple product features, remote data, navigation, and visible loading or failure states."
+  - "Feature ownership is more useful than grouping every file by technical type."
+do_not_use_when:
+  - "The target is a static page with no feature state or remote behavior."
+  - "An existing coherent frontend boundary is already enforced and no reorganization is requested."
+nodes:
+  - id: app-shell
+    kind: composition-root
+    owns: "Boot, routing, providers, layouts, global error handling, and feature assembly."
+  - id: feature-entrypoint
+    kind: public-surface
+    owns: "The feature API exported to routes and other approved consumers."
+  - id: feature-interface
+    kind: presentation
+    owns: "Screens, components, interaction adapters, accessibility, and visible states."
+  - id: feature-application
+    kind: client-application
+    owns: "Feature commands, queries, workflows, state transitions, and derived view models."
+  - id: feature-domain
+    kind: optional-domain
+    owns: "Client-owned product rules and types that are meaningful without UI or transport."
+  - id: feature-data
+    kind: data-boundary
+    owns: "Remote queries, mutations, cache keys, DTO mapping, and persistence ports."
+  - id: transport-adapters
+    kind: adapter
+    owns: "Generated or typed HTTP, RPC, GraphQL, realtime, storage, and platform calls."
+  - id: shared-ui
+    kind: design-system
+    owns: "Tokens, accessible primitives, reusable components, icons, and interaction patterns."
+  - id: shared-libs
+    kind: shared-foundation
+    owns: "Framework helpers, generic utilities, config, telemetry, and transport primitives."
+  - id: observability
+    kind: evidence
+    owns: "User-visible errors, performance, accessibility, interaction, and release signals."
+edges:
+  - from: app-shell
+    to: feature-entrypoint
+    relation: composes
+  - from: feature-entrypoint
+    to: feature-interface
+    relation: exposes
+  - from: feature-interface
+    to: feature-application
+    relation: sends_intent
+  - from: feature-application
+    to: feature-domain
+    relation: applies_when_needed
+  - from: feature-application
+    to: feature-data
+    relation: reads_and_mutates
+  - from: feature-data
+    to: transport-adapters
+    relation: calls
+  - from: feature-interface
+    to: shared-ui
+    relation: uses
+  - from: feature-application
+    to: shared-libs
+    relation: uses
+  - from: feature-interface
+    to: observability
+    relation: exposes_visible_outcomes
+decisions:
+  - id: folder-ownership
+    default: "Organize product behavior by feature; keep app composition and truly shared primitives separate."
+    exception_when: "The client is too small to have an independent feature boundary."
+  - id: feature-public-surface
+    default: "Each feature exposes a narrow entrypoint; consumers do not deep-import its internal UI, application, domain, or data files."
+    exception_when: "Framework-reserved route files must import a named feature screen directly; keep that import as the documented public surface."
+  - id: dependency-direction
+    default: "Feature interface depends on application behavior, application may depend on client domain and data ports, and adapters remain at the edge."
+    exception_when: "A small presentational feature has no application or domain behavior and can stay shallow."
+  - id: state-ownership
+    default: "Keep remote server state in a query or request boundary and transient UI state near its feature."
+    exception_when: "Offline-first synchronization makes the local store an explicit replicated data boundary."
+  - id: api-contract
+    default: "Use generated or schema-derived clients when a stable API contract exists."
+    exception_when: "The backend lacks a machine-readable contract; use one typed adapter and record the gap."
+  - id: shared-code
+    default: "Promote code to shared only after independent feature reuse is real."
+    exception_when: "A design-system or platform primitive is shared by definition."
+  - id: rendering-boundary
+    default: "Choose server, client, or hybrid rendering per route from data sensitivity, interactivity, and performance evidence."
+    exception_when: "The target framework and deployment contract fixes the rendering mode."
+validation:
+  - "Enforce feature public entrypoints and reject cross-feature deep imports or shared-to-feature imports."
+  - "Exercise loading, empty, success, validation, permission, stale, offline where supported, failure, and retry states."
+  - "Verify keyboard, focus, semantics, contrast, motion, localization expansion, and responsive behavior for changed UI."
+  - "Contract-test data and transport adapters, query identity, mutation reconciliation, and error translation."
+  - "Measure route payload, rendering, interaction latency, and prevent accidental client exposure of server-only data."

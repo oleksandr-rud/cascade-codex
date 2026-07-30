@@ -1,0 +1,5 @@
+skills:
+  - name: simulation-execution
+    source: .codex/skills/simulation-execution/SKILL.md
+  - name: functional-qa
+    source: .codex/skills/functional-qa/SKILL.md

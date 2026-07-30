@@ -1,7 +1,6 @@
 # Project AI Instructions
 
-This file is the repository instruction entrypoint for coding agents. Keep it
-  as a thin boot contract after copying Cascade. Detailed stack
+This file is the thin repository boot contract for coding agents. Detailed stack
   maps, source roots, commands, workflow policy, learned rules, product specs,
   and active work state belong in `harness.config.yaml`, `docs/structure.md`,
   `CODEX.md`, `.codex/skills/`, `.codex/agents/`, and the relevant docs.
@@ -21,6 +20,7 @@ This file is the repository instruction entrypoint for coding agents. Keep it
 ## Where To Look Next
 
 - Runtime bridge and routing: `CODEX.md`.
+- Pull request description contract for Codex and Copilot: `.github/pull_request_template.md`.
 - Stack details, source roots, test roots, commands, runners, memory paths:
   `harness.config.yaml`.
 - Folder/write-target map: `docs/structure.md`.
@@ -63,23 +63,25 @@ Use the new-task route for non-atomic work:
 
 `issue-intake` is an explicit exception path for issue bodies or tracker
 tickets. Human review is an explicit open-question or exception path, not a
-standalone workflow router.
+standalone workflow router. Worklines and work graphs do not
+auto-dispatch; use the execution-surface contract in `CODEX.md`.
 
 Only bypass planning for atomic mechanical edits: typo fixes, formatting, import
 cleanup, or single-line changes with no behavior or contract impact.
 
 ## Validation Commands
 
-Current available validation:
-
 ```bash
 python3 scripts/validate_cascade_codex.py
 python3 scripts/run_harness_evals.py catalog --check
 python3 scripts/run_harness_evals.py self-test
+bun test scripts/cascade
+bun scripts/cascade.ts campaign catalog --check
+bun scripts/cascade.ts campaign self-test
 ```
 
-No install, unit, lint, typecheck, build, or end-to-end command exists until
-application source is added.
+No application install, lint, typecheck, build, or end-to-end command exists;
+Bun 1.3.3 runs the simulation campaign tooling and unit tests.
 
 ## Codebase Vocabulary
 

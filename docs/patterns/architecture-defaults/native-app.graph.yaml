@@ -1,0 +1,86 @@
+schema_id: architecture-default-graph-v1
+graph_id: native-app
+pair_kind: archetype
+title: Native App Default
+status: reference-default
+spec_path: docs/patterns/architecture-defaults/native-app.spec.md
+default_when:
+  - "A mobile or native app has multiple features, navigation, remote data, and platform capabilities."
+  - "The app needs a durable boundary between presentation, use cases, data access, and platform APIs."
+do_not_use_when:
+  - "The target is a single-screen prototype with no durable product behavior."
+  - "A platform-standard existing architecture already provides equivalent boundaries."
+nodes:
+  - id: app-shell
+    kind: composition-root
+    owns: "Application lifecycle, dependency assembly, navigation root, and global policy."
+  - id: feature-presentation
+    kind: presentation
+    owns: "Screens, UI state, user intent, accessibility, and navigation requests."
+  - id: use-cases
+    kind: application
+    owns: "Feature workflows, authorization context, and state transitions."
+  - id: domain
+    kind: policy
+    owns: "Platform-independent invariants, values, and behavior."
+  - id: repositories
+    kind: data-contract
+    owns: "Data access, freshness, sync, and source selection contracts."
+  - id: remote-adapter
+    kind: external-adapter
+    owns: "API transport, authentication attachment, and error translation."
+  - id: local-adapter
+    kind: persistence-adapter
+    owns: "Database, files, secure storage, and migration details."
+  - id: platform-adapter
+    kind: device-adapter
+    owns: "Notifications, camera, location, background work, and other platform APIs."
+  - id: observability
+    kind: evidence
+    owns: "Crash, performance, sync, network, and release diagnostics."
+edges:
+  - from: app-shell
+    to: feature-presentation
+    relation: composes
+  - from: feature-presentation
+    to: use-cases
+    relation: invokes
+  - from: use-cases
+    to: domain
+    relation: enforces
+  - from: use-cases
+    to: repositories
+    relation: depends_on
+  - from: remote-adapter
+    to: repositories
+    relation: implements_remote_source
+  - from: local-adapter
+    to: repositories
+    relation: implements_local_source
+  - from: use-cases
+    to: platform-adapter
+    relation: requests_capability
+  - from: feature-presentation
+    to: observability
+    relation: records_visible_outcome
+decisions:
+  - id: folder-ownership
+    default: "Organize product code by feature and keep shared core, data, and platform foundations bounded."
+    exception_when: "The app is too small for more than one product feature."
+  - id: ui-state
+    default: "Use one explicit state owner per screen or feature flow with unidirectional intent and state updates."
+    exception_when: "A platform component fully owns the state and exposes a stable lifecycle contract."
+  - id: data-access
+    default: "Presentation depends on use cases; use cases depend on repository contracts; adapters own frameworks and storage."
+    exception_when: "A read-only trivial feature has no policy and the platform convention supports a thinner slice."
+  - id: offline
+    default: "Offline persistence and synchronization are opt-in product capabilities with explicit conflict and freshness rules."
+    exception_when: "The product is offline-first and local data is the declared interaction source of truth."
+  - id: platform-capabilities
+    default: "Wrap device APIs at the feature or shared platform boundary and model denial, interruption, and lifecycle changes."
+    exception_when: "The capability is presentation-only and already safely wrapped by the UI framework."
+validation:
+  - "Test lifecycle restoration, permission denial, background interruption, and network loss where relevant."
+  - "Verify screen loading, empty, success, stale, offline, and retry states."
+  - "Contract-test repository behavior across remote and local adapters."
+  - "Run platform accessibility, performance, crash, and release checks for supported targets."

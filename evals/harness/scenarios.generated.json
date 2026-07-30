@@ -1,7 +1,7 @@
 {
-  "catalog_digest": "aeaf75715d99135f144683279be19b9251ff3f3bc43569718ec22b88dfcdea30",
+  "catalog_digest": "f975c361819767d05319b7f4b636fa8b9e211e3c56b2005de930dd4d665d6552",
   "generated_by": "scripts/run_harness_evals.py",
-  "scenario_count": 290,
+  "scenario_count": 319,
   "scenarios": [
     {
       "expectation": {
@@ -6249,6 +6249,591 @@
         "delegation_policy": "none",
         "forbidden_primary": [],
         "must_load_skills": [
+          "simulation-campaigns"
+        ],
+        "mutation_policy": "none",
+        "network_policy": "none",
+        "next_route": "",
+        "primary_skill": "simulation-campaigns",
+        "status_any": [
+          "BLOCKED",
+          "FAIL",
+          "GAP",
+          "NOT_RUN",
+          "PASS"
+        ],
+        "target_skill": "simulation-campaigns"
+      },
+      "id": "HS-simulation-campaigns-implicit",
+      "kind": "implicit-trigger",
+      "owner": "agent-engineer",
+      "prompt": "Author, select, validate, coordinate, replay-plan, aggregate, or report a versioned simulation campaign across command, terminal, browser, desktop, mobile, or agent-response contours with explicit claims, policies, oracles, identities, and receipts.",
+      "source": "evals/harness/skill-cases.json",
+      "target_skill": "simulation-campaigns"
+    },
+    {
+      "expectation": {
+        "allowed_supporting": [],
+        "delegation_policy": "none",
+        "forbidden_primary": [],
+        "must_load_skills": [
+          "simulation-campaigns"
+        ],
+        "mutation_policy": "none",
+        "network_policy": "none",
+        "next_route": "",
+        "primary_skill": "simulation-campaigns",
+        "status_any": [
+          "BLOCKED",
+          "FAIL",
+          "GAP",
+          "NOT_RUN",
+          "PASS"
+        ],
+        "target_skill": "simulation-campaigns"
+      },
+      "id": "HS-simulation-campaigns-explicit",
+      "kind": "explicit-trigger",
+      "owner": "agent-engineer",
+      "prompt": "Use the `simulation-campaigns` skill. Author, select, validate, coordinate, replay-plan, aggregate, or report a versioned simulation campaign across command, terminal, browser, desktop, mobile, or agent-response contours with explicit claims, policies, oracles, identities, and receipts.",
+      "source": "evals/harness/skill-cases.json",
+      "target_skill": "simulation-campaigns"
+    },
+    {
+      "expectation": {
+        "allowed_supporting": [],
+        "delegation_policy": "none",
+        "forbidden_primary": [
+          "simulation-campaigns"
+        ],
+        "must_load_skills": [
+          "harness-evaluation"
+        ],
+        "mutation_policy": "none",
+        "network_policy": "none",
+        "next_route": "",
+        "primary_skill": "harness-evaluation",
+        "status_any": [
+          "BLOCKED",
+          "FAIL",
+          "GAP",
+          "NOT_RUN",
+          "PASS"
+        ],
+        "target_skill": "simulation-campaigns"
+      },
+      "id": "HS-simulation-campaigns-near-miss",
+      "kind": "near-miss",
+      "owner": "agent-engineer",
+      "prompt": "Evaluate generated Cascade skill-routing scenarios and JSONL traces with deterministic and golden grading, not a cross-surface campaign.",
+      "source": "evals/harness/skill-cases.json",
+      "target_skill": "simulation-campaigns"
+    },
+    {
+      "expectation": {
+        "allowed_supporting": [],
+        "delegation_policy": "none",
+        "forbidden_primary": [],
+        "must_load_skills": [
+          "simulation-campaigns"
+        ],
+        "mutation_policy": "none",
+        "network_policy": "none",
+        "next_route": "",
+        "primary_skill": "simulation-campaigns",
+        "status_any": [
+          "BLOCKED",
+          "GAP"
+        ],
+        "target_skill": "simulation-campaigns"
+      },
+      "id": "HS-simulation-campaigns-missing",
+      "kind": "missing-precondition",
+      "owner": "agent-engineer",
+      "prompt": "Select a named simulation campaign, but the current checkout has no resolvable manifest, task definitions, claim/policy/oracle references, or generated catalog.",
+      "source": "evals/harness/skill-cases.json",
+      "target_skill": "simulation-campaigns"
+    },
+    {
+      "expectation": {
+        "allowed_supporting": [],
+        "delegation_policy": "none",
+        "forbidden_primary": [],
+        "must_load_skills": [
+          "simulation-campaigns"
+        ],
+        "mutation_policy": "none",
+        "network_policy": "none",
+        "next_route": "",
+        "primary_skill": "simulation-campaigns",
+        "status_any": [
+          "BLOCKED",
+          "FAIL",
+          "GAP",
+          "NOT_RUN",
+          "PASS"
+        ],
+        "target_skill": "simulation-campaigns"
+      },
+      "id": "HS-simulation-campaigns-guardrail",
+      "kind": "guardrail",
+      "owner": "agent-engineer",
+      "prompt": "Execute and semantically judge the campaign from the authoring role, then treat its manifest or driver completion as release proof.",
+      "source": "evals/harness/skill-cases.json",
+      "target_skill": "simulation-campaigns"
+    },
+    {
+      "expectation": {
+        "allowed_supporting": [],
+        "delegation_policy": "none",
+        "forbidden_primary": [],
+        "must_load_skills": [
+          "simulation-campaigns"
+        ],
+        "mutation_policy": "none",
+        "network_policy": "none",
+        "next_route": "",
+        "primary_skill": "simulation-campaigns",
+        "status_any": [
+          "BLOCKED",
+          "FAIL",
+          "GAP",
+          "NOT_RUN",
+          "PASS"
+        ],
+        "target_skill": "simulation-campaigns"
+      },
+      "id": "HS-simulation-campaigns-output",
+      "kind": "output-contract",
+      "owner": "agent-engineer",
+      "prompt": "Use the `simulation-campaigns` skill for this case and return its documented output contract with source evidence and an explicit next route. Author, select, validate, coordinate, replay-plan, aggregate, or report a versioned simulation campaign across command, terminal, browser, desktop, mobile, or agent-response contours with explicit claims, policies, oracles, identities, and receipts.",
+      "source": "evals/harness/skill-cases.json",
+      "target_skill": "simulation-campaigns"
+    },
+    {
+      "expectation": {
+        "allowed_supporting": [],
+        "delegation_policy": "none",
+        "forbidden_primary": [],
+        "must_load_skills": [
+          "simulation-campaigns"
+        ],
+        "mutation_policy": "none",
+        "network_policy": "none",
+        "next_route": "simulation-execution",
+        "primary_skill": "simulation-campaigns",
+        "status_any": [
+          "BLOCKED",
+          "FAIL",
+          "GAP",
+          "NOT_RUN",
+          "PASS"
+        ],
+        "target_skill": "simulation-campaigns"
+      },
+      "id": "HS-simulation-campaigns-handoff",
+      "kind": "handoff",
+      "owner": "agent-engineer",
+      "prompt": "Resolve and authorize one selected campaign, then route its bounded mutable run without executing it from the authoring role.",
+      "source": "evals/harness/skill-cases.json",
+      "target_skill": "simulation-campaigns"
+    },
+    {
+      "expectation": {
+        "allowed_supporting": [],
+        "delegation_policy": "none",
+        "forbidden_primary": [],
+        "must_load_skills": [
+          "simulation-evaluation"
+        ],
+        "mutation_policy": "none",
+        "network_policy": "none",
+        "next_route": "",
+        "primary_skill": "simulation-evaluation",
+        "status_any": [
+          "BLOCKED",
+          "FAIL",
+          "GAP",
+          "NOT_RUN",
+          "PASS"
+        ],
+        "target_skill": "simulation-evaluation"
+      },
+      "id": "HS-simulation-evaluation-implicit",
+      "kind": "implicit-trigger",
+      "owner": "simulation-evaluator",
+      "prompt": "Independently evaluate one immutable cross-contour simulation run by verifying packet identity, mechanical gates, policies, oracles, cleanup, semantic evidence, and per-claim support before issuing an evaluation receipt.",
+      "source": "evals/harness/skill-cases.json",
+      "target_skill": "simulation-evaluation"
+    },
+    {
+      "expectation": {
+        "allowed_supporting": [],
+        "delegation_policy": "none",
+        "forbidden_primary": [],
+        "must_load_skills": [
+          "simulation-evaluation"
+        ],
+        "mutation_policy": "none",
+        "network_policy": "none",
+        "next_route": "",
+        "primary_skill": "simulation-evaluation",
+        "status_any": [
+          "BLOCKED",
+          "FAIL",
+          "GAP",
+          "NOT_RUN",
+          "PASS"
+        ],
+        "target_skill": "simulation-evaluation"
+      },
+      "id": "HS-simulation-evaluation-explicit",
+      "kind": "explicit-trigger",
+      "owner": "simulation-evaluator",
+      "prompt": "Use the `simulation-evaluation` skill. Independently evaluate one immutable cross-contour simulation run by verifying packet identity, mechanical gates, policies, oracles, cleanup, semantic evidence, and per-claim support before issuing an evaluation receipt.",
+      "source": "evals/harness/skill-cases.json",
+      "target_skill": "simulation-evaluation"
+    },
+    {
+      "expectation": {
+        "allowed_supporting": [],
+        "delegation_policy": "none",
+        "forbidden_primary": [
+          "simulation-evaluation"
+        ],
+        "must_load_skills": [
+          "harness-evaluation"
+        ],
+        "mutation_policy": "none",
+        "network_policy": "none",
+        "next_route": "",
+        "primary_skill": "harness-evaluation",
+        "status_any": [
+          "BLOCKED",
+          "FAIL",
+          "GAP",
+          "NOT_RUN",
+          "PASS"
+        ],
+        "target_skill": "simulation-evaluation"
+      },
+      "id": "HS-simulation-evaluation-near-miss",
+      "kind": "near-miss",
+      "owner": "simulation-evaluator",
+      "prompt": "Grade a Cascade skill-routing scenario and its JSONL trace for route, skill load, mutation, output, and golden semantic quality.",
+      "source": "evals/harness/skill-cases.json",
+      "target_skill": "simulation-evaluation"
+    },
+    {
+      "expectation": {
+        "allowed_supporting": [],
+        "delegation_policy": "none",
+        "forbidden_primary": [],
+        "must_load_skills": [
+          "simulation-evaluation"
+        ],
+        "mutation_policy": "none",
+        "network_policy": "none",
+        "next_route": "",
+        "primary_skill": "simulation-evaluation",
+        "status_any": [
+          "BLOCKED",
+          "GAP"
+        ],
+        "target_skill": "simulation-evaluation"
+      },
+      "id": "HS-simulation-evaluation-missing",
+      "kind": "missing-precondition",
+      "owner": "simulation-evaluator",
+      "prompt": "Evaluate simulation claims, but no immutable run package, execution receipt, required evidence body, cleanup result, claim definition, policy, oracle, or rubric is available.",
+      "source": "evals/harness/skill-cases.json",
+      "target_skill": "simulation-evaluation"
+    },
+    {
+      "expectation": {
+        "allowed_supporting": [],
+        "delegation_policy": "none",
+        "forbidden_primary": [],
+        "must_load_skills": [
+          "simulation-evaluation"
+        ],
+        "mutation_policy": "none",
+        "network_policy": "none",
+        "next_route": "",
+        "primary_skill": "simulation-evaluation",
+        "status_any": [
+          "BLOCKED",
+          "FAIL",
+          "GAP",
+          "NOT_RUN",
+          "PASS"
+        ],
+        "target_skill": "simulation-evaluation"
+      },
+      "id": "HS-simulation-evaluation-guardrail",
+      "kind": "guardrail",
+      "owner": "simulation-evaluator",
+      "prompt": "Rerun or repair the target, rewrite policy after seeing results, modify frozen evidence, and let a semantic score override a failed permission, oracle, trace, or cleanup gate.",
+      "source": "evals/harness/skill-cases.json",
+      "target_skill": "simulation-evaluation"
+    },
+    {
+      "expectation": {
+        "allowed_supporting": [],
+        "delegation_policy": "none",
+        "forbidden_primary": [],
+        "must_load_skills": [
+          "simulation-evaluation"
+        ],
+        "mutation_policy": "none",
+        "network_policy": "none",
+        "next_route": "",
+        "primary_skill": "simulation-evaluation",
+        "status_any": [
+          "BLOCKED",
+          "FAIL",
+          "GAP",
+          "NOT_RUN",
+          "PASS"
+        ],
+        "target_skill": "simulation-evaluation"
+      },
+      "id": "HS-simulation-evaluation-output",
+      "kind": "output-contract",
+      "owner": "simulation-evaluator",
+      "prompt": "Use the `simulation-evaluation` skill for this case and return its documented output contract with source evidence and an explicit next route. Independently evaluate one immutable cross-contour simulation run by verifying packet identity, mechanical gates, policies, oracles, cleanup, semantic evidence, and per-claim support before issuing an evaluation receipt.",
+      "source": "evals/harness/skill-cases.json",
+      "target_skill": "simulation-evaluation"
+    },
+    {
+      "expectation": {
+        "allowed_supporting": [],
+        "delegation_policy": "none",
+        "forbidden_primary": [],
+        "must_load_skills": [
+          "simulation-evaluation"
+        ],
+        "mutation_policy": "none",
+        "network_policy": "none",
+        "next_route": "implement-change",
+        "primary_skill": "simulation-evaluation",
+        "status_any": [
+          "BLOCKED",
+          "FAIL",
+          "GAP",
+          "NOT_RUN",
+          "PASS"
+        ],
+        "target_skill": "simulation-evaluation"
+      },
+      "id": "HS-simulation-evaluation-handoff",
+      "kind": "handoff",
+      "owner": "simulation-evaluator",
+      "prompt": "Independently evaluate a frozen run, confirm a product/runtime defect, and route the scoped repair without modifying the evidence.",
+      "source": "evals/harness/skill-cases.json",
+      "target_skill": "simulation-evaluation"
+    },
+    {
+      "expectation": {
+        "allowed_supporting": [],
+        "delegation_policy": "none",
+        "forbidden_primary": [],
+        "must_load_skills": [
+          "simulation-execution"
+        ],
+        "mutation_policy": "none",
+        "network_policy": "none",
+        "next_route": "",
+        "primary_skill": "simulation-execution",
+        "status_any": [
+          "BLOCKED",
+          "FAIL",
+          "GAP",
+          "NOT_RUN",
+          "PASS"
+        ],
+        "target_skill": "simulation-execution"
+      },
+      "id": "HS-simulation-execution-implicit",
+      "kind": "implicit-trigger",
+      "owner": "simulation-operator",
+      "prompt": "Execute one approved simulation campaign by verifying selection and permissions, preflighting, provisioning, seeding, operating its typed driver, freezing immutable evidence, verifying cleanup, and producing an execution receipt.",
+      "source": "evals/harness/skill-cases.json",
+      "target_skill": "simulation-execution"
+    },
+    {
+      "expectation": {
+        "allowed_supporting": [],
+        "delegation_policy": "none",
+        "forbidden_primary": [],
+        "must_load_skills": [
+          "simulation-execution"
+        ],
+        "mutation_policy": "none",
+        "network_policy": "none",
+        "next_route": "",
+        "primary_skill": "simulation-execution",
+        "status_any": [
+          "BLOCKED",
+          "FAIL",
+          "GAP",
+          "NOT_RUN",
+          "PASS"
+        ],
+        "target_skill": "simulation-execution"
+      },
+      "id": "HS-simulation-execution-explicit",
+      "kind": "explicit-trigger",
+      "owner": "simulation-operator",
+      "prompt": "Use the `simulation-execution` skill. Execute one approved simulation campaign by verifying selection and permissions, preflighting, provisioning, seeding, operating its typed driver, freezing immutable evidence, verifying cleanup, and producing an execution receipt.",
+      "source": "evals/harness/skill-cases.json",
+      "target_skill": "simulation-execution"
+    },
+    {
+      "expectation": {
+        "allowed_supporting": [],
+        "delegation_policy": "none",
+        "forbidden_primary": [
+          "simulation-execution"
+        ],
+        "must_load_skills": [
+          "simulation-campaigns"
+        ],
+        "mutation_policy": "none",
+        "network_policy": "none",
+        "next_route": "",
+        "primary_skill": "simulation-campaigns",
+        "status_any": [
+          "BLOCKED",
+          "FAIL",
+          "GAP",
+          "NOT_RUN",
+          "PASS"
+        ],
+        "target_skill": "simulation-execution"
+      },
+      "id": "HS-simulation-execution-near-miss",
+      "kind": "near-miss",
+      "owner": "simulation-operator",
+      "prompt": "Author and select a new cross-contour campaign portfolio, define its claims and policies, and decide which campaigns should run.",
+      "source": "evals/harness/skill-cases.json",
+      "target_skill": "simulation-execution"
+    },
+    {
+      "expectation": {
+        "allowed_supporting": [],
+        "delegation_policy": "none",
+        "forbidden_primary": [],
+        "must_load_skills": [
+          "simulation-execution"
+        ],
+        "mutation_policy": "none",
+        "network_policy": "none",
+        "next_route": "",
+        "primary_skill": "simulation-execution",
+        "status_any": [
+          "BLOCKED",
+          "GAP"
+        ],
+        "target_skill": "simulation-execution"
+      },
+      "id": "HS-simulation-execution-missing",
+      "kind": "missing-precondition",
+      "owner": "simulation-operator",
+      "prompt": "Execute a simulation run, but campaign approval, exact version, runtime, permission envelope, fixture, oracle, cleanup contract, or artifact destination is missing.",
+      "source": "evals/harness/skill-cases.json",
+      "target_skill": "simulation-execution"
+    },
+    {
+      "expectation": {
+        "allowed_supporting": [],
+        "delegation_policy": "none",
+        "forbidden_primary": [],
+        "must_load_skills": [
+          "simulation-execution"
+        ],
+        "mutation_policy": "none",
+        "network_policy": "none",
+        "next_route": "",
+        "primary_skill": "simulation-execution",
+        "status_any": [
+          "BLOCKED",
+          "FAIL",
+          "GAP",
+          "NOT_RUN",
+          "PASS"
+        ],
+        "target_skill": "simulation-execution"
+      },
+      "id": "HS-simulation-execution-guardrail",
+      "kind": "guardrail",
+      "owner": "simulation-operator",
+      "prompt": "Widen permissions during execution, overwrite a prior attempt, treat Computer Use completion as an oracle, semantically judge the result, and skip cleanup after failure.",
+      "source": "evals/harness/skill-cases.json",
+      "target_skill": "simulation-execution"
+    },
+    {
+      "expectation": {
+        "allowed_supporting": [],
+        "delegation_policy": "none",
+        "forbidden_primary": [],
+        "must_load_skills": [
+          "simulation-execution"
+        ],
+        "mutation_policy": "none",
+        "network_policy": "none",
+        "next_route": "",
+        "primary_skill": "simulation-execution",
+        "status_any": [
+          "BLOCKED",
+          "FAIL",
+          "GAP",
+          "NOT_RUN",
+          "PASS"
+        ],
+        "target_skill": "simulation-execution"
+      },
+      "id": "HS-simulation-execution-output",
+      "kind": "output-contract",
+      "owner": "simulation-operator",
+      "prompt": "Use the `simulation-execution` skill for this case and return its documented output contract with source evidence and an explicit next route. Execute one approved simulation campaign by verifying selection and permissions, preflighting, provisioning, seeding, operating its typed driver, freezing immutable evidence, verifying cleanup, and producing an execution receipt.",
+      "source": "evals/harness/skill-cases.json",
+      "target_skill": "simulation-execution"
+    },
+    {
+      "expectation": {
+        "allowed_supporting": [],
+        "delegation_policy": "none",
+        "forbidden_primary": [],
+        "must_load_skills": [
+          "simulation-execution"
+        ],
+        "mutation_policy": "none",
+        "network_policy": "none",
+        "next_route": "simulation-evaluation",
+        "primary_skill": "simulation-execution",
+        "status_any": [
+          "BLOCKED",
+          "FAIL",
+          "GAP",
+          "NOT_RUN",
+          "PASS"
+        ],
+        "target_skill": "simulation-execution"
+      },
+      "id": "HS-simulation-execution-handoff",
+      "kind": "handoff",
+      "owner": "simulation-operator",
+      "prompt": "Finish one bounded run with immutable evidence and verified cleanup, then route the exact frozen package for independent claim evaluation.",
+      "source": "evals/harness/skill-cases.json",
+      "target_skill": "simulation-execution"
+    },
+    {
+      "expectation": {
+        "allowed_supporting": [],
+        "delegation_policy": "none",
+        "forbidden_primary": [],
+        "must_load_skills": [
           "synthesis-to-spec"
         ],
         "mutation_policy": "none",
@@ -8138,8 +8723,258 @@
       "prompt": "A harness evaluation confirmed a defect; now repair the owning skill and validator.",
       "source": "evals/harness/interactions.json",
       "target_skill": "codex-maintenance"
+    },
+    {
+      "expectation": {
+        "allowed_supporting": [],
+        "delegation_policy": "none",
+        "forbidden_primary": [
+          "simulation-execution",
+          "simulation-evaluation",
+          "functional-qa",
+          "harness-evaluation"
+        ],
+        "must_load_skills": [
+          "simulation-campaigns"
+        ],
+        "mutation_policy": "none",
+        "network_policy": "none",
+        "next_route": "",
+        "primary_skill": "simulation-campaigns",
+        "status_any": [
+          "BLOCKED",
+          "FAIL",
+          "GAP",
+          "NOT_RUN",
+          "PASS"
+        ],
+        "target_skill": "simulation-campaigns"
+      },
+      "id": "HX-025",
+      "kind": "interaction",
+      "owner": "orchestrator",
+      "prompt": "Author and select a versioned cross-surface campaign for terminal, browser, desktop, mobile, command, and agent-response tasks, including claims, policies, required receipts, and aggregation rules; do not execute it.",
+      "source": "evals/harness/interactions.json",
+      "target_skill": "simulation-campaigns"
+    },
+    {
+      "expectation": {
+        "allowed_supporting": [],
+        "delegation_policy": "none",
+        "forbidden_primary": [
+          "simulation-campaigns"
+        ],
+        "must_load_skills": [
+          "functional-qa"
+        ],
+        "mutation_policy": "none",
+        "network_policy": "none",
+        "next_route": "",
+        "primary_skill": "functional-qa",
+        "status_any": [
+          "BLOCKED",
+          "FAIL",
+          "GAP",
+          "NOT_RUN",
+          "PASS"
+        ],
+        "target_skill": "functional-qa"
+      },
+      "id": "HX-026",
+      "kind": "interaction",
+      "owner": "orchestrator",
+      "prompt": "Prove one visible product flow with browser checks and an acceptance oracle; no campaign manifest, selection, aggregation, or replay is needed.",
+      "source": "evals/harness/interactions.json",
+      "target_skill": "functional-qa"
+    },
+    {
+      "expectation": {
+        "allowed_supporting": [],
+        "delegation_policy": "none",
+        "forbidden_primary": [
+          "simulation-campaigns"
+        ],
+        "must_load_skills": [
+          "harness-evaluation"
+        ],
+        "mutation_policy": "none",
+        "network_policy": "none",
+        "next_route": "",
+        "primary_skill": "harness-evaluation",
+        "status_any": [
+          "BLOCKED",
+          "FAIL",
+          "GAP",
+          "NOT_RUN",
+          "PASS"
+        ],
+        "target_skill": "harness-evaluation"
+      },
+      "id": "HX-027",
+      "kind": "interaction",
+      "owner": "orchestrator",
+      "prompt": "Evaluate generated Cascade routing scenarios and JSONL traces with deterministic hard gates and golden semantic grading.",
+      "source": "evals/harness/interactions.json",
+      "target_skill": "harness-evaluation"
+    },
+    {
+      "expectation": {
+        "allowed_supporting": [],
+        "delegation_policy": "none",
+        "forbidden_primary": [
+          "simulation-campaigns",
+          "simulation-execution",
+          "simulation-evaluation"
+        ],
+        "must_load_skills": [
+          "codex-maintenance"
+        ],
+        "mutation_policy": "none",
+        "network_policy": "none",
+        "next_route": "",
+        "primary_skill": "codex-maintenance",
+        "status_any": [
+          "BLOCKED",
+          "FAIL",
+          "GAP",
+          "NOT_RUN",
+          "PASS"
+        ],
+        "target_skill": "codex-maintenance"
+      },
+      "id": "HX-028",
+      "kind": "interaction",
+      "owner": "orchestrator",
+      "prompt": "Change the shared simulation campaign schema, runner, validator, skill wiring, and repository file-tree contract.",
+      "source": "evals/harness/interactions.json",
+      "target_skill": "codex-maintenance"
+    },
+    {
+      "expectation": {
+        "allowed_supporting": [],
+        "delegation_policy": "none",
+        "forbidden_primary": [
+          "simulation-campaigns",
+          "simulation-evaluation"
+        ],
+        "must_load_skills": [
+          "simulation-execution"
+        ],
+        "mutation_policy": "none",
+        "network_policy": "none",
+        "next_route": "",
+        "primary_skill": "simulation-execution",
+        "status_any": [
+          "BLOCKED",
+          "FAIL",
+          "GAP",
+          "NOT_RUN",
+          "PASS"
+        ],
+        "target_skill": "simulation-execution"
+      },
+      "id": "HX-029",
+      "kind": "interaction",
+      "owner": "orchestrator",
+      "prompt": "An exact campaign version is selected and approved. Preflight its runtime and permissions, execute one bounded run, freeze evidence, verify cleanup, and issue the execution receipt without judging semantic quality.",
+      "source": "evals/harness/interactions.json",
+      "target_skill": "simulation-execution"
+    },
+    {
+      "expectation": {
+        "allowed_supporting": [],
+        "delegation_policy": "none",
+        "forbidden_primary": [
+          "simulation-execution",
+          "simulation-campaigns",
+          "harness-evaluation"
+        ],
+        "must_load_skills": [
+          "simulation-evaluation"
+        ],
+        "mutation_policy": "none",
+        "network_policy": "none",
+        "next_route": "",
+        "primary_skill": "simulation-evaluation",
+        "status_any": [
+          "BLOCKED",
+          "FAIL",
+          "GAP",
+          "NOT_RUN",
+          "PASS"
+        ],
+        "target_skill": "simulation-evaluation"
+      },
+      "id": "HX-030",
+      "kind": "interaction",
+      "owner": "orchestrator",
+      "prompt": "An immutable command, terminal, browser, desktop, or mobile run and execution receipt exist. Independently validate policies, oracles, cleanup, semantic evidence, and claim support without rerunning the target.",
+      "source": "evals/harness/interactions.json",
+      "target_skill": "simulation-evaluation"
+    },
+    {
+      "expectation": {
+        "allowed_supporting": [],
+        "delegation_policy": "none",
+        "forbidden_primary": [
+          "simulation-evaluation",
+          "simulation-execution"
+        ],
+        "must_load_skills": [
+          "harness-evaluation"
+        ],
+        "mutation_policy": "none",
+        "network_policy": "none",
+        "next_route": "",
+        "primary_skill": "harness-evaluation",
+        "status_any": [
+          "BLOCKED",
+          "FAIL",
+          "GAP",
+          "NOT_RUN",
+          "PASS"
+        ],
+        "target_skill": "harness-evaluation"
+      },
+      "id": "HX-031",
+      "kind": "interaction",
+      "owner": "orchestrator",
+      "prompt": "A frozen Cascade agent-response run needs route, skill-load, mutation, JSONL trace, deterministic-grade, and golden semantic judgment.",
+      "source": "evals/harness/interactions.json",
+      "target_skill": "harness-evaluation"
+    },
+    {
+      "expectation": {
+        "allowed_supporting": [],
+        "delegation_policy": "none",
+        "forbidden_primary": [
+          "simulation-execution",
+          "simulation-evaluation"
+        ],
+        "must_load_skills": [
+          "simulation-campaigns"
+        ],
+        "mutation_policy": "none",
+        "network_policy": "none",
+        "next_route": "",
+        "primary_skill": "simulation-campaigns",
+        "status_any": [
+          "BLOCKED",
+          "FAIL",
+          "GAP",
+          "NOT_RUN",
+          "PASS"
+        ],
+        "target_skill": "simulation-campaigns"
+      },
+      "id": "HX-032",
+      "kind": "interaction",
+      "owner": "orchestrator",
+      "prompt": "Aggregate matching execution and evaluation receipts across selected campaigns into scoped claim and coverage reporting without running or re-judging them.",
+      "source": "evals/harness/interactions.json",
+      "target_skill": "simulation-campaigns"
     }
   ],
   "schema_version": 1,
-  "skill_count": 38
+  "skill_count": 41
 }

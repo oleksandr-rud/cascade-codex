@@ -1,0 +1,86 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://cascade.local/schemas/simulation-metric.schema.json",
+  "title": "Cascade simulation metric",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "id",
+    "kind",
+    "direction",
+    "unit",
+    "aggregation",
+    "hard_gate",
+    "required_slices",
+    "source"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9.-]+$"
+    },
+    "kind": {
+      "enum": [
+        "deterministic",
+        "semantic",
+        "business"
+      ]
+    },
+    "direction": {
+      "enum": [
+        "higher-is-better",
+        "lower-is-better",
+        "exact"
+      ]
+    },
+    "unit": {
+      "type": "string",
+      "minLength": 1
+    },
+    "aggregation": {
+      "enum": [
+        "mean",
+        "sum",
+        "rate",
+        "exact"
+      ]
+    },
+    "hard_gate": {
+      "type": "boolean"
+    },
+    "required_slices": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string"
+      }
+    },
+    "uncertainty": {
+      "enum": [
+        "none",
+        "bootstrap",
+        "confidence-interval"
+      ]
+    },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "oracle_id": {
+          "type": "string"
+        },
+        "rubric_id": {
+          "type": "string"
+        },
+        "reference_field": {
+          "type": "string"
+        }
+      },
+      "minProperties": 1
+    }
+  }
+}

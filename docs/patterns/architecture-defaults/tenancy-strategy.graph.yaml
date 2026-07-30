@@ -1,0 +1,86 @@
+schema_id: architecture-default-graph-v1
+graph_id: tenancy-strategy
+pair_kind: decision
+title: Multi-Tenant And Multi-App Strategy
+status: reference-default
+spec_path: docs/patterns/architecture-defaults/tenancy-strategy.spec.md
+requires:
+  - architecture-selection
+compatible_with:
+  - service-api-worker
+  - web-frontend
+  - native-app
+  - caching-strategy
+  - interface-strategy
+  - event-driven
+default_when:
+  - "One platform serves multiple tenants, organizations, accounts, regions, brands, or first-party apps."
+  - "Identity, data, cache, queue, configuration, or observability isolation must be explicit."
+do_not_use_when:
+  - "The product has one security principal and no planned tenant or app boundary."
+  - "The distinction is only feature configuration inside one trusted account."
+nodes:
+  - id: tenant-context
+    kind: security-context
+    owns: "Authenticated tenant, account, app, region, and actor identity."
+  - id: boundary-policy
+    kind: policy
+    owns: "Isolation level, residency, lifecycle, quotas, and cross-tenant rules."
+  - id: application-boundary
+    kind: application
+    owns: "Tenant-aware commands, queries, authorization, and idempotency."
+  - id: data-boundary
+    kind: persistence-policy
+    owns: "Database, schema, row, index, migration, retention, and backup isolation."
+  - id: cache-queue-boundary
+    kind: infrastructure-policy
+    owns: "Tenant-scoped keys, topics, partitions, jobs, quotas, and dead-letter handling."
+  - id: interface-boundary
+    kind: public-contract
+    owns: "Tenant derivation, explicit app identity, request validation, and response isolation."
+  - id: operations-boundary
+    kind: evidence
+    owns: "Tenant-safe telemetry, support access, export, deletion, recovery, and incident response."
+edges:
+  - from: tenant-context
+    to: boundary-policy
+    relation: validated_by
+  - from: boundary-policy
+    to: application-boundary
+    relation: constrains
+  - from: application-boundary
+    to: data-boundary
+    relation: scopes
+  - from: application-boundary
+    to: cache-queue-boundary
+    relation: scopes
+  - from: tenant-context
+    to: interface-boundary
+    relation: derived_at
+  - from: data-boundary
+    to: operations-boundary
+    relation: evidenced_by
+  - from: cache-queue-boundary
+    to: operations-boundary
+    relation: evidenced_by
+decisions:
+  - id: trusted-context
+    default: "Derive tenant and app context from authenticated server-side identity and validate it at every public boundary."
+    exception_when: "A trusted internal batch supplies context through a separately authenticated machine contract."
+  - id: isolation-profile
+    default: "Use shared infrastructure with enforced tenant keys and policies until risk, scale, residency, or lifecycle requires stronger isolation."
+    exception_when: "Regulatory, contractual, noisy-neighbor, or blast-radius evidence requires schema, database, account, or deployment isolation."
+  - id: data-scope
+    default: "Every tenant-owned record, query, unique key, cache key, event, job, and object path carries enforced tenant scope."
+    exception_when: "The resource is deliberately global and has a named global owner and access policy."
+  - id: cross-tenant-access
+    default: "Deny cross-tenant reads and writes; expose explicit audited support or aggregation workflows."
+    exception_when: "A documented platform-wide aggregation is the product behavior and returns only authorized projections."
+  - id: multi-app-contract
+    default: "Share domain and technical primitives across first-party apps, but keep app entrypoints, permissions, configuration, and release ownership explicit."
+    exception_when: "Apps are only branded shells over one identical trusted interface."
+validation:
+  - "Negative tests prove tenant spoofing, cache leakage, object-path leakage, event/job mix-ups, and cross-tenant query omissions fail closed."
+  - "Migrations, backups, restores, exports, deletion, retention, and incident workflows preserve the selected isolation profile."
+  - "Telemetry and support tools redact sensitive data and cannot silently broaden tenant scope."
+  - "Per-tenant quotas and noisy-neighbor behavior are tested where shared infrastructure is used."

@@ -1,0 +1,17 @@
+{
+  "name": "cascade-harness",
+  "private": true,
+  "type": "module",
+  "packageManager": "bun@1.3.3",
+  "engines": {
+    "bun": ">=1.3.3 <2"
+  },
+  "scripts": {
+    "cascade": "bun scripts/cascade.ts",
+    "campaign": "bun scripts/cascade.ts campaign",
+    "campaign:catalog": "bun scripts/cascade.ts campaign catalog --check",
+    "campaign:self-test": "bun scripts/cascade.ts campaign self-test",
+    "simulation:init": "bun scripts/cascade.ts simulation init",
+    "test": "bun test scripts/cascade"
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "id": "simulation-population-smoke",
+  "title": "Simulation population smoke",
+  "purpose": "Prove weighted population and required risk-slice resolution with framework-only data.",
+  "owner_lane": "W-004",
+  "tier": "deterministic-fixture",
+  "evaluation_profile_file": "evals/rubrics/deterministic-fixture-v1.json",
+  "simulation_file": "evals/simulations/simulation-correctness-fixture/manifest.json",
+  "task_files": [
+    "evals/tasks/SIMULATION-STATE-SMOKE.json"
+  ],
+  "claim_files": [
+    "evals/claims/fixture-state-transition.json",
+    "evals/claims/fixture-population-coverage.json",
+    "evals/claims/fixture-release-eligibility.json"
+  ],
+  "policy_files": [
+    "evals/policies/allow-fixture-state-actions-v1.json"
+  ],
+  "oracle_files": [
+    "evals/oracles/account-resolved-v1.json",
+    "evals/oracles/account-attempt-recorded-v1.json"
+  ]
+}

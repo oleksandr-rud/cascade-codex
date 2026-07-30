@@ -43,6 +43,12 @@ document_graph:
   node_shape: "Each item under documents is a graph node with path, kind, description, trigger_when, and optional sections."
   edge_shape: "Routing, trigger_when, section routing_description, primary_skills, and related_roles are retrieval edges into the owning document or skill."
   section_shape: "Sections are selectable subnodes under the owning document, not separate top-level parts."
+paired_document_contract:
+  use_when: "A bounded pattern owns two complementary artifacts, such as a machine-readable architecture graph and human-readable specification."
+  rules:
+    - "Give each artifact its own document node and use stable paths plus trigger text to retrieve them together."
+    - "Keep pair-specific cross-links and integrity rules in the owning entry schema and validator."
+    - "Do not duplicate the full graph inside pack metadata; pack documents are retrieval nodes, not architecture authority."
 selection_parameters:
   - "--pack selects by pack_id, path, or file stem"
   - "--entry selects all packs under a pattern entry folder"

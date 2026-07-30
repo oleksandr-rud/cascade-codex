@@ -1,0 +1,4 @@
+interface:
+  display_name: "Simulation Evaluation"
+  short_description: "Evaluate frozen simulation evidence"
+  default_prompt: "Use $simulation-evaluation to independently evaluate a frozen simulation run, reduce its claims conservatively, and produce an evaluation receipt."

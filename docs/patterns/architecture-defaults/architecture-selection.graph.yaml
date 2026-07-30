@@ -1,0 +1,78 @@
+schema_id: architecture-default-graph-v1
+graph_id: architecture-selection
+pair_kind: decision
+title: Architecture Selection Strategy
+status: reference-default
+spec_path: docs/patterns/architecture-defaults/architecture-selection.spec.md
+compatible_with:
+  - service-api-worker
+  - web-frontend
+  - native-app
+  - cli
+  - experiment
+  - sdk-library
+  - tenancy-strategy
+  - interface-strategy
+  - stack-selection
+default_when:
+  - "A new system or major boundary needs a topology choice before stack and implementation details."
+  - "Several deployed, versioned, or distributed units, interfaces, tenants, or consistency boundaries may be involved."
+do_not_use_when:
+  - "The target already has a coherent topology and the change stays within one established boundary."
+  - "The task is an atomic implementation with no deployment, ownership, or data-flow decision."
+nodes:
+  - id: constraints
+    kind: evidence
+    owns: "Product criticality, team ownership, scale, consistency, latency, security, compliance, and delivery constraints."
+  - id: topology-options
+    kind: decision-set
+    owns: "Modular monolith, service split, event-driven, client, CLI, experiment, and independently distributed library candidates."
+  - id: boundary-map
+    kind: architecture-contract
+    owns: "Deployable units, data ownership, public interfaces, failure domains, and dependency direction."
+  - id: quality-attributes
+    kind: evaluation
+    owns: "Changeability, reliability, operability, performance, isolation, and cost trade-offs."
+  - id: selected-architecture
+    kind: decision
+    owns: "Adopted or adapted topology plus rejected alternatives and triggers for reassessment."
+  - id: validation-plan
+    kind: evidence
+    owns: "Boundary tests, operational probes, migration checks, and review gates."
+edges:
+  - from: constraints
+    to: topology-options
+    relation: narrows
+  - from: topology-options
+    to: boundary-map
+    relation: proposes
+  - from: boundary-map
+    to: quality-attributes
+    relation: evaluated_by
+  - from: quality-attributes
+    to: selected-architecture
+    relation: informs
+  - from: selected-architecture
+    to: validation-plan
+    relation: requires
+decisions:
+  - id: simplest-sufficient-topology
+    default: "Choose the fewest independently deployed, operated, versioned, or distributed boundaries that satisfy current evidence."
+    exception_when: "A hard isolation, scaling, regulatory, ownership, availability, compatibility, or distribution boundary already requires separation."
+  - id: ownership-before-technology
+    default: "Define responsibility, data ownership, public contracts, and failure domains before frameworks or infrastructure."
+    exception_when: "A mandated platform fixes a boundary; still record the imposed constraint."
+  - id: modular-first
+    default: "Start server-side product logic as a modular monolith with explicit module entrypoints and ports."
+    exception_when: "Independent deployment or failure isolation is already proven necessary."
+  - id: evidence-classification
+    default: "Record each catalog pair as ADOPTED, ADAPTED, REJECTED, or GAP with target evidence."
+    exception_when: "No catalog pair applies; record a GAP and author a target-specific decision."
+  - id: reassessment-trigger
+    default: "Name measurable triggers that would justify changing topology later."
+    exception_when: "The architecture is fixed by an external contract that the project cannot change."
+validation:
+  - "Every deployed, versioned, or distributed unit, data owner, synchronous call, asynchronous flow, and external dependency has one named owner."
+  - "Rejected alternatives include evidence and reassessment triggers rather than preference alone."
+  - "Stack selection occurs after topology and preserves the selected boundaries."
+  - "Migration and rollback checks exist when replacing an established architecture."

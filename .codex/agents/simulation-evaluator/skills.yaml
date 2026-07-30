@@ -1,0 +1,3 @@
+skills:
+  - name: simulation-evaluation
+    source: .codex/skills/simulation-evaluation/SKILL.md

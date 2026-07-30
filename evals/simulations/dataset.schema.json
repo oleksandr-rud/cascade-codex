@@ -1,0 +1,66 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://cascade.local/schemas/simulation-dataset.schema.json",
+  "title": "Cascade simulation dataset",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "id",
+    "leakage_policy",
+    "cases"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9.-]+$"
+    },
+    "leakage_policy": {
+      "const": "exclusive-case-identity"
+    },
+    "cases": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "scenario_id",
+          "actor_id",
+          "partition"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[a-z0-9][a-z0-9.-]+$"
+          },
+          "scenario_id": {
+            "type": "string"
+          },
+          "actor_id": {
+            "type": "string"
+          },
+          "partition": {
+            "enum": [
+              "development",
+              "regression",
+              "holdout",
+              "calibration-reference"
+            ]
+          },
+          "slices": {
+            "type": "array",
+            "uniqueItems": true,
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    }
+  }
+}

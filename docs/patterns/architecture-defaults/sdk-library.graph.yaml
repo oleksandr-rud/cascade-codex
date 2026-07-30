@@ -1,0 +1,131 @@
+schema_id: architecture-default-graph-v1
+graph_id: sdk-library
+pair_kind: archetype
+title: SDK And Library Default
+status: reference-default
+spec_path: docs/patterns/architecture-defaults/sdk-library.spec.md
+compatible_with:
+  - frontend-ui-platform
+  - interface-strategy
+  - stack-selection
+default_when:
+  - "A package is independently versioned, released, distributed, or consumed across an explicit ownership boundary."
+  - "An SDK or reusable library needs a stable public API, compatibility policy, consumer evidence, and release lifecycle."
+do_not_use_when:
+  - "Code lives only in an application's src/libs, src/shared, or equivalent folder and has no independent version, distribution, or ownership contract."
+  - "The proposed package is only a hosted API, database, cache, queue, stream, pub/sub service, or control plane."
+nodes:
+  - id: public-exports
+    kind: public-contract
+    owns: "Supported import paths, symbols, types, protocols, errors, configuration, and compatibility surface."
+  - id: core-behavior
+    kind: policy-layer
+    owns: "Library-owned behavior and invariants independent of transport, platform SDK, package manager, and generated implementation."
+  - id: ports
+    kind: boundary-contract
+    owns: "Consumer-supplied clocks, transports, storage, crypto, platform facilities, and true external dependency contracts."
+  - id: adapters
+    kind: integration-boundary
+    owns: "HTTP, serialization, platform, runtime, FFI, binary, and provider-specific implementations behind stable contracts."
+  - id: generated-code
+    kind: isolated-generated-boundary
+    owns: "Regenerable schemas, clients, bindings, serializers, manifests, generator identity, and generated-source provenance."
+  - id: examples-and-docs
+    kind: adoption-contract
+    owns: "Supported installation, configuration, usage, error, migration, security, and troubleshooting guidance."
+  - id: contract-tests
+    kind: consumer-evidence
+    owns: "Public exports, compatibility fixtures, server contracts, examples, supported runtimes, and consumer journeys."
+  - id: compatibility-policy
+    kind: lifecycle-contract
+    owns: "Supported versions, runtime and platform matrix, dependency bounds, wire and source compatibility, and migration rules."
+  - id: release-policy
+    kind: distribution-contract
+    owns: "Versioning, deprecation, release gates, artifact integrity, signing, provenance, publication, rollback, and retirement."
+  - id: consumers
+    kind: external-boundary
+    owns: "Named applications, packages, runtimes, platforms, and support horizons that depend on the public surface."
+  - id: hosted-capability-boundary
+    kind: ownership-boundary
+    owns: "References to separately owned APIs, developer services, databases, caches, messaging, registries, and control planes."
+edges:
+  - from: public-exports
+    to: core-behavior
+    relation: exposes
+  - from: core-behavior
+    to: ports
+    relation: depends_on
+  - from: adapters
+    to: ports
+    relation: implements
+  - from: generated-code
+    to: adapters
+    relation: is_wrapped_by
+  - from: generated-code
+    to: public-exports
+    relation: cannot_bypass
+  - from: examples-and-docs
+    to: public-exports
+    relation: documents
+  - from: contract-tests
+    to: public-exports
+    relation: verifies
+  - from: contract-tests
+    to: generated-code
+    relation: verifies_regeneration
+  - from: compatibility-policy
+    to: public-exports
+    relation: governs
+  - from: compatibility-policy
+    to: adapters
+    relation: constrains
+  - from: release-policy
+    to: compatibility-policy
+    relation: enforces
+  - from: release-policy
+    to: examples-and-docs
+    relation: publishes_with
+  - from: consumers
+    to: public-exports
+    relation: imports_only
+  - from: consumers
+    to: contract-tests
+    relation: supplies_fixtures
+  - from: adapters
+    to: hosted-capability-boundary
+    relation: calls_without_owning
+decisions:
+  - id: independent-package-threshold
+    default: "Create a library application unit only for an independently versioned, released, distributed, or owned package; keep app-internal technical reuse inside its owning application."
+    exception_when: "A binding monorepo package boundary already has independent consumers and compatibility enforcement even though publication is private."
+  - id: stable-public-surface
+    default: "Expose one intentional public surface and prohibit consumer deep imports of core, adapter, generated, and test internals."
+    exception_when: "A documented advanced subpath is deliberately supported and governed as part of the public compatibility contract."
+  - id: generated-code-isolation
+    default: "Keep generated code regenerable and isolated behind stable exports or adapters, recording generator, input-contract, and output identities."
+    exception_when: "The generated artifact is itself the complete public contract; regeneration and compatibility checks still gate release."
+  - id: consumer-driven-compatibility
+    default: "Derive supported runtimes, platforms, protocols, dependency bounds, and compatibility tests from named consumers and published support policy."
+    exception_when: "A standards-governed package must support a broader compatibility matrix; record the governing standard and proof."
+  - id: semantic-versioning-and-migration
+    default: "Classify public changes, version them consistently, publish migration guidance, and test supported upgrade paths."
+    exception_when: "The ecosystem mandates another versioning convention with equivalent compatibility signaling."
+  - id: deprecation-lifecycle
+    default: "Deprecate through documented alternatives, detection where practical, support windows, and an explicit removal release."
+    exception_when: "An actively exploited vulnerability requires emergency removal; publish the security rationale and recovery path."
+  - id: release-and-provenance
+    default: "Release identified artifacts with source, dependency, toolchain, generator, build, test, signature, and publication provenance."
+    exception_when: "A trusted external package authority supplies equivalent verifiable provenance and recovery evidence."
+  - id: dependency-and-supply-chain-security
+    default: "Minimize runtime and build dependencies; map each namespace to an approved source; reserve private names; verify integrity; review lock/resolution drift; disable or sandbox install hooks where feasible; bound build egress; scan inputs and outputs; and reject dependency-confusion, typosquatting, generated, or binary trust failures."
+    exception_when: "A platform-mandated dependency cannot be replaced; record its trust, update, isolation, and exit controls."
+  - id: hosted-capabilities-are-separate
+    default: "A library owns client behavior and compatibility, not the hosted API, data, cache, messaging, registry service, telemetry receiver, or control plane it consumes."
+    exception_when: "There is no ownership exception; project-owned hosted behavior is classified as a separate backend application unit."
+validation:
+  - "SL-002: app-internal src/libs or src/shared code without independent versioning, distribution, or ownership remains inside the owning application."
+  - "SL-003: generated SDK code cannot be deep-imported by consumers and regeneration plus server-contract checks prove the stable public surface."
+  - "SL-005: an SDK that calls a hosted API owns client compatibility while a separate backend unit owns hosted behavior and operated data or messaging."
+  - "SL-006: a separately released UI library composes this package lifecycle with frontend-ui-platform presentation, accessibility, and visual governance."
+  - "Public exports, examples, supported consumers, compatibility, migration, deprecation, installation, release, signing, provenance, and dependency security are contract-tested."
+  - "Dependency-confusion and typosquatting probes verify approved registry/source mapping, private namespace protection, integrity, resolution drift, install-hook isolation, and bounded build egress."

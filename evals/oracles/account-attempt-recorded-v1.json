@@ -1,0 +1,7 @@
+{
+  "schema_version": 1,
+  "id": "account-attempt-recorded-v1",
+  "type": "state-equals",
+  "path": "account.attempts",
+  "expected": 1
+}

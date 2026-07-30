@@ -13,11 +13,31 @@ Current scaffold boundaries:
 | Harness agents | `.codex/agents/` | Cascade maintainers | Role manifests, instructions, and skill maps. |
 | Durable docs | `docs/` | Project maintainers | Product, design, spec, work, glossary, and pattern memory. |
 | Validation script | `scripts/validate_cascade_codex.py` | Project maintainers | Primary executable check for the current scaffold. |
-| Public contracts | `AGENTS.md`; `CODEX.md`; `harness.config.yaml`; `.codex/config.toml` | Project maintainers | Agent boot contract, runtime bridge, adapter config, and harness registry. |
+| Public contracts | `AGENTS.md`; `CODEX.md`; `.github/pull_request_template.md`; `.github/copilot-instructions.md`; `harness.config.yaml`; `.codex/config.toml` | Project maintainers | Agent boot contract, runtime bridge, pull request description and Copilot guidance, adapter config, and harness registry. |
 | UI/features | none yet | Project maintainers | Add source roots and ownership when application implementation starts. |
 | State/store | `docs/work/` | Project maintainers | Active work state, lane packets, examples, and reports. |
 | External adapters | `.codex/config.toml` | Project maintainers | MCP server configuration and future tool integrations. |
-| Generated artifacts | none yet | Project maintainers | Add explicit paths before committing generated files. |
+| Generated catalogs | `evals/harness/scenarios.generated.json`; `evals/campaigns/catalog.generated.json` | Harness evaluators and campaign tooling | Tracked generated registries must match current sources and fail stale checks. |
+| Ignored run artifacts | `.artifacts/harness-evals/`; `.artifacts/campaigns/` | Harness and simulation runners | Append-only local evidence; never use mutable external paths as the sole evidence authority. |
+
+## Reference Architecture Defaults
+
+Use `docs/patterns/architecture-defaults/` when architecture or stack selection,
+caching, tenancy, interfaces, a backend service, event-driven behavior, a web
+frontend policy, native app, CLI, or experiment needs a reusable starting
+point. Select matching graph/spec pairs only after inspecting the target,
+resolve chooser and archetype dependencies before extensions, and preserve the
+base decisions declared by each extension. Record whether each pair was
+adopted, adapted, rejected, or exposed a gap.
+
+Use the `architecture-defaults` pack for cross-cutting, backend, native, CLI,
+and experiment selection. Use `frontend-architecture-defaults` for the web
+base, frontend stack profile, and independently selectable state/data, cache,
+realtime, and UI-platform extensions.
+
+Boundary rules in this file remain the general authority. Architecture-default
+pairs are reference candidates and must not override coherent target
+architecture or create source scaffolds without a plan and validation contract.
 
 ## Layer Discipline
 

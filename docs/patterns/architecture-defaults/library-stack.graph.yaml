@@ -1,0 +1,115 @@
+schema_id: architecture-default-graph-v1
+graph_id: library-stack
+pair_kind: extension
+title: Library Stack
+status: reference-default
+spec_path: docs/patterns/architecture-defaults/library-stack.spec.md
+extends:
+  - app-stack
+requires:
+  - sdk-library
+preserves:
+  - "app-stack:claims-drive-eligibility"
+  - "app-stack:policy-filter-before-score"
+  - "app-stack:application-type-branch"
+  - "app-stack:architecture-before-package"
+  - "app-stack:existing-stack-first"
+  - "app-stack:proof-before-adoption"
+compatible_with:
+  - frontend-ui-platform
+  - infrastructure
+default_when:
+  - "A library application unit needs a language, package format, generator, runtime-compatibility, or binding technology profile."
+do_not_use_when:
+  - "The code is app-internal reuse without an independent package lifecycle."
+  - "The decision concerns hosted compute, registries, artifacts, signing, documentation hosting, or release infrastructure."
+nodes:
+  - id: library-unit
+    kind: application-scope
+    owns: "One library application unit, its profile, consumers, compatibility claims, owners, and distribution constraints."
+  - id: generated-api-sdk
+    kind: candidate-family
+    owns: "Schema- or interface-generated client, models, serializers, generator toolchain, wrapper, and regeneration profile."
+  - id: hand-authored-sdk
+    kind: candidate-family
+    owns: "Domain-oriented client behavior, transport abstraction, public types, errors, resilience, and documentation profile."
+  - id: internal-library
+    kind: candidate-family
+    owns: "Privately consumed package with explicit consumers, coordinated or independent versioning, and organizational support."
+  - id: public-library
+    kind: candidate-family
+    owns: "Broadly distributed package with public compatibility, documentation, security, migration, and support obligations."
+  - id: platform-sdk
+    kind: candidate-family
+    owns: "Platform lifecycle, permission, storage, threading, capability, package, and release integration."
+  - id: wasm-ffi-binary-binding
+    kind: candidate-family
+    owns: "Adapted module or binary boundary with host language, ABI, memory, threading, serialization, target, and packaging constraints."
+  - id: library-proof
+    kind: evidence
+    owns: "Consumer, compatibility, generated-code, dependency, packaging, installation, size, performance, security, and upgrade proof."
+  - id: selected-library-stack
+    kind: decision
+    owns: "Selected language, package, generator or binding families, version constraints, support matrix, rejected candidates, and owners."
+edges:
+  - from: library-unit
+    to: generated-api-sdk
+    relation: may_select
+  - from: library-unit
+    to: hand-authored-sdk
+    relation: may_select
+  - from: library-unit
+    to: internal-library
+    relation: may_select
+  - from: library-unit
+    to: public-library
+    relation: may_select
+  - from: library-unit
+    to: platform-sdk
+    relation: may_select
+  - from: library-unit
+    to: wasm-ffi-binary-binding
+    relation: may_select
+  - from: generated-api-sdk
+    to: library-proof
+    relation: validated_by
+  - from: hand-authored-sdk
+    to: library-proof
+    relation: validated_by
+  - from: internal-library
+    to: library-proof
+    relation: validated_by
+  - from: public-library
+    to: library-proof
+    relation: validated_by
+  - from: platform-sdk
+    to: library-proof
+    relation: validated_by
+  - from: wasm-ffi-binary-binding
+    to: library-proof
+    relation: validated_by
+  - from: library-proof
+    to: selected-library-stack
+    relation: informs
+decisions:
+  - id: candidate-family-from-claims
+    default: "Evaluate only library technology families justified by consumers, public surface, source or wire contract, platforms, distribution, and support claims."
+    exception_when: "A binding ecosystem or platform mandate fixes the family; validate the actual toolchain and compatibility surface."
+  - id: ecosystem-and-consumer-fit
+    default: "Prefer the smallest supported language, package, and runtime profile native to the named consumers and current team ownership."
+    exception_when: "A cross-language or platform requirement provides enough value to justify another toolchain and support matrix."
+  - id: generated-sdk-toolchain-proof
+    default: "Select generation only when the authoritative input, generator lifecycle, normalized diff, wrapper boundary, customization route, and contract tests are owned."
+    exception_when: "A standards authority publishes the generated artifact; verify its identity, compatibility, trust, and update route."
+  - id: binding-boundary-proof
+    default: "Select WASM, FFI, or binary bindings only after proving supported targets, ABI or module compatibility, memory, threading, serialization, errors, security, debugging, packaging, and fallback."
+    exception_when: "A platform-native binding is mandatory; record the fixed boundary and prove its supported lifecycle."
+  - id: package-technology-infrastructure-separation
+    default: "Select language, package format, generator, and binding technology here; select build, registry, artifact, signing, provenance, documentation, and release resources through library-infrastructure."
+    exception_when: "A package authority couples format and distribution; record the coupling without moving hosted resource ownership into this extension."
+validation:
+  - "The unit is library and satisfies the independent version, release, distribution, or ownership threshold."
+  - "Generated, hand-authored, internal, public, platform, and adapted binding families are evaluated only when applicable rather than selected as one mandatory bundle."
+  - "Every candidate records consumer and platform claims, policy disposition, public-surface fit, dependency and toolchain impact, support horizon, and highest-risk proof."
+  - "Concrete packages or generators are not selected without target evidence and current official compatibility proof."
+  - "Application technology decisions do not absorb registry, signing, artifact, hosted API, data, cache, or messaging ownership."

@@ -1,0 +1,132 @@
+schema_id: architecture-default-graph-v1
+graph_id: native-infrastructure
+pair_kind: extension
+title: Native Infrastructure
+status: reference-default
+spec_path: docs/patterns/architecture-defaults/native-infrastructure.spec.md
+extends:
+  - infrastructure
+requires:
+  - native-app
+  - native-stack
+preserves:
+  - "infrastructure:scope-before-provider"
+  - "infrastructure:resource-ownership"
+  - "infrastructure:cost-and-lifecycle"
+  - "infrastructure:failure-and-recovery-proof"
+  - "infrastructure:application-profile-routing"
+  - "infrastructure:shared-resource-contract"
+  - "infrastructure:client-resource-boundary"
+  - "infrastructure:least-privilege-and-isolation"
+  - "infrastructure:tenant-isolation-enforcement"
+  - "infrastructure:workload-identity-lifecycle"
+  - "infrastructure:telemetry-data-boundary"
+compatible_with:
+  - infrastructure-delivery
+default_when:
+  - "A native application needs signing, release builds, store or enterprise delivery, client configuration, crash/RUM, or push integration."
+  - "Native delivery must distinguish device-local adapters from operated remote resources and backend units."
+do_not_use_when:
+  - "The concern is only an on-device database, file, secure store, or cache adapter owned by the native application."
+  - "The concern is a remote API, sync service, configuration control plane, or push dispatcher that owns operated behavior; classify it as a separate backend unit."
+nodes:
+  - id: native-infrastructure-scope
+    kind: application-resource-scope
+    owns: "One native application release scope, supported platforms, environments, channels, owners, and evidence-linked infrastructure needs."
+  - id: device-local-adapters
+    kind: application-boundary
+    owns: "Classification of on-device database, file, secure-store, and cache implementations as native application adapters rather than operated resources."
+  - id: release-builds
+    kind: delivery-resource
+    owns: "Evidence-required platform and architecture build matrix, release automation, and reproducible packaging."
+  - id: signed-artifacts
+    kind: trust-boundary
+    owns: "Release signatures, certificates, profiles, keys, rotation, access, and provenance evidence."
+  - id: distribution-channels
+    kind: delivery-resource
+    owns: "Store, enterprise, beta, or direct release channels, review gates, staged rollout, rollback, and support lifecycle."
+  - id: client-configuration
+    kind: client-integration
+    owns: "Client-side configuration consumption, safe defaults, schema compatibility, caching, and failure behavior."
+  - id: client-observability
+    kind: client-integration
+    owns: "Crash, performance, release-health, and real-user monitoring collection with consent, minimization, redaction, retention, and release identity."
+  - id: push-client-integration
+    kind: client-integration
+    owns: "Device permission, registration, token lifecycle, receipt, deep-link validation, and user-visible handling."
+  - id: remote-backend-boundary
+    kind: ownership-boundary
+    owns: "References to separately selected remote APIs, sync systems, configuration services, and push dispatchers without assigning their operated behavior to the native profile."
+  - id: native-infrastructure-proof
+    kind: evidence
+    owns: "Build, signing, distribution, configuration, telemetry, push, failure, recovery, cost, and remote-ownership validation."
+edges:
+  - from: native-infrastructure-scope
+    to: device-local-adapters
+    relation: excludes_from_operated_resources
+  - from: native-infrastructure-scope
+    to: release-builds
+    relation: scopes_when_evidenced
+  - from: release-builds
+    to: signed-artifacts
+    relation: produces
+  - from: signed-artifacts
+    to: distribution-channels
+    relation: authorizes
+  - from: native-infrastructure-scope
+    to: client-configuration
+    relation: includes_when_evidenced
+  - from: native-infrastructure-scope
+    to: client-observability
+    relation: includes_when_evidenced
+  - from: native-infrastructure-scope
+    to: push-client-integration
+    relation: includes_when_evidenced
+  - from: client-configuration
+    to: remote-backend-boundary
+    relation: consumes_separate_service
+  - from: push-client-integration
+    to: remote-backend-boundary
+    relation: receives_from_separate_dispatcher
+  - from: distribution-channels
+    to: native-infrastructure-proof
+    relation: validated_by
+  - from: client-observability
+    to: native-infrastructure-proof
+    relation: validated_by
+  - from: remote-backend-boundary
+    to: native-infrastructure-proof
+    relation: validated_by
+decisions:
+  - id: device-local-is-application
+    default: "Treat on-device databases, files, secure stores, and caches as native application adapters, not infrastructure-data resources."
+    exception_when: "A separately operated remote data or sync service exists; model that service and its resources under a backend unit."
+  - id: delivery-from-evidence
+    default: "Add build, signing, and distribution resources only for supported release targets and channels established by evidence."
+    exception_when: "A disposable local prototype has no release or installation path."
+  - id: signing-trust-boundary
+    default: "Keep signing identities least-privileged, access-controlled, auditable, rotatable, and separate from application source and general runtime configuration."
+    exception_when: "An external release authority owns signing; record its interface, evidence, and recovery route."
+  - id: release-matrix
+    default: "Build and test every supported platform, architecture, release mode, and channel with reproducible artifact identity."
+    exception_when: "A declared channel or target is unsupported and excluded from the release contract."
+  - id: distribution-lifecycle
+    default: "Define review, staged rollout, rollback or halt, minimum supported version, and retirement for each distribution channel."
+    exception_when: "An internal bounded build is installed manually and cannot reach external users."
+  - id: configuration-consumer-boundary
+    default: "The native app consumes versioned configuration with safe defaults; any operated configuration control plane is a separate backend unit."
+    exception_when: "All configuration is build-time and no remote configuration service exists."
+  - id: client-observability-privacy
+    default: "Collect crash and RUM data only with explicit purpose, consent or policy basis, minimization, redaction, retention, access, and release correlation."
+    exception_when: "Client telemetry is prohibited or unnecessary; retain local diagnostics only when permitted."
+  - id: push-dispatch-is-backend
+    default: "The native app owns permission, token lifecycle, receipt, and presentation; server-side targeting and dispatch belong to a separate backend unit and routed messaging/delivery resources."
+    exception_when: "The app has no server-originated push behavior."
+  - id: remote-services-are-backends
+    default: "Remote APIs, sync systems, control planes, and dispatchers that own operated behavior are separate backend application units with independent stack and infrastructure decisions."
+    exception_when: "The dependency is a true external service; record the provider boundary and client integration without claiming backend ownership."
+validation:
+  - "NCE-001: SQLite, Core Data, Room, files, secure stores, and device caches resolve to native application adapters and never to infrastructure-data."
+  - "NCE-002: server-side push dispatch resolves to a separate backend unit plus justified messaging or delivery resources; only device integration remains here."
+  - "Every signing identity, artifact, release target, channel, configuration source, telemetry stream, and push integration has an owner and lifecycle."
+  - "Release proof covers reproducible builds, signatures, provenance, staged delivery, halt or rollback, configuration failure, crash/RUM privacy, push denial and token rotation, and remote-service ownership."

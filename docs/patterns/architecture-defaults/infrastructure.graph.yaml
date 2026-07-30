@@ -1,0 +1,178 @@
+schema_id: architecture-default-graph-v1
+graph_id: infrastructure
+pair_kind: extension
+title: Infrastructure
+status: reference-default
+spec_path: docs/patterns/architecture-defaults/infrastructure.spec.md
+extends:
+  - stack-selection
+preserves:
+  - "stack-selection:claim-traceability"
+  - "stack-selection:evidence-data-minimization"
+  - "stack-selection:explicit-over-inferred"
+  - "stack-selection:policy-precedence"
+  - "stack-selection:application-unit-scope"
+  - "stack-selection:contradiction-blocks-selection"
+  - "stack-selection:fit-before-novelty"
+  - "stack-selection:whole-profile"
+  - "stack-selection:risk-first-proof"
+  - "stack-selection:boundary-preservation"
+  - "stack-selection:lifecycle-cost"
+  - "stack-selection:application-infrastructure-separation"
+  - "stack-selection:independent-extension-verdicts"
+compatible_with:
+  - backend-infrastructure
+  - frontend-infrastructure
+  - native-infrastructure
+  - cli-infrastructure
+  - experiment-infrastructure
+  - library-infrastructure
+  - infrastructure-compute
+  - infrastructure-data
+  - infrastructure-messaging
+  - infrastructure-delivery
+  - tenancy-strategy
+  - caching-strategy
+  - event-driven
+default_when:
+  - "A selected stack needs compute, data, cache, messaging, network, delivery, secrets, or observability resources."
+  - "Shared infrastructure spans several application units or environments."
+do_not_use_when:
+  - "The decision is only an application runtime, framework, package, UI toolkit, or client transport."
+  - "The target infrastructure is fixed and the task does not challenge its resource, policy, or lifecycle boundary."
+nodes:
+  - id: infrastructure-claims
+    kind: evidence-set
+    owns: "Source-linked availability, scale, latency, residency, security, recovery, cost, environment, and ownership claims."
+  - id: infrastructure-policies
+    kind: policy-set
+    owns: "Required, forbidden, proof-required, and preferred infrastructure policies."
+  - id: deployment-scopes
+    kind: decision-scope
+    owns: "Environment, region, tenant/isolation, application-unit, and lifecycle scopes."
+  - id: application-units
+    kind: application-set
+    owns: "Backend service, backend worker, web frontend, native app, CLI, experiment, and independently distributed library units with one declared application type and owner."
+  - id: application-profiles
+    kind: extension-router
+    owns: "Contour infrastructure profile routing derived from each application unit type before resource selection."
+  - id: composed-systems
+    kind: composition
+    owns: "Multi-unit systems such as fullstack products without inventing a combined application type or resource authority."
+  - id: resource-units
+    kind: resource-set
+    owns: "Independently selected compute, data, cache, messaging, edge, delivery, secrets, and observability resources."
+  - id: resource-extensions
+    kind: extension-router
+    owns: "Compute, data, messaging, and delivery extension routing for each resource unit."
+  - id: candidate-topologies
+    kind: decision-set
+    owns: "Eligible, rejected, proof-required, and gap resource/provider topologies."
+  - id: infrastructure-proof
+    kind: evidence
+    owns: "Provisioning, security, failure, recovery, scale, observability, cost, upgrade, and teardown evidence."
+  - id: selected-infrastructure
+    kind: decision
+    owns: "Chosen resource topology, providers, scopes, owners, lifecycle, dependencies, and exit constraints."
+edges:
+  - from: infrastructure-claims
+    to: deployment-scopes
+    relation: classifies
+  - from: deployment-scopes
+    to: application-units
+    relation: contains
+  - from: application-units
+    to: application-profiles
+    relation: routes_to
+  - from: application-units
+    to: composed-systems
+    relation: composes_as
+  - from: application-profiles
+    to: resource-units
+    relation: declares
+  - from: composed-systems
+    to: resource-units
+    relation: constrains
+  - from: infrastructure-policies
+    to: candidate-topologies
+    relation: filters
+  - from: deployment-scopes
+    to: resource-units
+    relation: contains
+  - from: resource-units
+    to: resource-extensions
+    relation: routes_to
+  - from: resource-extensions
+    to: candidate-topologies
+    relation: proposes
+  - from: candidate-topologies
+    to: infrastructure-proof
+    relation: tested_by
+  - from: infrastructure-proof
+    to: selected-infrastructure
+    relation: informs
+decisions:
+  - id: scope-before-provider
+    default: "Define environment, region, tenant/isolation, application consumers, lifecycle, and owner before naming a provider resource."
+    exception_when: "A binding platform mandate fixes the provider; still record the scope and coupling."
+  - id: existing-platform-first
+    default: "Prefer the supported infrastructure platform the organization can secure, observe, recover, and operate."
+    exception_when: "A mandatory requirement or measured risk cannot be met."
+  - id: managed-before-self-managed
+    default: "Prefer a managed resource when its control limits satisfy product, security, portability, recovery, and cost requirements."
+    exception_when: "Specialized behavior, scale, regulation, or lifecycle evidence justifies self-management."
+  - id: single-platform-default
+    default: "Use one primary cloud or infrastructure control plane unless resilience, regulation, customer isolation, or acquisition constraints require another."
+    exception_when: "Existing independent estates already have credible owners and integration contracts."
+  - id: resource-ownership
+    default: "Give every infrastructure resource one owning team, lifecycle, consumers, budget, alert route, recovery objective, and teardown route."
+    exception_when: "A truly ephemeral resource is created and destroyed within one bounded run."
+  - id: environment-contract
+    default: "Keep configuration, security, identity, data, and delivery contracts consistent across environments without requiring equal scale."
+    exception_when: "A lower environment intentionally omits an expensive resource and has a validated substitute."
+  - id: least-privilege-and-isolation
+    default: "Bind workload identity, network reachability, secret access, tenant isolation, encryption, and audit to resource scope."
+    exception_when: "A local-only disposable environment has no external data or credentials."
+  - id: cost-and-lifecycle
+    default: "Evaluate steady, burst, storage, transfer, operations, support, upgrade, migration, and exit cost."
+    exception_when: "A bounded experiment has an enforced budget and teardown."
+  - id: failure-and-recovery-proof
+    default: "Prove the highest-risk resource failure, recovery, restore, scaling, or regional behavior before production adoption."
+    exception_when: "Current production evidence exists for the exact topology and scope."
+  - id: infrastructure-as-code-authority
+    default: "Keep reproducible infrastructure configuration, review, drift detection, and teardown in one declared infrastructure-as-code authority."
+    exception_when: "A local ephemeral resource is created by a bounded test harness and cannot escape its cleanup boundary."
+  - id: application-profile-routing
+    default: "Route each application unit to the infrastructure profile derived from its declared application type before selecting resource units."
+    exception_when: "A local application unit needs no operated infrastructure; record the profile and explicit no-resource result."
+  - id: fullstack-is-composition
+    default: "Model a fullstack product as frontend, optional BFF, backend service, and worker application units composed through owned interfaces."
+    exception_when: "A future repeated decision cannot be expressed by the existing unit profiles; require new evidence and a separate architecture decision before adding another pair."
+  - id: shared-resource-contract
+    default: "Share a resource across application units only with one owner and explicit consumers, isolation, capacity, failure domain, recovery, lifecycle, budget, and teardown."
+    exception_when: "A resource is created and destroyed inside one bounded application run and cannot outlive its owner."
+  - id: client-resource-boundary
+    default: "Browser, device, and CLI code use owned application interfaces and never hold service infrastructure credentials or directly access another unit's database, cache service, queue, pub/sub, or stream."
+    exception_when: "A device-local or process-local adapter is owned by the client application and is not an operated shared infrastructure resource."
+  - id: tenant-isolation-enforcement
+    default: "Every multi-tenant scope resolves tenancy-strategy, derives effective tenant identity from authenticated caller or workload context, denies missing or mismatched scope, and carries isolation through data, cache, messaging, replay, restore, telemetry, and teardown."
+    exception_when: "The scope is demonstrably single-tenant and cannot receive or restore another tenant's data; record that invariant and the boundary that enforces it."
+  - id: workload-identity-lifecycle
+    default: "Prefer managed short-lived, audience-, resource-, and role-scoped workload identity; prohibit shared exported credentials and prove rotation, emergency revocation, and stale-credential rejection."
+    exception_when: "A true external dependency supports only a static credential; isolate it, minimize scope, rotate it, audit use, and record the provider limitation and exit plan."
+  - id: telemetry-data-boundary
+    default: "Export only allowlisted structured telemetry after sensitive-field and payload redaction, with tenant-aware access, retention, deletion, sampling, abuse controls, and auditable privileged operations."
+    exception_when: "A local disposable environment exports no telemetry and retains no sensitive or tenant data."
+validation:
+  - "Every application unit declares one supported application type and resolves to exactly one contour infrastructure profile."
+  - "Fullstack systems remain compositions of application units and owned interfaces rather than a combined application type."
+  - "A library with no operated runtime records an explicit no-production-runtime result and adds only evidence-backed build or distribution resources."
+  - "Every resource belongs to a deployment scope and one resource extension."
+  - "Every shared resource records one owner plus consumers, isolation, capacity, failure, recovery, lifecycle, budget, and teardown."
+  - "Browser, native, and CLI clients cannot own service credentials or direct data and messaging infrastructure access."
+  - "Multi-tenant scopes prove authenticated tenant derivation, deny missing or mismatched scope, tenant-aware keys and partitions, and cross-tenant denial through API, data, cache, messaging, replay, restore, telemetry, and teardown."
+  - "Workload identity proof covers short-lived credentials, audience/resource/role scope, non-exportability, rotation, emergency revocation, and stale-credential rejection."
+  - "Telemetry proof covers allowlisted fields, payload exclusion, pre-export redaction, tenant-aware access, retention/deletion, sampling, ingestion abuse controls, and privileged audit."
+  - "Every candidate evaluates all applicable policies and derives its disposition."
+  - "Application technology and infrastructure resource/provider ownership remain separate."
+  - "Provisioning, identity, network, security, failure, recovery, scale, observability, cost, drift, upgrade, and teardown are proved or blocked explicitly."

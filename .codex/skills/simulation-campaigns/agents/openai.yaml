@@ -1,0 +1,4 @@
+interface:
+  display_name: "Simulation Campaigns"
+  short_description: "Author and coordinate simulation campaigns"
+  default_prompt: "Use $simulation-campaigns to author, select, coordinate, aggregate, or report a versioned cross-surface simulation campaign with traceable claims and receipts."

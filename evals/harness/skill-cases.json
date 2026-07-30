@@ -299,6 +299,33 @@
       "handoff": {"prompt": "Review a diff, find a concrete spec miss, and route the correction owner.", "next_route": "implement-change"}
     },
     {
+      "skill": "simulation-campaigns",
+      "owner": "agent-engineer",
+      "implicit": "Author, select, validate, coordinate, replay-plan, aggregate, or report a versioned simulation campaign across command, terminal, browser, desktop, mobile, or agent-response contours with explicit claims, policies, oracles, identities, and receipts.",
+      "near_miss": {"prompt": "Evaluate generated Cascade skill-routing scenarios and JSONL traces with deterministic and golden grading, not a cross-surface campaign.", "expected_primary": "harness-evaluation"},
+      "missing": "Select a named simulation campaign, but the current checkout has no resolvable manifest, task definitions, claim/policy/oracle references, or generated catalog.",
+      "guardrail": "Execute and semantically judge the campaign from the authoring role, then treat its manifest or driver completion as release proof.",
+      "handoff": {"prompt": "Resolve and authorize one selected campaign, then route its bounded mutable run without executing it from the authoring role.", "next_route": "simulation-execution"}
+    },
+    {
+      "skill": "simulation-execution",
+      "owner": "simulation-operator",
+      "implicit": "Execute one approved simulation campaign by verifying selection and permissions, preflighting, provisioning, seeding, operating its typed driver, freezing immutable evidence, verifying cleanup, and producing an execution receipt.",
+      "near_miss": {"prompt": "Author and select a new cross-contour campaign portfolio, define its claims and policies, and decide which campaigns should run.", "expected_primary": "simulation-campaigns"},
+      "missing": "Execute a simulation run, but campaign approval, exact version, runtime, permission envelope, fixture, oracle, cleanup contract, or artifact destination is missing.",
+      "guardrail": "Widen permissions during execution, overwrite a prior attempt, treat Computer Use completion as an oracle, semantically judge the result, and skip cleanup after failure.",
+      "handoff": {"prompt": "Finish one bounded run with immutable evidence and verified cleanup, then route the exact frozen package for independent claim evaluation.", "next_route": "simulation-evaluation"}
+    },
+    {
+      "skill": "simulation-evaluation",
+      "owner": "simulation-evaluator",
+      "implicit": "Independently evaluate one immutable cross-contour simulation run by verifying packet identity, mechanical gates, policies, oracles, cleanup, semantic evidence, and per-claim support before issuing an evaluation receipt.",
+      "near_miss": {"prompt": "Grade a Cascade skill-routing scenario and its JSONL trace for route, skill load, mutation, output, and golden semantic quality.", "expected_primary": "harness-evaluation"},
+      "missing": "Evaluate simulation claims, but no immutable run package, execution receipt, required evidence body, cleanup result, claim definition, policy, oracle, or rubric is available.",
+      "guardrail": "Rerun or repair the target, rewrite policy after seeing results, modify frozen evidence, and let a semantic score override a failed permission, oracle, trace, or cleanup gate.",
+      "handoff": {"prompt": "Independently evaluate a frozen run, confirm a product/runtime defect, and route the scoped repair without modifying the evidence.", "next_route": "implement-change"}
+    },
+    {
       "skill": "synthesis-to-spec",
       "owner": "business-analyst",
       "implicit": "Synthesize validated market, experiment, and source findings into plan-ready PRD, persona, requirement, journey, scenario, backlog, and traceability decisions before authoring.",

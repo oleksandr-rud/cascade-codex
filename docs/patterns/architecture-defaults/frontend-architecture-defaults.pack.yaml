@@ -1,0 +1,607 @@
+pack_id: frontend-architecture-defaults
+entry_id: architecture-defaults
+title: Frontend Architecture Defaults
+kind: pattern-context-pack
+owner: Cascade maintainers
+summary: "Dedicated frontend architecture selection for the web base, stack, application technology, frontend infrastructure profile, shared resources, state/data, cache, realtime, UI platform, UI package lifecycle, tenancy, and interfaces."
+description: "Use after inspecting a frontend target when selecting its web base, frontend technology, static/SSR/BFF/fullstack infrastructure, shared hosting resources, independently released UI packages, or independently adoptable policy extensions."
+routing:
+  use_when:
+    - "A browser application or separately released UI package needs frontend architecture, stack, application technology, hosting infrastructure, state/data policy, cache, realtime, shared UI platform, or package lifecycle."
+    - "Onboarding or architecture review should load frontend defaults without backend, native, CLI, or experiment archetypes."
+  do_not_use_when:
+    - "The task is backend-only, native-only, CLI-only, experiment-only, or an atomic frontend edit inside an established boundary."
+    - "The target already has a coherent enforced frontend architecture and no boundary or policy change is proposed."
+  load_when:
+    - route: architecture-review
+      use_when: "A frontend boundary, stack, state, data, cache, realtime, or UI-platform decision needs a reference default."
+    - route: adapt-harness
+      use_when: "Target onboarding detects a browser client and needs a bounded frontend comparison."
+    - route: plan-change
+      use_when: "A new frontend or material frontend policy needs an implementation-draft structure."
+    - route: implement-change
+      use_when: "An adopted React/Vite or Next.js profile needs a previewed, no-conflict starter structure."
+    - route: design-system
+      use_when: "Reusable tokens, accessible primitives, components, themes, documentation, or UI packaging are in scope."
+  write_when:
+    - "The frontend base, frontend stack profile, or one of its extension contracts changes."
+    - "Frontend retrieval metadata, selection order, or validation obligations change."
+  defer_when:
+    - "The rule is feature-specific and belongs in the target feature spec, design owner, or work lane."
+    - "A native platform concern should use the native archetype rather than the web frontend family."
+  primary_skills:
+    - architecture-review
+    - adapt-harness
+    - plan-change
+    - design-system
+    - pattern-context
+    - validate-change
+  related_roles:
+    - agent-engineer
+    - project-onboarder
+    - orchestrator
+    - designer
+selection_rules:
+  - "Load web-frontend as the base; do not load every frontend extension by default."
+  - "Resolve architecture-selection first when topology is open, then tenancy and interfaces, the frontend stack profile, applicable policy extensions, frontend-stack, and independent infrastructure extensions."
+  - "Keep frontend framework and library candidates separate from compute, data, messaging, edge, delivery, secrets, and observability candidates."
+  - "Route the web application through frontend-infrastructure before selecting each justified shared compute, data, messaging, or delivery resource."
+  - "Extract web-application claims and policies from project descriptions before selecting React/Vite, Next.js, state, UI, or realtime technology."
+  - "Load frontend-state-data before frontend-cache or frontend-realtime because both require its ownership policy."
+  - "For a separately released UI component library, compose sdk-library package/public API lifecycle with frontend-ui-platform UI and accessibility governance."
+  - "Load each selected graph and paired spec together and record ADOPTED, ADAPTED, REJECTED, or GAP with target evidence."
+documents:
+  - path: docs/patterns/architecture-defaults/index.md
+    kind: pattern-entry
+    description: "Canonical pair contract plus the dedicated frontend selection order and extension catalog."
+    trigger_when:
+      - "An agent needs to select or compose frontend architecture defaults."
+    sections:
+      - id: frontend-defaults
+        title: Frontend Defaults
+        anchor: "## Frontend Defaults"
+        summary: "Selects the web base, shared decisions, stack profile, and only justified frontend extensions."
+        routing_description: "Load first for any frontend-default selection or composition task."
+        tags:
+          - frontend
+          - selection
+          - defaults
+      - id: frontend-composition
+        title: Composition And Preservation
+        anchor: "## Composition And Preservation"
+        summary: "Defines dependency order and preserved base decisions for frontend extensions."
+        routing_description: "Load before composing state/data, cache, realtime, or UI-platform extensions."
+        tags:
+          - frontend
+          - composition
+          - validation
+  - path: docs/patterns/architecture-defaults/architecture-default-graph.schema.yaml
+    kind: schema
+    description: "Machine-readable graph and relationship contract shared by frontend pairs."
+    trigger_when:
+      - "A frontend graph, dependency, or preserved decision is authored or validated."
+  - path: docs/patterns/architecture-defaults/architecture-selection.graph.yaml
+    kind: architecture-graph
+    description: "Shared topology chooser used before the frontend family when system topology is open."
+    trigger_when:
+      - "The frontend is part of a new system or major topology decision."
+  - path: docs/patterns/architecture-defaults/architecture-selection.spec.md
+    kind: architecture-spec
+    description: "Shared evidence-led architecture selection strategy."
+    trigger_when:
+      - "Frontend boundaries depend on a wider system topology decision."
+    sections:
+      - id: frontend-architecture-selection
+        title: Default Architecture
+        anchor: "## Default Architecture"
+        summary: "Chooses the simplest sufficient topology before frontend technology and extensions."
+        routing_description: "Load only when the surrounding system architecture is not already established."
+        tags:
+          - frontend
+          - architecture
+          - topology
+  - path: docs/patterns/architecture-defaults/tenancy-strategy.graph.yaml
+    kind: architecture-graph
+    description: "Shared tenant and multi-app isolation graph used when frontend identity and data scope are material."
+    trigger_when:
+      - "A frontend switches tenant, account, region, brand, or first-party app context."
+  - path: docs/patterns/architecture-defaults/tenancy-strategy.spec.md
+    kind: architecture-spec
+    description: "Shared tenancy strategy with frontend context and server-authority rules."
+    trigger_when:
+      - "Frontend state, storage, cache, realtime, or interfaces carry tenant or app context."
+    sections:
+      - id: frontend-tenancy
+        title: Default Architecture
+        anchor: "## Default Architecture"
+        summary: "Keeps client tenant selection as UX state while the server derives and authorizes effective scope."
+        routing_description: "Load for multi-tenant or multi-app frontend architecture."
+        tags:
+          - frontend
+          - tenancy
+          - isolation
+  - path: docs/patterns/architecture-defaults/interface-strategy.graph.yaml
+    kind: architecture-graph
+    description: "Shared interface chooser for request-response, realtime, webhook, stream, and batch contracts."
+    trigger_when:
+      - "Frontend data or realtime behavior depends on a consequential server interface choice."
+  - path: docs/patterns/architecture-defaults/interface-strategy.spec.md
+    kind: architecture-spec
+    description: "Shared interface strategy used by frontend data and realtime adapters."
+    trigger_when:
+      - "REST, RPC, GraphQL, SSE, WebSocket, subscriptions, or batch interfaces are being selected."
+    sections:
+      - id: frontend-interface
+        title: Default Architecture
+        anchor: "## Default Architecture"
+        summary: "Keeps application contracts stable while frontend adapters select appropriate transports."
+        routing_description: "Load for frontend API or realtime transport selection."
+        tags:
+          - frontend
+          - interfaces
+          - contracts
+  - path: docs/patterns/architecture-defaults/stack-selection.graph.yaml
+    kind: architecture-graph
+    description: "Shared whole-profile stack chooser with a dedicated frontend profile."
+    trigger_when:
+      - "A frontend needs framework, rendering, routing, data, state, UI, testing, build, and delivery choices."
+  - path: docs/patterns/architecture-defaults/stack-selection.spec.md
+    kind: architecture-spec
+    description: "Frontend stack profile across framework, routing, data, state, realtime, UI, testing, build, and delivery."
+    trigger_when:
+      - "A new frontend or major replacement needs a complete client stack selection."
+    sections:
+      - id: frontend-stack-profile
+        title: Frontend Stack Profile
+        anchor: "### Frontend Stack Profile"
+        summary: "Selects the complete frontend delivery profile rather than a framework in isolation."
+        routing_description: "Load after the web base and cross-cutting constraints are known."
+        tags:
+          - frontend
+          - stack
+          - selection
+      - id: frontend-stack-claims
+        title: Project Description Claim Extraction
+        anchor: "### Project Description Claim Extraction"
+        summary: "Extracts source-linked rendering, interaction, data, realtime, platform, delivery, and lifecycle claims."
+        routing_description: "Load before proposing a frontend stack from project descriptions."
+        tags:
+          - frontend
+          - claims
+          - evidence
+      - id: frontend-stack-policies
+        title: Selection Policy Contract
+        anchor: "### Selection Policy Contract"
+        summary: "Filters frontend candidates through required, forbidden, proof-required, and preferred policies."
+        routing_description: "Load when project or organization policy constrains frontend choices."
+        tags:
+          - frontend
+          - policy
+          - stack
+      - id: frontend-stack-extensions
+        title: Stack Extension Profiles
+        anchor: "### Stack Extension Profiles"
+        summary: "Separates frontend application technology from hosting and infrastructure resources."
+        routing_description: "Load when both frontend technology and infrastructure decisions are open."
+        tags:
+          - frontend
+          - stack
+          - extension
+      - id: frontend-stack-infrastructure
+        title: Infrastructure Resource Profiles
+        anchor: "### Infrastructure Resource Profiles"
+        summary: "Adds deployment scopes and resource candidate evidence for frontend hosting and operations."
+        routing_description: "Load when frontend stack evidence includes infrastructure resources."
+        tags:
+          - frontend
+          - infrastructure
+          - evidence
+  - path: docs/patterns/architecture-defaults/app-stack.graph.yaml
+    kind: architecture-graph
+    description: "Shared application-technology policy and contour routing graph."
+    trigger_when:
+      - "A resolved frontend stack profile needs routing to its frontend stack extension."
+  - path: docs/patterns/architecture-defaults/app-stack.spec.md
+    kind: architecture-spec
+    description: "Shared claim, policy, candidate-disposition, and application-type routing contract."
+    trigger_when:
+      - "A frontend technology selection must remain separate from infrastructure selection."
+    sections:
+      - id: frontend-stack-inputs
+        title: Claim And Policy Inputs
+        anchor: "### Claim And Policy Inputs"
+        summary: "Requires candidate eligibility to cite source claims and applied policies."
+        routing_description: "Load before concrete frontend framework and library comparisons."
+        tags:
+          - frontend
+          - claims
+          - policy
+      - id: frontend-stack-routing
+        title: Application Type Routing
+        anchor: "### Application Type Routing"
+        summary: "Routes the web unit to frontend-stack without loading other contour catalogs."
+        routing_description: "Load after the frontend stack profile is resolved."
+        tags:
+          - frontend
+          - technology
+          - routing
+  - path: docs/patterns/architecture-defaults/frontend-stack.graph.yaml
+    kind: architecture-graph
+    description: "Web framework, state/data, UI, styling, documentation, and realtime candidate extension."
+    trigger_when:
+      - "A web frontend needs concrete application technology."
+  - path: docs/patterns/architecture-defaults/frontend-stack.spec.md
+    kind: architecture-spec
+    description: "React/Vite, Next.js, state, UI-library, and realtime selection separated from hosting infrastructure."
+    trigger_when:
+      - "A frontend team must choose a framework, state tool, component strategy, or realtime transport."
+    sections:
+      - id: frontend-stack-framework
+        title: Frontend Framework Profiles
+        anchor: "### Frontend Framework Profiles"
+        summary: "Selects React/Vite or Next.js from rendering and deployment needs."
+        routing_description: "Load after the frontend stack profile is resolved."
+        tags:
+          - frontend
+          - react
+          - nextjs
+      - id: frontend-stack-state
+        title: Frontend Data And State
+        anchor: "### Frontend Data And State"
+        summary: "Keeps local, remote, shared-client, governed-event, and workflow state ownership separate."
+        routing_description: "Load for TanStack Query, Zustand, Redux Toolkit, or XState decisions."
+        tags:
+          - frontend
+          - state
+          - data
+      - id: frontend-stack-ui
+        title: UI Components And Styling
+        anchor: "### UI Components And Styling"
+        summary: "Selects Radix, shadcn/ui, Material UI, Tailwind, and Storybook by ownership model."
+        routing_description: "Load for component, primitive, styling, or UI-workbench choices."
+        tags:
+          - frontend
+          - ui
+          - design-system
+      - id: frontend-stack-realtime
+        title: Realtime Technology
+        anchor: "### Realtime Technology"
+        summary: "Selects polling, SSE, WebSocket, Socket.IO, or managed realtime by semantics."
+        routing_description: "Load after frontend-realtime establishes the policy boundary."
+        tags:
+          - frontend
+          - realtime
+          - transport
+  - path: docs/patterns/architecture-defaults/frontend-infrastructure.graph.yaml
+    kind: architecture-graph
+    description: "Frontend static, SSR, streaming, edge, embedded-BFF, and fullstack application infrastructure profile."
+    trigger_when:
+      - "A web frontend needs hosting resources or a browser/server/BFF ownership boundary."
+  - path: docs/patterns/architecture-defaults/frontend-infrastructure.spec.md
+    kind: architecture-spec
+    description: "Frontend infrastructure routing for static, SSR, streaming, edge, BFF, fullstack composition, and browser credentials."
+    trigger_when:
+      - "Frontend SSR, BFF, fullstack, hosting, or infrastructure resources are open."
+    sections:
+      - id: frontend-infrastructure-profile
+        title: Default Architecture
+        anchor: "## Default Architecture"
+        summary: "Maps frontend SSR and BFF infrastructure needs without creating a fullstack application type."
+        routing_description: "Load for frontend SSR BFF infrastructure selection."
+        tags:
+          - frontend
+          - ssr
+          - bff
+          - infrastructure
+      - id: frontend-infrastructure-resource-routing
+        title: Resource Routing
+        anchor: "### Resource Routing"
+        summary: "Routes frontend SSR and BFF infrastructure to justified compute, data, and delivery resources."
+        routing_description: "Load for frontend SSR BFF infrastructure resource routing."
+        tags:
+          - frontend
+          - ssr
+          - bff
+          - infrastructure
+      - id: frontend-infrastructure-bff
+        title: BFF Boundary Determination
+        anchor: "### BFF Boundary Determination"
+        summary: "Keeps a BFF embedded only for one frontend lifecycle and otherwise classifies a backend-service."
+        routing_description: "Load for frontend SSR BFF infrastructure ownership."
+        tags:
+          - frontend
+          - ssr
+          - bff
+          - infrastructure
+      - id: frontend-infrastructure-fullstack
+        title: Fullstack Composition
+        anchor: "### Fullstack Composition"
+        summary: "Treats fullstack as frontend, optional BFF, backend, and resource composition."
+        routing_description: "Load for frontend SSR BFF infrastructure fullstack composition."
+        tags:
+          - frontend
+          - ssr
+          - bff
+          - infrastructure
+  - path: docs/patterns/architecture-defaults/infrastructure.graph.yaml
+    kind: architecture-graph
+    description: "Shared deployment-scope and infrastructure-resource selection graph."
+    trigger_when:
+      - "A frontend needs hosting, edge, data, messaging, delivery, secrets, or observability resources."
+  - path: docs/patterns/architecture-defaults/infrastructure.spec.md
+    kind: architecture-spec
+    description: "Shared infrastructure selection contract kept separate from frontend application technology."
+    trigger_when:
+      - "Frontend hosting or platform resources are open."
+    sections:
+      - id: frontend-infrastructure-default
+        title: Default Architecture
+        anchor: "## Default Architecture"
+        summary: "Scopes frontend resources before selecting providers or products."
+        routing_description: "Load before frontend infrastructure extensions."
+        tags:
+          - frontend
+          - infrastructure
+          - selection
+      - id: frontend-infrastructure-routing
+        title: Resource Extension Routing
+        anchor: "### Resource Extension Routing"
+        summary: "Routes frontend compute, data, messaging, and delivery resources independently."
+        routing_description: "Load to identify the required infrastructure extension."
+        tags:
+          - frontend
+          - infrastructure
+          - routing
+  - path: docs/patterns/architecture-defaults/infrastructure-compute.graph.yaml
+    kind: architecture-graph
+    description: "Shared server, function, edge, batch, and accelerated compute extension."
+    trigger_when:
+      - "Frontend server rendering, route handlers, edge functions, or build jobs need compute."
+  - path: docs/patterns/architecture-defaults/infrastructure-compute.spec.md
+    kind: architecture-spec
+    description: "Compute selection from workload, placement, scaling, identity, failure, and cost."
+    trigger_when:
+      - "Frontend-associated runtime compute is open."
+    sections:
+      - id: frontend-infrastructure-compute
+        title: Default Architecture
+        anchor: "## Default Architecture"
+        summary: "Selects the cheapest sufficient compute model for frontend-associated workloads."
+        routing_description: "Load for frontend SSR BFF infrastructure compute, including edge, route-handler, or build workloads."
+        tags:
+          - frontend
+          - compute
+          - edge
+  - path: docs/patterns/architecture-defaults/infrastructure-data.graph.yaml
+    kind: architecture-graph
+    description: "Shared database, cache service, object, search, backup, and restore extension."
+    trigger_when:
+      - "A full-stack frontend owns or consumes selected data resources."
+  - path: docs/patterns/architecture-defaults/infrastructure-data.spec.md
+    kind: architecture-spec
+    description: "Data resource selection from access, consistency, lifecycle, recovery, and cost."
+    trigger_when:
+      - "Frontend-associated data infrastructure is open."
+    sections:
+      - id: frontend-infrastructure-data
+        title: Default Architecture
+        anchor: "## Default Architecture"
+        summary: "Selects authoritative and supporting data resources separately from client caching."
+        routing_description: "Load for justified frontend SSR BFF infrastructure data resources."
+        tags:
+          - frontend
+          - infrastructure
+          - data
+  - path: docs/patterns/architecture-defaults/infrastructure-messaging.graph.yaml
+    kind: architecture-graph
+    description: "Shared queue, pub/sub, stream, scheduler, and replay extension."
+    trigger_when:
+      - "A frontend system depends on asynchronous backend messaging resources."
+  - path: docs/patterns/architecture-defaults/infrastructure-messaging.spec.md
+    kind: architecture-spec
+    description: "Messaging selection from delivery, ordering, fan-out, retention, replay, and operations."
+    trigger_when:
+      - "Frontend product behavior introduces asynchronous resource topology."
+    sections:
+      - id: frontend-infrastructure-messaging
+        title: Default Architecture
+        anchor: "## Default Architecture"
+        summary: "Selects messaging from producer and consumer semantics."
+        routing_description: "Load when frontend workflows require messaging resources."
+        tags:
+          - frontend
+          - infrastructure
+          - messaging
+  - path: docs/patterns/architecture-defaults/infrastructure-delivery.graph.yaml
+    kind: architecture-graph
+    description: "Shared hosting edge, artifacts, CI/CD, secrets, observability, and IaC extension."
+    trigger_when:
+      - "Frontend hosting, delivery, rollback, telemetry, or infrastructure code is open."
+  - path: docs/patterns/architecture-defaults/infrastructure-delivery.spec.md
+    kind: architecture-spec
+    description: "Delivery and operations selection separated from framework and UI libraries."
+    trigger_when:
+      - "Frontend delivery infrastructure must be selected."
+    sections:
+      - id: frontend-infrastructure-delivery
+        title: Default Architecture
+        anchor: "## Default Architecture"
+        summary: "Selects hosting and delivery around immutable promotion, rollback, secrets, telemetry, and IaC."
+        routing_description: "Load for frontend SSR BFF infrastructure hosting and delivery."
+        tags:
+          - frontend
+          - infrastructure
+          - delivery
+  - path: docs/patterns/architecture-defaults/stack-selection-evidence.schema.json
+    kind: schema
+    description: "Shared evidence schema for frontend application and infrastructure scopes, resources, candidates, and policy results."
+    trigger_when:
+      - "A frontend stack decision must be traceable to project descriptions or current-code evidence."
+  - path: docs/patterns/architecture-defaults/web-frontend.graph.yaml
+    kind: architecture-graph
+    description: "Canonical web app shell, feature entrypoint, interface, application, optional domain, data, adapter, and shared-platform topology."
+    trigger_when:
+      - "A browser application needs its base architecture."
+  - path: docs/patterns/architecture-defaults/web-frontend.spec.md
+    kind: architecture-spec
+    description: "Base web frontend architecture and React, Next, Vue, Nuxt, and SvelteKit path overlays."
+    trigger_when:
+      - "A frontend implementation draft, file structure, or boundary review is needed."
+    sections:
+      - id: frontend-base
+        title: Default Architecture
+        anchor: "## Default Architecture"
+        summary: "Uses feature public entrypoints and optional interface, application, domain, and data responsibilities around a thin app shell."
+        routing_description: "Load as the base for every frontend architecture selection."
+        tags:
+          - frontend
+          - web
+          - slices
+      - id: frontend-base-structure
+        title: Reference File Structure
+        anchor: "## Reference File Structure"
+        summary: "Maps the base frontend graph to feature-owned source paths and framework overlays."
+        routing_description: "Load when drafting the frontend source tree."
+        tags:
+          - frontend
+          - files
+          - boilerplate
+  - path: docs/patterns/architecture-defaults/frontend-state-data.graph.yaml
+    kind: architecture-graph
+    description: "Frontend URL, form, UI, client, server, durable, and realtime state ownership."
+    trigger_when:
+      - "State categories, mutations, concurrency, persistence, or offline behavior are material."
+  - path: docs/patterns/architecture-defaults/frontend-state-data.spec.md
+    kind: architecture-spec
+    description: "Frontend state and data policy with store, transition, mutation, and durability rules."
+    trigger_when:
+      - "State ownership or data reconciliation needs more detail than the web base."
+    sections:
+      - id: frontend-state-data-default
+        title: Default Architecture
+        anchor: "## Default Architecture"
+        summary: "Classifies frontend state by authoritative owner before choosing stores or persistence."
+        routing_description: "Load for state, forms, server data, optimistic mutations, durable drafts, or offline data."
+        tags:
+          - frontend
+          - state
+          - data
+      - id: frontend-state-data-structure
+        title: Reference File Structure
+        anchor: "## Reference File Structure"
+        summary: "Maps state models and data boundaries into feature-owned paths."
+        routing_description: "Load when implementing frontend state and data policy."
+        tags:
+          - frontend
+          - state
+          - files
+  - path: docs/patterns/architecture-defaults/frontend-cache.graph.yaml
+    kind: architecture-graph
+    description: "Frontend request, memory, browser, service-worker, HTTP, and CDN cache layers."
+    trigger_when:
+      - "Frontend performance, offline, bandwidth, or resilience needs explicit cache layering."
+  - path: docs/patterns/architecture-defaults/frontend-cache.spec.md
+    kind: architecture-spec
+    description: "Layered frontend cache policy with freshness, invalidation, isolation, deploy, and recovery rules."
+    trigger_when:
+      - "A web client needs more than request deduplication and in-memory query caching."
+    sections:
+      - id: frontend-cache-default
+        title: Default Architecture
+        anchor: "## Default Architecture"
+        summary: "Uses the fewest cache layers and defines freshness, privacy, reconciliation, and version policy."
+        routing_description: "Load for query, browser, service-worker, HTTP, CDN, offline, or deployment caching."
+        tags:
+          - frontend
+          - caching
+          - offline
+      - id: frontend-cache-structure
+        title: Reference File Structure
+        anchor: "## Reference File Structure"
+        summary: "Maps query identity, persistence, service-worker, and protocol cache policy into owned paths."
+        routing_description: "Load when implementing frontend cache layers."
+        tags:
+          - frontend
+          - caching
+          - files
+  - path: docs/patterns/architecture-defaults/frontend-realtime.graph.yaml
+    kind: architecture-graph
+    description: "Frontend polling, SSE, WebSocket, subscription, lifecycle, ordering, and reconciliation."
+    trigger_when:
+      - "Users need bounded-latency progress, presence, collaboration, or live operational state."
+  - path: docs/patterns/architecture-defaults/frontend-realtime.spec.md
+    kind: architecture-spec
+    description: "Realtime transport selection and recoverable frontend subscription architecture."
+    trigger_when:
+      - "Focus refresh or polling no longer meets measured freshness requirements."
+    sections:
+      - id: frontend-realtime-default
+        title: Default Architecture
+        anchor: "## Default Architecture"
+        summary: "Selects the cheapest sufficient transport and reconciles validated updates through feature-owned state."
+        routing_description: "Load for polling, SSE, WebSocket, subscriptions, presence, ordering, reconnect, or gaps."
+        tags:
+          - frontend
+          - realtime
+          - resilience
+      - id: frontend-realtime-structure
+        title: Reference File Structure
+        anchor: "## Reference File Structure"
+        summary: "Separates shared connection mechanics from feature-owned event meaning and reconciliation."
+        routing_description: "Load when implementing realtime frontend boundaries."
+        tags:
+          - frontend
+          - realtime
+          - files
+  - path: docs/patterns/architecture-defaults/frontend-ui-platform.graph.yaml
+    kind: architecture-graph
+    description: "Frontend tokens, accessible primitives, components, patterns, themes, documentation, and package lifecycle."
+    trigger_when:
+      - "Multiple features or apps need reusable UI contracts or a component library."
+  - path: docs/patterns/architecture-defaults/frontend-ui-platform.spec.md
+    kind: architecture-spec
+    description: "Reusable frontend UI platform and component-library ownership and validation rules."
+    trigger_when:
+      - "Tokens, components, themes, accessibility, documentation, packaging, or release governance is material."
+    sections:
+      - id: frontend-ui-platform-default
+        title: Default Architecture
+        anchor: "## Default Architecture"
+        summary: "Builds feature-consumed UI contracts from semantic tokens and accessible primitives with governed lifecycle."
+        routing_description: "Load for tokens, shared components, theming, localization, docs, or UI packages."
+        tags:
+          - frontend
+          - ui
+          - design-system
+      - id: frontend-ui-platform-structure
+        title: Reference File Structure
+        anchor: "## Reference File Structure"
+        summary: "Maps tokens, primitives, components, patterns, docs, and evidence into app-owned or packaged paths."
+        routing_description: "Load when implementing a shared UI platform."
+        tags:
+          - frontend
+          - ui
+          - files
+  - path: docs/patterns/architecture-defaults/sdk-library.graph.yaml
+    kind: architecture-graph
+    description: "Shared SDK/library package lifecycle composed with frontend-ui-platform for separately released UI packages."
+    trigger_when:
+      - "A UI component library is independently versioned, released, distributed, or consumed."
+  - path: docs/patterns/architecture-defaults/sdk-library.spec.md
+    kind: architecture-spec
+    description: "Stable package exports, compatibility, migration, deprecation, signing, provenance, and release rules for a separately released UI library."
+    trigger_when:
+      - "A UI package needs lifecycle governance without duplicating frontend component and accessibility ownership."
+    sections:
+      - id: frontend-sdk-library-composition
+        title: Separately Released UI Libraries
+        anchor: "## Separately Released UI Libraries"
+        summary: "Composes sdk-library package and public API lifecycle with frontend-ui-platform component and accessibility governance."
+        routing_description: "Load for separately released UI component library package compatibility and frontend UI governance."
+        tags:
+          - frontend
+          - ui
+          - sdk
+          - library
+          - package
+          - compatibility

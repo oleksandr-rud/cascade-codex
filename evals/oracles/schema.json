@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://cascade.local/schemas/simulation-oracle.schema.json",
+  "title": "Cascade simulation oracle",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "id",
+    "type"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9.-]+$"
+    },
+    "type": {
+      "enum": [
+        "state-equals",
+        "exit-code",
+        "file-exists"
+      ]
+    },
+    "path": {
+      "type": "string"
+    },
+    "expected": {},
+    "expected_exit_code": {
+      "type": "integer"
+    },
+    "file": {
+      "type": "string"
+    }
+  }
+}

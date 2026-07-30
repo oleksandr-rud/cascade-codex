@@ -27,6 +27,9 @@ review, functional acceptance, or stale-test repair.
 - `coverage`: scoped current-task criteria to changed code and tests.
 - `feature-impact`: Feature Impact Matrix coverage for directly changed and
   protected adjacent behavior.
+- `status-reconciliation`: compare an in-scope task or lane with current source
+  identity, completion criteria, dependencies, and required evidence so proven
+  completion can be recorded automatically.
 
 ## Checklist
 
@@ -57,7 +60,12 @@ review, functional acceptance, or stale-test repair.
     report structural validation separately from factual or methodological
     validation. Passing commands do not prove source coverage, evidence
     strength, claim truth, or docking quality.
-12. Report `PASS`, `FAIL`, `BLOCKED`, `NOT_RUN`, or `GAP` with commands and
+12. In `status-reconciliation` mode, return `COMPLETE` only when every required
+    criterion and gate passes against the current source identity. Route that
+    receipt to `orchestrate-work -> closeout` for immediate status
+    synchronization without another confirmation. Keep partial, stale,
+    candidate-branch, or `NOT_RUN` work open with its exact next gate.
+13. Report `PASS`, `FAIL`, `BLOCKED`, `NOT_RUN`, or `GAP` with commands and
     evidence.
 
 ## Output
@@ -66,5 +74,6 @@ review, functional acceptance, or stale-test repair.
 - functional/scenario evidence;
 - Feature Impact Matrix coverage and routes;
 - work-lane/spec coverage matrix summary;
+- status-reconciliation disposition and exact source identity when requested;
 - failures and routing;
 - residual risk.

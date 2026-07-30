@@ -39,18 +39,34 @@ models:
 paths:
   source_roots:
     - "<SRC_ROOT>"
+    - ".github"
     - "evals"
   test_roots:
     - "<TEST_ROOT>"
     - "evals/harness"
+    - "evals/campaigns"
+    - "evals/simulations"
   app_entrypoints:
     - "<APP_ENTRYPOINT>"
   public_contracts:
     - "<API_OR_SCHEMA_OR_UI_CONTRACT>"
+    - ".github/pull_request_template.md"
+    - ".github/copilot-instructions.md"
     - "scripts/run_harness_evals.py"
+    - "scripts/cascade.ts"
     - "evals/harness/scenarios.generated.json"
     - "evals/harness/response.schema.json"
     - "evals/harness/judge-response.schema.json"
+    - "evals/campaigns/catalog.generated.json"
+    - "evals/campaigns/schema.json"
+    - "evals/simulations/schema.json"
+    - "evals/calibrations/schema.json"
+    - "evals/rubrics/evaluation-profile.schema.json"
+    - "evals/rubrics/simulation-evaluation-output.schema.json"
+    - "evals/rubrics/evaluation-receipt.schema.json"
+    - "evals/rubrics/deterministic-fixture-v1.json"
+    - "evals/rubrics/codex-independent-v1.json"
+    - ".codex/skills/simulation-campaigns/templates/starter/package.template.json"
   docs_root: "docs"
   structure: "docs/structure.md"
   glossary: "docs/glossary.md"
@@ -77,6 +93,15 @@ paths:
   harness_eval_judge_schema: "evals/harness/judge-response.schema.json"
   harness_eval_runner: "scripts/run_harness_evals.py"
   harness_eval_artifacts: ".artifacts/harness-evals"
+  simulation_campaigns: "evals/campaigns"
+  simulation_catalog: "evals/campaigns/catalog.generated.json"
+  simulation_runner: "scripts/cascade.ts"
+  simulation_evaluator_runner: "scripts/cascade/evaluations.ts"
+  simulation_evaluation_profiles: "evals/rubrics"
+  simulation_evaluation_receipt_schema: "evals/rubrics/evaluation-receipt.schema.json"
+  simulation_artifacts: ".artifacts/campaigns"
+  simulation_starter_template: ".codex/skills/simulation-campaigns/templates/starter/package.template.json"
+  simulation_design_template: ".codex/skills/simulation-campaigns/templates/campaign-design.md"
 
 validation_commands:
   install:
@@ -85,8 +110,11 @@ validation_commands:
     - "<TARGETED_TEST_COMMAND>"
     - "python3 scripts/run_harness_evals.py catalog --check"
     - "python3 scripts/run_harness_evals.py self-test"
+    - "bun scripts/cascade.ts campaign catalog --check"
+    - "bun scripts/cascade.ts campaign self-test"
   unit:
     - "<UNIT_TEST_COMMAND>"
+    - "bun test scripts/cascade"
   lint:
     - "<LINT_COMMAND>"
   typecheck:

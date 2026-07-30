@@ -10,6 +10,35 @@ import sys
 import tomllib
 from pathlib import Path
 
+try:
+    from scripts.build_pattern_context_pack import PackError, load_simple_yaml
+    from scripts.scaffold_architecture_default import (
+        ScaffoldError,
+        load_manifest as load_scaffold_manifest,
+        profile_map as scaffold_profile_map,
+        render_profile as render_scaffold_profile,
+    )
+    from scripts.validate_stack_selection_evidence import (
+        EvidenceError,
+        valid_fixture as valid_stack_selection_fixture,
+        valid_library_fixture as valid_library_stack_selection_fixture,
+        validate_evidence as validate_stack_selection_evidence,
+    )
+except ModuleNotFoundError:
+    from build_pattern_context_pack import PackError, load_simple_yaml
+    from scaffold_architecture_default import (
+        ScaffoldError,
+        load_manifest as load_scaffold_manifest,
+        profile_map as scaffold_profile_map,
+        render_profile as render_scaffold_profile,
+    )
+    from validate_stack_selection_evidence import (
+        EvidenceError,
+        valid_fixture as valid_stack_selection_fixture,
+        valid_library_fixture as valid_library_stack_selection_fixture,
+        validate_evidence as validate_stack_selection_evidence,
+    )
+
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -17,6 +46,8 @@ REQUIRED_FILES = [
     "README.md",
     "AGENTS.md",
     "CODEX.md",
+    ".github/pull_request_template.md",
+    ".github/copilot-instructions.md",
     "harness.config.example.yaml",
     ".codex/config.toml",
     ".codex/README.md",
@@ -38,6 +69,7 @@ REQUIRED_FILES = [
     "docs/work/_index.md",
     "docs/work/active.md",
     "docs/work/lane-template.md",
+    "docs/work/work-graph-template.md",
     "docs/work/examples/_index.md",
     "docs/work/lanes/.gitkeep",
     "docs/work/reports/_index.md",
@@ -52,13 +84,46 @@ REQUIRED_FILES = [
     "docs/patterns/context-memory/index.md",
     "docs/patterns/context-memory/context-memory.pack.yaml",
     "scripts/build_pattern_context_pack.py",
+    "scripts/scaffold_architecture_default.py",
+    "scripts/validate_stack_selection_evidence.py",
     "scripts/run_harness_evals.py",
+    "scripts/cascade.ts",
+    "scripts/cascade/common.ts",
+    "scripts/cascade/campaigns.ts",
+    "scripts/cascade/evaluations.ts",
+    "scripts/cascade/simulations.ts",
+    "scripts/cascade/simulation-definitions.ts",
+    "package.json",
+    "docs/patterns/architecture-defaults/architecture-scaffold-profiles.json",
+    "docs/patterns/architecture-defaults/stack-selection-evidence.schema.json",
     "evals/harness/README.md",
     "evals/harness/skill-cases.json",
     "evals/harness/interactions.json",
     "evals/harness/scenarios.generated.json",
     "evals/harness/response.schema.json",
     "evals/harness/judge-response.schema.json",
+    "evals/campaigns/schema.json",
+    "evals/campaigns/catalog.generated.json",
+    "evals/simulations/schema.json",
+    "evals/simulations/population.schema.json",
+    "evals/simulations/scenario.schema.json",
+    "evals/simulations/world.schema.json",
+    "evals/simulations/dataset.schema.json",
+    "evals/tasks/schema.json",
+    "evals/claims/schema.json",
+    "evals/policies/schema.json",
+    "evals/oracles/schema.json",
+    "evals/metrics/schema.json",
+    "evals/treatments/schema.json",
+    "evals/calibrations/schema.json",
+    "evals/rubrics/schema.json",
+    "evals/rubrics/evaluation-profile.schema.json",
+    "evals/rubrics/deterministic-fixture-v1.json",
+    "evals/rubrics/codex-independent-v1.json",
+    "evals/rubrics/simulation-evaluator-v1.json",
+    "evals/rubrics/simulation-evaluation-output.schema.json",
+    "evals/rubrics/evaluation-receipt.schema.json",
+    ".codex/skills/simulation-campaigns/templates/starter/package.template.json",
     ".codex/skills/discover/templates/product-spec.md",
     ".codex/skills/discover/templates/journey.md",
     ".codex/skills/discover/templates/brand-spec.md",
@@ -125,6 +190,15 @@ REQUIRED_FILES = [
     ".codex/skills/harness-evaluation/checklists/golden-eval-quality.md",
     ".codex/skills/harness-evaluation/references/trace-schema.md",
     ".codex/skills/harness-evaluation/templates/evaluation-report.md",
+    ".codex/skills/simulation-campaigns/agents/openai.yaml",
+    ".codex/skills/simulation-campaigns/checklists/campaign-quality.md",
+    ".codex/skills/simulation-campaigns/templates/campaign-design.md",
+    ".codex/skills/simulation-execution/agents/openai.yaml",
+    ".codex/skills/simulation-execution/checklists/execution-quality.md",
+    ".codex/skills/simulation-execution/templates/execution-receipt.md",
+    ".codex/skills/simulation-evaluation/agents/openai.yaml",
+    ".codex/skills/simulation-evaluation/checklists/evaluation-quality.md",
+    ".codex/skills/simulation-evaluation/templates/evaluation-receipt.md",
     ".codex/agents/security/checklists/security-agent-workflows.md",
     ".codex/agents/security/scripts/security_stack_scan.py",
     ".codex/agents/designer/checklists/designer-workflows.md",
@@ -138,6 +212,8 @@ AGENTS = [
     "security",
     "designer",
     "harness-evaluator",
+    "simulation-operator",
+    "simulation-evaluator",
 ]
 
 SKILLS = [
@@ -178,6 +254,9 @@ SKILLS = [
     "develop-skill",
     "adapt-harness",
     "ingest-spec",
+    "simulation-campaigns",
+    "simulation-execution",
+    "simulation-evaluation",
     "harness-evaluation",
 ]
 
@@ -215,8 +294,528 @@ REQUIRED_PATTERN_FILES = {
 REQUIRED_PATTERN_ENTRIES = {
     "workflow": "workflow.pack.yaml",
     "boundaries": "boundaries.pack.yaml",
+    "architecture-defaults": "architecture-defaults.pack.yaml",
     "testing": "testing.pack.yaml",
     "context-memory": "context-memory.pack.yaml",
+}
+
+ARCHITECTURE_DEFAULT_PAIR_IDS = {
+    "architecture-selection",
+    "backend-infrastructure",
+    "backend-stack",
+    "caching-strategy",
+    "cli",
+    "cli-infrastructure",
+    "cli-stack",
+    "event-driven",
+    "experiment",
+    "experiment-infrastructure",
+    "experiment-stack",
+    "frontend-cache",
+    "frontend-infrastructure",
+    "frontend-realtime",
+    "frontend-state-data",
+    "frontend-stack",
+    "frontend-ui-platform",
+    "infrastructure-compute",
+    "infrastructure-data",
+    "infrastructure-delivery",
+    "infrastructure-messaging",
+    "infrastructure",
+    "interface-strategy",
+    "library-infrastructure",
+    "library-stack",
+    "native-app",
+    "native-infrastructure",
+    "native-stack",
+    "service-api-worker",
+    "sdk-library",
+    "stack-selection",
+    "app-stack",
+    "tenancy-strategy",
+    "web-frontend",
+}
+
+ARCHITECTURE_REQUIRED_PAIR_KINDS = {
+    "architecture-selection": "decision",
+    "backend-infrastructure": "extension",
+    "caching-strategy": "decision",
+    "interface-strategy": "decision",
+    "stack-selection": "decision",
+    "app-stack": "extension",
+    "backend-stack": "extension",
+    "cli-infrastructure": "extension",
+    "frontend-stack": "extension",
+    "frontend-infrastructure": "extension",
+    "native-stack": "extension",
+    "native-infrastructure": "extension",
+    "cli-stack": "extension",
+    "experiment-stack": "extension",
+    "experiment-infrastructure": "extension",
+    "library-infrastructure": "extension",
+    "infrastructure": "extension",
+    "infrastructure-compute": "extension",
+    "infrastructure-data": "extension",
+    "infrastructure-messaging": "extension",
+    "infrastructure-delivery": "extension",
+    "tenancy-strategy": "decision",
+    "service-api-worker": "archetype",
+    "web-frontend": "archetype",
+    "native-app": "archetype",
+    "cli": "archetype",
+    "experiment": "archetype",
+    "sdk-library": "archetype",
+    "event-driven": "extension",
+    "frontend-state-data": "extension",
+    "frontend-cache": "extension",
+    "frontend-realtime": "extension",
+    "frontend-ui-platform": "extension",
+    "library-stack": "extension",
+}
+
+FRONTEND_ARCHITECTURE_PAIR_IDS = {
+    "sdk-library",
+    "web-frontend",
+    "frontend-stack",
+    "frontend-infrastructure",
+    "frontend-state-data",
+    "frontend-cache",
+    "frontend-realtime",
+    "frontend-ui-platform",
+}
+
+SHARED_ARCHITECTURE_PACK_PAIR_IDS = {
+    "frontend-infrastructure",
+    "sdk-library",
+}
+
+CONTOUR_INFRASTRUCTURE_REQUIRED_PRESERVES = {
+    "infrastructure:scope-before-provider",
+    "infrastructure:resource-ownership",
+    "infrastructure:cost-and-lifecycle",
+    "infrastructure:failure-and-recovery-proof",
+    "infrastructure:application-profile-routing",
+    "infrastructure:shared-resource-contract",
+    "infrastructure:client-resource-boundary",
+    "infrastructure:tenant-isolation-enforcement",
+    "infrastructure:workload-identity-lifecycle",
+    "infrastructure:telemetry-data-boundary",
+}
+
+ARCHITECTURE_CONTOUR_INFRASTRUCTURE_RELATIONSHIPS = {
+    "backend-infrastructure": {
+        "extends": {"infrastructure"},
+        "requires": {"service-api-worker", "backend-stack"},
+        "compatible_with": {
+            "infrastructure-compute",
+            "infrastructure-data",
+            "infrastructure-messaging",
+            "infrastructure-delivery",
+            "caching-strategy",
+            "event-driven",
+        },
+    },
+    "frontend-infrastructure": {
+        "extends": {"infrastructure"},
+        "requires": {"web-frontend", "frontend-stack"},
+        "compatible_with": {
+            "infrastructure-compute",
+            "infrastructure-data",
+            "infrastructure-delivery",
+        },
+    },
+    "native-infrastructure": {
+        "extends": {"infrastructure"},
+        "requires": {"native-app", "native-stack"},
+        "compatible_with": {"infrastructure-delivery"},
+    },
+    "cli-infrastructure": {
+        "extends": {"infrastructure"},
+        "requires": {"cli", "cli-stack"},
+        "compatible_with": {"infrastructure-delivery"},
+    },
+    "experiment-infrastructure": {
+        "extends": {"infrastructure"},
+        "requires": {"experiment", "experiment-stack"},
+        "compatible_with": {
+            "infrastructure-compute",
+            "infrastructure-data",
+            "infrastructure-messaging",
+            "infrastructure-delivery",
+        },
+    },
+    "library-infrastructure": {
+        "extends": {"infrastructure"},
+        "requires": {"sdk-library", "library-stack"},
+        "compatible_with": {
+            "infrastructure-compute",
+            "infrastructure-delivery",
+        },
+    },
+}
+
+ARCHITECTURE_PRESERVED_DECISION_IDS = {
+    "backend-infrastructure": {
+        "one-profile-explicit-runtime-roles",
+        "bff-is-a-backend-boundary",
+        "application-semantics-stay-in-modules",
+        "route-resources-without-providers",
+        "one-owner-all-consumers",
+        "multitenant-scope-requires-tenancy-strategy",
+        "deny-by-default-messaging-actions",
+        "managed-short-lived-workload-identity",
+        "telemetry-data-minimization",
+        "authoritative-database-contract",
+        "cache-policy-before-resource",
+        "messaging-model-from-semantics",
+        "at-least-once-consumer-contract",
+        "outbox-inbox-consistency",
+        "committed-write-invalidation",
+        "consumer-scaling-follows-capacity",
+        "migration-backup-restore-order",
+        "cross-resource-failure-is-explicit",
+    },
+    "frontend-infrastructure": {
+        "static-delivery-only",
+        "ssr-and-streaming-require-compute",
+        "hybrid-routes-are-explicit",
+        "edge-placement-by-proof",
+        "cache-and-session-separation",
+        "frontend-server-resource-ownership",
+        "browser-credential-prohibition",
+        "embedded-bff-eligibility",
+        "separate-bff-classification",
+        "fullstack-composition-only",
+    },
+    "native-infrastructure": {
+        "device-local-is-application",
+        "delivery-from-evidence",
+        "signing-trust-boundary",
+        "release-matrix",
+        "distribution-lifecycle",
+        "configuration-consumer-boundary",
+        "client-observability-privacy",
+        "push-dispatch-is-backend",
+        "remote-services-are-backends",
+    },
+    "cli-infrastructure": {
+        "no-infrastructure-default",
+        "local-files-are-application",
+        "distribution-from-evidence",
+        "signing-and-provenance",
+        "registry-and-update-lifecycle",
+        "plugin-trust-and-lifecycle",
+        "telemetry-from-evidence",
+        "remote-control-plane-is-backend",
+    },
+    "experiment-infrastructure": {
+        "local-or-ephemeral-default",
+        "remote-compute-from-evidence",
+        "artifact-lineage-and-retention",
+        "tracking-from-evidence",
+        "scheduling-from-evidence",
+        "budget-and-quota-required",
+        "ttl-required",
+        "teardown-verification",
+        "interruption-contract",
+        "remote-services-have-separate-owners",
+        "promotion-is-new-production-decision",
+    },
+    "library-infrastructure": {
+        "no-production-runtime-default",
+        "build-compute-from-evidence",
+        "distribution-through-delivery",
+        "signing-identity-lifecycle",
+        "provenance-and-reproducibility",
+        "browser-bundle-is-artifact",
+        "hosted-services-are-backend",
+        "no-data-or-messaging-ownership",
+    },
+    "stack-selection": {
+        "claim-traceability",
+        "evidence-data-minimization",
+        "explicit-over-inferred",
+        "policy-precedence",
+        "application-unit-scope",
+        "contradiction-blocks-selection",
+        "fit-before-novelty",
+        "whole-profile",
+        "risk-first-proof",
+        "boundary-preservation",
+        "lifecycle-cost",
+        "application-infrastructure-separation",
+        "independent-extension-verdicts",
+    },
+    "caching-strategy": {
+        "shared-cache-admission",
+        "cache-location",
+        "key-isolation",
+        "expiry",
+        "failure-mode",
+    },
+    "service-api-worker": {
+        "app-owned-vertical-slices",
+        "startup-composition",
+        "module-public-surface",
+        "shared-libs-scope",
+        "repository-and-model-reuse",
+        "event-flow",
+        "cross-app-reuse",
+    },
+    "web-frontend": {
+        "folder-ownership",
+        "state-ownership",
+        "api-contract",
+        "shared-code",
+        "rendering-boundary",
+    },
+    "native-app": {
+        "folder-ownership",
+        "ui-state",
+        "data-access",
+        "offline",
+        "platform-capabilities",
+    },
+    "cli": {
+        "command-discipline",
+        "output-contract",
+        "configuration",
+        "filesystem-safety",
+        "compatibility",
+    },
+    "experiment": {
+        "artifact-authority",
+        "reproducibility",
+        "code-boundary",
+        "evidence-language",
+        "promotion",
+    },
+    "sdk-library": {
+        "independent-package-threshold",
+        "stable-public-surface",
+        "generated-code-isolation",
+        "consumer-driven-compatibility",
+        "semantic-versioning-and-migration",
+        "deprecation-lifecycle",
+        "release-and-provenance",
+        "dependency-and-supply-chain-security",
+        "hosted-capabilities-are-separate",
+    },
+    "app-stack": {
+        "claims-drive-eligibility",
+        "policy-filter-before-score",
+        "application-type-branch",
+        "architecture-before-package",
+        "existing-stack-first",
+        "backend-runtime-fit",
+        "frontend-rendering-fit",
+        "state-by-authority",
+        "ui-ownership-fit",
+        "cheapest-realtime",
+        "proof-before-adoption",
+    },
+    "backend-stack": {
+        "service-worker-profile",
+        "polyglot-threshold",
+        "runtime-infrastructure-separation",
+    },
+    "frontend-stack": {
+        "framework-before-libraries",
+        "policy-extension-gates",
+        "frontend-infrastructure-separation",
+    },
+    "native-stack": {
+        "platform-depth-before-reuse",
+        "shared-core-before-shared-ui",
+        "distribution-proof",
+    },
+    "cli-stack": {
+        "distribution-before-language",
+        "automation-contract-first",
+        "plugin-trust-boundary",
+    },
+    "experiment-stack": {
+        "ecosystem-before-preference",
+        "source-before-notebook-state",
+        "promotion-is-new-decision",
+    },
+    "library-stack": {
+        "candidate-family-from-claims",
+        "ecosystem-and-consumer-fit",
+        "generated-sdk-toolchain-proof",
+        "binding-boundary-proof",
+        "package-technology-infrastructure-separation",
+    },
+    "infrastructure": {
+        "scope-before-provider",
+        "existing-platform-first",
+        "managed-before-self-managed",
+        "single-platform-default",
+        "resource-ownership",
+        "environment-contract",
+        "least-privilege-and-isolation",
+        "cost-and-lifecycle",
+        "failure-and-recovery-proof",
+        "infrastructure-as-code-authority",
+        "application-profile-routing",
+        "fullstack-is-composition",
+        "shared-resource-contract",
+        "client-resource-boundary",
+        "tenant-isolation-enforcement",
+        "workload-identity-lifecycle",
+        "telemetry-data-boundary",
+    },
+    "infrastructure-compute": {
+        "cheapest-sufficient-compute",
+        "scale-from-signal",
+        "graceful-lifecycle",
+    },
+    "infrastructure-data": {
+        "primary-store-before-specialists",
+        "cache-is-not-authority",
+        "restore-is-evidence",
+    },
+    "infrastructure-messaging": {
+        "semantics-before-broker",
+        "at-least-once-default",
+        "replay-is-operated",
+    },
+    "infrastructure-delivery": {
+        "immutable-promotion",
+        "rollback-before-release",
+        "observability-is-product-boundary",
+    },
+}
+
+ARCHITECTURE_PRESERVED_SPEC_MARKERS = {
+    "backend-infrastructure": {
+        "### Runtime Role Contract",
+        "### Resource Routing And Authority",
+        "### One Owner And All Consumers",
+        "### Multi-Tenant Isolation Contract",
+        "### Messaging Action Authorization",
+        "### Workload Identity And Credential Lifecycle",
+        "### Telemetry Privacy And Tenant Access",
+        "### Caching Ownership Preservation",
+        "### Event And Job Ownership Preservation",
+        "### Cross-Resource Failure Rules",
+    },
+    "frontend-infrastructure": {
+        "### Delivery Mode Matrix",
+        "### BFF Boundary Determination",
+        "### Browser Credential And Resource Boundary",
+        "### Fullstack Composition",
+    },
+    "native-infrastructure": {
+        "### Device-Local Versus Operated Boundary",
+        "### Release And Trust Contract",
+        "### Negative Routing Examples",
+    },
+    "cli-infrastructure": {
+        "### No-Infrastructure Result",
+        "### Evidence-Backed Distribution",
+        "### Remote Ownership Boundary",
+        "### Negative Routing Examples",
+    },
+    "experiment-infrastructure": {
+        "### Resource Routing",
+        "### Budget, TTL, And Teardown Contract",
+        "### Artifact And Service Ownership",
+        "### Negative Routing Examples",
+    },
+    "library-infrastructure": {
+        "## Resource Routing",
+        "## No-Production-Runtime Result",
+        "## Signing, Identity, Provenance, And Telemetry",
+        "## Hosted Service Boundary",
+        "## Negative Routing Examples",
+        "dependency-confusion",
+    },
+    "stack-selection": {
+        "### Project Description Claim Extraction",
+        "### Evidence Data Handling",
+        "### Selection Policy Contract",
+        "### Application Contour Profiles",
+        "### Stack Extension Profiles",
+        "### Infrastructure Resource Profiles",
+        "stack-selection-evidence.schema.json",
+        "EXPLICIT | INFERRED | UNKNOWN | CONFLICTING",
+        "ELIGIBLE | REJECTED | PROOF_REQUIRED | GAP",
+        "SATISFIED",
+        "VIOLATED",
+        "NOT_APPLICABLE",
+        "PROOF_PENDING",
+    },
+    "service-api-worker": {
+        "src/<app-name>/startup",
+        "src/<app-name>/modules",
+        "src/libs",
+        "interface/",
+        "application/",
+        "domain/",
+        "models/",
+        "repositories/",
+        "emitters.",
+        "subscribers.",
+    },
+    "sdk-library": {
+        "## Library And SDK Profiles",
+        "## Generated Code And Contract Drift",
+        "## Compatibility, Versioning, Migration, And Deprecation",
+        "## Hosted Capability Boundary",
+        "## Separately Released UI Libraries",
+        "dependency-confusion",
+    },
+    "app-stack": {
+        "### Claim And Policy Inputs",
+        "### Application Type Routing",
+        "stack-selection-evidence.schema.json",
+        "backend-stack",
+        "frontend-stack",
+        "native-stack",
+        "cli-stack",
+        "experiment-stack",
+        "library-stack",
+    },
+    "backend-stack": {
+        "Bun + Hono",
+        "Go standard library first",
+        "Python + FastAPI",
+    },
+    "library-stack": {
+        "## Candidate Families",
+        "## Generated SDK Selection",
+        "## WASM, FFI, And Binary Binding Selection",
+        "## Validation Contract",
+    },
+    "frontend-stack": {
+        "React + Vite",
+        "Next.js App Router",
+        "TanStack Query",
+        "Radix Primitives",
+        "shadcn/ui",
+        "Material UI",
+        "Socket.IO",
+    },
+    "infrastructure": {
+        "### Deployment Scope Contract",
+        "### Tenant And Shared-Resource Isolation",
+        "### Workload Identity And Secret Lifecycle",
+        "### Telemetry Data Boundary",
+        "### Application Contour Profiles",
+        "### Fullstack Composition",
+        "### Resource Extension Routing",
+        "backend-infrastructure",
+        "frontend-infrastructure",
+        "native-infrastructure",
+        "cli-infrastructure",
+        "experiment-infrastructure",
+        "library-infrastructure",
+        "infrastructure-compute",
+        "infrastructure-data",
+        "infrastructure-messaging",
+        "infrastructure-delivery",
+    },
 }
 
 REQUIRED_PATTERN_ENTRY_FILES = {
@@ -238,6 +837,15 @@ REQUIRED_FOLDERS = [
     "docs/work/examples",
     "docs/work/lanes",
     "docs/work/reports",
+    "evals/campaigns",
+    "evals/tasks",
+    "evals/simulations",
+    "evals/claims",
+    "evals/policies",
+    "evals/oracles",
+    "evals/metrics",
+    "evals/treatments",
+    "evals/calibrations",
 ]
 
 ALLOWED_DOC_FOLDERS = {
@@ -289,6 +897,9 @@ REQUIRED_WIRING_SKILLS = {
     "market-validation",
     "synthesis-to-spec",
     "compose-spec",
+    "simulation-campaigns",
+    "simulation-execution",
+    "simulation-evaluation",
 }
 
 REQUIRED_HARNESS_AGENTS = {
@@ -299,6 +910,15 @@ REQUIRED_HARNESS_AGENTS = {
     "security_review": "security",
     "design_review": "designer",
     "golden_evaluation": "harness-evaluator",
+    "simulation_execution": "simulation-operator",
+    "simulation_evaluation": "simulation-evaluator",
+}
+
+REQUIRED_CASCADE_CONDITIONALS = {
+    "conditional_harness_evaluation": "harness-evaluation",
+    "conditional_simulation_campaigns": "simulation-campaigns",
+    "conditional_simulation_execution": "simulation-execution",
+    "conditional_simulation_evaluation": "simulation-evaluation",
 }
 
 PLANNING_MODEL = "gpt-5.6-sol"
@@ -311,12 +931,21 @@ EXPECTED_AGENT_MODELS = {
     "security": PLANNING_MODEL,
     "designer": EXECUTION_MODEL,
     "harness-evaluator": PLANNING_MODEL,
+    "simulation-operator": EXECUTION_MODEL,
+    "simulation-evaluator": PLANNING_MODEL,
+}
+
+EXPECTED_AGENT_SANDBOXES = {
+    "harness-evaluator": "read-only",
+    "simulation-operator": "workspace-write",
+    "simulation-evaluator": "read-only",
 }
 
 SKIP_LEAKAGE_PATH_PARTS = {
     ".git",
     ".artifacts",
     "__pycache__",
+    "node_modules",
 }
 
 SKIP_LEAKAGE_FILENAMES = {
@@ -514,6 +1143,21 @@ SKILL_TRIGGER_REQUIREMENTS = {
         r"Codex|Cascade|harness",
         r"skill|agent|AGENTS|config|file.?tree|reference",
         r"permission|memory|observability|eval|handoff|scope",
+    ],
+    "simulation-campaigns": [
+        r"simulation campaign|campaign",
+        r"command|terminal|browser|desktop|mobile|agent-response",
+        r"claim|policy|oracle|evidence|cleanup|handoff",
+    ],
+    "simulation-execution": [
+        r"approved|versioned",
+        r"preflighted|provisioned|seeded|executed|observed|frozen|cleaned up|handed off",
+        r"command|terminal|browser|desktop|mobile|agent-response",
+    ],
+    "simulation-evaluation": [
+        r"frozen simulation run|simulation",
+        r"independent|read-only",
+        r"evidence|policy|oracle|semantic|claim-ledger|evaluation receipt",
     ],
     "harness-evaluation": [
         r"Cascade|harness",
@@ -850,6 +1494,78 @@ REQUIRED_SKILL_SURFACES = {
         "scope",
         "validator",
     ],
+    "simulation-campaigns": [
+        "evals/campaigns/",
+        "evals/tasks/",
+        "evals/simulations/",
+        "evals/claims/",
+        "evals/policies/",
+        "evals/metrics/",
+        "evals/treatments/",
+        "evals/calibrations/",
+        ".artifacts/campaigns/<run-id>/",
+        "command",
+        "terminal",
+        "browser",
+        "desktop",
+        "mobile",
+        "agent-response",
+        "Computer Use is a driver",
+        "functional-qa",
+        "harness-evaluation",
+        "codex-maintenance",
+        "PASS",
+        "FAIL",
+        "BLOCKED",
+        "NOT_RUN",
+        "GAP",
+        "SUPPORTED",
+        "PARTIALLY_SUPPORTED",
+        "UNSUPPORTED",
+        "CONFLICTING",
+        "INVALID",
+        "templates/campaign-design.md",
+        "templates/starter/package.template.json",
+        "simulation init",
+        "--dry-run",
+        "checklists/campaign-quality.md",
+    ],
+    "simulation-execution": [
+        ".artifacts/campaigns/<run-id>/",
+        "simulation-campaigns",
+        "simulation-evaluation",
+        "harness-evaluation",
+        "command",
+        "terminal",
+        "browser",
+        "desktop",
+        "mobile",
+        "agent-response",
+        "Computer Use is a driver",
+        "PASS",
+        "FAIL",
+        "BLOCKED",
+        "NOT_RUN",
+        "GAP",
+        "templates/execution-receipt.md",
+        "checklists/execution-quality.md",
+    ],
+    "simulation-evaluation": [
+        "simulation-campaigns",
+        "simulation-execution",
+        "harness-evaluation",
+        "harness-evaluator",
+        "functional-qa",
+        "SUPPORTED",
+        "PARTIALLY_SUPPORTED",
+        "UNSUPPORTED",
+        "CONFLICTING",
+        "BLOCKED",
+        "NOT_RUN",
+        "INVALID",
+        "templates/evaluation-receipt.md",
+        "checklists/evaluation-quality.md",
+    ],
     "harness-evaluation": [
         "evals/harness/skill-cases.json",
         "evals/harness/interactions.json",
@@ -980,6 +1696,36 @@ def check_required_folders(errors: list[str]) -> None:
                 errors.append(f"unexpected docs folder outside structure map: {relative}")
 
 
+def check_pull_request_contract(errors: list[str]) -> None:
+    template_path = ROOT / ".github" / "pull_request_template.md"
+    copilot_path = ROOT / ".github" / "copilot-instructions.md"
+    agents_path = ROOT / "AGENTS.md"
+    if not all(path.is_file() for path in [template_path, copilot_path, agents_path]):
+        return
+
+    template = read_text(template_path)
+    for heading in [
+        "## Summary",
+        "## Changes",
+        "## Related tasks and lanes",
+        "## Task cleanup",
+        "## Validation",
+        "## Risks and follow-up",
+    ]:
+        if heading not in template:
+            errors.append(f"pull request template missing heading: {heading}")
+    for token in ["Relationship to this PR", "Status", "Evidence or next gate"]:
+        if token not in template:
+            errors.append(f"pull request task table missing field: {token}")
+
+    copilot = read_text(copilot_path)
+    for pointer in ["AGENTS.md", "CODEX.md", ".github/pull_request_template.md"]:
+        if pointer not in copilot:
+            errors.append(f"Copilot instructions missing pointer: {pointer}")
+    if ".github/pull_request_template.md" not in read_text(agents_path):
+        errors.append("AGENTS.md missing pull request template pointer")
+
+
 def is_allowed_doc_folder(relative: str) -> bool:
     if relative in ALLOWED_DOC_FOLDERS:
         return True
@@ -1030,6 +1776,15 @@ def check_harness_agent_registry(errors: list[str]) -> None:
         errors.append(
             f".codex/config.toml default model must be pinned to {PLANNING_MODEL}"
         )
+    cascade = config.get("cascade")
+    if not isinstance(cascade, dict):
+        errors.append(".codex/config.toml missing [cascade] routing settings")
+    else:
+        for key, skill in REQUIRED_CASCADE_CONDITIONALS.items():
+            if cascade.get(key) != skill:
+                errors.append(
+                    f"Cascade conditional route mismatch for {key}: expected {skill}"
+                )
     eval_config = config.get("harness_evals")
     if not isinstance(eval_config, dict):
         errors.append(".codex/config.toml missing [harness_evals] settings")
@@ -1069,6 +1824,15 @@ def check_harness_agent_registry(errors: list[str]) -> None:
                 f"agent model mismatch in {rel(manifest_path)}: "
                 f"expected {expected_model}"
             )
+        expected_sandbox = EXPECTED_AGENT_SANDBOXES.get(agent)
+        if (
+            expected_sandbox is not None
+            and manifest.get("sandbox_mode") != expected_sandbox
+        ):
+            errors.append(
+                f"agent sandbox mismatch in {rel(manifest_path)}: "
+                f"expected {expected_sandbox}"
+            )
         for legacy_table in ["agent", "paths", "delegation", "scope"]:
             if legacy_table in manifest:
                 errors.append(
@@ -1085,7 +1849,7 @@ def check_harness_agent_registry(errors: list[str]) -> None:
 
 def check_retired_model_refs(errors: list[str]) -> None:
     retired = "gpt-" + "5.5"
-    skipped_parts = {".git", ".artifacts", "__pycache__"}
+    skipped_parts = {".git", ".artifacts", "__pycache__", "node_modules"}
     for path in ROOT.rglob("*"):
         if not path.is_file() or skipped_parts.intersection(path.parts):
             continue
@@ -1227,6 +1991,161 @@ def check_cascade_consistency(errors: list[str]) -> None:
                 errors.append(f"issue-intake appears inside a default cascade line in {surface}")
 
 
+def check_work_dispatch_contract(errors: list[str]) -> None:
+    required_markers = {
+        "CODEX.md": [
+            "### Workline And Work-Graph Execution",
+            "### Automatic Status Reconciliation",
+            "docs/work/work-graph-template.md",
+            "`internal-subagent`",
+            "`user-visible-task`",
+            "`NOT_AUTHORIZED`",
+            "`max_threads`",
+        ],
+        ".codex/skills/context/SKILL.md": [
+            "check, refresh, or actualize task status",
+            "automatic registry reconciliation",
+        ],
+        ".codex/skills/orchestrate-work/SKILL.md": [
+            "## Execution Surface And Dispatch Rules",
+            "## Status Reconciliation Rules",
+            "## Work Graph Rules",
+            "authorization evidence",
+            "runtime handle",
+        ],
+        ".codex/skills/validate-change/SKILL.md": [
+            "`status-reconciliation`",
+            "current source identity",
+        ],
+        ".codex/skills/closeout/SKILL.md": [
+            "immediately",
+            "without requesting another confirmation",
+        ],
+        ".codex/skills/agentic-workflow-builder/SKILL.md": [
+            "user-visible Codex tasks",
+            "execution-surface and dispatch manifest",
+        ],
+        ".codex/agents/orchestrator/AGENT.md": [
+            "readiness is not dispatch",
+            "`user-visible-task`",
+            "mark it `COMPLETE` immediately",
+        ],
+        ".codex/agents/agent-engineer/AGENT.md": [
+            "Do not self-dispatch",
+            "recorded task ID",
+        ],
+        "docs/work/lane-template.md": [
+            "Execution Surface:",
+            "Dispatch State:",
+            "Dispatch Authorization:",
+            "Runtime Handle:",
+            "## Status Reconciliation",
+            "Completion disposition:",
+        ],
+        "docs/work/work-graph-template.md": [
+            "Work Graph ID:",
+            "## Execution Surface And Dispatch Manifest",
+            "## Work Topology",
+            "## Invalidation And Repair",
+            "## Lifecycle And Closeout",
+            "`SUPERSEDED`",
+        ],
+        "docs/glossary.md": [
+            "| Work graph |",
+            "| Work-graph lifecycle |",
+        ],
+        "docs/work/reports/_index.md": [
+            "## Active Work Graphs",
+            "## Historical Work Graphs",
+        ],
+        "docs/patterns/workflow/index.md": [
+            "## Work Graphs",
+            "## Execution Surfaces And Dispatch",
+            "## Automatic Status Reconciliation",
+            "A ready gate means the work",
+        ],
+        ".codex/skills/agentic-workflow-builder/templates/agentic-workflow-packet.md": [
+            "## Dispatch Manifest",
+            "Packet readiness is not execution authorization",
+        ],
+    }
+    for relative_path, markers in required_markers.items():
+        path = ROOT / relative_path
+        if not path.is_file():
+            errors.append(f"missing work dispatch contract surface: {relative_path}")
+            continue
+        text = read_text(path)
+        for marker in markers:
+            if marker not in text:
+                errors.append(
+                    f"work dispatch contract marker missing in {relative_path}: {marker}"
+                )
+
+    active_path = ROOT / "docs" / "work" / "active.md"
+    if active_path.is_file():
+        active_text = read_text(active_path)
+        completed_lane_ids = re.findall(
+            r"(?m)^\| `(W-\d{3})` \| `COMPLETE` \|",
+            active_text,
+        )
+        for lane_id in completed_lane_ids:
+            errors.append(
+                "active work registry must not retain completed lane row: "
+                f"{lane_id}"
+            )
+        active_lane_ids = re.findall(
+            r"(?m)^\| `(W-\d{3})` \| "
+            r"`(?:OPEN|IN_PROGRESS|BLOCKED|READY_TO_MERGE)` \|",
+            active_text,
+        )
+        lanes_root = ROOT / "docs" / "work" / "lanes"
+        for lane_id in active_lane_ids:
+            lane_paths = sorted(lanes_root.glob(f"{lane_id}-*.md"))
+            if not lane_paths:
+                continue
+            if len(lane_paths) != 1:
+                errors.append(
+                    f"active work lane has ambiguous packets for dispatch validation: {lane_id}"
+                )
+                continue
+            lane_text = read_text(lane_paths[0])
+            for marker in [
+                "Execution Surface:",
+                "Dispatch State:",
+                "Dispatch Authorization:",
+                "Runtime Handle:",
+                "## Status Reconciliation",
+                "Completion disposition:",
+            ]:
+                if marker not in lane_text:
+                    errors.append(
+                        "active work lane missing execution/status field "
+                        f"{marker} in {rel(lane_paths[0])}"
+                    )
+
+    reports_root = ROOT / "docs" / "work" / "reports"
+    graph_paths = {
+        *reports_root.glob("*work-graph.md"),
+        *reports_root.glob("*implementation-graph.md"),
+    }
+    for graph_path in sorted(graph_paths):
+        graph_text = read_text(graph_path)
+        if "Status: `PLANNED`" not in graph_text:
+            continue
+        for marker in [
+            "## Execution Surface And Dispatch Manifest",
+            "Dispatch State",
+            "Authorization Evidence",
+            "Runtime Handle",
+            "## Status Reconciliation Audit",
+        ]:
+            if marker not in graph_text:
+                errors.append(
+                    "planned work graph missing dispatch contract "
+                    f"{marker} in {rel(graph_path)}"
+                )
+
+
 def check_thin_agents(errors: list[str]) -> None:
     path = ROOT / "AGENTS.md"
     if not path.is_file():
@@ -1345,6 +2264,568 @@ def check_pattern_shape(errors: list[str]) -> None:
                     errors.append(
                         f"pattern pack {rel(pack_path)} references missing path: {source}"
                     )
+
+
+def yaml_top_level_scalar(text: str, key: str) -> str | None:
+    match = re.search(rf"(?m)^{re.escape(key)}:\s+([^\n]+)$", text)
+    if match is None:
+        return None
+    return match.group(1).strip().strip('"').strip("'")
+
+
+def yaml_top_level_block(text: str, key: str) -> str:
+    match = re.search(rf"(?m)^{re.escape(key)}:\s*$", text)
+    if match is None:
+        return ""
+    start = match.end()
+    next_key = re.search(r"(?m)^[a-z][a-z0-9_-]*:\s*", text[start:])
+    end = start + next_key.start() if next_key is not None else len(text)
+    return text[start:end]
+
+
+def check_architecture_default_pairs(errors: list[str]) -> None:
+    entry_dir = ROOT / "docs" / "patterns" / "architecture-defaults"
+    if not entry_dir.is_dir():
+        return
+
+    try:
+        validate_stack_selection_evidence(valid_stack_selection_fixture())
+        validate_stack_selection_evidence(
+            valid_library_stack_selection_fixture()
+        )
+    except EvidenceError as exc:
+        errors.append(f"stack selection evidence semantic validation failed: {exc}")
+
+    evidence_schema_path = entry_dir / "stack-selection-evidence.schema.json"
+    if evidence_schema_path.is_file():
+        try:
+            evidence_schema = json.loads(read_text(evidence_schema_path))
+        except json.JSONDecodeError as exc:
+            errors.append(
+                "stack selection evidence schema is invalid JSON: "
+                f"{exc}"
+            )
+        else:
+            schema_text = json.dumps(evidence_schema, sort_keys=True)
+            for marker in [
+                "stack-selection-evidence.v1",
+                "sources",
+                "claims",
+                "policies",
+                "application_units",
+                "archetype_id",
+                "stack_extension_id",
+                "infrastructure_profile_id",
+                "infrastructure_scopes",
+                "infrastructure_resources",
+                "resource_role",
+                "teardown",
+                "candidate_results",
+                "candidate_family",
+                "infrastructure_candidate_results",
+                "selected_by_resource",
+                "policy_evaluations",
+                "EXPLICIT",
+                "INFERRED",
+                "UNKNOWN",
+                "CONFLICTING",
+                "REQUIRED",
+                "PREFERRED",
+                "FORBIDDEN",
+                "PROOF_REQUIRED",
+                "SATISFIED",
+                "VIOLATED",
+                "NOT_APPLICABLE",
+                "PROOF_PENDING",
+                "ELIGIBLE",
+                "REJECTED",
+                "GAP",
+                "backend-service",
+                "backend-worker",
+                "web-frontend",
+                "native-app",
+                "cli",
+                "experiment",
+                "library",
+                "compute",
+                "data",
+                "cache",
+                "messaging",
+                "network-edge",
+                "delivery",
+                "secrets",
+                "observability",
+                "artifact-storage",
+            ]:
+                if marker not in schema_text:
+                    errors.append(
+                        "stack selection evidence schema missing marker: "
+                        f"{marker}"
+                    )
+
+    schema_path = entry_dir / "architecture-default-graph.schema.yaml"
+    if schema_path.is_file():
+        schema_text = read_text(schema_path)
+        for marker in [
+            "  - extension",
+            "relationship_contract:",
+            "    - extends",
+            "    - requires",
+            "    - compatible_with",
+            "    - conflicts_with",
+            "    - preserves",
+        ]:
+            if marker not in schema_text:
+                errors.append(
+                    f"architecture graph schema missing relationship marker: {marker.strip()}"
+                )
+
+    graph_paths = sorted(entry_dir.glob("*.graph.yaml"))
+    spec_paths = sorted(entry_dir.glob("*.spec.md"))
+    graph_ids = {path.name.removesuffix(".graph.yaml") for path in graph_paths}
+    spec_ids = {path.name.removesuffix(".spec.md") for path in spec_paths}
+
+    for pair_id in sorted(ARCHITECTURE_DEFAULT_PAIR_IDS - graph_ids):
+        errors.append(f"missing required architecture graph: {pair_id}.graph.yaml")
+    for pair_id in sorted(ARCHITECTURE_DEFAULT_PAIR_IDS - spec_ids):
+        errors.append(f"missing required architecture spec: {pair_id}.spec.md")
+    for pair_id in sorted(graph_ids ^ spec_ids):
+        errors.append(f"unpaired architecture default artifact: {pair_id}")
+
+    pack_path = entry_dir / "architecture-defaults.pack.yaml"
+    pack_text = read_text(pack_path) if pack_path.is_file() else ""
+    frontend_pack_path = entry_dir / "frontend-architecture-defaults.pack.yaml"
+    frontend_pack_text = (
+        read_text(frontend_pack_path) if frontend_pack_path.is_file() else ""
+    )
+    if not frontend_pack_path.is_file():
+        errors.append(
+            "missing required frontend architecture pack: "
+            "frontend-architecture-defaults.pack.yaml"
+        )
+    elif "pack_id: frontend-architecture-defaults" not in frontend_pack_text:
+        errors.append(
+            "frontend architecture pack has invalid pack_id"
+        )
+
+    index_path = entry_dir / "index.md"
+    index_text = read_text(index_path) if index_path.is_file() else ""
+    for pair_id in sorted(ARCHITECTURE_DEFAULT_PAIR_IDS):
+        for suffix in ["graph.yaml", "spec.md"]:
+            expected_path = (
+                f"- path: docs/patterns/architecture-defaults/{pair_id}.{suffix}"
+            )
+            if pair_id in SHARED_ARCHITECTURE_PACK_PAIR_IDS:
+                for owner_name, owner_pack_text in [
+                    ("general", pack_text),
+                    ("frontend", frontend_pack_text),
+                ]:
+                    if expected_path not in owner_pack_text:
+                        errors.append(
+                            "architecture defaults shared pair artifact missing "
+                            f"from {owner_name} pack: {pair_id}.{suffix}"
+                        )
+            else:
+                owner_pack_text = (
+                    frontend_pack_text
+                    if pair_id in FRONTEND_ARCHITECTURE_PAIR_IDS
+                    else pack_text
+                )
+                if expected_path not in owner_pack_text:
+                    errors.append(
+                        "architecture defaults owner pack missing pair artifact: "
+                        f"{pair_id}.{suffix}"
+                    )
+            if (
+                pair_id in FRONTEND_ARCHITECTURE_PAIR_IDS
+                and pair_id not in SHARED_ARCHITECTURE_PACK_PAIR_IDS
+                and expected_path in pack_text
+            ):
+                errors.append(
+                    "general architecture defaults pack must not duplicate "
+                    f"frontend pair artifact: {pair_id}.{suffix}"
+                )
+        if f"| `{pair_id}` |" not in index_text:
+            errors.append(
+                f"architecture defaults index missing catalog row: {pair_id}"
+            )
+    for marker in [
+        "## Frontend Defaults",
+        "## Claim And Policy Driven Stack Selection",
+        "## Stack Extension Tree",
+        "## Scaffold Profiles",
+        "--pack frontend-architecture-defaults",
+        "scaffold_architecture_default.py preview",
+    ]:
+        if marker not in index_text:
+            errors.append(
+                f"architecture defaults index missing frontend marker: {marker}"
+            )
+    evidence_pack_path = (
+        "- path: docs/patterns/architecture-defaults/"
+        "stack-selection-evidence.schema.json"
+    )
+    for label, owner_text in [
+        ("general", pack_text),
+        ("frontend", frontend_pack_text),
+    ]:
+        if evidence_pack_path not in owner_text:
+            errors.append(
+                f"{label} architecture defaults pack missing stack selection evidence schema"
+            )
+    stack_spec_path = entry_dir / "stack-selection.spec.md"
+    if stack_spec_path.is_file() and "### Frontend Stack Profile" not in read_text(
+        stack_spec_path
+    ):
+        errors.append(
+            "stack selection spec missing dedicated frontend stack profile"
+        )
+    for suffix in ["graph.yaml", "spec.md"]:
+        expected_path = (
+            "- path: docs/patterns/architecture-defaults/"
+            f"app-stack.{suffix}"
+        )
+        if expected_path not in frontend_pack_text:
+            errors.append(
+                "frontend architecture defaults pack missing shared app-stack "
+                f"artifact: app-stack.{suffix}"
+            )
+
+    required_graph_fields = [
+        "schema_id",
+        "graph_id",
+        "pair_kind",
+        "title",
+        "status",
+        "spec_path",
+        "default_when",
+        "do_not_use_when",
+        "nodes",
+        "edges",
+        "decisions",
+        "validation",
+    ]
+    required_spec_headings = [
+        "## When This Is The Default",
+        "## Default Architecture",
+        "## Reference File Structure",
+        "## Default Decisions",
+        "## Validation Contract",
+        "## Exceptions",
+    ]
+    allowed_pair_kinds = {"decision", "archetype", "extension"}
+    relationship_fields = {
+        "extends",
+        "requires",
+        "compatible_with",
+        "conflicts_with",
+    }
+    graph_records: dict[str, dict[str, object]] = {}
+
+    for graph_path in graph_paths:
+        pair_id = graph_path.name.removesuffix(".graph.yaml")
+        graph_text = read_text(graph_path)
+        try:
+            graph_data = load_simple_yaml(graph_path)
+        except PackError as exc:
+            errors.append(f"architecture graph {rel(graph_path)} is invalid YAML: {exc}")
+            continue
+        if not isinstance(graph_data, dict):
+            errors.append(
+                f"architecture graph {rel(graph_path)} must be a YAML mapping"
+            )
+            continue
+        for field in required_graph_fields:
+            if not re.search(rf"(?m)^{re.escape(field)}:", graph_text):
+                errors.append(f"architecture graph {rel(graph_path)} missing field: {field}")
+
+        if yaml_top_level_scalar(graph_text, "schema_id") != "architecture-default-graph-v1":
+            errors.append(
+                f"architecture graph {rel(graph_path)} has invalid schema_id"
+            )
+        if yaml_top_level_scalar(graph_text, "graph_id") != pair_id:
+            errors.append(
+                f"architecture graph {rel(graph_path)} graph_id must match filename"
+            )
+        pair_kind = yaml_top_level_scalar(graph_text, "pair_kind")
+        if pair_kind not in allowed_pair_kinds:
+            errors.append(
+                f"architecture graph {rel(graph_path)} has invalid pair_kind"
+            )
+        expected_pair_kind = ARCHITECTURE_REQUIRED_PAIR_KINDS.get(pair_id)
+        if expected_pair_kind is not None and pair_kind != expected_pair_kind:
+            errors.append(
+                f"architecture graph {rel(graph_path)} pair_kind must remain {expected_pair_kind}"
+            )
+        if yaml_top_level_scalar(graph_text, "status") != "reference-default":
+            errors.append(
+                f"architecture graph {rel(graph_path)} must use status reference-default"
+            )
+
+        expected_spec = (
+            f"docs/patterns/architecture-defaults/{pair_id}.spec.md"
+        )
+        if yaml_top_level_scalar(graph_text, "spec_path") != expected_spec:
+            errors.append(
+                f"architecture graph {rel(graph_path)} has invalid spec_path"
+            )
+
+        nodes_block = yaml_top_level_block(graph_text, "nodes")
+        node_ids = re.findall(r"(?m)^  - id:\s+([a-z0-9-]+)\s*$", nodes_block)
+        if not node_ids:
+            errors.append(f"architecture graph {rel(graph_path)} has no nodes")
+        if len(node_ids) != len(set(node_ids)):
+            errors.append(f"architecture graph {rel(graph_path)} has duplicate node IDs")
+        if len(re.findall(r"(?m)^    kind:\s+", nodes_block)) != len(node_ids):
+            errors.append(f"architecture graph {rel(graph_path)} node missing kind")
+        if len(re.findall(r"(?m)^    owns:\s+", nodes_block)) != len(node_ids):
+            errors.append(f"architecture graph {rel(graph_path)} node missing owns")
+
+        edges_block = yaml_top_level_block(graph_text, "edges")
+        edges = re.findall(
+            r"(?m)^  - from:\s+([a-z0-9-]+)\s*$\n"
+            r"^    to:\s+([a-z0-9-]+)\s*$\n"
+            r"^    relation:\s+",
+            edges_block,
+        )
+        if not edges:
+            errors.append(f"architecture graph {rel(graph_path)} has no edges")
+        known_nodes = set(node_ids)
+        for source, target in edges:
+            if source not in known_nodes:
+                errors.append(
+                    f"architecture graph {rel(graph_path)} edge has unknown source: {source}"
+                )
+            if target not in known_nodes:
+                errors.append(
+                    f"architecture graph {rel(graph_path)} edge has unknown target: {target}"
+                )
+
+        decisions_block = yaml_top_level_block(graph_text, "decisions")
+        decision_ids = re.findall(
+            r"(?m)^  - id:\s+([a-z0-9-]+)\s*$", decisions_block
+        )
+        if not decision_ids:
+            errors.append(f"architecture graph {rel(graph_path)} has no decisions")
+        missing_preserved_decisions = (
+            ARCHITECTURE_PRESERVED_DECISION_IDS.get(pair_id, set())
+            - set(decision_ids)
+        )
+        for decision_id in sorted(missing_preserved_decisions):
+            errors.append(
+                f"architecture graph {rel(graph_path)} removed preserved decision: {decision_id}"
+            )
+        if len(re.findall(r"(?m)^    default:\s+", decisions_block)) != len(decision_ids):
+            errors.append(f"architecture graph {rel(graph_path)} decision missing default")
+        if len(re.findall(r"(?m)^    exception_when:\s+", decisions_block)) != len(
+            decision_ids
+        ):
+            errors.append(
+                f"architecture graph {rel(graph_path)} decision missing exception_when"
+            )
+        if not re.search(
+            r"(?m)^  - \".+\"\s*$",
+            yaml_top_level_block(graph_text, "validation"),
+        ):
+            errors.append(
+                f"architecture graph {rel(graph_path)} has no validation checks"
+            )
+
+        relationships: dict[str, list[str]] = {}
+        for field in sorted(relationship_fields | {"preserves"}):
+            value = graph_data.get(field, [])
+            if value == {}:
+                value = []
+            if not isinstance(value, list) or not all(
+                isinstance(item, str) and item for item in value
+            ):
+                errors.append(
+                    f"architecture graph {rel(graph_path)} field {field} must be a list of strings"
+                )
+                relationships[field] = []
+                continue
+            relationships[field] = value
+        if pair_kind == "extension":
+            if not relationships.get("extends"):
+                errors.append(
+                    f"architecture extension {rel(graph_path)} must declare extends"
+                )
+            if not relationships.get("preserves"):
+                errors.append(
+                    f"architecture extension {rel(graph_path)} must declare preserves"
+                )
+        graph_records[pair_id] = {
+            "path": graph_path,
+            "nodes": set(node_ids),
+            "decisions": set(decision_ids),
+            "relationships": relationships,
+        }
+
+        spec_path = entry_dir / f"{pair_id}.spec.md"
+        if not spec_path.is_file():
+            continue
+        spec_text = read_text(spec_path)
+        if f"- Pair ID: `{pair_id}`" not in spec_text:
+            errors.append(f"architecture spec {rel(spec_path)} has invalid pair ID")
+        expected_graph = (
+            f"- Graph: `docs/patterns/architecture-defaults/{pair_id}.graph.yaml`"
+        )
+        if expected_graph not in spec_text:
+            errors.append(f"architecture spec {rel(spec_path)} has invalid graph link")
+        if "- Status: `reference-default`" not in spec_text:
+            errors.append(
+                f"architecture spec {rel(spec_path)} must use status reference-default"
+            )
+        for marker in sorted(
+            ARCHITECTURE_PRESERVED_SPEC_MARKERS.get(pair_id, set())
+        ):
+            if marker not in spec_text:
+                errors.append(
+                    f"architecture spec {rel(spec_path)} removed preserved structure marker: {marker}"
+                )
+        for heading in required_spec_headings:
+            if heading not in spec_text:
+                errors.append(
+                    f"architecture spec {rel(spec_path)} missing heading: {heading}"
+                )
+
+    for pair_id, record in graph_records.items():
+        graph_path = record["path"]
+        relationships = record["relationships"]
+        assert isinstance(graph_path, Path)
+        assert isinstance(relationships, dict)
+        required_relationships = (
+            ARCHITECTURE_CONTOUR_INFRASTRUCTURE_RELATIONSHIPS.get(pair_id, {})
+        )
+        for field, required_targets in required_relationships.items():
+            actual_targets = set(relationships.get(field, []))
+            for target in sorted(required_targets - actual_targets):
+                errors.append(
+                    "architecture contour infrastructure relationship missing: "
+                    f"{pair_id}:{field}:{target}"
+                )
+        if pair_id in ARCHITECTURE_CONTOUR_INFRASTRUCTURE_RELATIONSHIPS:
+            actual_preserves = set(relationships.get("preserves", []))
+            for target in sorted(
+                CONTOUR_INFRASTRUCTURE_REQUIRED_PRESERVES - actual_preserves
+            ):
+                errors.append(
+                    "architecture contour infrastructure preservation missing: "
+                    f"{pair_id}:{target}"
+                )
+        for field in sorted(relationship_fields):
+            targets = relationships.get(field, [])
+            assert isinstance(targets, list)
+            for target in targets:
+                if target == pair_id:
+                    errors.append(
+                        f"architecture graph {rel(graph_path)} field {field} cannot target itself"
+                    )
+                elif target not in graph_records:
+                    errors.append(
+                        f"architecture graph {rel(graph_path)} field {field} has unknown graph: {target}"
+                    )
+        compatible = set(relationships.get("compatible_with", []))
+        conflicts = set(relationships.get("conflicts_with", []))
+        for target in sorted(compatible & conflicts):
+            errors.append(
+                f"architecture graph {rel(graph_path)} cannot both allow and conflict with: {target}"
+            )
+        preserves = relationships.get("preserves", [])
+        assert isinstance(preserves, list)
+        for preserved in preserves:
+            owner_id, separator, decision_id = preserved.partition(":")
+            if not separator or not owner_id or not decision_id:
+                errors.append(
+                    f"architecture graph {rel(graph_path)} has invalid preserves reference: {preserved}"
+                )
+                continue
+            owner = graph_records.get(owner_id)
+            if owner is None:
+                errors.append(
+                    f"architecture graph {rel(graph_path)} preserves unknown graph: {owner_id}"
+                )
+                continue
+            owner_decisions = owner["decisions"]
+            assert isinstance(owner_decisions, set)
+            if decision_id not in owner_decisions:
+                errors.append(
+                    f"architecture graph {rel(graph_path)} preserves unknown decision: {preserved}"
+                )
+
+    dependencies: dict[str, set[str]] = {}
+    for pair_id, record in graph_records.items():
+        relationships = record["relationships"]
+        assert isinstance(relationships, dict)
+        dependencies[pair_id] = set(relationships.get("extends", [])) | set(
+            relationships.get("requires", [])
+        )
+
+    visiting: set[str] = set()
+    visited: set[str] = set()
+
+    def visit(pair_id: str, trail: list[str]) -> None:
+        if pair_id in visiting:
+            cycle_start = trail.index(pair_id)
+            cycle = trail[cycle_start:] + [pair_id]
+            errors.append(
+                "architecture graph dependency cycle: " + " -> ".join(cycle)
+            )
+            return
+        if pair_id in visited:
+            return
+        visiting.add(pair_id)
+        trail.append(pair_id)
+        for target in sorted(dependencies.get(pair_id, set())):
+            if target in graph_records:
+                visit(target, trail)
+        trail.pop()
+        visiting.remove(pair_id)
+        visited.add(pair_id)
+
+    for pair_id in sorted(graph_records):
+        visit(pair_id, [])
+
+    scaffold_manifest_path = entry_dir / "architecture-scaffold-profiles.json"
+    try:
+        scaffold_manifest = load_scaffold_manifest(scaffold_manifest_path)
+    except ScaffoldError as exc:
+        errors.append(f"architecture scaffold profile manifest is invalid: {exc}")
+        return
+
+    for profile_id, profile in sorted(scaffold_profile_map(scaffold_manifest).items()):
+        technology_node = profile.get("technology_node")
+        pair_ids = profile.get("pair_ids", [])
+        technology_owners = [
+            pair_id
+            for pair_id in pair_ids
+            if pair_id != "app-stack"
+            and pair_id in graph_records
+            and technology_node in graph_records[pair_id].get("nodes", set())
+        ]
+        if len(technology_owners) != 1:
+            errors.append(
+                "architecture scaffold profile technology node must have exactly "
+                f"one child-extension owner: {profile_id}:{technology_node}:"
+                f"{technology_owners}"
+            )
+        for pair_id in pair_ids:
+            if pair_id not in graph_records:
+                errors.append(
+                    "architecture scaffold profile references unknown pair: "
+                    f"{profile_id}:{pair_id}"
+                )
+        try:
+            render_scaffold_profile(
+                scaffold_manifest,
+                profile_id,
+                "sample",
+                "example_items",
+            )
+        except ScaffoldError as exc:
+            errors.append(
+                f"architecture scaffold profile does not render: {profile_id}: {exc}"
+            )
 
 
 def check_no_project_leakage(errors: list[str]) -> None:
@@ -1642,10 +3123,406 @@ def check_harness_eval_contracts(errors: list[str]) -> None:
         errors.append("harness eval judge schema required fields are stale")
 
 
+def check_simulation_campaign_contracts(errors: list[str]) -> None:
+    catalog_path = ROOT / "evals" / "campaigns" / "catalog.generated.json"
+    if not catalog_path.is_file():
+        return
+    try:
+        catalog = json.loads(read_text(catalog_path))
+    except json.JSONDecodeError as exc:
+        errors.append(f"simulation campaign catalog JSON parse error: {exc}")
+        return
+
+    entries = catalog.get("entries")
+    if catalog.get("schema_version") != 1 or not isinstance(entries, list):
+        errors.append("simulation campaign catalog shape is invalid")
+        return
+    digest = hashlib.sha256(
+        json.dumps(entries, sort_keys=True, separators=(",", ":")).encode()
+    ).hexdigest()
+    if catalog.get("digest") != digest:
+        errors.append("simulation campaign catalog digest is stale or invalid")
+
+    campaign_ids: list[str] = []
+    manifest_paths: set[str] = set()
+    required_entry_fields = {
+        "id",
+        "manifest",
+        "manifest_digest",
+        "simulation_id",
+        "tier",
+        "contours",
+        "drivers",
+        "task_ids",
+        "claim_ids",
+        "policy_ids",
+        "oracle_ids",
+        "metric_ids",
+        "treatment_ids",
+        "calibration_id",
+        "evaluation_profile_id",
+        "evaluation_provider",
+        "evaluation_model",
+        "rubric_id",
+        "source_digest",
+    }
+    for entry in entries:
+        if not isinstance(entry, dict):
+            errors.append("simulation campaign catalog contains a non-object entry")
+            continue
+        missing_fields = required_entry_fields - set(entry)
+        if missing_fields:
+            errors.append(
+                "simulation campaign catalog entry missing fields: "
+                + ", ".join(sorted(missing_fields))
+            )
+            continue
+        campaign_id = entry.get("id")
+        manifest = entry.get("manifest")
+        if not isinstance(campaign_id, str) or not isinstance(manifest, str):
+            errors.append("simulation campaign catalog entry has invalid identity")
+            continue
+        campaign_ids.append(campaign_id)
+        manifest_paths.add(manifest)
+        manifest_path = ROOT / manifest
+        if not manifest_path.is_file():
+            errors.append(f"simulation campaign manifest missing: {manifest}")
+            continue
+        manifest_digest = hashlib.sha256(manifest_path.read_bytes()).hexdigest()
+        if entry.get("manifest_digest") != manifest_digest:
+            errors.append(f"simulation campaign manifest digest stale: {manifest}")
+
+    if len(campaign_ids) != len(set(campaign_ids)):
+        errors.append("simulation campaign catalog contains duplicate campaign IDs")
+    source_manifests = {
+        rel(path)
+        for path in (ROOT / "evals" / "campaigns").glob("*.json")
+        if path.name not in {"schema.json", "catalog.generated.json"}
+    }
+    if manifest_paths != source_manifests:
+        errors.append("simulation campaign catalog source manifest set is stale")
+
+    required_smokes = {
+        "simulation-contract-smoke",
+        "simulation-population-smoke",
+        "simulation-world-state-smoke",
+        "simulation-partition-leakage-smoke",
+        "simulation-metric-reduction-smoke",
+        "simulation-calibration-ranking-smoke",
+        "simulation-codex-evaluation-smoke",
+    }
+    missing_smokes = required_smokes - set(campaign_ids)
+    if missing_smokes:
+        errors.append(
+            "simulation campaign catalog missing correctness fixtures: "
+            + ", ".join(sorted(missing_smokes))
+        )
+
+    profile_schema_path = ROOT / "evals" / "rubrics" / "evaluation-profile.schema.json"
+    output_schema_path = (
+        ROOT / "evals" / "rubrics" / "simulation-evaluation-output.schema.json"
+    )
+    receipt_schema_path = ROOT / "evals" / "rubrics" / "evaluation-receipt.schema.json"
+    fixture_profile_path = (
+        ROOT / "evals" / "rubrics" / "deterministic-fixture-v1.json"
+    )
+    codex_profile_path = ROOT / "evals" / "rubrics" / "codex-independent-v1.json"
+    rubric_path = ROOT / "evals" / "rubrics" / "simulation-evaluator-v1.json"
+    contract_paths = [
+        profile_schema_path,
+        output_schema_path,
+        receipt_schema_path,
+        fixture_profile_path,
+        codex_profile_path,
+        rubric_path,
+    ]
+    if not all(path.is_file() for path in contract_paths):
+        return
+    try:
+        profile_schema = json.loads(read_text(profile_schema_path))
+        output_schema = json.loads(read_text(output_schema_path))
+        receipt_schema = json.loads(read_text(receipt_schema_path))
+        fixture_profile = json.loads(read_text(fixture_profile_path))
+        codex_profile = json.loads(read_text(codex_profile_path))
+        rubric = json.loads(read_text(rubric_path))
+    except json.JSONDecodeError as exc:
+        errors.append(f"simulation evaluation contract JSON parse error: {exc}")
+        return
+
+    if set(profile_schema.get("required", [])) != {
+        "schema_version",
+        "id",
+        "provider",
+        "timeout_ms",
+    }:
+        errors.append("simulation evaluation profile schema required fields are stale")
+    expected_output_fields = {
+        "schema_version",
+        "evaluation_id",
+        "run_id",
+        "campaign_id",
+        "source_manifest_digest",
+        "execution_receipt_digest",
+        "evaluation_input_digest",
+        "input_manifest_digest",
+        "evaluator_identity",
+        "status",
+        "mechanical_gate_status",
+        "claim_assessments",
+        "root_cause",
+        "earliest_failure",
+        "residual_uncertainty",
+        "next_route",
+    }
+    if (
+        output_schema.get("additionalProperties") is not False
+        or set(output_schema.get("required", [])) != expected_output_fields
+    ):
+        errors.append("simulation Codex output schema is stale or permissive")
+    expected_receipt_fields = {
+        "schema_version",
+        "evaluation_id",
+        "run_id",
+        "campaign_id",
+        "operator_identity",
+        "evaluator_identity",
+        "provider",
+        "profile_id",
+        "profile_digest",
+        "rubric_id",
+        "rubric_digest",
+        "model",
+        "reasoning_effort",
+        "source_manifest_digest",
+        "execution_receipt_digest",
+        "calibration_receipt_digest",
+        "evaluation_input_digest",
+        "input_manifest_digest",
+        "provider_trace_digest",
+        "provider_output_digest",
+        "usage",
+        "claim_ledger",
+        "status",
+        "root_cause",
+        "earliest_failure",
+        "residual_uncertainty",
+        "next_route",
+        "created_at",
+    }
+    if (
+        receipt_schema.get("additionalProperties") is not False
+        or set(receipt_schema.get("required", [])) != expected_receipt_fields
+    ):
+        errors.append("simulation evaluation receipt schema is stale or permissive")
+    if (
+        fixture_profile.get("schema_version") != 1
+        or fixture_profile.get("id") != "deterministic-fixture-v1"
+        or fixture_profile.get("provider") != "fixture"
+        or any(
+            field in fixture_profile
+            for field in ("model", "reasoning_effort", "rubric_file")
+        )
+    ):
+        errors.append("deterministic simulation evaluation profile is invalid")
+    if (
+        codex_profile.get("schema_version") != 1
+        or codex_profile.get("id") != "codex-independent-v1"
+        or codex_profile.get("provider") != "codex"
+        or codex_profile.get("model") != "gpt-5.6-sol"
+        or codex_profile.get("reasoning_effort") != "high"
+        or codex_profile.get("rubric_file")
+        != "evals/rubrics/simulation-evaluator-v1.json"
+        or rubric.get("id") != "simulation-evaluator-v1"
+    ):
+        errors.append("Codex simulation evaluation profile or rubric is invalid")
+
+    profile_cache: dict[str, dict] = {}
+    for manifest in sorted(source_manifests):
+        manifest_path = ROOT / manifest
+        try:
+            campaign = json.loads(read_text(manifest_path))
+        except json.JSONDecodeError as exc:
+            errors.append(f"simulation campaign JSON parse error in {manifest}: {exc}")
+            continue
+        profile_file = campaign.get("evaluation_profile_file")
+        if (
+            not isinstance(profile_file, str)
+            or not profile_file.startswith("evals/rubrics/")
+            or Path(profile_file).is_absolute()
+            or ".." in Path(profile_file).parts
+        ):
+            errors.append(f"simulation campaign evaluation profile invalid: {manifest}")
+            continue
+        profile_path = ROOT / profile_file
+        if not profile_path.is_file():
+            errors.append(
+                f"simulation campaign evaluation profile missing: {profile_file}"
+            )
+            continue
+        if profile_file not in profile_cache:
+            try:
+                profile_cache[profile_file] = json.loads(read_text(profile_path))
+            except json.JSONDecodeError as exc:
+                errors.append(
+                    f"simulation evaluation profile JSON parse error in "
+                    f"{profile_file}: {exc}"
+                )
+                continue
+        profile = profile_cache[profile_file]
+        tier = campaign.get("tier")
+        provider = profile.get("provider")
+        if tier == "semantic-evaluation" and provider != "codex":
+            errors.append(
+                f"semantic simulation campaign must use Codex evaluation: {manifest}"
+            )
+        if provider == "fixture" and tier != "deterministic-fixture":
+            errors.append(
+                f"fixture evaluator is limited to deterministic campaigns: {manifest}"
+            )
+        matching_entries = [
+            entry
+            for entry in entries
+            if isinstance(entry, dict) and entry.get("manifest") == manifest
+        ]
+        if len(matching_entries) != 1:
+            errors.append(
+                f"simulation campaign catalog entry missing or duplicated: {manifest}"
+            )
+            continue
+        entry = matching_entries[0]
+        rubric_id = None
+        rubric_file = profile.get("rubric_file")
+        if isinstance(rubric_file, str):
+            rubric_definition_path = ROOT / rubric_file
+            if rubric_definition_path.is_file():
+                try:
+                    rubric_id = json.loads(
+                        read_text(rubric_definition_path)
+                    ).get("id")
+                except json.JSONDecodeError as exc:
+                    errors.append(
+                        f"simulation rubric JSON parse error in {rubric_file}: {exc}"
+                    )
+        expected_catalog_profile = {
+            "tier": tier,
+            "evaluation_profile_id": profile.get("id"),
+            "evaluation_provider": provider,
+            "evaluation_model": profile.get("model"),
+            "rubric_id": rubric_id,
+        }
+        for field, expected_value in expected_catalog_profile.items():
+            if entry.get(field) != expected_value:
+                errors.append(
+                    f"simulation campaign catalog {field} stale: {manifest}"
+                )
+
+    starter_path = (
+        ROOT
+        / ".codex"
+        / "skills"
+        / "simulation-campaigns"
+        / "templates"
+        / "starter"
+        / "package.template.json"
+    )
+    if not starter_path.is_file():
+        return
+    try:
+        starter = json.loads(read_text(starter_path))
+    except json.JSONDecodeError as exc:
+        errors.append(f"simulation starter template JSON parse error: {exc}")
+        return
+    starter_files = starter.get("files")
+    if (
+        starter.get("schema_version") != 1
+        or starter.get("template_id") != "cascade-simulation-starter-v1"
+        or not isinstance(starter_files, list)
+        or len(starter_files) != 18
+    ):
+        errors.append("simulation starter template shape is invalid")
+        return
+    starter_paths = [
+        row.get("path") for row in starter_files if isinstance(row, dict)
+    ]
+    if (
+        len(starter_paths) != len(starter_files)
+        or any(not isinstance(path, str) for path in starter_paths)
+        or len(starter_paths) != len(set(starter_paths))
+    ):
+        errors.append("simulation starter template paths are invalid or duplicated")
+    required_starter_paths = {
+        "evals/simulations/{{SIMULATION_ID}}/manifest.json",
+        "evals/simulations/{{SIMULATION_ID}}/populations/default.json",
+        "evals/simulations/{{SIMULATION_ID}}/scenarios/happy-path.json",
+        "evals/simulations/{{SIMULATION_ID}}/worlds/default.json",
+        "evals/simulations/{{SIMULATION_ID}}/datasets/cases.json",
+        "evals/metrics/{{SIMULATION_ID}}-task-success-v1.json",
+        "evals/calibrations/{{SIMULATION_ID}}-framework-v1.json",
+        "evals/campaigns/{{SIMULATION_ID}}-smoke.json",
+    }
+    if not required_starter_paths.issubset(set(starter_paths)):
+        errors.append("simulation starter template is missing required model paths")
+    allowed_tokens = {
+        "SIMULATION_ID",
+        "TASK_ID",
+        "TITLE",
+        "OWNER_LANE",
+        "REFERENCE_WINDOW_END",
+        "BASELINE_PROMPT_DIGEST",
+        "BASELINE_TOOL_DIGEST",
+        "CANDIDATE_PROMPT_DIGEST",
+        "CANDIDATE_TOOL_DIGEST",
+        "HARNESS_DIGEST",
+        "REFERENCE_LABEL_DIGEST",
+    }
+    rendered_template = json.dumps(starter, sort_keys=True)
+    found_tokens = set(re.findall(r"\{\{([A-Z0-9_]+)\}\}", rendered_template))
+    if found_tokens != allowed_tokens:
+        errors.append(
+            "simulation starter template token set mismatch: "
+            + ", ".join(sorted(found_tokens ^ allowed_tokens))
+        )
+    starter_campaigns = [
+        row.get("content")
+        for row in starter_files
+        if isinstance(row, dict)
+        and row.get("path") == "evals/campaigns/{{SIMULATION_ID}}-smoke.json"
+    ]
+    if len(starter_campaigns) != 1:
+        errors.append("simulation starter template campaign is missing or duplicated")
+    else:
+        try:
+            starter_campaign = (
+                starter_campaigns[0]
+                if isinstance(starter_campaigns[0], dict)
+                else json.loads(starter_campaigns[0])
+            )
+        except (json.JSONDecodeError, TypeError) as exc:
+            errors.append(f"simulation starter campaign JSON parse error: {exc}")
+        else:
+            if (
+                starter_campaign.get("tier") != "deterministic-fixture"
+                or starter_campaign.get("evaluation_profile_file")
+                != "evals/rubrics/deterministic-fixture-v1.json"
+            ):
+                errors.append(
+                    "simulation starter campaign evaluation profile is unsafe"
+                )
+    code = read_text(ROOT / "scripts" / "cascade.ts")
+    codex = read_text(ROOT / "CODEX.md")
+    if "simulation init <simulation-id>" not in code:
+        errors.append("Cascade CLI help is missing simulation init")
+    if "simulation init <simulation-id>" not in codex:
+        errors.append("CODEX.md is missing simulation bootstrap guidance")
+    if "The planned runtime authorities are" in codex:
+        errors.append("CODEX.md still describes implemented simulation roots as planned")
+
+
 def main() -> int:
     errors: list[str] = []
     check_required_files(errors)
     check_required_folders(errors)
+    check_pull_request_contract(errors)
     check_toml(errors)
     check_harness_agent_registry(errors)
     check_retired_model_refs(errors)
@@ -1655,11 +3532,14 @@ def main() -> int:
     check_agent_skill_sources(errors)
     check_active_stale_skill_references(errors)
     check_cascade_consistency(errors)
+    check_work_dispatch_contract(errors)
     check_thin_agents(errors)
     check_pattern_shape(errors)
+    check_architecture_default_pairs(errors)
     check_no_project_leakage(errors)
     check_traceability_contracts(errors)
     check_harness_eval_contracts(errors)
+    check_simulation_campaign_contracts(errors)
 
     if errors:
         for error in errors:

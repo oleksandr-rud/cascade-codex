@@ -1,0 +1,105 @@
+schema_id: architecture-default-graph-v1
+graph_id: event-driven
+pair_kind: extension
+title: Event-Driven Service Extension
+status: reference-default
+spec_path: docs/patterns/architecture-defaults/event-driven.spec.md
+extends:
+  - service-api-worker
+requires:
+  - interface-strategy
+compatible_with:
+  - caching-strategy
+  - tenancy-strategy
+  - stack-selection
+preserves:
+  - "service-api-worker:app-owned-vertical-slices"
+  - "service-api-worker:startup-composition"
+  - "service-api-worker:shared-libs-scope"
+  - "service-api-worker:module-public-surface"
+default_when:
+  - "A backend module publishes facts to independent consumers or owns deferred work that must survive process failure."
+  - "Fan-out, availability isolation, replay, or long-running work justifies asynchronous infrastructure."
+do_not_use_when:
+  - "A direct in-process or synchronous call is simpler and the producer needs the immediate result."
+  - "The system cannot operate eventual consistency, duplicate delivery, replay, and poison-message recovery."
+nodes:
+  - id: module-application
+    kind: preserved-core
+    owns: "Module commands, queries, transactions, and domain behavior from the service archetype."
+  - id: domain-event
+    kind: module-contract
+    owns: "Module-owned fact with stable identity, schema, causation, correlation, tenant, and time."
+  - id: outbox
+    kind: persistence-adapter
+    owns: "Atomic persistence of publish intent with the module transaction."
+  - id: publisher
+    kind: messaging-adapter
+    owns: "Outbox dispatch, serialization, broker calls, retries, and publish telemetry."
+  - id: broker
+    kind: external-infrastructure
+    owns: "Durable routing, topics or queues, partitions, retention, and delivery."
+  - id: subscriber-entrypoint
+    kind: interface
+    owns: "Envelope validation, auth/trust, deduplication, and dispatch to an application use case."
+  - id: inbox-idempotency
+    kind: persistence-adapter
+    owns: "Processed-message identity, idempotency state, and replay safety."
+  - id: retry-dead-letter
+    kind: operations
+    owns: "Bounded retry, backoff, poison-message quarantine, replay, and operator recovery."
+  - id: event-observability
+    kind: evidence
+    owns: "Lag, throughput, failure, duplicate, retry, dead-letter, causation, and trace signals."
+edges:
+  - from: module-application
+    to: domain-event
+    relation: records_fact
+  - from: domain-event
+    to: outbox
+    relation: persisted_atomically
+  - from: outbox
+    to: publisher
+    relation: dispatched_by
+  - from: publisher
+    to: broker
+    relation: publishes
+  - from: broker
+    to: subscriber-entrypoint
+    relation: delivers
+  - from: subscriber-entrypoint
+    to: inbox-idempotency
+    relation: deduplicates_with
+  - from: subscriber-entrypoint
+    to: module-application
+    relation: invokes
+  - from: subscriber-entrypoint
+    to: retry-dead-letter
+    relation: fails_to
+  - from: publisher
+    to: event-observability
+    relation: emits
+  - from: subscriber-entrypoint
+    to: event-observability
+    relation: emits
+decisions:
+  - id: facts-not-hidden-commands
+    default: "Publish past-tense facts; use an owned job or command channel when one consumer is responsible for work."
+    exception_when: "The broker contract explicitly models commands with one owner and response semantics."
+  - id: atomic-publication
+    default: "Use a transactional outbox when a database change and event publication must not diverge."
+    exception_when: "The source store or broker provides an equivalent proven atomic transaction."
+  - id: at-least-once
+    default: "Assume at-least-once delivery and make consumers idempotent."
+    exception_when: "A stronger delivery guarantee is proven end to end, including side effects."
+  - id: schema-ownership
+    default: "The producing module owns the event schema and evolves it additively with consumer evidence."
+    exception_when: "A platform-owned canonical contract has explicit governance and ownership."
+  - id: bounded-failure
+    default: "Use bounded retries with backoff, dead-letter quarantine, replay tooling, and visible ownership."
+    exception_when: "The event is intentionally best-effort and loss is an accepted documented outcome."
+validation:
+  - "A committed module change cannot be silently lost between database and broker."
+  - "Duplicate, reordered, delayed, malformed, incompatible, and poison messages have deterministic outcomes."
+  - "Tenant, causation, correlation, trace, and idempotency identifiers survive publication and consumption."
+  - "Operators can inspect lag, retry, dead-letter, replay, and consumer health without editing data manually."

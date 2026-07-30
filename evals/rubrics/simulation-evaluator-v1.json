@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "id": "simulation-evaluator-v1",
+  "criteria": [
+    "Verify the exact campaign, run, source-manifest, execution-receipt, evaluator, and evidence identities.",
+    "Treat schema, policy, oracle, cleanup, evidence, and calibration gates as non-compensating.",
+    "Assess only the declared claim scope from the frozen evaluation packet.",
+    "Keep framework-fixture calibration separate from target-project release eligibility.",
+    "Cite frozen packet paths for every material judgment and preserve residual uncertainty."
+  ],
+  "judge_profile": "simulation-evaluator",
+  "human_calibration_required": false
+}

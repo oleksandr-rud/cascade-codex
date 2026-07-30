@@ -28,7 +28,7 @@ entries when reusable rules are discovered.
 | `ON-04` security and data handling | `[ ]` | `codebase-audit`, `auth-analysis`, `secure-design`, `pattern-context` | auth, role gates, tenant or owner boundaries, secrets, external sends, auditability, abuse cases | `docs/patterns/boundaries/`, `docs/patterns/testing/`, bounded security entry only when evidence exists, `docs/work/reports/`, `docs/backlog/_index.md` |
 | `ON-05` feature catalog | `[ ]` | `ingest-spec`, `discover`, `synthesis-to-spec`, `compose-spec` | visible features, routes, jobs, user-facing copy, API contracts, existing specs, tests | `docs/product/`, `docs/specs/{slice-slug}/`, `docs/backlog/_index.md` |
 | `ON-06` visual/design/brand capture | `[ ]` | `visual-qa`, `ux-flow-review`, `design-system`, `brand-positioning` | screenshots or UI evidence, layout, responsive behavior, states, tokens, components, tone, naming, visual direction | `docs/design/`, `docs/brand/`, `docs/product/`, `docs/work/reports/` |
-| `ON-07` functional acceptance map | `[ ]` | `functional-qa`, `docs-impact-map` | scenarios, acceptance checks, API/browser/CLI/manual proof routes, runner gaps | `docs/product/scenarios.md`, `docs/patterns/testing/index.md`, `harness.config.yaml` |
+| `ON-07` functional acceptance and simulation map | `[ ]` | `functional-qa`, `simulation-campaigns`, `docs-impact-map` | scenarios, acceptance checks, simulation ID/owner, API/browser/CLI/manual proof routes, runner gaps | `docs/product/scenarios.md`, `evals/simulations/`, `evals/campaigns/`, `docs/patterns/testing/index.md`, `harness.config.yaml` |
 | `ON-08` context-memory routing | `[ ]` | `docs-impact-map`, `pattern-context`, `closeout` | source identity, durable facts, pattern packs, gaps, deferred work, rejected scope worth preserving | narrow owner docs, `docs/patterns/context-memory/`, bounded pattern entries |
 | `ON-09` validation and handoff | `[ ]` | `validate-change`, `closeout` | Cascade validator, target checks, stale searches, files written/skipped/blocked | `docs/work/reports/`, final response |
 
@@ -69,6 +69,10 @@ Each project-part spec must include:
   entry through `pattern-context`.
 - Reusable validation, scenario, browser/API/CLI, and security probe rules go
   to `docs/patterns/testing/` through `pattern-context`.
+- Approved target simulations are previewed before creation, use the tracked
+  starter template, refuse existing paths, and regenerate the campaign
+  registry only after full graph validation. If no target scenario and owner
+  exist, record simulation bootstrap as `NOT_RUN`.
 - Source-context and memory rules go to `docs/patterns/context-memory/`.
 - Every pattern entry must have `index.md` and at least one `*.pack.yaml` with
   summary, routing, graph-like documents, and selectable sections.

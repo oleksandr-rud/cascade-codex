@@ -1,0 +1,93 @@
+schema_id: architecture-default-graph-v1
+graph_id: frontend-realtime
+pair_kind: extension
+title: Frontend Realtime Strategy
+status: reference-default
+spec_path: docs/patterns/architecture-defaults/frontend-realtime.spec.md
+extends:
+  - web-frontend
+requires:
+  - frontend-state-data
+  - interface-strategy
+compatible_with:
+  - frontend-cache
+  - tenancy-strategy
+preserves:
+  - "web-frontend:folder-ownership"
+  - "web-frontend:feature-public-surface"
+  - "web-frontend:state-ownership"
+  - "web-frontend:api-contract"
+default_when:
+  - "Users need bounded-latency remote updates, presence, progress, collaboration, or live operational state."
+  - "Polling cost or latency no longer meets measured product requirements."
+do_not_use_when:
+  - "On-focus refresh or bounded polling meets freshness and cost requirements."
+  - "The backend cannot provide authorization, resume, ordering, or recovery semantics."
+nodes:
+  - id: source-contract
+    kind: server-interface
+    owns: "Polling, SSE, WebSocket, subscription, or push contract plus auth and tenant scope."
+  - id: connection-manager
+    kind: adapter
+    owns: "Connect, authenticate, refresh, reconnect, heartbeat, visibility, and shutdown."
+  - id: subscription-registry
+    kind: application-policy
+    owns: "Feature subscriptions, reference counting, filters, lifecycle, and backpressure."
+  - id: event-normalizer
+    kind: data-boundary
+    owns: "Schema validation, ordering, deduplication, gap detection, and version translation."
+  - id: state-reconciler
+    kind: state-policy
+    owns: "Query-cache updates, invalidation, optimistic reconciliation, and snapshot refresh."
+  - id: feature-ui
+    kind: interface
+    owns: "Live, reconnecting, stale, conflict, degraded, and unavailable states."
+  - id: realtime-observability
+    kind: evidence
+    owns: "Connection health, lag, gaps, drops, reconnects, errors, and user-visible freshness."
+edges:
+  - from: source-contract
+    to: connection-manager
+    relation: connected_by
+  - from: connection-manager
+    to: subscription-registry
+    relation: serves
+  - from: subscription-registry
+    to: event-normalizer
+    relation: routes
+  - from: event-normalizer
+    to: state-reconciler
+    relation: validates_for
+  - from: state-reconciler
+    to: feature-ui
+    relation: updates
+  - from: connection-manager
+    to: feature-ui
+    relation: reports_status
+  - from: connection-manager
+    to: realtime-observability
+    relation: emits
+  - from: event-normalizer
+    to: realtime-observability
+    relation: emits
+decisions:
+  - id: cheapest-sufficient-transport
+    default: "Use focus refresh or polling first, then SSE for server push, and WebSocket/subscriptions only for bidirectional or richer session needs."
+    exception_when: "Platform constraints or an existing coherent contract fix the transport."
+  - id: recoverable-session
+    default: "Authenticate connections, refresh credentials, reconnect with backoff and jitter, resume when possible, and refresh snapshots after gaps."
+    exception_when: "Events are disposable hints and a full refetch is always cheap."
+  - id: ordered-idempotent-updates
+    default: "Validate schemas, deduplicate by identity, apply ordering/version rules, and reconcile optimistic state."
+    exception_when: "Updates only invalidate a query and never apply payload state."
+  - id: feature-owned-subscriptions
+    default: "Features own subscription meaning while shared libraries own connection mechanics."
+    exception_when: "One app-wide operational feed is itself the product boundary."
+  - id: degradation-policy
+    default: "Expose connecting, live, reconnecting, stale, degraded, and unavailable states with a fallback refresh path."
+    exception_when: "Realtime is nonessential decoration whose absence has no product consequence."
+validation:
+  - "Test auth expiry, reconnect, resume, duplicate, reorder, gap, burst, backpressure, background/foreground, offline, and server restart behavior."
+  - "Realtime changes reconcile with query caches, optimistic mutations, tenant scope, and current permissions."
+  - "Subscriptions release on feature unmount, account or tenant switch, logout, and application shutdown."
+  - "Telemetry measures connection health, lag, drops, gaps, reconnects, and user-visible freshness."

@@ -1,0 +1,1026 @@
+pack_id: architecture-defaults
+entry_id: architecture-defaults
+title: Architecture Default Graph And Spec Pairs
+kind: pattern-context-pack
+owner: Cascade maintainers
+summary: "Selectable stack, contour technology, application infrastructure, resource infrastructure, cross-cutting, backend, native, CLI, experiment, and SDK/library defaults; frontend defaults have a dedicated pack."
+description: "Use after target inspection when selecting architecture, stack, application technology, application-contour infrastructure, resource infrastructure, or backend, native, CLI, experiment, SDK/library, caching, tenancy, interface, and event concerns."
+routing:
+  use_when:
+    - "A target needs a starting architecture decision, file structure, or implementation-draft boundary model."
+    - "Onboarding or architecture review needs a reusable chooser, contour technology, infrastructure, caching, backend, native, CLI, experiment, SDK/library, tenancy, interface, or event reference."
+  do_not_use_when:
+    - "The task is frontend-specific; use frontend-architecture-defaults instead."
+    - "The task only needs current target facts, an atomic file edit, or a framework installation command."
+    - "The target already has a coherent established architecture and no boundary change is proposed."
+  load_when:
+    - route: architecture-review
+      use_when: "A cross-boundary plan needs a matching reference topology and exception criteria."
+    - route: adapt-harness
+      use_when: "Target onboarding needs to compare detected architecture with bounded defaults."
+    - route: plan-change
+      use_when: "A new service, native client, CLI, experiment, SDK/library, or cache boundary needs an implementation-draft structure."
+    - route: implement-change
+      use_when: "An adopted backend or frontend technology profile needs a previewed, no-conflict starter structure."
+  write_when:
+    - "A repeated architecture decision needs a new or revised graph/spec pair."
+    - "A pair contract, selection rule, profile, or validation obligation changes."
+  defer_when:
+    - "The proposed rule is target-specific and belongs in harness.config.yaml, target boundary docs, or a work lane."
+    - "No repeated decision or supported profile has been demonstrated."
+  primary_skills:
+    - architecture-review
+    - adapt-harness
+    - plan-change
+    - pattern-context
+    - validate-change
+  related_roles:
+    - agent-engineer
+    - project-onboarder
+    - orchestrator
+    - designer
+selection_rules:
+  - "Select one or more pair IDs from target evidence; never load the full catalog by default."
+  - "Use frontend-architecture-defaults for web frontend base and policy selection."
+  - "Keep application technology and infrastructure resource/provider candidates in separate extension branches."
+  - "Route each application unit to its matching contour infrastructure profile, then route each operated resource independently to its resource extension."
+  - "Load the graph and paired spec together before adopting or adapting a default."
+  - "Apply architecture, archetype, and stack decisions first; resolve applicable extensions and their relationships before selecting the concrete technology that implements those policies."
+  - "Extract source-linked claims and policies per deployed, versioned, or distributed application or package unit; do not select one repository-wide stack from a project label."
+  - "Record ADOPTED, ADAPTED, REJECTED, or GAP with evidence in the target work lane or owner doc."
+documents:
+  - path: docs/patterns/architecture-defaults/index.md
+    kind: pattern-entry
+    description: "Pair contract, default-selection semantics, initial catalog, and extension rules."
+    trigger_when:
+      - "An agent needs to select, adopt, adapt, reject, or extend an architecture default."
+    sections:
+      - id: architecture-pair-contract
+        title: Pair Contract
+        anchor: "## Pair Contract"
+        summary: "Every default is a stable-ID graph plus a same-stem human-readable spec with bidirectional links."
+        routing_description: "Load before creating, changing, or validating an architecture pair."
+        tags:
+          - architecture
+          - graph
+          - spec
+      - id: architecture-selection
+        title: Selection And Adoption
+        anchor: "## Selection And Adoption"
+        summary: "Reference defaults are selected after target inspection and recorded as adopted, adapted, rejected, or gap."
+        routing_description: "Load before applying a default to onboarding, planning, or implementation drafts."
+        tags:
+          - selection
+          - onboarding
+          - planning
+      - id: architecture-catalog
+        title: Pair Catalog
+        anchor: "## Pair Catalog"
+        summary: "Catalogs the validated 34 architecture graph/spec pairs while preserving stable IDs and separated application, contour, and resource authority."
+        routing_description: "Load when choosing the smallest pair set for a task."
+        tags:
+          - catalog
+          - retrieval
+          - defaults
+      - id: architecture-composition
+        title: Composition And Preservation
+        anchor: "## Composition And Preservation"
+        summary: "Defines dependency order, extension relationships, preserved decisions, and conflict handling."
+        routing_description: "Load when composing several pairs or creating an extension."
+        tags:
+          - composition
+          - extensions
+          - validation
+      - id: architecture-scaffold-profiles
+        title: Scaffold Profiles
+        anchor: "## Scaffold Profiles"
+        summary: "Explains the five safe source profiles, preview-first generator, and preserved backend/frontend boundaries."
+        routing_description: "Load only after a profile is adopted or adapted and new source structure is requested."
+        tags:
+          - scaffold
+          - generator
+          - boilerplate
+  - path: docs/patterns/architecture-defaults/architecture-default-graph.schema.yaml
+    kind: schema
+    description: "Machine-readable contract shared by every architecture-default graph."
+    trigger_when:
+      - "A graph is authored, reviewed, parsed, or mechanically validated."
+  - path: docs/patterns/architecture-defaults/architecture-selection.graph.yaml
+    kind: architecture-graph
+    description: "Architecture topology selection from constraints, ownership, quality attributes, and evidence."
+    trigger_when:
+      - "A new system or major boundary needs a topology decision before stack selection."
+  - path: docs/patterns/architecture-defaults/architecture-selection.spec.md
+    kind: architecture-spec
+    description: "Evidence-led architecture choosing strategy and adoption classification."
+    trigger_when:
+      - "A team must compare modular, service, event, client, CLI, or experiment shapes."
+    sections:
+      - id: architecture-selection-default
+        title: Default Architecture
+        anchor: "## Default Architecture"
+        summary: "Chooses the simplest sufficient topology from constraints before technology."
+        routing_description: "Load before selecting an archetype, tenancy model, interface, stack, or extension."
+        tags:
+          - architecture
+          - selection
+          - topology
+      - id: architecture-selection-structure
+        title: Reference File Structure
+        anchor: "## Reference File Structure"
+        summary: "Maps context, boundary, and decision evidence into existing target architecture owners."
+        routing_description: "Load when persisting an architecture selection."
+        tags:
+          - architecture
+          - decisions
+          - files
+  - path: docs/patterns/architecture-defaults/stack-selection.graph.yaml
+    kind: architecture-graph
+    description: "Whole-profile stack selection after architecture boundaries are known."
+    trigger_when:
+      - "A selected architecture needs language, framework, data, build, test, and deployment choices."
+  - path: docs/patterns/architecture-defaults/stack-selection.spec.md
+    kind: architecture-spec
+    description: "Stack choosing strategy across architecture fit, team capability, lifecycle, and proof."
+    trigger_when:
+      - "A new deployed, versioned, or distributed unit or major replacement needs a complete operable stack profile."
+    sections:
+      - id: stack-selection-default
+        title: Default Architecture
+        anchor: "## Default Architecture"
+        summary: "Selects a complete operable profile and proves its highest-risk boundary."
+        routing_description: "Load after topology selection and before framework-specific implementation."
+        tags:
+          - stack
+          - selection
+          - lifecycle
+      - id: stack-selection-structure
+        title: Reference File Structure
+        anchor: "## Reference File Structure"
+        summary: "Maps the chosen profile into config, architecture evidence, manifests, and archetype paths."
+        routing_description: "Load when recording or implementing a stack choice."
+        tags:
+          - stack
+          - files
+          - implementation
+      - id: stack-selection-claims
+        title: Project Description Claim Extraction
+        anchor: "### Project Description Claim Extraction"
+        summary: "Normalizes source-linked explicit, inferred, unknown, and conflicting stack claims before candidates are proposed."
+        routing_description: "Load when project descriptions, requirements, operations docs, or current code must drive stack selection."
+        tags:
+          - stack
+          - claims
+          - evidence
+      - id: stack-selection-evidence-data
+        title: Evidence Data Handling
+        anchor: "### Evidence Data Handling"
+        summary: "Keeps durable stack evidence to references, digests, classifications, and redacted summaries with explicit access and retention."
+        routing_description: "Load when stack-selection evidence may contain credentials, tenant/customer data, private source, or sensitive operational facts."
+        tags:
+          - stack
+          - evidence
+          - security
+          - redaction
+      - id: stack-selection-policies
+        title: Selection Policy Contract
+        anchor: "### Selection Policy Contract"
+        summary: "Applies required, forbidden, proof-required, and preferred policies in precedence order."
+        routing_description: "Load when organization or project policies filter candidate stacks."
+        tags:
+          - stack
+          - policy
+          - selection
+      - id: stack-selection-app-types
+        title: Application Contour Profiles
+        anchor: "### Application Contour Profiles"
+        summary: "Scopes independent stack decisions to backend service, worker, web, native, CLI, experiment, or library application and package units."
+        routing_description: "Load when a repository contains one or more deployed, versioned, or distributed application or package types."
+        tags:
+          - stack
+          - app-type
+          - contour
+      - id: stack-selection-extensions
+        title: Stack Extension Profiles
+        anchor: "### Stack Extension Profiles"
+        summary: "Separates application-technology and infrastructure selection branches under one stack authority."
+        routing_description: "Load when deciding which stack extensions remain open."
+        tags:
+          - stack
+          - extension
+          - routing
+      - id: stack-selection-infrastructure
+        title: Infrastructure Resource Profiles
+        anchor: "### Infrastructure Resource Profiles"
+        summary: "Adds deployment scopes, resource units, infrastructure candidates, and independent resource selections."
+        routing_description: "Load when stack evidence must include operated infrastructure."
+        tags:
+          - stack
+          - infrastructure
+          - evidence
+  - path: docs/patterns/architecture-defaults/app-stack.graph.yaml
+    kind: architecture-graph
+    description: "Stack-preserving application-technology policy and contour routing extension."
+    trigger_when:
+      - "A resolved stack profile needs application runtime, framework, or library selection."
+  - path: docs/patterns/architecture-defaults/app-stack.spec.md
+    kind: architecture-spec
+    description: "Routes one application unit to its backend, frontend, native, CLI, experiment, or library stack extension."
+    trigger_when:
+      - "A team must separate application technology from infrastructure selection."
+    sections:
+      - id: app-stack-default
+        title: Default Architecture
+        anchor: "## Default Architecture"
+        summary: "Routes a selected stack profile to one application-contour stack extension."
+        routing_description: "Load after stack selection and before a contour candidate catalog."
+        tags:
+          - technology
+          - stack
+          - selection
+      - id: app-stack-inputs
+        title: Claim And Policy Inputs
+        anchor: "### Claim And Policy Inputs"
+        summary: "Keeps application candidate disposition traceable to claims and policy outcomes."
+        routing_description: "Load before comparing concrete technology candidates."
+        tags:
+          - technology
+          - claims
+          - policy
+      - id: app-stack-app-types
+        title: Application Type Routing
+        anchor: "### Application Type Routing"
+        summary: "Routes backend, frontend, native, CLI, experiment, and library units to separate extension owners."
+        routing_description: "Load for application-type-specific technology selection."
+        tags:
+          - technology
+          - app-type
+          - profiles
+  - path: docs/patterns/architecture-defaults/backend-stack.graph.yaml
+    kind: architecture-graph
+    description: "Backend service and worker runtime/framework candidate extension."
+    trigger_when:
+      - "A backend unit needs a named runtime, HTTP adapter, process, or packaging profile."
+  - path: docs/patterns/architecture-defaults/backend-stack.spec.md
+    kind: architecture-spec
+    description: "Bun/Hono, Go, and Python/FastAPI selection separated from compute and data infrastructure."
+    trigger_when:
+      - "A backend service or worker needs concrete application technology."
+    sections:
+      - id: backend-stack-default
+        title: Default Architecture
+        anchor: "## Default Architecture"
+        summary: "Selects a backend runtime from workload, ecosystem, packaging, deployment compatibility, and ownership."
+        routing_description: "Load for backend runtime and framework selection."
+        tags:
+          - backend
+          - technology
+          - runtime
+      - id: backend-stack-profiles
+        title: Backend Runtime And Framework Profiles
+        anchor: "### Backend Runtime And Framework Profiles"
+        summary: "Compares Bun/Hono, Go standard library, and Python/FastAPI."
+        routing_description: "Load when the named backend candidates are open."
+        tags:
+          - bun
+          - go
+          - fastapi
+  - path: docs/patterns/architecture-defaults/native-stack.graph.yaml
+    kind: architecture-graph
+    description: "Native platform, cross-platform UI, or shared-core stack extension."
+    trigger_when:
+      - "A native app needs an application technology profile."
+  - path: docs/patterns/architecture-defaults/native-stack.spec.md
+    kind: architecture-spec
+    description: "Native technology selection from platform depth, reuse, lifecycle, distribution, and ownership."
+    trigger_when:
+      - "Platform-native versus cross-platform technology is open."
+    sections:
+      - id: native-stack-default
+        title: Default Architecture
+        anchor: "## Default Architecture"
+        summary: "Selects platform-native, cross-platform UI, or shared-core technology from device and lifecycle claims."
+        routing_description: "Load for native technology selection."
+        tags:
+          - native
+          - technology
+          - platform
+  - path: docs/patterns/architecture-defaults/cli-stack.graph.yaml
+    kind: architecture-graph
+    description: "Compiled, runtime-distributed, or embedded CLI stack extension."
+    trigger_when:
+      - "A CLI needs an implementation and distribution technology profile."
+  - path: docs/patterns/architecture-defaults/cli-stack.spec.md
+    kind: architecture-spec
+    description: "CLI technology selection from portability, automation, plugins, installation, and updates."
+    trigger_when:
+      - "Compiled versus runtime-distributed CLI technology is open."
+    sections:
+      - id: cli-stack-default
+        title: Default Architecture
+        anchor: "## Default Architecture"
+        summary: "Selects CLI technology after automation and distribution contracts."
+        routing_description: "Load for CLI technology selection."
+        tags:
+          - cli
+          - technology
+          - distribution
+  - path: docs/patterns/architecture-defaults/experiment-stack.graph.yaml
+    kind: architecture-graph
+    description: "Source, notebook, or accelerated experiment stack extension."
+    trigger_when:
+      - "An experiment needs a reproducible technology and environment profile."
+  - path: docs/patterns/architecture-defaults/experiment-stack.spec.md
+    kind: architecture-spec
+    description: "Experiment technology selection from ecosystem, reproducibility, acceleration, artifacts, and promotion."
+    trigger_when:
+      - "Script, notebook, or accelerated experiment technology is open."
+    sections:
+      - id: experiment-stack-default
+        title: Default Architecture
+        anchor: "## Default Architecture"
+        summary: "Selects experiment technology without inheriting shortcuts into production."
+        routing_description: "Load for experiment technology selection."
+        tags:
+          - experiment
+          - technology
+          - reproducibility
+  - path: docs/patterns/architecture-defaults/library-stack.graph.yaml
+    kind: architecture-graph
+    description: "SDK/library language, generation, binding, package, compatibility, and distribution stack extension."
+    trigger_when:
+      - "An independently versioned or distributed library needs a technology profile."
+  - path: docs/patterns/architecture-defaults/library-stack.spec.md
+    kind: architecture-spec
+    description: "Library technology selection for generated and hand-authored SDKs, internal or public packages, platform SDKs, and adapted bindings."
+    trigger_when:
+      - "SDK generation, language ecosystem, package format, or WASM/FFI/binary binding technology is open."
+    sections:
+      - id: library-stack-default
+        title: Default Architecture
+        anchor: "## Default Architecture"
+        summary: "Selects SDK/library technology from consumer, compatibility, generation, binding, and distribution claims."
+        routing_description: "Load for SDK library technology and generated binding selection."
+        tags:
+          - sdk
+          - library
+          - technology
+          - compatibility
+          - distribution
+  - path: docs/patterns/architecture-defaults/infrastructure.graph.yaml
+    kind: architecture-graph
+    description: "Stack-preserving deployment-scope and infrastructure-resource selection extension."
+    trigger_when:
+      - "A stack needs compute, data, messaging, edge, delivery, secrets, or observability resources."
+  - path: docs/patterns/architecture-defaults/infrastructure.spec.md
+    kind: architecture-spec
+    description: "Infrastructure scope, resource ownership, provider topology, lifecycle, and proof strategy."
+    trigger_when:
+      - "Application technology must be made operable through selected infrastructure."
+    sections:
+      - id: infrastructure-default
+        title: Default Architecture
+        anchor: "## Default Architecture"
+        summary: "Scopes resources before providers and routes each resource to one infrastructure extension."
+        routing_description: "Load before selecting infrastructure products."
+        tags:
+          - infrastructure
+          - selection
+          - stack
+      - id: infrastructure-scopes
+        title: Deployment Scope Contract
+        anchor: "### Deployment Scope Contract"
+        summary: "Defines environment, region, isolation, consumers, identity, lifecycle, and owners."
+        routing_description: "Load when resources are shared or vary by environment."
+        tags:
+          - infrastructure
+          - scope
+          - environment
+      - id: infrastructure-routing
+        title: Resource Extension Routing
+        anchor: "### Resource Extension Routing"
+        summary: "Routes compute, data, messaging, and delivery concerns to independent extensions."
+        routing_description: "Load to select the smallest relevant infrastructure context."
+        tags:
+          - infrastructure
+          - resources
+          - routing
+  - path: docs/patterns/architecture-defaults/backend-infrastructure.graph.yaml
+    kind: architecture-graph
+    description: "Backend service and worker application profile that routes runtime roles and owned resource needs without choosing providers."
+    trigger_when:
+      - "A backend API, separate BFF, worker, consumer, scheduler, or batch unit needs infrastructure."
+  - path: docs/patterns/architecture-defaults/backend-infrastructure.spec.md
+    kind: architecture-spec
+    description: "Backend infrastructure routing across database, cache, queue, pub/sub, stream, delivery, ownership, and cross-resource failure."
+    trigger_when:
+      - "Backend database, cache, queue, pub/sub, or stream resource needs must retain application and semantic ownership."
+    sections:
+      - id: backend-infrastructure-default
+        title: Default Architecture
+        anchor: "## Default Architecture"
+        summary: "Routes backend database, cache, queue, and pubsub needs through owned infrastructure resources."
+        routing_description: "Load for backend database cache queue pubsub application infrastructure."
+        tags:
+          - backend
+          - database
+          - cache
+          - queue
+          - pubsub
+      - id: backend-infrastructure-resource-routing
+        title: Resource Routing And Authority
+        anchor: "### Resource Routing And Authority"
+        summary: "Keeps backend database/cache and queue/pubsub topology separate from semantic and provider authorities."
+        routing_description: "Load for backend database cache queue pubsub authority routing."
+        tags:
+          - backend
+          - database
+          - cache
+          - queue
+          - pubsub
+      - id: backend-infrastructure-caching
+        title: Caching Ownership Preservation
+        anchor: "### Caching Ownership Preservation"
+        summary: "Preserves cache eligibility and invalidation policy while backend infrastructure records deployed cache needs."
+        routing_description: "Load with backend database cache queue pubsub selection when cache semantics are material."
+        tags:
+          - backend
+          - database
+          - cache
+          - queue
+          - pubsub
+      - id: backend-infrastructure-events
+        title: Event And Job Ownership Preservation
+        anchor: "### Event And Job Ownership Preservation"
+        summary: "Preserves event and job meaning while queue, pub/sub, stream, and scheduler resources remain independently selected."
+        routing_description: "Load with backend database cache queue pubsub selection when event or job semantics are material."
+        tags:
+          - backend
+          - database
+          - cache
+          - queue
+          - pubsub
+  - path: docs/patterns/architecture-defaults/frontend-infrastructure.graph.yaml
+    kind: architecture-graph
+    description: "Frontend static, SSR, streaming, edge, embedded-BFF, and fullstack application infrastructure profile."
+    trigger_when:
+      - "A web frontend needs hosting resources or a browser/server/BFF ownership boundary."
+  - path: docs/patterns/architecture-defaults/frontend-infrastructure.spec.md
+    kind: architecture-spec
+    description: "Frontend infrastructure routing for static, SSR, streaming, edge, BFF, fullstack composition, and browser credentials."
+    trigger_when:
+      - "Frontend SSR, BFF, fullstack, hosting, or infrastructure resources are open."
+    sections:
+      - id: frontend-infrastructure-profile
+        title: Default Architecture
+        anchor: "## Default Architecture"
+        summary: "Maps frontend SSR and BFF infrastructure needs without creating a fullstack application type."
+        routing_description: "Load for frontend SSR BFF infrastructure selection."
+        tags:
+          - frontend
+          - ssr
+          - bff
+          - infrastructure
+      - id: frontend-infrastructure-resource-routing
+        title: Resource Routing
+        anchor: "### Resource Routing"
+        summary: "Routes frontend SSR and BFF infrastructure to justified compute, data, and delivery resources."
+        routing_description: "Load for frontend SSR BFF infrastructure resource routing."
+        tags:
+          - frontend
+          - ssr
+          - bff
+          - infrastructure
+      - id: frontend-infrastructure-bff
+        title: BFF Boundary Determination
+        anchor: "### BFF Boundary Determination"
+        summary: "Keeps a BFF embedded only for one frontend lifecycle and otherwise classifies a backend-service."
+        routing_description: "Load for frontend SSR BFF infrastructure ownership."
+        tags:
+          - frontend
+          - ssr
+          - bff
+          - infrastructure
+      - id: frontend-infrastructure-fullstack
+        title: Fullstack Composition
+        anchor: "### Fullstack Composition"
+        summary: "Treats fullstack as frontend, optional BFF, backend, and resource composition."
+        routing_description: "Load for frontend SSR BFF infrastructure fullstack composition."
+        tags:
+          - frontend
+          - ssr
+          - bff
+          - infrastructure
+  - path: docs/patterns/architecture-defaults/native-infrastructure.graph.yaml
+    kind: architecture-graph
+    description: "Native delivery and remote-boundary profile that excludes device-local adapters from operated infrastructure."
+    trigger_when:
+      - "A native app needs signing, distribution, crash/RUM, remote configuration, push integration, or a backend handoff."
+  - path: docs/patterns/architecture-defaults/native-infrastructure.spec.md
+    kind: architecture-spec
+    description: "Native infrastructure selection for delivery, trust, telemetry, push, device-local adapters, and remote backend ownership."
+    trigger_when:
+      - "Native push or distribution infrastructure must preserve a separate backend owner."
+    sections:
+      - id: native-infrastructure-default
+        title: Default Architecture
+        anchor: "## Default Architecture"
+        summary: "Separates native push infrastructure and delivery from device-local adapters and backend dispatch."
+        routing_description: "Load for native push infrastructure and backend handoff."
+        tags:
+          - native
+          - push
+          - infrastructure
+      - id: native-infrastructure-local-boundary
+        title: Device-Local Versus Operated Boundary
+        anchor: "### Device-Local Versus Operated Boundary"
+        summary: "Keeps local storage and cache adapters inside the native application."
+        routing_description: "Load for native push infrastructure when device-local and operated boundaries are open."
+        tags:
+          - native
+          - push
+          - infrastructure
+      - id: native-infrastructure-negative-routing
+        title: Negative Routing Examples
+        anchor: "### Negative Routing Examples"
+        summary: "Routes push dispatch and other operated remote behavior to a separate backend unit."
+        routing_description: "Load for native push infrastructure backend handoff."
+        tags:
+          - native
+          - push
+          - infrastructure
+  - path: docs/patterns/architecture-defaults/cli-infrastructure.graph.yaml
+    kind: architecture-graph
+    description: "CLI no-infrastructure default plus evidence-backed distribution and remote-control-plane boundary."
+    trigger_when:
+      - "A CLI needs a no-resource result or distribution infrastructure."
+  - path: docs/patterns/architecture-defaults/cli-infrastructure.spec.md
+    kind: architecture-spec
+    description: "CLI infrastructure selection for local execution, artifacts, signing, registries, updates, plugins, telemetry, and backend handoff."
+    trigger_when:
+      - "A local CLI infrastructure decision must avoid presumed provider resources."
+    sections:
+      - id: cli-infrastructure-default
+        title: Default Architecture
+        anchor: "## Default Architecture"
+        summary: "Defaults local CLI infrastructure to no operated resources."
+        routing_description: "Load for local CLI infrastructure selection."
+        tags:
+          - local
+          - cli
+          - infrastructure
+      - id: cli-infrastructure-no-resource
+        title: No-Infrastructure Result
+        anchor: "### No-Infrastructure Result"
+        summary: "Records no operated infrastructure as a valid selected CLI profile."
+        routing_description: "Load for local CLI infrastructure negative selection."
+        tags:
+          - local
+          - cli
+          - infrastructure
+      - id: cli-infrastructure-remote-boundary
+        title: Remote Ownership Boundary
+        anchor: "### Remote Ownership Boundary"
+        summary: "Keeps remote APIs, control planes, hosted plugins, and telemetry services under separate owners."
+        routing_description: "Load for local CLI infrastructure and remote backend boundaries."
+        tags:
+          - local
+          - cli
+          - infrastructure
+  - path: docs/patterns/architecture-defaults/experiment-infrastructure.graph.yaml
+    kind: architecture-graph
+    description: "Experiment local-or-ephemeral resource profile with budget, TTL, teardown, and promotion boundaries."
+    trigger_when:
+      - "An experiment needs GPU, batch, artifact, tracking, scheduling, or teardown infrastructure."
+  - path: docs/patterns/architecture-defaults/experiment-infrastructure.spec.md
+    kind: architecture-spec
+    description: "Experiment infrastructure routing for local or ephemeral compute, artifacts, tracking, queues, budget, TTL, teardown, and promotion."
+    trigger_when:
+      - "An experiment GPU or batch run needs bounded infrastructure and verified teardown."
+    sections:
+      - id: experiment-infrastructure-default
+        title: Default Architecture
+        anchor: "## Default Architecture"
+        summary: "Routes experiment GPU batch resources through bounded ephemeral infrastructure and teardown."
+        routing_description: "Load for experiment GPU batch teardown infrastructure."
+        tags:
+          - experiment
+          - gpu
+          - batch
+          - teardown
+      - id: experiment-infrastructure-resource-routing
+        title: Resource Routing
+        anchor: "### Resource Routing"
+        summary: "Routes experiment GPU batch compute, data, messaging, and delivery independently."
+        routing_description: "Load for experiment GPU batch teardown resource routing."
+        tags:
+          - experiment
+          - gpu
+          - batch
+          - teardown
+      - id: experiment-infrastructure-lifecycle
+        title: Budget, TTL, And Teardown Contract
+        anchor: "### Budget, TTL, And Teardown Contract"
+        summary: "Requires hard budget, quota, TTL, terminal-path cleanup, and residual-resource evidence."
+        routing_description: "Load for experiment GPU batch teardown lifecycle controls."
+        tags:
+          - experiment
+          - gpu
+          - batch
+          - teardown
+      - id: experiment-infrastructure-ownership
+        title: Artifact And Service Ownership
+        anchor: "### Artifact And Service Ownership"
+        summary: "Keeps experiment artifacts immutable and project-owned tracking or scheduling under separate backend ownership."
+        routing_description: "Load for experiment GPU batch teardown artifact ownership."
+        tags:
+          - experiment
+          - gpu
+          - batch
+          - teardown
+  - path: docs/patterns/architecture-defaults/library-infrastructure.graph.yaml
+    kind: architecture-graph
+    description: "No-production-runtime SDK/library profile with evidence-backed build and distribution resources."
+    trigger_when:
+      - "An independently released package needs build, registry, artifact, signing, provenance, documentation, release, or browser-bundle infrastructure."
+  - path: docs/patterns/architecture-defaults/library-infrastructure.spec.md
+    kind: architecture-spec
+    description: "Library infrastructure routing that defaults to no production runtime and keeps hosted services under separate backend ownership."
+    trigger_when:
+      - "SDK/library distribution infrastructure or a no-runtime result must be selected."
+    sections:
+      - id: library-infrastructure-default
+        title: Default Architecture
+        anchor: "## Default Architecture"
+        summary: "Defaults SDK/library infrastructure to no production runtime and adds only evidence-backed build or delivery resources."
+        routing_description: "Load for SDK library infrastructure, no runtime, build, signing, provenance, registry, documentation, or release selection."
+        tags:
+          - sdk
+          - library
+          - infrastructure
+          - no-runtime
+          - distribution
+      - id: library-infrastructure-validation
+        title: Validation Contract
+        anchor: "## Validation Contract"
+        summary: "Proves release integrity and rejects library ownership of hosted APIs, databases, caches, or messaging."
+        routing_description: "Load for SDK library compatibility, supply-chain, and hosted-service ownership checks."
+        tags:
+          - sdk
+          - library
+          - compatibility
+          - supply-chain
+  - path: docs/patterns/architecture-defaults/infrastructure-compute.graph.yaml
+    kind: architecture-graph
+    description: "Compute model, placement, scaling, identity, and lifecycle extension."
+    trigger_when:
+      - "A service, worker, job, function, edge, batch, or accelerated workload needs compute."
+  - path: docs/patterns/architecture-defaults/infrastructure-compute.spec.md
+    kind: architecture-spec
+    description: "Compute selection from workload shape, placement, scale, isolation, failure, and cost."
+    trigger_when:
+      - "Runtime compute topology is open."
+    sections:
+      - id: infrastructure-compute-default
+        title: Default Architecture
+        anchor: "## Default Architecture"
+        summary: "Selects the cheapest sufficient compute model from actual workload evidence."
+        routing_description: "Load for compute topology selection, including frontend SSR BFF infrastructure or experiment GPU batch teardown."
+        tags:
+          - infrastructure
+          - compute
+          - scaling
+  - path: docs/patterns/architecture-defaults/infrastructure-data.graph.yaml
+    kind: architecture-graph
+    description: "Database, cache service, object, search, backup, restore, and residency extension."
+    trigger_when:
+      - "A deployed data resource needs selection."
+  - path: docs/patterns/architecture-defaults/infrastructure-data.spec.md
+    kind: architecture-spec
+    description: "Data infrastructure selection from access patterns, consistency, lifecycle, recovery, and cost."
+    trigger_when:
+      - "Database, cache service, object store, search, backup, or restore topology is open."
+    sections:
+      - id: infrastructure-data-default
+        title: Default Architecture
+        anchor: "## Default Architecture"
+        summary: "Starts with one authoritative data system and adds specialist resources only for measured gaps."
+        routing_description: "Load for backend database cache queue pubsub routing, justified frontend SSR BFF infrastructure data, or experiment GPU batch teardown artifacts."
+        tags:
+          - infrastructure
+          - data
+          - recovery
+  - path: docs/patterns/architecture-defaults/infrastructure-messaging.graph.yaml
+    kind: architecture-graph
+    description: "Queue, pub/sub, stream, scheduler, dead-letter, and replay extension."
+    trigger_when:
+      - "A deployed messaging resource is required."
+  - path: docs/patterns/architecture-defaults/infrastructure-messaging.spec.md
+    kind: architecture-spec
+    description: "Messaging infrastructure selection from delivery, ordering, fan-out, retention, replay, and operations."
+    trigger_when:
+      - "Queue, broker, stream, or scheduler topology is open."
+    sections:
+      - id: infrastructure-messaging-default
+        title: Default Architecture
+        anchor: "## Default Architecture"
+        summary: "Selects messaging only after producer and consumer semantics are explicit."
+        routing_description: "Load for backend database cache queue pubsub infrastructure selection."
+        tags:
+          - infrastructure
+          - messaging
+          - events
+  - path: docs/patterns/architecture-defaults/infrastructure-delivery.graph.yaml
+    kind: architecture-graph
+    description: "Network/edge, artifacts, CI/CD, configuration/secrets, observability, and IaC extension."
+    trigger_when:
+      - "Hosting, exposure, release, rollback, telemetry, or infrastructure control-plane selection is required."
+  - path: docs/patterns/architecture-defaults/infrastructure-delivery.spec.md
+    kind: architecture-spec
+    description: "Delivery and operations selection from exposure, security, release, observability, drift, and recovery."
+    trigger_when:
+      - "Delivery or operational infrastructure is open."
+    sections:
+      - id: infrastructure-delivery-default
+        title: Default Architecture
+        anchor: "## Default Architecture"
+        summary: "Selects operable delivery resources around immutable promotion, rollback, secrets, telemetry, and reviewed IaC."
+        routing_description: "Load for frontend SSR BFF infrastructure, native push infrastructure, or experiment GPU batch teardown delivery."
+        tags:
+          - infrastructure
+          - delivery
+          - operations
+  - path: docs/patterns/architecture-defaults/architecture-scaffold-profiles.json
+    kind: architecture-scaffold-profiles
+    description: "Five bounded backend and frontend source profiles consumed by the safe scaffold generator."
+    trigger_when:
+      - "An adopted technology profile should be previewed or written as a new source structure."
+  - path: docs/patterns/architecture-defaults/stack-selection-evidence.schema.json
+    kind: schema
+    description: "Machine-readable sources, claims, policies, application units, infrastructure scopes/resources, candidate results, and selections."
+    trigger_when:
+      - "Project descriptions or current-code evidence should drive a traceable stack decision."
+  - path: docs/patterns/architecture-defaults/tenancy-strategy.graph.yaml
+    kind: architecture-graph
+    description: "Tenant and multi-app isolation across identity, application, data, cache, queues, interfaces, and operations."
+    trigger_when:
+      - "One platform serves multiple organizations, accounts, regions, brands, or first-party apps."
+  - path: docs/patterns/architecture-defaults/tenancy-strategy.spec.md
+    kind: architecture-spec
+    description: "Multi-tenant and multi-app isolation profiles and overlay structure."
+    trigger_when:
+      - "Tenant context, data isolation, shared infrastructure, or multi-app reuse needs an explicit strategy."
+    sections:
+      - id: tenancy-default
+        title: Default Architecture
+        anchor: "## Default Architecture"
+        summary: "Applies trusted tenant context and selected isolation consistently across every boundary."
+        routing_description: "Load for tenant, account, region, brand, or first-party app decisions."
+        tags:
+          - tenancy
+          - isolation
+          - security
+      - id: tenancy-structure
+        title: Reference File Structure
+        anchor: "## Reference File Structure"
+        summary: "Overlays tenant context and scoping onto adopted archetype modules and shared libraries."
+        routing_description: "Load when drafting tenant-aware backend or client boundaries."
+        tags:
+          - tenancy
+          - files
+          - multi-app
+  - path: docs/patterns/architecture-defaults/interface-strategy.graph.yaml
+    kind: architecture-graph
+    description: "Synchronous, asynchronous, operator, and batch interface selection around stable application contracts."
+    trigger_when:
+      - "Behavior must be exposed through API, RPC, GraphQL, events, webhooks, CLI, stream, or batch."
+  - path: docs/patterns/architecture-defaults/interface-strategy.spec.md
+    kind: architecture-spec
+    description: "Interface choosing strategy based on consumer semantics, coupling, compatibility, and operations."
+    trigger_when:
+      - "Several consumers or transports make the public interface consequential."
+    sections:
+      - id: interface-default
+        title: Default Architecture
+        anchor: "## Default Architecture"
+        summary: "Defines application contracts first, then selects synchronous, asynchronous, or operator adapters."
+        routing_description: "Load for API, RPC, GraphQL, event, webhook, CLI, stream, or batch decisions."
+        tags:
+          - interfaces
+          - contracts
+          - adapters
+      - id: interface-structure
+        title: Reference File Structure
+        anchor: "## Reference File Structure"
+        summary: "Keeps interface adapters in module slices and transport primitives in shared libs."
+        routing_description: "Load when implementing selected interfaces."
+        tags:
+          - interfaces
+          - files
+          - public-contract
+  - path: docs/patterns/architecture-defaults/caching-strategy.graph.yaml
+    kind: architecture-graph
+    description: "Caching decision topology, defaults, exception cues, and checks."
+    trigger_when:
+      - "Cache placement, freshness, invalidation, isolation, or stampede behavior is in scope."
+  - path: docs/patterns/architecture-defaults/caching-strategy.spec.md
+    kind: architecture-spec
+    description: "Human-readable caching strategy default and implementation profile."
+    trigger_when:
+      - "A read path needs a cache policy or a cache proposal needs review."
+    sections:
+      - id: caching-default
+        title: Default Architecture
+        anchor: "## Default Architecture"
+        summary: "Starts without a shared cache; when evidence warrants one, uses cache-aside at the query boundary with explicit freshness and invalidation."
+        routing_description: "Load for cache placement, ownership, key, TTL, invalidation, or stampede decisions, including backend database cache queue pubsub routing."
+        tags:
+          - caching
+          - data
+          - reliability
+      - id: caching-file-structure
+        title: Reference File Structure
+        anchor: "## Reference File Structure"
+        summary: "Maps cache policy, ports, adapters, codecs, and tests into service-owned paths."
+        routing_description: "Load when turning the cache decision into an implementation draft."
+        tags:
+          - caching
+          - files
+          - boilerplate
+  - path: docs/patterns/architecture-defaults/service-api-worker.graph.yaml
+    kind: architecture-graph
+    description: "App startup, vertical module slices, shared technical libs, models, repositories, events, API, and worker topology."
+    trigger_when:
+      - "A backend API, worker, or server-side app needs vertical slices, startup composition, or shared infrastructure boundaries."
+  - path: docs/patterns/architecture-defaults/service-api-worker.spec.md
+    kind: architecture-spec
+    description: "Vertical-slice backend default with TypeScript, Python, and Go app/startup/module/libs profiles."
+    trigger_when:
+      - "An API/backend/worker implementation draft needs module interfaces, application/domain layers, shared libs, models, repositories, or events."
+    sections:
+      - id: service-default
+        title: Default Architecture
+        anchor: "## Default Architecture"
+        summary: "Uses app-owned startup composition, vertical module slices, module-owned adapters, and dependency-inverted shared technical libs."
+        routing_description: "Load for app, startup, module, interface, application, domain, repository, event, API, worker, or shared-lib boundaries."
+        tags:
+          - backend
+          - api
+          - worker
+      - id: service-file-structure
+        title: Reference File Structure
+        anchor: "## Reference File Structure"
+        summary: "Maps src/<app-name>/startup, src/<app-name>/modules, and src/libs to TypeScript, Python, and Go layouts."
+        routing_description: "Load when drafting a vertical-slice backend tree or shared server-side technical libraries."
+        tags:
+          - backend
+          - files
+          - boilerplate
+  - path: docs/patterns/architecture-defaults/event-driven.graph.yaml
+    kind: architecture-graph
+    description: "Composable outbox, broker, subscriber, idempotency, retry, dead-letter, and event-observability extension."
+    trigger_when:
+      - "A backend module publishes facts or owns deferred work that must survive process failure."
+  - path: docs/patterns/architecture-defaults/event-driven.spec.md
+    kind: architecture-spec
+    description: "Event-driven service extension that preserves backend vertical slices and startup composition."
+    trigger_when:
+      - "Fan-out, availability isolation, replay, or long-running work justifies asynchronous infrastructure."
+    sections:
+      - id: event-driven-default
+        title: Default Architecture
+        anchor: "## Default Architecture"
+        summary: "Adds transactional publication, idempotent consumption, bounded failure, replay, and event operations to service modules."
+        routing_description: "Load for outbox, broker, event, job, subscriber, retry, dead-letter, or replay design, including backend database cache queue pubsub routing."
+        tags:
+          - events
+          - messaging
+          - backend
+      - id: event-driven-structure
+        title: Reference File Structure
+        anchor: "## Reference File Structure"
+        summary: "Keeps event meaning in module slices and reusable transport mechanics in src/libs."
+        routing_description: "Load when applying the event extension to the backend archetype."
+        tags:
+          - events
+          - files
+          - extension
+  - path: docs/patterns/architecture-defaults/native-app.graph.yaml
+    kind: architecture-graph
+    description: "Native app shell, feature presentation, use-case, domain, repository, and platform-adapter topology."
+    trigger_when:
+      - "A mobile or native client needs feature, data, offline, or platform boundaries."
+  - path: docs/patterns/architecture-defaults/native-app.spec.md
+    kind: architecture-spec
+    description: "Native app default with Swift, Kotlin, React Native, and Flutter path overlays."
+    trigger_when:
+      - "A native app implementation draft, file structure, or architecture review is needed."
+    sections:
+      - id: native-app-default
+        title: Default Architecture
+        anchor: "## Default Architecture"
+        summary: "Uses feature-owned presentation around shared domain/use-case contracts and repository-backed platform adapters."
+        routing_description: "Load for native navigation, feature, repository, offline, or platform-boundary decisions."
+        tags:
+          - native
+          - mobile
+          - offline
+      - id: native-app-file-structure
+        title: Reference File Structure
+        anchor: "## Reference File Structure"
+        summary: "Maps one logical native graph to Swift, Kotlin, React Native, and Flutter source trees."
+        routing_description: "Load when drafting a native client file tree."
+        tags:
+          - native
+          - files
+          - boilerplate
+  - path: docs/patterns/architecture-defaults/cli.graph.yaml
+    kind: architecture-graph
+    description: "CLI parser, command, use-case, port, adapter, renderer, and exit-policy topology."
+    trigger_when:
+      - "A command-line tool needs stable commands, automation-safe output, or adapter boundaries."
+  - path: docs/patterns/architecture-defaults/cli.spec.md
+    kind: architecture-spec
+    description: "CLI default with Go, Rust, Python, and TypeScript path overlays."
+    trigger_when:
+      - "A CLI implementation draft, reusable structure, or public command review is needed."
+    sections:
+      - id: cli-default
+        title: Default Architecture
+        anchor: "## Default Architecture"
+        summary: "Keeps parsing and rendering at the edge around reusable use cases and explicit external adapters."
+        routing_description: "Load for command, core, config, adapter, output, or exit-code decisions."
+        tags:
+          - cli
+          - public-contract
+          - automation
+      - id: cli-file-structure
+        title: Reference File Structure
+        anchor: "## Reference File Structure"
+        summary: "Maps the CLI graph to Go, Rust, Python, and TypeScript layouts."
+        routing_description: "Load when drafting a distributable CLI file tree."
+        tags:
+          - cli
+          - files
+          - boilerplate
+  - path: docs/patterns/architecture-defaults/experiment.graph.yaml
+    kind: architecture-graph
+    description: "Experiment question, protocol, runner, adapter, raw artifact, analysis, report, and promotion topology."
+    trigger_when:
+      - "A spike, benchmark, data experiment, or model experiment needs reproducible structure."
+  - path: docs/patterns/architecture-defaults/experiment.spec.md
+    kind: architecture-spec
+    description: "Experiment default with Python and TypeScript path overlays and a promotion gate."
+    trigger_when:
+      - "An experiment project needs a shareable structure or production-promotion boundary."
+    sections:
+      - id: experiment-default
+        title: Default Architecture
+        anchor: "## Default Architecture"
+        summary: "Separates immutable protocol and raw runs from repeatable analysis and explicit production promotion."
+        routing_description: "Load for experiment inputs, reproducibility, artifacts, analysis, or promotion decisions."
+        tags:
+          - experiment
+          - reproducibility
+          - evidence
+      - id: experiment-file-structure
+        title: Reference File Structure
+        anchor: "## Reference File Structure"
+        summary: "Maps the experiment graph to Python and TypeScript project trees."
+        routing_description: "Load when drafting an experiment workspace."
+        tags:
+          - experiment
+          - files
+          - boilerplate
+  - path: docs/patterns/architecture-defaults/sdk-library.graph.yaml
+    kind: architecture-graph
+    description: "Independently versioned and distributed SDK/library public-surface, core, port, adapter, generation, compatibility, and release topology."
+    trigger_when:
+      - "A generated SDK, hand-authored SDK, public or internal package, platform SDK, or adapted binding needs a reusable architecture."
+  - path: docs/patterns/architecture-defaults/sdk-library.spec.md
+    kind: architecture-spec
+    description: "SDK/library default with stable exports, isolated generated code, consumer contracts, versioning, migration, deprecation, documentation, and release policy."
+    trigger_when:
+      - "An independently distributed library or SDK needs structure, compatibility, generation, or release decisions."
+    sections:
+      - id: sdk-library-default
+        title: Default Architecture
+        anchor: "## Default Architecture"
+        summary: "Keeps a stable public surface around core behavior, ports, adapters, and isolated generated or binding code."
+        routing_description: "Load for SDK library public API, generated code, compatibility, migration, deprecation, and release architecture."
+        tags:
+          - sdk
+          - library
+          - public-api
+          - compatibility
+          - generated-code
+      - id: sdk-library-structure
+        title: Reference File Structure
+        anchor: "## Reference File Structure"
+        summary: "Maps the SDK/library graph to package-owned source, generated, examples, docs, tests, and release paths."
+        routing_description: "Load when drafting an independently distributed SDK or library structure."
+        tags:
+          - sdk
+          - library
+          - files
+          - boilerplate

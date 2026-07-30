@@ -1,0 +1,127 @@
+schema_id: architecture-default-graph-v1
+graph_id: app-stack
+pair_kind: extension
+title: Application Stack
+status: reference-default
+spec_path: docs/patterns/architecture-defaults/app-stack.spec.md
+extends:
+  - stack-selection
+preserves:
+  - "stack-selection:claim-traceability"
+  - "stack-selection:evidence-data-minimization"
+  - "stack-selection:explicit-over-inferred"
+  - "stack-selection:policy-precedence"
+  - "stack-selection:application-unit-scope"
+  - "stack-selection:contradiction-blocks-selection"
+  - "stack-selection:fit-before-novelty"
+  - "stack-selection:whole-profile"
+  - "stack-selection:risk-first-proof"
+  - "stack-selection:boundary-preservation"
+  - "stack-selection:lifecycle-cost"
+  - "stack-selection:application-infrastructure-separation"
+  - "stack-selection:independent-extension-verdicts"
+compatible_with:
+  - backend-stack
+  - frontend-stack
+  - native-stack
+  - cli-stack
+  - experiment-stack
+  - library-stack
+  - frontend-state-data
+  - frontend-cache
+  - frontend-realtime
+  - frontend-ui-platform
+  - event-driven
+default_when:
+  - "A selected stack profile needs a runtime, framework, library, UI toolkit, or application transport."
+  - "Different application contours in one repository need independent technology choices."
+do_not_use_when:
+  - "The decision concerns compute, database, cache service, broker, network, delivery, or observability infrastructure."
+  - "The established target technology already satisfies the selected stack and the task does not challenge it."
+nodes:
+  - id: extracted-project-claims
+    kind: evidence-set
+    owns: "Source-linked application-technology claims inherited from stack-selection."
+  - id: applicable-selection-policies
+    kind: policy-set
+    owns: "Required, preferred, forbidden, and proof-required technology policies inherited from stack-selection."
+  - id: application-unit
+    kind: decision-scope
+    owns: "One backend service, worker, web frontend, native app, CLI, experiment, or independently distributed library."
+  - id: selected-stack-profile
+    kind: input
+    owns: "Resolved language/runtime class, architecture boundaries, workload, lifecycle, and delivery constraints."
+  - id: contour-extension
+    kind: extension-router
+    owns: "Exactly one matching backend, frontend, native, CLI, experiment, or library stack extension."
+  - id: candidate-results
+    kind: decision-set
+    owns: "Eligible, rejected, proof-required, and gap technology candidates for the application unit."
+  - id: technology-proof
+    kind: evidence
+    owns: "Compatibility, behavior, performance, security, accessibility, packaging, and operability evidence."
+  - id: selected-technology-profile
+    kind: decision
+    owns: "Chosen application technologies, versions or version constraints, rejected candidates, and owners."
+edges:
+  - from: extracted-project-claims
+    to: application-unit
+    relation: classifies
+  - from: applicable-selection-policies
+    to: candidate-results
+    relation: filters
+  - from: selected-stack-profile
+    to: contour-extension
+    relation: constrains
+  - from: application-unit
+    to: contour-extension
+    relation: routes_to
+  - from: contour-extension
+    to: candidate-results
+    relation: proposes
+  - from: candidate-results
+    to: technology-proof
+    relation: tested_by
+  - from: technology-proof
+    to: selected-technology-profile
+    relation: informs
+decisions:
+  - id: claims-drive-eligibility
+    default: "Use source-linked claims to establish candidate eligibility; do not select technology from project labels or popularity alone."
+    exception_when: "A binding platform mandate fixes the candidate; validate compatibility and record the mandate."
+  - id: policy-filter-before-score
+    default: "Reject forbidden candidates and hold proof-required candidates before comparing preferred qualities."
+    exception_when: "A policy conflict blocks the application-unit selection until its owners resolve it."
+  - id: application-type-branch
+    default: "Evaluate technologies through the extension matching one application contour rather than one repository-wide catalog."
+    exception_when: "The repository is deliberately one inseparable application and release unit."
+  - id: architecture-before-package
+    default: "Resolve workload, ownership, rendering, data, interface, and operational constraints before naming a runtime or library."
+    exception_when: "An organization mandate fixes a technology; record it and validate that boundaries remain expressible."
+  - id: existing-stack-first
+    default: "Prefer the coherent supported application stack already owned by the target team."
+    exception_when: "A mandatory requirement, support horizon, or operational constraint cannot be met."
+  - id: backend-runtime-fit
+    default: "Choose backend runtime families from workload, ecosystem, deployment artifact, concurrency, and ownership evidence."
+    exception_when: "The backend-stack proof contradicts the expected fit."
+  - id: frontend-rendering-fit
+    default: "Choose frontend frameworks from rendering, routing, server/client boundary, hosting, and interaction evidence."
+    exception_when: "The frontend-stack proof or an established framework provides a stronger fit."
+  - id: state-by-authority
+    default: "Select frontend state tools only after URL, local, remote, workflow, durable, and realtime authorities are separated."
+    exception_when: "One established system already covers the categories without competing authorities."
+  - id: ui-ownership-fit
+    default: "Select UI technology from primitive, source ownership, styled-system, theming, documentation, and release needs."
+    exception_when: "A target design system or platform component library is already authoritative."
+  - id: cheapest-realtime
+    default: "Select the cheapest application transport that satisfies direction, latency, ordering, recovery, and scale requirements."
+    exception_when: "A platform push or managed realtime mandate fixes the application transport."
+  - id: proof-before-adoption
+    default: "Prove the riskiest compatibility and operations claim before adopting a new application technology."
+    exception_when: "The exact versioned combination already has current production evidence in the target organization."
+validation:
+  - "Every application unit routes to only its matching stack extension."
+  - "Every child extension preserves the applicable app-stack decisions."
+  - "Every candidate records source claims, all applicable policy outcomes, and a derived disposition."
+  - "Application technology choices do not absorb infrastructure provider or resource topology decisions."
+  - "The highest-risk proof is executed or explicitly NOT_RUN with a blocker and next gate."

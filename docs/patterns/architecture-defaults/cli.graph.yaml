@@ -1,0 +1,80 @@
+schema_id: architecture-default-graph-v1
+graph_id: cli
+pair_kind: archetype
+title: Command-Line Tool Default
+status: reference-default
+spec_path: docs/patterns/architecture-defaults/cli.spec.md
+default_when:
+  - "A command-line tool has more than one command, external dependencies, or automation consumers."
+  - "Command behavior needs stable output, exit codes, configuration, and tests."
+do_not_use_when:
+  - "The target is a private one-off script with no reuse or distribution expectation."
+  - "The CLI is only a generated transport wrapper with no owned behavior."
+nodes:
+  - id: executable
+    kind: composition-root
+    owns: "Dependency assembly, process signals, and top-level error boundary."
+  - id: parser
+    kind: transport
+    owns: "Arguments, flags, environment, configuration precedence, and help."
+  - id: command
+    kind: boundary-handler
+    owns: "Command input mapping and invocation of one use case."
+  - id: core-use-case
+    kind: application
+    owns: "Reusable command behavior independent of terminal and parser frameworks."
+  - id: ports
+    kind: boundary-contract
+    owns: "Filesystem, process, network, clock, and true external dependency contracts."
+  - id: adapters
+    kind: infrastructure
+    owns: "Operating-system and provider-specific effects."
+  - id: renderer
+    kind: output-boundary
+    owns: "Human text, machine-readable output, progress, and diagnostics."
+  - id: exit-policy
+    kind: public-contract
+    owns: "Stable exit-code and interrupt semantics."
+edges:
+  - from: executable
+    to: parser
+    relation: configures
+  - from: parser
+    to: command
+    relation: dispatches
+  - from: command
+    to: core-use-case
+    relation: invokes
+  - from: core-use-case
+    to: ports
+    relation: depends_on
+  - from: adapters
+    to: ports
+    relation: implements
+  - from: command
+    to: renderer
+    relation: maps_result
+  - from: executable
+    to: exit-policy
+    relation: maps_terminal_outcome
+decisions:
+  - id: command-discipline
+    default: "Keep commands thin and place reusable behavior in parser-independent use cases."
+    exception_when: "A command only validates and forwards one transport call with no owned behavior."
+  - id: output-contract
+    default: "Separate human-readable output from versioned machine-readable output."
+    exception_when: "The CLI is interactive-only and explicitly has no automation consumers."
+  - id: configuration
+    default: "Define precedence as flags over environment over config file over defaults, with secrets redacted."
+    exception_when: "The target ecosystem mandates a different documented precedence."
+  - id: filesystem-safety
+    default: "Make destructive scope explicit, resolve targets before mutation, and support dry-run when effects are material."
+    exception_when: "The command has no destructive or external side effects."
+  - id: compatibility
+    default: "Treat command names, flags, output schema, and exit codes as public contracts after release."
+    exception_when: "The tool is unreleased and has no external consumers."
+validation:
+  - "Snapshot help, command routing, machine output, diagnostics, and exit codes."
+  - "Test configuration precedence, missing values, redaction, cancellation, and partial failure."
+  - "Use temporary directories and fake true external boundaries for functional CLI journeys."
+  - "Verify stdout contains results, stderr contains diagnostics, and structured output is not polluted."

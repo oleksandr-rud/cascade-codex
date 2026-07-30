@@ -13,6 +13,13 @@ author or update functional test artifacts when the user asks for coverage or
 the current behavior examples require executable proof. It must not patch
 product/runtime source code.
 
+When product-visible checks are part of a versioned cross-surface campaign,
+this skill owns the behavior examples and acceptance oracles.
+`simulation-campaigns` owns the manifest, selection, and aggregation;
+`simulation-execution` owns runtime identity, execution, evidence freezing,
+cleanup, and handoff; `simulation-evaluation` independently consumes the
+frozen oracle evidence.
+
 ## Source Order
 
 1. Latest user request and expected behavior.
@@ -65,7 +72,10 @@ If expected behavior is missing, report `GAP` and route to `plan-change` or
 13. Route stale failing tests to `test-autorepair` only when evidence shows
     product behavior still matches the expected contract.
 14. Escalate to human review only for subjective judgment that executable
-   evidence cannot decide.
+    evidence cannot decide.
+15. When invoked by a simulation campaign, return oracle status and evidence
+    to the exact campaign and run identity. Do not infer portfolio or release
+    status.
 
 ## Output
 

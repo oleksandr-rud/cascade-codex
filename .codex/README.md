@@ -16,6 +16,9 @@ Supporting skills:
 - `codex-maintenance`
 - `develop-skill`
 - `pattern-context`
+- `simulation-campaigns`
+- `simulation-execution`
+- `simulation-evaluation`
 - `harness-evaluation`
 - `discover`
 - `market-validation`
@@ -46,7 +49,8 @@ Supporting skills:
   config/docs migration, validation, and setup handoff.
 - `agent-engineer`: owns Cascade maintenance plus target-project agent/LLM
   system design, Codex surface best practices, agentic workflow checklists,
-  source-context, skill, tool-contract, observability, and eval guidance.
+  source-context, skill, tool-contract, simulation-campaign, observability, and
+  eval guidance.
 - `business-analyst`: owns long market validation, live research,
   business-analysis lanes, evidence grading, and synthesis into specs.
 - `security`: owns security-sensitive review, auth/session/RBAC and
@@ -57,6 +61,10 @@ Supporting skills:
   handoff planning.
 - `harness-evaluator`: owns read-only golden evaluation of completed harness
   scenario outputs and JSONL traces after deterministic grading.
+- `simulation-operator`: owns bounded mutable execution of one approved
+  campaign, immutable evidence freezing, cleanup, and execution handoff.
+- `simulation-evaluator`: owns independent read-only cross-contour evidence,
+  policy, oracle, semantic, and claim-support evaluation.
 
 Agent TOML files use the current Codex custom-agent schema with top-level
 `name`, `description`, `model`, and `developer_instructions`. Planning,

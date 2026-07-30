@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "id": "resolve-account-v1",
+  "goal": "Move the synthetic account from pending to resolved while recording one attempt.",
+  "actor_ids": [
+    "standard-actor",
+    "risk-actor"
+  ],
+  "initial_state": {
+    "account.status": "pending",
+    "account.attempts": 0
+  },
+  "stop_conditions": [
+    "account.status equals resolved",
+    "account.attempts equals 1"
+  ],
+  "claim_ids": [
+    "fixture-state-transition",
+    "fixture-population-coverage",
+    "fixture-release-eligibility"
+  ]
+}

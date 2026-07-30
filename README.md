@@ -18,8 +18,8 @@ work-lane tracking, and release validation into one reusable package.
 - Harness name: `cascade`
 - Runtime bridge: `CODEX.md`
 - Adapter template: `harness.config.example.yaml`
-- Local role contracts: 7
-- Registered skills: 38
+- Local role contracts: 9
+- Registered skills: 41
 - Canonical skill and role source: `.codex/skills/` and `.codex/agents/`
 - Planning and golden model: `gpt-5.6-sol`
 - Read-heavy execution model: `gpt-5.6-terra`
@@ -34,6 +34,7 @@ compatibility name. Treat that as a path/API label, not the product name.
 |---|---|
 | `AGENTS.md` | Thin boot contract for coding agents: project identity, hard guardrails, validation commands, operating rules, and pointers only. |
 | `CODEX.md` | Runtime bridge: load order, canonical task route, optional escalations, role references, work packets, write targets, and closeout evidence rules. |
+| `.github/` | Shared pull request description contract plus repository instructions that make GitHub Copilot use the same task, status, cleanup, and evidence rules as Codex. |
 | `.codex/config.toml` | Harness registry: name, bridge path, config template, canonical route, memory roots, MCP server config, and role registry. |
 | `.codex/skills/` | Reusable workflow skills with trigger-focused frontmatter, source order, output contracts, templates, checklists, and references where needed. |
 | `.codex/agents/` | Codex-compatible custom-agent TOML files plus local role contracts, skill maps, delegation policy, and specialist checklists. |
@@ -94,11 +95,13 @@ clear boundary:
 |---|---|---|
 | `orchestrator` | `gpt-5.6-sol` | Normal task routing plus explicit workflow-packet routing across context, ingest, impact, planning, acceptance, implementation, review, validation, repair, and closeout. |
 | `project-onboarder` | `gpt-5.6-terra` | New-repository setup, read-heavy harness adaptation, config/docs migration, validation, and setup handoff. |
-| `agent-engineer` | `gpt-5.6-sol` | Cascade maintenance and target-project agent/LLM system design, including agent graphs, model/tool loops, retrieval, memory, permissions, tool contracts, observability, cost/safety controls, evals, and Codex surface decisions. |
+| `agent-engineer` | `gpt-5.6-sol` | Cascade maintenance and target-project agent/LLM system design, including agent graphs, model/tool loops, retrieval, memory, permissions, tool contracts, simulation campaigns, observability, cost/safety controls, evals, and Codex surface decisions. |
 | `business-analyst` | `gpt-5.6-sol` | Long market validation, competitor/pain/economics lanes, evidence grading, and synthesis into specs. |
 | `security` | `gpt-5.6-sol` | Security-sensitive review, auth/session/RBAC and tenant-boundary analysis, secure-design review, audit evidence, and security validation planning. |
 | `designer` | `gpt-5.6-terra` | Read-heavy UX flow review, accessibility review, visual validation, design-system routing, and design handoff planning. |
 | `harness-evaluator` | `gpt-5.6-sol` | Read-only golden evaluation of completed Cascade scenario outputs and traces after deterministic hard gates. |
+| `simulation-operator` | `gpt-5.6-terra` | Bounded mutable execution of one approved command, terminal, browser, desktop, mobile, or agent-response campaign with evidence freezing and cleanup. |
+| `simulation-evaluator` | `gpt-5.6-sol` | Independent read-only evaluation of frozen cross-contour evidence, policies, oracles, semantic claims, and claim support. |
 
 Agent Engineer is not limited to Cascade internals. Use it for target-project
 agent and LLM systems too: framework-backed agent runtimes, project-owned
@@ -108,7 +111,7 @@ When those decisions require product/runtime code changes, the implementation
 still routes through planning, architecture or secure-design review when
 needed, `implement-change`, and validation.
 
-The 38 registered skills cluster into:
+The 41 registered skills cluster into:
 
 - Core execution and workflow packets: `context`, `agentic-workflow-builder`,
   `orchestrate-work`, `plan-change`, `functional-qa`, `implement-change`,
@@ -124,7 +127,18 @@ The 38 registered skills cluster into:
   `accessibility-review`, `visual-qa`.
 - Harness and agent-system design/maintenance: `agents-best-practices`,
   `develop-skill`, `codex-maintenance`, `pattern-context`,
-  `adapt-harness`, `harness-evaluation`.
+  `adapt-harness`, `simulation-campaigns`, `simulation-execution`,
+  `simulation-evaluation`, `harness-evaluation`.
+
+`simulation-campaigns` owns versioned campaign definition, selection,
+coordination, replay planning, receipt aggregation, and reporting across all
+six contours. `simulation-execution` and `simulation-operator` own the mutable
+run, evidence freeze, cleanup, and execution receipt.
+`simulation-evaluation` and `simulation-evaluator` independently judge frozen
+cross-contour evidence. Product-visible acceptance oracles remain with
+`functional-qa`, Cascade trace grading remains with `harness-evaluation` and
+`harness-evaluator`, and runner or schema changes remain with
+`codex-maintenance`.
 
 ## Documentation And Memory
 
@@ -146,6 +160,58 @@ document `sections`. Use
 available packs and `--pack`, `--section`, `--tag`, or `--query` to compile
 only the needed rule text.
 
+`docs/patterns/architecture-defaults/` currently provides 34 validated
+reference graph/spec pairs. `stack-selection` is the stable selection authority.
+`app-stack` routes application units to backend, frontend, native,
+CLI, experiment, or library stack extensions. `infrastructure`
+separately routes compute, data, messaging, and delivery resources. Agents
+extract source-linked claims and policies from project
+descriptions, requirements, operations constraints, explicit decisions, and
+current code; classify each backend service, backend worker, web frontend,
+native app, CLI, experiment, or independently distributed library; then record candidates as eligible, rejected,
+proof-required, or a gap. They honor declared dependency and preservation
+relationships and record each pair as adopted, adapted, rejected, or a gap.
+Use the core
+`architecture-defaults` pack for general, backend, native, CLI, experiment,
+and SDK/library work, and the separate `frontend-architecture-defaults` pack for the web base,
+frontend stack profiles, state/data, cache, realtime, and
+UI-platform policies.
+
+Backend, frontend, native, CLI, experiment, and library application-contour
+infrastructure profiles translate an application or package shape into
+justified resource needs; the compute, data, messaging, and delivery
+extensions remain the only resource/provider authorities. Libraries default
+to no production runtime and add build or distribution resources only from
+evidence.
+
+The architecture references are not all backend defaults.
+`architecture-selection` chooses topology, `stack-selection` chooses a complete
+operable profile from project evidence. The app-stack branch selects
+application runtimes, frameworks, and libraries; the infrastructure branch
+selects operated resources and provider topology. Their candidate verdicts and
+proof gates remain independent. Validate the combined machine-readable
+selection record before adoption:
+
+```bash
+python3 scripts/validate_stack_selection_evidence.py validate \
+  /path/to/stack-selection.json
+```
+
+Five selected profiles can also be rendered as new source structures:
+
+```bash
+python3 scripts/scaffold_architecture_default.py list
+python3 scripts/scaffold_architecture_default.py preview \
+  --profile backend-bun \
+  --target /path/to/new-source-root \
+  --app-name api \
+  --module-name orders
+```
+
+Use the separate `write` command only after reviewing the preview. The
+generator preflights every path, never overwrites, does not install packages,
+and does not select versions.
+
 The write-target map is intentionally narrow. The validator rejects unexpected
 docs folders, stale active skill references, unwired skills, invalid custom
 agent TOML, overgrown `AGENTS.md`, stale naming, project-specific token
@@ -156,7 +222,7 @@ audit adds missing-resource, semantic leakage, route, runtime, and trace checks.
 
 Start from a clean Cascade checkout or release bundle, then copy the harness
 into the target repository root. Review collisions first if the target already
-has `AGENTS.md`, `CODEX.md`, `.codex/`, `docs/`, or `scripts/`.
+has `AGENTS.md`, `CODEX.md`, `.github/`, `.codex/`, `docs/`, or `scripts/`.
 
 ```bash
 export CASCADE_SRC=/path/to/cascade
@@ -168,6 +234,7 @@ rsync -a --backup --suffix=.pre-cascade \
   "$CASCADE_SRC"/AGENTS.md \
   "$CASCADE_SRC"/CODEX.md \
   "$CASCADE_SRC"/harness.config.example.yaml \
+  "$CASCADE_SRC"/.github \
   "$CASCADE_SRC"/.codex \
   "$CASCADE_SRC"/docs \
   "$CASCADE_SRC"/scripts \
@@ -241,8 +308,8 @@ Expected output includes:
 
 ```text
 cascade_codex_status=PASS
-agents=7
-skills=38
+agents=9
+skills=41
 project_specific_leakage=0
 standalone_qa_refs=0
 ```

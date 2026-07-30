@@ -47,6 +47,7 @@ When reusable pattern memory is needed, create bounded pattern entries through
 | `design-system` | `.codex/skills/design-system/SKILL.md` | `ON-06` for reusable design rules |
 | `brand-positioning` | `.codex/skills/brand-positioning/SKILL.md` | `ON-06` for brand/content rules |
 | `functional-qa` | `.codex/skills/functional-qa/SKILL.md` | `ON-07` |
+| `simulation-campaigns` | `.codex/skills/simulation-campaigns/SKILL.md` | `ON-07` when approved scenarios need a campaign |
 | `docs-impact-map` | `.codex/skills/docs-impact-map/SKILL.md` | `ON-03` through `ON-08` before durable writes |
 | `pattern-context` | `.codex/skills/pattern-context/SKILL.md` | `ON-03`, `ON-04`, `ON-07`, `ON-08` when pattern entries or packs change |
 | `validate-change` | `.codex/skills/validate-change/SKILL.md` | `ON-09` |
@@ -63,7 +64,7 @@ When reusable pattern memory is needed, create bounded pattern entries through
 | `ON-04` | `<open>` | `security` or `project-onboarder` | `codebase-audit`, `auth-analysis`, `secure-design`, `pattern-context` | auth, data, config, API, adapters, logs docs | security/data notes and validation probes | sensitive data omitted, risks separated from evidence; no broad security dump | `ON-05` |
 | `ON-05` | `<open>` | `project-onboarder` | `ingest-spec`, `discover`, `synthesis-to-spec`, `compose-spec` | routes, UI copy, APIs, tests, specs, README | feature specs, scenarios, journeys, spec packets | each feature has source identity or `GAP` | `ON-06` |
 | `ON-06` | `<open>` | `designer` or `project-onboarder` | `visual-qa`, `ux-flow-review`, `design-system`, `brand-positioning` | running app, screenshots, UI code, design and brand docs | visual/design/brand/product deltas | viewport/state evidence or blocked reason | `ON-07` |
-| `ON-07` | `<open>` | `project-onboarder` | `functional-qa`, `docs-impact-map`, `pattern-context` | feature specs, scenarios, public contracts, runners | acceptance and test map | no missing required check marked pass; reusable validation packs updated only when durable | `ON-08` |
+| `ON-07` | `<open>` | `project-onboarder` | `functional-qa`, `simulation-campaigns`, `docs-impact-map`, `pattern-context` | feature specs, scenarios, public contracts, runners | acceptance, test, and optional initialized simulation map | no missing required check marked pass; simulation paths previewed and collision-free; reusable validation packs updated only when durable | `ON-08` |
 | `ON-08` | `<open>` | `project-onboarder` | `docs-impact-map`, `pattern-context`, `closeout` | all durable facts and owner docs | context-memory, pattern context, and doc routing matrix | narrow owner for every retained fact | `ON-09` |
 | `ON-09` | `<open>` | `project-onboarder` | `validate-change`, `closeout` | changed files, validator, target checks | validation and handoff | validator and available target checks recorded | done |
 

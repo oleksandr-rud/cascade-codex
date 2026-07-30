@@ -1,0 +1,70 @@
+schema_id: architecture-default-graph-v1
+graph_id: infrastructure-compute
+pair_kind: extension
+title: Compute Infrastructure
+status: reference-default
+spec_path: docs/patterns/architecture-defaults/infrastructure-compute.spec.md
+extends:
+  - infrastructure
+preserves:
+  - "infrastructure:scope-before-provider"
+  - "infrastructure:existing-platform-first"
+  - "infrastructure:managed-before-self-managed"
+  - "infrastructure:single-platform-default"
+  - "infrastructure:resource-ownership"
+  - "infrastructure:environment-contract"
+  - "infrastructure:least-privilege-and-isolation"
+  - "infrastructure:cost-and-lifecycle"
+  - "infrastructure:failure-and-recovery-proof"
+  - "infrastructure:infrastructure-as-code-authority"
+compatible_with:
+  - backend-stack
+  - frontend-stack
+  - native-stack
+  - cli-stack
+  - experiment-stack
+default_when:
+  - "An application needs server, worker, job, container, function, edge, cluster, or accelerated compute."
+do_not_use_when:
+  - "The artifact is purely local or statically delivered without runtime compute."
+nodes:
+  - id: workload-profile
+    kind: evidence
+    owns: "Request/job shape, concurrency, duration, CPU, memory, acceleration, startup, locality, and availability."
+  - id: compute-model
+    kind: candidate-set
+    owns: "Process/VM, container service, orchestrated cluster, function, edge runtime, batch, or accelerated compute."
+  - id: placement-and-scaling
+    kind: policy
+    owns: "Regions, zones, replicas, autoscaling signals, limits, disruption, scheduling, and capacity."
+  - id: workload-identity
+    kind: security-boundary
+    owns: "Runtime identity, network reachability, secret access, and resource permissions."
+  - id: compute-proof
+    kind: evidence
+    owns: "Startup, load, scale, failure, drain, recovery, cost, and teardown evidence."
+edges:
+  - from: workload-profile
+    to: compute-model
+    relation: constrains
+  - from: compute-model
+    to: placement-and-scaling
+    relation: configured_by
+  - from: placement-and-scaling
+    to: workload-identity
+    relation: scoped_by
+  - from: workload-identity
+    to: compute-proof
+    relation: validated_by
+decisions:
+  - id: cheapest-sufficient-compute
+    default: "Choose the simplest compute model that satisfies runtime compatibility, duration, scale, isolation, locality, and recovery."
+    exception_when: "A platform mandate or specialized workload requires a more complex model."
+  - id: scale-from-signal
+    default: "Scale from measured demand and saturation signals with explicit minimum, maximum, and failure behavior."
+    exception_when: "The workload has a fixed bounded schedule and capacity."
+  - id: graceful-lifecycle
+    default: "Define startup, health, readiness, drain, cancellation, shutdown, reschedule, and retry behavior."
+    exception_when: "The compute unit is an atomic bounded function with provider-enforced termination."
+validation:
+  - "Runtime compatibility, capacity, scale, placement, identity, network, secret, failure, drain, recovery, cost, and teardown are proved."

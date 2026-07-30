@@ -1,0 +1,72 @@
+schema_id: architecture-default-graph-v1
+graph_id: cli-stack
+pair_kind: extension
+title: CLI Stack
+status: reference-default
+spec_path: docs/patterns/architecture-defaults/cli-stack.spec.md
+extends:
+  - app-stack
+requires:
+  - cli
+preserves:
+  - "app-stack:claims-drive-eligibility"
+  - "app-stack:policy-filter-before-score"
+  - "app-stack:application-type-branch"
+  - "app-stack:architecture-before-package"
+  - "app-stack:existing-stack-first"
+  - "app-stack:proof-before-adoption"
+compatible_with:
+  - infrastructure
+default_when:
+  - "A CLI needs a compiled or runtime-distributed implementation and packaging profile."
+do_not_use_when:
+  - "The unit is a backend service, web frontend, native app, or experiment."
+nodes:
+  - id: cli-unit
+    kind: application-scope
+    owns: "One command-line application and its automation, portability, plugin, and distribution claims."
+  - id: compiled-cli
+    kind: candidate-family
+    owns: "Native executable with explicit target OS and architecture builds."
+  - id: runtime-cli
+    kind: candidate-family
+    owns: "CLI distributed through an existing language/runtime ecosystem."
+  - id: embedded-cli
+    kind: candidate-family
+    owns: "Command surface shipped inside an existing application or package."
+  - id: cli-proof
+    kind: evidence
+    owns: "Startup, portability, output, signals, filesystem safety, packaging, update, and compatibility proof."
+edges:
+  - from: cli-unit
+    to: compiled-cli
+    relation: may_select
+  - from: cli-unit
+    to: runtime-cli
+    relation: may_select
+  - from: cli-unit
+    to: embedded-cli
+    relation: may_select
+  - from: compiled-cli
+    to: cli-proof
+    relation: validated_by
+  - from: runtime-cli
+    to: cli-proof
+    relation: validated_by
+  - from: embedded-cli
+    to: cli-proof
+    relation: validated_by
+decisions:
+  - id: distribution-before-language
+    default: "Choose compiled or runtime distribution from target environments, install/update route, startup, size, and support policy before language preference."
+    exception_when: "The CLI is embedded in an already selected application runtime."
+  - id: automation-contract-first
+    default: "Preserve stable arguments, stdout/stderr, structured output, exit codes, signals, and non-interactive behavior across technology choices."
+    exception_when: "The tool is explicitly interactive-only and has no automation consumers."
+  - id: plugin-trust-boundary
+    default: "Add plugin technology only with an explicit compatibility, isolation, permission, signing, and lifecycle contract."
+    exception_when: "All extension points are compiled and released with the CLI."
+validation:
+  - "The unit is cli."
+  - "Startup, portability, output contract, signals, filesystem safety, packaging, update, and compatibility behavior are proved."
+  - "Runtime prerequisites and plugin trust boundaries are explicit."

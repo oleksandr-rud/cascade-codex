@@ -38,11 +38,54 @@ Create a lane packet when the workstream needs its own:
 - MCP/tool context policy;
 - blocked/deferred handoff.
 
-Completed rows should leave `docs/work/active.md` only after durable evidence
-has been preserved under `docs/work/reports/` and the cleanup scope is
-explicit. Do not create a permanent `CLOSED` active-row status; remove completed
-rows from the active registry and keep the report or lane packet as historical
-evidence.
+Completed rows leave `docs/work/active.md` after durable evidence is preserved
+under `docs/work/reports/`. Do not create a permanent `CLOSED` active-row
+status; remove terminal projections during closeout and keep the report or lane
+packet as historical evidence.
+
+## Work Graphs
+
+Use a work graph when several worklines need explicit dependency ordering,
+merge ownership, execution surfaces, dispatch state, evidence joins,
+invalidation, repair routes, or one terminal acceptance gate. Use
+`docs/work/work-graph-template.md` as the default shape.
+
+A work graph exists to make non-atomic execution checkable. It must name its
+purpose, source identity, worklines, topology, node outcomes, gate contracts,
+dispatch manifest, validation, invalidation, current frontier, and closeout
+receipt. It is not an architecture graph, task generator, automatic scheduler,
+or permission to create agents, Codex tasks, branches, worktrees, external
+actions, or provider spend.
+
+Naming defaults:
+
+- worklines use `W-XXX`;
+- new work graphs use `WG-XXX`;
+- new graph nodes use `WG-XXX-NXX` and gates use `WG-XXX-GX`;
+- durable files use `docs/work/reports/YYYY-MM-DD-<slug>-work-graph.md`;
+- existing graph and node IDs remain stable when already bound into reports or
+  receipts; changing the display term does not rewrite evidence identity.
+
+Lifecycle:
+
+1. `DRAFT`: topology or ownership is incomplete and the graph is not active.
+2. `PLANNED`: structure is validated and registered; nodes remain declarative.
+3. `ACTIVE`: at least one separately authorized node is dispatched or running.
+4. `BLOCKED`: the current frontier cannot proceed and the exact blocker is
+   recorded.
+5. `COMPLETE`: the terminal gate accepts current-source implementation and all
+   required evidence.
+6. `SUPERSEDED`: a named replacement owns the remaining scope; incomplete
+   evidence is never rewritten as complete.
+
+After `COMPLETE` or `SUPERSEDED`, preserve the durable graph/report, source
+identity, receipts, failed evidence, and invalidation history, then remove the
+terminal projection from the active registry.
+
+The defaults exist to prevent a diagram from being mistaken for execution,
+stop dependency readiness from becoming implicit authorization, keep parallel
+writes and merge ownership explicit, and preserve exact evidence when only part
+of a graph must be repaired.
 
 ## Parallel Rules
 
@@ -58,6 +101,44 @@ Parallel lanes are allowed only when:
 
 Serialize lanes when file ownership, public contracts, state machines, or
 product intent overlap.
+
+## Execution Surfaces And Dispatch
+
+Lane and work-graph state is declarative. A ready gate means the work
+is eligible; it does not authorize or perform dispatch.
+
+| Surface | Runtime meaning | Authorization |
+|---|---|---|
+| `root` | Current Codex task root agent | Current scoped implementation request |
+| `internal-subagent` | Child agent inside the current task tree | Explicit user authorization for delegation or parallel agents |
+| `user-visible-task` | Separate Codex task with its own conversation | Explicit user request to create, open, or fork separate tasks or threads |
+
+Use a separate dispatch state from lane status:
+`NOT_AUTHORIZED`, `AUTHORIZED`, `DISPATCHED`, `RUNNING`, `BLOCKED`, or
+`COMPLETE`. Record dependency gate, merge owner, authorization evidence, and
+runtime handle. Never infer user-visible task creation from an implementation
+request, graph readiness, `max_threads`, or a lane's preferred execution
+surface. `max_threads` is an internal agent-execution capacity limit.
+
+If a requested surface cannot be used, mark dispatch `BLOCKED`; do not silently
+replace a separate task with an internal subagent or vice versa.
+
+## Automatic Status Reconciliation
+
+A request to check, refresh, reconcile, or actualize a task, workline, or work
+graph includes authorization to update its in-scope local registry and graph
+status from current evidence.
+
+Mark a lane `COMPLETE` automatically, without another confirmation, only when
+all required acceptance criteria, dependencies, validation gates, and closeout
+evidence pass against the current source identity. Synchronize lane status,
+dispatch state, next gate, graph nodes, active registry, and completion receipt.
+
+Keep the lane open when implementation is partial, a required check is
+`NOT_RUN`, or evidence comes from historical artifacts, another branch, or a
+different source identity. Automatic completion is not permission to implement
+missing work, mutate an external tracker, or remove open or unresolved rows.
+It does remove a proven terminal projection after preserving durable evidence.
 
 ## Work-To-Source Coverage
 

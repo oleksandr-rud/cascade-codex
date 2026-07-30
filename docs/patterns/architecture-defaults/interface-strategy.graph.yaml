@@ -1,0 +1,89 @@
+schema_id: architecture-default-graph-v1
+graph_id: interface-strategy
+pair_kind: decision
+title: Interface Selection Strategy
+status: reference-default
+spec_path: docs/patterns/architecture-defaults/interface-strategy.spec.md
+requires:
+  - architecture-selection
+compatible_with:
+  - service-api-worker
+  - web-frontend
+  - native-app
+  - cli
+  - event-driven
+  - tenancy-strategy
+default_when:
+  - "A module or application must expose behavior through API, RPC, GraphQL, events, webhooks, CLI, or batch interfaces."
+  - "Several consumers or latency and coupling requirements make interface choice consequential."
+do_not_use_when:
+  - "The call remains private and in-process inside one established module."
+  - "An existing public contract is unchanged and already fits its consumers."
+nodes:
+  - id: consumer-needs
+    kind: evidence
+    owns: "Consumers, commands, queries, latency, consistency, payload, streaming, automation, and compatibility needs."
+  - id: application-contract
+    kind: stable-core
+    owns: "Transport-independent commands, queries, results, errors, authorization, and idempotency."
+  - id: synchronous-interface
+    kind: adapter-family
+    owns: "REST, RPC, GraphQL, local library, and synchronous request-response contracts."
+  - id: asynchronous-interface
+    kind: adapter-family
+    owns: "Events, queues, webhooks, streams, schedules, and batch contracts."
+  - id: operator-interface
+    kind: adapter-family
+    owns: "CLI, administrative, and automation-safe interfaces."
+  - id: contract-lifecycle
+    kind: governance
+    owns: "Schema ownership, compatibility, versioning, deprecation, generated clients, and consumer verification."
+  - id: operations
+    kind: evidence
+    owns: "Timeout, retry, rate limit, backpressure, replay, audit, tracing, and failure visibility."
+edges:
+  - from: consumer-needs
+    to: application-contract
+    relation: shapes
+  - from: application-contract
+    to: synchronous-interface
+    relation: exposed_by
+  - from: application-contract
+    to: asynchronous-interface
+    relation: exposed_by
+  - from: application-contract
+    to: operator-interface
+    relation: exposed_by
+  - from: synchronous-interface
+    to: contract-lifecycle
+    relation: governed_by
+  - from: asynchronous-interface
+    to: contract-lifecycle
+    relation: governed_by
+  - from: operator-interface
+    to: contract-lifecycle
+    relation: governed_by
+  - from: contract-lifecycle
+    to: operations
+    relation: evidenced_by
+decisions:
+  - id: application-first
+    default: "Define transport-independent application commands, queries, results, errors, auth, and idempotency before interface adapters."
+    exception_when: "A pass-through gateway deliberately owns no application behavior."
+  - id: synchronous-default
+    default: "Use request-response for immediate commands and queries with one known result."
+    exception_when: "Work is long-running, fan-out, failure-isolated, streaming, or naturally eventual."
+  - id: asynchronous-default
+    default: "Use events or jobs for facts and deferred work; do not disguise commands as broadcast events."
+    exception_when: "A direct synchronous call is simpler and its availability coupling is acceptable."
+  - id: contract-source
+    default: "Keep one machine-readable schema or typed contract owner and generate clients when practical."
+    exception_when: "A small internal interface has one co-released consumer; still contract-test the boundary."
+  - id: compatibility-policy
+    default: "Prefer additive evolution, explicit deprecation, bounded version support, and consumer evidence."
+    exception_when: "All consumers are atomically migrated in one release boundary."
+validation:
+  - "Each interface maps to an application contract and names its caller, auth, tenant, error, idempotency, and compatibility rules."
+  - "Synchronous paths test timeouts, retries, rate limits, cancellation, and partial failures."
+  - "Asynchronous paths test ordering, duplicates, replay, poison messages, backpressure, and dead-letter recovery."
+  - "CLI and batch interfaces test exit/status contracts, machine-readable output, interruption, and resumability."

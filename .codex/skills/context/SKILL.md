@@ -21,9 +21,14 @@ where the work stands.
 ## Checklist
 
 1. Identify active work lanes and whether they still match the latest request.
-2. Summarize branch state and local changes without reverting user work.
-3. Identify blockers, stale context, and next likely workflow skill.
-4. Keep the snapshot short; do not implement from this skill.
+2. When the user asks to check, refresh, or actualize task status, compare each
+   in-scope lane with its current source, required criteria, and validation
+   evidence. Route proven completion to `orchestrate-work -> closeout` for
+   automatic registry reconciliation; do not leave a proven-complete lane open
+   waiting for another confirmation.
+3. Summarize branch state and local changes without reverting user work.
+4. Identify blockers, stale context, and next likely workflow skill.
+5. Keep the snapshot short; do not implement from this skill.
 
 ## Output
 

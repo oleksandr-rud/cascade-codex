@@ -45,24 +45,46 @@ commands. It can also route explicit requests for agentic workflow packets to
 6. Pattern context: use `pattern-context` when reusable pattern entries or
    context packs need retrieval, creation, or update.
 7. Orchestrate: use `orchestrate-work` to keep work single-lane, split into
-   parallel-safe lanes, or serialize conflicting lanes.
-8. Plan: use `plan-change` for non-atomic work.
-9. Accept: use `functional-qa` for product-visible behavior examples.
-10. Act: use `implement-change` for scoped behavior-slice edits.
-11. Review: use `review-change` for fixed-point Standards/Spec review when a
+   parallel-safe lanes, or serialize conflicting lanes. Record execution
+   surface, dispatch state, authorization evidence, and runtime handles;
+   readiness is not dispatch.
+8. Simulate: route campaign authoring, selection, replay planning, aggregation,
+   and reporting to `simulation-campaigns`. When the user explicitly authorizes
+   delegated execution, dispatch the approved run to `simulation-operator`,
+   then dispatch its frozen evidence to the read-only `simulation-evaluator`;
+   Cascade route/trace runs first require the specialized
+   `harness-evaluator` receipt.
+9. Plan: use `plan-change` for non-atomic work.
+10. Accept: use `functional-qa` for product-visible behavior examples.
+11. Act: use `implement-change` for scoped behavior-slice edits.
+12. Review: use `review-change` for fixed-point Standards/Spec review when a
    non-atomic diff needs explicit review before closeout.
-12. Validate: use `validate-change` to aggregate evidence.
-13. Repair tests: use `test-autorepair` only for stale or failing tests when
+13. Validate: use `validate-change` to aggregate evidence.
+14. Repair tests: use `test-autorepair` only for stale or failing tests when
    behavior still matches the expected contract.
-14. Intake: use `issue-intake` only when a durable issue body or tracker ticket
+15. Intake: use `issue-intake` only when a durable issue body or tracker ticket
    is requested.
-15. Close: use `closeout` for final evidence and memory.
+16. Close: use `closeout` for final evidence and memory.
 
 ## Rules
 
 - Prefer codebase-specific terms from source, docs, and `docs/glossary.md`.
 - Ask only blocker questions; inspect first.
 - Use local role contracts unless the user explicitly authorizes delegation.
+- Treat a lane or work graph as declarative until dispatch is
+  explicitly authorized. Use `root` for current-task execution,
+  `internal-subagent` for bounded child agents, and `user-visible-task` only
+  when the user explicitly asks to create, open, or fork separate tasks or
+  threads.
+- Never describe an internal subagent as a separate Codex task. After dispatch,
+  record its agent ID or task ID in the lane or graph receipt.
+- Treat `max_threads` as internal agent-execution capacity, not as an automatic
+  task count or dispatch instruction.
+- Treat a request to check, refresh, or actualize task status as authorization
+  to reconcile the in-scope local lane/graph state from current evidence. When
+  every required criterion and gate passes, mark it `COMPLETE` immediately and
+  synchronize its receipt; do not ask for a second confirmation. Keep partial,
+  stale, candidate-branch, or `NOT_RUN` work open with the exact blocker.
 - Parallelize only lanes that have disjoint writes, independent validation, and
   mergeable evidence.
 - Route human review as an explicit open-question or exception path, not a
@@ -76,5 +98,8 @@ commands. It can also route explicit requests for agentic workflow packets to
   `project-onboarder` or `adapt-harness`, not the normal feature cascade.
 - Route harness, project agent/LLM runtime, model/tool loop, connector,
   memory, observability, eval, or agent workflow design to `agent-engineer`.
+- Keep simulation campaign design/aggregation, mutable execution, and read-only
+  evaluation as separate stages. Never let the operator evaluate its own run,
+  and never aggregate receipts with different campaign/run/source identities.
 - Keep changes surgical and verified.
 - Treat missing required validation as `BLOCKED`, not passing.

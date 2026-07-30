@@ -1,0 +1,72 @@
+schema_id: architecture-default-graph-v1
+graph_id: native-stack
+pair_kind: extension
+title: Native Stack
+status: reference-default
+spec_path: docs/patterns/architecture-defaults/native-stack.spec.md
+extends:
+  - app-stack
+requires:
+  - native-app
+preserves:
+  - "app-stack:claims-drive-eligibility"
+  - "app-stack:policy-filter-before-score"
+  - "app-stack:application-type-branch"
+  - "app-stack:architecture-before-package"
+  - "app-stack:existing-stack-first"
+  - "app-stack:proof-before-adoption"
+compatible_with:
+  - infrastructure
+default_when:
+  - "A native application needs a platform-native or cross-platform technology profile."
+do_not_use_when:
+  - "The unit is web, backend, CLI, or experiment."
+nodes:
+  - id: native-unit
+    kind: application-scope
+    owns: "One mobile or desktop native application and its platform claims."
+  - id: platform-native
+    kind: candidate-family
+    owns: "Platform SDK, language, UI toolkit, lifecycle, storage, and distribution technology."
+  - id: cross-platform
+    kind: candidate-family
+    owns: "Shared application runtime and UI technology with platform adapter escape hatches."
+  - id: shared-core
+    kind: candidate-family
+    owns: "Shared domain or data core with platform-owned presentation and lifecycle."
+  - id: native-proof
+    kind: evidence
+    owns: "Device API, lifecycle, accessibility, offline/sync, performance, packaging, store, and upgrade proof."
+edges:
+  - from: native-unit
+    to: platform-native
+    relation: may_select
+  - from: native-unit
+    to: cross-platform
+    relation: may_select
+  - from: native-unit
+    to: shared-core
+    relation: may_select
+  - from: platform-native
+    to: native-proof
+    relation: validated_by
+  - from: cross-platform
+    to: native-proof
+    relation: validated_by
+  - from: shared-core
+    to: native-proof
+    relation: validated_by
+decisions:
+  - id: platform-depth-before-reuse
+    default: "Choose platform-native technology when device capability, lifecycle, accessibility, or performance depth outweighs shared UI code."
+    exception_when: "Cross-platform proof satisfies the required platform behavior with lower lifecycle cost."
+  - id: shared-core-before-shared-ui
+    default: "Prefer sharing stable domain, contracts, and data behavior before sharing platform presentation."
+    exception_when: "The product experience and team model justify one cross-platform UI implementation."
+  - id: distribution-proof
+    default: "Prove signing, packaging, store or enterprise distribution, updates, telemetry, and crash recovery before adoption."
+    exception_when: "The artifact is a bounded internal prototype with no release path."
+validation:
+  - "The unit is native-app."
+  - "Device APIs, lifecycle, accessibility, offline/sync, background behavior, performance, packaging, and updates are proved."
+  - "Platform escape hatches and ownership are explicit for cross-platform candidates."

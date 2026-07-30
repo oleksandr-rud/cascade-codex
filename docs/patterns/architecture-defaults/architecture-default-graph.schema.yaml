@@ -1,0 +1,59 @@
+schema_id: architecture-default-graph-v1
+kind: architecture-default-graph-schema
+summary: "Contract for a reusable architecture-default graph paired with a human-readable specification."
+required_top_level_fields:
+  - schema_id
+  - graph_id
+  - pair_kind
+  - title
+  - status
+  - spec_path
+  - default_when
+  - do_not_use_when
+  - nodes
+  - edges
+  - decisions
+  - validation
+allowed_pair_kinds:
+  - decision
+  - archetype
+  - extension
+allowed_statuses:
+  - reference-default
+node_contract:
+  required:
+    - id
+    - kind
+    - owns
+  rule: "Node IDs describe stable logical responsibilities, not framework-specific filenames."
+edge_contract:
+  required:
+    - from
+    - to
+    - relation
+  rule: "Every edge endpoint must reference a node ID declared in the same graph."
+decision_contract:
+  required:
+    - id
+    - default
+    - exception_when
+  rule: "A default is a first candidate to evaluate; exception_when prevents blind adoption."
+relationship_contract:
+  optional_fields:
+    - extends
+    - requires
+    - compatible_with
+    - conflicts_with
+    - preserves
+  target_rule: "extends, requires, compatible_with, and conflicts_with contain graph IDs from this catalog."
+  preservation_rule: "preserves entries use <graph-id>:<decision-id> and point to decisions owned by another graph."
+  extension_rule: "An extension declares at least one extends target and at least one preserved decision."
+  cycle_rule: "The combined extends and requires dependency graph must be acyclic."
+pair_contract:
+  - "The graph filename is <graph_id>.graph.yaml."
+  - "spec_path points to <graph_id>.spec.md in the same pattern entry."
+  - "The spec header repeats the pair ID and graph path."
+  - "The graph owns topology and defaults; the spec owns explanation, file profiles, operations, and exceptions."
+validation_contract:
+  - "Validator checks required pairs, cross-links, node and edge integrity, relationship targets, preserved decisions, dependency cycles, and required spec sections."
+  - "Pattern-pack preview checks retrieval metadata and Markdown anchors."

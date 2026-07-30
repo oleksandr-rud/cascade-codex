@@ -1,0 +1,96 @@
+schema_id: architecture-default-graph-v1
+graph_id: frontend-cache
+pair_kind: extension
+title: Frontend Cache Layers
+status: reference-default
+spec_path: docs/patterns/architecture-defaults/frontend-cache.spec.md
+extends:
+  - web-frontend
+requires:
+  - frontend-state-data
+compatible_with:
+  - caching-strategy
+  - frontend-realtime
+  - tenancy-strategy
+preserves:
+  - "web-frontend:folder-ownership"
+  - "web-frontend:state-ownership"
+  - "web-frontend:api-contract"
+  - "web-frontend:rendering-boundary"
+default_when:
+  - "A web client uses more than request deduplication or needs explicit browser, service-worker, HTTP, or CDN freshness."
+  - "Performance, offline, bandwidth, or resilience requirements make multiple cache layers material."
+do_not_use_when:
+  - "The query library defaults are sufficient and no durable or edge cache is needed."
+  - "Sensitive or rapidly changing data cannot be cached safely."
+nodes:
+  - id: request-deduplication
+    kind: request-cache
+    owns: "In-flight coalescing and repeated request suppression."
+  - id: memory-query-cache
+    kind: application-cache
+    owns: "Query identity, freshness, retention, invalidation, and mutation reconciliation."
+  - id: persisted-browser-cache
+    kind: durable-cache
+    owns: "Versioned user/tenant-scoped persisted records and offline reads."
+  - id: service-worker-cache
+    kind: network-cache
+    owns: "App-shell and selected request caching, update activation, and offline fallback."
+  - id: http-cdn-cache
+    kind: protocol-cache
+    owns: "HTTP validators, cache-control, private/public scope, vary keys, and CDN behavior."
+  - id: source-api
+    kind: source-of-truth
+    owns: "Authoritative server response, version, authorization, and invalidation signals."
+  - id: cache-policy
+    kind: governance
+    owns: "Freshness budget, layer selection, invalidation, isolation, sensitive-data, and observability."
+edges:
+  - from: request-deduplication
+    to: source-api
+    relation: coalesces_calls
+  - from: memory-query-cache
+    to: request-deduplication
+    relation: reads_through
+  - from: persisted-browser-cache
+    to: memory-query-cache
+    relation: hydrates
+  - from: service-worker-cache
+    to: source-api
+    relation: intercepts
+  - from: http-cdn-cache
+    to: source-api
+    relation: validates_against
+  - from: cache-policy
+    to: memory-query-cache
+    relation: governs
+  - from: cache-policy
+    to: persisted-browser-cache
+    relation: governs
+  - from: cache-policy
+    to: service-worker-cache
+    relation: governs
+  - from: cache-policy
+    to: http-cdn-cache
+    relation: governs
+decisions:
+  - id: fewest-layers
+    default: "Use request deduplication and an in-memory query cache first; add persistence, service worker, or CDN only for measured needs."
+    exception_when: "Offline, bandwidth, latency, or resilience constraints already require another layer."
+  - id: freshness-budget
+    default: "Define freshness, stale display, revalidation, retention, and invalidation per data class."
+    exception_when: "The response is immutable and content-addressed."
+  - id: isolation-and-privacy
+    default: "Scope private cache identity by user, tenant, authorization, locale, and representation; do not persist sensitive data by default."
+    exception_when: "A reviewed encrypted offline requirement defines lifecycle and device risk."
+  - id: mutation-reconciliation
+    default: "Update or invalidate every affected query identity after mutations and realtime events."
+    exception_when: "The mutation response is the new complete immutable value."
+  - id: deploy-update-policy
+    default: "Version persistent and service-worker caches and define activation, rollback, cleanup, and mixed-version behavior."
+    exception_when: "Only ephemeral in-memory caching is used."
+validation:
+  - "Test hit, miss, stale, revalidate, mutation, logout, tenant switch, permission change, deploy, offline, reconnect, and corruption behavior for selected layers."
+  - "Private data cannot leak through query identity, browser storage, service workers, HTTP caches, or CDNs."
+  - "Mixed client/server versions and service-worker activation have deterministic recovery."
+  - "Cache metrics distinguish layer, hit, miss, staleness, revalidation, eviction, and user-visible fallback."

@@ -7,6 +7,7 @@ config; keep reusable workflow rules in skills, agents, and patterns.
 
 | Folder | Purpose | Written By |
 |---|---|---|
+| `.github/` | Pull request description contract and GitHub Copilot repository instructions | `codex-maintenance`, `adapt-harness` |
 | `docs/work/` | Active work lanes, copyable lane examples, lane packets, reports, handoffs | `orchestrate-work`, `market-validation`, `plan-change`, `validate-change`, `closeout` |
 | `docs/specs/` | Incoming and spec packets | `ingest-spec`, `synthesis-to-spec`, `compose-spec`, `discover`, `docs-impact-map`, `adapt-harness` |
 | `docs/product/` | Product intent, requirements, journeys, personas, scenarios | `discover`, `market-validation`, `synthesis-to-spec`, `compose-spec`, `ingest-spec`, `docs-impact-map` |
@@ -18,14 +19,25 @@ config; keep reusable workflow rules in skills, agents, and patterns.
 | `.codex/agents/` | Role contracts and skill maps | Agent Engineer skills |
 | `evals/harness/` | Canonical Cascade scenario sources, generated catalog, target schema, and golden-judge schema | `harness-evaluation`, Agent Engineer skills |
 | `.artifacts/harness-evals/` | Ignored raw JSONL traces, normalized runs, grades, and local reports | `scripts/run_harness_evals.py` |
+| `evals/campaigns/`, `evals/tasks/`, `evals/simulations/` | Canonical simulation campaigns, reusable tasks, populations, scenarios, worlds, datasets, and generated catalog | `simulation-campaigns`, Agent Engineer |
+| `evals/claims/`, `evals/policies/`, `evals/oracles/`, `evals/metrics/`, `evals/treatments/`, `evals/calibrations/`, `evals/rubrics/` | Versioned claim, policy, oracle, metric, treatment, calibration, evaluator-profile, rubric, and evaluation-schema authorities | `simulation-campaigns`, `simulation-evaluation`, Agent Engineer |
+| `.artifacts/campaigns/` | Ignored append-only execution, evaluation, calibration, and aggregation receipts | `scripts/cascade.ts`, `simulation-execution`, `simulation-evaluation` |
+| `.codex/skills/simulation-campaigns/` | Campaign authoring, selection, dispatch/replay planning, receipt aggregation, claim projection, and reporting contract | `develop-skill`, `codex-maintenance`, Agent Engineer |
+| `.codex/skills/simulation-execution/` | Bounded selected-run lifecycle and execution receipt contract | `simulation-operator`, `develop-skill`, `codex-maintenance` |
+| `.codex/skills/simulation-evaluation/` | Read-only frozen-evidence, policy, oracle, semantic, and claim-support contract | `simulation-evaluator`, `develop-skill`, `codex-maintenance` |
 
 ## Active Work Paths
 
 - Active registry: `docs/work/active.md`
 - Lane template: `docs/work/lane-template.md`
+- Work graph template: `docs/work/work-graph-template.md`
 - Lane examples: `docs/work/examples/`
 - Lane packets: `docs/work/lanes/W-XXX-slug.md`
 - Durable reports: `docs/work/reports/YYYY-MM-DD-slug.md`
+- Active work graphs: `docs/work/reports/YYYY-MM-DD-*-work-graph.md`, linked
+  from `docs/work/active.md`
+- Completed work graphs: retained as durable reports and removed from the
+  active registry during terminal closeout
 
 ## Spec Translation Paths
 
@@ -75,8 +87,35 @@ decision-heavy; otherwise update the smallest existing owner docs.
 
 - Repo boot contract and hard guardrails: `AGENTS.md`
 - Runtime bridge: `CODEX.md`
+- Pull request description contract: `.github/pull_request_template.md`
+- GitHub Copilot repository instructions: `.github/copilot-instructions.md`
 - Adapter variables: `harness.config.yaml`
 - Codebase folder map and boundary rules: `docs/patterns/boundaries/index.md`
+- Reference architecture graph/spec pairs:
+  `docs/patterns/architecture-defaults/`
+- Application-stack routing:
+  `docs/patterns/architecture-defaults/app-stack.{graph.yaml,spec.md}`
+- Contour application stacks:
+  `docs/patterns/architecture-defaults/{backend,frontend,native,cli,experiment,library}-stack.{graph.yaml,spec.md}`
+- SDK/library archetype:
+  `docs/patterns/architecture-defaults/sdk-library.{graph.yaml,spec.md}`
+- Infrastructure scope and resource selection:
+  `docs/patterns/architecture-defaults/infrastructure.{graph.yaml,spec.md}`
+- Application-contour infrastructure profiles:
+  `docs/patterns/architecture-defaults/{backend,frontend,native,cli,experiment,library}-infrastructure.{graph.yaml,spec.md}`;
+  these route application or package needs while resource extensions retain
+  provider authority
+- Infrastructure resource extensions:
+  `docs/patterns/architecture-defaults/infrastructure-{compute,data,messaging,delivery}.{graph.yaml,spec.md}`
+  remain the only resource/provider selection authorities
+- Source-linked stack claims, policies, application units, infrastructure
+  scopes/resources, and candidate disposition contract:
+  `docs/patterns/architecture-defaults/stack-selection-evidence.schema.json`
+- Stack selection evidence validation:
+  `scripts/validate_stack_selection_evidence.py`
+- Safe source profile manifest and preview/write tool:
+  `docs/patterns/architecture-defaults/architecture-scaffold-profiles.json`
+  and `scripts/scaffold_architecture_default.py`
 - Reusable architecture lessons: `docs/patterns/boundaries/index.md` or another
   bounded `docs/patterns/{entry}/` folder with metadata and pack YAML
 - Stack details, source roots, test roots, commands, runners, tracker settings,
@@ -114,6 +153,7 @@ Each pattern entry is a folder:
 
 - `docs/patterns/workflow/`
 - `docs/patterns/boundaries/`
+- `docs/patterns/architecture-defaults/`
 - `docs/patterns/testing/`
 - `docs/patterns/context-memory/`
 
@@ -124,6 +164,11 @@ Required files per entry:
 
 Use `docs/patterns/context-pack-schema.yaml` for the metadata contract and
 `scripts/build_pattern_context_pack.py` to build filtered text from packs.
+Architecture source scaffolds are a separate explicit path: select and record
+the graph/spec profile first, preview with
+`scripts/scaffold_architecture_default.py preview`, and use `write` only for a
+new no-conflict source structure. The tool does not install dependencies or
+overwrite target files.
 
 ## Harness Evaluation Paths
 
@@ -135,3 +180,83 @@ Use `docs/patterns/context-pack-schema.yaml` for the metadata contract and
 - Runner and deterministic grader: `scripts/run_harness_evals.py`
 - Ignored live run evidence: `.artifacts/harness-evals/<run-id>/`
 - Durable scenario and trace rules: `docs/patterns/agent-evaluation/index.md`
+
+## Simulation Campaign Paths
+
+Implemented skill and runtime authority:
+
+- Skill: `.codex/skills/simulation-campaigns/SKILL.md`
+- Design template:
+  `.codex/skills/simulation-campaigns/templates/campaign-design.md`
+- Quality checklist:
+  `.codex/skills/simulation-campaigns/checklists/campaign-quality.md`
+- Execution skill and role:
+  `.codex/skills/simulation-execution/`;
+  `.codex/agents/simulation-operator/`;
+  `.codex/agents/simulation-operator.toml`
+- Evaluation skill and role:
+  `.codex/skills/simulation-evaluation/`;
+  `.codex/agents/simulation-evaluator/`;
+  `.codex/agents/simulation-evaluator.toml`
+- Program:
+  `docs/work/reports/2026-07-27-cross-surface-simulation-program.md`
+- Foundation lane:
+  `docs/work/lanes/W-004-cross-surface-simulation-foundation.md`
+- Agent-tool composition lane:
+  `docs/work/lanes/W-012-agent-tool-composition.md`
+- Work graph:
+  `docs/work/reports/2026-07-27-cross-surface-simulation-work-graph.md`
+
+Canonical deterministic runtime authority owned by W-004:
+
+- Campaign manifests and generated catalog: `evals/campaigns/`
+- Typed reusable tasks: `evals/tasks/`
+- Simulation manifests and fixtures: `evals/simulations/`
+- Versioned claims and policies: `evals/claims/` and `evals/policies/`
+- Deterministic oracle definitions: `evals/oracles/`
+- Versioned metrics and exact treatment identities: `evals/metrics/` and
+  `evals/treatments/`
+- Calibration definitions and frozen framework/reference score fixtures:
+  `evals/calibrations/`
+- Semantic rubrics, fixture/Codex evaluation profiles, provider output schema,
+  and stored receipt schema: `evals/rubrics/`
+- Bun 1.3.3 runner and deterministic reducers: `scripts/cascade.ts` and
+  `scripts/cascade/`
+- Machine-readable target starter:
+  `.codex/skills/simulation-campaigns/templates/starter/package.template.json`
+- Human design template:
+  `.codex/skills/simulation-campaigns/templates/campaign-design.md`
+- Ignored append-only run container:
+  `.artifacts/campaigns/<run-id>/`, with an immutable `execution/` namespace
+  plus sibling `specialized-evaluations/`, `calibrations/`, and
+  `aggregations/` receipt namespaces; each
+  `evaluations/<evaluation-id>/` contains an immutable frozen `input/`,
+  provider command/trace/stderr, attempt record, and accepted `receipt.json`
+
+The deterministic framework fixture proves definition resolution, stateful
+fake execution, policy/oracle reduction, evidence freezing, treatment
+ranking, and calibration-receipt mechanics. It cannot support target-project
+release eligibility. Missing surface adapters or target reference data remain
+`GAP`, `BLOCKED`, or `NOT_RUN`; an authored campaign that has not executed is
+`NOT_RUN`.
+
+Bootstrap a target-project package by reviewing the dry-run first:
+
+```bash
+bun scripts/cascade.ts simulation init <simulation-id> --owner-lane W-NNN \
+  --dry-run
+bun scripts/cascade.ts simulation init <simulation-id> --owner-lane W-NNN
+```
+
+Initialization creates the simulation model, population, scenario, world,
+fixture, partitioned dataset, metric, baseline/candidate treatments,
+framework calibration and score fixtures, policy, oracle, task, claims,
+campaign, and co-located `simulation-design.md`. It then validates the graph
+and atomically regenerates the registry. Any existing output path aborts the
+operation without overwrite.
+
+W-012 will own only the agent-to-command/browser/terminal/desktop/mobile
+composition profiles, manifests, fake matrix, tool-event linkage, and joined
+results. W-004 remains the shared schema, policy, reducer, artifact, and final
+merge authority; W-005 through W-010 retain their surface adapters and
+policies.

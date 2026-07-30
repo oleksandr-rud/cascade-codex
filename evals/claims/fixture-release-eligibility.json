@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "id": "fixture-release-eligibility",
+  "class": "release-eligibility",
+  "assertion": "A current non-fixture calibration supports release eligibility for the exact treatment and source identity.",
+  "scope": {
+    "simulation_id": "simulation-correctness-fixture",
+    "target_project": "required"
+  },
+  "required_policy_ids": [
+    "allow-fixture-state-actions-v1"
+  ],
+  "required_oracle_ids": [
+    "account-resolved-v1"
+  ],
+  "required_metric_ids": [
+    "task-success-v1"
+  ],
+  "requires_calibration": true,
+  "evidence_requirements": [
+    "source-manifest",
+    "execution-receipt",
+    "policy-decisions",
+    "oracle",
+    "cleanup",
+    "calibration-receipt"
+  ]
+}

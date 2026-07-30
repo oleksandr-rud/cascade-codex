@@ -1,0 +1,327 @@
+schema_id: architecture-default-graph-v1
+graph_id: backend-infrastructure
+pair_kind: extension
+title: Backend Infrastructure
+status: reference-default
+spec_path: docs/patterns/architecture-defaults/backend-infrastructure.spec.md
+extends:
+  - infrastructure
+requires:
+  - service-api-worker
+  - backend-stack
+preserves:
+  - "infrastructure:scope-before-provider"
+  - "infrastructure:resource-ownership"
+  - "infrastructure:least-privilege-and-isolation"
+  - "infrastructure:cost-and-lifecycle"
+  - "infrastructure:failure-and-recovery-proof"
+  - "infrastructure:application-profile-routing"
+  - "infrastructure:shared-resource-contract"
+  - "infrastructure:client-resource-boundary"
+  - "infrastructure:tenant-isolation-enforcement"
+  - "infrastructure:workload-identity-lifecycle"
+  - "infrastructure:telemetry-data-boundary"
+compatible_with:
+  - infrastructure-compute
+  - infrastructure-data
+  - infrastructure-messaging
+  - infrastructure-delivery
+  - caching-strategy
+  - event-driven
+  - tenancy-strategy
+default_when:
+  - "A backend-service or backend-worker unit needs API, BFF, worker, consumer, scheduler, or batch infrastructure."
+  - "Backend application units share database, cache, object/search, messaging, or delivery resources whose ownership and consumers must be explicit."
+do_not_use_when:
+  - "The unit is only a web frontend, native app, CLI, or experiment with no separately owned backend-service or backend-worker boundary."
+  - "The task selects an application runtime, framework, library, event meaning, cache policy, or provider product rather than backend resource topology."
+nodes:
+  - id: backend-application-units
+    kind: application-scope
+    owns: "Backend-service and backend-worker units, deployment scopes, release boundaries, and consuming relationships."
+  - id: api-bff-runtime-roles
+    kind: workload-role-set
+    owns: "API and separate BFF ingress, concurrency, timeout, workload identity, scaling, health, drain, and shutdown requirements."
+  - id: worker-consumer-runtime-roles
+    kind: workload-role-set
+    owns: "Worker and consumer delivery contract, concurrency, backpressure, downstream capacity, drain, resume, cancellation, and shutdown requirements."
+  - id: scheduler-batch-runtime-roles
+    kind: workload-role-set
+    owns: "Scheduler and batch trigger, overlap, checkpoint, quota, capacity, cancellation, retry, artifact, and completion requirements."
+  - id: module-semantics
+    kind: preserved-application-boundary
+    owns: "Module workflows, domain data authority, event and job meaning, schemas, use cases, and module-specific ports and adapters."
+  - id: shared-technical-mechanics
+    kind: preserved-technical-boundary
+    owns: "Reusable src/libs connection, transaction, cache-client, broker-client, codec, retry, telemetry, and lifecycle mechanics without product semantics."
+  - id: compute-resource-route
+    kind: extension-router
+    owns: "API, BFF, worker, consumer, scheduler, and batch compute placement, scaling, workload identity, and lifecycle routing."
+  - id: database-resource-route
+    kind: extension-router
+    owns: "Authoritative database access, consistency, migration, retention, backup, restore, residency, capacity, and failure routing."
+  - id: cache-resource-route
+    kind: extension-router
+    owns: "Deployed cache identity, network, capacity, persistence, recovery, cost, and failure routing after cache policy is resolved."
+  - id: object-search-resource-route
+    kind: extension-router
+    owns: "Object/blob, search, and derived-data capacity, indexing, lifecycle, recovery, residency, and failure routing."
+  - id: queue-resource-route
+    kind: extension-router
+    owns: "Work distribution, lease or visibility, acknowledgement, retry, dead-letter, quota, and poison-isolation resource routing."
+  - id: pubsub-resource-route
+    kind: extension-router
+    owns: "Fan-out, subscription isolation, retention, authorization, schema-compatibility, and slow-consumer resource routing."
+  - id: stream-resource-route
+    kind: extension-router
+    owns: "Partitioning, ordering scope, offsets, retention, replay, compaction, authorization, and capacity resource routing."
+  - id: scheduler-resource-route
+    kind: extension-router
+    owns: "Time or deferred dispatch, timezone, missed-run, overlap, idempotency, retry, and ownership resource routing."
+  - id: delivery-operations-route
+    kind: extension-router
+    owns: "Network, edge, artifacts, CI/CD, configuration, secrets, observability, infrastructure code, release, and rollback routing."
+  - id: resource-ownership-register
+    kind: ownership-contract
+    owns: "Exactly one owner plus every application-unit consumer, scope, isolation, lifecycle, budget, alert route, recovery objective, and teardown route for each resource."
+  - id: tenant-isolation-contract
+    kind: security-boundary
+    owns: "Resolved tenancy-strategy, authenticated tenant derivation, fail-closed missing or mismatch handling, and tenant-aware database, cache, object/search, message, replay, and restore isolation."
+  - id: messaging-action-authorization
+    kind: security-policy
+    owns: "Deny-by-default role, tenant, resource, and action authorization for publish, consume, acknowledge, subscribe, trigger, dead-letter, replay, and administrative messaging operations."
+  - id: workload-identity-contract
+    kind: security-boundary
+    owns: "Managed short-lived audience, resource, role, and tenant-scoped workload identity, rotation, emergency revocation, and stale credential rejection without shared exported credentials."
+  - id: telemetry-privacy-contract
+    kind: privacy-boundary
+    owns: "Backend telemetry allowlists, pre-export sensitive-data exclusion and redaction, tenant/access separation, retention, deletion, sampling, and synthetic canary leak detection."
+  - id: cross-resource-consistency
+    kind: reliability-contract
+    owns: "Database-outbox publication, inbox/idempotency, committed-write cache invalidation, migration ordering, and reconciliation obligations."
+  - id: cross-resource-failure
+    kind: reliability-contract
+    owns: "Partial outage, dependency saturation, retry, dead-letter, replay, cache fallback, backpressure, restore, resume, rollback, and operator recovery rules."
+  - id: backend-infrastructure-proof
+    kind: evidence
+    owns: "Role, ownership, consumer, isolation, capacity, consistency, migration, failure, recovery, cost, and teardown evidence without provider selection."
+edges:
+  - from: backend-application-units
+    to: api-bff-runtime-roles
+    relation: classifies
+  - from: backend-application-units
+    to: worker-consumer-runtime-roles
+    relation: classifies
+  - from: backend-application-units
+    to: scheduler-batch-runtime-roles
+    relation: classifies
+  - from: api-bff-runtime-roles
+    to: compute-resource-route
+    relation: routes_to
+  - from: worker-consumer-runtime-roles
+    to: compute-resource-route
+    relation: routes_to
+  - from: scheduler-batch-runtime-roles
+    to: compute-resource-route
+    relation: routes_to
+  - from: module-semantics
+    to: shared-technical-mechanics
+    relation: uses_without_transferring_ownership
+  - from: shared-technical-mechanics
+    to: database-resource-route
+    relation: connects_through
+  - from: shared-technical-mechanics
+    to: cache-resource-route
+    relation: connects_through
+  - from: shared-technical-mechanics
+    to: object-search-resource-route
+    relation: connects_through
+  - from: shared-technical-mechanics
+    to: queue-resource-route
+    relation: connects_through
+  - from: shared-technical-mechanics
+    to: pubsub-resource-route
+    relation: connects_through
+  - from: shared-technical-mechanics
+    to: stream-resource-route
+    relation: connects_through
+  - from: shared-technical-mechanics
+    to: scheduler-resource-route
+    relation: connects_through
+  - from: backend-application-units
+    to: delivery-operations-route
+    relation: routes_to
+  - from: resource-ownership-register
+    to: compute-resource-route
+    relation: governs
+  - from: resource-ownership-register
+    to: database-resource-route
+    relation: governs
+  - from: resource-ownership-register
+    to: cache-resource-route
+    relation: governs
+  - from: resource-ownership-register
+    to: object-search-resource-route
+    relation: governs
+  - from: resource-ownership-register
+    to: queue-resource-route
+    relation: governs
+  - from: resource-ownership-register
+    to: pubsub-resource-route
+    relation: governs
+  - from: resource-ownership-register
+    to: stream-resource-route
+    relation: governs
+  - from: resource-ownership-register
+    to: scheduler-resource-route
+    relation: governs
+  - from: resource-ownership-register
+    to: delivery-operations-route
+    relation: governs
+  - from: backend-application-units
+    to: tenant-isolation-contract
+    relation: resolves_when_multitenant
+  - from: api-bff-runtime-roles
+    to: workload-identity-contract
+    relation: authenticates_with
+  - from: worker-consumer-runtime-roles
+    to: workload-identity-contract
+    relation: authenticates_with
+  - from: scheduler-batch-runtime-roles
+    to: workload-identity-contract
+    relation: authenticates_with
+  - from: tenant-isolation-contract
+    to: database-resource-route
+    relation: constrains
+  - from: tenant-isolation-contract
+    to: cache-resource-route
+    relation: constrains
+  - from: tenant-isolation-contract
+    to: object-search-resource-route
+    relation: constrains
+  - from: tenant-isolation-contract
+    to: messaging-action-authorization
+    relation: scopes
+  - from: workload-identity-contract
+    to: messaging-action-authorization
+    relation: authenticates
+  - from: messaging-action-authorization
+    to: queue-resource-route
+    relation: governs
+  - from: messaging-action-authorization
+    to: pubsub-resource-route
+    relation: governs
+  - from: messaging-action-authorization
+    to: stream-resource-route
+    relation: governs
+  - from: messaging-action-authorization
+    to: scheduler-resource-route
+    relation: governs
+  - from: telemetry-privacy-contract
+    to: delivery-operations-route
+    relation: constrains_export_through
+  - from: telemetry-privacy-contract
+    to: backend-infrastructure-proof
+    relation: validated_by
+  - from: database-resource-route
+    to: cross-resource-consistency
+    relation: participates_in
+  - from: cache-resource-route
+    to: cross-resource-consistency
+    relation: participates_in
+  - from: queue-resource-route
+    to: cross-resource-consistency
+    relation: participates_in
+  - from: pubsub-resource-route
+    to: cross-resource-consistency
+    relation: participates_in
+  - from: stream-resource-route
+    to: cross-resource-consistency
+    relation: participates_in
+  - from: cross-resource-consistency
+    to: cross-resource-failure
+    relation: defines_reconciliation_for
+  - from: compute-resource-route
+    to: cross-resource-failure
+    relation: constrains
+  - from: scheduler-resource-route
+    to: cross-resource-failure
+    relation: constrains
+  - from: delivery-operations-route
+    to: cross-resource-failure
+    relation: observes_and_recovers
+  - from: cross-resource-failure
+    to: backend-infrastructure-proof
+    relation: validated_by
+decisions:
+  - id: one-profile-explicit-runtime-roles
+    default: "Use one backend infrastructure profile for backend-service and backend-worker units, then classify API, separate BFF, worker, consumer, scheduler, and batch roles explicitly."
+    exception_when: "An independently owned unit has a materially different deployment, security, data, or lifecycle boundary; keep the same profile contract and record a separate scope."
+  - id: bff-is-a-backend-boundary
+    default: "Treat a BFF with domain workflows, durable data, independent contracts, multiple clients, messaging, scaling, or release ownership as a separate backend-service that calls owned application interfaces."
+    exception_when: "A frontend-owned embedded BFF only adapts sessions or UI data and remains inseparable from the frontend build, deployment, owner, and release."
+  - id: application-semantics-stay-in-modules
+    default: "Keep domain workflows, data authority, event and job meaning, schemas, use cases, and module-specific ports and adapters in application modules; src/libs and infrastructure resources own technical mechanics only."
+    exception_when: "An explicitly governed cross-application contract has its own owner, public surface, versioning, and validation."
+  - id: route-resources-without-providers
+    default: "Route compute, database/cache/object/search, queue/pub-sub/stream/scheduler, and delivery concerns to their existing infrastructure extensions before evaluating provider candidates."
+    exception_when: "A binding provider mandate exists; record the coupling and gaps without moving provider selection into this profile."
+  - id: one-owner-all-consumers
+    default: "Give every shared resource exactly one owner and enumerate every consuming application unit, identity, permission, isolation, capacity, lifecycle, budget, alert, recovery, and teardown contract."
+    exception_when: "A resource is disposable inside one bounded run and is created and destroyed by that run's sole owner."
+  - id: multitenant-scope-requires-tenancy-strategy
+    default: "Before selecting any resource for a multi-tenant scope, resolve tenancy-strategy, derive tenant context from authenticated server-side identity, deny missing or mismatched context, and enforce tenant isolation across database, cache, messages, replay, restore, operations, and telemetry."
+    exception_when: "The deployment and every resource are proven single-tenant; record the invariant and block runtime tenant multiplexing."
+  - id: deny-by-default-messaging-actions
+    default: "Deny every messaging action unless the authenticated workload role is explicitly allowed to publish, consume, acknowledge, subscribe, trigger, inspect or move dead-letter work, replay, or administer the named resource for the resolved tenant."
+    exception_when: "None; local disposable substitutes may simplify identity issuance but preserve the same deny-by-default action contract."
+  - id: managed-short-lived-workload-identity
+    default: "Use managed short-lived credentials scoped to audience, resource, workload role, and tenant where applicable; reject expired, stale, revoked, wrong-audience, wrong-resource, or wrong-role credentials and never share exported credentials between workloads."
+    exception_when: "A bounded local-only substitute has no external data or credentials; production-equivalent authorization behavior remains required."
+  - id: telemetry-data-minimization
+    default: "Export only allowlisted backend telemetry fields after local exclusion or redaction of sensitive payloads, secrets, credentials, and tenant identifiers, with tenant/access separation, retention, deletion, sampling, and canary leak tests."
+    exception_when: "A specifically approved diagnostic capture has a bounded owner, access policy, purpose, expiry, deletion proof, and no credential material."
+  - id: authoritative-database-contract
+    default: "Give transactional domain data one authoritative owner and prove access patterns, consistency, migrations, retention, backup, executed restore, residency, deletion, capacity, and exit."
+    exception_when: "Data is explicitly disposable and reproducible from owned inputs, with lifecycle and deletion evidence."
+  - id: cache-policy-before-resource
+    default: "Block cache resource selection until caching-strategy defines eligibility, keys, freshness, invalidation, isolation, stampede control, source fallback, and removal criteria."
+    exception_when: "The selected data system is intentionally authoritative rather than a cache and has durability, consistency, and recovery contracts."
+  - id: messaging-model-from-semantics
+    default: "Use a queue for one-consumer work distribution, pub/sub for isolated fan-out, a stream/log for ordered retained replayable facts, and a scheduler for time or deferred dispatch."
+    exception_when: "An established messaging resource is mandated; map required semantics, missing guarantees, and operational adaptations explicitly."
+  - id: at-least-once-consumer-contract
+    default: "Assume duplicate delivery and require inbox/idempotency, bounded retry and backoff, poison isolation, dead letter, backpressure, graceful drain, resume, and downstream-capacity proof."
+    exception_when: "A stronger end-to-end delivery guarantee, including all side effects, is demonstrated for the exact path."
+  - id: outbox-inbox-consistency
+    default: "Use transactional outbox or equivalent atomic publication when state and a message must not diverge, and keep inbox/idempotency with the consuming application effect."
+    exception_when: "Loss or duplication is an accepted documented outcome, or an equivalent atomic end-to-end mechanism is proven."
+  - id: committed-write-invalidation
+    default: "Invalidate, version, or refresh derived cache entries only after the authoritative owner write commits; cache failure must not change write success."
+    exception_when: "A documented write-through correctness contract atomically includes both authoritative and cache writes."
+  - id: consumer-scaling-follows-capacity
+    default: "Scale consumers from lag and saturation within downstream database, cache, provider, partition, quota, and connection limits, with explicit minimum, maximum, drain, and overload behavior."
+    exception_when: "A fixed bounded schedule and proven workload envelope make autoscaling unnecessary."
+  - id: migration-backup-restore-order
+    default: "Sequence schema and resource migrations with compatible application releases, independent backup evidence, executed restore proof, rollback or forward recovery, and consumer replay compatibility."
+    exception_when: "The resource is disposable, reproducible, and isolated from durable or externally visible state."
+  - id: cross-resource-failure-is-explicit
+    default: "Define behavior for each resource outage and partial success: cache fallback, database write rejection, publish reconciliation, consumer backpressure, retry/dead-letter, replay, scheduler overlap, restore, resume, and operator escalation."
+    exception_when: "A bounded best-effort path documents acceptable loss, no replay, and its user-visible impact."
+validation:
+  - "The graph and spec identify backend-infrastructure, cross-link each other, and use only architecture-default-graph-v1 fields."
+  - "Every edge resolves to a node in this graph and the extends/requires dependency remains acyclic."
+  - "Every API, BFF, worker, consumer, scheduler, and batch role maps to owned compute, data, messaging, and delivery requirements without duplicating provider catalogs."
+  - "Every shared resource has exactly one owner and enumerates all consumers, identities, permissions, isolation, capacity, lifecycle, budget, alerts, recovery, and teardown."
+  - "Every multi-tenant scope resolves tenancy-strategy, derives tenant context from authenticated server-side identity, denies missing or mismatched context, and proves database, cache, object path/container/key, search index/query/projection, message, replay, restore, operations, and telemetry isolation with negative cases."
+  - "Publish, consume, acknowledge, subscribe, trigger, dead-letter, replay, and messaging administration are deny-by-default and explicitly authorized per workload role, tenant, resource, and action."
+  - "Workload credentials are managed, short-lived, audience/resource/role scoped, rotated, emergency-revocable, rejected when stale or mismatched, and never shared as exported credentials."
+  - "Backend telemetry uses field allowlists, pre-export sensitive-data exclusion/redaction, tenant/access separation, retention, deletion, sampling, and synthetic canary leak tests."
+  - "Database, cache, object/search, queue, pub/sub, stream, scheduler, secrets, observability, and delivery concerns route to the existing resource extensions."
+  - "Cache eligibility, keys, freshness, invalidation, isolation, stampede, and fallback remain owned by caching-strategy."
+  - "Event and job meaning, schemas, outbox, inbox/idempotency, subscribers, and module boundaries remain owned by event-driven and service-api-worker."
+  - "API-owned transactional data proves migration, recovery, residency, and ownership; backup configuration and executed restore remain separate evidence."
+  - "At-least-once consumers prove idempotency, retry, poison isolation, shutdown, resume, backpressure, and downstream capacity."
+  - "Pub/sub proves subscription isolation and schema/authorization policy; stream/log proves partitioning, ordering, retention, offsets, replay, and compaction."
+  - "Cross-resource tests cover partial writes, publication gaps, invalidation failure, dependency outage, saturation, dead letter, replay, migration, backup/restore, rollback, and operator recovery."
+  - "No provider product, infrastructure-as-code template, application package, or new scaffold path is selected by this profile."

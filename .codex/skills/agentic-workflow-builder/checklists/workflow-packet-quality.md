@@ -26,6 +26,13 @@ Use this checklist before returning or executing agentic workflow packets.
 - [ ] Workflow steps are checklist-like and have stable step IDs.
 - [ ] Every step names owner route, skill calls, source order, delegation
       prompt ID, output artifact, validation evidence, and handoff.
+- [ ] Every executable step declares `root`, `internal-subagent`, or
+      `user-visible-task`, plus dispatch state, authorization evidence,
+      dependency gate, merge owner, and runtime handle when dispatched.
+- [ ] Packet or graph readiness is not treated as dispatch authorization.
+- [ ] `user-visible-task` appears only when the user explicitly requested
+      separate tasks or threads; internal subagents are not described as
+      user-visible tasks.
 - [ ] Global orchestration skill calls are explicit, including context,
       routing, impact, planning, acceptance, validation, and closeout gates
       when applicable.

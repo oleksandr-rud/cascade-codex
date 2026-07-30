@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "id": "support-actors-v1",
+  "source": {
+    "kind": "synthetic",
+    "description": "Deterministic framework actors; no production-derived records are included.",
+    "minimized": true
+  },
+  "actors": [
+    {
+      "id": "standard-actor",
+      "weight": 0.7,
+      "behavior": {
+        "retry_limit": 2,
+        "communication_style": "direct"
+      },
+      "slices": [
+        "standard"
+      ]
+    },
+    {
+      "id": "risk-actor",
+      "weight": 0.3,
+      "behavior": {
+        "retry_limit": 1,
+        "communication_style": "ambiguous"
+      },
+      "slices": [
+        "risk"
+      ]
+    }
+  ]
+}

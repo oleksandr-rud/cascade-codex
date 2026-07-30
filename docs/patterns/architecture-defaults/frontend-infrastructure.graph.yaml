@@ -1,0 +1,146 @@
+schema_id: architecture-default-graph-v1
+graph_id: frontend-infrastructure
+pair_kind: extension
+title: Frontend Infrastructure
+status: reference-default
+spec_path: docs/patterns/architecture-defaults/frontend-infrastructure.spec.md
+extends:
+  - infrastructure
+requires:
+  - web-frontend
+  - frontend-stack
+preserves:
+  - "infrastructure:scope-before-provider"
+  - "infrastructure:resource-ownership"
+  - "infrastructure:least-privilege-and-isolation"
+  - "infrastructure:cost-and-lifecycle"
+  - "infrastructure:failure-and-recovery-proof"
+  - "infrastructure:application-profile-routing"
+  - "infrastructure:fullstack-is-composition"
+  - "infrastructure:shared-resource-contract"
+  - "infrastructure:client-resource-boundary"
+  - "infrastructure:tenant-isolation-enforcement"
+  - "infrastructure:workload-identity-lifecycle"
+  - "infrastructure:telemetry-data-boundary"
+compatible_with:
+  - infrastructure-compute
+  - infrastructure-data
+  - infrastructure-delivery
+  - frontend-cache
+  - tenancy-strategy
+  - interface-strategy
+default_when:
+  - "A web frontend needs static delivery, server rendering, streaming, edge execution, hybrid routes, or frontend-specific operational resources."
+  - "A web unit needs a deterministic embedded or separate BFF boundary."
+do_not_use_when:
+  - "The task selects only frontend frameworks or libraries and does not change hosting, delivery, server, edge, secret, session, cache-service, or observability resources."
+  - "The unit is a backend service, backend worker, native app, CLI, or experiment without a web frontend consumer."
+nodes:
+  - id: frontend-application-unit
+    kind: application-scope
+    owns: "One web-frontend unit, its release owner, consumers, rendering claims, and deployment constraints."
+  - id: delivery-mode
+    kind: decision
+    owns: "Static, SSR, streaming, edge, and route-explicit hybrid delivery modes."
+  - id: server-runtime
+    kind: optional-compute
+    owns: "Server rendering, streaming, server-component, revalidation, action, and route-handler execution."
+  - id: edge-and-delivery
+    kind: resource-boundary
+    owns: "Artifacts, DNS/TLS, CDN/WAF, routing, release, rollback, and justified edge execution."
+  - id: session-and-secret-boundary
+    kind: security-boundary
+    owns: "Workload secret access, server-owned session authority, rotation, redaction, and browser-safe projections."
+  - id: bff-boundary
+    kind: boundary-decision
+    owns: "No BFF, frontend-embedded UI aggregation, or a separately owned backend-service unit."
+  - id: fullstack-composition
+    kind: application-composition
+    owns: "Composition of existing application units, interfaces, release owners, and explicitly shared resources."
+  - id: resource-routing
+    kind: extension-router
+    owns: "Conditional routing to compute, data, and delivery infrastructure extensions without duplicating their resource trees."
+  - id: observability-boundary
+    kind: operations-boundary
+    owns: "Correlated browser, server, edge, release, privacy, performance, error, log, metric, trace, alert, and SLO signals."
+  - id: frontend-infrastructure-proof
+    kind: evidence
+    owns: "Clean delivery, rendering, streaming, cache/session, secret, cross-unit data denial, BFF, failure, recovery, scale, cost, rollback, and credential-exposure proof."
+  - id: selected-frontend-infrastructure
+    kind: decision
+    owns: "Selected modes, resources, owners, scopes, dependencies, coupling, lifecycle, and blocked proof."
+edges:
+  - from: frontend-application-unit
+    to: delivery-mode
+    relation: selects
+  - from: delivery-mode
+    to: edge-and-delivery
+    relation: always_routes_to
+  - from: delivery-mode
+    to: server-runtime
+    relation: conditionally_requires
+  - from: server-runtime
+    to: session-and-secret-boundary
+    relation: may_use
+  - from: server-runtime
+    to: bff-boundary
+    relation: hosts_or_calls
+  - from: bff-boundary
+    to: fullstack-composition
+    relation: classifies
+  - from: fullstack-composition
+    to: resource-routing
+    relation: declares_consumers_for
+  - from: edge-and-delivery
+    to: resource-routing
+    relation: routes_delivery_through
+  - from: session-and-secret-boundary
+    to: resource-routing
+    relation: routes_server_resources_through
+  - from: resource-routing
+    to: observability-boundary
+    relation: instruments
+  - from: observability-boundary
+    to: frontend-infrastructure-proof
+    relation: produces
+  - from: frontend-infrastructure-proof
+    to: selected-frontend-infrastructure
+    relation: gates
+decisions:
+  - id: static-delivery-only
+    default: "A static browser client selects artifact and delivery resources only; it does not acquire server compute, secrets, sessions, data, cache-service, or messaging resources."
+    exception_when: "A named route or workload has proved server execution; classify that route as SSR, streaming, edge execution, or hybrid rather than enlarging the static client implicitly."
+  - id: ssr-and-streaming-require-compute
+    default: "SSR, streaming, server components, server actions, route handlers, and runtime revalidation select compute plus delivery, workload secrets, server/browser observability, and only justified cache or session resources."
+    exception_when: "The host precomputes an immutable artifact at build time with no request-time execution; classify it as static generation and delivery."
+  - id: hybrid-routes-are-explicit
+    default: "A hybrid frontend records the rendering mode, execution placement, cache behavior, session need, secret access, and failure owner for every route class."
+    exception_when: "All routes share one proven mode and resource contract, so a single application-unit profile is sufficient."
+  - id: edge-placement-by-proof
+    default: "Treat edge as an execution or delivery placement selected from latency, locality, data access, runtime compatibility, security, observability, cost, and recovery evidence."
+    exception_when: "Static assets use an existing CDN under the standard delivery contract and no edge code executes."
+  - id: cache-and-session-separation
+    default: "Keep browser query/cache semantics in frontend-cache, HTTP edge caching in delivery, cache-service ownership in infrastructure-data, and authoritative session state in a server workload."
+    exception_when: "The application is stateless and uses no response cache, shared cache service, or server session; record those resources as not applicable."
+  - id: frontend-server-resource-ownership
+    default: "Frontend server code directly accesses a database, cache service, object store, or search resource only when the frontend unit authoritatively owns that resource; domain data and another unit's resources are reached through the owner's application interface."
+    exception_when: "A frontend-owned operational resource such as its scoped session store satisfies the same ownership, isolation, lifecycle, recovery, failure, and teardown contract; consumer registration or shared hosting alone never grants direct access."
+  - id: browser-credential-prohibition
+    default: "Browser code never owns workload, cloud, database, cache-service, queue, broker, deployment, or observability-management credentials and never directly accesses database, cache-service, queue, or broker infrastructure."
+    exception_when: "There is no deployable-code exception; browser-local storage, in-memory query caches, public telemetry ingestion tokens, and local test substitutes are not infrastructure resource ownership."
+  - id: embedded-bff-eligibility
+    default: "Keep a BFF embedded only when it performs UI-specific aggregation or adaptation for one frontend and shares that unit's build, release, scaling, security, failure, and ownership lifecycle."
+    exception_when: "Any separate-BFF criterion applies; create a backend-service unit instead."
+  - id: separate-bff-classification
+    default: "Classify a BFF as a separate backend-service unit when it owns domain workflows, durable data, queue or broker behavior, multiple clients, independent release or scaling, or a distinct security, availability, or failure boundary."
+    exception_when: "It satisfies every embedded-BFF criterion and remains a thin UI-specific adapter within one frontend lifecycle."
+  - id: fullstack-composition-only
+    default: "Model fullstack as composition of existing application units and interfaces with declared resource consumers; do not create a seventh application type or duplicate infrastructure resource tree."
+    exception_when: "A frontend and eligible embedded BFF share one lifecycle; they remain one web-frontend unit while preserving browser/server code and credential boundaries."
+validation:
+  - "A static profile routes only to delivery and edge resources and records server compute, secrets, sessions, data, cache service, and messaging as not applicable."
+  - "Every SSR, streaming, edge-execution, or hybrid route records compute, delivery, secret, observability, cache/session justification, owner, failure, recovery, scale, cost, and rollback evidence."
+  - "Embedded and separate BFF classifications produce one deterministic application-unit and resource-ownership result."
+  - "Reject SSR and embedded-BFF access to another unit's database, cache service, object store, or search credentials and resources even when the frontend is listed as a consumer; require the owner's application interface."
+  - "Browser bundles and runtime requests prove absence of infrastructure credentials and direct database, cache-service, queue, or broker access."
+  - "Fullstack evidence contains only existing application types, interface contracts, and infrastructure resources owned once with explicit consumers."

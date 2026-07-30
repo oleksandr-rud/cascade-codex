@@ -1,0 +1,553 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://cascade.local/schemas/stack-selection-evidence-v1.json",
+  "title": "Cascade Stack Selection Evidence",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "project_id",
+    "sources",
+    "claims",
+    "policies",
+    "application_units"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "stack-selection-evidence.v1"
+    },
+    "project_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "sources": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/source"
+      }
+    },
+    "claims": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/claim"
+      }
+    },
+    "policies": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/policy"
+      }
+    },
+    "application_units": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/application_unit"
+      }
+    },
+    "infrastructure_scopes": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/infrastructure_scope"
+      }
+    },
+    "infrastructure_resources": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/infrastructure_resource"
+      }
+    },
+    "selection": {
+      "$ref": "#/$defs/selection"
+    }
+  },
+  "$defs": {
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "source_id",
+        "path",
+        "kind"
+      ],
+      "properties": {
+        "source_id": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9-]*$"
+        },
+        "path": {
+          "type": "string",
+          "minLength": 1
+        },
+        "kind": {
+          "enum": [
+            "project-description",
+            "product-requirement",
+            "architecture-note",
+            "policy",
+            "operations",
+            "existing-code",
+            "human-decision"
+          ]
+        },
+        "revision": {
+          "type": "string"
+        }
+      }
+    },
+    "claim": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "claim_id",
+        "source_id",
+        "source_anchor",
+        "statement",
+        "claim_class",
+        "status",
+        "confidence",
+        "application_units"
+      ],
+      "properties": {
+        "claim_id": {
+          "type": "string",
+          "pattern": "^SC-[0-9]{3,}$"
+        },
+        "source_id": {
+          "type": "string"
+        },
+        "source_anchor": {
+          "type": "string",
+          "minLength": 1
+        },
+        "statement": {
+          "type": "string",
+          "minLength": 1
+        },
+        "claim_class": {
+          "enum": [
+            "product-capability",
+            "interface-rendering",
+            "workload-performance",
+            "data-consistency",
+            "realtime",
+            "platform-device",
+            "distribution",
+            "operations",
+            "team-lifecycle",
+            "security-compliance"
+          ]
+        },
+        "status": {
+          "enum": [
+            "EXPLICIT",
+            "INFERRED",
+            "UNKNOWN",
+            "CONFLICTING"
+          ]
+        },
+        "confidence": {
+          "enum": [
+            "HIGH",
+            "MEDIUM",
+            "LOW"
+          ]
+        },
+        "application_units": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "policy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "policy_id",
+        "source_ids",
+        "mode",
+        "predicate",
+        "consequence"
+      ],
+      "properties": {
+        "policy_id": {
+          "type": "string",
+          "pattern": "^SP-[0-9]{3,}$"
+        },
+        "source_ids": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string"
+          }
+        },
+        "mode": {
+          "enum": [
+            "REQUIRED",
+            "PREFERRED",
+            "FORBIDDEN",
+            "PROOF_REQUIRED"
+          ]
+        },
+        "predicate": {
+          "type": "string",
+          "minLength": 1
+        },
+        "consequence": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "application_unit": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "unit_id",
+        "app_type",
+        "claim_ids",
+        "policy_ids"
+      ],
+      "properties": {
+        "unit_id": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9-]*$"
+        },
+        "app_type": {
+          "enum": [
+            "backend-service",
+            "backend-worker",
+            "web-frontend",
+            "native-app",
+            "cli",
+            "experiment",
+            "library"
+          ]
+        },
+        "claim_ids": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "policy_ids": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "existing_stack": {
+          "type": "string"
+        },
+        "archetype_id": {
+          "type": "string"
+        },
+        "stack_extension_id": {
+          "type": "string"
+        },
+        "infrastructure_profile_id": {
+          "type": "string"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "app_type": {
+                "const": "library"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "archetype_id",
+              "stack_extension_id",
+              "infrastructure_profile_id"
+            ],
+            "properties": {
+              "archetype_id": {
+                "const": "sdk-library"
+              },
+              "stack_extension_id": {
+                "const": "library-stack"
+              },
+              "infrastructure_profile_id": {
+                "const": "library-infrastructure"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "infrastructure_scope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "scope_id",
+        "environment",
+        "application_units",
+        "claim_ids",
+        "policy_ids"
+      ],
+      "properties": {
+        "scope_id": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9-]*$"
+        },
+        "environment": {
+          "type": "string",
+          "minLength": 1
+        },
+        "regions": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "application_units": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string"
+          }
+        },
+        "claim_ids": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "policy_ids": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "infrastructure_resource": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "resource_id",
+        "scope_id",
+        "resource_kind",
+        "application_units",
+        "claim_ids",
+        "policy_ids",
+        "owner",
+        "lifecycle"
+      ],
+      "properties": {
+        "resource_id": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9-]*$"
+        },
+        "scope_id": {
+          "type": "string"
+        },
+        "resource_kind": {
+          "enum": [
+            "compute",
+            "data",
+            "cache",
+            "messaging",
+            "network-edge",
+            "delivery",
+            "secrets",
+            "observability",
+            "artifact-storage"
+          ]
+        },
+        "application_units": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string"
+          }
+        },
+        "claim_ids": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "policy_ids": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "owner": {
+          "type": "string",
+          "minLength": 1
+        },
+        "lifecycle": {
+          "type": "string",
+          "minLength": 1
+        },
+        "resource_role": {
+          "type": "string"
+        },
+        "teardown": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "candidate_result": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "candidate_id",
+        "unit_id",
+        "status",
+        "claim_ids",
+        "policy_evaluations"
+      ],
+      "properties": {
+        "candidate_id": {
+          "type": "string"
+        },
+        "unit_id": {
+          "type": "string"
+        },
+        "candidate_family": {
+          "type": "string"
+        },
+        "status": {
+          "enum": [
+            "ELIGIBLE",
+            "REJECTED",
+            "PROOF_REQUIRED",
+            "GAP"
+          ]
+        },
+        "claim_ids": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "policy_evaluations": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/policy_evaluation"
+          }
+        },
+        "reason": {
+          "type": "string"
+        },
+        "proof": {
+          "type": "string"
+        }
+      }
+    },
+    "policy_evaluation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "policy_id",
+        "outcome"
+      ],
+      "properties": {
+        "policy_id": {
+          "type": "string",
+          "pattern": "^SP-[0-9]{3,}$"
+        },
+        "outcome": {
+          "enum": [
+            "SATISFIED",
+            "VIOLATED",
+            "NOT_APPLICABLE",
+            "PROOF_PENDING"
+          ]
+        },
+        "evidence": {
+          "type": "string"
+        }
+      }
+    },
+    "infrastructure_candidate_result": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "candidate_id",
+        "resource_id",
+        "status",
+        "claim_ids",
+        "policy_evaluations"
+      ],
+      "properties": {
+        "candidate_id": {
+          "type": "string"
+        },
+        "resource_id": {
+          "type": "string"
+        },
+        "status": {
+          "enum": [
+            "ELIGIBLE",
+            "REJECTED",
+            "PROOF_REQUIRED",
+            "GAP"
+          ]
+        },
+        "claim_ids": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "policy_evaluations": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/policy_evaluation"
+          }
+        },
+        "reason": {
+          "type": "string"
+        },
+        "proof": {
+          "type": "string"
+        }
+      }
+    },
+    "selection": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "candidate_results"
+      ],
+      "properties": {
+        "candidate_results": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/candidate_result"
+          }
+        },
+        "selected_by_unit": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "infrastructure_candidate_results": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/infrastructure_candidate_result"
+          }
+        },
+        "selected_by_resource": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}

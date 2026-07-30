@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "id": "task-success-v1",
+  "kind": "deterministic",
+  "direction": "higher-is-better",
+  "unit": "ratio",
+  "aggregation": "mean",
+  "hard_gate": true,
+  "required_slices": [
+    "standard",
+    "risk"
+  ],
+  "uncertainty": "none",
+  "source": {
+    "oracle_id": "account-resolved-v1"
+  }
+}

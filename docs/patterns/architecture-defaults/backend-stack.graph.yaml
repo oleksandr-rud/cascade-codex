@@ -1,0 +1,75 @@
+schema_id: architecture-default-graph-v1
+graph_id: backend-stack
+pair_kind: extension
+title: Backend Stack
+status: reference-default
+spec_path: docs/patterns/architecture-defaults/backend-stack.spec.md
+extends:
+  - app-stack
+requires:
+  - service-api-worker
+preserves:
+  - "app-stack:claims-drive-eligibility"
+  - "app-stack:policy-filter-before-score"
+  - "app-stack:application-type-branch"
+  - "app-stack:architecture-before-package"
+  - "app-stack:existing-stack-first"
+  - "app-stack:backend-runtime-fit"
+  - "app-stack:proof-before-adoption"
+compatible_with:
+  - event-driven
+  - interface-strategy
+  - infrastructure
+default_when:
+  - "A backend service or worker needs a named runtime, HTTP adapter, process model, or packaging profile."
+do_not_use_when:
+  - "The application unit is a browser, native app, CLI, or experiment."
+nodes:
+  - id: backend-unit
+    kind: application-scope
+    owns: "One backend service or worker and its selected stack profile."
+  - id: bun-hono
+    kind: backend-candidate
+    owns: "TypeScript-first Bun runtime with a Web-standard Hono HTTP adapter."
+  - id: go-standard-library
+    kind: backend-candidate
+    owns: "Go service or worker using standard-library contracts and small explicit dependencies."
+  - id: python-fastapi
+    kind: backend-candidate
+    owns: "Python API or worker using FastAPI where Python ecosystem integration is material."
+  - id: backend-proof
+    kind: evidence
+    owns: "Driver, telemetry, concurrency, shutdown, migration, packaging, and deployment compatibility proof."
+edges:
+  - from: backend-unit
+    to: bun-hono
+    relation: may_select
+  - from: backend-unit
+    to: go-standard-library
+    relation: may_select
+  - from: backend-unit
+    to: python-fastapi
+    relation: may_select
+  - from: bun-hono
+    to: backend-proof
+    relation: validated_by
+  - from: go-standard-library
+    to: backend-proof
+    relation: validated_by
+  - from: python-fastapi
+    to: backend-proof
+    relation: validated_by
+decisions:
+  - id: service-worker-profile
+    default: "Evaluate API and worker process requirements separately even when they share a runtime and libraries."
+    exception_when: "They are one inseparable process and release boundary."
+  - id: polyglot-threshold
+    default: "Keep one supported backend runtime unless a workload or ecosystem requirement outweighs another build, security, telemetry, and on-call profile."
+    exception_when: "A bounded service has a proven specialist need and an explicit long-term owner."
+  - id: runtime-infrastructure-separation
+    default: "Select the application runtime here and select compute, database, broker, and delivery products through infrastructure extensions."
+    exception_when: "A provider runtime mandate fixes both; record the coupling and exit constraint."
+validation:
+  - "The unit is backend-service or backend-worker."
+  - "Database drivers, telemetry, auth, graceful shutdown, migrations, packaging, and deployment compatibility are proved."
+  - "A new backend language names build, dependency, security, observability, deployment, and on-call owners."

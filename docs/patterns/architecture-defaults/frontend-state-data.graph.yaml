@@ -1,0 +1,97 @@
+schema_id: architecture-default-graph-v1
+graph_id: frontend-state-data
+pair_kind: extension
+title: Frontend State And Data Policy
+status: reference-default
+spec_path: docs/patterns/architecture-defaults/frontend-state-data.spec.md
+extends:
+  - web-frontend
+requires:
+  - interface-strategy
+compatible_with:
+  - frontend-cache
+  - frontend-realtime
+  - frontend-ui-platform
+  - tenancy-strategy
+preserves:
+  - "web-frontend:folder-ownership"
+  - "web-frontend:feature-public-surface"
+  - "web-frontend:dependency-direction"
+  - "web-frontend:api-contract"
+default_when:
+  - "A web feature has several state categories, mutations, optimistic behavior, cross-route client state, or durable local data."
+  - "State ownership and data reconciliation need rules beyond the base frontend archetype."
+do_not_use_when:
+  - "The client is read-only and a local request boundary plus component state is sufficient."
+  - "The target already has a coherent enforced state and data policy."
+nodes:
+  - id: url-state
+    kind: navigation-state
+    owns: "Shareable filters, selection, paging, and route identity."
+  - id: ui-form-state
+    kind: local-state
+    owns: "Ephemeral interaction, form values, validation, and unsaved edits."
+  - id: client-state
+    kind: client-owned-state
+    owns: "Cross-route state whose source of truth is the client."
+  - id: server-state
+    kind: replicated-state
+    owns: "Remote query identity, lifecycle, freshness, mutation, and reconciliation."
+  - id: durable-local-state
+    kind: persistence
+    owns: "Persisted preferences, drafts, offline records, schema version, and migration."
+  - id: state-model
+    kind: application-policy
+    owns: "Reducers, stores, state machines, derived state, concurrency, and transitions."
+  - id: data-boundary
+    kind: adapter-boundary
+    owns: "Contracts, DTO mapping, query/mutation functions, storage, and errors."
+  - id: visible-outcomes
+    kind: interface-contract
+    owns: "Loading, empty, validation, optimistic, stale, offline, conflict, failure, and retry states."
+edges:
+  - from: url-state
+    to: state-model
+    relation: informs
+  - from: ui-form-state
+    to: state-model
+    relation: sends_intent
+  - from: client-state
+    to: state-model
+    relation: owned_by
+  - from: server-state
+    to: data-boundary
+    relation: synchronized_by
+  - from: durable-local-state
+    to: data-boundary
+    relation: persisted_by
+  - from: state-model
+    to: data-boundary
+    relation: invokes
+  - from: state-model
+    to: visible-outcomes
+    relation: projects
+  - from: data-boundary
+    to: visible-outcomes
+    relation: reports
+decisions:
+  - id: explicit-state-owner
+    default: "Classify state as URL, local UI/form, client-owned, server, durable local, or realtime before selecting a library."
+    exception_when: "A tiny feature has one obvious local owner and no synchronization."
+  - id: derived-not-copied
+    default: "Derive values from authoritative state instead of synchronizing duplicate stores."
+    exception_when: "A measured performance boundary needs a materialized projection with explicit invalidation."
+  - id: store-selection
+    default: "Use component/form/query primitives first; add a store, reducer, or state machine only for shared or transition-heavy client-owned behavior."
+    exception_when: "An established target standard already provides the required semantics without added coupling."
+  - id: mutation-policy
+    default: "Define validation, optimistic update, rollback, concurrency, idempotency, retry, and reconciliation per mutation."
+    exception_when: "The mutation is append-only and cannot conflict; still define failure feedback."
+  - id: durable-data-policy
+    default: "Version and migrate durable client data, scope it by user and tenant, and define retention, encryption, logout, and reset."
+    exception_when: "The data is non-sensitive best-effort preference state with safe loss."
+validation:
+  - "Every state value has one authoritative owner and duplicate projections have reconciliation rules."
+  - "Mutations exercise success, validation, permission, optimistic rollback, duplicate, concurrent, stale, offline, and retry behavior as applicable."
+  - "Durable data tests schema migration, user and tenant isolation, logout/reset, retention, and corruption recovery."
+  - "Visible outcomes remain deterministic across reload, navigation, back/forward, and interrupted requests."

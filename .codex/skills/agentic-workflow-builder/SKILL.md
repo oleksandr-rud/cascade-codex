@@ -13,7 +13,7 @@ more agent role calls, specialist prompts, lane tasks, or subagent routes.
 This skill produces reviewable workflow packets that use existing agents,
 subagents when available and authorized, and global skills to get a request or
 task done. It does not create dynamic agents, spawn agents, activate external
-tools, or approve delegation by itself.
+tools, create user-visible Codex tasks, or approve delegation by itself.
 
 ## Source Order
 
@@ -73,6 +73,9 @@ use it to fill missing product intent; route to `discover`,
    skills relevant to the request.
 2. Identify the objective, expected output, risk, required evidence, and
    whether delegation was explicitly authorized.
+   Separately record whether the user explicitly requested user-visible Codex
+   tasks; implementation or workflow-packet approval alone is not task-creation
+   authorization.
 3. Translate the request into workflow phases. Name the global orchestration
    skill calls first, such as `context`, `orchestrate-work`,
    `docs-impact-map`, `plan-change`, `functional-qa`, `validate-change`, or
@@ -85,6 +88,8 @@ use it to fill missing product intent; route to `discover`,
 5. Build a checklist-style workflow where every step has:
    - step ID and status;
    - owning agent or subagent route;
+   - execution surface and dispatch state;
+   - authorization evidence and runtime handle when dispatched;
    - global skill or skills to load at that step;
    - source order;
    - delegation prompt;
@@ -110,7 +115,13 @@ use it to fill missing product intent; route to `discover`,
 - The packet starts with the agent/global skill inventory used to make routing
   choices.
 - Each checklist step names objective, owner route, skill calls, source order,
-  prompt, output contract, validation evidence, stop rules, and handoff target.
+  prompt, execution surface, dispatch state, authorization evidence, output
+  contract, validation evidence, stop rules, and handoff target.
+- A graph or packet may recommend `root`, `internal-subagent`, or
+  `user-visible-task`, but packet readiness never causes dispatch.
+- `user-visible-task` is valid only after an explicit user request to create,
+  open, or fork separate tasks or threads. Record the resulting task ID in the
+  packet; never represent an internal subagent as a user-visible task.
 - Each delegation prompt is written for an existing role or authorized subagent
   and names the skills it should use at specific steps.
 - Each packet names exact files or folders for allowed and forbidden writes.
@@ -142,6 +153,7 @@ use it to fill missing product intent; route to `discover`,
 
 - workflow model: `single-lane`, `sequential-pipeline`, `parallel-sectioning`,
   `parallel-voting`, `orchestrator-workers`, or `evaluator-optimizer`;
+- execution-surface and dispatch manifest with authorization evidence;
 - agent and global skill inventory summary;
 - checklist-style workflow steps with step-level skill calls;
 - delegation prompt bank for selected agents or subagents;

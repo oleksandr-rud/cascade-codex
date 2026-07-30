@@ -1,0 +1,315 @@
+{
+  "digest": "1cc7d56cc2c94d7ba523455e1fac9a2a36cf80220e0d5c6ff54650e9e131f0df",
+  "entries": [
+    {
+      "calibration_id": "framework-ranking-v1",
+      "claim_ids": [
+        "fixture-state-transition",
+        "fixture-population-coverage",
+        "fixture-release-eligibility"
+      ],
+      "contours": [
+        "agent-response"
+      ],
+      "drivers": [
+        "fake"
+      ],
+      "evaluation_model": null,
+      "evaluation_profile_id": "deterministic-fixture-v1",
+      "evaluation_provider": "fixture",
+      "id": "simulation-calibration-ranking-smoke",
+      "manifest": "evals/campaigns/simulation-calibration-ranking-smoke.json",
+      "manifest_digest": "7a5614f1f0fce51a9a4ac12bc7fa8771264b47ed073c0b55efccfd828e756e21",
+      "metric_ids": [
+        "task-success-v1"
+      ],
+      "oracle_ids": [
+        "account-resolved-v1",
+        "account-attempt-recorded-v1"
+      ],
+      "owner_lane": "W-004",
+      "policy_ids": [
+        "allow-fixture-state-actions-v1"
+      ],
+      "rubric_id": null,
+      "simulation_id": "simulation-correctness-fixture",
+      "source_digest": "0cb1a5f3cb4de3fed9f592c2aecc605fa6869f0ffb09ec452f967697e68729c8",
+      "task_ids": [
+        "SIMULATION-STATE-SMOKE"
+      ],
+      "tier": "deterministic-fixture",
+      "title": "Simulation calibration ranking smoke",
+      "treatment_ids": [
+        "baseline-v1",
+        "candidate-a-v1",
+        "candidate-b-v1"
+      ]
+    },
+    {
+      "calibration_id": "framework-ranking-v1",
+      "claim_ids": [
+        "fixture-state-transition",
+        "fixture-population-coverage",
+        "fixture-release-eligibility"
+      ],
+      "contours": [
+        "agent-response"
+      ],
+      "drivers": [
+        "fake"
+      ],
+      "evaluation_model": "gpt-5.6-sol",
+      "evaluation_profile_id": "codex-independent-v1",
+      "evaluation_provider": "codex",
+      "id": "simulation-codex-evaluation-smoke",
+      "manifest": "evals/campaigns/simulation-codex-evaluation-smoke.json",
+      "manifest_digest": "16b95aa45d17a7ce96775c22d369545c0a6f647e8905104fae892ca1f51a7c4b",
+      "metric_ids": [
+        "task-success-v1"
+      ],
+      "oracle_ids": [
+        "account-resolved-v1",
+        "account-attempt-recorded-v1"
+      ],
+      "owner_lane": "W-004",
+      "policy_ids": [
+        "allow-fixture-state-actions-v1"
+      ],
+      "rubric_id": "simulation-evaluator-v1",
+      "simulation_id": "simulation-correctness-fixture",
+      "source_digest": "b28a6c73b19bb673e206f37982a8d88097c9100378a04430bb8ca8711f22b624",
+      "task_ids": [
+        "SIMULATION-STATE-SMOKE"
+      ],
+      "tier": "semantic-evaluation",
+      "title": "Simulation Codex evaluation smoke",
+      "treatment_ids": [
+        "baseline-v1",
+        "candidate-a-v1",
+        "candidate-b-v1"
+      ]
+    },
+    {
+      "calibration_id": "framework-ranking-v1",
+      "claim_ids": [
+        "fixture-state-transition",
+        "fixture-population-coverage",
+        "fixture-release-eligibility"
+      ],
+      "contours": [
+        "agent-response"
+      ],
+      "drivers": [
+        "fake"
+      ],
+      "evaluation_model": null,
+      "evaluation_profile_id": "deterministic-fixture-v1",
+      "evaluation_provider": "fixture",
+      "id": "simulation-contract-smoke",
+      "manifest": "evals/campaigns/simulation-contract-smoke.json",
+      "manifest_digest": "5f3c39be835a1520fde9de2c49fe83afad9e1ccbff467fabe5306fdfe85b6735",
+      "metric_ids": [
+        "task-success-v1"
+      ],
+      "oracle_ids": [
+        "account-resolved-v1",
+        "account-attempt-recorded-v1"
+      ],
+      "owner_lane": "W-004",
+      "policy_ids": [
+        "allow-fixture-state-actions-v1"
+      ],
+      "rubric_id": null,
+      "simulation_id": "simulation-correctness-fixture",
+      "source_digest": "8f0ec177d886ef3b68af76c35d659afdb217c8b774d4eda03c0c4132e00c2b4e",
+      "task_ids": [
+        "SIMULATION-STATE-SMOKE"
+      ],
+      "tier": "deterministic-fixture",
+      "title": "Simulation contract smoke",
+      "treatment_ids": [
+        "baseline-v1",
+        "candidate-a-v1",
+        "candidate-b-v1"
+      ]
+    },
+    {
+      "calibration_id": "framework-ranking-v1",
+      "claim_ids": [
+        "fixture-state-transition",
+        "fixture-population-coverage",
+        "fixture-release-eligibility"
+      ],
+      "contours": [
+        "agent-response"
+      ],
+      "drivers": [
+        "fake"
+      ],
+      "evaluation_model": null,
+      "evaluation_profile_id": "deterministic-fixture-v1",
+      "evaluation_provider": "fixture",
+      "id": "simulation-metric-reduction-smoke",
+      "manifest": "evals/campaigns/simulation-metric-reduction-smoke.json",
+      "manifest_digest": "601e78c6755ea3c2efa5db0e34c8023d0d6f0ed6fac25afba93691904362c61e",
+      "metric_ids": [
+        "task-success-v1"
+      ],
+      "oracle_ids": [
+        "account-resolved-v1",
+        "account-attempt-recorded-v1"
+      ],
+      "owner_lane": "W-004",
+      "policy_ids": [
+        "allow-fixture-state-actions-v1"
+      ],
+      "rubric_id": null,
+      "simulation_id": "simulation-correctness-fixture",
+      "source_digest": "087afa05e5479659f9d34bcb40f73916c8f59ac7135c6eb82006b12fb2545869",
+      "task_ids": [
+        "SIMULATION-STATE-SMOKE"
+      ],
+      "tier": "deterministic-fixture",
+      "title": "Simulation metric reduction smoke",
+      "treatment_ids": [
+        "baseline-v1",
+        "candidate-a-v1",
+        "candidate-b-v1"
+      ]
+    },
+    {
+      "calibration_id": "framework-ranking-v1",
+      "claim_ids": [
+        "fixture-state-transition",
+        "fixture-population-coverage",
+        "fixture-release-eligibility"
+      ],
+      "contours": [
+        "agent-response"
+      ],
+      "drivers": [
+        "fake"
+      ],
+      "evaluation_model": null,
+      "evaluation_profile_id": "deterministic-fixture-v1",
+      "evaluation_provider": "fixture",
+      "id": "simulation-partition-leakage-smoke",
+      "manifest": "evals/campaigns/simulation-partition-leakage-smoke.json",
+      "manifest_digest": "79c80986c81297a0fc588b2ed52ea13e740515b4cf413e199e7b98b3585637e2",
+      "metric_ids": [
+        "task-success-v1"
+      ],
+      "oracle_ids": [
+        "account-resolved-v1",
+        "account-attempt-recorded-v1"
+      ],
+      "owner_lane": "W-004",
+      "policy_ids": [
+        "allow-fixture-state-actions-v1"
+      ],
+      "rubric_id": null,
+      "simulation_id": "simulation-correctness-fixture",
+      "source_digest": "f1c37d62981966167889243d686152a1b142164ce425ae898dd61f0a8df19357",
+      "task_ids": [
+        "SIMULATION-STATE-SMOKE"
+      ],
+      "tier": "deterministic-fixture",
+      "title": "Simulation partition leakage smoke",
+      "treatment_ids": [
+        "baseline-v1",
+        "candidate-a-v1",
+        "candidate-b-v1"
+      ]
+    },
+    {
+      "calibration_id": "framework-ranking-v1",
+      "claim_ids": [
+        "fixture-state-transition",
+        "fixture-population-coverage",
+        "fixture-release-eligibility"
+      ],
+      "contours": [
+        "agent-response"
+      ],
+      "drivers": [
+        "fake"
+      ],
+      "evaluation_model": null,
+      "evaluation_profile_id": "deterministic-fixture-v1",
+      "evaluation_provider": "fixture",
+      "id": "simulation-population-smoke",
+      "manifest": "evals/campaigns/simulation-population-smoke.json",
+      "manifest_digest": "c62468020c216e020819c617db1cc58e91e6fc4a60189243140d86b6a52bcf21",
+      "metric_ids": [
+        "task-success-v1"
+      ],
+      "oracle_ids": [
+        "account-resolved-v1",
+        "account-attempt-recorded-v1"
+      ],
+      "owner_lane": "W-004",
+      "policy_ids": [
+        "allow-fixture-state-actions-v1"
+      ],
+      "rubric_id": null,
+      "simulation_id": "simulation-correctness-fixture",
+      "source_digest": "f3326534a81dc7d1fcdd7748853ecf0b12482f5113a3ab43ab31e43320dc6da4",
+      "task_ids": [
+        "SIMULATION-STATE-SMOKE"
+      ],
+      "tier": "deterministic-fixture",
+      "title": "Simulation population smoke",
+      "treatment_ids": [
+        "baseline-v1",
+        "candidate-a-v1",
+        "candidate-b-v1"
+      ]
+    },
+    {
+      "calibration_id": "framework-ranking-v1",
+      "claim_ids": [
+        "fixture-state-transition",
+        "fixture-population-coverage",
+        "fixture-release-eligibility"
+      ],
+      "contours": [
+        "agent-response"
+      ],
+      "drivers": [
+        "fake"
+      ],
+      "evaluation_model": null,
+      "evaluation_profile_id": "deterministic-fixture-v1",
+      "evaluation_provider": "fixture",
+      "id": "simulation-world-state-smoke",
+      "manifest": "evals/campaigns/simulation-world-state-smoke.json",
+      "manifest_digest": "459a5dca5daab5637670876d82741bc4f267234f8665d972b713b0e3c3348819",
+      "metric_ids": [
+        "task-success-v1"
+      ],
+      "oracle_ids": [
+        "account-resolved-v1",
+        "account-attempt-recorded-v1"
+      ],
+      "owner_lane": "W-004",
+      "policy_ids": [
+        "allow-fixture-state-actions-v1"
+      ],
+      "rubric_id": null,
+      "simulation_id": "simulation-correctness-fixture",
+      "source_digest": "a6efd56587729d6bed4054794ccf168db22bd23f69715afacf8196bc7bb25ac4",
+      "task_ids": [
+        "SIMULATION-STATE-SMOKE"
+      ],
+      "tier": "deterministic-fixture",
+      "title": "Simulation world state smoke",
+      "treatment_ids": [
+        "baseline-v1",
+        "candidate-a-v1",
+        "candidate-b-v1"
+      ]
+    }
+  ],
+  "generated_from": "evals/campaigns/*.json",
+  "schema_version": 1
+}

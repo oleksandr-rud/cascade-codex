@@ -1,4 +1,6 @@
 skills:
+  - name: simulation-campaigns
+    source: .codex/skills/simulation-campaigns/SKILL.md
   - name: harness-evaluation
     source: .codex/skills/harness-evaluation/SKILL.md
   - name: agentic-workflow-builder

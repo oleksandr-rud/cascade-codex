@@ -17,6 +17,13 @@ preserving Cascade's local role contracts, templates, rules, invariants,
 checklists, and validation gates. It does not patch product/runtime code unless
 the user explicitly redirects the work through `implement-change`.
 
+Use `simulation-campaigns` for authoring, selecting, coordinating,
+replay-planning, aggregating, or reporting a campaign. Use
+`simulation-execution` for the mutable run and `simulation-evaluation` for
+independent frozen-evidence judgment. Use this skill when the request requires
+changes to the shared schema, runner, validator, skill or agent wiring,
+permissions, tool guidance, or repository file-tree contract.
+
 ## Source Order
 
 1. Latest user request, selected text, active goal, and explicit constraints.

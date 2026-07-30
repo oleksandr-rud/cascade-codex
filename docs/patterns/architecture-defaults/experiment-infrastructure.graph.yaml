@@ -1,0 +1,156 @@
+schema_id: architecture-default-graph-v1
+graph_id: experiment-infrastructure
+pair_kind: extension
+title: Experiment Infrastructure
+status: reference-default
+spec_path: docs/patterns/architecture-defaults/experiment-infrastructure.spec.md
+extends:
+  - infrastructure
+requires:
+  - experiment
+  - experiment-stack
+preserves:
+  - "infrastructure:scope-before-provider"
+  - "infrastructure:resource-ownership"
+  - "infrastructure:cost-and-lifecycle"
+  - "infrastructure:failure-and-recovery-proof"
+  - "infrastructure:application-profile-routing"
+  - "infrastructure:shared-resource-contract"
+  - "infrastructure:client-resource-boundary"
+  - "infrastructure:tenant-isolation-enforcement"
+  - "infrastructure:workload-identity-lifecycle"
+  - "infrastructure:telemetry-data-boundary"
+compatible_with:
+  - infrastructure-compute
+  - infrastructure-data
+  - infrastructure-messaging
+  - infrastructure-delivery
+default_when:
+  - "An experiment needs local or ephemeral compute, artifact storage, tracking, queues or schedulers, quotas, budget controls, TTL, or teardown."
+  - "Experiment infrastructure must remain bounded to a reproducible run and separate from production promotion."
+do_not_use_when:
+  - "The experiment runs locally with no operated resource; retain the local no-resource result."
+  - "The code or operated behavior is being promoted to production; make a new production application-stack and infrastructure decision."
+nodes:
+  - id: experiment-infrastructure-scope
+    kind: run-resource-scope
+    owns: "One experiment or campaign scope, protocols, runs, environments, data classification, owners, limits, and stop conditions."
+  - id: local-execution
+    kind: negative-selection
+    owns: "Default execution without operated infrastructure when local resources satisfy the protocol."
+  - id: ephemeral-compute
+    kind: compute-resource
+    owns: "Evidence-backed batch, accelerated, distributed, or isolated compute with quotas, interruption behavior, and bounded lifecycle."
+  - id: artifact-storage
+    kind: data-resource
+    owns: "Inputs, immutable raw run artifacts, manifests, logs, metrics, retention, access, lineage, and deletion."
+  - id: experiment-tracking
+    kind: evidence-resource
+    owns: "Optional run identity, parameters, metrics, lineage, comparison, access, retention, and export."
+  - id: queue-scheduler
+    kind: messaging-resource
+    owns: "Optional submission, scheduling, concurrency, retry, cancellation, deduplication, timeout, and dead-run handling."
+  - id: budget-quota-guards
+    kind: lifecycle-control
+    owns: "Hard spend, usage, concurrency, storage, accelerator, and data-transfer limits with owner alerts and stop behavior."
+  - id: ttl-policy
+    kind: lifecycle-control
+    owns: "Expiry for compute, volumes, artifacts, credentials, queues, logs, and tracking data."
+  - id: teardown-controller
+    kind: lifecycle-control
+    owns: "Success, failure, cancellation, timeout, and abandoned-run cleanup plus leak detection and evidence."
+  - id: remote-service-boundary
+    kind: ownership-boundary
+    owns: "References to managed external services or separately selected project-owned tracking, scheduling, and control services."
+  - id: promotion-boundary
+    kind: lifecycle-boundary
+    owns: "Discard, repeat, extend, or open a new production application-stack and infrastructure decision."
+  - id: experiment-infrastructure-proof
+    kind: evidence
+    owns: "Reproducibility, compute, artifacts, tracking, scheduling, interruption, quota, budget, TTL, teardown, remote ownership, and promotion validation."
+edges:
+  - from: experiment-infrastructure-scope
+    to: local-execution
+    relation: defaults_to
+  - from: experiment-infrastructure-scope
+    to: ephemeral-compute
+    relation: includes_when_evidenced
+  - from: ephemeral-compute
+    to: artifact-storage
+    relation: writes
+  - from: ephemeral-compute
+    to: experiment-tracking
+    relation: reports_when_evidenced
+  - from: queue-scheduler
+    to: ephemeral-compute
+    relation: dispatches_when_evidenced
+  - from: experiment-infrastructure-scope
+    to: budget-quota-guards
+    relation: bounded_by
+  - from: budget-quota-guards
+    to: ttl-policy
+    relation: reinforced_by
+  - from: ttl-policy
+    to: teardown-controller
+    relation: expires_into
+  - from: experiment-tracking
+    to: remote-service-boundary
+    relation: classifies_service_ownership
+  - from: queue-scheduler
+    to: remote-service-boundary
+    relation: classifies_service_ownership
+  - from: teardown-controller
+    to: promotion-boundary
+    relation: closes_before
+  - from: local-execution
+    to: experiment-infrastructure-proof
+    relation: validated_by
+  - from: artifact-storage
+    to: experiment-infrastructure-proof
+    relation: validated_by
+  - from: remote-service-boundary
+    to: experiment-infrastructure-proof
+    relation: validated_by
+  - from: promotion-boundary
+    to: experiment-infrastructure-proof
+    relation: validated_by
+decisions:
+  - id: local-or-ephemeral-default
+    default: "Run locally when the protocol fits; otherwise use the smallest isolated ephemeral resource set that satisfies it."
+    exception_when: "A long-lived shared experiment platform is already supported and its isolation, budget, lifecycle, and exit contracts are proved."
+  - id: remote-compute-from-evidence
+    default: "Add batch, accelerator, distributed, or isolated compute only from measured protocol needs and capacity constraints."
+    exception_when: "Local execution cannot represent the target environment or satisfy time, hardware, isolation, or scale requirements."
+  - id: artifact-lineage-and-retention
+    default: "Keep immutable raw run artifacts and manifests with input, source, environment, parameter, owner, access, retention, and deletion lineage."
+    exception_when: "The protocol explicitly permits a disposable non-evidentiary run and no decision depends on its output."
+  - id: tracking-from-evidence
+    default: "Add experiment tracking only when comparisons, collaboration, lineage, or audit require an operated service."
+    exception_when: "A local append-only manifest and report satisfy the evidence contract."
+  - id: scheduling-from-evidence
+    default: "Add a queue or scheduler only for real concurrency, deferred execution, fairness, retries, cancellation, or resource-placement needs."
+    exception_when: "One local or directly invoked run is simpler and bounded."
+  - id: budget-and-quota-required
+    default: "Remote or shared experiment resources require hard spend, usage, concurrency, storage, accelerator, and transfer limits plus alerts and stop behavior."
+    exception_when: "A local resource has no metered or shared capacity; still bound disk and run duration where failure can escape."
+  - id: ttl-required
+    default: "Every ephemeral compute, volume, credential, queue, artifact, log, and tracking record has an explicit TTL or documented retention owner."
+    exception_when: "An artifact is intentionally retained as immutable decision evidence under an approved retention policy."
+  - id: teardown-verification
+    default: "Teardown runs after success, failure, cancellation, timeout, and abandonment, then verifies no unintended resource, credential, or charge remains."
+    exception_when: "A supported shared platform owns the resource lifecycle; verify release of experiment-specific allocations and data instead."
+  - id: interruption-contract
+    default: "Remote runs define checkpoint, retry, idempotency, partial-artifact, cancellation, and resumption behavior appropriate to cost and duration."
+    exception_when: "The run is cheap, short, and safe to restart from an immutable protocol."
+  - id: remote-services-have-separate-owners
+    default: "Project-owned tracking, scheduling, or control services are separate backend units; managed third-party services remain true external boundaries."
+    exception_when: "The capability is a resource primitive selected directly under an infrastructure extension and owns no application behavior."
+  - id: promotion-is-new-production-decision
+    default: "Production promotion opens a new production application-stack and infrastructure decision with production ownership, security, reliability, data, operations, cost, and lifecycle gates."
+    exception_when: "The exact code and resources already use the production profile and have passed every production gate."
+validation:
+  - "A local experiment that needs no operated resource retains the explicit local-execution result."
+  - "NCE-005: cloud batch or GPU execution proves quota, budget, artifact lineage, interruption, TTL, teardown, and leak detection."
+  - "NCE-006: production promotion opens new production application-stack and infrastructure evidence rather than inheriting experimental shortcuts."
+  - "Every compute, artifact, tracking, queue, scheduler, credential, log, and metric resource has an owner, access policy, budget, TTL or retention, and teardown route."
+  - "Validation exercises success, failure, cancellation, timeout, interruption, quota exhaustion, budget exhaustion, partial artifacts, abandoned runs, cleanup, and remote-service ownership."

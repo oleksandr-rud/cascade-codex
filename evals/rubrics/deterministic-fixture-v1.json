@@ -1,0 +1,6 @@
+{
+  "schema_version": 1,
+  "id": "deterministic-fixture-v1",
+  "provider": "fixture",
+  "timeout_ms": 1000
+}

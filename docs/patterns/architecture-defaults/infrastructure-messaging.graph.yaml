@@ -1,0 +1,67 @@
+schema_id: architecture-default-graph-v1
+graph_id: infrastructure-messaging
+pair_kind: extension
+title: Messaging Infrastructure
+status: reference-default
+spec_path: docs/patterns/architecture-defaults/infrastructure-messaging.spec.md
+extends:
+  - infrastructure
+preserves:
+  - "infrastructure:scope-before-provider"
+  - "infrastructure:existing-platform-first"
+  - "infrastructure:managed-before-self-managed"
+  - "infrastructure:resource-ownership"
+  - "infrastructure:environment-contract"
+  - "infrastructure:least-privilege-and-isolation"
+  - "infrastructure:cost-and-lifecycle"
+  - "infrastructure:failure-and-recovery-proof"
+  - "infrastructure:infrastructure-as-code-authority"
+compatible_with:
+  - event-driven
+  - interface-strategy
+  - backend-stack
+default_when:
+  - "The system needs a queue, pub/sub broker, event stream, scheduler, retry, dead-letter, or replay resource."
+do_not_use_when:
+  - "Synchronous calls or an in-process queue satisfy the requirement."
+nodes:
+  - id: message-semantics
+    kind: evidence
+    owns: "Producer/consumer ownership, delivery, ordering, fan-out, latency, throughput, retention, replay, and payload constraints."
+  - id: messaging-model
+    kind: candidate-set
+    owns: "Work queue, pub/sub, event stream/log, scheduler, or adapted messaging resource."
+  - id: delivery-policy
+    kind: policy
+    owns: "Acknowledgement, visibility/lease, retry, backoff, idempotency, ordering, partitioning, and concurrency."
+  - id: failure-topology
+    kind: reliability
+    owns: "Dead letter, poison isolation, replay, retention, backpressure, quota, and operator recovery."
+  - id: messaging-proof
+    kind: evidence
+    owns: "Publish, consume, duplicate, reorder, outage, retry, dead-letter, replay, scale, security, cost, and teardown evidence."
+edges:
+  - from: message-semantics
+    to: messaging-model
+    relation: constrains
+  - from: messaging-model
+    to: delivery-policy
+    relation: configured_by
+  - from: delivery-policy
+    to: failure-topology
+    relation: fails_into
+  - from: failure-topology
+    to: messaging-proof
+    relation: validated_by
+decisions:
+  - id: semantics-before-broker
+    default: "Define work distribution, fact publication, ordered stream, or schedule semantics before naming a broker."
+    exception_when: "An established broker is mandated; map the required semantics and gaps explicitly."
+  - id: at-least-once-default
+    default: "Assume duplicates and require idempotent effects unless the exact end-to-end contract proves stronger behavior."
+    exception_when: "A bounded single-owner workflow has atomic processing evidence."
+  - id: replay-is-operated
+    default: "Add retention and replay only with authorization, compatibility, rate, ordering, observability, and operator controls."
+    exception_when: "Messages are disposable work items with no replay contract."
+validation:
+  - "Delivery, ordering, fan-out, retention, replay, idempotency, retry, dead-letter, backpressure, quotas, security, scale, cost, and teardown are proved."

@@ -17,6 +17,14 @@ Current entries:
   refactoring, closeout memory, and research coverage.
 - `boundaries/`: folder mapping, layer rules, APIs, adapters, seams, data
   boundaries, and agentic runtime invariants.
+- `architecture-defaults/`: paired machine-readable graphs and human-readable
+  reference specs for architecture and stack selection, caching, tenancy,
+  interfaces, contour-specific application technology, infrastructure
+  selection and compute/data/messaging/delivery extensions, backend API/worker services,
+  event-driven extensions, web frontend policies, native apps, CLIs, and
+  experiments; provides source-linked claim/policy evidence per application
+  contour, separate core and frontend retrieval packs over one canonical pair
+  catalog, and preview-first source scaffold profiles.
 - `testing/`: functional acceptance, browser/API/CLI checks, scenario tests,
   and semantic test repair.
 - `context-memory/`: retrieval/source fidelity, semantic-core packages,
