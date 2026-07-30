@@ -1,8 +1,8 @@
 # Simulation Correctness Fix Plan
 
 Date: 2026-07-30
-Status: `IMPLEMENTED_FRAMEWORK`; target-project calibration and live execution
-`NOT_RUN`
+Status: `IMPLEMENTED_FRAMEWORK`; current-HEAD replay, target-project
+calibration, and live execution `NOT_RUN`
 Owner: Agent Engineer through W-004
 Scope: Amend the active cross-surface simulation program before Gate A freezes
 an incomplete contract.
@@ -27,9 +27,10 @@ must preserve separate proof for:
 
 ## Authority And Current State
 
-Current authority is `master` at `e562ee5` plus the dirty and untracked
-working-tree state recorded on 2026-07-30. The active simulation program is
-W-004 through W-010 plus W-012 under `IG-001`.
+Current implementation baseline is clean
+`master@60fdc2464b9782a689d3f53ffa8fc177f486e6a8`, with the revision-9 planning
+diff applied on top. The active simulation program is W-004 through W-010 plus
+W-012 under `IG-001`.
 
 Current evidence:
 
@@ -454,13 +455,15 @@ bun scripts/cascade.ts campaign run simulation-codex-evaluation-smoke
 Repository validation remains required after implementation:
 
 ```bash
-python3 scripts/validate_cascade_codex.py
-python3 scripts/run_harness_evals.py catalog --check
-python3 scripts/run_harness_evals.py self-test
+bun scripts/cascade.ts validate
+bun scripts/cascade.ts eval catalog --check
+bun scripts/cascade.ts eval self-test
+bun scripts/cascade.ts target self-test
+bun test scripts/cascade
 git diff --check
 ```
 
-Current evidence:
+Preserved execution evidence:
 
 - `bun test scripts/cascade`: `PASS`, 22 tests;
 - campaign catalog check: `PASS`, 7 entries;
@@ -472,7 +475,7 @@ Current evidence:
 - `simulation-calibration-ranking-smoke`: `PASS`, release ineligible;
 - `simulation-codex-evaluation-smoke`: `PASS`, Sol/high provider, frozen
   72-file input packet, echoed packet-manifest digest, complete trace, and
-  receipt digests verified, release ineligible; current-source run
+  receipt digests verified, release ineligible; source-bound run
   `.artifacts/campaigns/simulation-codex-evaluation-smoke-20260730-live-r4`
   produced evaluation receipt digest
   `f02667704d910fad17fec4b86d321b05c87306ef91af215f0f43ca532e56e849`
@@ -480,9 +483,18 @@ Current evidence:
   `ce8b0121b5b4c85dfff1a543270dbd10a5258958a6a96e63ca376e628b1b4a37`;
 - preserved failed Codex attempt: `BLOCKED`, no aggregation, proving provider
   failures do not fall back to fixture evaluation;
-- Cascade validator: `PASS`;
-- harness catalog: `PASS`, 41 skills and 319 scenarios;
-- harness self-test: `PASS`, 15 cases.
+- preserved Cascade validator, 41-skill/319-scenario harness catalog, and
+  15-case harness self-test receipts: `PASS` for their recorded source only.
+
+Current-source freshness:
+
+- the contract, calibration, and latest Codex execution manifests differ from
+  current `HEAD` in 1/21, 7/39, and 4/54 inputs;
+- the generated harness catalog now records 44 skills, 368 scenarios, and
+  digest `d6030bf0ea98a6bd26b431de50ac1b7ca909a19a289192d005403c514507897d`;
+- current-HEAD Bun tests, validator, catalog checks, self-tests, target
+  self-test, and campaign replay are `NOT_RUN` because Bun 1.3.3 is unavailable
+  on the active shell `PATH`.
 
 ## Risks And Deferred Items
 

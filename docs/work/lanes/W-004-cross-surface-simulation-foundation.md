@@ -4,11 +4,13 @@ Status: `OPEN`
 Owner: `agent-engineer`
 Created: 2026-07-27
 Lane Model: `orchestrator-workers`
-Next Gate: `functional-qa -> review-change -> validate-change`
+Planning Status: `DEFINITION_READY`; implementation readiness blocked on Bun 1.3.3
+Next Gate: restore Bun 1.3.3, authorize, then `implement-change` at `IG-03`
 Execution Surface: `root`
-Dispatch State: `RUNNING`
-Dispatch Authorization: user request `implement`, 2026-07-30
-Runtime Handle: current root task
+Dispatch State: `NOT_AUTHORIZED`
+Dispatch Authorization: `none`; prior 2026-07-30 authorization consumed
+Runtime Handle: `none`
+Implementation Baseline: clean `master@60fdc2464b9782a689d3f53ffa8fc177f486e6a8`
 
 ## Request
 
@@ -108,7 +110,7 @@ Out:
 | Current checkout | `master`; dirty diff; `docs/work/active.md` | preserve active architecture and PR-contract work | current |
 | Work graph | `docs/work/reports/2026-07-27-cross-surface-simulation-work-graph.md` | executable nodes, gates, waves, invalidation, and partial repair | current authored plan |
 | Campaign candidate | `agent/w003-integration-r4-g3`: `scripts/cascade/campaigns.ts`; `evals/tasks/`; `evals/campaigns/` | existing task/campaign implementation | branch snapshot; must reconcile |
-| Evaluation authority | `scripts/run_harness_evals.py`; `evals/harness/` | existing trace and grading behavior | current checkout |
+| Evaluation authority | `scripts/cascade/evals.ts`; `evals/harness/` | current trace, grading, catalog, and self-test behavior | current checkout |
 | Architecture | `docs/patterns/boundaries/index.md`; architecture defaults | adapter and platform boundaries | current dirty work |
 | Provider reference | OpenAI Computer Use guide | screenshot/action loop and isolation | fetched 2026-07-27 |
 
@@ -253,6 +255,48 @@ cross-contour composition, and surface adapter acceptance are not yet proven.
     agent-browser, agent-terminal, agent-desktop, and agent-mobile canary
     dispositions without inferring one from another.
 
+## Next Implementation Slice
+
+The next candidate is `IG-03` under W-004. This packet prepares the slice but
+does not dispatch it.
+
+| Binding | Current value |
+|---|---|
+| Plan / node | `IG-001` plan revision 9 / `IG-03` |
+| State / attempt | `PENDING`; attempt 1 of 2 |
+| Objective | finish the bounded lifecycle and adapter seam, including typed result events, cleanup, cancellation/recovery, and unknown-outcome behavior |
+| Required inputs | accepted `IG-02` definitions; clean implementation baseline `master@60fdc246`; current seven-entry campaign catalog; current 44-skill/368-scenario harness catalog |
+| Allowed writes | `scripts/cascade/campaigns.ts`, `scripts/cascade/campaigns.test.ts`, `scripts/cascade/simulation-definitions.ts`, `scripts/cascade/simulation-definitions.test.ts`, `scripts/cascade/common.ts`, `scripts/cascade/common.test.ts`, `evals/tasks/schema.json`, `evals/campaigns/schema.json`, and W-004 evidence/status records |
+| Protected paths | W-005 through W-010 and W-012 lane-owned manifests/adapters; architecture-default sources; archived receipts; live/provider/platform artifacts |
+| Required tool / permission | Bun 1.3.3 available on `PATH`; local implementation and deterministic tests only; no live provider, Computer Use, platform, publication, or spending permission |
+| Output | version-bound IG-03 implementation receipt and proposed `PENDING -> IN_PROGRESS -> REVIEW`; no self-acceptance |
+| Acceptance owner | W-004 lane-state owner through `architecture-review -> functional-qa -> review-change -> validate-change` |
+| Repair / exhaustion | implementation defect returns to IG-03 attempt 2; a second failed attempt or changed contract returns to `plan-change`; missing Bun remains `BLOCKED` without consuming an attempt |
+
+Fragment evaluation for this slice selects `GF-004` version 1 as the shared
+contract boundary. Product, design, frontend, migration, integration, E2E, and
+assurance fragments are `NOT_APPLICABLE` to IG-03 because this slice changes
+only the internal campaign lifecycle seam; IG-05, IG-08, surface lanes, and
+their later validation gates retain the policy, integration, and public-run
+evidence obligations.
+
+Required validation after implementation:
+
+```bash
+bun test scripts/cascade/campaigns.test.ts scripts/cascade/simulation-definitions.test.ts
+bun test scripts/cascade
+bun scripts/cascade.ts campaign catalog --check
+bun scripts/cascade.ts campaign self-test
+bun scripts/cascade.ts validate
+bun scripts/cascade.ts eval catalog --check
+bun scripts/cascade.ts eval self-test
+git diff --check
+```
+
+Stop before edits if Bun 1.3.3, the clean implementation baseline, or the
+current catalog identities cannot be reproduced. Stop after IG-03 reaches
+`REVIEW`; Gate A and downstream surface work remain closed.
+
 ## Parallel Dependencies
 
 - Can run with: no surface implementation before Gate A; after Gate A, W-005,
@@ -290,8 +334,8 @@ cross-contour composition, and surface adapter acceptance are not yet proven.
 | Operator/evaluator role contracts | authored skills, agent metadata, permissions, checklists, and receipt templates | `PASS`; runtime conformance `NOT_RUN` |
 | Execution/evaluation separation | self-evaluation rejection, identity-matched receipts, frozen-evidence packet digest, provider trace/output digest verification, fail-closed Codex attempt, and specialized-receipt requirements | `PARTIAL`; general Codex path passes, specialized receipt integration remains open |
 | Baseline reconciliation | fixed-point `master` versus candidate-branch inventory | `PASS` |
-| Schema and lifecycle | 22 Bun tests; seven resolved campaign graphs; fixture and Codex immutable framework runs | `PARTIAL`; cross-surface recovery/handoff gates remain open |
-| Campaign catalog/selection | seven-entry generated catalog, pre-reservation drift check, and tier/provider validation | `PASS` for current definitions; broader selection matrix open |
+| Schema and lifecycle | preserved 22-test receipt and seven resolved campaign graphs | `PARTIAL`; prior evidence is pre-current-HEAD and current Bun replay is `NOT_RUN` |
+| Campaign catalog/selection | current seven-entry generated catalog plus catalog/self-test preflight | `NOT_RUN` for current `HEAD`; broader selection matrix open |
 | Claim/policy reduction | default deny, required artifacts/oracles/metrics, fixture calibration release refusal | `PARTIAL`; confirmation/conflict fixtures open |
 | Failure reduction | blocked, oracle, unsafe-action, cleanup probes | `OPEN` |
 | Artifact immutability | two distinct run roots; frozen runner/schema/definition bodies and digest-bound receipts | `PARTIAL`; retry/overwrite races open |
@@ -301,21 +345,24 @@ cross-contour composition, and surface adapter acceptance are not yet proven.
 | Generic composition contract | independent task results, denied surface policy, failed oracle, partial evidence, cleanup, receipt, and composed-claim reduction | `OPEN` |
 | W-012 agent-tool composition | deterministic five-contour matrix receipt | `OPEN` |
 | W-012 live agent-tool canaries | five exact IG-17 capability dispositions | `NOT_RUN` |
-| Existing harness | 41-skill, 319-scenario catalog check and 15-case harness self-test | `PASS` |
-| Repository source | current-source validator with generated dependency exclusion | `PASS` |
-| Repository mechanics | Python compilation, JSON/TOML parsing, and `git diff --check` | `PASS` |
-| Repository aggregate | canonical Cascade validator | `PASS` |
+| Existing harness | current 44-skill, 368-scenario catalog check and harness self-test | `NOT_RUN`; prior 41-skill/319-scenario receipt is historical |
+| Repository source | `bun scripts/cascade.ts validate` | `NOT_RUN`; Bun 1.3.3 unavailable on active `PATH` |
+| Repository mechanics | JSON parsing and `git diff --check` | `PASS` for the revision-9 planning diff |
+| Repository aggregate | canonical Bun Cascade validator | `NOT_RUN`; Bun 1.3.3 unavailable on active `PATH` |
 
 ## Status Reconciliation
 
 - Last checked: `2026-07-30`
-- Source identity: current `master` working tree
+- Source identity: clean implementation baseline
+  `master@60fdc2464b9782a689d3f53ffa8fc177f486e6a8`; revision-9 planning diff
+  applied on top
 - Completion disposition: `KEEP_OPEN`
 - Reason: deterministic framework roots and the independent Codex evaluation
-  chain now pass, but remaining W-004 cross-surface, specialized-evaluation,
-  recovery, handoff, redaction, and composition criteria remain
-  `OPEN`/`NOT_RUN`.
-- Synchronized surfaces: lane, active registry, and IG-001 revision 7.
+  chain are preserved as pre-current-HEAD evidence. Current-HEAD validation and
+  remaining W-004 cross-surface, specialized-evaluation, recovery, handoff,
+  redaction, and composition criteria remain `OPEN`/`NOT_RUN`.
+- Synchronized surfaces: lane, active registry, report index, and IG-001 plan
+  revision 9.
 
 ## Closeout
 

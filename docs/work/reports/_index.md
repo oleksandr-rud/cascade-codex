@@ -11,7 +11,7 @@ Use filenames like `YYYY-MM-DD-slug.md`.
 
 | Date | Work Graph | Purpose |
 |---|---|---|
-| 2026-07-27 | `2026-07-27-cross-surface-simulation-work-graph.md` | Active revision 7 of `IG-001` for W-004–W-010 plus W-012 sequencing, Gate A/Gate B evidence, dispatch state, lifecycle, invalidation, and partial repair. |
+| 2026-07-27 | `2026-07-27-cross-surface-simulation-work-graph.md` | Active plan revision 9 of `IG-001`; current implementation baseline `master@60fdc246`, no dispatched node, next candidate `IG-03` pending Bun 1.3.3 and explicit implementation authorization. |
 
 ## Reports
 

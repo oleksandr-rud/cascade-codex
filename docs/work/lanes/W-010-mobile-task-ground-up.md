@@ -196,12 +196,15 @@ iOS, Computer Use, simulator, and real-device claims stay independent.
 
 ## Status Reconciliation
 
-- Last checked: `2026-07-29`
-- Source identity: current `master` working tree
+- Last checked: `2026-07-30`
+- Source identity: clean implementation baseline
+  `master@60fdc2464b9782a689d3f53ffa8fc177f486e6a8`; revision-9 planning diff
+  applied on top
 - Completion disposition: `KEEP_OPEN`
 - Reason: Android/iOS providers, mobile adapters, fixtures, and coverage runtime
   are absent; required gates remain `OPEN`/`NOT_RUN`.
-- Synchronized surfaces: lane, active registry, and IG-001 revision 7.
+- Synchronized surfaces: lane, active registry, report index, and IG-001 plan
+  revision 9.
 
 ## Closeout
 

@@ -635,6 +635,16 @@ slice does not rewrite the aggregate leakage boundary or installed
 dependencies. W-004 must preserve that source-only boundary when the runtime
 foundation is implemented.
 
+### Current Status Reconciliation
+
+The table above is execution-time evidence for the earlier source identity.
+IG-001 plan revision 9 now binds the active implementation baseline to
+`master@60fdc2464b9782a689d3f53ffa8fc177f486e6a8`. The current generated
+harness catalog contains 44 skills and 368 scenarios, while current-HEAD Bun
+validation remains `NOT_RUN` because Bun 1.3.3 is unavailable on the active
+shell `PATH`. The next candidate is W-004 `IG-03`; it is `PENDING`, not
+dispatched or running.
+
 ## Doc Routing Decisions
 
 | Fact | Source | Owner Target | Action | Bloat Check | Evidence | Next Gate |

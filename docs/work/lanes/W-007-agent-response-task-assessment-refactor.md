@@ -70,7 +70,7 @@ Out:
 |---|---|---|---|
 | Annotation 1 | current response annotation | standalone versus Cascade requirement | current |
 | Program | W-004 Gate A and program report | common task/result contract | pending canonical gate |
-| Existing eval | `scripts/run_harness_evals.py`; `evals/harness/` | Codex trace, grading, coverage | current checkout |
+| Existing eval | `scripts/cascade/evals.ts`; `evals/harness/` | Codex trace, grading, catalog, and self-test coverage | current checkout |
 | Candidate | branch `scripts/cascade/evals.ts`; campaign task kind | Bun/Codex adapter candidate | candidate branch snapshot |
 | W-001 | lane and report | current regression and evidence rules | executed snapshot |
 
@@ -196,12 +196,15 @@ standalone-agent or Cascade-harness canaries.
 
 ## Status Reconciliation
 
-- Last checked: `2026-07-29`
-- Source identity: current `master` working tree
+- Last checked: `2026-07-30`
+- Source identity: clean implementation baseline
+  `master@60fdc2464b9782a689d3f53ffa8fc177f486e6a8`; revision-9 planning diff
+  applied on top
 - Completion disposition: `KEEP_OPEN`
 - Reason: provider-neutral agent task runtime, profiles, and tool-event
   composition seam are absent; required gates remain `OPEN`/`NOT_RUN`.
-- Synchronized surfaces: lane, active registry, and IG-001 revision 7.
+- Synchronized surfaces: lane, active registry, report index, and IG-001 plan
+  revision 9.
 
 ## Closeout
 

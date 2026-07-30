@@ -1,9 +1,9 @@
 # Cross-Surface Simulation Work Graph
 
 Date: 2026-07-27
-Status: `IN_PROGRESS`
+Status: `PLANNED`
 Work Graph ID: `IG-001`
-Plan Revision: `8`
+Plan Revision: `9`
 Owner: `agent-engineer` through W-004
 Merge Owner: `W-004`
 Scope: implementation sequencing for W-004 through W-010 plus W-012
@@ -66,9 +66,10 @@ Non-goals:
 | W-004 through W-010 plus W-012 plans | `OPEN`; authored | retain as criteria authority |
 | Candidate campaign code | present only on `agent/w003-integration-r4-g3` | compare and directly port only selected current-compatible modules |
 | Current campaign source folders | deterministic framework roots implemented in the working tree | retain as current W-004 evidence; do not infer surface completion |
-| Existing campaign artifacts | ignored local evidence from candidate execution | preserve as historical input; do not treat as current-source replay proof |
+| Existing campaign artifacts | preserved immutable framework and candidate runs; key manifests differ from current `HEAD` | preserve as source-bound history; current-HEAD replay required |
 | W-011 architecture-catalog work | `COMPLETE`; changed validator/docs/config surfaces | include its completed source state in the `IG-01` fixed-point inventory before accepting |
-| Current dirty work | present across architecture, validator, config, docs, and PR-contract surfaces | preserve; inventory before every shared-file edit |
+| Current source | clean implementation baseline `master@60fdc2464b9782a689d3f53ffa8fc177f486e6a8`; revision-9 planning diff applied on top | preserve implementation files until IG-03 dispatch |
+| Required runtime | Bun 1.3.3 declared by `package.json` and `harness.config.yaml`; absent from active shell `PATH` | block readiness without consuming an implementation attempt |
 | Work-graph mechanics | current template, workflow rules, dispatch contract, and validator | retain `IG-001` as the stable graph identity and use the canonical work-graph type |
 
 ## Execution Surface And Dispatch Manifest
@@ -81,7 +82,7 @@ separate tasks or threads and the resulting task ID is recorded here.
 
 | Nodes / Lane | Preferred Execution Surface | Dispatch State | Authorization Evidence | Runtime Handle | Eligible After | Merge Owner |
 |---|---|---|---|---|---|---|
-| `IG-01` through `IG-08` / W-004 | `root` | `RUNNING` | user request `implement`, 2026-07-30 | current root task | scoped implementation request and current-source inventory | W-004 |
+| `IG-03` through `IG-08` / W-004 | `root` | `NOT_AUTHORIZED` | none; prior W-004 authorization consumed by preserved framework attempt | none | current Bun preflight plus explicit implementation authorization | W-004 |
 | `IG-09` / W-005 | `internal-subagent` | `NOT_AUTHORIZED` | none | none | `IG-GA ACCEPTED` plus explicit delegation authorization | W-004 |
 | `IG-10` / W-006 | `internal-subagent` | `NOT_AUTHORIZED` | none | none | `IG-GA ACCEPTED` plus explicit delegation authorization | W-004 |
 | `IG-11` / W-007 | `internal-subagent` | `NOT_AUTHORIZED` | none | none | `IG-GA ACCEPTED` plus explicit delegation authorization | W-004 |
@@ -99,27 +100,29 @@ record the agent ID or Codex task ID without changing unrelated node evidence.
 
 ## Status Reconciliation Audit
 
-Checked: `2026-07-29`
-Source identity: current `master` working tree
+Checked: `2026-07-30`
+Source identity: clean implementation baseline
+`master@60fdc2464b9782a689d3f53ffa8fc177f486e6a8`; revision-9 planning diff
+applied on top
 Disposition rule: mark `COMPLETE` automatically only when current-source
 implementation, dependencies, required validation, and closeout evidence all
 pass.
 
 | Lane | Current-source implementation check | Required evidence state | Reconciled disposition |
 |---|---|---|---|
-| W-004 | deterministic schemas, catalog, runner, fake state world, policy/oracle reducer, frozen artifacts, evaluation/calibration/aggregation receipts, and correctness fixtures present | framework tests and three immutable runs pass; cross-surface recovery, handoff, redaction, composition, and Gate A criteria remain `OPEN`/`NOT_RUN` | `KEEP_OPEN` |
-| W-005 | command campaign adapter, definitions, fixtures, and runner absent from current source | deterministic command and recovery gates `OPEN`; candidate-branch files are not current implementation | `KEEP_OPEN` |
-| W-006 | browser campaign adapter/definitions absent from current source | deterministic browser and isolation gates `OPEN`; candidate-branch browser files are not current implementation | `KEEP_OPEN` |
+| W-004 | deterministic schemas, catalog, runner, fake state world, policy/oracle reducer, frozen artifacts, evaluation/calibration/aggregation receipts, and correctness fixtures present | three immutable run receipts are preserved but key source manifests differ from current `HEAD`; current Bun validation plus cross-surface recovery, handoff, redaction, composition, and Gate A criteria remain `OPEN`/`NOT_RUN` | `UPDATE`; `KEEP_OPEN` |
+| W-005 | shared `direct-process` execution primitive present; command manifests, recovery fixtures, and accepted seam absent | deterministic command, recovery, and handoff gates `OPEN`/`NOT_RUN` | `UPDATE`; `KEEP_OPEN` |
+| W-006 | isolated Playwright harness tooling present; browser campaign adapter/definitions absent | deterministic browser, isolation, and Computer Use gates `OPEN`/`NOT_RUN` | `UPDATE`; `KEEP_OPEN` |
 | W-007 | provider-neutral agent task runtime, profiles, and tool-event composition seam absent | fake adapter and regression gates `OPEN`; live canaries `NOT_RUN` | `KEEP_OPEN` |
 | W-008 | terminal PTY task, fixtures, transcripts, and cleanup runtime absent | PTY lifecycle, redaction, cleanup, and platform gates `OPEN`/`NOT_RUN` | `KEEP_OPEN` |
 | W-009 | desktop provider, adapter, controlled fixture, and reset runtime absent | environment, deterministic desktop, safety, and platform gates `OPEN`/`NOT_RUN` | `KEEP_OPEN` |
 | W-010 | Android/iOS provider, adapter, fixtures, and coverage runtime absent | provider and platform canaries `OPEN`/`NOT_RUN` | `KEEP_OPEN` |
 | W-012 | composed profiles/manifests, five-contour fake matrix, and joined result runtime absent | definition, matrix, receipt, reduction, regression, and live gates `OPEN`/`NOT_RUN` | `KEEP_OPEN` |
 
-Existing `.artifacts/campaigns/` files are historical candidate execution
-inputs without the current runtime source identity. They do not satisfy any
-lane's completion contract. No lane met the automatic-completion threshold, so
-no status, next gate, dispatch state, or runtime handle was changed.
+Existing `.artifacts/campaigns/` files remain immutable source-bound evidence,
+but the contract, calibration, and latest Codex run manifests respectively
+differ from current `HEAD` in 1/21, 7/39, and 4/54 inputs. They do not satisfy a
+current-source gate. No lane meets the automatic-completion threshold.
 
 ## Work Topology
 
@@ -188,12 +191,12 @@ flowchart TD
 |---|---|---|---|---|---|
 | `IG-01` | W-004 | fixed-point current/candidate inventory, selected canonical runner base, dirty-work preservation map, W-011 overlap disposition, and direct-cutover decision | current checkout; candidate branch; W-011 fixed state or non-overlap receipt | accepted baseline and allowed-write map | `COMPLETE` |
 | `IG-02` | W-004 | task/campaign/claim/policy/oracle/rubric/simulation schemas, reference resolution, supported-version migration rules, contour/driver/tier rules, generated campaign catalog contract, and duplicate/stale rejection | `IG-01` | versioned shared definition contract | `COMPLETE` |
-| `IG-03` | W-004 | bounded lifecycle, adapter interface, typed events, oracle interface, cleanup/recovery contract, unknown-outcome handling, result envelope, and operator/target-attributed execution receipt | `IG-02` | adapter and operator implementation seam | `IN_PROGRESS` |
-| `IG-04` | W-004 | atomic run/lease reservation, complete actor/role identity envelope, source manifest, append-only execution/specialized-evaluation/general-evaluation/aggregation namespaces, safe evidence freezing/content addressing, atomic finalization, and artifact verification | `IG-02` | artifact and identity seam | `IN_PROGRESS` |
-| `IG-05` | W-004 | policy registry/resolver, applicability, allow/deny/confirmation decisions, budgets, redaction, and default-deny behavior | `IG-02` | policy decision seam | `IN_PROGRESS` |
-| `IG-06` | W-004 | read-only simulation-evaluator contract, specialized harness-evaluator receipt input, actor/operator/evaluator identity separation, claim registry/resolver, evidence/oracle/policy linkage, split claim statuses, immutable evaluation receipt content, and non-compensating reduction | `IG-03`, `IG-04`, `IG-05` | evaluation receipt, claim ledger, and campaign reduction seam | `IN_PROGRESS` |
-| `IG-07` | W-004 | identity-matched append-only execution/specialized/general/aggregation receipt chain; self-evaluation rejection; accepted/rejected/pending/stale/not-applicable handoff receipts; retry parentage; cancellation/crash cleanup recovery; unknown-outcome binding; and invalidation rules | `IG-03`, `IG-04`, `IG-06` | receipt chain, aggregation projection, runtime handoff, recovery, and retry seam | `IN_PROGRESS` |
-| `IG-08` | W-004 | fake adapters, fake operator/evaluator receipts, `simulation-contract-smoke`, and `cross-contour-handoff-smoke`, including reservation race, recovery, unsafe-evidence, schema-version, role-separation, receipt-mismatch, and missing-specialized-receipt failure injection | `IG-02` through `IG-07` | Gate A evidence set | `IN_PROGRESS` |
+| `IG-03` | W-004 | bounded lifecycle, adapter interface, typed events, oracle interface, cleanup/recovery contract, unknown-outcome handling, result envelope, and operator/target-attributed execution receipt | `IG-02`; Bun 1.3.3; explicit authorization | adapter and operator implementation seam | `PENDING` |
+| `IG-04` | W-004 | atomic run/lease reservation, complete actor/role identity envelope, source manifest, append-only execution/specialized-evaluation/general-evaluation/aggregation namespaces, safe evidence freezing/content addressing, atomic finalization, and artifact verification | `IG-02`; current Bun preflight | artifact and identity seam | `PENDING` |
+| `IG-05` | W-004 | policy registry/resolver, applicability, allow/deny/confirmation decisions, budgets, redaction, and default-deny behavior | `IG-02`; current Bun preflight | policy decision seam | `PENDING` |
+| `IG-06` | W-004 | read-only simulation-evaluator contract, specialized harness-evaluator receipt input, actor/operator/evaluator identity separation, claim registry/resolver, evidence/oracle/policy linkage, split claim statuses, immutable evaluation receipt content, and non-compensating reduction | accepted `IG-03`, `IG-04`, `IG-05` | evaluation receipt, claim ledger, and campaign reduction seam | `BLOCKED_ON_IG-03/04/05` |
+| `IG-07` | W-004 | identity-matched append-only execution/specialized/general/aggregation receipt chain; self-evaluation rejection; accepted/rejected/pending/stale/not-applicable handoff receipts; retry parentage; cancellation/crash cleanup recovery; unknown-outcome binding; and invalidation rules | accepted `IG-03`, `IG-04`, `IG-06` | receipt chain, aggregation projection, runtime handoff, recovery, and retry seam | `BLOCKED_ON_IG-03/04/06` |
+| `IG-08` | W-004 | fake adapters, fake operator/evaluator receipts, `simulation-contract-smoke`, and `cross-contour-handoff-smoke`, including reservation race, recovery, unsafe-evidence, schema-version, role-separation, receipt-mismatch, and missing-specialized-receipt failure injection | accepted `IG-02` through `IG-07` | Gate A evidence set | `BLOCKED_ON_IG-03..07` |
 | `IG-GA` | W-004 | shared foundation accepted for surface implementation | `IG-08` and every required W-004 validation current | Gate A schema/interface digest and handoff packet | `OPEN` |
 | `IG-09` | W-005 | safe direct-process command adapter, scoped claims/policies/oracles, static smoke, failure/recovery campaign, and command-to-terminal handoff | `IG-GA` | W-005 accepted adapter/result seam | `BLOCKED_ON_IG-GA` |
 | `IG-10` | W-006 | Playwright and Computer Use browser drivers, isolated profile, scoped navigation/action policy, frozen visual evidence, and named browser campaigns | `IG-GA` | W-006 accepted visual action seam | `BLOCKED_ON_IG-GA` |
@@ -315,13 +318,16 @@ the campaign integration base.
 
 ## Validation Plan
 
-Current planning checks:
+Current structural and harness checks:
 
 ```bash
-python3 scripts/validate_cascade_codex.py
-python3 scripts/run_harness_evals.py catalog --check
-python3 scripts/run_harness_evals.py self-test
-python3 -m py_compile scripts/validate_cascade_codex.py scripts/run_harness_evals.py
+bun scripts/cascade.ts validate
+bun scripts/cascade.ts eval catalog --check
+bun scripts/cascade.ts eval self-test
+bun scripts/cascade.ts target self-test
+bun scripts/cascade.ts campaign catalog --check
+bun scripts/cascade.ts campaign self-test
+bun test scripts/cascade
 git diff --check
 ```
 
@@ -342,19 +348,25 @@ their explicit readiness and cost gates pass.
 ## Current Frontier
 
 - Complete: `IG-01` and `IG-02`.
-- In progress: `IG-03` through `IG-08`; Gate A remains open.
+- Pending: `IG-03`, `IG-04`, and `IG-05`; Gate A remains open.
 - Blocked: `IG-09` through `IG-17` pending the required predecessor gates.
-- Current implementation evidence: deterministic framework `PASS`; remaining
-  cross-surface Gate A evidence `OPEN`/`NOT_RUN`.
+- Next candidate: `IG-03` attempt 1 of 2 under the version-bound packet in the
+  W-004 lane.
+- Readiness blocker: Bun 1.3.3 is absent from the active shell `PATH`; current
+  validation and implementation authorization are also required.
+- Current implementation evidence: pre-merge deterministic framework evidence
+  is historical; current-HEAD replay and remaining Gate A evidence are
+  `OPEN`/`NOT_RUN`.
 - Current live Computer Use/model/platform evidence: `NOT_RUN`.
-- Next action: fixed-point review the `IG-03` through `IG-08` gaps, then add
-  recovery, handoff, redaction, and all-contour fake evidence before Gate A.
+- Dispatch authorization and runtime handles: none.
+- Next action: restore Bun 1.3.3, run the current preflight, then explicitly
+  authorize and execute `IG-03`.
 - Commit, push, publication, or provider spending: not authorized by this
   graph.
 
 ## Lifecycle And Closeout
 
-- Current lifecycle status: `ACTIVE`.
+- Current lifecycle status: `PLANNED`; no node is dispatched or running.
 - Use `BLOCKED` when the current frontier lacks a required dependency,
   authority, runtime, permission, or evidence input.
 - Deterministic implementation is complete only when `IG-GB` accepts the exact
@@ -372,9 +384,31 @@ their explicit readiness and cost gates pass.
 | Work-graph identity and node registry | `PASS` | 19 unique implementation node/gate IDs: `IG-01` through `IG-17`, `IG-GA`, and `IG-GB` |
 | Cross-document wiring | `PASS` | program report, W-004 lane, active registry, and report index reference `IG-001` |
 | Lane ownership | `PASS` | nodes reference W-004 through W-010 plus W-012 and preserve W-011 as an external overlap precondition; no additional workline is required for the integrity corrections |
-| Harness catalog | `PASS` | 41 skills, 319 scenarios, digest `f975c361819767d05319b7f4b636fa8b9e211e3c56b2005de930dd4d665d6552` |
-| Harness self-test | `PASS` | 15 cases |
-| Python compilation and diff whitespace | `PASS` | current validator/eval runner compile; `git diff --check` passes |
-| Aggregate Cascade validator | `PASS` | generated dependency directories are excluded from source-leakage scanning |
-| Campaign/runtime implementation | `PARTIAL` | 22 Bun tests; seven definitions; fixture and independent Codex evaluation runs pass with immutable receipt chains; release ineligible |
+| Harness catalog | `NOT_RUN` for current `HEAD` | generated catalog currently records 44 skills, 368 scenarios, digest `d6030bf0ea98a6bd26b431de50ac1b7ca909a19a289192d005403c514507897d`; prior 41/319 receipt retained as historical |
+| Harness self-test | `NOT_RUN` for current `HEAD` | prior 15-case receipt retained as historical |
+| Bun tests and diff whitespace | `NOT_RUN` / `PASS` | Bun 1.3.3 unavailable; revision-9 planning diff passes `git diff --check` |
+| Aggregate Cascade validator | `NOT_RUN` | current Bun validator exists but required runtime is unavailable |
+| Campaign/runtime implementation | `PARTIAL` | seven definitions and source-bound fixture/Codex receipts exist; current-HEAD replay, Gate A completion, and release eligibility remain open |
 | Live Computer Use/model/platform execution | `NOT_RUN` | owned by `IG-17` after `IG-GB` |
+
+## Revision 9 Reconciliation And Resume Contract
+
+- Revision delta: plan revision 8 -> 9. Topology, node IDs, owners, edges, Gate
+  A, Gate B, and workline boundaries are preserved.
+- Updated projections: current source/catalog identities, dispatch/runtime
+  state, evidence freshness, validation commands, lane dispositions, and
+  Current Frontier.
+- Canonical survivors: W-004 through W-010 and W-012. W-004, W-005, and W-006
+  are `UPDATE`; W-007 through W-010 and W-012 are `KEEP`. No merge,
+  supersession, retirement, or deletion applies.
+- Invalidated for current acceptance: prior W-004 Bun test, campaign,
+  evaluator, validator, and 41-skill/319-scenario harness receipts.
+- Preserved: implementation files, immutable run artifacts, completed
+  architecture work, accepted IG-01/IG-02 planning knowledge, and all
+  unrelated historical evidence.
+- Coordination Graph action: `NO_CHANGE`. The next slice is lane-local W-004
+  work; no worktree dispatch, materialization queue, batch join, or first-class
+  Coordination Graph cutover is authorized. Reassess before Gate A opens the
+  cross-workline surface wave.
+- Graph action: `UPDATE`; revision-9 status and resume bindings are now the
+  authoritative active projection.
