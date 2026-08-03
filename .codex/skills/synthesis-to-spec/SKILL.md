@@ -89,6 +89,10 @@ repair.
    `source -> finding -> requirement or scenario -> functional check -> work lane`.
    For research claims, also preserve:
    `query facet -> source family -> evidence class -> atomic claim -> promotion status`.
+   Treat simulation refinement proposals as hypotheses: separate product
+   friction, simulator defects, and research questions; require external
+   evidence plus accountable human review before routing a persona change to
+   `compose-spec`.
 6. Preserve the target repo's current catalog shape: use domain-specific specs,
    scenario files, or journey files only when already defined by the repo's
    product docs or `docs/structure.md`; otherwise use the flat required ledgers.

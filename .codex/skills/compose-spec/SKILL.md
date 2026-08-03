@@ -120,6 +120,12 @@ implementation, or test autorepair.
    - requirements should cite scenario IDs when known;
    - journeys should cite scenario IDs and carried state;
    - scenarios should cite source and functional evidence.
+   - persona revisions must record a positive revision, evidence/confidence,
+     uncertainty and abstention rules, reference window, permitted uses,
+     prohibited claims, invalidation signals, and accountable review owner;
+   - a simulation refinement proposal is never sufficient source evidence by
+     itself. Require external evidence and human review before authoring a new
+     persona revision, and link any approved derivation manifest explicitly.
 10. Use the Doc Routing Decision Matrix for every durable fact, gap, deferred
    item, blocked item, or explicit `NO_DOC_NEEDED` decision.
 11. Preserve current/superseded status and contradiction owner when source
@@ -143,6 +149,9 @@ implementation, or test autorepair.
   completeness, evidence type, and promotion status.
 - Every persona must state behavior implications; otherwise it is probably not
   durable enough to store.
+- Never parse persona Markdown implicitly into synthetic behavior or accept a
+  synthetic actor as validation of its source persona. The explicit,
+  digest-bound derivation manifest owns that bridge.
 - Every PRD must list non-goals and dependencies across product, design, brand,
   spec, backlog, and glossary when relevant.
 - References should use exact repo paths and stable IDs, not prose-only labels.
