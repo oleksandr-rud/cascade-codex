@@ -41,6 +41,7 @@ const MUTABLE_NAMESPACES = new Set([
   "calibrations",
   "specialized-evaluations",
   "evaluations",
+  "refinements",
   "aggregations",
   "recovery",
 ]);

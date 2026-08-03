@@ -130,6 +130,12 @@ async function seedCompletedRun(store: CampaignArtifactStore): Promise<void> {
     "aggregations/aggregation-1.json",
     aggregation,
   );
+  await store.writeStageJson("refinements/proposal-1.json", {
+    schema_version: 1,
+    proposal_id: "proposal-1",
+    status: "PROPOSED",
+    direct_persona_mutation_allowed: false,
+  });
   await store.writeStageJson("summary.json", {
     schema_version: 1,
     ...identity,

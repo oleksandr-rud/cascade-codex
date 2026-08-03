@@ -1,9 +1,33 @@
 import { describe, expect, test } from "bun:test";
 
 import { CascadeError, stableJson } from "./common";
-import { renderStarterPackage } from "./simulations";
+import { previewDerivedPopulation, renderStarterPackage } from "./simulations";
 
 describe("simulation starter bootstrap", () => {
+  test("previews an approved product-persona derivation without writing", async () => {
+    const result = await previewDerivedPopulation({
+      personaId: "P-999",
+      simulationId: "simulation-correctness-fixture",
+      mode: "coverage",
+      dryRun: true,
+    });
+    expect(result.status).toBe("DRY_RUN");
+    expect(result.population.schema_version).toBe(2);
+    expect(result.population.weight_semantics).toBe("test-allocation");
+    expect(result.population.source.product_personas[0]!.persona_id).toBe("P-999");
+  });
+
+  test("fails closed when no exact persona derivation exists", async () => {
+    await expect(
+      previewDerivedPopulation({
+        personaId: "P-001",
+        simulationId: "simulation-correctness-fixture",
+        mode: "coverage",
+        dryRun: true,
+      }),
+    ).rejects.toThrow("found 0");
+  });
+
   test("renders one complete collision-free package", async () => {
     const files = await renderStarterPackage({
       simulationId: "generated-example",

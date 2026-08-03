@@ -8,7 +8,16 @@ import {
   rel,
   rootPath,
   sha256File,
+  stableJson,
 } from "./common";
+import {
+  type PersonaDerivationManifest,
+  type PersonaDerivedPopulation,
+  samePersonaReferences,
+  validatePersonaDerivation,
+  validatePersonaDerivedPopulation,
+  verifyPersonaDerivationSources,
+} from "./persona-simulations";
 
 export type TaskKind =
   | "command"
@@ -96,7 +105,7 @@ export interface SimulationDefinition {
   calibration_file?: string;
 }
 
-export interface PopulationDefinition {
+export interface LegacyPopulationDefinition {
   schema_version: 1;
   id: string;
   source: {
@@ -111,6 +120,14 @@ export interface PopulationDefinition {
     behavior: Record<string, unknown>;
     slices: string[];
   }>;
+}
+
+export type PopulationDefinition = LegacyPopulationDefinition | PersonaDerivedPopulation;
+
+export interface ResolvedPersonaDerivation {
+  path: string;
+  sha256: string;
+  manifest: PersonaDerivationManifest;
 }
 
 export interface ScenarioDefinition {
@@ -343,6 +360,7 @@ export interface ResolvedCampaign {
   rubric?: RubricDefinition;
   simulation: SimulationDefinition;
   populations: PopulationDefinition[];
+  personaDerivations: ResolvedPersonaDerivation[];
   scenarios: ScenarioDefinition[];
   world: WorldDefinition;
   fixture: Record<string, unknown>;
@@ -566,6 +584,10 @@ export function validatePopulation(
   value: Record<string, unknown>,
   label: string,
 ): void {
+  if (value.schema_version === 2) {
+    validatePersonaDerivedPopulation(value, label);
+    return;
+  }
   assertSchema(value, label);
   assertId(requireString(value, "id", label), label);
   const source = objectValue(value.source, `${label}.source`);
@@ -1264,6 +1286,38 @@ export async function resolveCampaign(
       ),
     ),
   );
+  const personaDerivations: ResolvedPersonaDerivation[] = [];
+  const derivationPaths = new Set<string>();
+  for (const population of populations) {
+    if (population.schema_version !== 2) continue;
+    const reference = population.source.derivation;
+    if (derivationPaths.has(reference.path)) {
+      throw new CascadeError(`duplicate persona derivation path: ${reference.path}`);
+    }
+    derivationPaths.add(reference.path);
+    const manifest = await loadFile<PersonaDerivationManifest>(
+      reference.path,
+      "evals/simulations/",
+      validatePersonaDerivation,
+    );
+    await verifyPersonaDerivationSources(manifest, reference.path);
+    const digest = await sha256File(rootPath(reference.path));
+    if (digest !== reference.sha256) {
+      throw new CascadeError(`${population.id} persona derivation digest mismatch`);
+    }
+    if (
+      manifest.id !== reference.id ||
+      manifest.simulation_id !== simulation.id ||
+      manifest.population_id !== population.id ||
+      manifest.mode !== population.mode ||
+      manifest.review.status !== "approved" ||
+      !samePersonaReferences(manifest.product_personas, population.source.product_personas) ||
+      stableJson(manifest.generator) !== stableJson(population.source.generator)
+    ) {
+      throw new CascadeError(`${population.id} persona derivation binding is stale or mismatched`);
+    }
+    personaDerivations.push({ path: reference.path, sha256: digest, manifest });
+  }
   const scenarios = await Promise.all(
     simulation.scenario_files.map((file) =>
       loadFile<ScenarioDefinition>(
@@ -1501,6 +1555,7 @@ export async function resolveCampaign(
     "scripts/cascade/evaluations.ts",
     "scripts/cascade/simulations.ts",
     "scripts/cascade/simulation-definitions.ts",
+    "scripts/cascade/persona-simulations.ts",
     ".codex/skills/simulation-campaigns/templates/starter/package.template.json",
     ".codex/skills/simulation-campaigns/templates/campaign-design.md",
     ".codex/agents/simulation-evaluator.toml",
@@ -1518,6 +1573,8 @@ export async function resolveCampaign(
     ...(evaluationProfile.rubric_file ? [evaluationProfile.rubric_file] : []),
     "evals/simulations/schema.json",
     "evals/simulations/population.schema.json",
+    "evals/simulations/persona-derivation.schema.json",
+    "evals/simulations/refinement-proposal.schema.json",
     "evals/simulations/scenario.schema.json",
     "evals/simulations/world.schema.json",
     "evals/simulations/dataset.schema.json",
@@ -1532,6 +1589,10 @@ export async function resolveCampaign(
     rel(path),
     campaign.simulation_file,
     ...simulation.population_files,
+    ...personaDerivations.flatMap((item) => [
+      item.path,
+      ...item.manifest.product_personas.map((persona) => persona.path),
+    ]),
     ...simulation.scenario_files,
     simulation.world_file,
     world.fixture_file,
@@ -1562,6 +1623,7 @@ export async function resolveCampaign(
     rubric,
     simulation,
     populations,
+    personaDerivations,
     scenarios,
     world,
     fixture,

@@ -42,6 +42,9 @@ Usage:
   bun scripts/cascade.ts campaign self-test
   bun scripts/cascade.ts simulation init <simulation-id> --owner-lane W-NNN
     [--title "Title"] [--reference-date YYYY-MM-DD] [--dry-run]
+  bun scripts/cascade.ts simulation derive-population P-NNN
+    --simulation <simulation-id>
+    --mode <representative|coverage|stress|counterfactual> --dry-run
 `);
       return 0;
     default:

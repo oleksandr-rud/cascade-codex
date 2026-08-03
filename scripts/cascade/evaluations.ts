@@ -28,6 +28,12 @@ import type {
   ResolvedCampaign,
 } from "./simulation-definitions";
 import { CampaignArtifactStore } from "./campaign-artifacts";
+import {
+  type PersonaRefinementProposal,
+  type RefinementProposalCandidate,
+  materializeRefinementProposal,
+  validateRefinementProposalCandidate,
+} from "./persona-simulations";
 
 export interface ClaimLedgerEntry {
   claim_id: string;
@@ -85,7 +91,7 @@ export interface EvaluationIdentity {
 }
 
 export interface CodexEvaluationOutput {
-  schema_version: 1;
+  schema_version: 2;
   evaluation_id: string;
   run_id: string;
   campaign_id: string;
@@ -102,6 +108,7 @@ export interface CodexEvaluationOutput {
     reason: string;
     evidence: string[];
   }>;
+  refinement_proposals: RefinementProposalCandidate[];
   root_cause:
     | "none"
     | "execution"
@@ -136,6 +143,7 @@ export interface EvaluationRequest {
 
 export interface CodexEvaluationResult {
   receipt: EvaluationReceipt | null;
+  refinementProposals: PersonaRefinementProposal[];
   attemptPath: string;
   blockedReason: string | null;
 }
@@ -290,8 +298,8 @@ export function validateCodexEvaluationOutput(
     throw new CascadeError("Codex evaluation output must be an object");
   }
   const output = value as Record<string, unknown>;
-  if (output.schema_version !== 1) {
-    throw new CascadeError("Codex evaluation output schema_version must be 1");
+  if (output.schema_version !== 2) {
+    throw new CascadeError("Codex evaluation output schema_version must be 2");
   }
   const expected = {
     evaluation_id: request.evaluation_id,
@@ -383,6 +391,18 @@ export function validateCodexEvaluationOutput(
       );
     }
   }
+  if (!Array.isArray(output.refinement_proposals)) {
+    throw new CascadeError("Codex evaluation output refinement_proposals must be an array");
+  }
+  const proposals = output.refinement_proposals.map((proposal, index) =>
+    validateRefinementProposalCandidate(
+      objectValue(proposal, `refinement_proposals[${index}]`),
+      `refinement_proposals[${index}]`,
+    ),
+  );
+  if (new Set(proposals.map((proposal) => proposal.proposal_id)).size !== proposals.length) {
+    throw new CascadeError("Codex evaluation output contains duplicate refinement proposal IDs");
+  }
   const rootCauses = new Set([
     "none",
     "execution",
@@ -419,6 +439,47 @@ export function validateCodexEvaluationOutput(
     );
   }
   return output as unknown as CodexEvaluationOutput;
+}
+
+function objectValue(value: unknown, label: string): Record<string, unknown> {
+  if (!value || typeof value !== "object" || Array.isArray(value)) {
+    throw new CascadeError(`${label} must be an object`);
+  }
+  return value as Record<string, unknown>;
+}
+
+export function buildPersonaRefinementProposals(
+  resolved: ResolvedCampaign,
+  identity: EvaluationIdentity,
+  output: CodexEvaluationOutput,
+  createdAt?: string,
+): PersonaRefinementProposal[] {
+  return output.refinement_proposals.map((candidate) => {
+    const derivation = resolved.personaDerivations.find(
+      (item) => item.manifest.id === candidate.derivation_id,
+    );
+    const persona = derivation?.manifest.product_personas.find(
+      (item) => item.persona_id === candidate.persona_id,
+    );
+    if (!derivation || !persona) {
+      throw new CascadeError(
+        `${candidate.proposal_id} persona or derivation binding is stale or unknown`,
+      );
+    }
+    return materializeRefinementProposal(candidate, {
+      runId: identity.runId,
+      campaignId: identity.campaignId,
+      evaluationId: `${identity.runId}-evaluation`,
+      evaluatorIdentity: identity.evaluatorIdentity,
+      persona,
+      derivation: {
+        id: derivation.manifest.id,
+        path: derivation.path,
+        sha256: derivation.sha256,
+      },
+      createdAt,
+    });
+  });
 }
 
 export function buildCodexEvaluationReceipt(
@@ -517,7 +578,10 @@ cannot support target release eligibility.
 Return only JSON matching contracts/output.schema.json. Echo every identity and
 digest from request.json exactly, plus the manifest_digest from
 input-manifest.json as input_manifest_digest. Include every declared claim
-exactly once and cite only paths inside this frozen input.`;
+exactly once and cite only paths inside this frozen input. Return
+refinement_proposals as an empty array unless a persona-derived population is
+present and frozen evidence supports a typed proposal. A proposal is a
+hypothesis only: it must not claim to validate or mutate its source persona.`;
 }
 
 function blockedReason(result: {
@@ -714,7 +778,7 @@ export async function runCodexEvaluation(
     await writeJson(resolve(evaluationRoot, "attempt.json"), attempt);
     const attemptPath = await persistAttempt();
     await rm(evaluationRoot, { recursive: true, force: true });
-    return { receipt: null, attemptPath, blockedReason: attempt.reason };
+    return { receipt: null, refinementProposals: [], attemptPath, blockedReason: attempt.reason };
   }
   try {
     const parsed = parseCodexJsonl(result.stdout);
@@ -732,6 +796,20 @@ export async function runCodexEvaluation(
         }
       }
     }
+    for (const proposal of output.refinement_proposals) {
+      for (const evidence of proposal.evidence_paths) {
+        if (!(await isFile(resolve(inputRoot, evidence)))) {
+          throw new CascadeError(
+            `Codex refinement proposal cites missing frozen evidence: ${evidence}`,
+          );
+        }
+      }
+    }
+    const refinementProposals = buildPersonaRefinementProposals(
+      resolved,
+      identity,
+      output,
+    );
     const traceDigest = await sha256File(resolve(evaluationRoot, "stdout.jsonl"));
     const receipt = buildCodexEvaluationReceipt(
       resolved,
@@ -748,12 +826,12 @@ export async function runCodexEvaluation(
     await writeJson(resolve(evaluationRoot, "attempt.json"), attempt);
     const attemptPath = await persistAttempt();
     await rm(evaluationRoot, { recursive: true, force: true });
-    return { receipt, attemptPath, blockedReason: null };
+    return { receipt, refinementProposals, attemptPath, blockedReason: null };
   } catch (error) {
     attempt.reason = error instanceof Error ? error.message : String(error);
     await writeJson(resolve(evaluationRoot, "attempt.json"), attempt);
     const attemptPath = await persistAttempt();
     await rm(evaluationRoot, { recursive: true, force: true });
-    return { receipt: null, attemptPath, blockedReason: attempt.reason };
+    return { receipt: null, refinementProposals: [], attemptPath, blockedReason: attempt.reason };
   }
 }

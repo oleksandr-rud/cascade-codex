@@ -1,4 +1,4 @@
-import { rmdir, unlink } from "node:fs/promises";
+import { readdir, rmdir, unlink } from "node:fs/promises";
 import { dirname } from "node:path";
 
 import {
@@ -7,11 +7,13 @@ import {
   boundedPath,
   exists,
   flag,
+  isFile,
   parseArgs,
   readJson,
   readText,
   rel,
   rootPath,
+  sha256File,
   sha256Text,
   stableJson,
   writeJsonAtomic,
@@ -20,6 +22,13 @@ import {
 } from "./common";
 import { buildCampaignCatalog } from "./campaigns";
 import { resolveCampaign } from "./simulation-definitions";
+import {
+  type PersonaDerivationManifest,
+  type PersonaDerivationMode,
+  derivePopulationFromManifest,
+  validatePersonaDerivation,
+  verifyPersonaDerivationSources,
+} from "./persona-simulations";
 
 const TEMPLATE_PATH =
   ".codex/skills/simulation-campaigns/templates/starter/package.template.json";
@@ -28,6 +37,7 @@ const DESIGN_TEMPLATE_PATH =
 const CATALOG_PATH = rootPath("evals/campaigns/catalog.generated.json");
 const SIMULATION_ID = /^[a-z0-9][a-z0-9.-]+$/;
 const OWNER_LANE = /^W-[0-9]{3}$/;
+const PERSONA_ID = /^P-[0-9]{3}$/;
 
 interface TemplateFile {
   path: string;
@@ -51,6 +61,13 @@ export interface StarterOptions {
   ownerLane: string;
   title?: string;
   referenceDate?: string;
+}
+
+export interface DerivePopulationOptions {
+  personaId: string;
+  simulationId: string;
+  mode: PersonaDerivationMode;
+  dryRun: true;
 }
 
 function titleFromId(id: string): string {
@@ -358,6 +375,95 @@ export async function initializeSimulation(
   }
 }
 
+export async function previewDerivedPopulation(
+  options: DerivePopulationOptions,
+) {
+  if (!PERSONA_ID.test(options.personaId)) {
+    throw new CascadeError("persona ID must use P-NNN");
+  }
+  if (!SIMULATION_ID.test(options.simulationId)) {
+    throw new CascadeError("simulation ID must use lowercase letters, numbers, dots, or hyphens");
+  }
+  if (!["representative", "coverage", "stress", "counterfactual"].includes(options.mode)) {
+    throw new CascadeError("--mode must be representative, coverage, stress, or counterfactual");
+  }
+  if (options.dryRun !== true) {
+    throw new CascadeError("persona population derivation is preview-only and requires --dry-run");
+  }
+
+  const directory = boundedPath(
+    `evals/simulations/${options.simulationId}/derivations`,
+    "evals/simulations/",
+  );
+  let names: string[];
+  try {
+    names = (await readdir(directory)).filter((name) => name.endsWith(".json")).sort();
+  } catch {
+    throw new CascadeError(`persona derivation directory missing for simulation: ${options.simulationId}`);
+  }
+  const matches: Array<{
+    path: string;
+    digest: string;
+    manifest: PersonaDerivationManifest;
+  }> = [];
+  for (const name of names) {
+    const path = `evals/simulations/${options.simulationId}/derivations/${name}`;
+    const manifest = await readJson<PersonaDerivationManifest>(boundedPath(path));
+    validatePersonaDerivation(manifest as unknown as Record<string, unknown>, path);
+    if (
+      manifest.mode === options.mode &&
+      manifest.product_personas.some((persona) => persona.persona_id === options.personaId)
+    ) {
+      await verifyPersonaDerivationSources(manifest, path);
+      matches.push({ path, digest: await sha256File(rootPath(path)), manifest });
+    }
+  }
+  if (matches.length !== 1) {
+    throw new CascadeError(
+      `expected exactly one persona derivation for ${options.personaId}/${options.mode}, found ${matches.length}`,
+    );
+  }
+  const selected = matches[0]!;
+  const population = derivePopulationFromManifest(
+    selected.manifest,
+    selected.path,
+    selected.digest,
+  );
+  const populationDirectory = boundedPath(
+    `evals/simulations/${options.simulationId}/populations`,
+    "evals/simulations/",
+  );
+  const existingMatches: string[] = [];
+  for (const name of (await readdir(populationDirectory)).filter((item) => item.endsWith(".json")).sort()) {
+    const candidatePath = `evals/simulations/${options.simulationId}/populations/${name}`;
+    const candidate = await readJson<Record<string, unknown>>(boundedPath(candidatePath));
+    const source = candidate.source as Record<string, unknown> | undefined;
+    const derivation = source?.derivation as Record<string, unknown> | undefined;
+    if (candidate.schema_version === 2 && derivation?.path === selected.path) {
+      existingMatches.push(candidatePath);
+    }
+  }
+  if (existingMatches.length > 1) {
+    throw new CascadeError(`persona derivation maps to multiple population files: ${existingMatches.join(", ")}`);
+  }
+  const defaultOutput = `evals/simulations/${options.simulationId}/populations/${population.id}.json`;
+  const outputPath = existingMatches[0] ?? defaultOutput;
+  const outputExists = await isFile(boundedPath(outputPath));
+  if (outputExists) {
+    const existing = await readJson<unknown>(boundedPath(outputPath));
+    if (stableJson(existing) !== stableJson(population)) {
+      throw new CascadeError(`persona population preview refuses existing collision: ${outputPath}`);
+    }
+  }
+  return {
+    status: "DRY_RUN" as const,
+    output_path: outputPath,
+    existing_match: outputExists,
+    derivation_path: selected.path,
+    population,
+  };
+}
+
 async function commandInit(value: string | undefined, argv: string[]) {
   if (!value) throw new CascadeError("simulation init requires a simulation ID");
   const args = parseArgs(argv);
@@ -384,12 +490,38 @@ async function commandInit(value: string | undefined, argv: string[]) {
   return 0;
 }
 
+async function commandDerivePopulation(
+  personaId: string | undefined,
+  argv: string[],
+): Promise<number> {
+  if (!personaId) throw new CascadeError("simulation derive-population requires a P-NNN persona ID");
+  const args = parseArgs(argv);
+  const simulationId = flag(args, "simulation");
+  const mode = flag(args, "mode");
+  if (!simulationId) throw new CascadeError("simulation derive-population requires --simulation");
+  if (!mode) throw new CascadeError("simulation derive-population requires --mode");
+  if (!boolFlag(args, "dry-run")) {
+    throw new CascadeError("simulation derive-population is preview-only and requires --dry-run");
+  }
+  const result = await previewDerivedPopulation({
+    personaId,
+    simulationId,
+    mode: mode as PersonaDerivationMode,
+    dryRun: true,
+  });
+  console.log(stableJson(result, true));
+  return 0;
+}
+
 export async function main(argv: string[]): Promise<number> {
   const [command, value, ...rest] = argv;
   if (command === "init") return commandInit(value, rest);
+  if (command === "derive-population") return commandDerivePopulation(value, rest);
   console.log(`Usage:
   bun scripts/cascade.ts simulation init <simulation-id> --owner-lane W-NNN
     [--title "Title"] [--reference-date YYYY-MM-DD] [--dry-run]
+  bun scripts/cascade.ts simulation derive-population P-NNN --simulation <simulation-id>
+    --mode <representative|coverage|stress|counterfactual> --dry-run
 `);
   return command ? 1 : 0;
 }

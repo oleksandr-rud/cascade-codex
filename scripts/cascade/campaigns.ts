@@ -61,6 +61,7 @@ import {
   findCampaignPath,
   resolveCampaign,
 } from "./simulation-definitions";
+import type { PersonaRefinementProposal } from "./persona-simulations";
 
 const CAMPAIGN_ROOT = rootPath("evals/campaigns");
 const ARTIFACT_ROOT = rootPath(".artifacts/campaigns");
@@ -2324,6 +2325,7 @@ async function commandRun(value: string, argv: string[]): Promise<number> {
     evaluator_identity: evaluatorIdentity,
   });
   let evaluation: EvaluationReceipt | null;
+  let refinementProposals: PersonaRefinementProposal[] = [];
   let evaluationAttempt: string | null = null;
   let evaluationBlockedReason: string | null = null;
   if (resolved.evaluationProfile.provider === "codex") {
@@ -2335,6 +2337,7 @@ async function commandRun(value: string, argv: string[]): Promise<number> {
       artifactStore,
     );
     evaluation = result.receipt;
+    refinementProposals = result.refinementProposals;
     evaluationAttempt = result.attemptPath;
     evaluationBlockedReason = result.blockedReason;
   } else {
@@ -2388,6 +2391,12 @@ async function commandRun(value: string, argv: string[]): Promise<number> {
     return 1;
   }
   assertEvaluationReceiptFresh(resolved, evaluationIdentity, evaluation);
+  for (const proposal of refinementProposals) {
+    await artifactStore.writeStageJson(
+      `refinements/${proposal.proposal_id}.json`,
+      proposal,
+    );
+  }
   const aggregation = buildAggregationReceipt(
     resolved,
     runId,

@@ -16,6 +16,7 @@
     "status",
     "mechanical_gate_status",
     "claim_assessments",
+    "refinement_proposals",
     "root_cause",
     "earliest_failure",
     "residual_uncertainty",
@@ -24,7 +25,7 @@
   "properties": {
     "schema_version": {
       "type": "integer",
-      "const": 1
+      "const": 2
     },
     "evaluation_id": {
       "type": "string",
@@ -113,6 +114,59 @@
               "type": "string",
               "minLength": 1
             }
+          }
+        }
+      }
+    },
+    "refinement_proposals": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "proposal_id",
+          "persona_id",
+          "derivation_id",
+          "proposal_type",
+          "target_field",
+          "summary",
+          "rationale",
+          "recommended_change",
+          "evidence_paths",
+          "confidence",
+          "disposition_route"
+        ],
+        "properties": {
+          "proposal_id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9.-]+$" },
+          "persona_id": { "type": "string", "pattern": "^P-[0-9]{3}$" },
+          "derivation_id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9.-]+$" },
+          "proposal_type": {
+            "enum": [
+              "missing-dimension",
+              "stale-assumption",
+              "contradiction",
+              "journey-gap",
+              "scenario-gap",
+              "requirement-gap",
+              "accessibility-gap",
+              "permission-gap",
+              "simulator-defect",
+              "research-question"
+            ]
+          },
+          "target_field": { "type": "string", "minLength": 1 },
+          "summary": { "type": "string", "minLength": 1 },
+          "rationale": { "type": "string", "minLength": 1 },
+          "recommended_change": { "type": "string", "minLength": 1 },
+          "evidence_paths": {
+            "type": "array",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": { "type": "string", "minLength": 1 }
+          },
+          "confidence": { "enum": ["low", "medium", "high"] },
+          "disposition_route": {
+            "enum": ["collect-external-evidence", "repair-simulator", "synthesis-to-spec"]
           }
         }
       }

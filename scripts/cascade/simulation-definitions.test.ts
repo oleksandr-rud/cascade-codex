@@ -16,6 +16,10 @@ describe("simulation definition contracts", () => {
       "evals/campaigns/simulation-contract-smoke.json",
     );
     expect(resolved.populations).toHaveLength(1);
+    expect(resolved.personaDerivations).toHaveLength(1);
+    expect(resolved.sourceFiles).toContain(
+      "docs/product/personas/fixtures/P-999-framework-support-role.md",
+    );
     expect(resolved.dataset.cases.map((item) => item.partition).sort()).toEqual([
       "calibration-reference",
       "calibration-reference",
@@ -46,6 +50,20 @@ describe("simulation definition contracts", () => {
         "invalid-population",
       ),
     ).toThrow("weights must sum to 1");
+  });
+
+  test("keeps coverage weights distinct from prevalence", async () => {
+    const resolved = await resolveCampaign(
+      "evals/campaigns/simulation-contract-smoke.json",
+    );
+    const population = structuredClone(resolved.populations[0]!) as unknown as Record<
+      string,
+      unknown
+    >;
+    population.weight_semantics = "estimated-prevalence";
+    expect(() => validatePopulation(population, "invalid-derived-population")).toThrow(
+      "must use test-allocation",
+    );
   });
 
   test("rejects case identity leakage across partitions", () => {

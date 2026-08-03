@@ -3,6 +3,7 @@ import { describe, expect, test } from "bun:test";
 import {
   buildCodexEvaluationReceipt,
   buildFixtureEvaluationReceipt,
+  buildPersonaRefinementProposals,
   parseCodexJsonl,
   validateCodexEvaluationOutput,
   type CodexEvaluationOutput,
@@ -94,7 +95,7 @@ function request(): EvaluationRequest {
 function output(): CodexEvaluationOutput {
   const value = request();
   return {
-    schema_version: 1,
+    schema_version: 2,
     evaluation_id: value.evaluation_id,
     run_id: value.run_id,
     campaign_id: value.campaign_id,
@@ -125,6 +126,7 @@ function output(): CodexEvaluationOutput {
         evidence: ["run/calibration.json"],
       },
     ],
+    refinement_proposals: [],
     root_cause: "none",
     earliest_failure: null,
     residual_uncertainty: ["target-project behavior remains untested"],
@@ -204,6 +206,43 @@ describe("Codex simulation evaluation", () => {
     expect(receipt.status).toBe("FAIL");
     expect(receipt.claim_ledger[0]!.status).toBe("UNSUPPORTED");
     expect(receipt.claim_ledger[2]!.status).toBe("NOT_RUN");
+  });
+
+  test("binds refinement proposals to current persona derivations", async () => {
+    const resolved = await resolveCampaign(
+      "evals/campaigns/simulation-codex-evaluation-smoke.json",
+    );
+    const value = output();
+    value.refinement_proposals = [
+      {
+        proposal_id: "fixture-research-question",
+        persona_id: "P-999",
+        derivation_id: "p-999-coverage-v1",
+        proposal_type: "research-question",
+        target_field: "communication behavior",
+        summary: "Collect real evidence before interpreting fixture communication behavior.",
+        rationale: "The frozen fixture explicitly contains no real-user evidence.",
+        recommended_change: "Do not change the persona; collect external observations.",
+        evidence_paths: ["run/execution/execution-receipt.json"],
+        confidence: "high",
+        disposition_route: "collect-external-evidence",
+      },
+    ];
+    const proposals = buildPersonaRefinementProposals(
+      resolved,
+      identity(),
+      value,
+      "2026-08-03T00:00:00Z",
+    );
+    expect(proposals).toHaveLength(1);
+    expect(proposals[0]!.status).toBe("PROPOSED");
+    expect(proposals[0]!.direct_persona_mutation_allowed).toBe(false);
+    expect(proposals[0]!.external_evidence_required).toBe(true);
+
+    value.refinement_proposals[0]!.persona_id = "P-001";
+    expect(() =>
+      buildPersonaRefinementProposals(resolved, identity(), value),
+    ).toThrow("stale or unknown");
   });
 
   test("rejects stale receipts before aggregation", async () => {
