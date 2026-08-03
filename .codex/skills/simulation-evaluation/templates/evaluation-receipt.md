@@ -57,3 +57,9 @@
 - Immutable sibling receipt destination:
 - Exact next route:
 - Explicitly not proven:
+
+## Persona Refinement Candidates
+
+| Proposal ID | Persona Revision / Derivation | Type | Frozen Evidence | Confidence | Route | Promotion Blockers |
+|---|---|---|---|---|---|---|
+| | | | | | | external evidence and human review |

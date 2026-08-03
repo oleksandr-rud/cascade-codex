@@ -66,6 +66,8 @@
 ## Population, Data, And Calibration
 
 - Population source and reference window:
+- Product-persona revision/path/digest and approved derivation, when applicable:
+- Derivation mode, generator identity, invariants, mutation axes, and weight semantics:
 - Actor weights and required risk slices:
 - Scenario distribution and stop conditions:
 - Stateful world and negative behavior:
@@ -76,6 +78,7 @@
 - Reference labels and reviewer identity:
 - Sample, slice, agreement, correlation, and freshness thresholds:
 - Calibration invalidation inputs:
+- Refinement proposal types, frozen evidence binding, and promotion blockers:
 
 ## Lifecycle
 

@@ -29,6 +29,8 @@ role and does not treat an authored campaign as an executed result.
    - `evals/treatments/`
    - `evals/calibrations/`
    - `evals/rubrics/`
+   - `docs/product/personas/` only through explicit persona derivation
+     manifests; never through inferred Markdown parsing;
    - the generated campaign catalog.
    - `templates/starter/package.template.json` when bootstrapping a new target
      simulation.
@@ -116,6 +118,11 @@ materially.
      provider for `semantic-evaluation`.
    - Reject duplicate IDs, unknown references, stale generated catalogs, and
      ambiguous versions.
+   - For persona-derived populations, resolve the approved derivation manifest,
+     exact product-persona ID/revision/path/digest, generator identity,
+     behavioral dimensions, invariants, mutation axes, and allocation mode.
+     Preview deterministic generation with `simulation derive-population ...
+     --dry-run`; model-backed generation requires a separately authorized path.
 3. Validate the execution contract.
    - Record contour, driver, tier, platform, permissions, runtime identity,
      fixture identity, timeout, budget, evidence targets, cleanup, and handoff.
@@ -158,6 +165,10 @@ materially.
    - Use `SUPPORTED`, `PARTIALLY_SUPPORTED`, `UNSUPPORTED`, `CONFLICTING`,
      `BLOCKED`, `NOT_RUN`, or `INVALID` for claim-ledger entries. Only
      `SUPPORTED` satisfies a required claim.
+   - Validate evaluator refinement candidates against the exact persona and
+     derivation identities and frozen evidence paths, then freeze them once in
+     `refinements/` before terminal finalization. They remain `PROPOSED` and
+     route to simulator repair, external research, or `synthesis-to-spec`.
 8. Verify cleanup and handoffs.
    - Require operator cleanup verification plus matching execution and
      evaluation receipts containing campaign ID, run ID, source revision,
@@ -199,6 +210,10 @@ materially.
   release-eligible are separate states.
 - A framework-fixture, stale, partial, missing, or failed calibration cannot
   support a target-project release claim.
+- Coverage, stress, and counterfactual actor weights are test allocation, not
+  population prevalence. Synthetic output cannot self-confirm or directly
+  mutate its source product persona; promotion requires external evidence,
+  accountable human review, and a new persona revision.
 
 Use `templates/campaign-design.md` before creating or materially changing a
 campaign. Use `checklists/campaign-quality.md` before accepting a campaign or
@@ -211,6 +226,8 @@ report.
 - resolved source graph and digests;
 - population/scenario coverage, dataset partitions, metrics, treatment
   identities, and calibration status;
+- persona derivation identities and allocation semantics, plus proposal IDs
+  and their external-evidence/human-review blockers when present;
 - selection, dispatch, execution-receipt, evaluation-receipt, cleanup, and
   handoff status;
 - claim ledger with policy, oracle, evidence, and support status per claim;

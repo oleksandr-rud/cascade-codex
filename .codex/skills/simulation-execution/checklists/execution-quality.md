@@ -10,6 +10,8 @@
       driver, and environment references resolve.
 - [ ] Population, scenario, world, dataset partition, metric, treatment, and
       calibration sources are digest-bound before execution.
+- [ ] Persona-derived inputs bind the approved derivation and exact persona
+      revision/path/digest without copying sensitive raw research into actors.
 - [ ] Runtime, permissions, isolation, credentials, budgets, artifact
       writability, oracles, and cleanup capability pass preflight.
 - [ ] Failed required preflight produces no target execution events.

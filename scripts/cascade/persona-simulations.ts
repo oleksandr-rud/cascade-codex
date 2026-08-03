@@ -605,7 +605,7 @@ export function materializeRefinementProposal(
   if (validated.persona_id !== binding.persona.persona_id || validated.derivation_id !== binding.derivation.id) {
     throw new CascadeError(`${validated.proposal_id} persona or derivation binding is stale or unknown`);
   }
-  return {
+  const proposal: PersonaRefinementProposal = {
     schema_version: 1,
     proposal_id: validated.proposal_id,
     run_id: binding.runId,
@@ -632,6 +632,76 @@ export function materializeRefinementProposal(
       "accountable human persona review has not approved a new revision",
     ],
   };
+  validatePersonaRefinementProposal(
+    proposal as unknown as Record<string, unknown>,
+    proposal.proposal_id,
+  );
+  return proposal;
+}
+
+export function validatePersonaRefinementProposal(
+  value: Record<string, unknown>,
+  label: string,
+): void {
+  exactKeys(
+    value,
+    [
+      "schema_version", "proposal_id", "run_id", "campaign_id", "evaluation_id",
+      "persona", "derivation", "proposal_type", "target_field", "summary", "rationale",
+      "recommended_change", "evidence_paths", "confidence", "disposition_route",
+      "external_evidence_required", "human_review_required",
+      "direct_persona_mutation_allowed", "status", "proposed_by", "created_at",
+      "promotion_blockers",
+    ],
+    label,
+  );
+  if (value.schema_version !== 1) throw new CascadeError(`${label}.schema_version must be 1`);
+  const proposalId = requiredString(value, "proposal_id", label);
+  const persona = validatePersonaReference(
+    objectValue(value.persona, `${label}.persona`),
+    `${label}.persona`,
+  );
+  const derivation = objectValue(value.derivation, `${label}.derivation`);
+  exactKeys(derivation, ["id", "path", "sha256"], `${label}.derivation`);
+  const derivationId = requiredString(derivation, "id", `${label}.derivation`);
+  assertId(derivationId, `${label}.derivation.id`);
+  const derivationPath = requiredString(derivation, "path", `${label}.derivation`);
+  if (!/^evals\/simulations\/.+\/derivations\/.+\.json$/.test(derivationPath)) {
+    throw new CascadeError(`${label}.derivation.path is invalid`);
+  }
+  assertDigest(requiredString(derivation, "sha256", `${label}.derivation`), `${label}.derivation.sha256`);
+  validateRefinementProposalCandidate(
+    {
+      proposal_id: proposalId,
+      persona_id: persona.persona_id,
+      derivation_id: derivationId,
+      proposal_type: value.proposal_type,
+      target_field: value.target_field,
+      summary: value.summary,
+      rationale: value.rationale,
+      recommended_change: value.recommended_change,
+      evidence_paths: value.evidence_paths,
+      confidence: value.confidence,
+      disposition_route: value.disposition_route,
+    },
+    label,
+  );
+  for (const key of ["run_id", "campaign_id", "evaluation_id", "proposed_by"] as const) {
+    requiredString(value, key, label);
+  }
+  const createdAt = requiredString(value, "created_at", label);
+  if (Number.isNaN(Date.parse(createdAt))) throw new CascadeError(`${label}.created_at must be an ISO timestamp`);
+  if (
+    value.external_evidence_required !== true ||
+    value.human_review_required !== true ||
+    value.direct_persona_mutation_allowed !== false ||
+    value.status !== "PROPOSED"
+  ) {
+    throw new CascadeError(`${label} violates proposal-only promotion controls`);
+  }
+  if (stringArray(value, "promotion_blockers", label).length < 2) {
+    throw new CascadeError(`${label}.promotion_blockers must include external evidence and human review`);
+  }
 }
 
 export function samePersonaReferences(

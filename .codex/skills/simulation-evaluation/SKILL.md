@@ -83,6 +83,10 @@ implementation defects after evaluation to `codex-maintenance` or
      `BLOCKED`, `NOT_RUN`, or `INVALID`.
    - Only `SUPPORTED` satisfies a required claim.
    - Never let a semantic score compensate for a failed mechanical gate.
+   - When a persona-derived population is present, optionally emit typed
+     refinement candidates bound to its exact persona and derivation IDs and
+     frozen evidence paths. Separate product friction from simulator defects
+     and research questions; emit no candidate when evidence is insufficient.
 7. Validate calibration inputs when the claim requires calibration.
    - Check frozen score, metric, treatment, label, reviewer, required-slice,
      freshness, and invalidation identities.
@@ -95,6 +99,10 @@ implementation defects after evaluation to `codex-maintenance` or
      campaign aggregation stores it as a sibling immutable evaluation
      artifact under a new evaluation ID after identity checks and refuses to
      overwrite an existing receipt.
+   - Return proposal candidates separately from the evaluation receipt. The
+     operator-side artifact writer validates their bindings and freezes them
+     as `PROPOSED`; the evaluator cannot mark them accepted or mutate persona
+     source files.
 
 ## Hard Gates
 
@@ -113,6 +121,9 @@ implementation defects after evaluation to `codex-maintenance` or
   digest mismatch blocks evaluation; never substitute a fixture evaluator.
 - Release eligibility remains a campaign aggregation decision after every
   required execution and evaluation receipt exists.
+- Repeated synthetic findings do not validate their source persona. Every
+  persona refinement requires external evidence, human review, and a new
+  revision through `synthesis-to-spec -> compose-spec`.
 
 Use `checklists/evaluation-quality.md` before accepting an evaluation. Use
 `templates/evaluation-receipt.md` for a durable receipt.

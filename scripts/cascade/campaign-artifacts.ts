@@ -23,6 +23,7 @@ import {
   writeJsonAtomicExclusive,
   writeJsonExclusive,
 } from "./common";
+import { validatePersonaRefinementProposal } from "./persona-simulations";
 
 export const CAMPAIGN_ARTIFACT_SCHEMA_VERSION = "1.0.0";
 export const DEFAULT_EVIDENCE_LIMIT_BYTES = 10 * 1024 * 1024;
@@ -540,6 +541,12 @@ export class CampaignArtifactStore {
       if (!topLevelAllowed && !MUTABLE_NAMESPACES.has(namespace)) {
         throw new CascadeError(
           `artifact stage path is outside a governed namespace: ${relativePath}`,
+        );
+      }
+      if (namespace === "refinements") {
+        validatePersonaRefinementProposal(
+          value as Record<string, unknown>,
+          `campaign refinement ${relativePath}`,
         );
       }
       const serialized = stableJson(value);

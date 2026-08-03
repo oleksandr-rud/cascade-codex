@@ -7,6 +7,7 @@
 - Source revision and dirty identity:
 - Task and simulation IDs:
 - Population, scenario, world, and dataset IDs:
+- Persona revision and derivation IDs/digests, when applicable:
 - Metric, treatment, baseline, and calibration definition IDs:
 - Contour, driver, tier, and platform:
 - Runner, adapter, environment, and fixture identities:

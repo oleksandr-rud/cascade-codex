@@ -18,6 +18,9 @@ judgment, aggregate a portfolio, or decide release eligibility.
 2. Current-checkout campaign, task, simulation, population, scenario, world,
    dataset, metric, treatment, calibration, claim, policy, oracle, fixture,
    and generated-catalog sources.
+   For persona-derived populations, include the approved derivation manifest
+   and exact product-persona revision/path/digest without copying raw research
+   content into the run.
 3. Runtime adapter, environment provider, permission envelope, and budget
    definitions.
 4. Prior attempt and retry lineage without mutating prior artifacts.
@@ -119,6 +122,9 @@ Route runtime or adapter defects to `codex-maintenance` or
 - A retry receives a new run ID and preserves its parent attempt unchanged.
 - An action with an unknown external outcome is never retried automatically;
   preserve the uncertainty and require an explicit recovery disposition.
+- The operator never edits a product persona or treats synthetic actor behavior
+  as persona validation; refinement candidates belong to independent
+  evaluation and governed proposal storage.
 
 Use `checklists/execution-quality.md` before accepting a run package. Use
 `templates/execution-receipt.md` when the runner does not yet emit a typed

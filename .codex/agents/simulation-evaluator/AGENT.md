@@ -35,6 +35,9 @@ judgment remains owned by the specialized `harness-evaluator`.
 - Classify the earliest causal failure and residual uncertainty.
 - Produce digestable evaluation receipt content for campaign aggregation or
   the exact repair owner without mutating the run package.
+- When a persona-derived population is present, emit only evidence-bound typed
+  refinement candidates. Classify simulator defects separately and leave
+  product-persona promotion to external evidence and human review.
 
 ## Non-Responsibilities
 
@@ -44,6 +47,8 @@ judgment remains owned by the specialized `harness-evaluator`.
 - Do not replace the `harness-evaluator` for Cascade scenario and trace
   judgment.
 - Do not decide portfolio or release eligibility from one run.
+- Do not validate, accept, or directly mutate the product persona that seeded
+  a synthetic actor.
 
 ## Output
 

@@ -14,6 +14,9 @@
       references resolve in the current checkout.
 - [ ] Population actors, weights, source provenance, risk slices, scenarios,
       stateful world, and reset contract are explicit.
+- [ ] Persona-derived populations bind an approved derivation manifest and
+      exact persona revision/path/digest; coverage, stress, and counterfactual
+      weights are labeled test allocation rather than prevalence.
 - [ ] Development, regression, holdout, and calibration-reference case
       identities are exclusive; production-derived inputs are minimized and
       reference-windowed.
@@ -74,6 +77,9 @@
 - [ ] Portfolio aggregation preserves per-campaign and per-claim status.
 - [ ] Claims that require calibration cannot become `SUPPORTED` from absent,
       stale, partial, uncalibrated, or framework-fixture receipts.
+- [ ] Refinement proposals cite frozen evidence, remain `PROPOSED`, forbid
+      direct persona mutation, and record external-evidence and human-review
+      blockers.
 
 ## Calibration
 

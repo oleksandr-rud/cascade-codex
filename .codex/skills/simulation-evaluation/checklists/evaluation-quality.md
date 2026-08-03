@@ -33,6 +33,9 @@
 - [ ] Claims use `SUPPORTED`, `PARTIALLY_SUPPORTED`, `UNSUPPORTED`,
       `CONFLICTING`, `BLOCKED`, `NOT_RUN`, or `INVALID`.
 - [ ] Only `SUPPORTED` satisfies a required claim.
+- [ ] Persona refinement candidates bind current persona/derivation IDs and
+      frozen evidence, distinguish simulator defects, and remain hypotheses
+      requiring external evidence and accountable human review.
 
 ## Receipt And Routing
 
@@ -50,3 +53,5 @@
       target-project release claim.
 - [ ] The evaluator did not execute, repair, rewrite policy, modify evidence,
       or decide release eligibility from incomplete scope.
+- [ ] The evaluator did not accept, self-validate, or directly mutate a source
+      product persona.
