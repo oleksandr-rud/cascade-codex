@@ -119,6 +119,13 @@ materially.
 3. Validate the execution contract.
    - Record contour, driver, tier, platform, permissions, runtime identity,
      fixture identity, timeout, budget, evidence targets, cleanup, and handoff.
+   - Resolve each referenced policy against the exact campaign, task, kind,
+     driver, action, and optional path or command prefix before provisioning.
+     Zero applicable referenced policies and ambiguous matches fail closed.
+   - Bind distinct operator, evaluator, target, simulator, aggregator, and
+     recovery sessions; lease/recovery authority; confirmation receipt expiry;
+     required budget dimensions; redaction capability; frozen-evidence
+     producer/platform/lineage; terminal verification; and retry parentage.
 4. Preflight before execution.
    - Do not start when required runtime, permission, identity, fixture, oracle,
      or cleanup inputs are missing.
@@ -164,6 +171,9 @@ materially.
 ## Hard Gates
 
 - Unknown or duplicate references and stale catalogs invalidate selection.
+- A referenced policy that cannot apply to its task action invalidates
+  selection before provisioning; an unreferenced action remains default-denied
+  at execution.
 - Simulation initialization refuses path collisions, renders only tracked
   templates, validates the complete generated graph, and regenerates the
   catalog only after the new sources resolve.
@@ -183,6 +193,8 @@ materially.
 - Run, evaluation, and aggregation IDs are atomically reserved and
   append-only; no stage may overwrite another stage's namespace.
 - Platform-specific evidence proves only the platform and scope it exercised.
+- Frozen evidence must record producer, platform, timestamp, digest, redaction
+  status, and lineage; terminal handoff requires manifest verification.
 - Authored, validated, executed, graded, calibrated, deployed, and
   release-eligible are separate states.
 - A framework-fixture, stale, partial, missing, or failed calibration cannot

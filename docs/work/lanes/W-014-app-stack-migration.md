@@ -59,7 +59,7 @@ or candidate evidence rather than a pair ID.
 
 ### Preservation Snapshot
 
-The IG-AS-10 comparison must prove equality for:
+The WG-002-N10 comparison must prove equality for:
 
 - all 11 app-router decision IDs;
 - every child decision, node, edge, candidate ID, and validation obligation;
@@ -71,7 +71,7 @@ The IG-AS-10 comparison must prove equality for:
 
 | Source | Path Or Tool | Why Needed | Freshness / Confidence |
 |---|---|---|---|
-| Rename contract | W-013 and IG-AS-01 | exact IDs and ownership | current completed gate |
+| Rename contract | W-013 and WG-002-N01 | exact IDs and ownership | current completed gate |
 | Current app pairs | `technology-selection`, `*-technology` graph/spec pairs | semantic source to preserve | current |
 | Scaffold manifest | `architecture-scaffold-profiles.json` | five profiles and 71-path contract | current |
 | Scaffold generator | `scripts/scaffold_architecture_default.py` | required-pair checks and safe rendering | current |
@@ -126,7 +126,7 @@ The IG-AS-10 comparison must prove equality for:
 
 ## Parallel Dependencies
 
-- Can run with: W-015 and W-016 after IG-AS-01.
+- Can run with: W-015 and W-016 after WG-002-N01.
 - Must wait for: W-013 rename and exclusive-write contract.
 - Conflicts with: W-013 deletion/integration before this lane is
   `READY_TO_MERGE`; any other scaffold manifest or generator edit.
@@ -137,7 +137,7 @@ The IG-AS-10 comparison must prove equality for:
   comparison, and path-manifest comparison.
 - Required output: W-014-owned files only.
 - Merge owner: W-013.
-- Merge target: IG-AS-20 direct cutover.
+- Merge target: WG-002-N20 direct cutover.
 - Evidence to preserve: pair decision/node snapshots and five scaffold preview
   manifests.
 - Stop condition: any candidate, decision, template, safety rule, or output
@@ -154,9 +154,9 @@ The IG-AS-10 comparison must prove equality for:
 
 ## Closeout
 
-- Merge evidence: IG-AS-10 and IG-AS-11 passed; all six app-stack graph/spec
+- Merge evidence: WG-002-N10 and WG-002-N11 passed; all six app-stack graph/spec
   pairs match the normalized baseline, five profile previews preserve all 71
   paths, and the old manifest fails closed because it lacks `app-stack`.
-- Report: `docs/work/reports/2026-07-28-stack-naming-implementation-graph.md`.
+- Report: `docs/work/reports/2026-07-28-stack-naming-work-graph.md`.
 - Remaining risk: candidate `technology_node` IDs remain public scaffold
   references and were intentionally unchanged.

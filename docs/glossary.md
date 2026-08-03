@@ -12,7 +12,7 @@ Cascade harness vocabulary.
 | Skill contract | `.codex/skills/` | Reusable workflow instruction bundle with triggers, source order, outputs, and validation rules. |
 | Role contract | `.codex/agents/` | Local agent role definition, manifest, and skill wiring. |
 | Work lane | `docs/work/` | Tracked execution packet for non-atomic work, ownership, checks, and handoff evidence. |
-| Work graph | `docs/work/work-graph-template.md`; `docs/work/reports/*work-graph.md` | Declarative coordination of worklines, dependency gates, execution surfaces, dispatch state, merge ownership, evidence joins, invalidation, and closeout. New identities use `WG-XXX`; existing evidence-bound IDs remain stable. It is not an architecture graph or automatic scheduler. |
+| Work graph | `docs/work/work-graph-template.md`; `docs/work/reports/*work-graph.md` | Declarative coordination of worklines, dependency gates, execution surfaces, dispatch state, merge ownership, evidence joins, invalidation, and closeout. Graphs use `WG-XXX`, nodes use `WG-XXX-NXX`, and gates use `WG-XXX-GX`; IDs are graph-scoped, unique, and never reused. Runtime run and receipt IDs remain separate evidence identities. It is not an architecture graph or automatic scheduler. |
 | Work-graph lifecycle | work graph | `DRAFT` to `PLANNED`, then `ACTIVE` or `BLOCKED`, and finally `COMPLETE` or `SUPERSEDED`; completed projections leave the active registry while durable evidence remains. |
 | Execution surface | work lane or work graph | Runtime placement for eligible work: current-task `root`, an `internal-subagent`, or a separate `user-visible-task`. |
 | Internal subagent | current Codex task tree | Bounded child agent that reports to its parent and does not appear as a separate user-visible Codex task. |

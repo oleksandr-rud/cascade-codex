@@ -445,11 +445,11 @@ Rejected approaches:
 ## Work Lane Graph
 
 The separate executable-node work graph is
-[`IG-001`](2026-07-27-cross-surface-simulation-work-graph.md).
+[`WG-001`](2026-07-27-cross-surface-simulation-work-graph.md).
 Its pre-implementation assumptions, corrections, feasibility limits, and
 complexity are reviewed in
 [`2026-07-28-cross-surface-simulation-plan-integrity-review.md`](2026-07-28-cross-surface-simulation-plan-integrity-review.md).
-The diagram below remains a lane-level summary; `IG-001` owns implementation
+The diagram below remains a lane-level summary; `WG-001` owns implementation
 order, Gate A/Gate B inputs, invalidation, and partial-repair sequencing without
 duplicating lane acceptance criteria.
 
@@ -492,7 +492,7 @@ flowchart TD
 W-005, W-006, and W-007 are parallel-safe only after W-004 Gate A and only
 when each lane writes its own adapter and fixtures. Shared schema, dispatcher,
 documentation, catalog, and final merge remain W-004-only surfaces. W-012
-writes only composition profiles, manifests, and fixtures after IG-15.
+writes only composition profiles, manifests, and fixtures after WG-001-N15.
 W-009 and W-010 may proceed in parallel after W-006 publishes the accepted
 visual-action seam; mobile does not consume the desktop provider.
 
@@ -583,7 +583,7 @@ passed its oracle, was semantically graded, or is release-eligible.
 - W-004 owns campaign catalog generation and selection rules. W-005 through
   W-010 own their named direct-surface manifests and reusable contour tasks
   after Gate A. W-012 owns agent-to-tool composition profiles and manifests
-  after IG-15; W-004 remains their merge and shared-contract authority.
+  after WG-001-N15; W-004 remains their merge and shared-contract authority.
 - Release reporting consumes exact immutable run IDs and claims rather than an
   umbrella campaign status; cross-contour orchestration must preserve each
   campaign's independent verdict and blocker.
@@ -610,7 +610,7 @@ passed its oracle, was semantically graded, or is release-eligible.
 | Check | Result | Evidence boundary |
 |---|---|---|
 | Lane registration and required packet sections | `PASS` | W-004 through W-010 plus W-012 each exist, are registered, and contain the required lane sections |
-| Separate work graph | `PASS` | `IG-001` defines 19 unique implementation node/gate IDs, Gate A/Gate B contracts, execution waves, ownership, invalidation, and partial repair without creating duplicate W-IDs |
+| Separate work graph | `PASS` | `WG-001` defines 19 unique work-graph node/gate IDs, Gate A/Gate B contracts, execution waves, ownership, invalidation, and partial repair without creating duplicate W-IDs |
 | Named contour campaign ownership | `PASS` | 22 planned campaign IDs are assigned once across W-004 through W-010 plus W-012 with explicit execution tier, evidence boundary, and current `OPEN` or `NOT_RUN` status |
 | Claim/policy/identity/artifact/handoff planning coverage | `PASS` | W-004 owns one shared authority; W-005 through W-010 provide surface seams and W-012 owns composition criteria, profiles, manifests, examples, and validation gates |
 | Campaign-plan focused structure and diff checks | `PASS` | all eight simulation lane packets contain campaign deliverables and required sections; 22 campaign IDs are unique and assigned once; diff whitespace is clean |
@@ -628,22 +628,26 @@ passed its oracle, was semantically graded, or is release-eligible.
 | Campaign/task implementation | `NOT_RUN` | plans and lane packets only |
 | Computer Use, standalone Codex-agent, five-contour agent-tool composition, desktop, and mobile execution | `NOT_RUN` | direct surfaces are owned by W-006 through W-010; composition by W-012; W-004 aggregates |
 
-The aggregate validator still fails because its leakage checks walk ignored
-dependency trees: 36 findings are in the root and `.codex/harness-tooling`
-Playwright `node_modules`. The dependency-excluded source snapshot passes. This
-slice does not rewrite the aggregate leakage boundary or installed
-dependencies. W-004 must preserve that source-only boundary when the runtime
-foundation is implemented.
+The aggregate validator now passes after the repository validator excluded
+generated dependency trees from source leakage checks. Installed Playwright
+dependencies remain tooling inputs, not project-source evidence.
 
 ### Current Status Reconciliation
 
 The table above is execution-time evidence for the earlier source identity.
-IG-001 plan revision 9 now binds the active implementation baseline to
-`master@60fdc2464b9782a689d3f53ffa8fc177f486e6a8`. The current generated
-harness catalog contains 44 skills and 368 scenarios, while current-HEAD Bun
-validation remains `NOT_RUN` because Bun 1.3.3 is unavailable on the active
-shell `PATH`. The next candidate is W-004 `IG-03`; it is `PENDING`, not
-dispatched or running.
+WG-001 plan revision 13 binds current work to
+`master@21ba5288b27700f94ecad92ec0cf3d1e5dca5f29` plus WG-001-N03 implementation
+diff `a964ee6a736727b13a7e25fef18fc87f13a8128b119f8863a42de2c620e71491`.
+Exact Bun 1.3.3 validation passes through an ephemeral `pnpm dlx` runner; the
+generated harness catalog contains 44 skills and 368 scenarios. W-004
+WG-001-N03 is `ACCEPTED`. WG-001-N04 and WG-001-N05 are implemented at fixed
+point `0ccb25a3eb88d58289d47e920d5924e78390dd11b69e20b354c4ce53d069d940`;
+52 focused and 62 aggregate tests pass, deterministic run
+`wg001-frontier-repair-20260731-r1` passes with platform-bound evidence, and
+its 72-file terminal manifest verifies.
+Both nodes remain `REVIEW` because independent GF-004/GF-101 review is
+`NOT_RUN`. No older branch implementation was imported; N06 through N08 and
+Gate A remain unopened.
 
 ## Doc Routing Decisions
 
@@ -651,7 +655,7 @@ dispatched or running.
 |---|---|---|---|---|---|---|
 | Task kind and execution driver are separate axes | current request | this program report and W-004 | `UPDATED` | provisional architecture belongs with the implementation program until validated in code | lane structure and source-only validator pass | W-004 |
 | `agent-response` supports standalone Codex agents and Cascade profiles through one adapter boundary | Annotation 1 | W-007 | `UPDATED` | no unimplemented provider-neutral rule added to durable architecture patterns | W-007 criteria and examples | W-007 |
-| Agent-driven tool evaluation composes `agent-response` with command, browser, terminal, desktop, and mobile tasks rather than creating hybrid task kinds | current follow-up | W-012 with W-005 through W-010 inputs and W-004 merge authority | `UPDATED` | one composition lane avoids duplicate adapters while each composed claim retains agent and surface evidence boundaries | `agent-tool-composition-smoke`, five live canaries, `SIM-016` through `SIM-019`, and W-012 examples | IG-16 then IG-17 |
+| Agent-driven tool evaluation composes `agent-response` with command, browser, terminal, desktop, and mobile tasks rather than creating hybrid task kinds | current follow-up | W-012 with W-005 through W-010 inputs and W-004 merge authority | `UPDATED` | one composition lane avoids duplicate adapters while each composed claim retains agent and surface evidence boundaries | `agent-tool-composition-smoke`, five live canaries, `SIM-016` through `SIM-019`, and W-012 examples | WG-001-N16 then WG-001-N17 |
 | Mobile is a separate native task kind with Android/iOS simulator evidence split from real devices | current request | W-010 | `UPDATED` | platform claims remain in the implementation lane until executed | W-010 criteria and coverage examples | W-010 |
 | Claims resolve to versioned policies, independent oracles, frozen evidence, exact identity, and runtime handoff receipts | simulation audit | this program report and W-004 through W-010 plus W-012 | `UPDATED` | one shared foundation owns the contract; W-012 consumes it without a parallel reducer or artifact authority | updated criteria, behavior examples, and validation gates | W-004 Gate A |
 | Execution and evaluation use separate identities and matching receipts, with specialized Cascade trace evaluation preserved | role-separation follow-up | W-004 and W-007 | `UPDATED` | one operator and one read-only evaluator serve every contour; per-contour agent duplication is avoided | skill/agent contracts, receipt templates, W-004 Gate A criteria, and W-007 profile rules | W-004 Gate A |

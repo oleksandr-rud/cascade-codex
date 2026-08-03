@@ -1,5 +1,5 @@
 {
-  "digest": "58c7d3519275f350db0b8dfd9f170104109c0ff1ab4cf5fe00ecd50b4132ec39",
+  "digest": "25bc8484ea084b0ddc962d0d28b21fefd2be19dbf1b489cd4f9171cf11feae84",
   "entries": [
     {
       "calibration_id": "framework-ranking-v1",
@@ -33,7 +33,7 @@
       ],
       "rubric_id": null,
       "simulation_id": "simulation-correctness-fixture",
-      "source_digest": "e7d8733d5aba472e0b640c9e7e8d5a5d895b180ad19460bb642cd025f90aabd1",
+      "source_digest": "c3ee7d71bb23aebdff982e56136d204057df69751dc469f5dfe1dacbde3725ea",
       "task_ids": [
         "SIMULATION-STATE-SMOKE"
       ],
@@ -77,7 +77,7 @@
       ],
       "rubric_id": "simulation-evaluator-v1",
       "simulation_id": "simulation-correctness-fixture",
-      "source_digest": "c13cee21b99d00420a8e4e4db2efa54d327f788c5ecb5397e4c69931b05e63c7",
+      "source_digest": "0888696ef2bfb7e9383dc825a41782731f49c10c5eaa5784d9bcdb231909985c",
       "task_ids": [
         "SIMULATION-STATE-SMOKE"
       ],
@@ -121,7 +121,7 @@
       ],
       "rubric_id": null,
       "simulation_id": "simulation-correctness-fixture",
-      "source_digest": "4a940c63dcd3db8318b7cb73b400c671a15c88e9a81788767d5741752d5653c5",
+      "source_digest": "02dfc41f7ad22fff067f3e7f3f0190e6bbe34710d8478fb85138c009261fd532",
       "task_ids": [
         "SIMULATION-STATE-SMOKE"
       ],
@@ -165,7 +165,7 @@
       ],
       "rubric_id": null,
       "simulation_id": "simulation-correctness-fixture",
-      "source_digest": "a0a858ec34bf527d283b9a83b40bbe694083ee6bbf0e3bad65a0b2a5caff6a40",
+      "source_digest": "e7420de5c97fe22f7d49e5f8eac773543b94f4ea19a8ba42ab666058e3e0a258",
       "task_ids": [
         "SIMULATION-STATE-SMOKE"
       ],
@@ -209,7 +209,7 @@
       ],
       "rubric_id": null,
       "simulation_id": "simulation-correctness-fixture",
-      "source_digest": "ff846c3948bbc09f76d53f0f649ee62dc65591795f90244086daf591fb8c1269",
+      "source_digest": "df7dd15bb4c6f32f797495faa6e043accf5beb6f2303a10c613255115099eda9",
       "task_ids": [
         "SIMULATION-STATE-SMOKE"
       ],
@@ -253,7 +253,7 @@
       ],
       "rubric_id": null,
       "simulation_id": "simulation-correctness-fixture",
-      "source_digest": "8dd8d40ce09ea303cb8ea5d99788b174a4e533f8f9c5f04566994e2d224ec467",
+      "source_digest": "e6f6a9474763ffedfe911c79ddc1b047528ce385049c4e74ff7104f4dc61e567",
       "task_ids": [
         "SIMULATION-STATE-SMOKE"
       ],
@@ -297,7 +297,7 @@
       ],
       "rubric_id": null,
       "simulation_id": "simulation-correctness-fixture",
-      "source_digest": "d69028a07e4e5978f1998844c56f5a1c0b1a269ca14b9cfbe89fc5c045ed2f20",
+      "source_digest": "f108f05624dd484be134c04d0da1537e5d79cb33e414457ee6d8d89f13d81482",
       "task_ids": [
         "SIMULATION-STATE-SMOKE"
       ],

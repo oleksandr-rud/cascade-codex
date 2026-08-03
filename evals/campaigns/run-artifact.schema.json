@@ -1,0 +1,238 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://cascade.local/schemas/campaign-run-artifact.schema.json",
+  "title": "Cascade campaign run artifact",
+  "oneOf": [
+    {
+      "$ref": "#/$defs/reservation"
+    },
+    {
+      "$ref": "#/$defs/finalization"
+    }
+  ],
+  "$defs": {
+    "principal": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "role",
+        "session_id",
+        "subject"
+      ],
+      "properties": {
+        "role": {
+          "enum": [
+            "simulation-operator",
+            "simulation-evaluator",
+            "campaign-aggregator",
+            "target-actor",
+            "simulator",
+            "simulation-recovery"
+          ]
+        },
+        "session_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "subject": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "file": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "path",
+        "sha256",
+        "size"
+      ],
+      "properties": {
+        "path": {
+          "type": "string",
+          "minLength": 1
+        },
+        "sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "size": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "reservation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema_version",
+        "artifact_type",
+        "run_id",
+        "campaign_id",
+        "campaign_digest",
+        "attempt",
+        "parent_run_id",
+        "reserved_at",
+        "identities",
+        "lease"
+      ],
+      "properties": {
+        "schema_version": {
+          "const": "1.0.0"
+        },
+        "artifact_type": {
+          "const": "campaign-run-reservation"
+        },
+        "run_id": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$"
+        },
+        "campaign_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "campaign_digest": {
+          "type": "string",
+          "minLength": 1
+        },
+        "attempt": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "parent_run_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "reserved_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "identities": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "operator",
+            "evaluator",
+            "aggregator",
+            "target",
+            "simulator",
+            "recovery"
+          ],
+          "properties": {
+            "operator": {
+              "$ref": "#/$defs/principal"
+            },
+            "evaluator": {
+              "$ref": "#/$defs/principal"
+            },
+            "aggregator": {
+              "$ref": "#/$defs/principal"
+            },
+            "target": {
+              "$ref": "#/$defs/principal"
+            },
+            "simulator": {
+              "$ref": "#/$defs/principal"
+            },
+            "recovery": {
+              "$ref": "#/$defs/principal"
+            }
+          }
+        },
+        "lease": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "lease_id",
+            "owner_session_id",
+            "acquired_at",
+            "expires_at",
+            "recovery_mode"
+          ],
+          "properties": {
+            "lease_id": {
+              "type": "string",
+              "minLength": 1
+            },
+            "owner_session_id": {
+              "type": "string",
+              "minLength": 1
+            },
+            "acquired_at": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "expires_at": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "recovery_mode": {
+              "const": "FINALIZE_UNKNOWN_OUTCOME"
+            }
+          }
+        }
+      }
+    },
+    "finalization": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema_version",
+        "artifact_type",
+        "run_id",
+        "status",
+        "finalized_at",
+        "finalized_by",
+        "recovery_reason",
+        "files",
+        "manifest_digest"
+      ],
+      "properties": {
+        "schema_version": {
+          "const": "1.0.0"
+        },
+        "artifact_type": {
+          "const": "campaign-run-finalization"
+        },
+        "run_id": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$"
+        },
+        "status": {
+          "enum": [
+            "COMPLETED",
+            "BLOCKED",
+            "UNKNOWN_OUTCOME"
+          ]
+        },
+        "finalized_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "finalized_by": {
+          "$ref": "#/$defs/principal"
+        },
+        "recovery_reason": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "files": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/file"
+          }
+        },
+        "manifest_digest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        }
+      }
+    }
+  }
+}

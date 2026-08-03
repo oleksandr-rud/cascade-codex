@@ -7,6 +7,7 @@ import {
   flags,
   parseArgs,
   parseFrontmatter,
+  runCommand,
   stableJson,
   valueDigest,
 } from "./common";
@@ -48,5 +49,69 @@ describe("Cascade common tooling", () => {
       parseFrontmatter('---\nname: example\ndescription: "Useful example"\n---\n# Body'),
     ).toEqual({ name: "example", description: "Useful example" });
     expect(parseFrontmatter("# No frontmatter")).toEqual({});
+  });
+
+  test("command execution observes abort signals and reports cancellation", async () => {
+    const controller = new AbortController();
+    const pending = runCommand(
+      [process.execPath, "-e", "await Bun.sleep(10_000)"],
+      { signal: controller.signal },
+    );
+    setTimeout(() => controller.abort(), 20);
+
+    const result = await pending;
+    expect(result.aborted).toBe(true);
+    expect(result.timedOut).toBe(false);
+    expect(result.exitCode).toBe(130);
+  });
+
+  test("command timeout force-terminates a process that ignores SIGTERM", async () => {
+    const result = await runCommand(
+      [
+        process.execPath,
+        "-e",
+        'process.on("SIGTERM", () => {}); await Bun.sleep(10_000)',
+      ],
+      { timeoutMs: 100, terminationGraceMs: 20 },
+    );
+
+    expect(result.timedOut).toBe(true);
+    expect(result.aborted).toBe(false);
+    expect(result.exitCode).toBe(124);
+    expect(result.durationMs).toBeLessThan(2_000);
+  });
+
+  test("command output limits terminate before buffering unbounded output", async () => {
+    const result = await runCommand(
+      [
+        process.execPath,
+        "-e",
+        'for (let index = 0; index < 10000; index += 1) console.log("0123456789")',
+      ],
+      { maxOutputBytes: 128, terminationGraceMs: 20 },
+    );
+
+    expect(result.outputLimitExceeded).toBe(true);
+    expect(
+      Buffer.byteLength(result.stdout) + Buffer.byteLength(result.stderr),
+    ).toBeLessThanOrEqual(128);
+  });
+
+  test("command execution can omit authority secrets from child environments", async () => {
+    const variable = "CASCADE_TEST_CHILD_SECRET";
+    process.env[variable] = "standalone-confirmation-secret";
+    try {
+      const result = await runCommand(
+        [
+          process.execPath,
+          "-e",
+          `process.stdout.write(process.env.${variable} ?? "absent")`,
+        ],
+        { unsetEnv: [variable] },
+      );
+      expect(result.stdout).toBe("absent");
+    } finally {
+      delete process.env[variable];
+    }
   });
 });

@@ -1,8 +1,8 @@
 # Simulation Correctness Fix Plan
 
 Date: 2026-07-30
-Status: `IMPLEMENTED_FRAMEWORK`; current-HEAD replay, target-project
-calibration, and live execution `NOT_RUN`
+Status: `IMPLEMENTED_FRAMEWORK`; current WG-001-N03 deterministic replay `PASS`;
+target-project calibration and live execution `NOT_RUN`
 Owner: Agent Engineer through W-004
 Scope: Amend the active cross-surface simulation program before Gate A freezes
 an incomplete contract.
@@ -27,10 +27,11 @@ must preserve separate proof for:
 
 ## Authority And Current State
 
-Current implementation baseline is clean
-`master@60fdc2464b9782a689d3f53ffa8fc177f486e6a8`, with the revision-9 planning
-diff applied on top. The active simulation program is W-004 through W-010 plus
-W-012 under `IG-001`.
+Current implementation base is clean
+`master@21ba5288b27700f94ecad92ec0cf3d1e5dca5f29`, with WG-001-N03 implementation
+diff `a964ee6a736727b13a7e25fef18fc87f13a8128b119f8863a42de2c620e71491`
+and revision-12 planning records applied on top. The active simulation program is
+W-004 through W-010 plus W-012 under `WG-001`.
 
 Current evidence:
 
@@ -46,7 +47,7 @@ Current evidence:
 - target-specific adapters, sim-to-reference calibration, platform canaries,
   production confirmation, and release claims remain `NOT_RUN`.
 
-The historical candidate runner was treated as an inventory input for IG-01;
+The historical candidate runner was treated as an inventory input for WG-001-N01;
 its useful process utilities were adapted without retaining a second runtime
 authority.
 
@@ -79,7 +80,7 @@ does not replace the final target-project validation gate.
 | P0 | No judge-to-human calibration contract | Independent evaluation exists, but calibration is a named state without a schema or receipt | Semantic scores may be precise-looking but unaligned with domain judgment | W-004 calibration contract; simulation-evaluator consumes it |
 | P0 | No sim-to-reference calibration receipt | No correlation, treatment-ranking, slice, staleness, or reference-window contract exists | Simulation execution can be mistaken for evidence that predicts real behavior | W-004 calibration reducer and receipt |
 | P0 | Release eligibility does not mechanically require current calibration when the claim needs it | Lower gates are separate, but calibration is not yet reducible | A structurally sound or semantically graded run can be projected as release support | W-004 claim reducer and aggregation |
-| P0 | Candidate implementation is too shallow | Candidate schema has three kinds, one command shape, and direct status reduction | Direct promotion would create a second authority and bypass the active plan | IG-01 direct cutover |
+| P0 | Candidate implementation is too shallow | Candidate schema has three kinds, one command shape, and direct status reduction | Direct promotion would create a second authority and bypass the active plan | WG-001-N01 direct cutover |
 | P1 | No treatment/candidate comparison identity | Campaigns run named tasks, but candidate prompt/model/tool/harness revisions are not compared as a set | Rankings cannot be reproduced or linked to exact variants | W-004 comparison contract |
 | P1 | No required slice-level reporting | Coverage is platform-oriented, not population/risk-slice oriented | Aggregate improvement can hide a critical user or failure regression | Metric and claim ledgers |
 | P1 | No calibration drift or invalidation rules | Source changes invalidate runs, but reference-data age and distribution drift do not | Old calibration can silently authorize a changed population or agent | Calibration ledger |
@@ -212,7 +213,7 @@ remain unchanged.
 
 ### Wave 0 — Reconcile before changing contracts
 
-Owner: W-004 / IG-01
+Owner: W-004 / WG-001-N01
 
 1. Inventory current dirty sources and owners.
 2. Compare the candidate runner, schemas, fixtures, and historical artifacts
@@ -246,7 +247,7 @@ before provisioning or release projection.
 
 ### Wave 2 — Implement the shared foundation
 
-Owner: W-004 / IG-02 through IG-08
+Owner: W-004 / WG-001-N02 through WG-001-N08
 
 1. Implement canonical loaders, registries, generated catalog, and resolvers.
 2. Implement lifecycle, atomic identity, evidence freezing, receipt
@@ -488,18 +489,25 @@ Preserved execution evidence:
 
 Current-source freshness:
 
-- the contract, calibration, and latest Codex execution manifests differ from
-  current `HEAD` in 1/21, 7/39, and 4/54 inputs;
+- earlier contract, calibration, and Codex execution receipts remain
+  historical and source-bound;
 - the generated harness catalog now records 44 skills, 368 scenarios, and
   digest `d6030bf0ea98a6bd26b431de50ac1b7ca909a19a289192d005403c514507897d`;
-- current-HEAD Bun tests, validator, catalog checks, self-tests, target
-  self-test, and campaign replay are `NOT_RUN` because Bun 1.3.3 is unavailable
-  on the active shell `PATH`.
+- exact Bun 1.3.3 passes 31 targeted tests, 44 aggregate tests, campaign catalog
+  and self-test, harness catalog and 20-case self-test, 26-case target
+  self-test, aggregate validator, and `git diff --check`;
+- deterministic run `wg001-n03-attempt3-20260730-r1` passes execution,
+  fixture evaluation, cleanup verification, and campaign aggregation while
+  remaining release-ineligible;
+- current campaign catalog digest is
+  `5228269b97beac38bb77fb0e254bc1b2a1244404b0f69ea8685bca6c23f250a8`;
+- independent attempt-3 Standards, Spec, and GF-004 v1 review passes with no
+  findings, so WG-001-N03 is `ACCEPTED`.
 
 ## Risks And Deferred Items
 
 - The current working tree contains substantial user-owned dirty and untracked
-  work. IG-01 must establish write ownership before implementation.
+  work. WG-001-N01 must establish write ownership before implementation.
 - Adding calibration to the claim reducer after Gate A would invalidate every
   dependent surface. Amend the contract before Gate A instead.
 - Population realism is domain-specific. Cascade can validate shape,
@@ -515,17 +523,17 @@ Current-source freshness:
 
 ## Work-Graph Integration
 
-The deterministic W-004 foundation applies the following IG-001 ownership
+The deterministic W-004 foundation applies the following WG-001 ownership
 split; the remaining surface implementation must preserve it:
 
-1. Expand IG-02 to own population, scenario, world, dataset, metric,
+1. Expand WG-001-N02 to own population, scenario, world, dataset, metric,
    treatment, and calibration definitions.
-2. Expand IG-04 to own the calibration namespace and generator/reviewer
+2. Expand WG-001-N04 to own the calibration namespace and generator/reviewer
    identity fields.
-3. Expand IG-06 to require judge calibration and slice-aware metric reduction.
-4. Expand IG-07 to own calibration receipts, staleness, invalidation, and
+3. Expand WG-001-N06 to require judge calibration and slice-aware metric reduction.
+4. Expand WG-001-N07 to own calibration receipts, staleness, invalidation, and
    release-projection requirements.
-5. Expand IG-08 and Gate A with deterministic population, world, partition,
+5. Expand WG-001-N08 and Gate A with deterministic population, world, partition,
    metric, and calibration failure-injection fixtures.
 6. Add the state-consistency and simulated-actor seam to W-007 and W-012
    acceptance criteria without creating a hybrid task kind.
@@ -540,7 +548,7 @@ criteria keep W-004 through W-010 and W-012 `OPEN`.
 
 | Fact | Source | Owner Target | Action | Bloat Check | Evidence | Next Gate |
 |---|---|---|---|---|---|---|
-| Simulation correctness needs population, state, partition, metric, and calibration contracts | video/paper analysis plus current-source audit | this report | `UPDATED` | One decision-heavy plan; no broad program rewrite | targeted source search and candidate inspection | W-004/IG-001 amendment |
+| Simulation correctness needs population, state, partition, metric, and calibration contracts | video/paper analysis plus current-source audit | this report | `UPDATED` | One decision-heavy plan; no broad program rewrite | targeted source search and candidate inspection | W-004/WG-001 amendment |
 | Active status changed | deterministic implementation and receipts | `docs/work/active.md` | `UPDATED` | Lane remains open; evidence and next gate only | current tests and run receipts | remaining W-004 gates |
 | Durable simulation vocabulary and paths | implemented schemas and runner | `docs/structure.md`, `harness.config.yaml` | `UPDATED` | Canonical paths only | validator and catalog pass | target adapters |
 | Skill and agent contracts | calibration and data-quality additions | simulation skill packages | `UPDATED` | Thin checklist/template deltas | validator passes | fixed-point review |

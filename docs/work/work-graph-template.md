@@ -2,16 +2,23 @@
 
 Status: `<DRAFT | PLANNED | ACTIVE | BLOCKED | COMPLETE | SUPERSEDED>`
 Work Graph ID: `<WG-XXX>`
-Revision: `<INTEGER>`
+Work Graph Revision: `<INTEGER>`
 Owner: `<ROLE_OR_WORKLINE>`
 Merge Owner: `<ROLE_OR_WORKLINE>`
 Scope: `<TASK | STORY | EPIC>`
-Terminal Gate: `<GATE_ID>`
+Terminal Gate: `<WG-XXX-GX>`
 
 A work graph coordinates non-atomic work across worklines, dependency gates,
 execution surfaces, dispatch state, evidence joins, invalidation, and closeout.
 It is not an architecture topology, an automatic scheduler, or authorization
 to create agents, tasks, branches, worktrees, external actions, or spending.
+
+ID contract:
+
+- graph: `WG-XXX`;
+- node: `WG-XXX-NXX`;
+- gate: `WG-XXX-GX`;
+- every ID is graph-scoped, unique, and never reused.
 
 ## Purpose And Success
 

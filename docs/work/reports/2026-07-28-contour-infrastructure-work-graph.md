@@ -1,15 +1,17 @@
-# Contour Infrastructure Profiles Implementation Graph
+# Contour Infrastructure Profiles Work Graph
 
 Status: `COMPLETE`
 Created: 2026-07-28
 Actualized: 2026-07-28
-Revision: `4`
+Work Graph ID: `WG-003`
+Work Graph Revision: `5`
 Scope: `EPIC`
 Implementation evidence: `PASS`
 Planning evidence: `CURRENT`
 Coordinator: `orchestrator`
 Merge owner: `W-018`
 Validation owner: `W-023`
+Terminal Gate: `WG-003-GD`
 
 ## Outcome
 
@@ -51,7 +53,7 @@ identity is
 W-013-W-017 made a direct identity migration with no semantic additions and
 preserved the evidence and scaffold contracts.
 
-IG-IP-00 reproduced the W-017 baseline before section dispatch. W-018 then
+WG-003-N00 reproduced the W-017 baseline before section dispatch. W-018 then
 merged W-019-W-022 and W-023 independently validated the exact 78-file source
 identity
 `sha256:597720223d136685fba2ca04c25f8de56e58d6af3f3a6b6cb340794c5fc1b6aa`.
@@ -147,7 +149,7 @@ The current `stack-selection-evidence.v1` shape already records:
 - resource owners, lifecycle, claims, policies, candidates, and selections.
 
 The default implementation derives the profile from `app_type` and keeps the
-schema plus `validate_stack_selection_evidence.py` byte-identical. IG-IP-01
+schema plus `validate_stack_selection_evidence.py` byte-identical. WG-003-N01
 must stop and revise this plan before adding a profile ID, resource-role enum,
 schema version, or record-shape field. Descriptive roles may remain resource
 IDs, claims, and profile rules until machine enforcement proves necessary.
@@ -175,12 +177,12 @@ four disjoint section owners, and independent validation.
 
 | Lane | Execution role | Boundary | Exclusive writes | Start | Completion receipt |
 |---|---|---|---|---|---|
-| W-018 | root `orchestrator` coordinating an `agent-engineer` merge owner | contract, infrastructure root, shared validator, integration | post-migration `infrastructure` pair and shared architecture validator | IG-IP-00 now | integrated 31-pair source identity |
-| W-019 | direct `agent-engineer` subagent | frontend and fullstack profile | `frontend-infrastructure` graph/spec | after IG-IP-01 | SSR/BFF/fullstack boundary and pair receipt |
-| W-020 | direct `agent-engineer` subagent; conditional `security` review | backend profile | `backend-infrastructure` graph/spec | after IG-IP-01 | API/worker/data/messaging ownership receipt |
-| W-021 | direct `agent-engineer` subagent | native, CLI, experiment profiles | three graph/spec pairs | after IG-IP-01 | six-file contour receipt |
-| W-022 | direct `agent-engineer` subagent | retrieval and public routing | two packs, routing skills, index, stack spec, discovery docs, current architecture report | after IG-IP-01 | selective pack and documentation receipt |
-| W-023 | independent `agent-engineer` validation instance | independent validation and closeout | work registry and report evidence only | after IG-IP-20 | final exact check matrix |
+| W-018 | root `orchestrator` coordinating an `agent-engineer` merge owner | contract, infrastructure root, shared validator, integration | post-migration `infrastructure` pair and shared architecture validator | WG-003-N00 now | integrated 31-pair source identity |
+| W-019 | direct `agent-engineer` subagent | frontend and fullstack profile | `frontend-infrastructure` graph/spec | after WG-003-N01 | SSR/BFF/fullstack boundary and pair receipt |
+| W-020 | direct `agent-engineer` subagent; conditional `security` review | backend profile | `backend-infrastructure` graph/spec | after WG-003-N01 | API/worker/data/messaging ownership receipt |
+| W-021 | direct `agent-engineer` subagent | native, CLI, experiment profiles | three graph/spec pairs | after WG-003-N01 | six-file contour receipt |
+| W-022 | direct `agent-engineer` subagent | retrieval and public routing | two packs, routing skills, index, stack spec, discovery docs, current architecture report | after WG-003-N01 | selective pack and documentation receipt |
+| W-023 | independent `agent-engineer` validation instance | independent validation and closeout | work registry and report evidence only | after WG-003-N20 | final exact check matrix |
 
 W-019-W-022 have disjoint write sets. W-018 freezes the contract before they
 start and is the only source merge owner. W-023 never repairs implementation
@@ -211,28 +213,28 @@ automatic dispatch. If the runtime cannot provide that capacity, keep W-018 at
 root and run W-019-W-022 in bounded waves. No subagent may spawn another agent,
 change a sibling lane, or merge its own receipt.
 
-## Implementation Topology
+## Work Topology
 
 ```mermaid
 flowchart TD
-    B0["IG-IP-00 / W-018: consume W-017 source identity"]
-    B1["IG-IP-01 / W-018: freeze profile, ownership, and schema contract"]
+    B0["WG-003-N00 / W-018: consume W-017 source identity"]
+    B1["WG-003-N01 / W-018: freeze profile, ownership, and schema contract"]
 
-    F10["IG-IP-10 / W-019: frontend profile graph/spec"]
-    F11["IG-IP-11 / W-019: SSR, BFF, and fullstack proof"]
-    B12["IG-IP-12 / W-020: backend profile graph/spec"]
-    B13["IG-IP-13 / W-020: data and messaging ownership proof"]
-    O14["IG-IP-14 / W-021: native, CLI, experiment pairs"]
-    D15["IG-IP-15 / W-022: packs, skills, index, and discovery"]
+    F10["WG-003-N10 / W-019: frontend profile graph/spec"]
+    F11["WG-003-N11 / W-019: SSR, BFF, and fullstack proof"]
+    B12["WG-003-N12 / W-020: backend profile graph/spec"]
+    B13["WG-003-N13 / W-020: data and messaging ownership proof"]
+    O14["WG-003-N14 / W-021: native, CLI, experiment pairs"]
+    D15["WG-003-N15 / W-022: packs, skills, index, and discovery"]
 
-    M20["IG-IP-20 / W-018: root routing, validator, and merge"]
-    M21["IG-IP-21 / W-018: 31-pair and protected-contract gate"]
+    M20["WG-003-N20 / W-018: root routing, validator, and merge"]
+    M21["WG-003-N21 / W-018: 31-pair and protected-contract gate"]
 
-    V22["IG-IP-22 / W-023: relationship and preservation validation"]
-    V23["IG-IP-23 / W-023: general and frontend retrieval"]
-    V24["IG-IP-24 / W-023: evidence and scaffold preservation"]
-    V25["IG-IP-25 / W-023: source, harness, diff, review, closeout"]
-    L30["IG-SL-00 / W-024: consume the closed 31-pair identity"]
+    V22["WG-003-N22 / W-023: relationship and preservation validation"]
+    V23["WG-003-N23 / W-023: general and frontend retrieval"]
+    V24["WG-003-N24 / W-023: evidence and scaffold preservation"]
+    V25["WG-003-N25 / W-023: source, harness, diff, review, closeout"]
+    L30["WG-003-N30 / W-024: consume the closed 31-pair identity"]
 
     B0 --> B1
     B1 --> F10 --> F11 --> M20
@@ -249,14 +251,34 @@ flowchart TD
     V25 --> L30
 ```
 
-## Gates
+## Node Registry
+
+| Node | Workline | Outcome | Requires | Produces | State |
+|---|---|---|---|---|---|
+| `WG-003-N00` | W-018 | reproduce the accepted W-017 source identity | W-017 completion | fixed Stage 2 baseline | `PASS` |
+| `WG-003-N01` | W-018 | freeze profile IDs, ownership, schema, and exclusive writes | `WG-003-N00` | section-start contract | `PASS` |
+| `WG-003-N10` | W-019 | add the frontend infrastructure profile | `WG-003-N01` | frontend graph/spec pair | `PASS` |
+| `WG-003-N11` | W-019 | prove SSR, BFF, and fullstack composition boundaries | `WG-003-N10` | frontend boundary receipt | `PASS` |
+| `WG-003-N12` | W-020 | add the backend infrastructure profile | `WG-003-N01` | backend graph/spec pair | `PASS` |
+| `WG-003-N13` | W-020 | prove data and messaging ownership | `WG-003-N12` | backend ownership receipt | `PASS` |
+| `WG-003-N14` | W-021 | add native, CLI, and experiment profiles | `WG-003-N01` | six-file contour receipt | `PASS` |
+| `WG-003-N15` | W-022 | update packs, skills, index, and discovery | `WG-003-N01` | retrieval and routing receipt | `PASS` |
+| `WG-003-N20` | W-018 | integrate routing, validator, and section outputs | `WG-003-N11`, `WG-003-N13`, `WG-003-N14`, `WG-003-N15` | integrated 31-pair source | `PASS` |
+| `WG-003-N21` | W-018 | verify the 31-pair and protected-contract gate | `WG-003-N20` | integration receipt | `PASS` |
+| `WG-003-N22` | W-023 | validate relationships and preservation | `WG-003-N21` | relationship evidence | `PASS` |
+| `WG-003-N23` | W-023 | validate general and frontend retrieval | `WG-003-N21` | retrieval evidence | `PASS` |
+| `WG-003-N24` | W-023 | validate evidence and scaffold preservation | `WG-003-N21` | preservation evidence | `PASS` |
+| `WG-003-N25` | W-023 | validate source, harness, diff, review, and closeout | `WG-003-N22`, `WG-003-N23`, `WG-003-N24` | closeout receipt | `PASS` |
+| `WG-003-N30` | W-024 | consume the closed 31-pair identity for the SDK/library addition | `WG-003-N25` | additive 34-pair result | `PASS` |
+
+## Gate Contracts
 
 | Gate | Required evidence | Current state |
 |---|---|---|
-| Gate IP-A | W-017 completion, exact source identity, post-migration consumer inventory, frozen five-profile IDs, no-schema-change rule | `PASS` |
-| Gate IP-B | W-019-W-022 readiness receipts from disjoint files | `PASS` |
-| Gate IP-C | integrated 31-pair catalog, relationships, validator registry, no duplicate authority | `PASS` |
-| Gate IP-D | pair, pack, evidence, scaffold, source, harness, review, and diff checks against one source identity | `PASS` |
+| `WG-003-GA` | W-017 completion, exact source identity, post-migration consumer inventory, frozen five-profile IDs, no-schema-change rule | `PASS` |
+| `WG-003-GB` | W-019-W-022 readiness receipts from disjoint files | `PASS` |
+| `WG-003-GC` | integrated 31-pair catalog, relationships, validator registry, no duplicate authority | `PASS` |
+| `WG-003-GD` | pair, pack, evidence, scaffold, source, harness, review, and diff checks against one source identity | `PASS` |
 
 ## Feature Impact Matrix
 
@@ -298,8 +320,8 @@ fit for a target project, has been provisioned, or is release-eligible.
 
 | Failure or changed input | Reopen |
 |---|---|
-| W-017 source identity or canonical names change | IG-IP-00 and all downstream nodes |
-| profile ID, ownership, or fullstack classification changes | IG-IP-01 and all profile/retrieval work |
+| W-017 source identity or canonical names change | WG-003-N00 and all downstream nodes |
+| profile ID, ownership, or fullstack classification changes | WG-003-N01 and all profile/retrieval work |
 | frontend SSR/BFF rule fails | W-019, then W-018 integration and W-023 validation |
 | backend resource ownership rule fails | W-020, then W-018 integration and W-023 validation |
 | native/CLI/experiment rule fails | W-021, then W-018 integration and W-023 validation |
@@ -312,7 +334,7 @@ fit for a target project, has been provisioned, or is release-eligible.
 
 W-024 consumed the closed W-023 identity and added the `library` application
 contour, SDK/library archetype and stack, and library distribution
-infrastructure. It remained outside the IG-IP 31-pair gate and produced the
+infrastructure. It remained outside the `WG-003-GC` 31-pair gate and produced the
 additive 34-pair result only after Stage 2 completed.
 
 ## Completion Receipt And Current Frontier
@@ -320,7 +342,7 @@ additive 34-pair result only after Stage 2 completed.
 W-018-W-023 are complete. The catalog contains 31 graphs and 31 specs:
 five decisions, five archetypes, and 21 extensions. All 78 frozen source files
 match their manifest; the evidence and scaffold authorities retain their
-Gate IP-A hashes; scaffold validation remains five profiles and 71 generated
+`WG-003-GA` hashes; scaffold validation remains five profiles and 71 generated
 files; evidence and harness self-tests pass; and the isolated source validator
 has zero findings. The direct checkout validator's 36 findings are confined to
 generated Playwright `node_modules`.

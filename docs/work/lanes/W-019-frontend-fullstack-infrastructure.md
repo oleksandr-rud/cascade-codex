@@ -84,7 +84,7 @@ Out:
 
 ## Dependencies And Handoff
 
-- Must wait for: W-018 IG-IP-01.
+- Must wait for: W-018 WG-003-N01.
 - Can run with: W-020-W-022.
 - Merge owner: W-018.
 - Stop condition: the design needs a new app type, resource kind, schema field,
@@ -101,7 +101,7 @@ Out:
 
 ## Closeout
 
-- Report: `docs/work/reports/2026-07-28-contour-infrastructure-implementation-graph.md`.
+- Report: `docs/work/reports/2026-07-28-contour-infrastructure-work-graph.md`.
 - Implementation evidence: `PASS`; 11 nodes, 12 edges, and 10 decisions.
 - Pair receipt: graph
   `sha256:d2499ffcb7eb503fb6abc937a6a03e7f6d87b93bc0d0f3c2fceb41d4e55b424f`;

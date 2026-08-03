@@ -43,13 +43,19 @@
 
 - Runtime and adapter:
 - Environment and platform:
+- Operator, evaluator, target, and recovery session separation:
 - Identity and permission scope:
 - Isolation boundary:
-- Timeout and budget:
+- Reservation, lease, and recovery authority:
+- Policy scope, version, default-deny, and ambiguity behavior:
+- Confirmation receipt binding and expiry:
+- Timeout and required budget dimensions:
 - Fixture or seed identity:
 - Evidence root:
+- Evidence producer, platform, lineage, and redaction:
 - Cleanup contract:
-- Replay inputs:
+- Terminal finalization and verification:
+- Retry and replay parentage:
 
 ## Claim Map
 

@@ -4,7 +4,7 @@ Status: `OPEN`
 Owner: `agent-engineer`
 Created: 2026-07-27
 Lane Model: `sequential-pipeline`
-Next Gate: `implement-change at IG-16 after IG-15`
+Next Gate: `implement-change at WG-001-N16 after WG-001-N15`
 Execution Surface: `internal-subagent`
 Dispatch State: `NOT_AUTHORIZED`
 Dispatch Authorization: `none`
@@ -81,7 +81,7 @@ Out:
 | Source | Path Or Tool | Why Needed | Freshness / Confidence |
 |---|---|---|---|
 | Request | current contour-composition follow-up | agent use across every contour | current |
-| Foundation | W-004 Gate A and IG-15 integrated source | shared tasks, policies, claims, artifacts, receipts, and accepted adapters | pending |
+| Foundation | W-004 Gate A and WG-001-N15 integrated source | shared tasks, policies, claims, artifacts, receipts, and accepted adapters | pending |
 | Command | W-005 accepted process/tool seam | bounded direct-process actions | pending |
 | Browser | W-006 accepted structured browser-tool seam | isolated web actions and public-state oracle | pending |
 | Agent | W-007 accepted Codex adapter and tool-event normalization | source-blind agent execution | pending |
@@ -89,7 +89,7 @@ Out:
 | Desktop | W-009 accepted native-app/environment seam | isolated desktop actions and app/file/accessibility oracle | pending |
 | Mobile | W-010 accepted emulator/simulator seam | device/app lifecycle actions and oracle | pending |
 | Program | `docs/work/reports/2026-07-27-cross-surface-simulation-program.md` | campaign portfolio and evidence rules | current authored plan |
-| Work graph | `docs/work/reports/2026-07-27-cross-surface-simulation-work-graph.md` | IG-16 deterministic join and IG-17 live execution | current authored plan |
+| Work graph | `docs/work/reports/2026-07-27-cross-surface-simulation-work-graph.md` | WG-001-N16 deterministic join and WG-001-N17 live execution | current authored plan |
 
 ## Campaign Deliverables
 
@@ -129,7 +129,7 @@ platform behavior, mobile platform behavior, or release eligibility.
 | Shared campaign contracts | W-004 | schemas, policies, claims, artifacts, receipts, reducer | no | Gate A digest and one authority remain unchanged | contract compatibility | `NOT_RUN` | `validate-change` |
 | Standalone/Cascade agent evaluation | W-007/W-001 | Codex adapter, harness evaluator, coverage | no | existing profiles retain independent claims | agent regression suite | `NOT_RUN` | `harness-evaluation` |
 | Surface adapters | W-005/W-006/W-008/W-009/W-010 | process, browser, PTY, desktop, mobile seams | no | direct surface campaigns remain runnable without an agent | adapter conformance matrix | `NOT_RUN` | `functional-qa` |
-| Live capability reporting | IG-17 | named live canaries and coverage ledger | yes | one contour cannot satisfy another | independent-verdict projection | `NOT_RUN` | `simulation-evaluation` |
+| Live capability reporting | WG-001-N17 | named live canaries and coverage ledger | yes | one contour cannot satisfy another | independent-verdict projection | `NOT_RUN` | `simulation-evaluation` |
 
 ## File Ownership
 
@@ -154,7 +154,7 @@ platform behavior, mobile platform behavior, or release eligibility.
 
 ## Plan
 
-1. Wait for IG-15 to publish one integrated source identity containing accepted
+1. Wait for WG-001-N15 to publish one integrated source identity containing accepted
    W-004 through W-010 contracts and adapters.
 2. Define a composition profile that binds one agent target to one typed surface
    tool without changing the common task kinds or surface adapter interfaces.
@@ -165,23 +165,23 @@ platform behavior, mobile platform behavior, or release eligibility.
    and partial-result cases for every surface seam.
 5. Add composition-specific claim and policy references while preserving
    surface-owned policies and oracles as the mechanical authority.
-6. Run the deterministic matrix through IG-16 and merge only through W-004;
+6. Run the deterministic matrix through WG-001-N16 and merge only through W-004;
    Gate B requires its passing receipt.
 7. Author the five live canary manifests with separate runtime, environment,
    platform, permission, budget, cleanup, and claim envelopes.
 8. After Gate B, preflight and run each authorized live canary independently
-   through IG-17; unavailable or unauthorized canaries remain `BLOCKED` or
+   through WG-001-N17; unavailable or unauthorized canaries remain `BLOCKED` or
    `NOT_RUN`.
 9. Aggregate exact immutable execution and evaluation receipts without
    inferring one contour, platform, or driver from another.
 
 ## Parallel Dependencies
 
-- Can run with: no deterministic implementation before IG-15; after Gate B,
+- Can run with: no deterministic implementation before WG-001-N15; after Gate B,
   live canaries may run independently when their exact environments and
   approvals are available.
-- Must wait for: IG-15 plus accepted W-005, W-006, W-007, W-008, W-009, and
-  W-010 seams for the deterministic matrix; IG-GB for live canaries.
+- Must wait for: WG-001-N15 plus accepted W-005, W-006, W-007, W-008, W-009, and
+  W-010 seams for the deterministic matrix; WG-001-GB for live canaries.
 - Conflicts with: shared schema, policy, claim, receipt, reducer, catalog,
   adapter, and artifact-writer changes; those return to their owning lane and
   invalidate affected W-012 evidence.
@@ -195,7 +195,7 @@ platform behavior, mobile platform behavior, or release eligibility.
   joined-result tests, execution/evaluation receipts, and exact live-canary
   dispositions.
 - Merge owner: W-004.
-- Merge target: canonical campaign foundation at IG-16/IG-17.
+- Merge target: canonical campaign foundation at WG-001-N16/WG-001-N17.
 - Evidence to preserve: agent and surface identities, tool calls, policy
   decisions, independent task results, oracles, frozen evidence, cleanup,
   execution/evaluation receipts, joined claim ledger, and coverage projection.
@@ -212,24 +212,24 @@ platform behavior, mobile platform behavior, or release eligibility.
 | Conservative reduction | independent task results and required composed-claim joins | `OPEN` |
 | Direct-surface regression | every accepted surface campaign remains independent of agent composition | `OPEN` |
 | Agent regression | standalone and Cascade profiles preserve current behavior | `OPEN` |
-| Live command/browser/terminal/desktop/mobile canaries | exact IG-17 run and evaluation receipts | `NOT_RUN` |
+| Live command/browser/terminal/desktop/mobile canaries | exact WG-001-N17 run and evaluation receipts | `NOT_RUN` |
 | Portfolio projection | independent contour/platform verdict and coverage checks | `OPEN` |
 
 ## Status Reconciliation
 
 - Last checked: `2026-07-30`
-- Source identity: clean implementation baseline
-  `master@60fdc2464b9782a689d3f53ffa8fc177f486e6a8`; revision-9 planning diff
-  applied on top
+- Source identity: clean implementation base
+  `master@21ba5288b27700f94ecad92ec0cf3d1e5dca5f29`; accepted WG-001-N03
+  current-source implementation and revision-11 status records applied on top
 - Completion disposition: `KEEP_OPEN`
 - Reason: composed profiles/manifests, five-contour fake matrix, and joined
   result runtime are absent; required gates remain `OPEN`/`NOT_RUN`.
-- Synchronized surfaces: lane, active registry, report index, and IG-001 plan
-  revision 9.
+- Synchronized surfaces: lane, active registry, report index, and WG-001 plan
+  revision 10.
 
 ## Closeout
 
 - Merge evidence: pending.
-- Report: cross-surface simulation program and IG-001.
+- Report: cross-surface simulation program and WG-001.
 - Remaining risk: live agent/tool behavior, provider variance, platform
   availability, and cost remain outside deterministic composition proof.

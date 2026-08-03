@@ -34,6 +34,25 @@ describe("simulation starter bootstrap", () => {
           file.path === "evals/campaigns/generated-example-smoke.json",
       ),
     ).toBe(true);
+    const campaign = files.find(
+      (file) => file.path === "evals/campaigns/generated-example-smoke.json",
+    )!.content as { id: string };
+    const policy = files.find(
+      (file) =>
+        file.path ===
+        "evals/policies/generated-example-allow-state-actions-v1.json",
+    )!.content as { scope: { campaign_ids: string[] } };
+    expect(policy.scope.campaign_ids).toEqual([campaign.id]);
+    const design = files.find(
+      (file) =>
+        file.path ===
+        "evals/simulations/generated-example/simulation-design.md",
+    )!.content as string;
+    expect(design).toContain(
+      "distinct reserved role sessions are required",
+    );
+    expect(design).toContain("no-secrets-v1 or source-code-v1");
+    expect(design).toContain("campaign verify");
     expect(stableJson(files)).not.toContain("{{");
   });
 

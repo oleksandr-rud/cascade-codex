@@ -46,6 +46,10 @@ Use this folder as the active work memory for Orchestrator.
 - Use a work graph only when several worklines, dependency gates, merge
   ownership, dispatch surfaces, or evidence joins need explicit coordination.
   A work graph is declarative and never dispatches itself.
+- Name work graphs with a three-digit `WG` prefix; extend that exact graph ID
+  with `N` plus two digits for nodes and `G` plus an alphanumeric suffix for
+  gates. Keep IDs graph-scoped, unique, never reused, and resolvable from every
+  live planning/work reference.
 - Create a Coordination Graph only for two or more worklines with at least one
   real cross-workline dependency, evidence/batch join, materialization or
   integrated-validation boundary, invalidation relationship, or partial-repair

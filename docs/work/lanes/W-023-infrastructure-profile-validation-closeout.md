@@ -36,7 +36,7 @@ In:
 - read-only integrated validation;
 - exact check and failure-routing matrix;
 - updates to `docs/work/active.md`, `docs/work/reports/_index.md`, and the
-  contour infrastructure implementation-graph report after validation.
+  contour infrastructure work-graph report after validation.
 
 Out:
 
@@ -50,7 +50,7 @@ Out:
 |---|---|---|---|
 | `IPV-001` | All application-profile and resource-extension relationships resolve. | isolated architecture validator | `PASS` |
 | `IPV-002` | Frontend query requests SSR/BFF infrastructure. | frontend-only focused pack receipt | `PASS` |
-| `IPV-003` | Evidence and scaffold files are compared with Gate IP-A. | byte/path preservation receipt | `PASS` |
+| `IPV-003` | Evidence and scaffold files are compared with `WG-003-GA`. | byte/path preservation receipt | `PASS` |
 | `IPV-004` | A required check fails. | lane remains open and failure returns to the source owner | `PASS` |
 
 ## Feature Impact Matrix
@@ -94,11 +94,11 @@ Out:
 - Failure handling: report the exact failed gate and source identity, then
   return ownership to W-018-W-022.
 - Completion handling: update only the active registry, report index, and
-  implementation-graph evidence/status surfaces listed in File Ownership.
+  work-graph evidence/status surfaces listed in File Ownership.
 
 ## Dependencies And Handoff
 
-- Must wait for: W-018 IG-IP-20 integrated receipt.
+- Must wait for: W-018 WG-003-N20 integrated receipt.
 - No implementation source may change during validation.
 - Source merge owner: W-018.
 - Evidence owner: W-023.
@@ -117,14 +117,14 @@ Out:
 
 ## Closeout
 
-- Report: `docs/work/reports/2026-07-28-contour-infrastructure-implementation-graph.md`.
+- Report: `docs/work/reports/2026-07-28-contour-infrastructure-work-graph.md`.
 - Frozen source identity:
   `sha256:597720223d136685fba2ca04c25f8de56e58d6af3f3a6b6cb340794c5fc1b6aa`.
 - Manifest equality: `PASS`, 78 of 78 files in the working and isolated trees.
 - Catalog: `PASS`, 31 graphs and 31 specs comprising five decisions, five
   archetypes, and 21 extensions.
 - Protected evidence schema, evidence validator, graph schema, scaffold
-  manifest, and scaffold generator hashes match Gate IP-A.
+  manifest, and scaffold generator hashes match `WG-003-GA`.
 - Direct checkout validator: `FAIL_UNRELATED`; all 36 findings are generated
   Playwright `node_modules`, while the isolated source validator has zero
   findings.

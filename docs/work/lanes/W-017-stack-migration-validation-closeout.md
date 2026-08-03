@@ -50,7 +50,7 @@ W-017 performs no implementation-source edits. It verifies the integrated
 | Operation | Count | Paths |
 |---|---:|---|
 | Read/verify | 46 | 14 created, 18 modified, and 14 deleted canonical source entries |
-| Update status/evidence | 3 | `docs/work/active.md`, `docs/work/reports/_index.md`, and the migration implementation-graph report |
+| Update status/evidence | 3 | `docs/work/active.md`, `docs/work/reports/_index.md`, and the migration work-graph report |
 
 The old-ID search excludes W-013 through W-017 lane packets and the migration
 report only because those files preserve the explicit before/after map.
@@ -73,10 +73,10 @@ architecture remains inside the search boundary.
 
 | Source | Path Or Tool | Why Needed | Freshness / Confidence |
 |---|---|---|---|
-| Integrated receipt | W-013 IG-AS-20 | exact validation target | current |
+| Integrated receipt | W-013 WG-002-N20 | exact validation target | current |
 | Section receipts | W-014, W-015, W-016 | preservation and local checks | current |
-| Migration graph | implementation graph report | required gate set | current authored plan |
-| Baseline snapshot | IG-AS-00 | before/after comparison | current |
+| Migration graph | work graph report | required gate set | current authored plan |
+| Baseline snapshot | WG-002-N00 | before/after comparison | current |
 
 ## Behavior Examples
 
@@ -104,7 +104,7 @@ architecture remains inside the search boundary.
 | implementation source owned by W-013-W-016 | source lane | read only | route fixes back |
 | `docs/work/active.md` | W-017 | write at validation/closeout | exact states and evidence |
 | `docs/work/reports/_index.md` | W-017 | write | report registration/status |
-| migration implementation graph report | W-017 | write after execution | gate results and frontier |
+| migration work graph report | W-017 | write after execution | gate results and frontier |
 | simulation files and reports | existing lanes | read only | protected |
 
 ## Tool And MCP Context
@@ -131,7 +131,7 @@ architecture remains inside the search boundary.
 
 - Can run with: no source implementation; individual read-only checks may run
   concurrently against one fixed source identity.
-- Must wait for: W-013 IG-AS-20 integrated receipt.
+- Must wait for: W-013 WG-002-N20 integrated receipt.
 - Conflicts with: any source mutation while validation is running.
 
 ## Handoff And Merge Contract
@@ -140,7 +140,7 @@ architecture remains inside the search boundary.
   evidence boundary, and remaining risk.
 - Required output: validation/closeout doc updates only.
 - Merge owner: W-013 for source; W-017 for evidence records.
-- Merge target: IG-AS-26 closeout.
+- Merge target: WG-002-N26 closeout.
 - Evidence to preserve: command outputs, pair/profile counts, digests, and
   review findings.
 - Stop condition: source identity changes or any required migration check fails.
@@ -160,11 +160,11 @@ architecture remains inside the search boundary.
 
 ## Closeout
 
-- Merge evidence: IG-AS-21 through IG-AS-26 passed against implementation
+- Merge evidence: WG-002-N21 through WG-002-N26 passed against implementation
   source identity
   `sha256:e36113eba7d80c12ef1441569b69e8bd43e6cc5e909913a2da4f56993873398b`.
-- Report: `docs/work/reports/2026-07-28-stack-naming-implementation-graph.md`.
-- Completion unlocks W-018 IG-IP-00 using this lane's exact source
+- Report: `docs/work/reports/2026-07-28-stack-naming-work-graph.md`.
+- Completion unlocks W-018 WG-003-N00 using this lane's exact source
   identity; it does not implement or validate the contour infrastructure
   profiles.
 - Remaining risk: completion does not prove that any candidate

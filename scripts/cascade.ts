@@ -37,6 +37,8 @@ Usage:
   bun scripts/cascade.ts campaign catalog [--check|--write]
   bun scripts/cascade.ts campaign validate <campaign-id-or-path>
   bun scripts/cascade.ts campaign run <campaign-id-or-path> [--run-id ID]
+    [--confirmation-receipt PATH]
+  bun scripts/cascade.ts campaign verify <run-id>
   bun scripts/cascade.ts campaign self-test
   bun scripts/cascade.ts simulation init <simulation-id> --owner-lane W-NNN
     [--title "Title"] [--reference-date YYYY-MM-DD] [--dry-run]

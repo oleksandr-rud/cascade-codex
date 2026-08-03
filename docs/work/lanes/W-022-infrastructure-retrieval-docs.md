@@ -91,7 +91,7 @@ Out:
 
 ## Dependencies And Handoff
 
-- Must wait for: W-018 IG-IP-01 and canonical post-W-017 filenames.
+- Must wait for: W-018 WG-003-N01 and canonical post-W-017 filenames.
 - Can run with: W-019-W-021.
 - Merge owner: W-018.
 - Stop condition: frontend retrieval loads unrelated contour catalogs, a pack
@@ -108,7 +108,7 @@ Out:
 
 ## Closeout
 
-- Report: `docs/work/reports/2026-07-28-contour-infrastructure-implementation-graph.md`.
+- Report: `docs/work/reports/2026-07-28-contour-infrastructure-work-graph.md`.
 - Implementation evidence: `PASS`; five general previews and the focused
   frontend SSR/BFF preview resolve selectively, with unrelated contour
   exclusion.

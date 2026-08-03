@@ -84,7 +84,7 @@ Out:
 
 ## Dependencies And Handoff
 
-- Must wait for: W-018 IG-IP-01.
+- Must wait for: W-018 WG-003-N01.
 - Can run with: W-019, W-020, and W-022.
 - Merge owner: W-018.
 - Stop condition: source scaffold generation, a new app type, or remote
@@ -101,7 +101,7 @@ Out:
 
 ## Closeout
 
-- Report: `docs/work/reports/2026-07-28-contour-infrastructure-implementation-graph.md`.
+- Report: `docs/work/reports/2026-07-28-contour-infrastructure-work-graph.md`.
 - Implementation evidence: `PASS`; native 10 nodes/12 edges/9 decisions, CLI
   11/13/8, and experiment 12/15/11.
 - Pair receipt:

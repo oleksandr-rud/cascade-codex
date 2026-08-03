@@ -60,8 +60,8 @@ through section receipts.
 |---|---:|---|---|
 | Create replacement pair files | 14 | W-014 and W-015 | six app-stack graph/spec pairs plus one infrastructure graph/spec pair |
 | Modify canonical consumers | 18 | W-013 through W-016 | validator, scaffold metadata/generator, four infrastructure child graphs, two packs, two skills, and seven current docs |
-| Delete superseded pair files | 14 | W-013 | seven old graph/spec pairs after Gate B |
-| Update closeout evidence | 3 | W-017 | active registry, report index, and this implementation-graph report |
+| Delete superseded pair files | 14 | W-013 | seven old graph/spec pairs after `WG-002-GB` |
+| Update closeout evidence | 3 | W-017 | active registry, report index, and this work-graph report |
 
 W-013 directly modifies only `scripts/validate_cascade_codex.py` and deletes
 the 14 superseded pair files. It must not absorb fixes from section owners
@@ -71,9 +71,9 @@ during integration.
 
 | Receipt | Required contents |
 |---|---|
-| W-014 / IG-AS-11 | 12 created pair files, 2 modified scaffold files, normalized pair comparison, five preview manifests, and 71-path equality |
-| W-015 / IG-AS-13 | 2 created root files, 4 modified child graphs, root/child comparison, evidence-file byte digests, and evidence self-test |
-| W-016 / IG-AS-14 | 11 modified retrieval/routing/doc files, two pack previews, harness checks, and canonical-doc old-ID search |
+| W-014 / WG-002-N11 | 12 created pair files, 2 modified scaffold files, normalized pair comparison, five preview manifests, and 71-path equality |
+| W-015 / WG-002-N13 | 2 created root files, 4 modified child graphs, root/child comparison, evidence-file byte digests, and evidence self-test |
+| W-016 / WG-002-N14 | 11 modified retrieval/routing/doc files, two pack previews, harness checks, and canonical-doc old-ID search |
 
 ## Source Inputs
 
@@ -84,7 +84,7 @@ during integration.
 | Graph authority | `docs/patterns/architecture-defaults/*.graph.yaml` | nodes, decisions, relationships, and preservation | current |
 | Validator | `scripts/validate_cascade_codex.py` | required pair IDs, kinds, decisions, markers, and scaffold links | current |
 | Active work | `docs/work/active.md` | shared-checkout conflicts and open simulation lanes | current |
-| Graph plan | `docs/work/reports/2026-07-28-stack-naming-implementation-graph.md` | nodes, waves, gates, and invalidation | current authored plan |
+| Graph plan | `docs/work/reports/2026-07-28-stack-naming-work-graph.md` | nodes, waves, gates, and invalidation | current authored plan |
 
 ## Behavior Examples
 
@@ -93,7 +93,7 @@ during integration.
 | `ASN-001` | Given the current 26-pair catalog, when the migration integrates, then the catalog still contains 26 valid pairs with seven replacement IDs. | pair catalog and validator result | `PASS` |
 | `ASN-002` | Given a preserved child decision reference, when its parent pair is renamed, then only the pair prefix changes and the decision ID still resolves. | preservation-matrix check | `PASS` |
 | `ASN-003` | Given an old pair path or ID in a canonical consumer, when integration validation runs, then the cutover fails. | scoped old-ID absence check | `PASS` |
-| `ASN-004` | Given W-014, W-015, or W-016 is incomplete, when integration is attempted, then old pairs are not deleted and Gate C remains blocked. | readiness receipts | `PASS` |
+| `ASN-004` | Given W-014, W-015, or W-016 is incomplete, when integration is attempted, then old pairs are not deleted and `WG-002-GC` remains blocked. | readiness receipts | `PASS` |
 
 ## Feature Impact Matrix
 
@@ -109,7 +109,7 @@ during integration.
 | Path Or Area | Owner | Access | Notes |
 |---|---|---|---|
 | `scripts/validate_cascade_codex.py` | W-013 | write | one final pair-ID/kind/marker cutover |
-| seven superseded graph/spec pairs | W-013 | delete at IG-AS-20 | only after all readiness receipts pass |
+| seven superseded graph/spec pairs | W-013 | delete at WG-002-N20 | only after all readiness receipts pass |
 | W-014, W-015, W-016 owned files | owning lane | read/merge-only | fixes route back before integration |
 | simulation implementation and plans | W-004-W-010, W-012 | read only | protected concurrent work |
 
@@ -122,9 +122,9 @@ during integration.
 
 ## Plan
 
-1. Execute IG-AS-00 and freeze the 26-pair, relationship, decision, scaffold,
+1. Execute WG-002-N00 and freeze the 26-pair, relationship, decision, scaffold,
    and direct-consumer preservation snapshot.
-2. Publish the exact rename and exclusive-write map at IG-AS-01.
+2. Publish the exact rename and exclusive-write map at WG-002-N01.
 3. Wait for W-014, W-015, and W-016 readiness receipts.
 4. Rewrite the shared validator pair set, pair kinds, preserved-decision
    owners, required spec markers, frontend set, pack-path assertions, and
@@ -132,14 +132,14 @@ during integration.
 5. Merge the three section outputs, remove the 14 superseded files, and run
    canonical-consumer old-ID absence checks.
 6. Record the integrated source identity, exact create/modify/delete manifest,
-   and Gate C receipt for W-017.
+   and `WG-002-GC` receipt for W-017.
 
 ## Parallel Dependencies
 
-- Can run with: W-014, W-015, and W-016 after IG-AS-01; existing simulation
+- Can run with: W-014, W-015, and W-016 after WG-002-N01; existing simulation
   lanes because their files are protected.
 - Must wait for: W-014, W-015, and W-016 `READY_TO_MERGE` receipts before
-  IG-AS-20.
+  WG-002-N20.
 - Conflicts with: any independent edit to the shared architecture pair
   registry, old-pair deletion, or architecture validator sets during cutover.
 
@@ -165,11 +165,11 @@ during integration.
 
 ## Closeout
 
-- Merge evidence: IG-AS-20 and IG-AS-21 passed against implementation source
+- Merge evidence: WG-002-N20 and WG-002-N21 passed against implementation source
   identity
   `sha256:e36113eba7d80c12ef1441569b69e8bd43e6cc5e909913a2da4f56993873398b`;
   26 complete pairs remain, all seven replacement IDs resolve, and canonical
   old-ID search is empty outside migration history.
-- Report: `docs/work/reports/2026-07-28-stack-naming-implementation-graph.md`.
+- Report: `docs/work/reports/2026-07-28-stack-naming-work-graph.md`.
 - Remaining risk: downstream consumers outside this repository must adopt the
   direct-cutover IDs; no compatibility aliases are provided.

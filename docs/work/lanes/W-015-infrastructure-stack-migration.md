@@ -52,7 +52,7 @@ Out:
 | Delete | 0 | W-013 removes the 2 superseded root files after readiness |
 
 The four child specs are also verification-only: current consumer search finds
-no old root ID in them. If a fresh IG-AS-00 search disagrees, stop and amend
+no old root ID in them. If a fresh WG-002-N00 search disagrees, stop and amend
 the ownership map before editing.
 
 ### Required Relationship Refactor
@@ -67,7 +67,7 @@ the ownership map before editing.
 
 | Source | Path Or Tool | Why Needed | Freshness / Confidence |
 |---|---|---|---|
-| Rename contract | W-013 and IG-AS-01 | exact parent ID and compatibility names | current completed gate |
+| Rename contract | W-013 and WG-002-N01 | exact parent ID and compatibility names | current completed gate |
 | Root pair | `infrastructure-selection` graph/spec | ten decisions and scope semantics | current |
 | Child graphs | four `infrastructure-*` graphs | extends, preserves, and compatibility edges | current |
 | Evidence contract | schema and semantic validator | prove the rename is shape-neutral | current |
@@ -99,7 +99,7 @@ the ownership map before editing.
 | four child specs | W-015 | read only | current search finds no old root ID |
 | evidence schema and semantic validator | W-015 | read/verify | edit only after a documented failed dependency check |
 | old root pair | W-013 | read only | integration owner deletes |
-| app-stack pairs | W-014 | read only | use frozen IDs from IG-AS-01 |
+| app-stack pairs | W-014 | read only | use frozen IDs from WG-002-N01 |
 
 ## Tool And MCP Context
 
@@ -124,7 +124,7 @@ the ownership map before editing.
 
 ## Parallel Dependencies
 
-- Can run with: W-014 and W-016 after IG-AS-01.
+- Can run with: W-014 and W-016 after WG-002-N01.
 - Must wait for: frozen app-stack IDs and infrastructure root ID.
 - Conflicts with: concurrent edits to the four infrastructure child graphs or
   evidence contract.
@@ -135,7 +135,7 @@ the ownership map before editing.
   compatibility result, and exact source identity.
 - Required output: W-015-owned graph/spec files only.
 - Merge owner: W-013.
-- Merge target: IG-AS-20 direct cutover.
+- Merge target: WG-002-N20 direct cutover.
 - Evidence to preserve: normalized root/child comparison and evidence self-test.
 - Stop condition: any evidence schema change, child decision change, or
   provider/resource semantic change without a new reviewed plan.
@@ -150,10 +150,10 @@ the ownership map before editing.
 
 ## Closeout
 
-- Merge evidence: IG-AS-12 and IG-AS-13 passed; the infrastructure root and
+- Merge evidence: WG-002-N12 and WG-002-N13 passed; the infrastructure root and
   four children match the normalized baseline, evidence self-test passes, and
   the evidence schema, semantic validator, graph schema, and four child specs
   retain their baseline SHA-256 digests.
-- Report: `docs/work/reports/2026-07-28-stack-naming-implementation-graph.md`.
+- Report: `docs/work/reports/2026-07-28-stack-naming-work-graph.md`.
 - Remaining risk: generic `infrastructure` is intentionally a pair ID inside
   the architecture-default namespace, not a new top-level source folder.

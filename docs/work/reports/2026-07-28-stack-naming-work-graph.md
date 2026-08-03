@@ -1,12 +1,14 @@
-# Stack Naming Migration Implementation Graph
+# Stack Naming Migration Work Graph
 
 Status: `COMPLETE`
 Created: 2026-07-28
-Revision: `3`
+Work Graph ID: `WG-002`
+Work Graph Revision: `4`
 Scope: `EPIC`
 Implementation evidence: `PASS`
 Merge owner: `W-013`
 Validation owner: `W-017`
+Terminal Gate: `WG-002-GD`
 
 ## Outcome
 
@@ -80,7 +82,7 @@ Non-goals:
 ## Follow-On Program Boundary
 
 The contour-infrastructure profile request remains planned separately in
-`docs/work/reports/2026-07-28-contour-infrastructure-implementation-graph.md`
+`docs/work/reports/2026-07-28-contour-infrastructure-work-graph.md`
 and W-018-W-023. It adds frontend SSR/BFF/fullstack, backend data/messaging,
 native, CLI, and experiment infrastructure profiles only after W-017 closes
 this identity migration.
@@ -89,7 +91,7 @@ This report's 26-pair baseline, 46-operation source manifest, protected
 evidence/scaffold contract, and W-013-W-017 completion gates remain unchanged.
 W-017 completed against implementation source identity
 `sha256:e36113eba7d80c12ef1441569b69e8bd43e6cc5e909913a2da4f56993873398b`
-and unlocks W-018 IG-IP-00. That completion is not implementation evidence for
+and unlocks W-018 WG-003-N00. That completion is not implementation evidence for
 the follow-on profiles.
 
 ## Canonical Rename Map
@@ -166,7 +168,7 @@ authority move to the app-stack vocabulary.
 | `stack-selection-evidence.schema.json` | byte-identical unless a graph-ID dependency is demonstrated |
 | `validate_stack_selection_evidence.py` | byte-identical and existing self-test passes |
 | architecture graph schema | unchanged |
-| `stack-selection.graph.yaml` | unchanged unless IG-AS-00 finds an exact old pair ID |
+| `stack-selection.graph.yaml` | unchanged unless WG-002-N00 finds an exact old pair ID |
 | four infrastructure child specs | unchanged unless fresh consumer inventory finds an old ID |
 | archetype and frontend-policy pairs | unchanged |
 | candidate, node, edge, and decision IDs | unchanged except the seven pair IDs and relationship owner prefixes |
@@ -180,37 +182,37 @@ validation lane.
 
 | Lane | Boundary | Exclusive writes | Starts | Completion receipt |
 |---|---|---|---|---|
-| W-013 | contract, shared validator, deletion, integration | shared architecture validator and superseded-pair deletion | IG-AS-00 | integrated source identity |
-| W-014 | application branch and source profiles | six new pairs, scaffold manifest, scaffold generator | after IG-AS-01 | app-pair and 71-path preservation |
-| W-015 | infrastructure branch | new root pair and four child graph relationships | after IG-AS-01 | infra relationship and evidence-compatibility receipt |
-| W-016 | retrieval, routing, and public docs | packs, skills, index, stack spec, public docs, current report | after IG-AS-01 | pack previews and canonical-doc absence check |
-| W-017 | independent validation and closeout | work registry and migration report evidence only | after IG-AS-20 | final exact check matrix |
+| W-013 | contract, shared validator, deletion, integration | shared architecture validator and superseded-pair deletion | WG-002-N00 | integrated source identity |
+| W-014 | application branch and source profiles | six new pairs, scaffold manifest, scaffold generator | after WG-002-N01 | app-pair and 71-path preservation |
+| W-015 | infrastructure branch | new root pair and four child graph relationships | after WG-002-N01 | infra relationship and evidence-compatibility receipt |
+| W-016 | retrieval, routing, and public docs | packs, skills, index, stack spec, public docs, current report | after WG-002-N01 | pack previews and canonical-doc absence check |
+| W-017 | independent validation and closeout | work registry and migration report evidence only | after WG-002-N20 | final exact check matrix |
 
-W-014, W-015, and W-016 are parallel-safe after IG-AS-01 because their write
+W-014, W-015, and W-016 are parallel-safe after WG-002-N01 because their write
 sets are disjoint. W-013 is the only merge owner for shared cutover. W-017
 never repairs implementation files; it routes a failed check back to its owner.
 
-## Implementation Topology
+## Work Topology
 
 ```mermaid
 flowchart TD
-    B0["IG-AS-00: fixed-point preservation snapshot"]
-    B1["IG-AS-01: rename and exclusive-write contract"]
+    B0["WG-002-N00: fixed-point preservation snapshot"]
+    B1["WG-002-N01: rename and exclusive-write contract"]
 
-    A10["IG-AS-10 / W-014: six app-stack graph/spec pairs"]
-    A11["IG-AS-11 / W-014: five scaffold profiles and generator"]
-    I12["IG-AS-12 / W-015: infrastructure root and child relationships"]
-    I13["IG-AS-13 / W-015: evidence shape compatibility"]
-    D14["IG-AS-14 / W-016: packs, skills, index, and public docs"]
+    A10["WG-002-N10 / W-014: six app-stack graph/spec pairs"]
+    A11["WG-002-N11 / W-014: five scaffold profiles and generator"]
+    I12["WG-002-N12 / W-015: infrastructure root and child relationships"]
+    I13["WG-002-N13 / W-015: evidence shape compatibility"]
+    D14["WG-002-N14 / W-016: packs, skills, index, and public docs"]
 
-    C20["IG-AS-20 / W-013: canonical validator cutover, merge, and old-pair deletion"]
-    C21["IG-AS-21 / W-013: relationship, preservation, and old-ID gate"]
+    C20["WG-002-N20 / W-013: canonical validator cutover, merge, and old-pair deletion"]
+    C21["WG-002-N21 / W-013: relationship, preservation, and old-ID gate"]
 
-    V22["IG-AS-22 / W-017: scaffold and pack behavior"]
-    V23["IG-AS-23 / W-017: evidence, compile, and diff checks"]
-    V24["IG-AS-24 / W-017: isolated source validator and harness checks"]
-    V25["IG-AS-25 / W-017: direct dirty-checkout classification"]
-    V26["IG-AS-26 / W-017: review, registry, and closeout"]
+    V22["WG-002-N22 / W-017: scaffold and pack behavior"]
+    V23["WG-002-N23 / W-017: evidence, compile, and diff checks"]
+    V24["WG-002-N24 / W-017: isolated source validator and harness checks"]
+    V25["WG-002-N25 / W-017: direct dirty-checkout classification"]
+    V26["WG-002-N26 / W-017: review, registry, and closeout"]
 
     B0 --> B1
     B1 --> A10
@@ -234,24 +236,24 @@ flowchart TD
 
 | Node | Lane | Implementation outcome | Requires | Produces | State |
 |---|---|---|---|---|---|
-| `IG-AS-00` | W-013 | fixed pair, decision, node, relationship, consumer, scaffold-template, and rendered-path snapshot plus dirty-work protection map | current checkout | baseline digest and preservation matrix | `PASS` |
-| `IG-AS-01` | W-013 | frozen rename map, section file ownership, canonical-consumer scope, and migration-history exclusion | IG-AS-00 | workline start receipt | `PASS` |
-| `IG-AS-10` | W-014 | create 12 app-stack graph/spec files with new IDs, paths, titles, relationship prefixes, and unchanged semantics | IG-AS-01 | app pair source and normalized comparison | `PASS` |
-| `IG-AS-11` | W-014 | modify 2 scaffold files: profile metadata/adoption text and required-pair validation | IG-AS-10 | five profiles, 71-path manifest, safety self-test, and 14-file lane receipt | `PASS` |
-| `IG-AS-12` | W-015 | create 2 infrastructure root files and modify 4 child graph relationships | IG-AS-01 | infra pair source and relationship comparison | `PASS` |
-| `IG-AS-13` | W-015 | proof that evidence schema/validator are graph-name independent; no edit unless that proof fails | IG-AS-12 | evidence compatibility and self-test receipt | `PASS` |
-| `IG-AS-14` | W-016 | modify 11 pack, skill, pattern, public-discovery, and current-report consumers | IG-AS-01 | retrieval previews, harness checks, old-ID search, and 11-file receipt | `PASS` |
-| `IG-AS-20` | W-013 | modify 1 shared validator, merge section receipts, delete 14 superseded files, and produce one canonical 26-pair source | IG-AS-11, IG-AS-13, IG-AS-14 | exact integrated source identity and 46-operation manifest | `PASS` |
-| `IG-AS-21` | W-013 | every relationship and preserved decision resolves; old IDs are absent from canonical authorities | IG-AS-20 | Gate C integration receipt | `PASS` |
-| `IG-AS-22` | W-017 | five scaffold previews, validate/self-test, and both context-pack previews pass against the integrated source | IG-AS-21 | behavior evidence | `PASS` |
-| `IG-AS-23` | W-017 | evidence self-test, byte-preservation checks, Python compilation, whitespace, and scoped diff checks pass | IG-AS-21 | mechanical evidence | `PASS` |
-| `IG-AS-24` | W-017 | isolated source validator, harness catalog, and harness self-test pass against one source identity | IG-AS-22, IG-AS-23 | source validation receipt | `PASS` |
-| `IG-AS-25` | W-017 | direct checkout validator is run and unrelated generated Playwright findings are separated from migration findings | IG-AS-24 | dirty-checkout disposition | `PASS` |
-| `IG-AS-26` | W-017 | Standards/Spec review, active work status, report evidence, and remaining risks are finalized | IG-AS-25 | closeout or exact routed blocker | `PASS` |
+| `WG-002-N00` | W-013 | fixed pair, decision, node, relationship, consumer, scaffold-template, and rendered-path snapshot plus dirty-work protection map | current checkout | baseline digest and preservation matrix | `PASS` |
+| `WG-002-N01` | W-013 | frozen rename map, section file ownership, canonical-consumer scope, and migration-history exclusion | WG-002-N00 | workline start receipt | `PASS` |
+| `WG-002-N10` | W-014 | create 12 app-stack graph/spec files with new IDs, paths, titles, relationship prefixes, and unchanged semantics | WG-002-N01 | app pair source and normalized comparison | `PASS` |
+| `WG-002-N11` | W-014 | modify 2 scaffold files: profile metadata/adoption text and required-pair validation | WG-002-N10 | five profiles, 71-path manifest, safety self-test, and 14-file lane receipt | `PASS` |
+| `WG-002-N12` | W-015 | create 2 infrastructure root files and modify 4 child graph relationships | WG-002-N01 | infra pair source and relationship comparison | `PASS` |
+| `WG-002-N13` | W-015 | proof that evidence schema/validator are graph-name independent; no edit unless that proof fails | WG-002-N12 | evidence compatibility and self-test receipt | `PASS` |
+| `WG-002-N14` | W-016 | modify 11 pack, skill, pattern, public-discovery, and current-report consumers | WG-002-N01 | retrieval previews, harness checks, old-ID search, and 11-file receipt | `PASS` |
+| `WG-002-N20` | W-013 | modify 1 shared validator, merge section receipts, delete 14 superseded files, and produce one canonical 26-pair source | WG-002-N11, WG-002-N13, WG-002-N14 | exact integrated source identity and 46-operation manifest | `PASS` |
+| `WG-002-N21` | W-013 | every relationship and preserved decision resolves; old IDs are absent from canonical authorities | WG-002-N20 | `WG-002-GC` integration receipt | `PASS` |
+| `WG-002-N22` | W-017 | five scaffold previews, validate/self-test, and both context-pack previews pass against the integrated source | WG-002-N21 | behavior evidence | `PASS` |
+| `WG-002-N23` | W-017 | evidence self-test, byte-preservation checks, Python compilation, whitespace, and scoped diff checks pass | WG-002-N21 | mechanical evidence | `PASS` |
+| `WG-002-N24` | W-017 | isolated source validator, harness catalog, and harness self-test pass against one source identity | WG-002-N22, WG-002-N23 | source validation receipt | `PASS` |
+| `WG-002-N25` | W-017 | direct checkout validator is run and unrelated generated Playwright findings are separated from migration findings | WG-002-N24 | dirty-checkout disposition | `PASS` |
+| `WG-002-N26` | W-017 | Standards/Spec review, active work status, report evidence, and remaining risks are finalized | WG-002-N25 | closeout or exact routed blocker | `PASS` |
 
 ## Gate Contracts
 
-### Gate A — IG-AS-01 Naming Contract
+### WG-002-GA — Naming Contract
 
 Required:
 
@@ -270,13 +272,13 @@ Acceptance:
 - historical migration documents are the only allowed old-ID exclusion;
 - section work may begin without sharing an unresolved decision.
 
-### Gate B — Section Readiness
+### WG-002-GB — Section Readiness
 
 Required:
 
-- W-014 app-pair and scaffold receipt from IG-AS-11;
-- W-015 infrastructure and evidence compatibility receipt from IG-AS-13;
-- W-016 pack, skill, and documentation receipt from IG-AS-14.
+- W-014 app-pair and scaffold receipt from WG-002-N11;
+- W-015 infrastructure and evidence compatibility receipt from WG-002-N13;
+- W-016 pack, skill, and documentation receipt from WG-002-N14.
 
 Acceptance:
 
@@ -285,11 +287,11 @@ Acceptance:
 - no lane deletes current pairs or edits the shared validator;
 - all section-local checks pass or integration remains blocked.
 
-### Gate C — IG-AS-21 Canonical Integration
+### WG-002-GC — Canonical Integration
 
 Required:
 
-- Gate B accepted;
+- `WG-002-GB` accepted;
 - shared validator set, kind, preserved-decision, spec-marker, frontend-set, and
   scaffold-owner logic use replacement IDs;
 - seven old graph/spec pairs are removed;
@@ -303,7 +305,7 @@ Acceptance:
 - no compatibility alias or duplicate path exists;
 - W-017 receives one fixed integrated source identity.
 
-### Gate D — IG-AS-26 Validation And Closeout
+### WG-002-GD — Validation And Closeout
 
 Required:
 
@@ -334,7 +336,7 @@ Acceptance:
 | replacement infrastructure root and four child graphs | W-015 | packs, index, validator | W-013 merge-only |
 | evidence schema and semantic validator | protected/read-only | every stack evidence record | change requires a new failed-dependency finding and plan |
 | architecture packs, index, stack spec, skills, and public docs | W-016 | agents and maintainers | no graph or validator edits |
-| shared architecture validator and old-pair deletion | W-013 | repository | serialized after Gate B |
+| shared architecture validator and old-pair deletion | W-013 | repository | serialized after `WG-002-GB` |
 | active registry, report index, and final report evidence | W-017 | work tracking | validation status only |
 | simulation program files | W-004-W-010 and W-012 | simulation implementation | no migration write |
 
@@ -363,40 +365,40 @@ protected inputs and compatibility checks, not expected edit targets.
 
 | Wave | Nodes | Parallel rule | Exit |
 |---|---|---|---|
-| 0 | IG-AS-00, IG-AS-01 | serialized under W-013 | Gate A accepted |
-| 1 | IG-AS-10/11, IG-AS-12/13, IG-AS-14 | three parallel sections with disjoint writes | three readiness receipts |
-| 2 | IG-AS-20, IG-AS-21 | serialized merge, validator cutover, deletion, and relationship gate | Gate C accepted |
-| 3 | IG-AS-22 and IG-AS-23 | read-only checks may run in parallel against one fixed source | behavior and mechanical receipts |
-| 4 | IG-AS-24 through IG-AS-26 | serialized source validation, dirty-checkout classification, and closeout | Gate D accepted or exact blocker |
+| 0 | WG-002-N00, WG-002-N01 | serialized under W-013 | `WG-002-GA` accepted |
+| 1 | WG-002-N10/11, WG-002-N12/13, WG-002-N14 | three parallel sections with disjoint writes | three readiness receipts |
+| 2 | WG-002-N20, WG-002-N21 | serialized merge, validator cutover, deletion, and relationship gate | `WG-002-GC` accepted |
+| 3 | WG-002-N22 and WG-002-N23 | read-only checks may run in parallel against one fixed source | behavior and mechanical receipts |
+| 4 | WG-002-N24 through WG-002-N26 | serialized source validation, dirty-checkout classification, and closeout | `WG-002-GD` accepted or exact blocker |
 
 Parallel work must use isolated branches/worktrees or otherwise preserve the
-exclusive write map. A source mutation after IG-AS-20 invalidates every W-017
+exclusive write map. A source mutation after WG-002-N20 invalidates every W-017
 result produced from the previous identity.
 
 ## Implementation Completion Checklist
 
 | Gate | Required completion signal | Current state |
 |---|---|---|
-| IG-AS-00 | 26-pair normalized baseline, 32-consumer inventory, five scaffold previews, 71-path manifest, evidence-file digests, and dirty-work map | `PASS` |
-| IG-AS-01 | frozen rename map, history exclusion, exclusive ownership, and per-lane start receipt | `PASS` |
-| IG-AS-11 | W-014 14-file receipt and all app/scaffold preservation checks | `PASS` |
-| IG-AS-13 | W-015 6-file change receipt plus evidence and child-spec unchanged proof | `PASS` |
-| IG-AS-14 | W-016 11-file receipt, two pack previews, harness checks, and scoped old-ID result | `PASS` |
-| IG-AS-21 | 46-operation integration manifest, 26 valid pairs, no canonical old IDs, and exact source identity | `PASS` |
-| IG-AS-24 | scaffold, evidence, packs, isolated validator, harness, compile, and diff checks pass on that identity | `PASS` |
-| IG-AS-25 | direct dirty-checkout validator findings classified independently | `PASS_WITH_UNRELATED_FINDINGS` |
-| IG-AS-26 | Standards/Spec review and three evidence owners updated | `PASS` |
+| WG-002-N00 | 26-pair normalized baseline, 32-consumer inventory, five scaffold previews, 71-path manifest, evidence-file digests, and dirty-work map | `PASS` |
+| WG-002-N01 | frozen rename map, history exclusion, exclusive ownership, and per-lane start receipt | `PASS` |
+| WG-002-N11 | W-014 14-file receipt and all app/scaffold preservation checks | `PASS` |
+| WG-002-N13 | W-015 6-file change receipt plus evidence and child-spec unchanged proof | `PASS` |
+| WG-002-N14 | W-016 11-file receipt, two pack previews, harness checks, and scoped old-ID result | `PASS` |
+| WG-002-N21 | 46-operation integration manifest, 26 valid pairs, no canonical old IDs, and exact source identity | `PASS` |
+| WG-002-N24 | scaffold, evidence, packs, isolated validator, harness, compile, and diff checks pass on that identity | `PASS` |
+| WG-002-N25 | direct dirty-checkout validator findings classified independently | `PASS_WITH_UNRELATED_FINDINGS` |
+| WG-002-N26 | Standards/Spec review and three evidence owners updated | `PASS` |
 
 ## Invalidation And Repair Routing
 
 | Changed input or failure | Reopen | Preserve |
 |---|---|---|
-| rename map or pair-ID convention | IG-AS-01 and every downstream node | baseline snapshot only |
-| app pair decision, node, candidate, or scaffold path drift | W-014 IG-AS-10/11; integration and validation | W-015/W-016 evidence when source inputs are unchanged |
-| infrastructure decision or evidence-shape drift | W-015 IG-AS-12/13; integration and validation | W-014/W-016 evidence when inputs are unchanged |
-| pack path, section, or routing failure | W-016 IG-AS-14; integration and pack validation | W-014/W-015 structural evidence |
-| shared validator or deletion failure | W-013 IG-AS-20/21 and all W-017 checks | section receipts after identity revalidation |
-| scaffold behavior failure | W-014, then IG-AS-20 onward | infrastructure and docs receipts |
+| rename map or pair-ID convention | WG-002-N01 and every downstream node | baseline snapshot only |
+| app pair decision, node, candidate, or scaffold path drift | W-014 WG-002-N10/11; integration and validation | W-015/W-016 evidence when source inputs are unchanged |
+| infrastructure decision or evidence-shape drift | W-015 WG-002-N12/13; integration and validation | W-014/W-016 evidence when inputs are unchanged |
+| pack path, section, or routing failure | W-016 WG-002-N14; integration and pack validation | W-014/W-015 structural evidence |
+| shared validator or deletion failure | W-013 WG-002-N20/21 and all W-017 checks | section receipts after identity revalidation |
+| scaffold behavior failure | W-014, then WG-002-N20 onward | infrastructure and docs receipts |
 | isolated source validator failure caused by migration | owning source lane plus W-013 integration | unrelated simulation work |
 | direct validator generated Playwright finding only | no migration node; report separate checkout blocker | all isolated source evidence |
 | any simulation source diff from this program | stop and restore ownership through the simulation lane | architecture plan artifacts |
@@ -411,7 +413,7 @@ result produced from the previous identity.
 | retrieval and skill routing must use new names | two packs and two skills | `PROPOSED` | W-016 |
 | active execution is separated into five worklines | work lanes and active registry | `UPDATED` | current planning turn |
 | migration contains 14 creates, 18 modifications, and 14 deletions plus three evidence updates | this report and W-013-W-017 packets | `UPDATED` | preserve counts in every section receipt |
-| implementation and validation evidence | migration report and active registry | `PASS` | W-017 completed after IG-AS-20 |
+| implementation and validation evidence | migration report and active registry | `PASS` | W-017 completed after WG-002-N20 |
 
 ## Validation Plan
 
@@ -452,7 +454,7 @@ exact independent disposition.
 | Check | Result | Evidence boundary |
 |---|---|---|
 | Workline registration | `PASS` | five `COMPLETE` lane packets, W-013 through W-017, each registered once in `docs/work/active.md` |
-| Implementation graph identity | `PASS` | 14 unique nodes, IG-AS-00, IG-AS-01, IG-AS-10 through IG-AS-14, and IG-AS-20 through IG-AS-26 |
+| work graph identity | `PASS` | 14 unique nodes, WG-002-N00, WG-002-N01, WG-002-N10 through WG-002-N14, and WG-002-N20 through WG-002-N26 |
 | Concrete scope reconciliation | `PASS` | 32 current canonical consumers map to 14 creates, 18 modifications, and 14 deletions; W-017 separately owns 3 evidence updates |
 | Canonical authority cutover | `PASS` | current catalog has 26 complete pairs, all seven replacement IDs, and zero superseded pair files |
 | Graph/spec preservation | `PASS` | seven renamed pairs and four infrastructure children match the normalized baseline; all renamed specs differ only by direct IDs and approved titles/routing vocabulary |
@@ -468,14 +470,14 @@ exact independent disposition.
 | Direct dirty-checkout validator | `FAIL_UNRELATED` | 36 findings under root and `.codex/harness-tooling` Playwright `node_modules`; no Stage 1 source finding |
 | Standards review | `PASS` | direct cutover, thin entrypoints, ownership boundaries, and protected dirty work conform to repository rules |
 | Spec review | `PASS` | W-013-W-017 acceptance criteria are covered with no Stage 2 or SDK/library implementation |
-| Naming migration implementation | `PASS` | IG-AS-00 through IG-AS-26 completed against source identity `e36113be...39873398b` |
+| Naming migration implementation | `PASS` | WG-002-N00 through WG-002-N26 completed against source identity `e36113be...39873398b` |
 
 ## Current Frontier
 
-- Complete: IG-AS-00 through IG-AS-26 and W-013 through W-017.
+- Complete: WG-002-N00 through WG-002-N26 and W-013 through W-017.
 - Canonical authority: 26 pairs under `app-stack`, the five contour stack
   children, and `infrastructure`.
-- Ready: W-018 IG-IP-00 may consume the completed Stage 1 source identity.
+- Ready: W-018 WG-003-N00 may consume the completed Stage 1 source identity.
 - Not implemented: W-018-W-023 contour infrastructure profiles and W-024
   SDK/library contour.
 - Live stack proof, deployment, publication, and release eligibility:

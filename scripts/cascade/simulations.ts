@@ -157,6 +157,66 @@ async function renderDesignReport(
     .replace(
       "- Explicitly not proven:",
       "- Explicitly not proven: target-project calibration, live behavior, deployment, or release eligibility",
+    )
+    .replace(
+      "- Runtime and adapter:",
+      "- Runtime and adapter: Cascade campaign runner with the deterministic fake adapter",
+    )
+    .replace(
+      "- Environment and platform:",
+      "- Environment and platform: isolated local deterministic fixture / local",
+    )
+    .replace(
+      "- Operator, evaluator, target, and recovery session separation:",
+      "- Operator, evaluator, target, and recovery session separation: distinct reserved role sessions are required",
+    )
+    .replace(
+      "- Identity and permission scope:",
+      "- Identity and permission scope: fixture-only state actions within the generated task and world",
+    )
+    .replace(
+      "- Isolation boundary:",
+      "- Isolation boundary: generated in-memory world reset to the tracked fixture",
+    )
+    .replace(
+      "- Reservation, lease, and recovery authority:",
+      "- Reservation, lease, and recovery authority: atomically reserved run ID, operator-owned lease, and named recovery session; no implicit resume",
+    )
+    .replace(
+      "- Policy scope, version, default-deny, and ambiguity behavior:",
+      "- Policy scope, version, default-deny, and ambiguity behavior: policy v2 binds the exact campaign, task, kind, driver, actions, and path; zero applicable referenced policies or ambiguity blocks before provisioning",
+    )
+    .replace(
+      "- Confirmation receipt binding and expiry:",
+      "- Confirmation receipt binding and expiry: any required confirmation binds run, policy version and digest, campaign, task, action index and digest, confirmer, and expiry",
+    )
+    .replace(
+      "- Timeout and required budget dimensions:",
+      "- Timeout and required budget dimensions: 1000 ms task timeout; action_count and output_bytes are required and bounded by policy",
+    )
+    .replace(
+      "- Fixture or seed identity:",
+      `- Fixture or seed identity: evals/fixtures/${options.simulationId}-world.json`,
+    )
+    .replace(
+      "- Evidence root:",
+      "- Evidence root: .artifacts/campaigns/<run-id>",
+    )
+    .replace(
+      "- Evidence producer, platform, lineage, and redaction:",
+      "- Evidence producer, platform, lineage, and redaction: simulation operator, selected platform, run/source digests, and no-secrets-v1 or source-code-v1",
+    )
+    .replace(
+      "- Cleanup contract:",
+      "- Cleanup contract: reset the world to the tracked fixture and verify no residual resources",
+    )
+    .replace(
+      "- Terminal finalization and verification:",
+      "- Terminal finalization and verification: atomically finalize once, then run campaign verify against the frozen manifest",
+    )
+    .replace(
+      "- Retry and replay parentage:",
+      "- Retry and replay parentage: use a new run ID plus --parent-run-id and preserve the original frozen source digest",
     );
   return {
     path: `evals/simulations/${options.simulationId}/simulation-design.md`,

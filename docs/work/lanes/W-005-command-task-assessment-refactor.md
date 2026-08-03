@@ -168,15 +168,15 @@ declared oracles.
 ## Status Reconciliation
 
 - Last checked: `2026-07-30`
-- Source identity: clean implementation baseline
-  `master@60fdc2464b9782a689d3f53ffa8fc177f486e6a8`; revision-9 planning diff
-  applied on top
+- Source identity: clean implementation base
+  `master@21ba5288b27700f94ecad92ec0cf3d1e5dca5f29`; accepted WG-001-N03
+  current-source implementation and revision-11 status records applied on top
 - Completion disposition: `KEEP_OPEN`
 - Reason: current source has a shared `direct-process` execution primitive but
   no accepted command manifests, failure/recovery fixtures, handoff receipt, or
   lane evidence. Required gates remain `OPEN`/`NOT_RUN`.
-- Synchronized surfaces: lane, active registry, report index, and IG-001 plan
-  revision 9.
+- Synchronized surfaces: lane, active registry, report index, and WG-001 plan
+  revision 10.
 
 ## Closeout
 

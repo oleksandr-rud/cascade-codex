@@ -1,11 +1,45 @@
 {
-  "schema_version": 1,
+  "schema_version": 2,
   "id": "allow-fixture-state-actions-v1",
+  "version": "2.0.0",
   "effect": "ALLOW",
-  "action_types": [
-    "assert",
-    "set",
-    "increment"
-  ],
+  "scope": {
+    "campaign_ids": [
+      "simulation-calibration-ranking-smoke",
+      "simulation-codex-evaluation-smoke",
+      "simulation-contract-smoke",
+      "simulation-metric-reduction-smoke",
+      "simulation-partition-leakage-smoke",
+      "simulation-population-smoke",
+      "simulation-world-state-smoke"
+    ],
+    "task_ids": [
+      "SIMULATION-STATE-SMOKE"
+    ],
+    "task_kinds": [
+      "agent-response"
+    ],
+    "driver_types": [
+      "fake"
+    ],
+    "action_types": [
+      "assert",
+      "set",
+      "increment"
+    ],
+    "action_paths": [
+      "account.status",
+      "account.attempts"
+    ]
+  },
+  "budgets": {
+    "required_dimensions": [
+      "action_count",
+      "output_bytes"
+    ],
+    "max_actions": 8,
+    "max_output_bytes": 65536
+  },
+  "redaction_profile": "no-secrets-v1",
   "reason": "The deterministic fixture permits declared in-memory state transitions only."
 }

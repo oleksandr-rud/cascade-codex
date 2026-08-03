@@ -11,32 +11,34 @@ Use filenames like `YYYY-MM-DD-slug.md`.
 
 | Date | Work Graph | Purpose |
 |---|---|---|
-| 2026-07-27 | `2026-07-27-cross-surface-simulation-work-graph.md` | Active plan revision 9 of `IG-001`; current implementation baseline `master@60fdc246`, no dispatched node, next candidate `IG-03` pending Bun 1.3.3 and explicit implementation authorization. |
+| 2026-07-27 | `2026-07-27-cross-surface-simulation-work-graph.md` | Active plan revision 12/work-graph revision 11; WG-001-N03 is `ACCEPTED`; implemented N04/N05 are in `REVIEW` pending independent GF-004/GF-101 review. |
 
 ## Reports
 
 | Date | Report | Purpose |
 |---|---|---|
+| 2026-07-30 | `2026-07-30-wg001-n04-n05-implementation.md` | N04/N05 implementation and scenario-building repair receipts, deterministic validation, fixed-point identity, and independent-review boundary. |
+| 2026-07-30 | `2026-07-30-wg001-next-frontier-preparation.md` | Version-bound architecture, security, fragment, write-scope, behavior, validation, repair, and review packets that governed the completed N04/N05 implementation attempts. |
 | 2026-06-22 | `2026-06-22-pattern-context-pack-orchestration-report.md` | Recent PR analysis, skills/agents orchestration tree, pattern context-pack system, onboarding wiring, and validation evidence. |
 | 2026-06-23 | `2026-06-23-context-pattern-context-skill-analysis.md` | Context versus pattern-context skill analysis and graph-shaped context-pack schema update. |
 | 2026-07-09 | `2026-07-09-harness-evaluation-lab.md` | Full Cascade harness inventory, 290-scenario corpus, Sol/Terra model policy, live trace matrices, golden judgments, repairs, and residual eval gaps. |
 | 2026-07-27 | `2026-07-27-cross-surface-simulation-program.md` | Cross-surface campaign architecture and W-004–W-010 plus W-012 implementation plan for direct contours and agent composition with command, browser, terminal, desktop, and mobile tools. |
 | 2026-07-27 | `2026-07-27-simulation-campaigns-skill-design.md` | Trigger, ownership, artifact, and validation contract for the cross-surface simulation-campaign skill. |
 | 2026-07-27 | `2026-07-27-simulation-operator-evaluator-design.md` | Independent authoring, mutable execution, read-only evaluation, receipt, permission, and existing-lane integration design. |
-| 2026-07-28 | `2026-07-28-cross-surface-simulation-plan-integrity-review.md` | Pre-implementation graph, workline, assumption, handoff, failure-recovery, feasibility, and complexity review for the simulation program. |
+| 2026-07-28 | `2026-07-28-cross-surface-simulation-plan-integrity-review.md` | Pre-execution work-graph, workline, assumption, handoff, failure-recovery, feasibility, and complexity review for the simulation program. |
 | 2026-07-30 | `2026-07-30-simulation-correctness-fix-plan.md` | Repository-specific remediation plan for actor populations, stateful worlds, dataset partitions, metrics, judge calibration, sim-to-reference evidence, treatment ranking, drift invalidation, and release gates. |
 | 2026-07-27 | `2026-07-27-architecture-selection-and-frontend-defaults.md` | Thirty-four-pair architecture catalog with claim/policy-driven stack, contour technology and infrastructure, SDK/library defaults, safe source profiles, frontend policies, preservation matrix, and validation evidence; updated 2026-07-28. |
 
 ## Historical Work Graphs
 
 Completed work graphs remain durable evidence but are not active registry
-entries. Historical filenames are preserved so their completion receipts and
-inbound references do not drift.
+entries. Canonical work-graph filenames and IDs remain the live reference
+surface; immutable runtime evidence identities are preserved separately.
 
 | Date | Work Graph | Purpose |
 |---|---|---|
-| 2026-07-28 | `2026-07-28-stack-naming-implementation-graph.md` | Completed Revision 3 direct cutover to app-stack and infrastructure: W-013-W-017, 14 nodes, 46 source operations, 26 preserved pairs, unchanged evidence/scaffold contracts, exact validation evidence, and W-018 handoff. |
-| 2026-07-28 | `2026-07-28-contour-infrastructure-implementation-graph.md` | Completed Revision 4 for W-018-W-024: exact 31-pair Stage 2 receipt and serialized 34-pair SDK/library follow-on, with preserved resource authority, evidence compatibility, and five-profile/71-file scaffolds. |
+| 2026-07-28 | `2026-07-28-stack-naming-work-graph.md` | Completed work graph `WG-002`, revision 4: direct cutover to app-stack and infrastructure across W-013-W-017, 14 nodes, 46 source operations, 26 preserved pairs, unchanged evidence/scaffold contracts, exact validation evidence, and W-018 handoff. |
+| 2026-07-28 | `2026-07-28-contour-infrastructure-work-graph.md` | Completed work graph `WG-003`, revision 5: exact 31-pair Stage 2 receipt and serialized 34-pair SDK/library follow-on across W-018-W-024, with preserved resource authority, evidence compatibility, and five-profile/71-file scaffolds. |
 
 ## Archived Report Sets
 

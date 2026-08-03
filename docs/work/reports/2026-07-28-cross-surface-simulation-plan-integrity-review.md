@@ -2,12 +2,12 @@
 
 Date: 2026-07-28
 Status: `PLANNING_ACCEPTED`; implementation `NOT_STARTED`
-Graph: `IG-001`, revision 4
+Work Graph: `WG-001`, work-graph revision 4
 Scope: W-004 through W-010 plus W-012
-Next executable node: `IG-01`
+Next executable node: `WG-001-N01`
 
 Historical review boundary: this report records the revision-4 integrity
-review. The current active authority is the revision-7
+review. The current active authority is work-graph revision 11
 [`Cross-Surface Simulation Work Graph`](2026-07-27-cross-surface-simulation-work-graph.md);
 do not use this report's revision number as current execution state.
 
@@ -46,7 +46,7 @@ After the corrections recorded below, the graph is structurally coherent:
 This is a plan-readiness result, not a runtime-readiness result. The current
 checkout contains the skills, roles, worklines, and design documents, but not
 the canonical campaign runner, schemas, adapters, receipt store, or live run
-evidence. The only safe next step is `IG-01`; claiming that the system works
+evidence. The only safe next step is `WG-001-N01`; claiming that the system works
 before Gate A, Gate B, and the relevant live canary would be unsupported.
 
 ## Current Implementation Boundary
@@ -56,13 +56,13 @@ before Gate A, Gate B, and the relevant live canary would be unsupported.
 | Campaign, execution, and evaluation skill contracts | `IMPLEMENTED` | routing and responsibility are authored |
 | Simulation operator and evaluator role contracts | `IMPLEMENTED` | intended mutable/read-only permission separation is authored |
 | W-004–W-010 and W-012 worklines | `PLANNED` | scope, ownership, acceptance, and dependencies exist |
-| `IG-001` revision 4 | `PLANNED` | implementation order, gates, invalidation, and merge ownership exist |
+| `WG-001` revision 4 | `PLANNED` | implementation order, gates, invalidation, and merge ownership exist |
 | Current `evals/campaigns/`, tasks, claims, policies, oracles, and rubrics | `GAP` | no current canonical runtime definitions exist |
 | Current runner and typed adapters | `GAP` | no current command, browser, agent, PTY, desktop, or mobile execution path exists |
 | Immutable run and receipt artifacts | `NOT_RUN` | no current execution/evaluation chain has been produced |
 | Computer Use, Codex, desktop, Android, and iOS canaries | `NOT_RUN` | no live capability or platform coverage is established |
 
-The candidate branch is an `IG-01` source input, not current authority. Its
+The candidate branch is a `WG-001-N01` source input, not current authority. Its
 minimal command/browser runner can inform the cutover, but its shallow schema,
 non-atomic run creation, external evidence references, and lack of
 claim/policy/oracle/receipt/recovery boundaries are insufficient as the final
@@ -74,33 +74,33 @@ foundation.
 
 | Stage | Dependency | Integrity judgment |
 |---|---|---|
-| `IG-01` | current checkout, candidate branch, dirty-work ownership, W-011 overlap | correct fixed-point starting gate |
-| `IG-02` | `IG-01` | schemas and registries cannot be frozen before canonical source selection |
-| `IG-03`–`IG-05` | `IG-02` | lifecycle, artifact identity, and policy decisions share definitions but can be internally sectioned |
-| `IG-06`–`IG-07` | lifecycle, identity/artifact, and policy seams | evaluation and receipt joining correctly follow their producer contracts |
-| `IG-08` / Gate A | all W-004 foundation seams | failure injection precedes every real surface adapter |
-| `IG-09`–`IG-11` | Gate A | command, browser, and agent work can proceed in parallel with disjoint ownership |
-| `IG-12` | accepted command process-result seam | PTY cleanup and result handling reuse process foundations |
-| `IG-13` | accepted browser visual-action seam | desktop reuses action/observation vocabulary, not browser behavior |
-| `IG-14` | Gate A plus accepted browser visual-action seam | mobile reuses visual actions but not the desktop provider |
-| `IG-15` | exact dispositions from all six task seams | one merge owner performs direct canonical cutover |
-| `IG-16` | `IG-15` and all accepted seams | composition follows, rather than invents, surface contracts |
+| `WG-001-N01` | current checkout, candidate branch, dirty-work ownership, W-011 overlap | correct fixed-point starting gate |
+| `WG-001-N02` | `WG-001-N01` | schemas and registries cannot be frozen before canonical source selection |
+| `WG-001-N03`–`WG-001-N05` | `WG-001-N02` | lifecycle, artifact identity, and policy decisions share definitions but can be internally sectioned |
+| `WG-001-N06`–`WG-001-N07` | lifecycle, identity/artifact, and policy seams | evaluation and receipt joining correctly follow their producer contracts |
+| `WG-001-N08` / Gate A | all W-004 foundation seams | failure injection precedes every real surface adapter |
+| `WG-001-N09`–`WG-001-N11` | Gate A | command, browser, and agent work can proceed in parallel with disjoint ownership |
+| `WG-001-N12` | accepted command process-result seam | PTY cleanup and result handling reuse process foundations |
+| `WG-001-N13` | accepted browser visual-action seam | desktop reuses action/observation vocabulary, not browser behavior |
+| `WG-001-N14` | Gate A plus accepted browser visual-action seam | mobile reuses visual actions but not the desktop provider |
+| `WG-001-N15` | exact dispositions from all six task seams | one merge owner performs direct canonical cutover |
+| `WG-001-N16` | `WG-001-N15` and all accepted seams | composition follows, rather than invents, surface contracts |
 | Gate B | integrated deterministic evidence | proves implementation only |
-| `IG-17` | Gate B plus per-campaign readiness | live and platform evidence stays capability-scoped |
+| `WG-001-N17` | Gate B plus per-campaign readiness | live and platform evidence stays capability-scoped |
 
-The graph has 19 unique node or gate IDs: `IG-01` through `IG-17`, `IG-GA`,
-and `IG-GB`. No new workline is needed for the integrity corrections because
+The graph has 19 unique node or gate IDs: `WG-001-N01` through `WG-001-N17`, `WG-001-GA`,
+and `WG-001-GB`. No new workline is needed for the integrity corrections because
 each correction belongs to an existing W-004 foundation invariant or its
 owning surface lane.
 
 ### Parallelism and serialization
 
-- Serialize `IG-01` and W-004 shared-contract work.
+- Serialize `WG-001-N01` and W-004 shared-contract work.
 - After Gate A, run W-005, W-006, and W-007 in parallel only when each writes
   its own adapter, fixtures, and manifests.
 - After the producer seams accept, W-008, W-009, and W-010 may run in
   parallel. W-009 and W-010 do not depend on each other.
-- Serialize `IG-15` canonical cutover and `IG-16` composition.
+- Serialize `WG-001-N15` canonical cutover and `WG-001-N16` composition.
 - After Gate B, live campaigns may run independently; one result never
   substitutes for another contour, driver, runtime, or platform.
 
@@ -125,7 +125,7 @@ owning surface lane.
 
 | ID | Assumption | State | Required proof or failure disposition |
 |---|---|---|---|
-| A-01 | One canonical runner can replace candidate and current fragments without a compatibility path. | `TO_PROVE` | `IG-01` selects a direct cutover base; otherwise `BLOCKED` |
+| A-01 | One canonical runner can replace candidate and current fragments without a compatibility path. | `TO_PROVE` | `WG-001-N01` selects a direct cutover base; otherwise `BLOCKED` |
 | A-02 | One common task/result envelope can represent all six contours without hiding contour-specific lifecycle rules. | `TO_PROVE` | Gate A fake-adapter conformance matrix |
 | A-03 | Claims match policies, oracles, and evidence by stable ID, supported version, digest, declared scope, and applicability—not by prose similarity. | `CONFIRMED` in plan; `TO_PROVE` in code | unresolved, stale, ambiguous, or inapplicable references fail before provisioning |
 | A-04 | Policy decisions can be repeated at action time after preflight. | `TO_PROVE` | allow/deny/confirmation/default-deny fixtures at Gate A |
@@ -143,7 +143,7 @@ owning surface lane.
 | A-16 | The first standalone Codex canary can run non-interactively with a digest-bound instruction source, JSONL events, and an output schema. | `GATED` | W-007 isolated `codex exec --ephemeral --json --output-schema` capability probe |
 | A-17 | A named Codex custom agent can be invoked with a stable machine-readable identity. | `GATED` | keep the named-agent variant `BLOCKED` until the exact invocation seam is documented and proven; do not invent an unsupported flag |
 | A-18 | Cascade-specific trace grading can remain outside the provider-neutral agent schema. | `CONFIRMED` in architecture; `TO_PROVE` in integration | W-007 emits the specialized receipt only for Cascade profiles |
-| A-19 | A portable PTY library can provide bounded resize, signal, screen, and orphan-process behavior. | `GATED` | `IG-01` selects the dependency; W-008 deterministic fixtures prove behavior |
+| A-19 | A portable PTY library can provide bounded resize, signal, screen, and orphan-process behavior. | `GATED` | `WG-001-N01` selects the dependency; W-008 deterministic fixtures prove behavior |
 | A-20 | A disposable Linux desktop fixture is available before broader native platforms. | `GATED` | W-009 provider preflight; macOS/Windows remain `DEFERRED` without controlled providers |
 | A-21 | Android emulator automation is the first practical mobile path. | `GATED` | exact SDK, emulator image, device, and app-build identity plus reset verification |
 | A-22 | iOS Simulator execution is available only on a matching controlled macOS host. | `CONFIRMED` as a platform gate | unavailable host reports `BLOCKED`; Android evidence cannot replace it |
@@ -254,7 +254,7 @@ credible failure mode.
 | W-012 composition | 10 | 9 | 9 | 10 | 10 | **10/10** | critical |
 | Gate A deterministic foundation | 9 | 3 | 9 | 8 | 8 | **7/10** | high |
 | Gate B deterministic integration | 10 | 6 | 9 | 9 | 9 | **9/10** | very high |
-| IG-17 live/platform rollout | 10 | 10 | 9 | 10 | 10 | **10/10** | critical |
+| WG-001-N17 live/platform rollout | 10 | 10 | 9 | 10 | 10 | **10/10** | critical |
 
 Overall program complexity is **10/10 (critical)**. This does not mean the
 plan is unimplementable. It means implementation must remain staged: prove the
@@ -273,7 +273,7 @@ integrate once, and only then spend on isolated live/platform evidence.
 | Aggregate Cascade validator | `FAIL` | 36 findings, all under the root and `.codex/harness-tooling` Playwright `node_modules` trees |
 | Diff whitespace and stale graph references | `PASS` | no whitespace error, revision-3 reference, or desktop-to-mobile dependency remains in the simulation planning slice |
 | Campaign runner, schemas, adapters, receipts, and deterministic campaigns | `NOT_RUN` | W-004 through W-012 implementation has not started |
-| Computer Use, Codex, desktop, Android, and iOS live/platform evidence | `NOT_RUN` | `IG-17` remains behind Gate B and per-campaign readiness |
+| Computer Use, Codex, desktop, Android, and iOS live/platform evidence | `NOT_RUN` | `WG-001-N17` remains behind Gate B and per-campaign readiness |
 
 The aggregate failure is not converted into a planning pass. It is reported
 separately because the 36 findings are dependency scanner leakage rather than
@@ -287,7 +287,7 @@ simulation source findings.
 | Duplicate external effects after timeout/crash | critical | unknown outcome, cleanup-only recovery, no automatic retry |
 | Unsafe host, account, or network control | critical | isolated environment, default deny, explicit confirmation |
 | Secret leakage into immutable evidence | critical | redact before freeze; fail closed when safe evidence is impossible |
-| Candidate runner imported as a second authority | high | `IG-01` direct cutover decision; no fallback path |
+| Candidate runner imported as a second authority | high | `WG-001-N01` direct cutover decision; no fallback path |
 | Named Codex-agent invocation assumed without a supported seam | high | keep named-agent capability `BLOCKED`; use explicit instruction source first |
 | Desktop or mobile environment unavailable | high | exact `BLOCKED` platform disposition; no substitute coverage |
 | Evaluator judges mutable or mismatched evidence | high | append-only namespaces and digest/identity verification |
@@ -301,7 +301,7 @@ frozen safely, or an external outcome is unknown.
 
 ## Implementation Recommendation
 
-Proceed with `IG-01` only:
+Proceed with `WG-001-N01` only:
 
 1. inventory the current checkout, candidate branch, ignored campaign
    artifacts, W-011 overlap, and dirty-file owners;
@@ -312,13 +312,13 @@ Proceed with `IG-01` only:
    interface digest.
 
 No additional simulation workline should be added now. Add a new lane only if
-`IG-01` discovers a genuinely separate authority, such as a remote artifact
+`WG-001-N01` discovers a genuinely separate authority, such as a remote artifact
 service implementation or a real-device lab provider, rather than another
 contour variant that belongs to an existing lane.
 
 ## Sources
 
-- Current checkout, worklines, skill and role contracts, and `IG-001`
+- Current checkout, worklines, skill and role contracts, and `WG-001`
   revision 4.
 - Candidate branch `agent/w003-integration-r4-g3`, inspected only as a
   fixed-point input.

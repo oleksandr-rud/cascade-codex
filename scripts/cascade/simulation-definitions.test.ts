@@ -5,7 +5,9 @@ import {
   validateClaim,
   validateDataset,
   validatePopulation,
+  validatePolicy,
   validateTask,
+  validateTaskPolicyApplicability,
 } from "./simulation-definitions";
 
 describe("simulation definition contracts", () => {
@@ -107,6 +109,54 @@ describe("simulation definition contracts", () => {
         "invalid-action",
       ),
     ).toThrow("path is required");
+  });
+
+  test("rejects referenced policies whose scope cannot apply before execution", async () => {
+    const resolved = await resolveCampaign(
+      "evals/campaigns/simulation-contract-smoke.json",
+    );
+    const policy = structuredClone(resolved.policies[0]!);
+    policy.scope.campaign_ids = ["different-campaign"];
+
+    expect(() =>
+      validateTaskPolicyApplicability(
+        resolved.campaign,
+        resolved.tasks[0]!,
+        [policy],
+      ),
+    ).toThrow("has no applicable referenced policy");
+  });
+
+  test("keeps executable policy validation aligned with the public schema", async () => {
+    const resolved = await resolveCampaign(
+      "evals/campaigns/simulation-contract-smoke.json",
+    );
+    const policy = structuredClone(resolved.policies[0]!) as Record<
+      string,
+      unknown
+    >;
+    policy.version = "not-semver";
+    policy.unexpected = true;
+    expect(() => validatePolicy(policy, "invalid-policy")).toThrow(
+      "unknown fields",
+    );
+
+    const invalidVersion = structuredClone(
+      resolved.policies[0]!,
+    ) as unknown as Record<string, unknown>;
+    invalidVersion.version = "not-semver";
+    expect(() => validatePolicy(invalidVersion, "invalid-policy")).toThrow(
+      "version must be semver",
+    );
+
+    const emptyPaths = structuredClone(resolved.policies[0]!) as unknown as Record<
+      string,
+      unknown
+    >;
+    (emptyPaths.scope as Record<string, unknown>).action_paths = [];
+    expect(() => validatePolicy(emptyPaths, "invalid-policy")).toThrow(
+      "action_paths is empty",
+    );
   });
 
   test("rejects unknown evidence artifact names", () => {

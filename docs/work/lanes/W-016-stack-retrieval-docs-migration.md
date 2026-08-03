@@ -73,7 +73,7 @@ names, composition trees, and statements that assign authority to an old pair.
 
 | Source | Path Or Tool | Why Needed | Freshness / Confidence |
 |---|---|---|---|
-| Rename contract | W-013 and IG-AS-01 | exact canonical vocabulary | current completed gate |
+| Rename contract | W-013 and WG-002-N01 | exact canonical vocabulary | current completed gate |
 | Pack contract | both architecture pack YAML files | retrieval paths and section IDs | current |
 | Routing skills | architecture-review and adapt-harness | agent selection flow | current |
 | Owner docs | index, README, CODEX, glossary, structure | human and harness discovery | current |
@@ -132,7 +132,7 @@ names, composition trees, and statements that assign authority to an old pair.
 
 ## Parallel Dependencies
 
-- Can run with: W-014 and W-015 after IG-AS-01.
+- Can run with: W-014 and W-015 after WG-002-N01.
 - Must wait for: exact replacement filenames and section-ID convention.
 - Conflicts with: concurrent edits to either pack, the architecture index, the
   two routing skills, or the named public docs.
@@ -143,7 +143,7 @@ names, composition trees, and statements that assign authority to an old pair.
   result, and exact source identity.
 - Required output: W-016-owned files only.
 - Merge owner: W-013.
-- Merge target: IG-AS-20 direct cutover.
+- Merge target: WG-002-N20 direct cutover.
 - Evidence to preserve: pack output paths/sections and harness catalog result.
 - Stop condition: a pack resolves an old path, loads a missing pair, duplicates
   frontend/backend scope, or loses graph/spec pairing.
@@ -159,9 +159,9 @@ names, composition trees, and statements that assign authority to an old pair.
 
 ## Closeout
 
-- Merge evidence: IG-AS-14 passed; app-stack, backend-stack, and frontend-stack
+- Merge evidence: WG-002-N14 passed; app-stack, backend-stack, and frontend-stack
   pack previews resolve paired files, canonical docs contain no superseded
   pair IDs, and the 319-scenario catalog plus 15-case harness self-test pass.
-- Report: `docs/work/reports/2026-07-28-stack-naming-implementation-graph.md`.
+- Report: `docs/work/reports/2026-07-28-stack-naming-work-graph.md`.
 - Remaining risk: pack section IDs are retrieval contracts and now use the
   direct-cutover names without compatibility aliases.

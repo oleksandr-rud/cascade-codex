@@ -1,13 +1,12 @@
-import { appendFile, mkdir, writeFile } from "node:fs/promises";
-import { dirname, resolve } from "node:path";
+import { mkdir } from "node:fs/promises";
+import { dirname, relative, resolve } from "node:path";
 
 import {
   CascadeError,
   boolFlag,
   boundedPath,
-  exists,
   flag,
-  freezeFile,
+  flags,
   isFile,
   parseArgs,
   readJson,
@@ -19,10 +18,25 @@ import {
   utcNow,
   valueDigest,
   walkFiles,
-  writeJson,
   writeJsonAtomic,
   writeJsonExclusive,
+  writeTextExclusive,
 } from "./common";
+import {
+  type CampaignIdentityEnvelope,
+  type FrozenCampaignArtifact,
+  CampaignArtifactStore,
+} from "./campaign-artifacts";
+import {
+  type CampaignPolicyBudgetUsage,
+  type CampaignPolicyDecision,
+  type PolicyConfirmationReceipt,
+  applyPolicyOutputControls,
+  consumePolicyBudget,
+  consumePolicyOutputBudget,
+  resolvePolicyDecision,
+  validatePolicyConfirmationReceipt,
+} from "./campaign-policies";
 import {
   type EvaluationIdentity,
   type EvaluationReceipt,
@@ -36,6 +50,7 @@ import {
   type CampaignStatus,
   type ClaimDefinition,
   type ClaimStatus,
+  type DriverType,
   type MetricDefinition,
   type OracleDefinition,
   type PolicyDefinition,
@@ -51,50 +66,242 @@ const CAMPAIGN_ROOT = rootPath("evals/campaigns");
 const ARTIFACT_ROOT = rootPath(".artifacts/campaigns");
 const CATALOG_PATH = rootPath("evals/campaigns/catalog.generated.json");
 
-interface PolicyDecision {
-  action_index: number;
-  action_type: string;
-  policy_id: string | null;
-  decision: "ALLOW" | "DENY" | "REQUIRE_CONFIRMATION";
-  reason: string;
-}
+export type PolicyDecision = CampaignPolicyDecision;
 
-interface OracleResult {
+export interface OracleResult {
   oracle_id: string;
   type: string;
   status: "PASS" | "FAIL";
   expected?: unknown;
   actual?: unknown;
   evidence?: string;
+  error?: string;
 }
 
-interface TaskResult {
+export type TaskExecutionOutcome =
+  | "SUCCEEDED"
+  | "FAILED"
+  | "BLOCKED"
+  | "CANCELLED"
+  | "UNKNOWN_OUTCOME";
+
+export type TaskSideEffectStatus = "NONE" | "KNOWN" | "UNKNOWN";
+export type TaskCleanupStatus =
+  | "VERIFIED"
+  | "FAILED"
+  | "UNKNOWN"
+  | "NOT_REQUIRED";
+export type TaskRecoveryStatus =
+  | "NOT_REQUIRED"
+  | "RECOVERED"
+  | "FAILED"
+  | "UNSUPPORTED";
+
+export interface TaskCommandResult {
+  argv: string[];
+  exit_code: number;
+  timed_out: boolean;
+  aborted: boolean;
+  stdout: string;
+  stderr: string;
+  output_control?: {
+    policy_id: string;
+    max_output_bytes: number;
+    original_bytes: number;
+    retained_bytes: number;
+    redacted: boolean;
+    truncated: boolean;
+  };
+}
+
+export interface TaskCleanupResult {
+  status: TaskCleanupStatus;
+  attempted: boolean;
+  verified: boolean;
+  residual_resources: string[];
+  reason: string | null;
+}
+
+export interface TaskRecoveryResult {
+  status: TaskRecoveryStatus;
+  attempted: boolean;
+  reason: string | null;
+}
+
+export type TaskAdapterEvent =
+  | {
+      event_type: "ACTION";
+      index: number;
+      type: TaskAction["type"];
+      before: Record<string, unknown>;
+      after: Record<string, unknown>;
+      status: "PASS" | "FAIL" | "BLOCKED";
+      reason: string | null;
+      policy_decision: PolicyDecision["decision"];
+    }
+  | {
+      event_type: "PROCESS";
+      index: 0;
+      type: "process-exec";
+      argv: string[];
+      exit_code: number;
+      timed_out: boolean;
+      aborted: boolean;
+      status: "PASS" | "BLOCKED";
+    };
+
+type TaskEventPayload =
+  | {
+      event_type: "LIFECYCLE";
+      type: "task-lifecycle";
+      phase: "STARTED" | "COMPLETED";
+      outcome?: TaskExecutionOutcome;
+      status?: CampaignStatus;
+    }
+  | TaskAdapterEvent
+  | {
+      event_type: "ORACLE";
+      type: "oracle";
+      oracle_id: string;
+      status: OracleResult["status"];
+    }
+  | {
+      event_type: "RECOVERY";
+      type: "recovery";
+      status: TaskRecoveryStatus;
+      reason: string | null;
+    }
+  | {
+      event_type: "CLEANUP";
+      type: "cleanup";
+      status: TaskCleanupStatus;
+      verified: boolean;
+      residual_resources: string[];
+      reason: string | null;
+    }
+  | {
+      event_type: "ADAPTER";
+      type: "adapter";
+      status: "BLOCKED";
+      reason: string;
+    }
+  | {
+      event_type: "BOUNDARY";
+      type: "lifecycle-bound";
+      phase: "EXECUTE" | "ORACLE" | "RECOVERY" | "CLEANUP" | "FINALIZE";
+      status: "TIMED_OUT" | "CANCELLED";
+      reason: string;
+    };
+
+export type TaskEvent = TaskEventPayload & {
+  sequence: number;
+  at: string;
+  task_id: string;
+  driver: DriverType;
+};
+
+export interface TaskAdapterContext {
+  readonly run_id: string;
+  readonly campaign_id: string;
+  readonly platform: string;
+  readonly task: TaskDefinition;
+  readonly fixture: Record<string, unknown>;
+  readonly policies: PolicyDefinition[];
+  readonly cleanup_contract: ResolvedCampaign["world"]["cleanup"];
+  readonly budget_usage: CampaignPolicyBudgetUsage;
+  readonly authorize_action: (input: {
+    action_index: number;
+    action: TaskAction | { type: "process-exec"; argv: string[] };
+    projected_output_bytes: number;
+  }) => PolicyDecision;
+  readonly control_output: (
+    value: string,
+    policy: PolicyDefinition,
+  ) => ReturnType<typeof applyPolicyOutputControls>;
+  readonly child_env_omit: string[];
+  readonly signal?: AbortSignal;
+}
+
+export interface TaskAdapterResult {
+  outcome: TaskExecutionOutcome;
+  earliest_failure: string | null;
+  side_effects: TaskSideEffectStatus;
+  policy_decisions: PolicyDecision[];
+  policy_decision_digest: string;
+  events: TaskAdapterEvent[];
+  final_state?: Record<string, unknown>;
+  command?: TaskCommandResult;
+}
+
+export interface TaskAdapterFailure {
+  outcome: "CANCELLED" | "UNKNOWN_OUTCOME";
+  reason: string;
+}
+
+export interface TaskAdapter {
+  driver: DriverType;
+  execute(context: TaskAdapterContext): Promise<TaskAdapterResult>;
+  recover(
+    context: TaskAdapterContext,
+    failure: TaskAdapterFailure,
+  ): Promise<TaskRecoveryResult>;
+  cleanup(
+    context: TaskAdapterContext,
+    result: TaskAdapterResult | null,
+  ): Promise<TaskCleanupResult>;
+}
+
+export interface TaskOracleEvaluator {
+  evaluate(
+    oracle: OracleDefinition,
+    context: {
+      final_state: Record<string, unknown> | undefined;
+      command: TaskCommandResult | undefined;
+      signal?: AbortSignal;
+    },
+  ): Promise<OracleResult>;
+}
+
+export interface ExecuteCampaignTaskInput {
+  resolved: ResolvedCampaign;
+  task: TaskDefinition;
+  task_root: string;
+  operator_identity: string;
+  target_actor_identity: string;
+  run_id?: string;
+  platform?: string;
+  adapters?: ReadonlyMap<DriverType, TaskAdapter>;
+  oracle_evaluator?: TaskOracleEvaluator;
+  confirmation_receipts?: PolicyConfirmationReceipt[];
+  confirmation_secrets?: Record<string, string>;
+  budget_usage?: CampaignPolicyBudgetUsage;
+  artifact_store?: CampaignArtifactStore;
+  signal?: AbortSignal;
+}
+
+export interface TaskResult {
   task_id: string;
   kind: string;
   driver: string;
   required: boolean;
   status: CampaignStatus;
+  outcome: TaskExecutionOutcome;
+  operator_identity: string;
+  target_actor_identity: string;
+  platform: string;
   started_at: string;
   completed_at: string;
   duration_ms: number;
   earliest_failure: string | null;
+  side_effects: TaskSideEffectStatus;
   policy_decisions: PolicyDecision[];
   oracle_results: OracleResult[];
-  events: Array<Record<string, unknown>>;
+  events: TaskEvent[];
   final_state?: Record<string, unknown>;
-  command?: {
-    argv: string[];
-    exit_code: number;
-    timed_out: boolean;
-    stdout: string;
-    stderr: string;
-  };
-  evidence: Array<{ path: string; sha256: string; size: number }>;
-  cleanup: {
-    attempted: boolean;
-    verified: boolean;
-    residual_resources: string[];
-  };
+  command?: TaskCommandResult;
+  evidence: FrozenCampaignArtifact[];
+  recovery: TaskRecoveryResult;
+  cleanup: TaskCleanupResult;
 }
 
 interface CorrelationResult {
@@ -193,23 +400,6 @@ function setStatePath(
   current[parts.at(-1)!] = clone(value);
 }
 
-function applicablePolicy(
-  action: TaskAction,
-  policies: PolicyDefinition[],
-): PolicyDefinition | undefined {
-  const matches = policies.filter((policy) =>
-    policy.action_types.includes(action.type),
-  );
-  if (matches.length > 1) {
-    throw new CascadeError(
-      `multiple policies apply to action ${action.type}: ${matches
-        .map((item) => item.id)
-        .join(", ")}`,
-    );
-  }
-  return matches[0];
-}
-
 function applyFakeAction(
   state: Record<string, unknown>,
   action: TaskAction,
@@ -250,7 +440,7 @@ function applyFakeAction(
 async function evaluateOracle(
   oracle: OracleDefinition,
   state: Record<string, unknown> | undefined,
-  command: TaskResult["command"],
+  command: TaskCommandResult | undefined,
 ): Promise<OracleResult> {
   if (oracle.type === "state-equals") {
     const actual = state && oracle.path ? getStatePath(state, oracle.path) : undefined;
@@ -284,179 +474,925 @@ async function evaluateOracle(
   };
 }
 
-async function executeTask(
-  resolved: ResolvedCampaign,
-  task: TaskDefinition,
-  taskRoot: string,
-): Promise<TaskResult> {
-  await mkdir(taskRoot, { recursive: true });
-  const startedAt = utcNow();
-  const started = performance.now();
-  const events: Array<Record<string, unknown>> = [];
-  const policyDecisions: PolicyDecision[] = [];
-  const evidence: Array<{ path: string; sha256: string; size: number }> = [];
-  let status: CampaignStatus = "PASS";
-  let earliestFailure: string | null = null;
-  let finalState: Record<string, unknown> | undefined;
-  let commandResult: TaskResult["command"];
+export function createTaskOracleEvaluator(): TaskOracleEvaluator {
+  return {
+    evaluate: (oracle, context) =>
+      evaluateOracle(oracle, context.final_state, context.command),
+  };
+}
 
-  const taskPolicies = resolved.policies.filter((policy) =>
-    (task.policy_ids ?? []).includes(policy.id),
-  );
-  const taskOracles = resolved.oracles.filter((oracle) =>
-    task.oracle_ids.includes(oracle.id),
-  );
-
-  if (task.driver.type === "fake") {
-    const state = clone(resolved.fixture);
-    for (const [index, action] of (task.actions ?? []).entries()) {
+const fakeTaskAdapter: TaskAdapter = {
+  driver: "fake",
+  async execute(context): Promise<TaskAdapterResult> {
+    const state = clone(context.fixture);
+    const policyDecisions: PolicyDecision[] = [];
+    const events: TaskAdapterEvent[] = [];
+    for (const [index, action] of (context.task.actions ?? []).entries()) {
+      if (context.signal?.aborted) {
+        return {
+          outcome: "CANCELLED",
+          earliest_failure: "task cancelled during fake execution",
+          side_effects: "NONE",
+          policy_decisions: policyDecisions,
+          events,
+          final_state: clone(state),
+        };
+      }
       const before = clone(state);
-      const policy = applicablePolicy(action, taskPolicies);
-      const decision = policy?.effect ?? "DENY";
-      policyDecisions.push({
+      const policyDecision = context.authorize_action({
         action_index: index,
-        action_type: action.type,
-        policy_id: policy?.id ?? null,
-        decision,
-        reason: policy?.reason ?? "default deny: no applicable policy",
+        action,
+        projected_output_bytes: Buffer.byteLength(
+          stableJson({ state: before, action }),
+        ),
       });
-      if (decision !== "ALLOW") {
-        status = decision === "DENY" ? "FAIL" : "BLOCKED";
-        earliestFailure = `action ${index} ${decision.toLowerCase()}`;
+      policyDecisions.push(policyDecision);
+      if (policyDecision.decision !== "ALLOW") {
+        const status =
+          policyDecision.decision === "DENY" ? "FAIL" : "BLOCKED";
         events.push({
+          event_type: "ACTION",
           index,
           type: action.type,
           before,
           after: clone(state),
           status,
-          policy_decision: decision,
+          reason: policyDecision.reason,
+          policy_decision: policyDecision.decision,
         });
-        break;
+        return {
+          outcome:
+            policyDecision.decision === "DENY" ? "FAILED" : "BLOCKED",
+          earliest_failure: policyDecision.reason,
+          side_effects: "NONE",
+          policy_decisions: policyDecisions,
+          events,
+          final_state: clone(state),
+        };
       }
+      consumePolicyBudget(
+        policyDecision,
+        context.budget_usage,
+        Buffer.byteLength(stableJson({ state: before, action })),
+      );
       const actionResult = applyFakeAction(state, action);
       events.push({
+        event_type: "ACTION",
         index,
         type: action.type,
         before,
         after: clone(state),
         status: actionResult.status,
         reason: actionResult.reason,
-        policy_decision: decision,
+        policy_decision: policyDecision.decision,
       });
       if (actionResult.status === "FAIL") {
-        status = "FAIL";
-        earliestFailure = actionResult.reason;
-        break;
+        return {
+          outcome: "FAILED",
+          earliest_failure: actionResult.reason,
+          side_effects: "NONE",
+          policy_decisions: policyDecisions,
+          events,
+          final_state: clone(state),
+        };
       }
     }
-    finalState = clone(state);
-  } else if (task.driver.type === "direct-process") {
-    for (const policy of taskPolicies) {
-      if (!policy.action_types.includes("process-exec")) continue;
-      policyDecisions.push({
-        action_index: 0,
-        action_type: "process-exec",
-        policy_id: policy.id,
-        decision: policy.effect,
-        reason: policy.reason,
-      });
-    }
-    const processPolicy = taskPolicies.find((policy) =>
-      policy.action_types.includes("process-exec"),
+    return {
+      outcome: "SUCCEEDED",
+      earliest_failure: null,
+      side_effects: "KNOWN",
+      policy_decisions: policyDecisions,
+      events,
+      final_state: clone(state),
+    };
+  },
+  async recover(): Promise<TaskRecoveryResult> {
+    return {
+      status: "RECOVERED",
+      attempted: true,
+      reason: "isolated fixture state discarded",
+    };
+  },
+  async cleanup(context): Promise<TaskCleanupResult> {
+    return {
+      status: context.cleanup_contract.reset_to_fixture
+        ? "VERIFIED"
+        : "FAILED",
+      attempted: true,
+      verified: context.cleanup_contract.reset_to_fixture,
+      residual_resources: [],
+      reason: context.cleanup_contract.reset_to_fixture
+        ? null
+        : "fixture reset contract was not satisfied",
+    };
+  },
+};
+
+const directProcessTaskAdapter: TaskAdapter = {
+  driver: "direct-process",
+  async execute(context): Promise<TaskAdapterResult> {
+    const policyDecision = context.authorize_action({
+      action_index: 0,
+      action: { type: "process-exec", argv: context.task.command! },
+      projected_output_bytes: 0,
+    });
+    const policyDecisions: PolicyDecision[] = [policyDecision];
+    const processPolicy = context.policies.find(
+      (policy) =>
+        policy.id === policyDecision.policy_id &&
+        policy.version === policyDecision.policy_version,
     );
-    if (!processPolicy || processPolicy.effect !== "ALLOW") {
-      status = processPolicy?.effect === "REQUIRE_CONFIRMATION" ? "BLOCKED" : "FAIL";
-      earliestFailure = processPolicy
-        ? `process execution ${processPolicy.effect.toLowerCase()}`
-        : "process execution default denied";
-    } else {
-      const result = await runCommand(task.command!, {
-        timeoutMs: task.timeout_ms,
-      });
-      commandResult = {
-        argv: result.argv,
-        exit_code: result.exitCode,
-        timed_out: result.timedOut,
-        stdout: result.stdout,
-        stderr: result.stderr,
+    if (policyDecision.decision !== "ALLOW" || !processPolicy) {
+      const outcome =
+        policyDecision.decision === "REQUIRE_CONFIRMATION" ||
+        policyDecision.decision === "BLOCKED"
+          ? "BLOCKED"
+          : "FAILED";
+      return {
+        outcome,
+        earliest_failure: policyDecision.reason,
+        side_effects: "NONE",
+        policy_decisions: policyDecisions,
+        events: [],
       };
-      events.push({
-        index: 0,
-        type: "process-exec",
-        argv: result.argv,
-        exit_code: result.exitCode,
-        timed_out: result.timedOut,
-      });
-      if (result.timedOut) {
-        status = "FAIL";
-        earliestFailure = "process timed out";
+    }
+    if (context.signal?.aborted) {
+      return {
+        outcome: "CANCELLED",
+        earliest_failure: "process execution cancelled before dispatch",
+        side_effects: "NONE",
+        policy_decisions: policyDecisions,
+        events: [],
+      };
+    }
+    consumePolicyBudget(policyDecision, context.budget_usage);
+    const result = await runCommand(context.task.command!, {
+      timeoutMs: context.task.timeout_ms,
+      signal: context.signal,
+      maxOutputBytes: policyDecision.budgets!.remaining_after.output_bytes,
+      unsetEnv: context.child_env_omit,
+    });
+    const stdoutControl = context.control_output(
+      result.stdout,
+      processPolicy,
+    );
+    const stderrControl = context.control_output(
+      result.stderr,
+      processPolicy,
+    );
+    let controlledStdout = stdoutControl.value;
+    let controlledStderr = stderrControl.value;
+    const combinedOriginalBytes =
+      stdoutControl.original_bytes + stderrControl.original_bytes;
+    consumePolicyOutputBudget(
+      policyDecision,
+      context.budget_usage,
+      combinedOriginalBytes + (result.outputLimitExceeded ? 1 : 0),
+    );
+    if (
+      Buffer.byteLength(controlledStdout) + Buffer.byteLength(controlledStderr) >
+      processPolicy.budgets.max_output_bytes
+    ) {
+      const remaining = Math.max(
+        0,
+        processPolicy.budgets.max_output_bytes -
+          Buffer.byteLength(controlledStdout),
+      );
+      controlledStderr = new TextDecoder().decode(
+        Buffer.from(controlledStderr).subarray(0, remaining),
+      );
+      if (remaining === 0) {
+        controlledStdout = new TextDecoder().decode(
+          Buffer.from(controlledStdout).subarray(
+            0,
+            processPolicy.budgets.max_output_bytes,
+          ),
+        );
       }
     }
-  } else {
-    status = "BLOCKED";
+    const outputBudgetExceeded =
+      result.outputLimitExceeded ||
+      policyDecision.budgets!.consumed_after.output_bytes >
+        processPolicy.budgets.max_output_bytes;
+    const command: TaskCommandResult = {
+      argv: result.argv,
+      exit_code: result.exitCode,
+      timed_out: result.timedOut,
+      aborted: result.aborted,
+      stdout: controlledStdout,
+      stderr: controlledStderr,
+      output_control: {
+        policy_id: processPolicy.id,
+        max_output_bytes: processPolicy.budgets.max_output_bytes,
+        original_bytes: combinedOriginalBytes,
+        retained_bytes:
+          Buffer.byteLength(controlledStdout) +
+          Buffer.byteLength(controlledStderr),
+        redacted: stdoutControl.redacted || stderrControl.redacted,
+        truncated:
+          outputBudgetExceeded ||
+          stdoutControl.truncated ||
+          stderrControl.truncated,
+      },
+    };
+    const ambiguous = result.timedOut || result.aborted;
+    const outcome = ambiguous
+      ? "UNKNOWN_OUTCOME"
+      : outputBudgetExceeded
+        ? "FAILED"
+        : "SUCCEEDED";
+    return {
+      outcome,
+      earliest_failure: result.timedOut
+        ? "process timed out after dispatch; side effects are unknown"
+        : result.aborted
+          ? "process cancelled after dispatch; side effects are unknown"
+          : outputBudgetExceeded
+            ? "process output exceeded the governing policy budget"
+          : null,
+      side_effects: ambiguous ? "UNKNOWN" : "KNOWN",
+      policy_decisions: policyDecisions,
+      events: [
+        {
+          event_type: "PROCESS",
+          index: 0,
+          type: "process-exec",
+          argv: result.argv,
+          exit_code: result.exitCode,
+          timed_out: result.timedOut,
+          aborted: result.aborted,
+          status: ambiguous || outputBudgetExceeded ? "BLOCKED" : "PASS",
+        },
+      ],
+      command,
+    };
+  },
+  async recover(): Promise<TaskRecoveryResult> {
+    return {
+      status: "UNSUPPORTED",
+      attempted: false,
+      reason: "direct-process side effects cannot be reconstructed safely",
+    };
+  },
+  async cleanup(_context, result): Promise<TaskCleanupResult> {
+    if (!result?.command) {
+      return {
+        status: "NOT_REQUIRED",
+        attempted: false,
+        verified: true,
+        residual_resources: [],
+        reason: "process was not dispatched",
+      };
+    }
+    return {
+      status: "VERIFIED",
+      attempted: true,
+      verified: true,
+      residual_resources: [],
+      reason: "process termination observed",
+    };
+  },
+};
+
+export function createTaskAdapterRegistry(
+  additional: TaskAdapter[] = [],
+): ReadonlyMap<DriverType, TaskAdapter> {
+  const adapters = new Map<DriverType, TaskAdapter>();
+  for (const adapter of [fakeTaskAdapter, directProcessTaskAdapter, ...additional]) {
+    if (adapters.has(adapter.driver)) {
+      throw new CascadeError(`duplicate task adapter: ${adapter.driver}`);
+    }
+    adapters.set(adapter.driver, adapter);
+  }
+  return adapters;
+}
+
+function campaignStatus(outcome: TaskExecutionOutcome): CampaignStatus {
+  if (outcome === "SUCCEEDED") return "PASS";
+  if (outcome === "FAILED") return "FAIL";
+  return "BLOCKED";
+}
+
+function noRecovery(reason: string | null = null): TaskRecoveryResult {
+  return { status: "NOT_REQUIRED", attempted: false, reason };
+}
+
+function noCleanup(reason: string): TaskCleanupResult {
+  return {
+    status: "NOT_REQUIRED",
+    attempted: false,
+    verified: true,
+    residual_resources: [],
+    reason,
+  };
+}
+
+function assertTaskAdapterResult(result: TaskAdapterResult): void {
+  const outcomes = new Set<TaskExecutionOutcome>([
+    "SUCCEEDED",
+    "FAILED",
+    "BLOCKED",
+    "CANCELLED",
+    "UNKNOWN_OUTCOME",
+  ]);
+  const sideEffects = new Set<TaskSideEffectStatus>(["NONE", "KNOWN", "UNKNOWN"]);
+  if (!outcomes.has(result.outcome) || !sideEffects.has(result.side_effects)) {
+    throw new CascadeError("task adapter returned an invalid result envelope");
+  }
+  if (result.outcome === "SUCCEEDED" && result.earliest_failure !== null) {
+    throw new CascadeError("successful task adapter result contains a failure");
+  }
+  if (
+    result.outcome !== "SUCCEEDED" &&
+    (!result.earliest_failure || !result.earliest_failure.trim())
+  ) {
+    throw new CascadeError("non-success task adapter result must explain failure");
+  }
+  if (
+    result.outcome === "UNKNOWN_OUTCOME" &&
+    result.side_effects !== "UNKNOWN"
+  ) {
+    throw new CascadeError(
+      "unknown task outcome must report unknown side effects",
+    );
+  }
+}
+
+function assertTaskCleanupResult(result: TaskCleanupResult): void {
+  const successful =
+    result.status === "VERIFIED" || result.status === "NOT_REQUIRED";
+  if (result.verified !== successful) {
+    throw new CascadeError("task cleanup status and verification disagree");
+  }
+  if (result.status === "VERIFIED" && !result.attempted) {
+    throw new CascadeError("verified task cleanup must be attempted");
+  }
+  if (result.status === "NOT_REQUIRED" && result.attempted) {
+    throw new CascadeError("unneeded task cleanup must not be attempted");
+  }
+  if (successful && result.residual_resources.length) {
+    throw new CascadeError(
+      "verified task cleanup cannot retain residual resources",
+    );
+  }
+}
+
+function assertTaskRecoveryResult(result: TaskRecoveryResult): void {
+  if (
+    (result.status === "RECOVERED" || result.status === "FAILED") &&
+    !result.attempted
+  ) {
+    throw new CascadeError(
+      "completed or failed task recovery must record an attempt",
+    );
+  }
+  if (
+    (result.status === "NOT_REQUIRED" || result.status === "UNSUPPORTED") &&
+    result.attempted
+  ) {
+    throw new CascadeError(
+      "unneeded or unsupported task recovery must not record an attempt",
+    );
+  }
+}
+
+type BoundedStepResult<T> =
+  | { status: "COMPLETED"; value: T }
+  | { status: "TIMED_OUT" | "CANCELLED"; reason: string };
+
+const LIFECYCLE_ABORT_GRACE_MS = 100;
+const DIRECT_PROCESS_TERMINATION_ALLOWANCE_MS = 1_000;
+
+async function runBoundedTaskStep<T>(
+  phase: "EXECUTE" | "ORACLE" | "RECOVERY" | "CLEANUP",
+  timeoutMs: number,
+  parentSignal: AbortSignal | undefined,
+  operation: (signal: AbortSignal) => Promise<T>,
+): Promise<BoundedStepResult<T>> {
+  if (!Number.isFinite(timeoutMs) || timeoutMs < 1) {
+    throw new CascadeError(`task ${phase.toLowerCase()} timeout must be positive`);
+  }
+  if (parentSignal?.aborted) {
+    return {
+      status: "CANCELLED",
+      reason: `task cancelled before ${phase.toLowerCase()}`,
+    };
+  }
+
+  const controller = new AbortController();
+  type Settled =
+    | { kind: "COMPLETED"; value: T }
+    | { kind: "FAILED"; error: unknown };
+  const settled: Promise<Settled> = Promise.resolve()
+    .then(() => operation(controller.signal))
+    .then(
+      (value) => ({ kind: "COMPLETED", value }),
+      (error) => ({ kind: "FAILED", error }),
+    );
+
+  let timeout: ReturnType<typeof setTimeout> | undefined;
+  let boundaryResolved = false;
+  let resolveBoundary!: (
+    result: Exclude<BoundedStepResult<T>, { status: "COMPLETED" }>,
+  ) => void;
+  const boundary = new Promise<
+    Exclude<BoundedStepResult<T>, { status: "COMPLETED" }>
+  >((resolveBoundaryPromise) => {
+    resolveBoundary = resolveBoundaryPromise;
+  });
+  const stop = (status: "TIMED_OUT" | "CANCELLED", reason: string): void => {
+    if (boundaryResolved) return;
+    boundaryResolved = true;
+    controller.abort();
+    resolveBoundary({ status, reason });
+  };
+  const cancel = (): void =>
+    stop("CANCELLED", `task cancelled during ${phase.toLowerCase()}`);
+  parentSignal?.addEventListener("abort", cancel, { once: true });
+  if (parentSignal?.aborted) cancel();
+  timeout = setTimeout(
+    () =>
+      stop(
+        "TIMED_OUT",
+        `task ${phase.toLowerCase()} exceeded ${timeoutMs}ms bound`,
+      ),
+    timeoutMs,
+  );
+
+  try {
+    const first = await Promise.race([settled, boundary]);
+    if ("kind" in first) {
+      if (first.kind === "FAILED") throw first.error;
+      return { status: "COMPLETED", value: first.value };
+    }
+
+    let graceTimer: ReturnType<typeof setTimeout> | undefined;
+    try {
+      await Promise.race([
+        settled,
+        new Promise<void>((resolveGrace) => {
+          graceTimer = setTimeout(resolveGrace, LIFECYCLE_ABORT_GRACE_MS);
+        }),
+      ]);
+    } finally {
+      if (graceTimer) clearTimeout(graceTimer);
+    }
+    return first;
+  } finally {
+    if (timeout) clearTimeout(timeout);
+    parentSignal?.removeEventListener("abort", cancel);
+  }
+}
+
+export async function executeCampaignTask(
+  input: ExecuteCampaignTaskInput,
+): Promise<TaskResult> {
+  const {
+    resolved,
+    task,
+    task_root: taskRoot,
+    operator_identity: operatorIdentity,
+    target_actor_identity: targetActorIdentity,
+  } = input;
+  if (
+    !operatorIdentity.trim() ||
+    !targetActorIdentity.trim() ||
+    operatorIdentity === targetActorIdentity
+  ) {
+    throw new CascadeError(
+      "task operator and target identities must be non-empty and distinct",
+    );
+  }
+  const platform = input.platform ?? process.platform;
+  if (!platform.trim()) {
+    throw new CascadeError("task platform must be non-empty");
+  }
+  if (!input.artifact_store) {
+    await mkdir(taskRoot, { recursive: true });
+  }
+  const startedAt = utcNow();
+  const started = performance.now();
+  const events: TaskEvent[] = [];
+  const emit = (event: TaskEventPayload): void => {
+    events.push({
+      ...event,
+      sequence: events.length,
+      at: utcNow(),
+      task_id: task.id,
+      driver: task.driver.type,
+    } as TaskEvent);
+  };
+  emit({
+    event_type: "LIFECYCLE",
+    type: "task-lifecycle",
+    phase: "STARTED",
+  });
+
+  const evidence: FrozenCampaignArtifact[] = [];
+  let outcome: TaskExecutionOutcome;
+  let earliestFailure: string | null = null;
+  let sideEffects: TaskSideEffectStatus = "NONE";
+  const taskPolicies = resolved.policies.filter((policy) =>
+    (task.policy_ids ?? []).includes(policy.id),
+  );
+  const taskOracles = resolved.oracles.filter((oracle) =>
+    task.oracle_ids.includes(oracle.id),
+  );
+  const confirmationReceipts = clone(input.confirmation_receipts ?? []);
+  const confirmationSecrets = { ...(input.confirmation_secrets ?? {}) };
+  const budgetUsage = input.budget_usage ?? {};
+  const sensitiveValues = Object.values(confirmationSecrets);
+  const adapterContext: TaskAdapterContext = {
+    run_id: input.run_id ?? `task:${task.id}`,
+    campaign_id: resolved.campaign.id,
+    platform,
+    task: clone(task),
+    fixture: clone(resolved.fixture),
+    policies: clone(taskPolicies),
+    cleanup_contract: clone(resolved.world.cleanup),
+    budget_usage: budgetUsage,
+    authorize_action: ({ action_index, action, projected_output_bytes }) =>
+      resolvePolicyDecision(taskPolicies, {
+        run_id: input.run_id ?? `task:${task.id}`,
+        campaign_id: resolved.campaign.id,
+        task_id: task.id,
+        task_kind: task.kind,
+        driver_type: task.driver.type,
+        action_index,
+        action,
+        projected_output_bytes,
+        supported_budget_dimensions: ["action_count", "output_bytes"],
+        redaction_capabilities: ["no-secrets-v1", "source-code-v1"],
+        now: utcNow(),
+        confirmation_receipts: confirmationReceipts,
+        confirmation_secrets: confirmationSecrets,
+        budget_usage: budgetUsage,
+      }),
+    control_output: (value, policy) =>
+      applyPolicyOutputControls(value, policy, sensitiveValues),
+    child_env_omit: taskPolicies.flatMap((policy) =>
+      policy.confirmation_authority
+        ? [policy.confirmation_authority.secret_env]
+        : [],
+    ),
+  };
+  const contextWithSignal = (signal: AbortSignal): TaskAdapterContext => ({
+    ...adapterContext,
+    signal,
+  });
+  const adapter =
+    (input.adapters ?? createTaskAdapterRegistry()).get(task.driver.type);
+  if (adapter && adapter.driver !== task.driver.type) {
+    throw new CascadeError(
+      `task adapter registry mismatch: ${task.driver.type}/${adapter.driver}`,
+    );
+  }
+  let adapterResult: TaskAdapterResult | null = null;
+  let adapterDispatched = false;
+  let recovery = noRecovery();
+  let cleanup = noCleanup("adapter was not dispatched");
+
+  if (input.signal?.aborted) {
+    outcome = "CANCELLED";
+    earliestFailure = "task cancelled before adapter dispatch";
+  } else if (!adapter) {
+    outcome = "BLOCKED";
     earliestFailure = `runtime adapter not implemented: ${task.driver.type}`;
+    emit({
+      event_type: "ADAPTER",
+      type: "adapter",
+      status: "BLOCKED",
+      reason: earliestFailure,
+    });
+  } else {
+    try {
+      adapterDispatched = true;
+      const executionBound =
+        task.timeout_ms +
+        (adapter.driver === "direct-process"
+          ? DIRECT_PROCESS_TERMINATION_ALLOWANCE_MS
+          : 0);
+      const step = await runBoundedTaskStep(
+        "EXECUTE",
+        executionBound,
+        input.signal,
+        (signal) => adapter.execute(contextWithSignal(signal)),
+      );
+      if (step.status === "COMPLETED") {
+        assertTaskAdapterResult(step.value);
+        adapterResult = step.value;
+        outcome = adapterResult.outcome;
+        earliestFailure = adapterResult.earliest_failure;
+        sideEffects = adapterResult.side_effects;
+        for (const event of adapterResult.events) emit(event);
+      } else {
+        outcome =
+          step.status === "CANCELLED" ? "CANCELLED" : "UNKNOWN_OUTCOME";
+        sideEffects = "UNKNOWN";
+        earliestFailure = step.reason;
+        emit({
+          event_type: "BOUNDARY",
+          type: "lifecycle-bound",
+          phase: "EXECUTE",
+          status: step.status,
+          reason: step.reason,
+        });
+      }
+    } catch (error) {
+      outcome = "UNKNOWN_OUTCOME";
+      sideEffects = "UNKNOWN";
+      const detail = error instanceof Error ? error.message : String(error);
+      earliestFailure = `adapter failed after dispatch: ${detail}`;
+    }
   }
 
   const oracleResults: OracleResult[] = [];
-  if (status === "PASS") {
+  const oracleEvaluator = input.oracle_evaluator ?? createTaskOracleEvaluator();
+  if (outcome === "SUCCEEDED") {
     for (const oracle of taskOracles) {
-      const result = await evaluateOracle(oracle, finalState, commandResult);
+      let result: OracleResult;
+      try {
+        const step = await runBoundedTaskStep(
+          "ORACLE",
+          task.timeout_ms,
+          input.signal,
+          (signal) =>
+            oracleEvaluator.evaluate(oracle, {
+              final_state: adapterResult?.final_state,
+              command: adapterResult?.command,
+              signal,
+            }),
+        );
+        if (step.status === "COMPLETED") {
+          result = step.value;
+        } else {
+          result = {
+            oracle_id: oracle.id,
+            type: oracle.type,
+            status: "FAIL",
+            error: step.reason,
+          };
+          outcome = step.status === "CANCELLED" ? "CANCELLED" : "BLOCKED";
+          earliestFailure = step.reason;
+          emit({
+            event_type: "BOUNDARY",
+            type: "lifecycle-bound",
+            phase: "ORACLE",
+            status: step.status,
+            reason: step.reason,
+          });
+        }
+      } catch (error) {
+        const detail = error instanceof Error ? error.message : String(error);
+        result = {
+          oracle_id: oracle.id,
+          type: oracle.type,
+          status: "FAIL",
+          error: `oracle evaluation failed: ${detail}`,
+        };
+      }
       oracleResults.push(result);
-      if (result.status === "FAIL" && status === "PASS") {
-        status = "FAIL";
+      emit({
+        event_type: "ORACLE",
+        type: "oracle",
+        oracle_id: oracle.id,
+        status: result.status,
+      });
+      if (result.status === "FAIL" && outcome === "SUCCEEDED") {
+        outcome = "FAILED";
         earliestFailure = `required oracle failed: ${oracle.id}`;
       }
+      if (outcome === "CANCELLED" || outcome === "BLOCKED") break;
     }
   }
 
-  const evidenceRoot = resolve(taskRoot, "evidence");
+  if (
+    adapter &&
+    adapterDispatched &&
+    (outcome === "CANCELLED" || outcome === "UNKNOWN_OUTCOME")
+  ) {
+    try {
+      const step = await runBoundedTaskStep(
+        "RECOVERY",
+        task.timeout_ms,
+        undefined,
+        (signal) =>
+          adapter.recover(contextWithSignal(signal), {
+            outcome,
+            reason: earliestFailure ?? "task outcome requires recovery",
+          }),
+      );
+      if (step.status === "COMPLETED") {
+        recovery = step.value;
+        assertTaskRecoveryResult(recovery);
+      } else {
+        recovery = {
+          status: "FAILED",
+          attempted: true,
+          reason: step.reason,
+        };
+        emit({
+          event_type: "BOUNDARY",
+          type: "lifecycle-bound",
+          phase: "RECOVERY",
+          status: step.status,
+          reason: step.reason,
+        });
+      }
+    } catch (error) {
+      const detail = error instanceof Error ? error.message : String(error);
+      recovery = {
+        status: "FAILED",
+        attempted: true,
+        reason: `recovery failed: ${detail}`,
+      };
+    }
+    emit({
+      event_type: "RECOVERY",
+      type: "recovery",
+      status: recovery.status,
+      reason: recovery.reason,
+    });
+  }
+
+  if (adapter && adapterDispatched) {
+    try {
+      const step = await runBoundedTaskStep(
+        "CLEANUP",
+        task.timeout_ms,
+        undefined,
+        (signal) =>
+          adapter.cleanup(contextWithSignal(signal), adapterResult),
+      );
+      if (step.status === "COMPLETED") {
+        cleanup = step.value;
+        assertTaskCleanupResult(cleanup);
+      } else {
+        cleanup = {
+          status: "UNKNOWN",
+          attempted: true,
+          verified: false,
+          residual_resources: [],
+          reason: step.reason,
+        };
+        emit({
+          event_type: "BOUNDARY",
+          type: "lifecycle-bound",
+          phase: "CLEANUP",
+          status: step.status,
+          reason: step.reason,
+        });
+      }
+    } catch (error) {
+      const detail = error instanceof Error ? error.message : String(error);
+      cleanup = {
+        status: "UNKNOWN",
+        attempted: true,
+        verified: false,
+        residual_resources: [],
+        reason: `cleanup outcome unknown: ${detail}`,
+      };
+    }
+  }
+  if (cleanup.status === "UNKNOWN") {
+    outcome = "UNKNOWN_OUTCOME";
+    sideEffects = "UNKNOWN";
+    earliestFailure ??= cleanup.reason ?? "cleanup outcome unknown";
+  } else if (cleanup.status === "FAILED") {
+    if (outcome !== "UNKNOWN_OUTCOME") outcome = "FAILED";
+    earliestFailure ??= cleanup.reason ?? "cleanup verification failed";
+  }
+  emit({
+    event_type: "CLEANUP",
+    type: "cleanup",
+    status: cleanup.status,
+    verified: cleanup.verified,
+    residual_resources: cleanup.residual_resources,
+    reason: cleanup.reason,
+  });
+
+  let parentCancellationRecorded = outcome === "CANCELLED";
+  const latchParentCancellation = (): void => {
+    if (!input.signal?.aborted || parentCancellationRecorded) return;
+    parentCancellationRecorded = true;
+    const reason = "task cancelled before terminal completion";
+    emit({
+      event_type: "BOUNDARY",
+      type: "lifecycle-bound",
+      phase: "FINALIZE",
+      status: "CANCELLED",
+      reason,
+    });
+    if (outcome === "SUCCEEDED") {
+      outcome = "CANCELLED";
+      earliestFailure = reason;
+      if (recovery.status === "NOT_REQUIRED" && recovery.reason === null) {
+        recovery = noRecovery(
+          "execution completed before cancellation; cleanup still ran",
+        );
+      }
+    }
+  };
+  latchParentCancellation();
+
   for (const file of task.evidence ?? []) {
-    const destination = resolve(evidenceRoot, file.replaceAll("/", "__"));
-    evidence.push(await freezeFile(file, destination));
+    if (!input.artifact_store) {
+      throw new CascadeError(
+        `task ${task.id} evidence requires the campaign artifact store`,
+      );
+    }
+    evidence.push(
+      await input.artifact_store.freezeFile({
+        source_path: boundedPath(file),
+        namespace: `execution/tasks/${task.id}/evidence`,
+        producer: operatorIdentity,
+        platform,
+        redaction_profile: "no-secrets-v1",
+      }),
+    );
   }
-  if (commandResult) {
-    await writeFile(resolve(taskRoot, "stdout.log"), commandResult.stdout, "utf8");
-    await writeFile(resolve(taskRoot, "stderr.log"), commandResult.stderr, "utf8");
+  const artifactRelative = (path: string): string =>
+    relative(input.artifact_store!.runRoot, path).split("\\").join("/");
+  const writeTaskText = async (path: string, value: string): Promise<void> => {
+    if (input.artifact_store) {
+      await input.artifact_store.writeStageText(artifactRelative(path), value);
+    } else {
+      await writeTextExclusive(path, value);
+    }
+  };
+  const writeTaskJson = async (path: string, value: unknown): Promise<void> => {
+    if (input.artifact_store) {
+      await input.artifact_store.writeStageJson(artifactRelative(path), value);
+    } else {
+      await writeJsonExclusive(path, value);
+    }
+  };
+  if (adapterResult?.command) {
+    await writeTaskText(
+      resolve(taskRoot, "stdout.log"),
+      adapterResult.command.stdout,
+    );
+    await writeTaskText(
+      resolve(taskRoot, "stderr.log"),
+      adapterResult.command.stderr,
+    );
   }
-  await writeFile(
+  latchParentCancellation();
+  const status = campaignStatus(outcome);
+  emit({
+    event_type: "LIFECYCLE",
+    type: "task-lifecycle",
+    phase: "COMPLETED",
+    outcome,
+    status,
+  });
+  await writeTaskText(
     resolve(taskRoot, "events.jsonl"),
     events.map((event) => stableJson(event)).join("\n") + (events.length ? "\n" : ""),
-    "utf8",
   );
-  await writeJson(resolve(taskRoot, "policy-decisions.json"), policyDecisions);
-  await writeJson(resolve(taskRoot, "oracle.json"), oracleResults);
-  if (finalState) await writeJson(resolve(taskRoot, "final-state.json"), finalState);
-
-  const cleanup = {
-    attempted: true,
-    verified: resolved.world.cleanup.reset_to_fixture,
-    residual_resources: [] as string[],
-  };
-  if (!cleanup.verified) {
-    status = "FAIL";
-    earliestFailure ??= "cleanup verification failed";
+  await writeTaskJson(
+    resolve(taskRoot, "policy-decisions.json"),
+    adapterResult?.policy_decisions ?? [],
+  );
+  await writeTaskJson(resolve(taskRoot, "oracle.json"), oracleResults);
+  if (adapterResult?.final_state) {
+    await writeTaskJson(
+      resolve(taskRoot, "final-state.json"),
+      adapterResult.final_state,
+    );
   }
-  await writeJson(resolve(taskRoot, "cleanup.json"), cleanup);
+  await writeTaskJson(resolve(taskRoot, "recovery.json"), recovery);
+  await writeTaskJson(resolve(taskRoot, "cleanup.json"), cleanup);
 
+  const policyDecisions = adapterResult?.policy_decisions ?? [];
   const result: TaskResult = {
     task_id: task.id,
     kind: task.kind,
     driver: task.driver.type,
     required: task.required,
     status,
+    outcome,
+    operator_identity: operatorIdentity,
+    target_actor_identity: targetActorIdentity,
+    platform,
     started_at: startedAt,
     completed_at: utcNow(),
     duration_ms: Math.round(performance.now() - started),
     earliest_failure: earliestFailure,
+    side_effects: sideEffects,
     policy_decisions: policyDecisions,
+    policy_decision_digest: valueDigest(policyDecisions),
     oracle_results: oracleResults,
     events,
-    ...(finalState ? { final_state: finalState } : {}),
-    ...(commandResult ? { command: commandResult } : {}),
+    ...(adapterResult?.final_state
+      ? { final_state: adapterResult.final_state }
+      : {}),
+    ...(adapterResult?.command ? { command: adapterResult.command } : {}),
     evidence,
+    recovery,
     cleanup,
   };
-  await writeJson(resolve(taskRoot, "result.json"), result);
+  await writeTaskJson(resolve(taskRoot, "result.json"), result);
   return result;
 }
 
@@ -1105,15 +2041,19 @@ async function commandValidate(value: string): Promise<number> {
 
 async function freezeSources(
   resolved: ResolvedCampaign,
-  sourceRoot: string,
-): Promise<Array<{ path: string; sha256: string; size: number }>> {
+  store: CampaignArtifactStore,
+  platform: string,
+) {
   const frozen = [];
   for (const file of resolved.sourceFiles) {
     frozen.push(
-      await freezeFile(
-        file,
-        resolve(sourceRoot, file.replaceAll("/", "__")),
-      ),
+      await store.freezeFile({
+        source_path: boundedPath(file),
+        namespace: "execution/source",
+        producer: "simulation-operator",
+        platform,
+        redaction_profile: "source-code-v1",
+      }),
     );
   }
   return frozen;
@@ -1145,18 +2085,6 @@ async function sourceRevision(
   };
 }
 
-async function appendLifecycle(
-  runRoot: string,
-  status: "RESERVED" | "RUNNING" | "EVALUATING" | "COMPLETED" | "BLOCKED",
-  detail: Record<string, unknown> = {},
-): Promise<void> {
-  await appendFile(
-    resolve(runRoot, "lifecycle.jsonl"),
-    `${stableJson({ status, at: utcNow(), ...detail })}\n`,
-    "utf8",
-  );
-}
-
 async function commandRun(value: string, argv: string[]): Promise<number> {
   const args = parseArgs(argv);
   await assertCampaignCatalogCurrent(await buildCampaignCatalog());
@@ -1182,82 +2110,156 @@ async function commandRun(value: string, argv: string[]): Promise<number> {
   const aggregatorIdentity = flag(args, "aggregator", "local-campaign-aggregator")!;
   const targetActorIdentity = `target:${resolved.simulation.id}`;
   const simulatorIdentity = `simulator:${resolved.simulation.id}`;
-  const identities = [
-    operatorIdentity,
-    evaluatorIdentity,
-    aggregatorIdentity,
-    targetActorIdentity,
-    simulatorIdentity,
-  ];
-  if (
-    identities.some((identity) => !identity.trim()) ||
-    new Set(identities).size !== identities.length
-  ) {
-    throw new CascadeError(
-      "operator, evaluator, aggregator, target, and simulator identities must be non-empty and distinct",
-    );
+  const recoveryIdentity = flag(args, "recovery", "local-simulation-recovery")!;
+  const platform = flag(args, "platform", process.platform)!;
+  if (!platform.trim()) {
+    throw new CascadeError("campaign platform must be non-empty");
   }
+  const identities: CampaignIdentityEnvelope = {
+    operator: {
+      role: "simulation-operator",
+      session_id: `${runId}:operator`,
+      subject: operatorIdentity,
+    },
+    evaluator: {
+      role: "simulation-evaluator",
+      session_id: `${runId}:evaluator`,
+      subject: evaluatorIdentity,
+    },
+    aggregator: {
+      role: "campaign-aggregator",
+      session_id: `${runId}:aggregator`,
+      subject: aggregatorIdentity,
+    },
+    target: {
+      role: "target-actor",
+      session_id: `${runId}:target`,
+      subject: targetActorIdentity,
+    },
+    simulator: {
+      role: "simulator",
+      session_id: `${runId}:simulator`,
+      subject: simulatorIdentity,
+    },
+    recovery: {
+      role: "simulation-recovery",
+      session_id: `${runId}:recovery`,
+      subject: recoveryIdentity,
+    },
+  };
 
   const runRoot = resolve(ARTIFACT_ROOT, runId);
-  await mkdir(ARTIFACT_ROOT, { recursive: true });
-  if (await exists(runRoot)) {
-    throw new CascadeError(`run already exists: ${rel(runRoot)}`);
-  }
-  await mkdir(runRoot, { recursive: false });
-  await writeJsonExclusive(resolve(runRoot, "reservation.json"), {
-    schema_version: 1,
-    run_id: runId,
+  let artifactStore = new CampaignArtifactStore(ARTIFACT_ROOT, runId);
+  const campaignDigest = await sha256File(path);
+  const leaseAcquiredAt = new Date();
+  const leaseExpiresAt = new Date(leaseAcquiredAt.getTime() + 60 * 60 * 1000);
+  const leaseId = flag(args, "lease-id", crypto.randomUUID())!;
+  await artifactStore.reserve({
     campaign_id: resolved.campaign.id,
-    status: "RESERVED",
-    operator_identity: operatorIdentity,
-    reserved_at: utcNow(),
+    campaign_digest: campaignDigest,
+    attempt: Number(flag(args, "attempt", "1")),
+    parent_run_id: flag(args, "parent-run-id") ?? null,
+    identities,
+    lease: {
+      lease_id: leaseId,
+      owner_session_id: identities.operator.session_id,
+      acquired_at: leaseAcquiredAt.toISOString(),
+      expires_at: leaseExpiresAt.toISOString(),
+      recovery_mode: "FINALIZE_UNKNOWN_OUTCOME",
+    },
   });
-  await appendLifecycle(runRoot, "RESERVED", {
+  artifactStore = artifactStore.withAuthority(identities.operator, leaseId);
+  await artifactStore.appendLifecycle({
+    status: "RESERVED",
+    at: utcNow(),
     campaign_id: resolved.campaign.id,
     operator_identity: operatorIdentity,
   });
 
   const executionRoot = resolve(runRoot, "execution");
-  const frozenSources = await freezeSources(
-    resolved,
-    resolve(executionRoot, "source"),
-  );
+  const frozenSources = await freezeSources(resolved, artifactStore, platform);
   const repositorySource = await sourceRevision(resolved.sourceFiles);
   const sourceManifest = {
     schema_version: 1,
     run_id: runId,
     campaign_id: resolved.campaign.id,
+    platform,
     source_revision: repositorySource.revision,
     dirty_source: repositorySource.dirty,
     definitions: resolved.sourceDigests,
     frozen_sources: frozenSources,
     source_digest: valueDigest(resolved.sourceDigests),
   };
-  await writeJson(resolve(executionRoot, "source-manifest.json"), sourceManifest);
-  await appendLifecycle(runRoot, "RUNNING", {
+  await artifactStore.writeStageJson(
+    "execution/source-manifest.json",
+    sourceManifest,
+  );
+  await artifactStore.appendLifecycle({
+    status: "RUNNING",
+    at: utcNow(),
     source_manifest_digest: valueDigest(sourceManifest),
   });
   const sourceManifestDigest = valueDigest(sourceManifest);
+  const confirmationReceipts = await Promise.all(
+    flags(args, "confirmation-receipt").map(async (receiptPath) => {
+      const receipt = await readJson<unknown>(boundedPath(receiptPath));
+      validatePolicyConfirmationReceipt(receipt);
+      return receipt;
+    }),
+  );
+  const confirmationReceiptIds = new Set<string>();
+  for (const receipt of confirmationReceipts) {
+    if (confirmationReceiptIds.has(receipt.receipt_id)) {
+      throw new CascadeError(
+        `duplicate confirmation receipt id: ${receipt.receipt_id}`,
+      );
+    }
+    confirmationReceiptIds.add(receipt.receipt_id);
+  }
+  const confirmationSecrets: Record<string, string> = {};
+  for (const policy of resolved.policies) {
+    const authority = policy.confirmation_authority;
+    if (!authority) continue;
+    const secret = Bun.env[authority.secret_env];
+    if (secret) confirmationSecrets[authority.key_id] = secret;
+    delete process.env[authority.secret_env];
+  }
+  artifactStore = artifactStore.withSensitiveValues(
+    Object.values(confirmationSecrets),
+  );
+  const budgetUsage: CampaignPolicyBudgetUsage = {};
 
   const taskResults: TaskResult[] = [];
   for (const task of resolved.tasks) {
     taskResults.push(
-      await executeTask(
+      await executeCampaignTask({
         resolved,
         task,
-        resolve(executionRoot, "tasks", task.id),
-      ),
+        task_root: resolve(executionRoot, "tasks", task.id),
+        operator_identity: operatorIdentity,
+        target_actor_identity: targetActorIdentity,
+        run_id: runId,
+        platform,
+        confirmation_receipts: confirmationReceipts,
+        confirmation_secrets: confirmationSecrets,
+        budget_usage: budgetUsage,
+        artifact_store: artifactStore,
+      }),
     );
   }
   const requiredFailures = taskResults.filter(
     (task) => task.required && task.status !== "PASS",
+  );
+  const requiredBlocked = requiredFailures.filter(
+    (task) => task.status === "BLOCKED",
   );
   const cleanupVerified = taskResults.every((task) => task.cleanup.verified);
   const executionReceipt = {
     schema_version: 1,
     run_id: runId,
     campaign_id: resolved.campaign.id,
-    campaign_digest: await sha256File(path),
+    platform,
+    campaign_digest: campaignDigest,
     source_manifest_digest: sourceManifestDigest,
     operator_identity: operatorIdentity,
     target_actor_identity: targetActorIdentity,
@@ -1265,17 +2267,25 @@ async function commandRun(value: string, argv: string[]): Promise<number> {
     task_results: taskResults.map((task) => ({
       task_id: task.task_id,
       status: task.status,
+      outcome: task.outcome,
+      cleanup_status: task.cleanup.status,
+      recovery_status: task.recovery.status,
+      policy_decision_digest: task.policy_decision_digest,
       result_digest: valueDigest(task),
     })),
     cleanup_verified: cleanupVerified,
     status:
-      requiredFailures.length || !cleanupVerified ? "FAIL" : "PASS",
+      requiredBlocked.length
+        ? "BLOCKED"
+        : requiredFailures.length || !cleanupVerified
+          ? "FAIL"
+          : "PASS",
     earliest_failure: requiredFailures[0]?.earliest_failure ?? null,
     evidence_root: rel(executionRoot),
     created_at: utcNow(),
   };
-  await writeJson(
-    resolve(executionRoot, "execution-receipt.json"),
+  await artifactStore.writeStageJson(
+    "execution/execution-receipt.json",
     executionReceipt,
   );
   const executionReceiptDigest = valueDigest(executionReceipt);
@@ -1286,8 +2296,8 @@ async function commandRun(value: string, argv: string[]): Promise<number> {
     aggregatorIdentity,
   );
   if (calibration) {
-    await writeJsonExclusive(
-      resolve(runRoot, "calibrations", `${calibration.calibration_id}.json`),
+    await artifactStore.writeStageJson(
+      `calibrations/${calibration.calibration_id}.json`,
       calibration,
     );
   }
@@ -1306,7 +2316,9 @@ async function commandRun(value: string, argv: string[]): Promise<number> {
     executionReceiptDigest,
     calibrationReceiptDigest: calibration ? valueDigest(calibration) : null,
   };
-  await appendLifecycle(runRoot, "EVALUATING", {
+  await artifactStore.appendLifecycle({
+    status: "EVALUATING",
+    at: utcNow(),
     provider: resolved.evaluationProfile.provider,
     profile_id: resolved.evaluationProfile.id,
     evaluator_identity: evaluatorIdentity,
@@ -1320,6 +2332,7 @@ async function commandRun(value: string, argv: string[]): Promise<number> {
       runRoot,
       evaluationIdentity,
       mechanicalEvaluation,
+      artifactStore,
     );
     evaluation = result.receipt;
     evaluationAttempt = result.attemptPath;
@@ -1330,14 +2343,10 @@ async function commandRun(value: string, argv: string[]): Promise<number> {
       evaluationIdentity,
       mechanicalEvaluation,
     );
-    const evaluationRoot = resolve(
-      runRoot,
-      "evaluations",
-      evaluation.evaluation_id,
+    await artifactStore.writeStageJson(
+      `evaluations/${evaluation.evaluation_id}/receipt.json`,
+      evaluation,
     );
-    await mkdir(resolve(runRoot, "evaluations"), { recursive: true });
-    await mkdir(evaluationRoot, { recursive: false });
-    await writeJsonExclusive(resolve(evaluationRoot, "receipt.json"), evaluation);
   }
   if (!evaluation) {
     const blockedSummary = {
@@ -1359,11 +2368,17 @@ async function commandRun(value: string, argv: string[]): Promise<number> {
       aggregation_receipt_digest: null,
       completed_at: utcNow(),
     };
-    await writeJson(resolve(runRoot, "summary.json"), blockedSummary);
-    await appendLifecycle(runRoot, "BLOCKED", {
+    await artifactStore.writeStageJson("summary.json", blockedSummary);
+    await artifactStore.appendLifecycle({
+      status: "BLOCKED",
+      at: utcNow(),
       campaign_status: "BLOCKED",
       evaluation_attempt: evaluationAttempt,
       reason: evaluationBlockedReason,
+    });
+    await artifactStore.finalize({
+      status: "BLOCKED",
+      finalized_by: identities.operator,
     });
     console.log(
       `campaign_status=BLOCKED campaign=${resolved.campaign.id} run=${runId} ` +
@@ -1381,8 +2396,8 @@ async function commandRun(value: string, argv: string[]): Promise<number> {
     evaluation,
     calibration,
   );
-  await writeJsonExclusive(
-    resolve(runRoot, "aggregations", `${aggregation.aggregation_id}.json`),
+  await artifactStore.writeStageJson(
+    `aggregations/${aggregation.aggregation_id}.json`,
     aggregation,
   );
   const summary = {
@@ -1412,10 +2427,16 @@ async function commandRun(value: string, argv: string[]): Promise<number> {
     aggregation_receipt_digest: valueDigest(aggregation),
     completed_at: utcNow(),
   };
-  await writeJson(resolve(runRoot, "summary.json"), summary);
-  await appendLifecycle(runRoot, "COMPLETED", {
+  await artifactStore.writeStageJson("summary.json", summary);
+  await artifactStore.appendLifecycle({
+    status: "COMPLETED",
+    at: utcNow(),
     campaign_status: summary.campaign_status,
     release_eligible: summary.release_eligible,
+  });
+  await artifactStore.finalize({
+    status: "COMPLETED",
+    finalized_by: identities.operator,
   });
   console.log(
     `campaign_status=${summary.campaign_status} campaign=${resolved.campaign.id} ` +
@@ -1424,6 +2445,19 @@ async function commandRun(value: string, argv: string[]): Promise<number> {
       `release_eligible=${summary.release_eligible} output=${rel(runRoot)}`,
   );
   return summary.campaign_status === "PASS" ? 0 : 1;
+}
+
+async function commandVerify(runId: string): Promise<number> {
+  const result = await new CampaignArtifactStore(
+    ARTIFACT_ROOT,
+    runId,
+  ).verify();
+  console.log(
+    `campaign_artifact_verification=${result.status} run=${result.run_id} ` +
+      `finalization=${result.finalization_status} files=${result.file_count} ` +
+      `manifest_digest=${result.manifest_digest}`,
+  );
+  return 0;
 }
 
 async function commandSelfTest(): Promise<number> {
@@ -1463,12 +2497,16 @@ export async function main(argv: string[]): Promise<number> {
   if (command === "catalog") return commandCatalog([...(value ? [value] : []), ...rest]);
   if (command === "validate" && value) return commandValidate(value);
   if (command === "run" && value) return commandRun(value, rest);
+  if (command === "verify" && value) return commandVerify(value);
   if (command === "self-test") return commandSelfTest();
   console.log(`Usage:
   bun scripts/cascade.ts campaign list
   bun scripts/cascade.ts campaign catalog [--check|--write]
   bun scripts/cascade.ts campaign validate <campaign-id-or-path>
   bun scripts/cascade.ts campaign run <campaign-id-or-path> [--run-id ID]
+    [--attempt N] [--parent-run-id ID] [--lease-id ID]
+    [--platform NAME] [--confirmation-receipt PATH]
+  bun scripts/cascade.ts campaign verify <run-id>
   bun scripts/cascade.ts campaign self-test
 `);
   return command ? 1 : 0;

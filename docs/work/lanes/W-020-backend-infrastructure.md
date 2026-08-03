@@ -82,7 +82,7 @@ Out:
 
 ## Dependencies And Handoff
 
-- Must wait for: W-018 IG-IP-01.
+- Must wait for: W-018 WG-003-N01.
 - Can run with: W-019, W-021, and W-022.
 - Merge owner: W-018.
 - Stop condition: a resource-provider choice leaks into the profile or a
@@ -99,7 +99,7 @@ Out:
 
 ## Closeout
 
-- Report: `docs/work/reports/2026-07-28-contour-infrastructure-implementation-graph.md`.
+- Report: `docs/work/reports/2026-07-28-contour-infrastructure-work-graph.md`.
 - Implementation evidence: `PASS`; 23 nodes, 49 edges, and 18 decisions.
 - Pair receipt: graph
   `sha256:2d3dbb5f6f0512f30a1190cf271231b95ce7d4e4fea6e46e3b7aaa957dc91ed5`;

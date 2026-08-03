@@ -32,6 +32,13 @@
 - [ ] Contour, driver, tier, platform, and selection reason are explicit.
 - [ ] Runtime, permissions, identity, timeout, budget, isolation, fixture, and
       cleanup requirements are preflighted.
+- [ ] Every referenced policy applies to the exact campaign, task, kind,
+      driver, action, and optional path or command prefix before provisioning;
+      zero matches and ambiguity fail closed.
+- [ ] Required budget dimensions and named redaction capabilities are supported
+      by the selected adapter and evidence store.
+- [ ] Confirmation receipts bind the exact run, policy version and digest,
+      campaign, task, action index and digest, confirmer, and expiry.
 - [ ] Computer Use is treated as a driver, not an oracle.
 - [ ] Platform-specific evidence is not generalized beyond its tested scope.
 
@@ -41,10 +48,15 @@
       evaluate, freeze, cleanup, and handoff.
 - [ ] Required evidence bodies are copied into the immutable run directory.
 - [ ] Evidence includes producer, timestamp, digest, platform, and lineage.
+- [ ] Operator, evaluator, target, simulator, aggregator, and recovery roles
+      use distinct reserved sessions with explicit lease and recovery authority.
 - [ ] Partial runs preserve the earliest failure and available evidence.
-- [ ] Replay inputs are explicit and do not mutate frozen evidence.
+- [ ] Replay uses a new run ID, records parent-run lineage, and does not mutate
+      frozen evidence.
 - [ ] Run IDs and stage receipt IDs are reserved atomically; crash recovery,
       cancellation, and unknown external outcomes have explicit dispositions.
+- [ ] Terminal finalization is atomic and the frozen file set and manifest
+      digest are independently verified before handoff.
 
 ## Claims And Reduction
 

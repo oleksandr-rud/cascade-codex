@@ -373,13 +373,40 @@
     {
       "path": "evals/policies/{{SIMULATION_ID}}-allow-state-actions-v1.json",
       "content": {
-        "schema_version": 1,
+        "schema_version": 2,
         "id": "{{SIMULATION_ID}}-allow-state-actions-v1",
+        "version": "2.0.0",
         "effect": "ALLOW",
-        "action_types": [
-          "assert",
-          "set"
-        ],
+        "scope": {
+          "campaign_ids": [
+            "{{SIMULATION_ID}}-smoke"
+          ],
+          "task_ids": [
+            "{{TASK_ID}}-STATE-SMOKE"
+          ],
+          "task_kinds": [
+            "agent-response"
+          ],
+          "driver_types": [
+            "fake"
+          ],
+          "action_types": [
+            "assert",
+            "set"
+          ],
+          "action_paths": [
+            "workflow.status"
+          ]
+        },
+        "budgets": {
+          "required_dimensions": [
+            "action_count",
+            "output_bytes"
+          ],
+          "max_actions": 4,
+          "max_output_bytes": 65536
+        },
+        "redaction_profile": "no-secrets-v1",
         "reason": "The generated deterministic starter permits declared in-memory state transitions only."
       }
     },

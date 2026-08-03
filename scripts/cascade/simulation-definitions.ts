@@ -259,11 +259,71 @@ export interface ClaimDefinition {
 }
 
 export interface PolicyDefinition {
-  schema_version: 1;
+  schema_version: 2;
   id: string;
+  version: string;
   effect: "ALLOW" | "DENY" | "REQUIRE_CONFIRMATION";
-  action_types: string[];
+  scope: {
+    campaign_ids: string[];
+    task_ids: string[];
+    task_kinds: string[];
+    driver_types: string[];
+    action_types: string[];
+    action_paths?: string[];
+    command_prefix?: string[];
+  };
+  budgets: {
+    required_dimensions: Array<
+      "action_count" | "output_bytes" | "token_count" | "cost_usd"
+    >;
+    max_actions: number;
+    max_output_bytes: number;
+  };
+  redaction_profile: "no-secrets-v1" | "source-code-v1";
+  confirmation_authority?: {
+    key_id: string;
+    secret_env: string;
+    allowed_confirmers: string[];
+  };
   reason: string;
+}
+
+export interface PolicyObservation {
+  campaign_id: string;
+  task_id: string;
+  task_kind: string;
+  driver_type: string;
+  action: TaskAction | { type: "process-exec"; argv: string[] };
+}
+
+export function policyAppliesToObservation(
+  policy: PolicyDefinition,
+  observation: PolicyObservation,
+): boolean {
+  const scope = policy.scope;
+  if (!scope.campaign_ids.includes(observation.campaign_id)) return false;
+  if (!scope.task_ids.includes(observation.task_id)) return false;
+  if (!scope.task_kinds.includes(observation.task_kind)) return false;
+  if (!scope.driver_types.includes(observation.driver_type)) return false;
+  if (!scope.action_types.includes(observation.action.type)) return false;
+  if (
+    scope.action_paths &&
+    (!("path" in observation.action) ||
+      !observation.action.path ||
+      !scope.action_paths.includes(observation.action.path))
+  ) {
+    return false;
+  }
+  if (
+    scope.command_prefix &&
+    (!("argv" in observation.action) ||
+      !scope.command_prefix.every(
+        (value, index) => observation.action.argv[index] === value,
+      ))
+  ) {
+    return false;
+  }
+  return true;
 }
 
 export interface OracleDefinition {
@@ -309,6 +369,20 @@ function objectValue(value: unknown, label: string): Record<string, unknown> {
     throw new CascadeError(`${label} must be an object`);
   }
   return value as Record<string, unknown>;
+}
+
+function assertExactKeys(
+  value: Record<string, unknown>,
+  allowed: readonly string[],
+  label: string,
+): void {
+  const allowedKeys = new Set(allowed);
+  const unknown = Object.keys(value).filter((key) => !allowedKeys.has(key));
+  if (unknown.length) {
+    throw new CascadeError(
+      `${label} has unknown fields: ${unknown.sort().join(", ")}`,
+    );
+  }
 }
 
 function requireString(
@@ -900,9 +974,29 @@ export function validateClaim(
   }
 }
 
-function validatePolicy(value: Record<string, unknown>, label: string): void {
-  assertSchema(value, label);
+export function validatePolicy(value: Record<string, unknown>, label: string): void {
+  assertExactKeys(
+    value,
+    [
+      "schema_version",
+      "id",
+      "version",
+      "effect",
+      "scope",
+      "budgets",
+      "redaction_profile",
+      "confirmation_authority",
+      "reason",
+    ],
+    label,
+  );
+  if (value.schema_version !== 2) {
+    throw new CascadeError(`${label}.schema_version must be 2`);
+  }
   assertId(requireString(value, "id", label), label);
+  if (!/^[0-9]+\.[0-9]+\.[0-9]+$/.test(requireString(value, "version", label))) {
+    throw new CascadeError(`${label}.version must be semver`);
+  }
   if (
     !new Set(["ALLOW", "DENY", "REQUIRE_CONFIRMATION"]).has(
       requireString(value, "effect", label),
@@ -910,9 +1004,128 @@ function validatePolicy(value: Record<string, unknown>, label: string): void {
   ) {
     throw new CascadeError(`${label}.effect is invalid`);
   }
-  const actions = requireArray<string>(value, "action_types", label);
-  if (!actions.length) throw new CascadeError(`${label}.action_types is empty`);
-  uniqueStrings(actions, `${label}.action_types`);
+  if (value.effect === "REQUIRE_CONFIRMATION") {
+    const authority = objectValue(
+      value.confirmation_authority,
+      `${label}.confirmation_authority`,
+    );
+    assertExactKeys(
+      authority,
+      ["key_id", "secret_env", "allowed_confirmers"],
+      `${label}.confirmation_authority`,
+    );
+    requireString(authority, "key_id", `${label}.confirmation_authority`);
+    if (
+      !/^[A-Z][A-Z0-9_]+$/.test(
+        requireString(authority, "secret_env", `${label}.confirmation_authority`),
+      )
+    ) {
+      throw new CascadeError(
+        `${label}.confirmation_authority.secret_env is invalid`,
+      );
+    }
+    const confirmers = requireArray<string>(
+      authority,
+      "allowed_confirmers",
+      `${label}.confirmation_authority`,
+    );
+    if (!confirmers.length) {
+      throw new CascadeError(
+        `${label}.confirmation_authority.allowed_confirmers is empty`,
+      );
+    }
+    uniqueStrings(
+      confirmers,
+      `${label}.confirmation_authority.allowed_confirmers`,
+    );
+  } else if (value.confirmation_authority !== undefined) {
+    throw new CascadeError(
+      `${label}.confirmation_authority requires REQUIRE_CONFIRMATION`,
+    );
+  }
+  const scope = objectValue(value.scope, `${label}.scope`);
+  assertExactKeys(
+    scope,
+    [
+      "campaign_ids",
+      "task_ids",
+      "task_kinds",
+      "driver_types",
+      "action_types",
+      "action_paths",
+      "command_prefix",
+    ],
+    `${label}.scope`,
+  );
+  for (const key of [
+    "campaign_ids",
+    "task_ids",
+    "task_kinds",
+    "driver_types",
+    "action_types",
+  ]) {
+    const values = requireArray<string>(scope, key, `${label}.scope`);
+    if (!values.length) {
+      throw new CascadeError(`${label}.scope.${key} is empty`);
+    }
+    uniqueStrings(values, `${label}.scope.${key}`);
+  }
+  if (scope.action_paths !== undefined) {
+    const paths = requireArray<string>(scope, "action_paths", `${label}.scope`);
+    if (!paths.length) {
+      throw new CascadeError(`${label}.scope.action_paths is empty`);
+    }
+    uniqueStrings(paths, `${label}.scope.action_paths`);
+  }
+  if (scope.command_prefix !== undefined) {
+    const prefix = requireArray<string>(
+      scope,
+      "command_prefix",
+      `${label}.scope`,
+    );
+    if (!prefix.length) {
+      throw new CascadeError(`${label}.scope.command_prefix is empty`);
+    }
+    uniqueStrings(prefix, `${label}.scope.command_prefix`);
+  }
+  const budgets = objectValue(value.budgets, `${label}.budgets`);
+  assertExactKeys(
+    budgets,
+    ["required_dimensions", "max_actions", "max_output_bytes"],
+    `${label}.budgets`,
+  );
+  const requiredDimensions = requireArray<string>(
+    budgets,
+    "required_dimensions",
+    `${label}.budgets`,
+  );
+  uniqueStrings(requiredDimensions, `${label}.budgets.required_dimensions`);
+  for (const dimension of requiredDimensions) {
+    if (
+      !new Set([
+        "action_count",
+        "output_bytes",
+        "token_count",
+        "cost_usd",
+      ]).has(dimension)
+    ) {
+      throw new CascadeError(
+        `${label}.budgets.required_dimensions has unknown dimension ${dimension}`,
+      );
+    }
+  }
+  for (const key of ["max_actions", "max_output_bytes"]) {
+    if (!Number.isInteger(budgets[key]) || (budgets[key] as number) < 1) {
+      throw new CascadeError(`${label}.budgets.${key} must be a positive integer`);
+    }
+  }
+  if (
+    !new Set(["no-secrets-v1", "source-code-v1"]).has(
+      requireString(value, "redaction_profile", label),
+    )
+  ) {
+    throw new CascadeError(`${label}.redaction_profile is invalid`);
+  }
   requireString(value, "reason", label);
 }
 
@@ -939,6 +1152,64 @@ function assertReferences(
 ): void {
   for (const value of values) {
     if (!available.has(value)) throw new CascadeError(`${label} unknown reference: ${value}`);
+  }
+}
+
+export function validateTaskPolicyApplicability(
+  campaign: CampaignDefinition,
+  task: TaskDefinition,
+  policies: PolicyDefinition[],
+): void {
+  const referencedPolicyIds = task.policy_ids ?? [];
+  for (const action of task.actions ?? []) {
+    const matchingPolicies = policies.filter(
+      (policy) =>
+        referencedPolicyIds.includes(policy.id) &&
+        policyAppliesToObservation(policy, {
+          campaign_id: campaign.id,
+          task_id: task.id,
+          task_kind: task.kind,
+          driver_type: task.driver.type,
+          action,
+        }),
+    );
+    if (referencedPolicyIds.length > 0 && matchingPolicies.length === 0) {
+      throw new CascadeError(
+        `${task.id} action ${action.type} has no applicable referenced policy ` +
+          `for campaign ${campaign.id}`,
+      );
+    }
+    if (matchingPolicies.length > 1) {
+      throw new CascadeError(
+        `${task.id} action ${action.type} has overlapping policies: ` +
+          matchingPolicies.map((policy) => policy.id).join(", "),
+      );
+    }
+  }
+  if (task.driver.type !== "direct-process") return;
+
+  const processPolicies = policies.filter(
+    (policy) =>
+      referencedPolicyIds.includes(policy.id) &&
+      policyAppliesToObservation(policy, {
+        campaign_id: campaign.id,
+        task_id: task.id,
+        task_kind: task.kind,
+        driver_type: task.driver.type,
+        action: { type: "process-exec", argv: task.command ?? [] },
+      }),
+  );
+  if (referencedPolicyIds.length > 0 && processPolicies.length === 0) {
+    throw new CascadeError(
+      `${task.id} process execution has no applicable referenced policy ` +
+        `for campaign ${campaign.id}`,
+    );
+  }
+  if (processPolicies.length > 1) {
+    throw new CascadeError(
+      `${task.id} process execution has overlapping policies: ` +
+        processPolicies.map((policy) => policy.id).join(", "),
+    );
   }
 }
 
@@ -1122,31 +1393,8 @@ export async function resolveCampaign(
           `${task.id} action ${action.type} is not allowed by world ${world.id}`,
         );
       }
-      const matchingPolicies = policies.filter(
-        (policy) =>
-          (task.policy_ids ?? []).includes(policy.id) &&
-          policy.action_types.includes(action.type),
-      );
-      if (matchingPolicies.length > 1) {
-        throw new CascadeError(
-          `${task.id} action ${action.type} has overlapping policies: ` +
-            matchingPolicies.map((policy) => policy.id).join(", "),
-        );
-      }
     }
-    if (task.driver.type === "direct-process") {
-      const processPolicies = policies.filter(
-        (policy) =>
-          (task.policy_ids ?? []).includes(policy.id) &&
-          policy.action_types.includes("process-exec"),
-      );
-      if (processPolicies.length > 1) {
-        throw new CascadeError(
-          `${task.id} process execution has overlapping policies: ` +
-            processPolicies.map((policy) => policy.id).join(", "),
-        );
-      }
-    }
+    validateTaskPolicyApplicability(campaign, task, policies);
   }
   for (const claim of claims) {
     assertReferences(
@@ -1247,6 +1495,8 @@ export async function resolveCampaign(
     "package.json",
     "scripts/cascade.ts",
     "scripts/cascade/common.ts",
+    "scripts/cascade/campaign-artifacts.ts",
+    "scripts/cascade/campaign-policies.ts",
     "scripts/cascade/campaigns.ts",
     "scripts/cascade/evaluations.ts",
     "scripts/cascade/simulations.ts",
@@ -1259,6 +1509,7 @@ export async function resolveCampaign(
     ".codex/skills/simulation-evaluation/SKILL.md",
     ".codex/skills/simulation-evaluation/checklists/evaluation-quality.md",
     "evals/campaigns/schema.json",
+    "evals/campaigns/run-artifact.schema.json",
     "evals/rubrics/schema.json",
     "evals/rubrics/evaluation-profile.schema.json",
     "evals/rubrics/simulation-evaluation-output.schema.json",
@@ -1273,6 +1524,7 @@ export async function resolveCampaign(
     "evals/tasks/schema.json",
     "evals/claims/schema.json",
     "evals/policies/schema.json",
+    "evals/policies/confirmation-receipt.schema.json",
     "evals/oracles/schema.json",
     "evals/metrics/schema.json",
     "evals/treatments/schema.json",

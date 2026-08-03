@@ -1,9 +1,15 @@
-import { copyFile, mkdir, writeFile } from "node:fs/promises";
+import {
+  copyFile,
+  mkdir,
+  mkdtemp,
+  rm,
+  writeFile,
+} from "node:fs/promises";
+import { tmpdir } from "node:os";
 import { relative, resolve } from "node:path";
 
 import {
   CascadeError,
-  rel,
   rootPath,
   runCommand,
   sha256File,
@@ -21,6 +27,7 @@ import type {
   EvaluationProfileDefinition,
   ResolvedCampaign,
 } from "./simulation-definitions";
+import { CampaignArtifactStore } from "./campaign-artifacts";
 
 export interface ClaimLedgerEntry {
   claim_id: string;
@@ -548,6 +555,7 @@ export async function runCodexEvaluation(
   runRoot: string,
   identity: EvaluationIdentity,
   mechanical: MechanicalEvaluation,
+  artifactStore: CampaignArtifactStore,
 ): Promise<CodexEvaluationResult> {
   if (resolved.evaluationProfile.provider !== "codex") {
     throw new CascadeError("runCodexEvaluation requires a codex profile");
@@ -556,9 +564,24 @@ export async function runCodexEvaluation(
     throw new CascadeError("operator and evaluator identities must differ");
   }
   const evaluationId = `${identity.runId}-evaluation`;
-  const evaluationRoot = resolve(runRoot, "evaluations", evaluationId);
-  await mkdir(resolve(runRoot, "evaluations"), { recursive: true });
-  await mkdir(evaluationRoot, { recursive: false });
+  const evaluationRoot = await mkdtemp(
+    resolve(tmpdir(), `cascade-${evaluationId}-`),
+  );
+  const persistAttempt = async (): Promise<string> => {
+    for (const file of await walkFiles(evaluationRoot)) {
+      const path = relative(evaluationRoot, file).split("\\").join("/");
+      await artifactStore.writeStageFile(
+        `evaluations/${evaluationId}/${path}`,
+        file,
+        {
+          redaction_profile: path.startsWith("input/")
+            ? "source-code-v1"
+            : "no-secrets-v1",
+        },
+      );
+    }
+    return `evaluations/${evaluationId}/attempt.json`;
+  };
   const inputRoot = resolve(evaluationRoot, "input");
   await mkdir(inputRoot, { recursive: false });
 
@@ -666,6 +689,7 @@ export async function runCodexEvaluation(
     cwd: inputRoot,
     env: { NO_COLOR: "1", TERM: "xterm-256color" },
     timeoutMs: profile.timeout_ms,
+    maxOutputBytes: 10 * 1024 * 1024,
   });
   await writeFile(resolve(evaluationRoot, "stdout.jsonl"), result.stdout, "utf8");
   await writeFile(resolve(evaluationRoot, "stderr.log"), result.stderr, "utf8");
@@ -688,11 +712,9 @@ export async function runCodexEvaluation(
   if (result.exitCode !== 0 || result.timedOut) {
     attempt.reason = blockedReason(result);
     await writeJson(resolve(evaluationRoot, "attempt.json"), attempt);
-    return {
-      receipt: null,
-      attemptPath: rel(resolve(evaluationRoot, "attempt.json")),
-      blockedReason: attempt.reason,
-    };
+    const attemptPath = await persistAttempt();
+    await rm(evaluationRoot, { recursive: true, force: true });
+    return { receipt: null, attemptPath, blockedReason: attempt.reason };
   }
   try {
     const parsed = parseCodexJsonl(result.stdout);
@@ -724,18 +746,14 @@ export async function runCodexEvaluation(
     await writeJsonExclusive(resolve(evaluationRoot, "receipt.json"), receipt);
     attempt.status = receipt.status;
     await writeJson(resolve(evaluationRoot, "attempt.json"), attempt);
-    return {
-      receipt,
-      attemptPath: rel(resolve(evaluationRoot, "attempt.json")),
-      blockedReason: null,
-    };
+    const attemptPath = await persistAttempt();
+    await rm(evaluationRoot, { recursive: true, force: true });
+    return { receipt, attemptPath, blockedReason: null };
   } catch (error) {
     attempt.reason = error instanceof Error ? error.message : String(error);
     await writeJson(resolve(evaluationRoot, "attempt.json"), attempt);
-    return {
-      receipt: null,
-      attemptPath: rel(resolve(evaluationRoot, "attempt.json")),
-      blockedReason: attempt.reason,
-    };
+    const attemptPath = await persistAttempt();
+    await rm(evaluationRoot, { recursive: true, force: true });
+    return { receipt: null, attemptPath, blockedReason: attempt.reason };
   }
 }

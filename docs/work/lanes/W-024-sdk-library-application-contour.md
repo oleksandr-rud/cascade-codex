@@ -86,7 +86,7 @@ Out:
 | Source | Path Or Tool | Why Needed | Freshness / Confidence |
 |---|---|---|---|
 | User request | Current task | explicit library/SDK contour intent | current / high |
-| Post-infrastructure identity | W-023 and `2026-07-28-contour-infrastructure-implementation-graph.md` | required 31-pair baseline and shared-file boundary | pending / high |
+| Post-infrastructure identity | W-023 and `2026-07-28-contour-infrastructure-work-graph.md` | required 31-pair baseline and shared-file boundary | pending / high |
 | Architecture chooser | `architecture-selection` graph/spec | already identifies a library as a possible reusable boundary | current / high |
 | Stack authority | `stack-selection` graph/spec and evidence schema | application-unit definition, routing, and public enum | current / high |
 | Backend reuse rule | `service-api-worker.spec.md` | distinguishes app-internal technical libs from real domain packages | current / high |

@@ -1,5 +1,6 @@
 import {
   copyFile,
+  link,
   mkdir,
   open,
   readdir,
@@ -129,6 +130,27 @@ export async function writeJsonAtomic(
       // The temporary file may not have been created.
     }
     throw error;
+  }
+}
+
+export async function writeJsonAtomicExclusive(
+  path: string,
+  value: unknown,
+): Promise<void> {
+  await mkdir(dirname(path), { recursive: true });
+  const temporary = `${path}.tmp-${crypto.randomUUID()}`;
+  try {
+    await writeFile(temporary, `${stableJson(value, true)}\n`, {
+      encoding: "utf8",
+      flag: "wx",
+    });
+    await link(temporary, path);
+  } finally {
+    try {
+      await unlink(temporary);
+    } catch {
+      // The temporary file may not have been created.
+    }
   }
 }
 
@@ -276,6 +298,8 @@ export interface CommandResult {
   stderr: string;
   durationMs: number;
   timedOut: boolean;
+  aborted: boolean;
+  outputLimitExceeded: boolean;
 }
 
 export async function runCommand(
@@ -284,38 +308,164 @@ export async function runCommand(
     cwd?: string;
     env?: Record<string, string | undefined>;
     timeoutMs?: number;
+    signal?: AbortSignal;
+    terminationGraceMs?: number;
+    maxOutputBytes?: number;
+    unsetEnv?: string[];
   } = {},
 ): Promise<CommandResult> {
   if (!argv.length) throw new CascadeError("command argv must not be empty");
+  if (
+    options.timeoutMs !== undefined &&
+    (!Number.isFinite(options.timeoutMs) || options.timeoutMs < 1)
+  ) {
+    throw new CascadeError("command timeout must be a positive number");
+  }
+  if (
+    options.terminationGraceMs !== undefined &&
+    (!Number.isFinite(options.terminationGraceMs) ||
+      options.terminationGraceMs < 0)
+  ) {
+    throw new CascadeError(
+      "command termination grace must be a non-negative number",
+    );
+  }
+  if (
+    options.maxOutputBytes !== undefined &&
+    (!Number.isInteger(options.maxOutputBytes) || options.maxOutputBytes < 1)
+  ) {
+    throw new CascadeError("command output limit must be a positive integer");
+  }
   const started = performance.now();
+  if (options.signal?.aborted) {
+    return {
+      argv,
+      exitCode: 130,
+      stdout: "",
+      stderr: "",
+      durationMs: Math.round(performance.now() - started),
+      timedOut: false,
+      aborted: true,
+      outputLimitExceeded: false,
+    };
+  }
+  const childEnv = { ...Bun.env, ...options.env };
+  for (const name of options.unsetEnv ?? []) {
+    delete childEnv[name];
+  }
   const process = Bun.spawn(argv, {
     cwd: options.cwd ?? ROOT,
-    env: { ...Bun.env, ...options.env },
+    env: childEnv,
     stdin: "ignore",
     stdout: "pipe",
     stderr: "pipe",
   });
   let timedOut = false;
+  let aborted = false;
+  let outputLimitExceeded = false;
+  let exited = false;
+  const terminationGraceMs = options.terminationGraceMs ?? 100;
+  const processExited = process.exited.then((exitCode) => {
+    exited = true;
+    return exitCode;
+  });
   let timer: ReturnType<typeof setTimeout> | undefined;
+  let forceTimer: ReturnType<typeof setTimeout> | undefined;
+  const kill = (signal: "SIGTERM" | "SIGKILL"): void => {
+    if (exited) return;
+    try {
+      process.kill(signal);
+    } catch {
+      // Exit can race with termination. The exited promise remains authority.
+    }
+  };
+  const terminate = (): void => {
+    kill("SIGTERM");
+    forceTimer = setTimeout(() => kill("SIGKILL"), terminationGraceMs);
+  };
+  const abort = (): void => {
+    if (exited || timedOut || aborted) return;
+    aborted = true;
+    terminate();
+  };
+  let retainedOutputBytes = 0;
+  const readBounded = async (
+    stream: ReadableStream<Uint8Array>,
+  ): Promise<string> => {
+    const chunks: Uint8Array[] = [];
+    const reader = stream.getReader();
+    try {
+      while (true) {
+        const item = await reader.read();
+        if (item.done) break;
+        const chunk = item.value;
+        const remaining =
+          options.maxOutputBytes === undefined
+            ? chunk.byteLength
+            : Math.max(0, options.maxOutputBytes - retainedOutputBytes);
+        if (remaining > 0) {
+          const retained =
+            remaining >= chunk.byteLength
+              ? chunk
+              : chunk.subarray(0, remaining);
+          chunks.push(retained);
+          retainedOutputBytes += retained.byteLength;
+        }
+        if (
+          options.maxOutputBytes !== undefined &&
+          remaining < chunk.byteLength
+        ) {
+          outputLimitExceeded = true;
+          terminate();
+        }
+      }
+    } finally {
+      reader.releaseLock();
+    }
+    const total = chunks.reduce((sum, chunk) => sum + chunk.byteLength, 0);
+    const joined = new Uint8Array(total);
+    let offset = 0;
+    for (const chunk of chunks) {
+      joined.set(chunk, offset);
+      offset += chunk.byteLength;
+    }
+    return new TextDecoder().decode(joined);
+  };
+  options.signal?.addEventListener("abort", abort, { once: true });
+  if (options.signal?.aborted) abort();
   if (options.timeoutMs) {
     timer = setTimeout(() => {
+      if (exited || aborted || timedOut) return;
       timedOut = true;
-      process.kill();
+      terminate();
     }, options.timeoutMs);
   }
-  const [stdout, stderr, exitCode] = await Promise.all([
-    new Response(process.stdout).text(),
-    new Response(process.stderr).text(),
-    process.exited,
-  ]);
-  if (timer) clearTimeout(timer);
+  let output: [string, string, number];
+  try {
+    output = await Promise.all([
+      readBounded(process.stdout),
+      readBounded(process.stderr),
+      processExited,
+    ]);
+  } catch (error) {
+    kill("SIGKILL");
+    await processExited;
+    throw error;
+  } finally {
+    if (timer) clearTimeout(timer);
+    if (forceTimer) clearTimeout(forceTimer);
+    options.signal?.removeEventListener("abort", abort);
+  }
+  const [stdout, stderr, exitCode] = output;
   return {
     argv,
-    exitCode: timedOut ? 124 : exitCode,
+    exitCode: timedOut ? 124 : aborted ? 130 : exitCode,
     stdout,
     stderr,
     durationMs: Math.round(performance.now() - started),
     timedOut,
+    aborted,
+    outputLimitExceeded,
   };
 }
 

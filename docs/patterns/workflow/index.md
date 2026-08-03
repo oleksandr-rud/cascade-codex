@@ -63,11 +63,13 @@ actions, or provider spend.
 Naming defaults:
 
 - worklines use `W-XXX`;
-- new work graphs use `WG-XXX`;
-- new graph nodes use `WG-XXX-NXX` and gates use `WG-XXX-GX`;
+- work graphs use `WG-XXX`;
+- graph nodes use `WG-XXX-NXX` and gates use `WG-XXX-GX`;
 - durable files use `docs/work/reports/YYYY-MM-DD-<slug>-work-graph.md`;
-- existing graph and node IDs remain stable when already bound into reports or
-  receipts; changing the display term does not rewrite evidence identity.
+- graph, node, and gate IDs are unique, graph-scoped, and never reused;
+- legacy graph namespaces require an explicit reconciliation and direct
+  cutover across every live planning/work reference. Immutable runtime run and
+  receipt IDs remain evidence identities rather than work-graph IDs.
 
 Lifecycle:
 
