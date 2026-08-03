@@ -88,6 +88,45 @@ async function authorizedStore(
   return store.withAuthority(identity.operator, "lease-1");
 }
 
+function refinementProposal(runId: string) {
+  return {
+    schema_version: 1,
+    proposal_id: "proposal-1",
+    run_id: runId,
+    campaign_id: "campaign-1",
+    evaluation_id: "evaluation-1",
+    persona: {
+      persona_id: "P-999",
+      revision: 1,
+      path: "docs/product/personas/fixtures/P-999-framework-support-role.md",
+      sha256: "a".repeat(64),
+    },
+    derivation: {
+      id: "p-999-coverage-v1",
+      path: "evals/simulations/fixture/derivations/P-999.json",
+      sha256: "b".repeat(64),
+    },
+    proposal_type: "research-question",
+    target_field: "communication behavior",
+    summary: "Collect external observations.",
+    rationale: "Fixture evidence cannot validate a product persona.",
+    recommended_change: "Keep the persona unchanged until research exists.",
+    evidence_paths: ["run/execution/execution-receipt.json"],
+    confidence: "high",
+    disposition_route: "collect-external-evidence",
+    external_evidence_required: true,
+    human_review_required: true,
+    direct_persona_mutation_allowed: false,
+    status: "PROPOSED",
+    proposed_by: "evaluator",
+    created_at: "2026-08-03T00:00:00Z",
+    promotion_blockers: [
+      "external evidence has not been reviewed",
+      "accountable human persona review has not approved a new revision",
+    ],
+  };
+}
+
 async function seedCompletedRun(store: CampaignArtifactStore): Promise<void> {
   const identity = {
     run_id: store.runId,
@@ -130,42 +169,10 @@ async function seedCompletedRun(store: CampaignArtifactStore): Promise<void> {
     "aggregations/aggregation-1.json",
     aggregation,
   );
-  await store.writeStageJson("refinements/proposal-1.json", {
-    schema_version: 1,
-    proposal_id: "proposal-1",
-    run_id: store.runId,
-    campaign_id: "campaign-1",
-    evaluation_id: "evaluation-1",
-    persona: {
-      persona_id: "P-999",
-      revision: 1,
-      path: "docs/product/personas/fixtures/P-999-framework-support-role.md",
-      sha256: "a".repeat(64),
-    },
-    derivation: {
-      id: "p-999-coverage-v1",
-      path: "evals/simulations/fixture/derivations/P-999.json",
-      sha256: "b".repeat(64),
-    },
-    proposal_type: "research-question",
-    target_field: "communication behavior",
-    summary: "Collect external observations.",
-    rationale: "Fixture evidence cannot validate a product persona.",
-    recommended_change: "Keep the persona unchanged until research exists.",
-    evidence_paths: ["run/execution/execution-receipt.json"],
-    confidence: "high",
-    disposition_route: "collect-external-evidence",
-    external_evidence_required: true,
-    human_review_required: true,
-    direct_persona_mutation_allowed: false,
-    status: "PROPOSED",
-    proposed_by: "evaluator",
-    created_at: "2026-08-03T00:00:00Z",
-    promotion_blockers: [
-      "external evidence has not been reviewed",
-      "accountable human persona review has not approved a new revision",
-    ],
-  });
+  await store.writeStageJson(
+    "refinements/proposal-1.json",
+    refinementProposal(store.runId),
+  );
   await store.writeStageJson("summary.json", {
     schema_version: 1,
     ...identity,
@@ -252,6 +259,18 @@ describe("CampaignArtifactStore", () => {
     await expect(
       store.writeStageJson("execution/late.json", { status: "LATE" }),
     ).rejects.toThrow("already finalized");
+  });
+
+  test("rejects refinement artifacts that claim direct persona mutation", async () => {
+    const root = await temporaryRoot();
+    const store = await authorizedStore(root, "run-invalid-refinement");
+
+    await expect(
+      store.writeStageJson("refinements/invalid.json", {
+        ...refinementProposal(store.runId),
+        direct_persona_mutation_allowed: true,
+      }),
+    ).rejects.toThrow("proposal-only");
   });
 
   test("freezes bounded regular files and blocks symlinks, size, and secrets", async () => {
