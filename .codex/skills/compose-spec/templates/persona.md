@@ -1,8 +1,12 @@
 # Persona: `<persona-name-or-role>`
 
 ID: P-XXX
+Revision: `<positive-integer>`
 Status: `<draft | reviewed | approved | superseded>`
+Maturity: `<hypothesis | research-backed | behavior-validated>`
 Source: `<REQUEST_OR_SPEC_OR_RESEARCH>`
+Source Digests: `<SOURCE_ID_SHA256_OR_NONE>`
+Reference Window: `<START_END_OR_NOT_APPLICABLE>`
 
 ## Summary
 
@@ -17,6 +21,24 @@ Source: `<REQUEST_OR_SPEC_OR_RESEARCH>`
 - Frequency:
 - Environment:
 - Tools or adjacent workflow:
+
+## Evidence, Confidence, And Uncertainty
+
+| Attribute | Evidence Source | Evidence Class | Confidence | Uncertainty / Abstention Rule | Invalidation Signal |
+|---|---|---|---|---|---|
+| `<ROLE_GOAL_CONSTRAINT_BEHAVIOR>` | `<SOURCE_ID_OR_PATH>` | `<observed | user-provided | expert-reviewed | inferred>` | `<low | medium | high>` | `<WHAT_MUST_REMAIN_UNKNOWN>` | `<NEW_EVIDENCE_OR_DATE_RULE>` |
+
+Do not turn unsupported demographic or biographical detail into behavioral
+certainty. Preserve missing evidence as uncertainty and define when downstream
+synthetic actors must abstain.
+
+## Permitted Uses And Prohibited Claims
+
+- Permitted uses:
+- Prohibited claims:
+- Sensitive attributes excluded or minimized:
+- Product artifacts affected:
+- Review owner:
 
 ## Behavior Implications
 
@@ -38,6 +60,8 @@ Source: `<REQUEST_OR_SPEC_OR_RESEARCH>`
 - Journeys:
 - Scenarios:
 - Brand/design/spec dependencies:
+- Prior revision or supersession:
+- Approved derivation manifests:
 
 ## Doc Routing Decisions
 
