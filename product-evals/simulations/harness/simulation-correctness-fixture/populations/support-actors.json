@@ -1,0 +1,84 @@
+{
+  "schema_version": 2,
+  "id": "support-actors-v2",
+  "mode": "coverage",
+  "weight_semantics": "test-allocation",
+  "source": {
+    "kind": "persona-derived",
+    "description": "Derived from approved manifest p-999-coverage-v1; synthetic evidence remains proposal-only.",
+    "derivation": {
+      "id": "p-999-coverage-v1",
+      "path": "product-evals/simulations/harness/simulation-correctness-fixture/derivations/P-999-coverage-v1.json",
+      "sha256": "87370d2a8a6f877b9baf446ac3ff672c5837bf4c5c70ed9ce718e8c8a0faac79"
+    },
+    "product_personas": [
+      {
+        "persona_id": "P-999",
+        "revision": 1,
+        "path": "docs/product/personas/fixtures/P-999-framework-support-role.md",
+        "sha256": "e0376f335cce998b2a5189cc2e000b150f7b91d76bccd735df40f6f85110687a"
+      }
+    ],
+    "generator": {
+      "kind": "deterministic-manifest",
+      "name": "cascade-persona-derivation",
+      "version": "1.0.0",
+      "input_digest": "0c9f608f12aeda9cd4437921aea40ccc8d08dae910ca704d636ee6552376d5aa"
+    },
+    "minimized": true
+  },
+  "actors": [
+    {
+      "id": "standard-actor",
+      "weight": 0.7,
+      "actor_class": "representative",
+      "persona_ids": ["P-999"],
+      "goals": ["complete the deterministic support task"],
+      "invariants": ["do not infer real-user behavior"],
+      "knowledge": {
+        "known": ["fixture account identifier"],
+        "unknown": ["all production customer context"]
+      },
+      "uncertainty": ["real-user behavior is not represented"],
+      "decision_policy": {
+        "strategy": "rule-based",
+        "retry_limit": 2,
+        "stop_on_blocked": true
+      },
+      "communication_policy": {
+        "style": "direct",
+        "clarification": "ask"
+      },
+      "state_memory": { "scope": "scenario", "max_facts": 8 },
+      "friction_behaviors": [],
+      "abstention": { "when_unsupported": true, "when_conflicted": true },
+      "slices": ["standard"]
+    },
+    {
+      "id": "risk-actor",
+      "weight": 0.3,
+      "actor_class": "edge",
+      "persona_ids": ["P-999"],
+      "goals": ["complete the deterministic support task"],
+      "invariants": ["do not infer real-user behavior"],
+      "knowledge": {
+        "known": ["fixture account identifier"],
+        "unknown": ["all production customer context"]
+      },
+      "uncertainty": ["real-user behavior is not represented"],
+      "decision_policy": {
+        "strategy": "scripted",
+        "retry_limit": 1,
+        "stop_on_blocked": true
+      },
+      "communication_policy": {
+        "style": "ambiguous",
+        "clarification": "ask"
+      },
+      "state_memory": { "scope": "scenario", "max_facts": 8 },
+      "friction_behaviors": ["provide ambiguous input once"],
+      "abstention": { "when_unsupported": true, "when_conflicted": true },
+      "slices": ["risk"]
+    }
+  ]
+}

@@ -1,6 +1,8 @@
 #!/usr/bin/env bun
 
 import { main as campaignMain } from "./cascade/campaigns";
+import { main as admissionMain } from "./cascade/admission";
+import { main as briefMain } from "./cascade/briefs";
 import { printError } from "./cascade/common";
 import { main as evalMain } from "./cascade/evals";
 import { main as patternsMain } from "./cascade/patterns";
@@ -22,6 +24,10 @@ async function main(): Promise<number> {
       return targetMain(args);
     case "campaign":
       return campaignMain(args);
+    case "admission":
+      return admissionMain(args);
+    case "brief":
+      return briefMain(args);
     case "simulation":
       return simulationMain(args);
     case "--help":
@@ -38,13 +44,31 @@ Usage:
   bun scripts/cascade.ts campaign validate <campaign-id-or-path>
   bun scripts/cascade.ts campaign run <campaign-id-or-path> [--run-id ID]
     [--confirmation-receipt PATH]
+  bun scripts/cascade.ts campaign resume <run-id> --lease-id ID
+    [--recovery SUBJECT] [--recovery-reason TEXT]
   bun scripts/cascade.ts campaign verify <run-id>
   bun scripts/cascade.ts campaign self-test
+  bun scripts/cascade.ts admission validate
+  bun scripts/cascade.ts admission assess --request "..." [--authority VALUE]
+    [--task-id SESSION] [--output .artifacts/task-admission/FILE.json]
+  bun scripts/cascade.ts admission explain --request "..."
+  bun scripts/cascade.ts admission check-envelope --file PATH
+  bun scripts/cascade.ts admission corpus
+  bun scripts/cascade.ts brief list
+  bun scripts/cascade.ts brief validate <brief-id-or-path>
+  bun scripts/cascade.ts brief generate <brief-id-or-path> [--check|--write]
+  bun scripts/cascade.ts brief check
   bun scripts/cascade.ts simulation init <simulation-id> --owner-lane W-NNN
     [--title "Title"] [--reference-date YYYY-MM-DD] [--dry-run]
+    Output root: product-evals/simulations/product/<simulation-id>/
   bun scripts/cascade.ts simulation derive-population P-NNN
     --simulation <simulation-id>
-    --mode <representative|coverage|stress|counterfactual> --dry-run
+    --mode <representative|coverage|stress|counterfactual> (--dry-run|--write)
+  bun scripts/cascade.ts simulation dispose-refinement --proposal <path>
+    --disposition-id <id> --decision <accepted|rejected|needs-evidence|simulator-repair>
+    --reviewer <identity> [--evidence-manifest <path>] (--dry-run|--write)
+  bun scripts/cascade.ts simulation intake <campaign-id-or-path> --envelope <path>
+    [--brief PB-NNN|docs/specs/.../brief.yaml] [--check|--write]
 `);
       return 0;
     default:

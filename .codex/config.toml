@@ -8,7 +8,10 @@ bridge = "CODEX.md"
 config_template = "harness.config.example.yaml"
 
 [cascade]
-default = [
+admission_command = "scripts/cascade.ts admission assess"
+admission_policy_bundle = ".codex/task-admission/policies/core.json"
+admission_hook = ".codex/hooks.json"
+fallback_non_atomic = [
   "context",
   "ingest-spec",
   "docs-impact-map",
@@ -54,22 +57,29 @@ planning_model = "gpt-5.6-sol"
 execution_model = "gpt-5.6-terra"
 judge_model = "gpt-5.6-sol"
 default_model_profile = "execution"
-cases = "evals/harness/skill-cases.json"
-interactions = "evals/harness/interactions.json"
-catalog = "evals/harness/scenarios.generated.json"
-response_schema = "evals/harness/response.schema.json"
-judge_schema = "evals/harness/judge-response.schema.json"
-judge_profiles = "evals/harness/judge-profiles.json"
-rubrics = "evals/harness/rubrics"
+cases = "harness-evals/skill-cases.json"
+interactions = "harness-evals/interactions.json"
+catalog = "harness-evals/scenarios.generated.json"
+response_schema = "harness-evals/response.schema.json"
+judge_schema = "harness-evals/judge-response.schema.json"
+judge_profiles = "harness-evals/judge-profiles.json"
+rubrics = "harness-evals/rubrics"
 runner = "scripts/cascade/evals.ts"
 artifacts = ".artifacts/harness-evals"
 
 [campaigns]
-registry = "evals/campaigns"
-schema = "evals/campaigns/schema.json"
+registry = "product-evals/campaigns"
+schema = "product-evals/campaigns/schema.json"
 runner = "scripts/cascade/campaigns.ts"
-artifacts = ".artifacts/campaigns"
+artifacts = ".artifacts/product-evals"
 browser_runner = ".codex/harness-tooling/playwright.config.ts"
+
+[product_briefs]
+catalog = "docs/product/catalog.yaml"
+catalog_schema = "docs/product/catalog.schema.json"
+manifest_schema = "docs/specs/brief-manifest.schema.json"
+manifests = "docs/specs/*/brief.yaml"
+runner = "scripts/cascade/briefs.ts"
 
 [mcp_servers.context7]
 command = "npx"

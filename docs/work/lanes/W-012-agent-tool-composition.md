@@ -12,14 +12,14 @@ Runtime Handle: `none`
 
 ## Request
 
-Compose the accepted `agent-response` adapter with command, browser, terminal,
-desktop, and mobile tool seams so a source-blind agent can operate each contour
+Compose the accepted `agent-response` adapter with command, HTTP, browser,
+terminal, desktop, and mobile tool seams so a source-blind agent can operate each contour
 without creating hybrid task kinds, duplicating surface adapters, or allowing
 agent or observed content to expand permissions.
 
 ## Acceptance Criteria
 
-- Composition uses existing typed `agent-response`, `command`, `browser`,
+- Composition uses existing typed `agent-response`, `command`, `http`, `browser`,
   `terminal`, `desktop`, and `mobile` tasks; no `agent-command`,
   `agent-browser`, or other hybrid task kind is introduced.
 - Each agent profile resolves an exact tool seam, surface task, simulation,
@@ -40,9 +40,9 @@ agent or observed content to expand permissions.
 - Driver completion, a strong final answer, or semantic judgment cannot
   compensate for a denied action, failed surface oracle, missing evidence,
   identity mismatch, or failed cleanup.
-- One deterministic fake-adapter matrix covers all five agent-to-tool bindings
+- One deterministic fake-adapter matrix covers all six agent-to-tool bindings
   without model, browser, PTY, desktop, or mobile runtime execution.
-- Live command, browser, terminal, desktop, and mobile agent-tool canaries
+- Live command, HTTP, browser, terminal, desktop, and mobile agent-tool canaries
   remain separate named campaigns with their own runtime, permission, platform,
   cost, cleanup, and claim scope.
 - Every live composed run is executed by `simulation-operator` and independently
@@ -59,8 +59,8 @@ In:
 - composition manifests, fake bindings, tool-event linkage, and joined result
   fixtures;
 - deterministic cross-contour composition matrix;
-- bounded live agent-command, agent-browser, agent-terminal, agent-desktop, and
-  agent-mobile canary manifests;
+- bounded live agent-command, agent-HTTP, agent-browser, agent-terminal,
+  agent-desktop, and agent-mobile canary manifests;
 - composition-specific policies, claims, oracles, evidence requirements,
   cleanup joins, receipts, and coverage projection.
 
@@ -70,7 +70,8 @@ Out:
   by W-004;
 - Codex runtime and normalized agent-result implementation owned by W-007;
 - command, browser, terminal, desktop, or mobile adapter implementation owned
-  by W-005, W-006, W-008, W-009, and W-010;
+  by W-005, W-006, W-008, W-009, and W-010; the HTTP adapter remains owned by
+  W-004;
 - unrestricted host, personal-profile, real-account, or production-device
   access;
 - live provider spending or platform execution before Gate B and each named
@@ -83,6 +84,7 @@ Out:
 | Request | current contour-composition follow-up | agent use across every contour | current |
 | Foundation | W-004 Gate A and WG-001-N15 integrated source | shared tasks, policies, claims, artifacts, receipts, and accepted adapters | pending |
 | Command | W-005 accepted process/tool seam | bounded direct-process actions | pending |
+| HTTP | W-004 accepted bounded HTTP seam | exact method/origin requests and status/body oracle | pending |
 | Browser | W-006 accepted structured browser-tool seam | isolated web actions and public-state oracle | pending |
 | Agent | W-007 accepted Codex adapter and tool-event normalization | source-blind agent execution | pending |
 | Terminal | W-008 accepted PTY/TUI seam | interactive terminal actions and screen/transcript oracle | pending |
@@ -95,8 +97,9 @@ Out:
 
 | Campaign ID | Tier | Required Evidence Boundary | Status |
 |---|---|---|---|
-| `agent-tool-composition-smoke` | PR deterministic integration | Fake source-blind agent plus fake command, browser, terminal, desktop, and mobile seams; tool-call linkage, per-task results, deny/failed-oracle/cleanup cases, joined claims, execution/evaluation receipts, and no external runtime | `OPEN` |
+| `agent-tool-composition-smoke` | PR deterministic integration | Fake source-blind agent plus fake command, HTTP, browser, terminal, desktop, and mobile seams; tool-call linkage, per-task results, deny/failed-oracle/cleanup cases, joined claims, execution/evaluation receipts, and no external runtime | `OPEN` |
 | `agent-command-tool-canary` | bounded live integration | Exact Codex agent/profile and direct-process tool identity, argv/cwd/env policy, output oracle, action/token/cost budgets, frozen trace/logs, and cleanup | `NOT_RUN` |
+| `agent-http-tool-canary` | bounded live integration | Exact agent/profile and HTTP adapter identity, method/origin policy, bounded response evidence, status/body oracle, budgets, and cleanup | `NOT_RUN` |
 | `agent-browser-tool-canary` | bounded live integration | Exact Codex agent/profile, isolated browser/profile/fixture, structured browser tool, navigation/action policy, public-state oracle, frozen trace/visual evidence, and cleanup | `NOT_RUN` |
 | `agent-terminal-tool-canary` | bounded live integration | Exact Codex agent/profile, PTY/runtime/dimensions, typed input/signal policy, transcript/screen oracle, budgets, process cleanup, and frozen evidence | `NOT_RUN` |
 | `agent-desktop-tool-canary` | isolated live platform | Exact Codex agent/profile, disposable OS/image/display/app build, app/window/action policy, native oracle, budgets, reset, and artifact transfer | `NOT_RUN` |
@@ -120,6 +123,7 @@ platform behavior, mobile platform behavior, or release eligibility.
 | `ATC-008` | Given cleanup fails after successful agent and surface oracles, the composed required claim cannot pass. | cleanup failure, receipts, and claim ledger | `OPEN` |
 | `ATC-009` | Given an execution receipt is evaluated by the same runtime identity, receipt joining rejects self-evaluation. | identity-mismatch fixture | `OPEN` |
 | `ATC-010` | Given one live composed canary is blocked, every other composed canary retains its independent result and coverage scope. | campaign portfolio projection | `OPEN` |
+| `ATC-011` | Given an actor requests an HTTP method or origin outside its policy, the request is rejected before network dispatch and cannot be compensated by the agent answer. | HTTP policy decision and absent response evidence | `OPEN` |
 
 ## Feature Impact Matrix
 
@@ -139,7 +143,7 @@ platform behavior, mobile platform behavior, or release eligibility.
 | composition event linkage and joined-result fixtures | W-012 | write | consume W-004 receipts and reducer |
 | shared schemas, catalog generator, artifact writer, reducer, receipts | W-004 | read/merge-only | changes reopen Gate A |
 | Codex adapter and base agent profiles | W-007 | read | W-012 adds composition profiles only |
-| command/browser/terminal/desktop/mobile adapters and fixtures | W-005/W-006/W-008/W-009/W-010 | read | W-012 consumes accepted seams |
+| command/HTTP/browser/terminal/desktop/mobile adapters and fixtures | W-004/W-005/W-006/W-008/W-009/W-010 | read | W-012 consumes accepted seams |
 | canonical catalog/docs/config/validator integration | W-004 | merge-only | W-012 contributes manifests and evidence |
 
 ## Tool And MCP Context
@@ -148,7 +152,7 @@ platform behavior, mobile platform behavior, or release eligibility.
 |---|---|---|---|
 | fake agent and fake surface adapters | deterministic composition matrix | local only | typed events, receipts, and joined ledgers |
 | Codex CLI/runtime | bounded live agent | explicit model/runtime and cost approval | raw/normalized trace and usage |
-| command/PTY/browser/platform/device tools | live surface action | exact allowlists and isolated environment | surface evidence and cleanup receipt |
+| command/HTTP/PTY/browser/platform/device tools | live surface action | exact allowlists and isolated environment | surface evidence and cleanup receipt |
 | Computer Use | optional visual driver inside declared surface campaign | isolated; action policy and confirmations | action/observation trace, never oracle |
 | personal profiles, real accounts, host desktop, production devices | none | forbidden | fail preflight |
 
@@ -167,7 +171,7 @@ platform behavior, mobile platform behavior, or release eligibility.
    surface-owned policies and oracles as the mechanical authority.
 6. Run the deterministic matrix through WG-001-N16 and merge only through W-004;
    Gate B requires its passing receipt.
-7. Author the five live canary manifests with separate runtime, environment,
+7. Author the six live canary manifests with separate runtime, environment,
    platform, permission, budget, cleanup, and claim envelopes.
 8. After Gate B, preflight and run each authorized live canary independently
    through WG-001-N17; unavailable or unauthorized canaries remain `BLOCKED` or
@@ -176,6 +180,11 @@ platform behavior, mobile platform behavior, or release eligibility.
    inferring one contour, platform, or driver from another.
 
 ## Parallel Dependencies
+
+Every product-scoped composed canary in `WG-001-N17` additionally requires a
+READY W-032 intake that binds the current Task Envelope, product brief, and
+exact policies for each composed task action. Harness-only deterministic
+composition remains gated by Gate B and cannot satisfy this product intake.
 
 - Can run with: no deterministic implementation before WG-001-N15; after Gate B,
   live canaries may run independently when their exact environments and
@@ -207,12 +216,12 @@ platform behavior, mobile platform behavior, or release eligibility.
 | Check | Command Or Evidence | Status |
 |---|---|---|
 | Definition/reference validation | composed profile, task, claim, policy, oracle, fixture, and catalog checks | `OPEN` |
-| Fake composition matrix | five surface success paths plus deny/oracle/timeout/evidence/cleanup failures | `OPEN` |
+| Fake composition matrix | six surface success paths plus deny/oracle/timeout/evidence/cleanup failures | `OPEN` |
 | Identity and receipts | tool-event linkage, stale/mismatched/self-evaluation receipt rejection | `OPEN` |
 | Conservative reduction | independent task results and required composed-claim joins | `OPEN` |
 | Direct-surface regression | every accepted surface campaign remains independent of agent composition | `OPEN` |
 | Agent regression | standalone and Cascade profiles preserve current behavior | `OPEN` |
-| Live command/browser/terminal/desktop/mobile canaries | exact WG-001-N17 run and evaluation receipts | `NOT_RUN` |
+| Live command/HTTP/browser/terminal/desktop/mobile canaries | exact WG-001-N17 run and evaluation receipts | `NOT_RUN` |
 | Portfolio projection | independent contour/platform verdict and coverage checks | `OPEN` |
 
 ## Status Reconciliation
@@ -222,7 +231,7 @@ platform behavior, mobile platform behavior, or release eligibility.
   `master@21ba5288b27700f94ecad92ec0cf3d1e5dca5f29`; accepted WG-001-N03
   current-source implementation and revision-11 status records applied on top
 - Completion disposition: `KEEP_OPEN`
-- Reason: composed profiles/manifests, five-contour fake matrix, and joined
+- Reason: composed profiles/manifests, six-contour fake matrix, and joined
   result runtime are absent; required gates remain `OPEN`/`NOT_RUN`.
 - Synchronized surfaces: lane, active registry, report index, and WG-001 plan
   revision 10.

@@ -1,5 +1,13 @@
 # Spec Packet: `<title>`
 
+## Product Context
+
+- Domain ID: `<PD-XXX_OR_GAP>`
+- Capability ID: `<PC-XXX_OR_GAP>`
+- Brief manifest: `<docs/specs/<slice>/brief.yaml_OR_NOT_APPLICABLE>`
+- Coverage: `<complete | selected | not-applicable>`
+- Simulation intake target: `<product-evals/intakes/product/<id>.json_OR_NOT_APPLICABLE>`
+
 ## Source
 
 - Source type:
@@ -51,3 +59,4 @@ Use `docs/patterns/workflow/index.md` for the shared Doc Routing Decision Matrix
 - Next gate:
 - Blockers:
 - Durable docs updated:
+- Product-doc update trigger: `<which accepted finding re-enters synthesis-to-spec/compose-spec; never implicit>`

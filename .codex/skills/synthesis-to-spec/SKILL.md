@@ -18,7 +18,8 @@ authoring to `compose-spec`. It does not implement code.
 1. Latest market-validation report, lane outputs, scorecard, critic report, and
    validation experiment evidence.
 2. User brief, source spec, ticket, or incoming research packet.
-3. Existing `docs/product/_index.md`, `docs/product/requirements.md`,
+3. Existing `docs/product/_index.md`, `docs/product/catalog.yaml`,
+   `docs/product/requirements.md`,
    `docs/product/journeys.md`, `docs/product/scenarios.md`,
    `docs/product/personas/`, `docs/specs/`, `docs/design/`, `docs/brand/`,
    `docs/backlog/_index.md`, and `docs/glossary.md`.
@@ -39,6 +40,8 @@ Use this skill for:
   implications affect behavior;
 - backlog candidates with acceptance criteria;
 - plan-ready spec packets;
+- product-domain/capability placement and brief-ready source/evidence
+  selections when synthesis spans several owner docs;
 - evidence-to-doc traceability;
 - source-context trajectory analysis before durable promotion;
 - explicit no-doc-needed decisions for weak or non-durable findings.
@@ -73,6 +76,9 @@ repair.
    - current/superseded status;
    - contradiction owner and resolution route;
    - acceptance behavior and implementation bridge.
+   - owning `PD-XXX` domain and `PC-XXX` capability when the target catalog is
+     present, plus whether a `PB-XXX` brief should use complete or selected
+     coverage.
 4. Choose the smallest owner target:
    - `compose-spec` for PRDs, personas, compact product specs,
      requirement rows, journey rows, scenario rows, spec packets, and
@@ -84,9 +90,10 @@ repair.
    - `docs/product/journeys.md` when state carries across steps;
    - `docs/product/personas/` when roles change behavior;
    - `docs/specs/{slice-slug}/` for normalized plan-ready source packets;
+   - `docs/product/catalog.yaml` for stable domain/capability relationships;
    - `docs/backlog/_index.md` for follow-up work with acceptance criteria.
 5. Preserve traceability:
-   `source -> finding -> requirement or scenario -> functional check -> work lane`.
+   `source -> finding -> domain/capability -> requirement or scenario -> optional brief selection -> functional check -> work lane`.
    For research claims, also preserve:
    `query facet -> source family -> evidence class -> atomic claim -> promotion status`.
    Treat simulation refinement proposals as hypotheses: separate product

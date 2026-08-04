@@ -1,0 +1,26 @@
+schema_version: 1
+brief_id: PB-XXX
+revision: 1
+status: draft
+title: <capability-title>
+catalog_path: docs/product/catalog.yaml
+domain_id: PD-XXX
+capability_id: PC-XXX
+coverage_mode: complete
+purpose: <planning-or-prompt-context-purpose>
+audiences: [<audience>]
+product_refs:
+  requirement_ids: []
+  journey_ids: []
+  scenario_ids: []
+  persona_ids: []
+omissions: []
+source_documents: [docs/specs/<slice-slug>/<source>.md]
+evidence: []
+pattern_context:
+  - pack_id: product-context-core
+    section_ids: [product-authority-graph, brief-manifest-and-compilation, evidence-promotion-boundary]
+simulation_context: []
+gaps: []
+non_goals: [<explicit-non-goal>]
+output_path: docs/specs/<slice-slug>/brief.generated.md

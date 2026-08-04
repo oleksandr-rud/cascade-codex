@@ -26,7 +26,7 @@ import {
 
 const DEFAULT_CONFIG = "harness.config.yaml";
 const DEFAULT_MANIFEST = "docs/work/onboarding-manifest.json";
-const FIXTURE_ROOT = rootPath("evals/harness/fixtures/onboarding/basic-project");
+const FIXTURE_ROOT = rootPath("harness-evals/fixtures/onboarding/basic-project");
 const PHASE_IDS = Array.from({ length: 10 }, (_, index) =>
   `ON-${String(index).padStart(2, "0")}`,
 );
@@ -117,17 +117,8 @@ function isHarnessOwned(relative: string): boolean {
     relative.startsWith("scripts/cascade/") ||
     relative.startsWith(".codex/") ||
     relative.startsWith("docs/patterns/") ||
-    relative.startsWith("evals/harness/") ||
-    relative.startsWith("evals/campaigns/") ||
-    relative.startsWith("evals/tasks/") ||
-    relative.startsWith("evals/simulations/") ||
-    relative.startsWith("evals/claims/") ||
-    relative.startsWith("evals/policies/") ||
-    relative.startsWith("evals/oracles/") ||
-    relative.startsWith("evals/metrics/") ||
-    relative.startsWith("evals/treatments/") ||
-    relative.startsWith("evals/calibrations/") ||
-    relative.startsWith("evals/rubrics/")
+    relative.startsWith("harness-evals/") ||
+    relative.startsWith("product-evals/")
   );
 }
 
@@ -986,7 +977,8 @@ export async function runFixtureSelfTest(): Promise<string[]> {
     if (
       cascadeInventory.public_contracts.some(
         (item: string) =>
-          item.startsWith("evals/") ||
+          item.startsWith("harness-evals/") ||
+          item.startsWith("product-evals/") ||
           item.startsWith(".codex/") ||
           item.startsWith("docs/patterns/"),
       )

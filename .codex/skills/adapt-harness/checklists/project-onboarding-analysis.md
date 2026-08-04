@@ -29,9 +29,9 @@ entries when reusable rules are discovered.
 | `ON-02` code area specs | `[ ]` | `adapt-harness`, `architecture-review` | backend, frontend, shared, data, integration, tooling, runtime areas and public contracts | `docs/specs/{slice-slug}/`, `docs/patterns/boundaries/index.md` |
 | `ON-03` architecture boundaries | `[ ]` | `architecture-review`, `docs-impact-map`, `pattern-context` | layer boundaries, consumers, side effects, public contract rules, adapter rules | `docs/patterns/boundaries/`, other bounded pattern entries, `docs/glossary.md` |
 | `ON-04` security and data handling | `[ ]` | `codebase-audit`, `auth-analysis`, `secure-design`, `pattern-context` | auth, role gates, tenant or owner boundaries, secrets, external sends, auditability, abuse cases | `docs/patterns/boundaries/`, `docs/patterns/testing/`, bounded security entry only when evidence exists, `docs/work/reports/`, `docs/backlog/_index.md` |
-| `ON-05` feature catalog | `[ ]` | `ingest-spec`, `discover`, `synthesis-to-spec`, `compose-spec` | visible features, routes, jobs, user-facing copy, API contracts, existing specs, tests | `docs/product/`, `docs/specs/{slice-slug}/`, `docs/backlog/_index.md` |
+| `ON-05` product relationship and feature catalog | `[ ]` | `ingest-spec`, `discover`, `synthesis-to-spec`, `compose-spec`, `pattern-context` | target-evidence-backed `PD-XXX` domains and `PC-XXX` capabilities, visible features, routes, jobs, user-facing copy, API contracts, existing specs, tests, copied-scaffold disposition, optional `PB-XXX` brief selection | `docs/product/catalog.yaml`, product owner ledgers, `docs/specs/{slice-slug}/`, `docs/patterns/product-context/`, `docs/backlog/_index.md` |
 | `ON-06` visual/design/brand capture | `[ ]` | `visual-qa`, `ux-flow-review`, `design-system`, `brand-positioning` | screenshots or UI evidence, layout, responsive behavior, states, tokens, components, tone, naming, visual direction | `docs/design/`, `docs/brand/`, `docs/product/`, `docs/work/reports/` |
-| `ON-07` functional acceptance and simulation map | `[ ]` | `functional-qa`, `simulation-campaigns`, `docs-impact-map` | scenarios, acceptance checks, simulation ID/owner, API/browser/CLI/manual proof routes, runner gaps | `docs/product/scenarios.md`, `evals/simulations/`, `evals/campaigns/`, `docs/patterns/testing/index.md`, `harness.config.yaml` |
+| `ON-07` functional acceptance and simulation map | `[ ]` | `functional-qa`, `simulation-campaigns`, `docs-impact-map` | scenarios, acceptance checks, product simulation ID/owner, API/browser/CLI/manual proof routes, runner gaps, explicit separation from harness fixtures | `docs/product/scenarios.md`, `product-evals/simulations/product/`, `product-evals/simulations/harness/`, `product-evals/campaigns/`, `docs/patterns/testing/index.md`, `harness.config.yaml` |
 | `ON-08` context-memory routing | `[ ]` | `docs-impact-map`, `pattern-context`, `closeout` | source identity, durable facts, pattern packs, gaps, deferred work, rejected scope worth preserving | narrow owner docs, `docs/patterns/context-memory/`, bounded pattern entries |
 | `ON-09` validation and handoff | `[ ]` | `validate-change`, `closeout` | target-mode Cascade validator, configured-command availability and per-command dispositions, complete manifest, preservation hashes, current drift result, target checks, stale searches, files written/skipped/blocked | `docs/work/onboarding-manifest.json`, `docs/work/reports/`, final response |
 
@@ -60,6 +60,11 @@ Each project-part spec must include:
 
 - Product feature intent, requirements, journeys, scenarios, and acceptance
   criteria go to `docs/product/` or `docs/specs/{slice-slug}/`.
+- Stable product domain/capability relationships go to
+  `docs/product/catalog.yaml`. A per-slice `brief.yaml` may select those owner
+  facts and reusable context only after the target catalog is reconciled;
+  copied Cascade catalog and brief entries are scaffold examples, not target
+  evidence.
 - Design tokens, components, layout, interaction, accessibility, and visual
   evidence rules go to `docs/design/` or `design-system`.
 - Brand naming, tone, content, positioning, and visual direction go to

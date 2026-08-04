@@ -1,0 +1,86 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://cascade.local/schemas/product-catalog.schema.json",
+  "title": "Cascade product domain and capability catalog",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "product", "domains", "capabilities"],
+  "properties": {
+    "schema_version": { "const": 1 },
+    "product": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "name", "summary"],
+      "properties": {
+        "id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9-]*$" },
+        "name": { "type": "string", "minLength": 1 },
+        "summary": { "type": "string", "minLength": 1 }
+      }
+    },
+    "domains": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/domain" }
+    },
+    "capabilities": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/capability" }
+    }
+  },
+  "$defs": {
+    "status": {
+      "enum": ["draft", "reviewed", "approved", "superseded"]
+    },
+    "pathList": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "type": "string", "pattern": "^docs/" }
+    },
+    "domain": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "name", "status", "owner", "summary", "source_paths"],
+      "properties": {
+        "id": { "type": "string", "pattern": "^PD-[0-9]{3}$" },
+        "name": { "type": "string", "minLength": 1 },
+        "status": { "$ref": "#/$defs/status" },
+        "owner": { "type": "string", "minLength": 1 },
+        "summary": { "type": "string", "minLength": 1 },
+        "source_paths": { "$ref": "#/$defs/pathList" }
+      }
+    },
+    "capability": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "domain_id", "name", "status", "owner", "summary", "source_paths", "requirement_ids", "journey_ids", "scenario_ids", "persona_ids", "evaluation_refs"],
+      "properties": {
+        "id": { "type": "string", "pattern": "^PC-[0-9]{3}$" },
+        "domain_id": { "type": "string", "pattern": "^PD-[0-9]{3}$" },
+        "name": { "type": "string", "minLength": 1 },
+        "status": { "$ref": "#/$defs/status" },
+        "owner": { "type": "string", "minLength": 1 },
+        "summary": { "type": "string", "minLength": 1 },
+        "source_paths": { "$ref": "#/$defs/pathList" },
+        "requirement_ids": { "type": "array", "items": { "type": "string", "pattern": "^PR-[0-9]{3}$" } },
+        "journey_ids": { "type": "array", "items": { "type": "string", "pattern": "^J-[0-9]{3}$" } },
+        "scenario_ids": { "type": "array", "items": { "type": "string", "pattern": "^PS-[0-9]{3}$" } },
+        "persona_ids": { "type": "array", "items": { "type": "string", "pattern": "^P-[0-9]{3}$" } },
+        "evaluation_refs": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["path", "kind", "authority", "status"],
+            "properties": {
+              "path": { "type": "string", "pattern": "^(scripts|harness-evals|product-evals)/" },
+              "kind": { "enum": ["contract-test", "harness-evaluation", "harness-simulation", "product-simulation"] },
+              "authority": { "enum": ["implementation", "harness-only", "mechanics-only", "target-product"] },
+              "status": { "enum": ["authored", "validated", "executed", "reviewed", "accepted", "not-run"] }
+            }
+          }
+        }
+      }
+    }
+  }
+}

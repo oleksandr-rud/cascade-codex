@@ -1,6 +1,6 @@
 ---
 name: simulation-execution
-description: Use when one approved, versioned simulation campaign must be preflighted, provisioned, seeded, executed, observed, frozen into immutable evidence, cleaned up, or handed off across command, terminal, browser, desktop, mobile, or agent-response contours.
+description: Use when one approved, versioned simulation campaign must be preflighted, provisioned, seeded, executed, observed, frozen into immutable evidence, cleaned up, or handed off across command, HTTP, terminal, browser, desktop, mobile, or agent-response contours.
 ---
 
 # Simulation Execution
@@ -14,7 +14,8 @@ judgment, aggregate a portfolio, or decide release eligibility.
 
 ## Source Order
 
-1. Approved campaign selection and exact campaign/run request.
+1. Approved campaign selection, READY simulation intake, bound Task Envelope,
+   and exact campaign/run request.
 2. Current-checkout campaign, task, simulation, population, scenario, world,
    dataset, metric, treatment, calibration, claim, policy, oracle, fixture,
    and generated-catalog sources.
@@ -26,7 +27,7 @@ judgment, aggregate a portfolio, or decide release eligibility.
 4. Prior attempt and retry lineage without mutating prior artifacts.
 5. `simulation-campaigns`, `functional-qa`, `docs/structure.md`,
    `docs/glossary.md`, and the owning work lane.
-6. The new run package under `.artifacts/campaigns/<run-id>/`.
+6. The new run package under `.artifacts/product-evals/<run-id>/`.
 
 If selection, approval, source identity, runtime, permissions, fixture, oracle,
 cleanup contract, or artifact destination is missing, stop before execution
@@ -37,11 +38,11 @@ and report `BLOCKED` or `GAP`.
 Use for:
 
 - preflighting one already-selected campaign;
-- provisioning an isolated CLI, PTY, browser, desktop, mobile, or agent
+- provisioning an isolated CLI, HTTP, PTY, browser, desktop, mobile, or agent
   environment;
 - seeding digest-bound fixtures and initial state;
 - executing typed adapter actions within declared permissions and budgets;
-- collecting raw command, terminal, UI, device, application, tool, and model
+- collecting raw command, HTTP, terminal, UI, device, application, tool, and model
   observations;
 - invoking declared deterministic oracles without rewriting their expected
   results;
@@ -60,6 +61,8 @@ Route runtime or adapter defects to `codex-maintenance` or
 1. Verify authorization and selection.
    - Resolve the exact campaign version, source revision, task order, contour,
      driver, tier, platform, permission envelope, and approval.
+   - For product scope, reject execution unless the intake is READY and its
+     Task Envelope, product brief, action, and policy digests still match.
    - Reject stale catalog entries, ambiguous IDs, changed inputs, or a reused
      run ID.
 2. Create the immutable run identity.
@@ -84,6 +87,11 @@ Route runtime or adapter defects to `codex-maintenance` or
      account, and action limits.
    - Record decisions, actions, observations, approvals, errors, and the
      earliest failure.
+   - When one purpose spans several screens or contours, run it through one
+     bounded simulation session with a typed surface registry. Serialize
+     overlapping surfaces or conflict keys; parallelize only independent
+     steps. Roll long trajectories into bounded episodes and checkpoint after
+     every dispatched batch.
 6. Observe and invoke deterministic oracles.
    - Capture public-boundary state.
    - Treat driver completion as an observation, never as the oracle.
@@ -97,8 +105,15 @@ Route runtime or adapter defects to `codex-maintenance` or
    - Attempt cleanup after pass, failure, blocker, timeout, or cancellation.
    - Verify reset and record remaining resources or contamination.
    - After an operator crash or lost session, a recovery operation may perform
-     cleanup and finalize the interrupted attempt, but it must not resume target
-     actions or silently retry them.
+     cleanup and finalize the interrupted attempt. It may replace an expired
+     operator lease only through the exact reserved recovery identity, a
+     monotonic lease generation, and an append-only takeover receipt.
+   - A controlled continuation may rehydrate a completed checkpoint under the
+     same still-valid operator lease or a recovery-issued replacement lease.
+     Re-resolve and match the reserved campaign, identities, source digests,
+     platform, session contract, persisted policy budgets, and journal/checkpoint
+     chain first. If a journaled dispatch lacks its durable checkpoint,
+     terminate as `UNKNOWN_OUTCOME`; never infer completion or replay the action.
 9. Hand off.
    - Produce an execution receipt containing status, identities, evidence
      root, digests, cleanup outcome, blockers, retry lineage, and exact next

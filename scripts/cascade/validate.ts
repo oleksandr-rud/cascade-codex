@@ -18,8 +18,10 @@ import {
   walkFiles,
 } from "./common";
 import { generateCatalog } from "./evals";
-import { resolveCampaign } from "./simulation-definitions";
+import { resolveCampaign, validateSimulation } from "./simulation-definitions";
 import { validateConfig } from "./target";
+import { validateBriefRepository } from "./briefs";
+import { validateAdmissionRepository } from "./admission";
 
 const REQUIRED_FILES = [
   "README.md",
@@ -28,6 +30,11 @@ const REQUIRED_FILES = [
   "harness.config.example.yaml",
   "harness.config.yaml",
   ".codex/config.toml",
+  ".codex/hooks.json",
+  ".codex/task-admission/task-envelope.schema.json",
+  ".codex/task-admission/policy.schema.json",
+  ".codex/task-admission/control-catalog.json",
+  ".codex/task-admission/policies/core.json",
   ".codex/harness-tooling/package.json",
   ".codex/harness-tooling/bun.lock",
   ".codex/harness-tooling/playwright.config.ts",
@@ -38,6 +45,8 @@ const REQUIRED_FILES = [
   "docs/glossary.md",
   "docs/backlog/_index.md",
   "docs/product/_index.md",
+  "docs/product/catalog.yaml",
+  "docs/product/catalog.schema.json",
   "docs/product/scenarios.md",
   "docs/product/journeys.md",
   "docs/product/requirements.md",
@@ -47,6 +56,7 @@ const REQUIRED_FILES = [
   "docs/design/tokens.md",
   "docs/brand/_index.md",
   "docs/specs/_index.md",
+  "docs/specs/brief-manifest.schema.json",
   "docs/work/_index.md",
   "docs/work/active.md",
   "docs/work/lane-template.md",
@@ -68,45 +78,64 @@ const REQUIRED_FILES = [
   "docs/patterns/testing/testing.pack.yaml",
   "docs/patterns/context-memory/index.md",
   "docs/patterns/context-memory/context-memory.pack.yaml",
+  "docs/patterns/product-context/index.md",
+  "docs/patterns/product-context/product-context.pack.yaml",
   "scripts/cascade.ts",
+  "scripts/cascade/admission.ts",
+  "scripts/cascade/admission.test.ts",
+  "scripts/cascade/task-admission-hook.ts",
+  "scripts/cascade/briefs.ts",
   "scripts/cascade/persona-simulations.ts",
+  "scripts/cascade/simulation-intake.ts",
+  "scripts/cascade/simulation-intake.test.ts",
   "scripts/cascade/common.ts",
   "scripts/cascade/validate.ts",
   "scripts/cascade/evals.ts",
   "scripts/cascade/patterns.ts",
   "scripts/cascade/target.ts",
   "scripts/cascade/campaigns.ts",
-  "evals/harness/README.md",
-  "evals/harness/skill-cases.json",
-  "evals/harness/interactions.json",
-  "evals/harness/scenarios.generated.json",
-  "evals/harness/response.schema.json",
-  "evals/harness/judge-response.schema.json",
-  "evals/harness/judge-profiles.json",
-  "evals/harness/rubrics/outcome-v1.json",
-  "evals/harness/rubrics/trajectory-v1.json",
-  "evals/campaigns/schema.json",
-  "evals/campaigns/README.md",
-  "evals/campaigns/catalog.generated.json",
-  "evals/campaigns/simulation-contract-smoke.json",
-  "evals/tasks/schema.json",
-  "evals/tasks/SIMULATION-STATE-SMOKE.json",
-  "evals/simulations/schema.json",
-  "evals/simulations/population.schema.json",
-  "evals/simulations/persona-derivation.schema.json",
-  "evals/simulations/refinement-proposal.schema.json",
-  "evals/simulations/scenario.schema.json",
-  "evals/simulations/world.schema.json",
-  "evals/simulations/dataset.schema.json",
-  "evals/metrics/schema.json",
-  "evals/calibrations/schema.json",
-  "evals/claims/schema.json",
-  "evals/policies/schema.json",
-  "evals/oracles/schema.json",
-  "evals/treatments/schema.json",
-  "evals/rubrics/evaluation-profile.schema.json",
-  "evals/rubrics/evaluation-receipt.schema.json",
-  "evals/simulations/browser-fixture.html",
+  "harness-evals/README.md",
+  "harness-evals/skill-cases.json",
+  "harness-evals/interactions.json",
+  "harness-evals/scenarios.generated.json",
+  "harness-evals/response.schema.json",
+  "harness-evals/judge-response.schema.json",
+  "harness-evals/judge-profiles.json",
+  "harness-evals/rubrics/outcome-v1.json",
+  "harness-evals/rubrics/trajectory-v1.json",
+  "harness-evals/task-admission/case.schema.json",
+  "harness-evals/task-admission/assessment.schema.json",
+  "harness-evals/task-admission/cases.json",
+  "product-evals/campaigns/schema.json",
+  "product-evals/campaigns/README.md",
+  "product-evals/campaigns/catalog.generated.json",
+  "product-evals/campaigns/simulation-contract-smoke.json",
+  "product-evals/intakes/schema.json",
+  "product-evals/tasks/schema.json",
+  "product-evals/tasks/SIMULATION-STATE-SMOKE.json",
+  "product-evals/simulations/schema.json",
+  "product-evals/simulations/population.schema.json",
+  "product-evals/simulations/persona-derivation.schema.json",
+  "product-evals/simulations/refinement-proposal.schema.json",
+  "product-evals/simulations/refinement-disposition.schema.json",
+  "product-evals/simulations/external-persona-evidence.schema.json",
+  "product-evals/simulations/scenario.schema.json",
+  "product-evals/simulations/world.schema.json",
+  "product-evals/simulations/dataset.schema.json",
+  "product-evals/metrics/schema.json",
+  "product-evals/calibrations/schema.json",
+  "product-evals/claims/schema.json",
+  "product-evals/policies/schema.json",
+  "product-evals/oracles/schema.json",
+  "product-evals/treatments/schema.json",
+  "product-evals/rubrics/evaluation-profile.schema.json",
+  "product-evals/rubrics/evaluation-receipt.schema.json",
+  "product-evals/artifact-policy.schema.json",
+  "product-evals/artifact-policy.json",
+  "product-evals/simulations/harness/browser-fixture.html",
+  "product-evals/simulations/README.md",
+  "product-evals/simulations/harness/README.md",
+  "product-evals/simulations/product/README.md",
   ".codex/agents/security/scripts/security_stack_scan.ts",
   ".codex/skills/adapt-harness/schemas/harness-config.schema.json",
   ".codex/skills/adapt-harness/schemas/onboarding-manifest.schema.json",
@@ -124,17 +153,26 @@ const REQUIRED_FOLDERS = [
   "docs/specs",
   "docs/work",
   "docs/patterns",
-  "evals/harness",
-  "evals/campaigns",
-  "evals/tasks",
-  "evals/simulations",
-  "evals/metrics",
-  "evals/calibrations",
-  "evals/claims",
-  "evals/policies",
-  "evals/oracles",
-  "evals/treatments",
-  "evals/rubrics",
+  ".codex/task-admission",
+  ".codex/task-admission/policies",
+  "docs/patterns/product-context",
+  "harness-evals",
+  "harness-evals/task-admission",
+  "product-evals/campaigns",
+  "product-evals/tasks",
+  "product-evals/simulations",
+  "product-evals/simulations/harness",
+  "product-evals/simulations/product",
+  "product-evals/intakes",
+  "product-evals/intakes/harness",
+  "product-evals/intakes/product",
+  "product-evals/metrics",
+  "product-evals/calibrations",
+  "product-evals/claims",
+  "product-evals/policies",
+  "product-evals/oracles",
+  "product-evals/treatments",
+  "product-evals/rubrics",
   "scripts/cascade",
 ];
 
@@ -433,6 +471,21 @@ async function validateConfigToml(
   if (config.campaigns?.runner !== "scripts/cascade/campaigns.ts") {
     errors.push("campaign runner must point to scripts/cascade/campaigns.ts");
   }
+  if (config.cascade?.admission_command !== "scripts/cascade.ts admission assess") {
+    errors.push("Cascade admission command must use the task admission compiler");
+  }
+  if (config.cascade?.admission_policy_bundle !== ".codex/task-admission/policies/core.json") {
+    errors.push("Cascade admission policy bundle path is invalid");
+  }
+  if (config.cascade?.default !== undefined) {
+    errors.push("blanket Cascade default route must be removed after task-admission cutover");
+  }
+  if (config.product_briefs?.catalog !== "docs/product/catalog.yaml") {
+    errors.push("product brief catalog must point to docs/product/catalog.yaml");
+  }
+  if (config.product_briefs?.runner !== "scripts/cascade/briefs.ts") {
+    errors.push("product brief runner must point to scripts/cascade/briefs.ts");
+  }
   const registry = config.harness_agents ?? {};
   const registered = new Set(Object.values(registry));
   for (const agent of agents.keys()) {
@@ -570,7 +623,7 @@ async function validateWorkGraphs(errors: string[]): Promise<void> {
 
 async function validateCampaigns(errors: string[]): Promise<void> {
   const ids = new Set<string>();
-  for (const path of await walkFiles(rootPath("evals/campaigns"), {
+  for (const path of await walkFiles(rootPath("product-evals/campaigns"), {
     include: (item) =>
       item.endsWith(".json") &&
       !item.endsWith("schema.json") &&
@@ -589,6 +642,45 @@ async function validateCampaigns(errors: string[]): Promise<void> {
           error instanceof Error ? error.message : String(error)
         }`,
       );
+    }
+  }
+}
+
+async function validateSimulationLayout(errors: string[]): Promise<void> {
+  const root = rootPath("product-evals/simulations");
+  const allowedDirectories = new Set(["harness", "product"]);
+  const simulationIds = new Map<string, string>();
+  for (const entry of await readdir(root, { withFileTypes: true })) {
+    if (entry.isDirectory() && !allowedDirectories.has(entry.name)) {
+      errors.push(
+        `unexpected simulation root: product-evals/simulations/${entry.name}; use harness/ or product/`,
+      );
+    }
+  }
+  for (const scope of [...allowedDirectories].sort()) {
+    for (const path of await walkFiles(rootPath("product-evals/simulations", scope), {
+      include: (item) => item.endsWith("/manifest.json"),
+    })) {
+      try {
+        const manifestPath = rel(path);
+        const manifest = await readJson<Record<string, unknown>>(path);
+        validateSimulation(manifest, manifestPath);
+        const id = String(manifest.id);
+        const existing = simulationIds.get(id);
+        if (existing) {
+          errors.push(
+            `duplicate scoped simulation id ${id}: ${existing}, ${manifestPath}`,
+          );
+        } else {
+          simulationIds.set(id, manifestPath);
+        }
+      } catch (error) {
+        errors.push(
+          `invalid scoped simulation ${rel(path)}: ${
+            error instanceof Error ? error.message : String(error)
+          }`,
+        );
+      }
     }
   }
 }
@@ -639,6 +731,11 @@ async function validateHarness(errors: string[]): Promise<{
   skills: number;
   leakage: number;
 }> {
+  if (await exists(rootPath("evals"))) {
+    errors.push(
+      "retired evaluation root remains: evals/; use harness-evals/ or product-evals/",
+    );
+  }
   for (const path of REQUIRED_FILES) {
     if (!(await isFile(rootPath(path)))) errors.push(`missing required file: ${path}`);
   }
@@ -654,9 +751,18 @@ async function validateHarness(errors: string[]): Promise<{
   const agents = await discoverAgents();
   await validateConfigToml(agents, errors);
   await validateSkills(skills, agents, errors);
+  try {
+    await validateAdmissionRepository();
+  } catch (error) {
+    errors.push(`invalid task admission bundle: ${error instanceof Error ? error.message : String(error)}`);
+  }
   await validateReferences(errors);
   await validatePatterns(errors);
+  for (const error of await validateBriefRepository(true)) {
+    errors.push(`invalid product brief context: ${error}`);
+  }
   await validateWorkGraphs(errors);
+  await validateSimulationLayout(errors);
   await validateCampaigns(errors);
   await validateBunCutover(errors);
   for (const [path, tokens] of Object.entries(ARCHIVE_CHAIN_SURFACES)) {
@@ -668,7 +774,7 @@ async function validateHarness(errors: string[]): Promise<{
   const configResult = await validateConfig(ROOT, "harness.config.yaml");
   errors.push(...configResult.errors.map((item) => `harness config: ${item}`));
   const generated = await generateCatalog();
-  const current = await readJson(rootPath("evals/harness/scenarios.generated.json"));
+  const current = await readJson(rootPath("harness-evals/scenarios.generated.json"));
   if (stableJson(generated) !== stableJson(current)) {
     errors.push("generated harness scenario catalog is stale");
   }

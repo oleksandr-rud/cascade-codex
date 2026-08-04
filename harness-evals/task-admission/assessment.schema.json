@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "status", "total", "passed", "failed", "over_control", "under_control", "trace_complete", "results"],
+  "properties": {
+    "schema_version": { "const": 1 },
+    "status": { "enum": ["PASS", "FAIL"] },
+    "total": { "type": "integer", "minimum": 1 },
+    "passed": { "type": "integer", "minimum": 0 },
+    "failed": { "type": "integer", "minimum": 0 },
+    "over_control": { "type": "integer", "minimum": 0 },
+    "under_control": { "type": "integer", "minimum": 0 },
+    "trace_complete": { "type": "boolean" },
+    "results": { "type": "array" }
+  }
+}

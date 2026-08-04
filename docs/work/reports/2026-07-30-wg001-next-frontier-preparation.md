@@ -43,8 +43,8 @@ Relevant current-source fingerprints at preparation time:
 | `scripts/cascade/campaigns.test.ts` | `719bc7cbbe93ef1e107940dc8b66653be171595bd9e8c89ca4fc97386e9bc79f` |
 | `scripts/cascade/common.ts` | `07aeded6a195591ba0b7fd3830118f7ba0f0401fd77f5b97b3aba2632415549a` |
 | `scripts/cascade/simulation-definitions.ts` | `bc2e2c901e24b620fd91af20748ea9539e816082adf4d8d88827432224f767ec` |
-| `evals/policies/schema.json` | `bdae369dadb190926c9bcc018e67ff4f6f449ddeaa24bfa045d9e66b9ccb8673` |
-| `evals/campaigns/catalog.generated.json` | `6a9bde660a72b33a3bc5a819ca664addc78e2507cf910152d48b11c511d8adf6` |
+| `product-evals/policies/schema.json` | `bdae369dadb190926c9bcc018e67ff4f6f449ddeaa24bfa045d9e66b9ccb8673` |
+| `product-evals/campaigns/catalog.generated.json` | `6a9bde660a72b33a3bc5a819ca664addc78e2507cf910152d48b11c511d8adf6` |
 
 Any unexplained change to a fingerprinted implementation input requires a
 fresh overlap review before dispatch. The current dirty tree contains accepted
@@ -205,9 +205,9 @@ Allowed implementation writes:
   to the existing exclusive/atomic filesystem primitives;
 - update `scripts/cascade.ts` only if the prepared `campaign verify <run-id>`
   public command is added;
-- add a versioned run-artifact/identity schema under `evals/campaigns/` and
+- add a versioned run-artifact/identity schema under `product-evals/campaigns/` and
   register it in `harness.config.yaml` when used as a public contract;
-- regenerate `evals/campaigns/catalog.generated.json` only from the final
+- regenerate `product-evals/campaigns/catalog.generated.json` only from the final
   current sources.
 
 Protected paths:
@@ -299,9 +299,9 @@ Allowed implementation writes:
   action-time enforcement;
 - update `scripts/cascade/simulation-definitions.ts` and its test for the
   versioned policy definition and reference rules;
-- update `evals/policies/schema.json`, current tracked policy definitions, and
+- update `product-evals/policies/schema.json`, current tracked policy definitions, and
   the simulation starter template through one direct cutover;
-- regenerate `evals/campaigns/catalog.generated.json` only from the final
+- regenerate `product-evals/campaigns/catalog.generated.json` only from the final
   current sources.
 
 Protected paths:

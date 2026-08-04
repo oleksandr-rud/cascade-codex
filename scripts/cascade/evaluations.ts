@@ -32,6 +32,7 @@ import {
   type PersonaRefinementProposal,
   type RefinementProposalCandidate,
   materializeRefinementProposal,
+  refinementProposalCandidateDigest,
   validateRefinementProposalCandidate,
 } from "./persona-simulations";
 
@@ -69,6 +70,10 @@ export interface EvaluationReceipt {
   input_manifest_digest: string | null;
   provider_trace_digest: string | null;
   provider_output_digest: string | null;
+  refinement_proposal_bindings: Array<{
+    proposal_id: string;
+    candidate_digest: string;
+  }>;
   usage: Record<string, number> | null;
   claim_ledger: ClaimLedgerEntry[];
   status: CampaignStatus;
@@ -148,7 +153,7 @@ export interface CodexEvaluationResult {
   blockedReason: string | null;
 }
 
-const OUTPUT_SCHEMA = "evals/rubrics/simulation-evaluation-output.schema.json";
+const OUTPUT_SCHEMA = "product-evals/rubrics/simulation-evaluation-output.schema.json";
 const EVALUATOR_CONTRACTS = [
   ".codex/agents/simulation-evaluator.toml",
   ".codex/agents/simulation-evaluator/AGENT.md",
@@ -234,6 +239,7 @@ export function buildFixtureEvaluationReceipt(
     input_manifest_digest: null,
     provider_trace_digest: null,
     provider_output_digest: null,
+    refinement_proposal_bindings: [],
     usage: null,
     claim_ledger: mechanical.claim_ledger,
     status: mechanical.status,
@@ -509,6 +515,11 @@ export function buildCodexEvaluationReceipt(
     (claim) =>
       claim.class !== "release-eligibility" && claim.status !== "SUPPORTED",
   );
+  const refinementProposals = buildPersonaRefinementProposals(
+    resolved,
+    identity,
+    output,
+  );
   return {
     schema_version: 2,
     evaluation_id: request.evaluation_id,
@@ -530,6 +541,10 @@ export function buildCodexEvaluationReceipt(
     input_manifest_digest: inputManifestDigest,
     provider_trace_digest: providerTraceDigest,
     provider_output_digest: valueDigest(output),
+    refinement_proposal_bindings: refinementProposals.map((proposal) => ({
+      proposal_id: proposal.proposal_id,
+      candidate_digest: refinementProposalCandidateDigest(proposal),
+    })),
     usage,
     claim_ledger: claimLedger,
     status: requiredFailures.length ? "FAIL" : output.status,

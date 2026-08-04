@@ -3,7 +3,14 @@
 ## Authority And Definition
 
 - [ ] New target simulations were previewed with `simulation init --dry-run`;
-      every output path and owning lane were reviewed before writing.
+      every output path is under `product-evals/simulations/product/`, and every path
+      plus the owning lane was reviewed before writing.
+- [ ] The simulation declares `simulation_scope` as `harness` or `product`, the
+      manifest and all co-located definition files use the matching root, and
+      the generated catalog exposes the resolved scope.
+- [ ] Harness-scoped simulations use only framework-fixture calibration and
+      are never cited as target-product or release evidence. Product scope is
+      not treated as proof without target evidence and ordinary campaign gates.
 - [ ] Initialization used the tracked starter template, refused collisions,
       resolved the generated graph, and regenerated the catalog without an
       overwrite or compatibility path.
@@ -15,8 +22,12 @@
 - [ ] Population actors, weights, source provenance, risk slices, scenarios,
       stateful world, and reset contract are explicit.
 - [ ] Persona-derived populations bind an approved derivation manifest and
-      exact persona revision/path/digest; coverage, stress, and counterfactual
-      weights are labeled test allocation rather than prevalence.
+      exact `reviewed` or `approved` persona revision/path/digest. All weights
+      default to test allocation; estimated prevalence is limited to
+      representative mode with digest-backed research or behavioral data,
+      reference window, sample description, and reviewer.
+- [ ] Persona generator input digests recompute from the complete manifest
+      after removing only the digest field itself; changed inputs fail stale.
 - [ ] Development, regression, holdout, and calibration-reference case
       identities are exclusive; production-derived inputs are minimized and
       reference-windowed.
@@ -58,12 +69,20 @@
       frozen evidence.
 - [ ] Run IDs and stage receipt IDs are reserved atomically; crash recovery,
       cancellation, and unknown external outcomes have explicit dispositions.
+- [ ] Multi-surface sessions declare total/per-step time, step, episode,
+      parallelism, surface-cardinality, checkpoint, and lease bounds; journal
+      dispatches bind the exact contract and digest-only step inputs.
+- [ ] Parallel campaign tasks have disjoint surfaces, policy budgets, target
+      resources, and driver instances; ambiguous or shared boundaries are
+      serialized before dispatch.
 - [ ] Terminal finalization is atomic and the frozen file set and manifest
       digest are independently verified before handoff.
 
 ## Claims And Reduction
 
 - [ ] Every claim maps to applicable policies and required oracles.
+- [ ] Every claim declares `population_authority`; persona-derived and
+      estimated-prevalence claims meet their non-compensating authority gates.
 - [ ] Every verdict cites sufficient frozen evidence.
 - [ ] Policy denial, missing evidence, failed required oracle, identity
       mismatch, or cleanup failure cannot produce `PASS`.
@@ -80,6 +99,16 @@
 - [ ] Refinement proposals cite frozen evidence, remain `PROPOSED`, forbid
       direct persona mutation, and record external-evidence and human-review
       blockers.
+- [ ] Every refinement proposal matches one evaluation-receipt proposal ID and
+      candidate digest, exact source-manifest persona/derivation digests, and
+      input-manifest-bound frozen evidence path/digest; terminal sets are
+      one-to-one.
+- [ ] Every refinement disposition is a separate append-only receipt bound to
+      the proposal digest and reviewed evidence-manifest digests; acceptance
+      routes only to `synthesis-to-spec` and never mutates the persona.
+- [ ] Evidence follows `product-evals/artifact-policy.json`: no raw sensitive
+      source material, explicit retention/access/encryption posture, and no
+      remote export by default.
 
 ## Calibration
 

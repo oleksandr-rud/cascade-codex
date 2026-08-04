@@ -45,3 +45,5 @@ skills:
     source: .codex/skills/docs-impact-map/SKILL.md
   - name: pattern-context
     source: .codex/skills/pattern-context/SKILL.md
+  - name: simulation-campaigns
+    source: .codex/skills/simulation-campaigns/SKILL.md

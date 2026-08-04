@@ -27,9 +27,30 @@ If docs and code disagree, follow current code and report the drift.
 - A diagnostic model override is allowed only when its value is captured in
   the run metadata; it does not change the canonical pins.
 
-## New Task And Spec Route
+## Task Admission And Proportional Route
 
-Use this cascade for non-atomic work:
+Every turn first receives the deterministic admission microkernel defined by
+`.codex/task-admission/` and exposed through `scripts/cascade.ts admission`.
+The Task Envelope independently records topology, effort, assurance, authority,
+evidence, duration, and context. Its selected control packs determine which
+parts of the Cascade route apply. It never grants permission, dispatches work,
+or converts authored evidence into acceptance.
+
+`UserPromptSubmit` adds only bounded advisory context. `PreToolUse` and
+`PermissionRequest` fail closed for external, privileged, or destructive
+actions without a current envelope and explicit authority, but never
+auto-approve an action. Project hooks require normal Codex trust review. When
+hooks are unavailable, perform the same microkernel in-process; do not make
+conversation depend on hook availability.
+
+Hard-action envelopes are opt-in runtime state, not prompt-hook output. Compile
+one below `.artifacts/task-admission/` with its exact session ID and explicit
+authority, then expose that exact path as `CASCADE_TASK_ENVELOPE` to the Codex
+process. The hook resolves symlinks, requires the artifact root, binds
+`task_id` to `session_id`, rejects stale policy/time state, and still defers to
+the normal approval flow. Do not persist prompts containing raw secrets.
+
+For non-atomic work, select only the applicable stages from:
 
 `context -> ingest-spec/discover/market-validation/synthesis-to-spec/compose-spec if needed -> docs-impact-map when durable docs may affect sibling rules -> pattern-context when reusable pattern packs are needed -> orchestrate-work -> plan-change -> functional-qa when new product-visible proof is needed -> implement-change -> review-change -> validate-change -> test-autorepair only if stale tests -> closeout`
 
@@ -331,7 +352,8 @@ Required routing:
 - `docs/specs/{slice-slug}/`: one folder per big issue, capability, or
   workflow slice; stores normalized plan-ready spec packets, package files,
   prompt scripts, and module catalogs for that slice.
-- `docs/product/`: product intent, journeys, personas, scenarios.
+- `docs/product/`: product intent, domain/capability catalog, journeys,
+  personas, requirements, and scenarios.
 - `docs/design/`: interaction, accessibility, tokens, components, constraints.
 - `docs/brand/`: naming, tone, content, visual direction.
 - `docs/work/`: active execution state and durable work reports.
@@ -345,6 +367,7 @@ Required routing:
 Use product/spec docs only when they are current enough to guide behavior:
 
 - `docs/product/_index.md`
+- `docs/product/catalog.yaml`
 - `docs/product/scenarios.md`
 - `docs/product/personas/_index.md`
 - `docs/design/_index.md`
@@ -366,6 +389,13 @@ responsive rules, interaction states, or visual evidence need durable structure.
 or design notes into plan-ready docs. Use `docs-impact-map` when those docs
 create or change a fact that may affect sibling product, design, brand, spec,
 backlog, glossary, or pattern rules.
+
+When one capability needs a reusable planning or prompt brief, keep product
+facts in their owner docs, connect them through `docs/product/catalog.yaml`,
+and author `docs/specs/<slice>/brief.yaml`. Validate or compile the
+digest-bound projection with `scripts/cascade.ts brief`. Generated briefs are
+context projections, not product authority; harness or synthetic evidence
+retains its limited authority.
 
 ## Evidence And Context
 
@@ -412,10 +442,12 @@ campaign layer to store in a separate append-only sibling namespace—never
 inside the finalized execution namespace. Campaign aggregation writes another
 identity-matched projection receipt; no stage overwrites another.
 
-The canonical runtime authorities are `evals/campaigns/`, `evals/tasks/`,
-`evals/simulations/`, `evals/claims/`, `evals/policies/`, `evals/oracles/`,
-`evals/metrics/`, `evals/treatments/`, `evals/calibrations/`,
-`evals/rubrics/`, and ignored `.artifacts/campaigns/<run-id>/` evidence.
+The canonical runtime authorities are `product-evals/campaigns/`, `product-evals/tasks/`,
+shared schemas under `product-evals/simulations/`, framework-only definitions under
+`product-evals/simulations/harness/`, target-product definitions under
+`product-evals/simulations/product/`, `product-evals/claims/`, `product-evals/policies/`, `product-evals/oracles/`,
+`product-evals/metrics/`, `product-evals/treatments/`, `product-evals/calibrations/`,
+`product-evals/rubrics/`, and ignored `.artifacts/product-evals/<run-id>/` evidence.
 Every campaign binds a tracked `evaluation_profile_file`. Deterministic
 fixture campaigns use `deterministic-fixture-v1`; semantic-evaluation
 campaigns use the Sol-pinned `codex-independent-v1` profile and its versioned
@@ -438,10 +470,14 @@ bun scripts/cascade.ts simulation init <simulation-id> --owner-lane W-NNN
 ```
 
 The initializer renders the tracked starter package, creates a co-located
-simulation design report, validates the complete definition graph, and
+product-scoped simulation design report under `product-evals/simulations/product/`,
+validates the complete definition graph, and
 regenerates the campaign catalog. It refuses every existing output path and
 never treats its framework calibration as target-project release evidence.
 Missing target adapters or real reference data remain `GAP` or `NOT_RUN`.
+
+`harness-evals/` remains the separate Cascade skill/agent harness-evaluation
+corpus. It grades routes and traces; it is not a simulation-definition root.
 
 Use `functional-qa` for product-visible behavior examples and acceptance
 oracles inside a campaign. Use `harness-evaluation` and `harness-evaluator`
@@ -458,7 +494,7 @@ self-review independent.
 
 ## Harness Evaluation
 
-Canonical harness scenarios and schemas live under `evals/harness/`. Generate
+Canonical harness scenarios and schemas live under `harness-evals/`. Generate
 and check the 7-case-per-skill catalog with
 `bun scripts/cascade.ts eval catalog --write` and `catalog --check`.
 Live target runs are read-only and store raw JSONL, normalized traces,
@@ -471,9 +507,9 @@ judgments of every eligible case. Accepted coverage requires both.
 
 ## Campaign Execution
 
-Typed reusable tasks live in `evals/tasks/`; versioned execution plans live in
-`evals/campaigns/`. Run them through `bun scripts/cascade.ts campaign`.
-Campaigns preserve task logs and source digests under `.artifacts/campaigns/`
+Typed reusable tasks live in `product-evals/tasks/`; versioned execution plans live in
+`product-evals/campaigns/`. Run them through `bun scripts/cascade.ts campaign`.
+Campaigns preserve task logs and source digests under `.artifacts/product-evals/`
 but do not convert authored tasks into execution evidence. `browser` tasks use
 Playwright; autonomous agent browsing remains a separate permissioned
 browser-tool capability.

@@ -1,0 +1,69 @@
+pack_id: product-context-core
+entry_id: product-context
+title: Product Context Core Pattern Pack
+kind: pattern-context-pack
+owner: Cascade maintainers
+summary: "Selectable rules for product domain/capability authority, deterministic briefs, evidence promotion, and persona/simulation feedback."
+description: "Use when product facts, domains, capabilities, briefs, evidence, personas, or simulation findings must be connected without duplicating authority."
+routing:
+  use_when:
+    - "A task needs stable product domain/capability relationships, a generated brief, evidence promotion rules, or a persona/simulation feedback bridge."
+  do_not_use_when:
+    - "The task only needs generic architecture, workflow, testing, or context retrieval rules without product entities."
+  load_when:
+    - route: product-authority
+      use_when: "Product domains, capabilities, owner rows, specs, or evaluations must be connected."
+    - route: brief-generation
+      use_when: "A brief manifest or deterministic product-context projection is authored, validated, or compiled."
+    - route: evidence-promotion
+      use_when: "Research, harness, product-simulation, or synthetic evidence may affect product claims."
+    - route: persona-simulation
+      use_when: "Product personas seed simulations or simulation findings propose persona refinements."
+  write_when:
+    - "A reusable product-context relationship, brief assembly, evidence promotion, or persona/simulation feedback rule changes."
+  defer_when:
+    - "A fact is product-specific and belongs in docs/product, docs/specs, or a target evidence report."
+  primary_skills:
+    - compose-spec
+    - synthesis-to-spec
+    - docs-impact-map
+    - pattern-context
+    - plan-change
+  related_roles:
+    - orchestrator
+    - business-analyst
+    - agent-engineer
+selection_rules:
+  - "Load product-authority-graph before generating or changing a brief."
+  - "Load evidence-promotion-boundary whenever synthetic, harness, or research evidence appears."
+documents:
+  - path: docs/patterns/product-context/index.md
+    kind: pattern-entry
+    description: "Durable product entity, brief assembly, evidence authority, and persona/simulation feedback rules."
+    trigger_when:
+      - "Product domains, capabilities, briefs, evidence promotion, personas, or simulations need a connected context."
+    sections:
+      - id: product-authority-graph
+        title: Product Authority Graph
+        anchor: "## Product Authority Graph"
+        summary: "Connects sources, domains, capabilities, owner rows, spec selections, and projections without creating a second authority."
+        routing_description: "Use before creating or validating product catalogs, capability links, or brief selections."
+        tags: [product, domains, capabilities, traceability]
+      - id: brief-manifest-and-compilation
+        title: Brief Manifest And Compilation
+        anchor: "## Brief Manifest And Compilation"
+        summary: "Defines complete versus selected coverage, fail-closed graph validation, deterministic rendering, and source digests."
+        routing_description: "Use when authoring, generating, checking, or consuming a product brief."
+        tags: [product, briefs, context, compilation]
+      - id: evidence-promotion-boundary
+        title: Evidence Promotion Boundary
+        anchor: "## Evidence Promotion Boundary"
+        summary: "Preserves evidence class, authority, status, limitations, and promotion gates."
+        routing_description: "Use when research, harness, simulation, or synthetic evidence may influence product claims."
+        tags: [product, evidence, simulation, governance]
+      - id: simulation-feedback-bridge
+        title: Simulation Feedback Bridge
+        anchor: "## Simulation Feedback Bridge"
+        summary: "Keeps persona derivation explicit and routes simulation findings through proposal, evidence, review, and new revision."
+        routing_description: "Use when personas seed simulations or findings may refine personas."
+        tags: [personas, simulation, refinement, provenance]

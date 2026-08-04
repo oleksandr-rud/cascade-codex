@@ -1,0 +1,124 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://cascade.local/schemas/task-envelope.schema.json",
+  "title": "Cascade Task Envelope",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version", "artifact_type", "envelope_id", "revision",
+    "policy_bundle_version", "request_digest", "task_id", "prior_envelope_id",
+    "produced_at", "relation", "intent", "claims", "workload", "route",
+    "control_packs", "required_skills", "evidence_floor", "persistence",
+    "authority", "policy_decisions", "explanation_trace", "reclassification",
+    "reclassification_triggers", "conflicts", "gaps", "blockers",
+    "non_goals", "invalidation"
+  ],
+  "properties": {
+    "schema_version": { "const": 1 },
+    "artifact_type": { "const": "cascade-task-envelope" },
+    "envelope_id": { "type": "string", "pattern": "^TE-[a-f0-9]{16}$" },
+    "revision": { "type": "integer", "minimum": 1 },
+    "policy_bundle_version": { "type": "string", "pattern": "^[a-z0-9.-]+@[0-9]+$" },
+    "request_digest": { "$ref": "#/$defs/digest" },
+    "task_id": { "type": "string", "minLength": 1, "maxLength": 200 },
+    "prior_envelope_id": { "type": ["string", "null"], "pattern": "^TE-[a-f0-9]{16}$" },
+    "produced_at": { "type": "string", "format": "date-time" },
+    "relation": { "enum": ["NEW", "CONTINUE", "AMEND", "OVERRIDE", "STATUS", "CANCEL", "CONVERSATION_ONLY"] },
+    "intent": { "enum": ["ANSWER", "DISCOVER", "DIAGNOSE", "REVIEW", "VALIDATE", "CHANGE", "OPERATE"] },
+    "claims": { "type": "array", "items": { "$ref": "#/$defs/claim" } },
+    "workload": { "$ref": "#/$defs/workload" },
+    "route": { "enum": ["NO_WORKFLOW", "DIRECT_READ", "DIRECT_CHANGE", "BOUNDED", "CONNECTED", "PROGRAM"] },
+    "control_packs": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "$ref": "#/$defs/controlPack" } },
+    "required_skills": { "type": "array", "uniqueItems": true, "items": { "type": "string", "pattern": "^[a-z0-9-]+$" } },
+    "evidence_floor": { "enum": ["EXPLANATION", "TARGETED", "REGRESSION", "INDEPENDENT", "RELEASE"] },
+    "persistence": {
+      "type": "object", "additionalProperties": false,
+      "required": ["recommended", "dispatch_authorized", "reason"],
+      "properties": {
+        "recommended": { "type": "boolean" },
+        "dispatch_authorized": { "type": "boolean" },
+        "reason": { "type": "string", "minLength": 1 }
+      }
+    },
+    "authority": {
+      "type": "object", "additionalProperties": false,
+      "required": ["granted", "missing"],
+      "properties": {
+        "granted": { "type": "array", "uniqueItems": true, "items": { "type": "string", "minLength": 1 } },
+        "missing": { "type": "array", "uniqueItems": true, "items": { "type": "string", "minLength": 1 } }
+      }
+    },
+    "policy_decisions": { "type": "array", "items": { "$ref": "#/$defs/policyDecision" } },
+    "explanation_trace": { "type": "array", "items": { "$ref": "#/$defs/trace" } },
+    "reclassification": {
+      "type": "object", "additionalProperties": false,
+      "required": ["preserved_claim_ids", "superseded_claim_ids", "reopened_consumers"],
+      "properties": {
+        "preserved_claim_ids": { "type": "array", "uniqueItems": true, "items": { "type": "string", "pattern": "^CL-[0-9]{3}$" } },
+        "superseded_claim_ids": { "type": "array", "uniqueItems": true, "items": { "type": "string", "pattern": "^CL-[0-9]{3}$" } },
+        "reopened_consumers": { "$ref": "#/$defs/stringList" }
+      }
+    },
+    "reclassification_triggers": { "type": "array", "uniqueItems": true, "items": { "type": "string", "minLength": 1 } },
+    "conflicts": { "$ref": "#/$defs/stringList" },
+    "gaps": { "$ref": "#/$defs/stringList" },
+    "blockers": { "$ref": "#/$defs/stringList" },
+    "non_goals": { "$ref": "#/$defs/stringList" },
+    "invalidation": { "$ref": "#/$defs/stringList" }
+  },
+  "$defs": {
+    "digest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "stringList": { "type": "array", "uniqueItems": true, "items": { "type": "string", "minLength": 1 } },
+    "controlPack": { "enum": ["BASE", "GROUNDED_READ", "ATOMIC_CHANGE", "STANDARD_CHANGE", "CONNECTED_DELIVERY", "PROGRAM_CONTROL", "SIMULATION_GOVERNANCE", "SECURITY_ASSURANCE", "FULL_SCAN", "RELEASE_EVIDENCE"] },
+    "claim": {
+      "type": "object", "additionalProperties": false,
+      "required": ["claim_id", "kind", "statement", "source", "status", "confidence", "verification", "policy_tags", "consumers", "invalidation"],
+      "properties": {
+        "claim_id": { "type": "string", "pattern": "^CL-[0-9]{3}$" },
+        "kind": { "enum": ["OUTCOME", "CURRENT_STATE", "CRITERION", "CONSTRAINT", "NON_GOAL", "BOUNDARY", "HAZARD", "AUTHORITY", "EVIDENCE", "INFERENCE"] },
+        "statement": { "type": "string", "minLength": 1, "maxLength": 1000 },
+        "source": { "enum": ["USER", "TRUSTED_INSTRUCTION", "CURRENT_SOURCE", "TOOL_EVIDENCE", "EXTERNAL_SOURCE", "MODEL_INFERENCE"] },
+        "status": { "enum": ["PROVIDED", "VERIFIED", "INFERRED", "UNKNOWN", "CONFLICTING", "SUPERSEDED"] },
+        "confidence": { "type": ["number", "null"], "minimum": 0, "maximum": 1 },
+        "verification": { "type": "string", "minLength": 1 },
+        "policy_tags": { "$ref": "#/$defs/stringList" },
+        "consumers": { "$ref": "#/$defs/stringList" },
+        "invalidation": { "$ref": "#/$defs/stringList" }
+      }
+    },
+    "workload": {
+      "type": "object", "additionalProperties": false,
+      "required": ["topology", "effort", "assurance", "authority", "evidence", "duration", "context"],
+      "properties": {
+        "topology": { "enum": ["ATOMIC", "BOUNDED", "CONNECTED", "PROGRAM"] },
+        "effort": { "enum": ["MICRO", "SMALL", "MEDIUM", "LARGE", "EXTENDED"] },
+        "assurance": { "enum": ["BASIC", "STANDARD", "HIGH", "REGULATED"] },
+        "authority": { "enum": ["READ_ONLY", "LOCAL_WRITE", "EXTERNAL_WRITE", "PRIVILEGED", "DESTRUCTIVE"] },
+        "evidence": { "enum": ["EXPLANATION", "TARGETED", "REGRESSION", "INDEPENDENT", "RELEASE"] },
+        "duration": { "enum": ["TURN", "MULTI_TURN", "RESUMABLE", "PROGRAM"] },
+        "context": { "enum": ["PROMPT_ONLY", "TARGETED_PROBE", "SCOPED_SCAN", "FULL_SCAN"] }
+      }
+    },
+    "policyDecision": {
+      "type": "object", "additionalProperties": false,
+      "required": ["policy_id", "version", "effect", "matched_claim_ids", "controls", "reason"],
+      "properties": {
+        "policy_id": { "type": "string", "pattern": "^TAP-[0-9]{3}$" },
+        "version": { "type": "integer", "minimum": 1 },
+        "effect": { "enum": ["ALLOW", "REQUIRE", "DENY", "GAP"] },
+        "matched_claim_ids": { "type": "array", "uniqueItems": true, "items": { "type": "string" } },
+        "controls": { "type": "array", "uniqueItems": true, "items": { "$ref": "#/$defs/controlPack" } },
+        "reason": { "type": "string", "minLength": 1 }
+      }
+    },
+    "trace": {
+      "type": "object", "additionalProperties": false,
+      "required": ["claim_id", "signal", "policy_id", "control", "outcome"],
+      "properties": {
+        "claim_id": { "type": "string" }, "signal": { "type": "string" },
+        "policy_id": { "type": "string" }, "control": { "type": "string" },
+        "outcome": { "type": "string" }
+      }
+    }
+  }
+}

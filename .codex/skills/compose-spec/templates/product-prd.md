@@ -4,6 +4,9 @@ Status: `<draft | reviewed | approved | superseded>`
 Created: YYYY-MM-DD
 Source: `<REQUEST_OR_SPEC_OR_RESEARCH>`
 Owner: `<ROLE_OR_PERSON>`
+Domain ID: `<PD-XXX>`
+Capability ID: `<PC-XXX>`
+Brief ID: `<PB-XXX_OR_NOT_APPLICABLE>`
 
 ## Problem
 
@@ -59,6 +62,13 @@ Owner: `<ROLE_OR_PERSON>`
 - Functional boundary:
 - Required data:
 - Command or visible check:
+
+## Simulation Seed And Feedback
+
+- Seed brief and selected requirement/journey/scenario/persona IDs:
+- Product or harness scope:
+- Claim and policy boundaries:
+- Refinement route and product-doc update gate:
 
 ## Doc Routing Decisions
 

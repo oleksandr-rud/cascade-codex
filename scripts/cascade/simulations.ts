@@ -7,6 +7,7 @@ import {
   boundedPath,
   exists,
   flag,
+  flags,
   isFile,
   parseArgs,
   readJson,
@@ -21,23 +22,40 @@ import {
   writeTextExclusive,
 } from "./common";
 import { buildCampaignCatalog } from "./campaigns";
-import { resolveCampaign } from "./simulation-definitions";
+import { CampaignArtifactStore } from "./campaign-artifacts";
+import {
+  resolveCampaign,
+  type SimulationDefinition,
+  type SimulationScope,
+  validateSimulation,
+} from "./simulation-definitions";
 import {
   type PersonaDerivationManifest,
   type PersonaDerivationMode,
+  type PersonaRefinementProposal,
+  type ExternalPersonaEvidenceManifest,
+  type RefinementDispositionDecision,
+  buildPersonaRefinementDisposition,
   derivePopulationFromManifest,
+  validateExternalPersonaEvidenceManifest,
   validatePersonaDerivation,
+  validatePersonaRefinementProposal,
   verifyPersonaDerivationSources,
 } from "./persona-simulations";
+import {
+  compileSimulationIntake,
+  writeCompiledSimulationIntake,
+} from "./simulation-intake";
 
 const TEMPLATE_PATH =
   ".codex/skills/simulation-campaigns/templates/starter/package.template.json";
 const DESIGN_TEMPLATE_PATH =
   ".codex/skills/simulation-campaigns/templates/campaign-design.md";
-const CATALOG_PATH = rootPath("evals/campaigns/catalog.generated.json");
+const CATALOG_PATH = rootPath("product-evals/campaigns/catalog.generated.json");
 const SIMULATION_ID = /^[a-z0-9][a-z0-9.-]+$/;
 const OWNER_LANE = /^W-[0-9]{3}$/;
 const PERSONA_ID = /^P-[0-9]{3}$/;
+const SIMULATION_SCOPES: SimulationScope[] = ["harness", "product"];
 
 interface TemplateFile {
   path: string;
@@ -67,7 +85,17 @@ export interface DerivePopulationOptions {
   personaId: string;
   simulationId: string;
   mode: PersonaDerivationMode;
-  dryRun: true;
+  dryRun: boolean;
+}
+
+export interface DisposeRefinementOptions {
+  proposalPath: string;
+  dispositionId: string;
+  decision: RefinementDispositionDecision;
+  reviewerIdentity: string;
+  evidenceManifestPaths: string[];
+  dryRun: boolean;
+  reviewedAt?: string;
 }
 
 function titleFromId(id: string): string {
@@ -107,6 +135,29 @@ function validateOptions(options: StarterOptions): void {
   ) {
     throw new CascadeError("--title must be 1-120 characters without '{{'");
   }
+}
+
+async function findSimulationRoot(simulationId: string): Promise<string> {
+  const matches: string[] = [];
+  for (const scope of SIMULATION_SCOPES) {
+    const root = `product-evals/simulations/${scope}/${simulationId}`;
+    const manifestPath = `${root}/manifest.json`;
+    if (!(await isFile(boundedPath(manifestPath, "product-evals/simulations/")))) continue;
+    const manifest = await readJson<SimulationDefinition>(
+      boundedPath(manifestPath, "product-evals/simulations/"),
+    );
+    validateSimulation(
+      manifest as unknown as Record<string, unknown>,
+      manifestPath,
+    );
+    matches.push(root);
+  }
+  if (matches.length !== 1) {
+    throw new CascadeError(
+      `expected exactly one scoped simulation for ${simulationId}, found ${matches.length}`,
+    );
+  }
+  return matches[0]!;
 }
 
 function replaceTokens(
@@ -156,8 +207,12 @@ async function renderDesignReport(
       `- Campaign ID and version: ${campaignId} / schema v1`,
     )
     .replace(
+      "- Simulation scope and root (`harness` or `product`):",
+      `- Simulation scope and root (\`harness\` or \`product\`): product / product-evals/simulations/product/${options.simulationId}/`,
+    )
+    .replace(
       "- Current authority state:",
-      "- Current authority state: generated deterministic framework fixture",
+      "- Current authority state: generated product-scoped framework scaffold; target evidence remains NOT_RUN",
     )
     .replace(
       "- Requested outcome:",
@@ -213,11 +268,11 @@ async function renderDesignReport(
     )
     .replace(
       "- Fixture or seed identity:",
-      `- Fixture or seed identity: evals/fixtures/${options.simulationId}-world.json`,
+      `- Fixture or seed identity: product-evals/simulations/product/${options.simulationId}/worlds/default.fixture.json`,
     )
     .replace(
       "- Evidence root:",
-      "- Evidence root: .artifacts/campaigns/<run-id>",
+      "- Evidence root: .artifacts/product-evals/<run-id>",
     )
     .replace(
       "- Evidence producer, platform, lineage, and redaction:",
@@ -236,7 +291,7 @@ async function renderDesignReport(
       "- Retry and replay parentage: use a new run ID plus --parent-run-id and preserve the original frozen source digest",
     );
   return {
-    path: `evals/simulations/${options.simulationId}/simulation-design.md`,
+    path: `product-evals/simulations/product/${options.simulationId}/simulation-design.md`,
     content,
     format: "text",
   };
@@ -279,6 +334,7 @@ export async function renderStarterPackage(
     REFERENCE_LABEL_DIGEST: sha256Text(
       `${options.simulationId}:framework-reference-labels`,
     ),
+    INTAKE_ID: sha256Text(`${options.simulationId}:simulation-intake`).slice(0, 16),
   };
   const rendered: RenderedStarterFile[] = template.files.map((file) => ({
     path: replaceTokens(file.path, tokens) as string,
@@ -360,7 +416,7 @@ export async function initializeSimulation(
       created.push(path);
     }
     await resolveCampaign(
-      rootPath("evals/campaigns", `${campaignId}.json`),
+      rootPath("product-evals/campaigns", `${campaignId}.json`),
     );
     const catalog = await buildCampaignCatalog();
     await writeJsonAtomic(CATALOG_PATH, catalog);
@@ -387,13 +443,10 @@ export async function previewDerivedPopulation(
   if (!["representative", "coverage", "stress", "counterfactual"].includes(options.mode)) {
     throw new CascadeError("--mode must be representative, coverage, stress, or counterfactual");
   }
-  if (options.dryRun !== true) {
-    throw new CascadeError("persona population derivation is preview-only and requires --dry-run");
-  }
-
+  const simulationRoot = await findSimulationRoot(options.simulationId);
   const directory = boundedPath(
-    `evals/simulations/${options.simulationId}/derivations`,
-    "evals/simulations/",
+    `${simulationRoot}/derivations`,
+    "product-evals/simulations/",
   );
   let names: string[];
   try {
@@ -407,7 +460,7 @@ export async function previewDerivedPopulation(
     manifest: PersonaDerivationManifest;
   }> = [];
   for (const name of names) {
-    const path = `evals/simulations/${options.simulationId}/derivations/${name}`;
+    const path = `${simulationRoot}/derivations/${name}`;
     const manifest = await readJson<PersonaDerivationManifest>(boundedPath(path));
     validatePersonaDerivation(manifest as unknown as Record<string, unknown>, path);
     if (
@@ -430,12 +483,12 @@ export async function previewDerivedPopulation(
     selected.digest,
   );
   const populationDirectory = boundedPath(
-    `evals/simulations/${options.simulationId}/populations`,
-    "evals/simulations/",
+    `${simulationRoot}/populations`,
+    "product-evals/simulations/",
   );
   const existingMatches: string[] = [];
   for (const name of (await readdir(populationDirectory)).filter((item) => item.endsWith(".json")).sort()) {
-    const candidatePath = `evals/simulations/${options.simulationId}/populations/${name}`;
+    const candidatePath = `${simulationRoot}/populations/${name}`;
     const candidate = await readJson<Record<string, unknown>>(boundedPath(candidatePath));
     const source = candidate.source as Record<string, unknown> | undefined;
     const derivation = source?.derivation as Record<string, unknown> | undefined;
@@ -446,7 +499,7 @@ export async function previewDerivedPopulation(
   if (existingMatches.length > 1) {
     throw new CascadeError(`persona derivation maps to multiple population files: ${existingMatches.join(", ")}`);
   }
-  const defaultOutput = `evals/simulations/${options.simulationId}/populations/${population.id}.json`;
+  const defaultOutput = `${simulationRoot}/populations/${population.id}.json`;
   const outputPath = existingMatches[0] ?? defaultOutput;
   const outputExists = await isFile(boundedPath(outputPath));
   if (outputExists) {
@@ -455,12 +508,90 @@ export async function previewDerivedPopulation(
       throw new CascadeError(`persona population preview refuses existing collision: ${outputPath}`);
     }
   }
+  if (!options.dryRun && !outputExists) {
+    await writeJsonExclusive(boundedPath(outputPath, "product-evals/simulations/"), population);
+    try {
+      await writeJsonAtomic(CATALOG_PATH, await buildCampaignCatalog());
+    } catch (error) {
+      await unlink(boundedPath(outputPath, "product-evals/simulations/"));
+      throw error;
+    }
+  }
   return {
-    status: "DRY_RUN" as const,
+    status: options.dryRun ? "DRY_RUN" as const : outputExists ? "UNCHANGED" as const : "WRITTEN" as const,
     output_path: outputPath,
     existing_match: outputExists,
     derivation_path: selected.path,
     population,
+  };
+}
+
+export async function disposeRefinement(
+  options: DisposeRefinementOptions,
+  dependencies: {
+    verifyFrozenRun?: (runId: string) => Promise<void>;
+  } = {},
+) {
+  if (!/^\.artifacts\/product-evals\/.+\/refinements\/.+\.json$/.test(options.proposalPath)) {
+    throw new CascadeError("--proposal must reference a frozen .artifacts/product-evals refinement");
+  }
+  const proposalPath = boundedPath(options.proposalPath, ".artifacts/product-evals/");
+  if (!(await isFile(proposalPath))) throw new CascadeError(`refinement proposal missing: ${options.proposalPath}`);
+  const proposal = await readJson<PersonaRefinementProposal>(proposalPath);
+  validatePersonaRefinementProposal(
+    proposal as unknown as Record<string, unknown>,
+    options.proposalPath,
+  );
+  const runId = options.proposalPath.split("/")[2]!;
+  if (proposal.run_id !== runId) {
+    throw new CascadeError("refinement proposal run identity does not match its frozen path");
+  }
+  if (dependencies.verifyFrozenRun) {
+    await dependencies.verifyFrozenRun(runId);
+  } else {
+    const verification = await new CampaignArtifactStore(
+      rootPath(".artifacts/product-evals"),
+      runId,
+    ).verify();
+    if (verification.finalization_status !== "COMPLETED") {
+      throw new CascadeError("refinement proposal requires a completed verified run");
+    }
+  }
+  const evidence = await Promise.all(
+    options.evidenceManifestPaths.map(async (path) => {
+      if (!/^(docs\/product\/evidence|\.artifacts\/product-evals\/evidence-manifests)\/.+\.json$/.test(path)) {
+        throw new CascadeError(
+          `external evidence manifest must stay under docs/product/evidence/ or .artifacts/product-evals/evidence-manifests/: ${path}`,
+        );
+      }
+      const absolute = boundedPath(path);
+      if (!(await isFile(absolute))) throw new CascadeError(`external evidence manifest missing: ${path}`);
+      const manifest = await readJson<ExternalPersonaEvidenceManifest>(absolute);
+      validateExternalPersonaEvidenceManifest(
+        manifest as unknown as Record<string, unknown>,
+        path,
+      );
+      return { path, digest: await sha256File(absolute), manifest };
+    }),
+  );
+  const disposition = buildPersonaRefinementDisposition({
+    dispositionId: options.dispositionId,
+    proposalPath: options.proposalPath,
+    proposalDigest: await sha256File(proposalPath),
+    proposal,
+    decision: options.decision,
+    reviewerIdentity: options.reviewerIdentity,
+    evidence,
+    reviewedAt: options.reviewedAt,
+  });
+  const outputPath = `.artifacts/product-evals/refinement-reviews/${options.dispositionId}/disposition.json`;
+  if (!options.dryRun) {
+    await writeJsonExclusive(boundedPath(outputPath, ".artifacts/product-evals/"), disposition);
+  }
+  return {
+    status: options.dryRun ? "DRY_RUN" as const : "WRITTEN" as const,
+    output_path: outputPath,
+    disposition,
   };
 }
 
@@ -500,28 +631,92 @@ async function commandDerivePopulation(
   const mode = flag(args, "mode");
   if (!simulationId) throw new CascadeError("simulation derive-population requires --simulation");
   if (!mode) throw new CascadeError("simulation derive-population requires --mode");
-  if (!boolFlag(args, "dry-run")) {
-    throw new CascadeError("simulation derive-population is preview-only and requires --dry-run");
+  const dryRun = boolFlag(args, "dry-run");
+  const write = boolFlag(args, "write");
+  if (dryRun === write) {
+    throw new CascadeError("simulation derive-population requires exactly one of --dry-run or --write");
   }
   const result = await previewDerivedPopulation({
     personaId,
     simulationId,
     mode: mode as PersonaDerivationMode,
-    dryRun: true,
+    dryRun,
   });
   console.log(stableJson(result, true));
   return 0;
+}
+
+async function commandDisposeRefinement(argv: string[]): Promise<number> {
+  const args = parseArgs(argv);
+  const proposalPath = flag(args, "proposal");
+  const dispositionId = flag(args, "disposition-id");
+  const decision = flag(args, "decision")?.toUpperCase().replaceAll("-", "_");
+  const reviewerIdentity = flag(args, "reviewer");
+  if (!proposalPath || !dispositionId || !decision || !reviewerIdentity) {
+    throw new CascadeError(
+      "simulation dispose-refinement requires --proposal, --disposition-id, --decision, and --reviewer",
+    );
+  }
+  const dryRun = boolFlag(args, "dry-run");
+  const write = boolFlag(args, "write");
+  if (dryRun === write) {
+    throw new CascadeError("simulation dispose-refinement requires exactly one of --dry-run or --write");
+  }
+  const result = await disposeRefinement({
+    proposalPath,
+    dispositionId,
+    decision: decision as RefinementDispositionDecision,
+    reviewerIdentity,
+    evidenceManifestPaths: flags(args, "evidence-manifest"),
+    dryRun,
+  });
+  console.log(stableJson(result, true));
+  return 0;
+}
+
+async function commandIntake(campaign: string | undefined, argv: string[]): Promise<number> {
+  if (!campaign) throw new CascadeError("simulation intake requires a campaign ID or path");
+  const args = parseArgs(argv);
+  const envelopePath = flag(args, "envelope");
+  if (!envelopePath) throw new CascadeError("simulation intake requires --envelope PATH");
+  const write = boolFlag(args, "write");
+  const check = boolFlag(args, "check");
+  if (write && check) throw new CascadeError("simulation intake accepts only one of --write or --check");
+  const options = { campaign, envelopePath, brief: flag(args, "brief") };
+  const result = write
+    ? await writeCompiledSimulationIntake(options)
+    : (await compileSimulationIntake(options)).intake;
+  if (check) {
+    const resolved = await resolveCampaign(campaign, { allowStaleIntake: true });
+    const current = await readJson(resolved.campaign.intake_file!);
+    if (stableJson(current) !== stableJson(result)) {
+      throw new CascadeError(`simulation intake is stale: ${resolved.campaign.intake_file}`);
+    }
+    if (result.status === "READY") {
+      await resolveCampaign(campaign);
+    }
+  }
+  console.log(stableJson(result, true));
+  return result.status === "READY" ? 0 : 2;
 }
 
 export async function main(argv: string[]): Promise<number> {
   const [command, value, ...rest] = argv;
   if (command === "init") return commandInit(value, rest);
   if (command === "derive-population") return commandDerivePopulation(value, rest);
+  if (command === "dispose-refinement") return commandDisposeRefinement([value, ...rest].filter(Boolean) as string[]);
+  if (command === "intake") return commandIntake(value, rest);
   console.log(`Usage:
   bun scripts/cascade.ts simulation init <simulation-id> --owner-lane W-NNN
     [--title "Title"] [--reference-date YYYY-MM-DD] [--dry-run]
+    Output root: product-evals/simulations/product/<simulation-id>/
   bun scripts/cascade.ts simulation derive-population P-NNN --simulation <simulation-id>
-    --mode <representative|coverage|stress|counterfactual> --dry-run
+    --mode <representative|coverage|stress|counterfactual> (--dry-run|--write)
+  bun scripts/cascade.ts simulation dispose-refinement --proposal <path>
+    --disposition-id <id> --decision <accepted|rejected|needs-evidence|simulator-repair>
+    --reviewer <identity> [--evidence-manifest <path>] (--dry-run|--write)
+  bun scripts/cascade.ts simulation intake <campaign-id-or-path> --envelope <path>
+    [--brief PB-NNN|docs/specs/.../brief.yaml] [--check|--write]
 `);
   return command ? 1 : 0;
 }

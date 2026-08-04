@@ -13,7 +13,7 @@ import {
   walkFiles,
 } from "./common";
 
-interface PackSection {
+export interface PackSection {
   id: string;
   title?: string;
   anchor?: string;
@@ -21,14 +21,14 @@ interface PackSection {
   tags?: string[];
 }
 
-interface PackDocument {
+export interface PackDocument {
   path: string;
   title?: string;
   summary?: string;
   sections?: PackSection[];
 }
 
-interface Pack {
+export interface Pack {
   pack_id: string;
   entry_id?: string;
   kind?: string;
@@ -42,7 +42,7 @@ interface Pack {
 
 const PATTERNS_ROOT = rootPath("docs/patterns");
 
-async function discoverPacks(): Promise<string[]> {
+export async function discoverPacks(): Promise<string[]> {
   return (
     await walkFiles(PATTERNS_ROOT, {
       include: (path) => path.endsWith(".pack.yaml"),
@@ -50,7 +50,7 @@ async function discoverPacks(): Promise<string[]> {
   ).sort();
 }
 
-async function loadPack(path: string): Promise<Pack> {
+export async function loadPack(path: string): Promise<Pack> {
   const value = Bun.YAML.parse(await readText(path)) as Pack;
   if (!value || typeof value !== "object" || !value.pack_id) {
     throw new CascadeError(`invalid pattern pack: ${rel(path)}`);
@@ -114,7 +114,7 @@ function sectionMatches(
   return true;
 }
 
-async function extractSection(path: string, anchor: string): Promise<string> {
+export async function extractSection(path: string, anchor: string): Promise<string> {
   const lines = (await readText(path)).split("\n");
   const start = lines.findIndex((line) => line.trim() === anchor.trim());
   if (start < 0) throw new CascadeError(`${rel(path)} missing anchor: ${anchor}`);
@@ -130,6 +130,72 @@ async function extractSection(path: string, anchor: string): Promise<string> {
     }
   }
   return lines.slice(start, end).join("\n").trimEnd();
+}
+
+export interface PatternSectionSelection {
+  pack_id: string;
+  section_ids: string[];
+}
+
+export interface CompiledPatternSection {
+  pack_id: string;
+  section_id: string;
+  title: string;
+  source_path: string;
+  content: string;
+}
+
+export async function compilePatternSelections(
+  selections: PatternSectionSelection[],
+): Promise<CompiledPatternSection[]> {
+  const packs = new Map<string, { path: string; pack: Pack }>();
+  for (const path of await discoverPacks()) {
+    const pack = await loadPack(path);
+    if (packs.has(pack.pack_id)) {
+      throw new CascadeError(`duplicate pattern pack id: ${pack.pack_id}`);
+    }
+    packs.set(pack.pack_id, { path, pack });
+  }
+
+  const compiled: CompiledPatternSection[] = [];
+  const selectedKeys = new Set<string>();
+  for (const selection of selections) {
+    const resolved = packs.get(selection.pack_id);
+    if (!resolved) {
+      throw new CascadeError(`unknown pattern pack: ${selection.pack_id}`);
+    }
+    for (const sectionId of selection.section_ids) {
+      const key = `${selection.pack_id}:${sectionId}`;
+      if (selectedKeys.has(key)) {
+        throw new CascadeError(`duplicate pattern section selection: ${key}`);
+      }
+      selectedKeys.add(key);
+      let match:
+        | { document: PackDocument; section: PackSection }
+        | undefined;
+      for (const document of resolved.pack.documents ?? []) {
+        for (const section of document.sections ?? []) {
+          if (section.id !== sectionId) continue;
+          if (match) {
+            throw new CascadeError(`ambiguous pattern section: ${key}`);
+          }
+          match = { document, section };
+        }
+      }
+      if (!match) throw new CascadeError(`unknown pattern section: ${key}`);
+      const source = resolve(ROOT, match.document.path);
+      compiled.push({
+        pack_id: selection.pack_id,
+        section_id: sectionId,
+        title: match.section.title ?? sectionId,
+        source_path: match.document.path,
+        content: match.section.anchor
+          ? await extractSection(source, match.section.anchor)
+          : (match.section.summary ?? ""),
+      });
+    }
+  }
+  return compiled;
 }
 
 function renderList(title: string, values: string[] | undefined): string[] {

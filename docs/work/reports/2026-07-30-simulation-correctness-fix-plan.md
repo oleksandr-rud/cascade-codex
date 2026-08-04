@@ -147,14 +147,14 @@ world-state authority, metric, judge, or expected-result oracle.
 Extend the planned W-004 layout:
 
 ```text
-evals/simulations/<simulation-id>/
+product-evals/simulations/<harness|product>/<simulation-id>/
   manifest.json
   populations/
   scenarios/
   worlds/
   datasets/
-evals/metrics/
-evals/calibrations/
+product-evals/metrics/
+product-evals/calibrations/
 ```
 
 Responsibilities:
@@ -487,7 +487,7 @@ Preserved execution evidence:
 - preserved Cascade validator, 41-skill/319-scenario harness catalog, and
   15-case harness self-test receipts: `PASS` for their recorded source only.
 
-Current-source freshness:
+Report-revision source freshness (historical):
 
 - earlier contract, calibration, and Codex execution receipts remain
   historical and source-bound;
@@ -499,10 +499,21 @@ Current-source freshness:
 - deterministic run `wg001-n03-attempt3-20260730-r1` passes execution,
   fixture evaluation, cleanup verification, and campaign aggregation while
   remaining release-ineligible;
-- current campaign catalog digest is
+- campaign catalog digest at that fixed point was
   `5228269b97beac38bb77fb0e254bc1b2a1244404b0f69ea8685bca6c23f250a8`;
-- independent attempt-3 Standards, Spec, and GF-004 v1 review passes with no
-  findings, so WG-001-N03 is `ACCEPTED`.
+- independent attempt-3 Standards, Spec, and GF-004 v1 review passed with no
+  findings, so WG-001-N03 was `ACCEPTED` for that fixed point.
+
+Current reconciliation, 2026-08-03: W-025 and W-026 changed named shared
+campaign, evaluation, artifact, schema, catalog, and workflow sources. Under
+the receipt invalidation rule, historical N03 acceptance is stale and N03 is
+`PENDING`; current-source revalidation is `NOT_RUN`. WG-001 plan revision 17
+and work-graph revision 11 are authoritative. N04/N05 remain `BLOCKED` after
+failed attempt-4 reviews with all four attempts exhausted. The current
+seven-entry campaign catalog digest is
+`213a94b684e6c6341924fcb8723e2483050fa5cd198db0bc83f8b3cd26e962b4`;
+W-026's 84-test pass is scoped repair evidence and does not accept a WG-001
+node.
 
 ## Risks And Deferred Items
 

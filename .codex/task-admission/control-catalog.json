@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "catalog_id": "cascade-task-controls",
+  "catalog_version": 1,
+  "controls": [
+    { "id": "BASE", "cost": 0, "requires": [], "purpose": "Record relation, intent, authority, hazards, and trace." },
+    { "id": "GROUNDED_READ", "cost": 1, "requires": ["BASE"], "purpose": "Ground current-state claims with bounded reads." },
+    { "id": "ATOMIC_CHANGE", "cost": 1, "requires": ["BASE"], "purpose": "Protect one mechanical local edit with a targeted check." },
+    { "id": "STANDARD_CHANGE", "cost": 2, "requires": ["BASE"], "purpose": "Plan, implement, review, and regress a bounded behavior change." },
+    { "id": "CONNECTED_DELIVERY", "cost": 3, "requires": ["STANDARD_CHANGE"], "purpose": "Track dependent obligations and partial repair." },
+    { "id": "PROGRAM_CONTROL", "cost": 4, "requires": ["CONNECTED_DELIVERY"], "purpose": "Persist program worklines, checkpoints, and joins." },
+    { "id": "SIMULATION_GOVERNANCE", "cost": 4, "requires": ["CONNECTED_DELIVERY"], "purpose": "Bind simulation authoring and execution to versioned campaigns, exact policies, frozen evidence, cleanup, and independent evaluation." },
+    { "id": "SECURITY_ASSURANCE", "cost": 4, "requires": ["BASE"], "purpose": "Protect trust, permission, secret, tenant, and external-write boundaries." },
+    { "id": "FULL_SCAN", "cost": 5, "requires": ["BASE"], "purpose": "Inventory an otherwise unbounded public or security contract." },
+    { "id": "RELEASE_EVIDENCE", "cost": 5, "requires": ["BASE"], "purpose": "Require current-source, independent, environment-bound release evidence." }
+  ]
+}

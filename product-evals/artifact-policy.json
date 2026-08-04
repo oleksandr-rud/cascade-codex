@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "artifact_root": ".artifacts/product-evals",
+  "storage_mode": "local-append-only",
+  "source_material_mode": "digest-and-minimized-metadata-only",
+  "raw_sensitive_material_allowed": false,
+  "encryption_at_rest": "host-filesystem-required",
+  "access_scope": "maintainers-only",
+  "operator_attestation": "required-for-restricted",
+  "retention": {
+    "mode": "manual-review",
+    "review_after_days": 30,
+    "deletion_owner": "target-project maintainer"
+  },
+  "remote_storage": "disabled",
+  "export": "disabled"
+}

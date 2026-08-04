@@ -41,7 +41,9 @@ describe("Cascade common tooling", () => {
 
   test("bounded paths reject traversal", () => {
     expect(() => boundedPath("../../outside")).toThrow(CascadeError);
-    expect(boundedPath("evals/harness", "evals/")).toContain("evals/harness");
+    expect(
+      boundedPath("product-evals/campaigns", "product-evals/"),
+    ).toContain("product-evals/campaigns");
   });
 
   test("frontmatter parsing is bounded to the leading block", () => {

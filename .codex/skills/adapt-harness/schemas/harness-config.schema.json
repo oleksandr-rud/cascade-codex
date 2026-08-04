@@ -68,8 +68,70 @@
         "active_work",
         "patterns",
         "pattern_context_builder",
-        "harness_eval_runner"
-      ]
+        "task_admission_schema",
+        "task_admission_policy",
+        "task_admission_hook",
+        "task_admission_runner",
+        "task_admission_cases",
+        "harness_evals",
+        "harness_eval_runner",
+        "harness_eval_artifacts",
+        "simulation_campaigns",
+        "simulation_artifacts",
+        "simulation_artifact_policy",
+        "harness_simulations",
+        "product_simulations"
+      ],
+      "properties": {
+        "product_catalog": {
+          "const": "docs/product/catalog.yaml"
+        },
+        "product_catalog_schema": {
+          "const": "docs/product/catalog.schema.json"
+        },
+        "product_brief_schema": {
+          "const": "docs/specs/brief-manifest.schema.json"
+        },
+        "product_brief_runner": {
+          "const": "scripts/cascade/briefs.ts"
+        },
+        "task_admission_schema": {
+          "const": ".codex/task-admission/task-envelope.schema.json"
+        },
+        "task_admission_policy": {
+          "const": ".codex/task-admission/policies/core.json"
+        },
+        "task_admission_hook": {
+          "const": ".codex/hooks.json"
+        },
+        "task_admission_runner": {
+          "const": "scripts/cascade/admission.ts"
+        },
+        "task_admission_cases": {
+          "const": "harness-evals/task-admission/cases.json"
+        },
+        "harness_evals": {
+          "const": "harness-evals"
+        },
+        "harness_eval_artifacts": {
+          "const": ".artifacts/harness-evals"
+        },
+        "simulation_campaigns": {
+          "const": "product-evals/campaigns"
+        },
+        "simulation_artifacts": {
+          "const": ".artifacts/product-evals"
+        },
+        "simulation_artifact_policy": {
+          "const": "product-evals/artifact-policy.json"
+        },
+        "harness_simulations": {
+          "const": "product-evals/simulations/harness"
+        },
+        "product_simulations": {
+          "const": "product-evals/simulations/product"
+        }
+      }
     },
     "validation_commands": {
       "type": "object",
@@ -85,7 +147,9 @@
       ]
     },
     "routing": {
-      "type": "object"
+      "type": "object",
+      "required": ["admission", "non_atomic_fallback_path"],
+      "not": { "required": ["new_task_path"] }
     },
     "functional_acceptance": {
       "type": "object"

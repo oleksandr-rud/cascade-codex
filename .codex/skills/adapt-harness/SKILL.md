@@ -24,8 +24,9 @@ questions.
    `harness.config.yaml` if present.
 5. `docs/patterns/workflow/index.md` for the shared Doc Routing Decision Matrix.
 6. `docs/patterns/boundaries/index.md`, `docs/patterns/testing/index.md`, and
-   `docs/patterns/context-memory/index.md` for reusable architecture, validation,
-   and source-context routing.
+   `docs/patterns/context-memory/index.md`, and
+   `docs/patterns/product-context/index.md` for reusable architecture,
+   validation, source-context, product relationship, and brief routing.
 7. `docs/patterns/architecture-defaults/index.md` plus only matching
    graph/spec pairs when detected architecture, stack, cache, tenancy,
    interface, service, event-driven, frontend, native app, CLI, experiment, or
@@ -73,15 +74,20 @@ their owning skills are needed and delegation is authorized.
    `docs/glossary.md`, and validation commands.
 4. Map real source roots, test roots, docs roots, app entry points, public
    contracts, and functional test runners.
-5. Map product/spec folders: personas, scenarios, journeys, design refs,
-   brand/content refs, spec packets, work lanes, backlog, and work reports.
+5. Map product/spec folders: domain/capability catalog, personas, scenarios,
+   journeys, design refs, brand/content refs, spec packets, brief manifests,
+   work lanes, backlog, and work reports. Treat Cascade's `PD-001`, `PC-001`,
+   `PC-002`, and `PB-001` entries as scaffold examples during target
+   adaptation, not target-product truth: replace, reconcile, or explicitly
+   retain them from inspected target evidence before generating a target brief.
 6. Replace placeholder vocabulary with codebase-specific terms.
 7. Keep reusable workflow rules in `.codex/skills/`, `.codex/agents/`, and
    `docs/patterns/`; keep project facts in config, glossary, work lanes, and
    specs.
 8. Decide which generic pattern entries need target-specific updates:
-   workflow, boundaries, architecture-defaults, testing, context-memory, or a
-   new bounded entry created through `pattern-context`. For a matching
+   workflow, boundaries, architecture-defaults, testing, context-memory,
+   product-context, or a new bounded entry created through `pattern-context`.
+   For a matching
    architecture-default pair, record `ADOPTED`, `ADAPTED`, `REJECTED`, or
    `GAP` from current target evidence. Resolve `architecture-selection`, then
    extract source-linked claims and applicable policies for each backend
@@ -148,7 +154,10 @@ their owning skills are needed and delegation is authorized.
 17. When target behavior needs simulation, derive the simulation ID and owner
     lane from approved project scope, preview
     `bun scripts/cascade.ts simulation init <id> --owner-lane W-NNN --dry-run`,
-    review all generated paths, then initialize. Do not create a generic
+    require all generated simulation-definition paths to use
+    `product-evals/simulations/product/`, review all generated paths, then initialize.
+    Reserve `product-evals/simulations/harness/` for explicit Cascade machinery
+    fixtures. Do not create a generic
     simulation when no target scenario or owner exists, and never overwrite an
     existing package.
 18. For completed deep onboarding, run
@@ -194,9 +203,13 @@ Required phase outcomes:
    workflow risks to `secure-design`, and durable validation rules to
    `docs/patterns/testing/index.md`.
 6. Product feature catalog: inspect routes, UI surfaces, API contracts, tests,
-   README docs, specs, and user-facing copy; write durable feature intent,
-   journeys, scenarios, requirements, and spec packets to their narrow
-   owner docs.
+   README docs, specs, and user-facing copy; define stable product domains and
+   capabilities from target evidence in `docs/product/catalog.yaml`; write
+   durable feature intent, journeys, scenarios, requirements, personas, and
+   spec packets to their narrow owner docs. Author a per-slice `brief.yaml`
+   only after its capability and every selected owner row resolve, then run
+   `bun scripts/cascade.ts brief check` so copied Cascade examples cannot pass
+   as target context accidentally.
 7. Visual, design, brand, and layout capture: when a UI can be run or evidence
    exists, use `visual-qa` for screenshot-backed layout/style/state evidence,
    `ux-flow-review` for flow quality, `design-system` for reusable tokens and
@@ -219,7 +232,7 @@ Required phase outcomes:
     onboarding writes without changing preserved-file hashes; record all phase,
     project-part, documentation, and check outcomes; run the target validator
     with `--require-onboarding-complete`, available target checks,
-    stale-reference searches, and a separate drift command; close with files
+   product-brief check, stale-reference searches, and a separate drift command; close with files
     written, skipped, blocked, and next routes.
 
 Do not create broad security, backend, frontend, or memory dump folders.

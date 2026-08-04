@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "id": "simulation-correctness-fixture",
+  "simulation_scope": "harness",
+  "title": "Simulation correctness framework fixture",
+  "purpose": "Exercise population, partition, state, metric, treatment, calibration, and release-gate contracts without external services.",
+  "population_files": [
+    "product-evals/simulations/harness/simulation-correctness-fixture/populations/support-actors.json"
+  ],
+  "scenario_files": [
+    "product-evals/simulations/harness/simulation-correctness-fixture/scenarios/resolve-account.json"
+  ],
+  "world_file": "product-evals/simulations/harness/simulation-correctness-fixture/worlds/support-world.json",
+  "dataset_file": "product-evals/simulations/harness/simulation-correctness-fixture/datasets/support-cases.json",
+  "metric_files": [
+    "product-evals/metrics/task-success-v1.json"
+  ],
+  "treatment_files": [
+    "product-evals/treatments/baseline-v1.json",
+    "product-evals/treatments/candidate-a-v1.json",
+    "product-evals/treatments/candidate-b-v1.json"
+  ],
+  "calibration_file": "product-evals/calibrations/framework-ranking-v1.json"
+}

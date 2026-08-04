@@ -30,6 +30,9 @@ Current entries:
 - `context-memory/`: retrieval/source fidelity, semantic-core packages,
   compaction, context bounds, compact research-memory entries, and
   observability.
+- `product-context/`: stable product domain/capability relationships,
+  deterministic brief assembly, evidence-promotion boundaries, and governed
+  persona/simulation feedback.
 - `agent-evaluation/`: harness scenario coverage, trace evidence,
   mechanical eligibility, independent judged evaluation, root cause, and regression
   promotion.

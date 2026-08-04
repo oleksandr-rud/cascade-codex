@@ -1,0 +1,92 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://cascade.local/schemas/simulation-claim.schema.json",
+  "title": "Cascade simulation claim",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "id",
+    "class",
+    "assertion",
+    "scope",
+    "population_authority",
+    "required_policy_ids",
+    "required_oracle_ids",
+    "required_metric_ids",
+    "requires_calibration",
+    "evidence_requirements"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9.-]+$"
+    },
+    "class": {
+      "enum": [
+        "authorship",
+        "execution",
+        "mechanical-behavior",
+        "semantic-quality",
+        "safety-compliance",
+        "coverage",
+        "release-eligibility"
+      ]
+    },
+    "assertion": {
+      "type": "string",
+      "minLength": 1
+    },
+    "scope": {
+      "type": "object",
+      "minProperties": 1
+    },
+    "population_authority": {
+      "enum": ["none", "persona-derived", "estimated-prevalence"]
+    },
+    "required_policy_ids": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string"
+      }
+    },
+    "required_oracle_ids": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string"
+      }
+    },
+    "required_metric_ids": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string"
+      }
+    },
+    "requires_calibration": {
+      "type": "boolean"
+    },
+    "evidence_requirements": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "enum": [
+          "source-manifest",
+          "execution-receipt",
+          "task-result",
+          "trajectory",
+          "policy-decisions",
+          "oracle",
+          "cleanup",
+          "calibration-receipt"
+        ]
+      }
+    }
+  }
+}

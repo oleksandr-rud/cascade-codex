@@ -1,0 +1,53 @@
+schema_version: 1
+brief_id: PB-002
+revision: 1
+status: reviewed
+title: Evidence-Bound Simulation Intake And Agent Handoffs
+catalog_path: docs/product/catalog.yaml
+domain_id: PD-001
+capability_id: PC-003
+coverage_mode: complete
+purpose: Assemble current admission, product-context, simulation-policy, and agent-handoff context for authoring or reviewing a product simulation intake.
+audiences:
+  - Cascade maintainers
+  - simulation authors, operators, and evaluators
+  - product spec and persona owners
+product_refs:
+  requirement_ids: [PR-009, PR-010, PR-011, PR-012]
+  journey_ids: [J-002]
+  scenario_ids: [PS-009, PS-010, PS-011, PS-012]
+  persona_ids: []
+omissions: []
+source_documents:
+  - docs/specs/simulation-intake-agent-bridge/contract.md
+  - docs/specs/task-admission-workload/contract.md
+  - docs/specs/product-context-briefs/contract.md
+evidence: []
+pattern_context:
+  - pack_id: product-context-core
+    section_ids: [product-authority-graph, brief-manifest-and-compilation, evidence-promotion-boundary, simulation-feedback-bridge]
+  - pack_id: workflow-core
+    section_ids: [planning-knowledge-contract, doc-routing-decision-matrix]
+  - pack_id: testing-core
+    section_ids: [scenario-tests]
+simulation_context:
+  - path: scripts/cascade/simulation-intake.test.ts
+    scope: contract-test
+    authority: implementation
+    status: authored
+    purpose: Exercises the intake schema, draft starter, and normalized action boundary without claiming product behavior.
+  - path: product-evals/simulations/harness/simulation-correctness-fixture/manifest.json
+    scope: harness-simulation
+    authority: mechanics-only
+    status: authored
+    purpose: Exercises framework mechanics only and cannot establish target-product behavior or persona truth.
+gaps:
+  - No target-product campaign has yet compiled a READY intake from PB-002.
+  - No authorized product execution or independent product evaluation receipt exists.
+  - No reviewed target-user evidence exists for a non-fixture persona refinement.
+non_goals:
+  - Treat a brief or intake as execution authorization.
+  - Treat harness mechanics as product evidence.
+  - Let a synthetic persona validate or mutate its source product persona.
+  - Update product documents implicitly from a work cycle or simulation finding.
+output_path: docs/specs/simulation-intake-agent-bridge/brief.generated.md

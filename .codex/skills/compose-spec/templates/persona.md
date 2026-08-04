@@ -8,6 +8,9 @@ Source: `<REQUEST_OR_SPEC_OR_RESEARCH>`
 Source Digests: `<SOURCE_ID_SHA256_OR_NONE>`
 Reference Window: `<START_END_OR_NOT_APPLICABLE>`
 
+Only `reviewed` or `approved` revisions may seed an approved simulation
+derivation. `draft` and `superseded` revisions remain non-executable sources.
+
 ## Summary
 
 - Role:

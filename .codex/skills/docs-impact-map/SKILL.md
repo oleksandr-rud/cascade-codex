@@ -22,6 +22,7 @@ durable doc fact. It does not patch product/runtime code.
    fact.
 3. Existing durable docs:
    - `docs/product/`
+   - `docs/product/catalog.yaml`
    - `docs/design/`
    - `docs/brand/`
    - `docs/specs/`
@@ -67,6 +68,7 @@ Use these dependency checks before deciding that one doc update is complete:
 |---|---|
 | Persona or target user | `docs/product/requirements.md`, `docs/product/journeys.md`, `docs/product/scenarios.md`, `docs/brand/`, `docs/design/`, active work criteria |
 | Product requirement or acceptance criterion | scenario rows, journeys, spec packets, functional evidence, backlog candidates |
+| Product domain, capability, or brief selection | catalog relationships, owner rows, spec packet, selected pattern context, evaluation authority, generated-brief freshness |
 | Journey or multi-step state | requirements, scenarios, interaction model, functional checks, carried state, duplicate side effects |
 | Scenario row | requirement source, journey coverage, design state, functional evidence, active lane overlay |
 | Brand positioning, naming, tone, or content | product audience, UI copy, visual direction, token implications, scenarios that assert copy |

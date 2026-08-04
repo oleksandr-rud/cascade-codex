@@ -1,0 +1,153 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://cascade.local/schemas/campaign.schema.json",
+  "title": "Cascade execution campaign",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "id",
+    "title",
+    "purpose",
+    "owner_lane",
+    "tier",
+    "evaluation_profile_file",
+    "simulation_file",
+    "task_files",
+    "claim_files",
+    "policy_files",
+    "oracle_files"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9.-]+$"
+    },
+    "title": {
+      "type": "string",
+      "minLength": 1
+    },
+    "purpose": {
+      "type": "string",
+      "minLength": 1
+    },
+    "owner_lane": {
+      "type": "string",
+      "pattern": "^W-[0-9]{3}$"
+    },
+    "tier": {
+      "enum": [
+        "deterministic-fixture",
+        "controlled-integration",
+        "platform-canary",
+        "semantic-evaluation"
+      ]
+    },
+    "session": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "max_duration_ms",
+        "max_step_duration_ms",
+        "max_steps",
+        "max_parallel_steps",
+        "max_steps_per_episode",
+        "max_surfaces",
+        "max_checkpoint_bytes",
+        "lease_ttl_ms"
+      ],
+      "properties": {
+        "max_duration_ms": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "max_step_duration_ms": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "max_steps": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 1000000
+        },
+        "max_parallel_steps": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 64
+        },
+        "max_steps_per_episode": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 10000
+        },
+        "max_surfaces": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 10000
+        },
+        "max_checkpoint_bytes": {
+          "type": "integer",
+          "minimum": 1024,
+          "maximum": 10485760
+        },
+        "lease_ttl_ms": {
+          "type": "integer",
+          "minimum": 1000,
+          "maximum": 86400000
+        }
+      }
+    },
+    "evaluation_profile_file": {
+      "type": "string",
+      "pattern": "^product-evals/rubrics/.+\\.json$"
+    },
+    "simulation_file": {
+      "type": "string",
+      "pattern": "^product-evals/simulations/(harness|product)/.+/manifest\\.json$"
+    },
+    "task_files": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "pattern": "^product-evals/tasks/.+\\.json$"
+      }
+    },
+    "claim_files": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "pattern": "^product-evals/claims/.+\\.json$"
+      }
+    },
+    "policy_files": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "pattern": "^product-evals/policies/.+\\.json$"
+      }
+    },
+    "oracle_files": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "pattern": "^product-evals/oracles/.+\\.json$"
+      }
+    },
+    "intake_file": {
+      "type": "string",
+      "pattern": "^product-evals/intakes/(harness|product)/.+\\.json$"
+    }
+  }
+}

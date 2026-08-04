@@ -1,0 +1,88 @@
+schema_version: 1
+product:
+  id: cascade
+  name: Cascade
+  summary: Standalone coding-agent workflow harness with governed product and evaluation context.
+domains:
+  - id: PD-001
+    name: Product context and simulation governance
+    status: approved
+    owner: Cascade maintainers
+    summary: Governs product evidence, product-context assembly, persona-derived simulation, and reviewed refinement feedback.
+    source_paths:
+      - docs/product/_index.md
+      - docs/specs/persona-simulation-governance/contract.md
+      - docs/specs/product-context-briefs/contract.md
+      - docs/specs/simulation-intake-agent-bridge/contract.md
+capabilities:
+  - id: PC-001
+    domain_id: PD-001
+    name: Governed persona-derived simulation
+    status: approved
+    owner: Cascade maintainers
+    summary: Binds reviewed product personas and governed evidence to typed synthetic populations and proposal-only refinement feedback.
+    source_paths:
+      - docs/specs/persona-simulation-governance/contract.md
+      - docs/product/personas/_index.md
+    requirement_ids:
+      - PR-001
+      - PR-002
+      - PR-003
+      - PR-004
+      - PR-005
+    journey_ids: []
+    scenario_ids:
+      - PS-001
+      - PS-002
+      - PS-003
+      - PS-004
+      - PS-005
+    persona_ids: []
+    evaluation_refs:
+      - path: product-evals/simulations/harness/simulation-correctness-fixture/manifest.json
+        kind: harness-simulation
+        authority: mechanics-only
+        status: authored
+  - id: PC-002
+    domain_id: PD-001
+    name: Evidence-bound product brief assembly
+    status: reviewed
+    owner: Cascade maintainers
+    summary: Validates domain and capability relationships and deterministically compiles exact product sources and reusable context into a digest-bound brief.
+    source_paths:
+      - docs/specs/product-context-briefs/contract.md
+    requirement_ids:
+      - PR-006
+      - PR-007
+      - PR-008
+    journey_ids:
+      - J-001
+    scenario_ids:
+      - PS-006
+      - PS-007
+      - PS-008
+    persona_ids: []
+    evaluation_refs:
+      - path: scripts/cascade/briefs.test.ts
+        kind: contract-test
+        authority: implementation
+        status: authored
+  - id: PC-003
+    domain_id: PD-001
+    name: Evidence-bound simulation intake and agent handoff
+    status: reviewed
+    owner: Cascade maintainers
+    summary: Compiles Task Envelope claims and a scope-correct product brief into exact campaign action-policy bindings and separated author, operator, and evaluator handoffs.
+    source_paths:
+      - docs/specs/simulation-intake-agent-bridge/contract.md
+      - docs/specs/task-admission-workload/contract.md
+      - docs/specs/product-context-briefs/contract.md
+    requirement_ids: [PR-009, PR-010, PR-011, PR-012]
+    journey_ids: [J-002]
+    scenario_ids: [PS-009, PS-010, PS-011, PS-012]
+    persona_ids: []
+    evaluation_refs:
+      - path: scripts/cascade/simulation-intake.test.ts
+        kind: contract-test
+        authority: implementation
+        status: authored

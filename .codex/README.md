@@ -9,11 +9,24 @@ simulations. Install it with
 `bun install --cwd .codex/harness-tooling --frozen-lockfile`; do not replace or
 merge a target application's root package manifest or lockfile.
 
-## Skills
+## Task Admission And Skills
 
-Core cascade:
+Every request first runs the bounded task-admission microkernel through
+`.codex/task-admission/` and `scripts/cascade.ts admission`. Its Task Envelope
+selects proportional controls but cannot grant authority, dispatch work, or
+auto-approve a tool. Project hooks in `.codex/hooks.json` require normal Codex
+trust review; the full chain below is a conditional non-atomic fallback, not
+the default for direct answers or atomic edits.
+
+Core non-atomic fallback:
 
 `context -> ingest-spec/discover/market-validation/synthesis-to-spec/compose-spec if needed -> docs-impact-map -> pattern-context when reusable pattern packs are needed -> orchestrate-work -> plan-change -> functional-qa -> implement-change -> review-change -> validate-change -> test-autorepair only if stale tests -> closeout`
+
+`compose-spec` may register stable product domains and capabilities in
+`docs/product/catalog.yaml` and author a per-slice `brief.yaml`. The
+`product_briefs` registry in `.codex/config.toml` points to the schemas and
+deterministic Bun compiler; generated briefs remain projections rather than
+product authority.
 
 When a lane or Coordination Graph completes, `closeout` automatically chains
 `archive-work` for the exact closed set. The archive result is `ARCHIVED`,

@@ -13,7 +13,7 @@
 
 Create one focused skill that owns versioned simulation campaign authoring,
 selection, dispatch/replay planning, receipt aggregation, claim projection,
-and reporting across command, terminal, browser, desktop, mobile, and
+and reporting across command, HTTP, terminal, browser, desktop, mobile, and
 agent-response contours. Mutable execution and independent evaluation are
 separate skills and agent roles.
 
@@ -85,7 +85,7 @@ contract, so no web or library-documentation lookup is needed.
 | `simulation-evaluation` skill and `simulation-evaluator` role | implemented contract | W-004 for receipt storage and runtime conformance |
 | Repository route, structure, and glossary docs | implemented | none |
 | Validator and harness route cases | implemented | none |
-| `evals/campaigns/`, tasks, simulations, claims, policies, oracles, and rubrics | planned | W-004 |
+| `product-evals/campaigns/`, tasks, simulations, claims, policies, oracles, and rubrics | planned | W-004 |
 | Campaign runner, atomic reservation/lease, recovery, and append-only receipt namespaces under `.artifacts/campaigns/` | planned and `NOT_RUN` | W-004 and contour lanes |
 
 ## Validation Evidence

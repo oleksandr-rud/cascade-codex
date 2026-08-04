@@ -11,7 +11,7 @@ Use filenames like `YYYY-MM-DD-slug.md`.
 
 | Date | Work Graph | Purpose |
 |---|---|---|
-| 2026-07-27 | `2026-07-27-cross-surface-simulation-work-graph.md` | Active plan revision 12/work-graph revision 11; WG-001-N03 is `ACCEPTED`; implemented N04/N05 are in `REVIEW` pending independent GF-004/GF-101 review. |
+| 2026-07-27 | `2026-07-27-cross-surface-simulation-work-graph.md` | Active plan revision 28/work-graph revision 12; public process resume, strict READY-intake checks, PB-002, catalog `73e0a208...`, 152-test regression, and immutable run `wg001-resume-hardening-20260804-r7` pass locally; independent reviews, Gate A/B, real adapters, product/provider runs, platform proof, and release eligibility remain `NOT_RUN`. |
 
 ## Reports
 
@@ -29,20 +29,22 @@ Use filenames like `YYYY-MM-DD-slug.md`.
 | 2026-07-30 | `2026-07-30-simulation-correctness-fix-plan.md` | Repository-specific remediation plan for actor populations, stateful worlds, dataset partitions, metrics, judge calibration, sim-to-reference evidence, treatment ranking, drift invalidation, and release gates. |
 | 2026-07-27 | `2026-07-27-architecture-selection-and-frontend-defaults.md` | Thirty-four-pair architecture catalog with claim/policy-driven stack, contour technology and infrastructure, SDK/library defaults, safe source profiles, frontend policies, preservation matrix, and validation evidence; updated 2026-07-28. |
 
-## Historical Work Graphs
-
-Completed work graphs remain durable evidence but are not active registry
-entries. Canonical work-graph filenames and IDs remain the live reference
-surface; immutable runtime evidence identities are preserved separately.
-
-| Date | Work Graph | Purpose |
-|---|---|---|
-| 2026-07-28 | `2026-07-28-stack-naming-work-graph.md` | Completed work graph `WG-002`, revision 4: direct cutover to app-stack and infrastructure across W-013-W-017, 14 nodes, 46 source operations, 26 preserved pairs, unchanged evidence/scaffold contracts, exact validation evidence, and W-018 handoff. |
-| 2026-07-28 | `2026-07-28-contour-infrastructure-work-graph.md` | Completed work graph `WG-003`, revision 5: exact 31-pair Stage 2 receipt and serialized 34-pair SDK/library follow-on across W-018-W-024, with preserved resource authority, evidence compatibility, and five-profile/71-file scaffolds. |
-
 ## Archived Report Sets
 
 | Archive Date | Archive | Scope | Preserved Detail |
 |---|---|---|---|
 | 2026-07-24 | [`AR-001`](../../archive/work-reports/2026-07-24-w003-cg001-archive.md) | W-003 / CG-001 | plan, packet, graph, completion, reconciliation, blockers, exhausted attempts, and focused dual-judge evidence |
 | 2026-07-24 | [`AR-002`](../../archive/work-reports/2026-07-24-w002-judged-harness-evals-archive.md) | W-002 judged harness evaluations | lane, reviewed judge-builder design, completion report, failed canary judgments, and `NOT_RUN` calibration/full-catalog limits |
+| 2026-08-03 | [`AR-003`](../../archive/work-reports/2026-08-03-wg002-stack-naming-archive.md) | stack naming migration / W-013-W-017 | completed graph, five terminal lanes, unrelated generated-dependency validator noise, and live/release limits |
+| 2026-08-03 | [`AR-004`](../../archive/work-reports/2026-08-03-wg003-contour-infrastructure-archive.md) | contour infrastructure / W-018-W-024 | completed graph, seven terminal lanes, deterministic validation, and provider/deployment limits |
+| 2026-08-03 | [`AR-005`](../../archive/work-reports/2026-08-03-w025-persona-refinement-archive.md) | W-025 persona refinement loop | terminal lane, completion evidence, artifact-binding repair, and live/promotion limits |
+| 2026-08-03 | [`AR-006`](../../archive/work-reports/2026-08-03-w026-persona-provenance-defaults-hardening-archive.md) | W-026 persona provenance/defaults hardening | terminal lane, status/weight/input/proposal provenance repairs, defaults audit, and WG-001 projection reconciliation |
+| 2026-08-03 | [`AR-007`](../../archive/work-reports/2026-08-03-w027-harness-product-simulation-separation-archive.md) | W-027 harness/product simulation separation | typed roots, resolver/default enforcement, staleness repair, validation, and WG-001 revision-18 reconciliation |
+| 2026-08-03 | [`AR-008`](../../archive/work-reports/2026-08-03-w028-top-level-evaluation-root-separation-archive.md) | W-028 top-level evaluation root separation | peer evaluation roots, defaults/schema hardening, stale-path repair, validation, and WG-001 revision-19 reconciliation |
+| 2026-08-04 | [`AR-009`](../../archive/work-reports/2026-08-04-w029-persona-simulation-gap-closure-archive.md) | W-029 persona and simulation gap closure | governed evidence, typed actors, exact population authority, refinement dispositions, artifact/privacy defaults, fixed-point repairs, and terminal validation |
+| 2026-08-04 | [`AR-010`](../../archive/work-reports/2026-08-04-w030-product-context-brief-generation-archive.md) | W-030 product context brief generation | stable domain/capability graph, deterministic evidence-bound briefs, reusable context, staleness repairs, and terminal validation |
+
+W-001 archive result is `ARCHIVE_DEFERRED`: active W-004 and W-007 packets
+still consume its lane/report authority at the live paths. It remains complete
+historical authority, not an active registry row, until those consumers are
+rehydrated against an archive-safe reference.

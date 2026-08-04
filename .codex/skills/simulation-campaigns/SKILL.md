@@ -1,6 +1,6 @@
 ---
 name: simulation-campaigns
-description: Use when versioned simulation campaigns across command, terminal, browser, desktop, mobile, or agent-response contours must be authored, selected, validated, coordinated, replay-planned, aggregated, or reported with explicit claims, policies, oracles, evidence, identity, and handoffs.
+description: Use when versioned simulation campaigns across command, HTTP, terminal, browser, desktop, mobile, or agent-response contours must be authored, selected, validated, coordinated, replay-planned, aggregated, or reported with explicit claims, policies, oracles, evidence, identity, and handoffs.
 ---
 
 # Simulation Campaigns
@@ -19,16 +19,20 @@ role and does not treat an authored campaign as an executed result.
 
 1. Latest request plus any named campaign, run, task, claim, or policy IDs.
 2. Current-checkout campaign sources, when present:
-   - `evals/campaigns/`
-   - `evals/tasks/`
-   - `evals/simulations/`
-   - `evals/claims/`
-   - `evals/policies/`
-   - `evals/oracles/`
-   - `evals/metrics/`
-   - `evals/treatments/`
-   - `evals/calibrations/`
-   - `evals/rubrics/`
+   - `product-evals/campaigns/`
+   - simulation intakes and Task Envelope snapshots under
+     `product-evals/intakes/harness/` or `product-evals/intakes/product/`;
+   - `product-evals/tasks/`
+   - shared simulation schemas under `product-evals/simulations/`;
+   - framework-only simulation fixtures under `product-evals/simulations/harness/`;
+   - target-product simulations under `product-evals/simulations/product/`;
+   - `product-evals/claims/`
+   - `product-evals/policies/`
+   - `product-evals/oracles/`
+   - `product-evals/metrics/`
+   - `product-evals/treatments/`
+   - `product-evals/calibrations/`
+   - `product-evals/rubrics/`
    - `docs/product/personas/` only through explicit persona derivation
      manifests; never through inferred Markdown parsing;
    - the generated campaign catalog.
@@ -36,7 +40,7 @@ role and does not treat an authored campaign as an executed result.
      simulation.
 3. Current program and lane state under `docs/work/`.
 4. `harness.config.yaml`, `docs/structure.md`, and `docs/glossary.md`.
-5. Immutable run evidence under `.artifacts/campaigns/<run-id>/`.
+5. Immutable run evidence under `.artifacts/product-evals/<run-id>/`.
 6. Execution and evaluation receipts from `simulation-execution`,
    `simulation-evaluation`, and specialized `harness-evaluation`.
 7. The adjacent `functional-qa` and `codex-maintenance` contracts.
@@ -79,12 +83,13 @@ Route elsewhere when:
 
 ## Contours, Drivers, and Tiers
 
-Supported contours are `command`, `terminal`, `browser`, `desktop`, `mobile`,
-and `agent-response`.
+Supported contours are `command`, `http`, `terminal`, `browser`, `desktop`,
+`mobile`, and `agent-response`.
 
 Choose a driver explicitly:
 
 - direct process for non-interactive command execution;
+- bounded HTTP client for protocol-level request/response behavior;
 - PTY for interactive terminal behavior;
 - Playwright or an equivalent browser driver for web interaction;
 - platform automation for native desktop applications;
@@ -108,27 +113,58 @@ materially.
    - Confirm both the campaign source and its runtime adapter or runner exist.
    - For a new target simulation, derive an approved lowercase simulation ID
      and owning `W-NNN` lane, preview with `simulation init ... --dry-run`,
-     inspect every path, then initialize without an overwrite mode.
+     confirm that every simulation path is under `product-evals/simulations/product/`,
+     then initialize without an overwrite mode. Harness fixtures are authored
+     explicitly and are never produced by the target initializer.
 2. Resolve the definition graph.
    - Resolve manifest, task, simulation, claim, policy, oracle, fixture, and
      digest references, including populations, scenarios, stateful worlds,
      dataset partitions, metrics, treatments, and calibration inputs.
+   - Require `simulation_scope` to match the physical `harness/` or `product/`
+     root. Reject cross-root populations, scenarios, worlds, datasets,
+     derivations, and fixtures. Expose the resolved scope in the catalog.
+   - Treat harness-scoped simulations as framework mechanics only and reject
+     any non-framework calibration. Treat product scope as intended authority,
+     not evidence: target claims still require current non-fixture evidence and
+     every ordinary campaign gate.
    - Resolve the campaign's versioned evaluation profile and rubric. Permit a
      fixture provider only for `deterministic-fixture`; require the Codex
      provider for `semantic-evaluation`.
    - Reject duplicate IDs, unknown references, stale generated catalogs, and
      ambiguous versions.
+   - For product scope, resolve one campaign `intake_file`. Require a READY
+     intake compiled from the current W-031 Task Envelope and a current
+     reviewed/approved `PB-XXX` brief. Reject missing, draft, blocked, stale,
+     cross-scope, or campaign-mismatched intakes. Harness scope may use only a
+     harness intake and cannot claim product-brief authority.
    - For persona-derived populations, resolve the approved derivation manifest,
-     exact product-persona ID/revision/path/digest, generator identity,
+     exact `reviewed` or `approved` product-persona ID/revision/path/digest,
+     reproducible generator input digest,
      behavioral dimensions, invariants, mutation axes, and allocation mode.
+     Default weights to `test-allocation`. Permit `estimated-prevalence` only
+     for representative mode with digest-bound research or behavioral data,
+     reference window, sample description, and reviewer.
+     Require typed decision, communication, memory, and abstention policies;
+     governed evidence authority, rights, sensitivity, retention, purpose, and
+     prohibited-use metadata; and a claim-level `population_authority`.
      Preview deterministic generation with `simulation derive-population ...
-     --dry-run`; model-backed generation requires a separately authorized path.
+     --dry-run`, then materialize it without overwrite using `--write`;
+     model-backed generation requires a separately authorized path.
 3. Validate the execution contract.
    - Record contour, driver, tier, platform, permissions, runtime identity,
      fixture identity, timeout, budget, evidence targets, cleanup, and handoff.
+   - For a multi-surface or long-running purpose, declare finite session
+     duration, per-step duration, total-step, parallel-step, per-episode,
+     surface-cardinality, checkpoint-size, and lease-TTL bounds. Bind journal
+     events to the exact contract and digest-only step inputs; require every
+     resumed checkpoint to connect to the journal. Each independently
+     executable parallel step requires a distinct surface and non-overlapping
+     task, policy, target-resource, and driver conflict keys.
    - Resolve each referenced policy against the exact campaign, task, kind,
      driver, action, and optional path or command prefix before provisioning.
      Zero applicable referenced policies and ambiguous matches fail closed.
+     Require the task's declared policy IDs, the intake's computed applicable
+     policy IDs, and their current content digests to be exactly equal.
    - Bind distinct operator, evaluator, target, simulator, aggregator, and
      recovery sessions; lease/recovery authority; confirmation receipt expiry;
      required budget dimensions; redaction capability; frozen-evidence
@@ -141,6 +177,9 @@ materially.
      evidence targets, cleanup contract, and exact evaluator to
      `simulation-operator`.
    - Do not continue aggregation until an immutable execution receipt exists.
+   - Require the operator to journal dispatch before execution, checkpoint the
+     resulting state before acknowledging completion, renew its lease between
+     bounded steps, and let a goal oracle—not the driver—decide `ACHIEVED`.
 6. Route independent evaluation.
    - Route Cascade agent-response trace claims through the specialized
      `harness-evaluator` first and require its receipt.
@@ -167,7 +206,10 @@ materially.
      `SUPPORTED` satisfies a required claim.
    - Validate evaluator refinement candidates against the exact persona and
      derivation identities and frozen evidence paths, then freeze them once in
-     `refinements/` before terminal finalization. They remain `PROPOSED` and
+     `refinements/` before terminal finalization. Require the evaluation
+     receipt to bind every proposal ID and candidate digest, and terminally
+     require an exact one-to-one set plus source-manifest and evaluation-input
+     manifest path/digest verification. They remain `PROPOSED` and
      route to simulator repair, external research, or `synthesis-to-spec`.
 8. Verify cleanup and handoffs.
    - Require operator cleanup verification plus matching execution and
@@ -210,10 +252,18 @@ materially.
   release-eligible are separate states.
 - A framework-fixture, stale, partial, missing, or failed calibration cannot
   support a target-project release claim.
-- Coverage, stress, and counterfactual actor weights are test allocation, not
-  population prevalence. Synthetic output cannot self-confirm or directly
+- Persona-derived actor weights default to test allocation, including
+  representative actors. Estimated prevalence requires the explicit
+  evidence-backed representative contract; a mode label alone is never
+  prevalence evidence. Synthetic output cannot self-confirm or directly
   mutate its source product persona; promotion requires external evidence,
-  accountable human review, and a new persona revision.
+  accountable human review, a separate append-only disposition receipt, and a
+  new persona revision. An accepted disposition authorizes only
+  `synthesis-to-spec`.
+- Apply `product-evals/artifact-policy.json`: keep raw sensitive material out of
+  run artifacts, store minimized metadata and digests, require restricted-data
+  attestation, and keep remote storage and export disabled unless the target
+  deliberately adapts the public policy contract.
 
 Use `templates/campaign-design.md` before creating or materially changing a
 campaign. Use `checklists/campaign-quality.md` before accepting a campaign or

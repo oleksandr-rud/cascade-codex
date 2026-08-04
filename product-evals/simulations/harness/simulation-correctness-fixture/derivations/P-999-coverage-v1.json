@@ -1,0 +1,126 @@
+{
+  "schema_version": 1,
+  "id": "p-999-coverage-v1",
+  "simulation_id": "simulation-correctness-fixture",
+  "population_id": "support-actors-v2",
+  "mode": "coverage",
+  "weight_semantics": "test-allocation",
+  "product_personas": [
+    {
+      "persona_id": "P-999",
+      "revision": 1,
+      "path": "docs/product/personas/fixtures/P-999-framework-support-role.md",
+      "sha256": "e0376f335cce998b2a5189cc2e000b150f7b91d76bccd735df40f6f85110687a"
+    }
+  ],
+  "dimensions": [
+    {
+      "id": "communication-directness",
+      "description": "Vary deterministic communication clarity without inferring real-user prevalence.",
+      "source_persona_ids": ["P-999"],
+      "confidence": "low",
+      "uncertainty": "The fixture provides no evidence about real support users.",
+      "permitted_variation": true
+    }
+  ],
+  "invariants": [
+    "Exercise only deterministic framework contract behavior.",
+    "Never support product, population, calibration, or release claims."
+  ],
+  "mutation_axes": [
+    {
+      "id": "communication-clarity",
+      "values": ["direct", "ambiguous"],
+      "rationale": "Cover deterministic standard and risk slices."
+    }
+  ],
+  "actors": [
+    {
+      "id": "standard-actor",
+      "weight": 0.7,
+      "actor_class": "representative",
+      "persona_ids": ["P-999"],
+      "goals": ["complete the deterministic support task"],
+      "invariants": ["do not infer real-user behavior"],
+      "knowledge": {
+        "known": ["fixture account identifier"],
+        "unknown": ["all production customer context"]
+      },
+      "uncertainty": ["real-user behavior is not represented"],
+      "decision_policy": {
+        "strategy": "rule-based",
+        "retry_limit": 2,
+        "stop_on_blocked": true
+      },
+      "communication_policy": {
+        "style": "direct",
+        "clarification": "ask"
+      },
+      "state_memory": { "scope": "scenario", "max_facts": 8 },
+      "friction_behaviors": [],
+      "abstention": { "when_unsupported": true, "when_conflicted": true },
+      "slices": ["standard"]
+    },
+    {
+      "id": "risk-actor",
+      "weight": 0.3,
+      "actor_class": "edge",
+      "persona_ids": ["P-999"],
+      "goals": ["complete the deterministic support task"],
+      "invariants": ["do not infer real-user behavior"],
+      "knowledge": {
+        "known": ["fixture account identifier"],
+        "unknown": ["all production customer context"]
+      },
+      "uncertainty": ["real-user behavior is not represented"],
+      "decision_policy": {
+        "strategy": "scripted",
+        "retry_limit": 1,
+        "stop_on_blocked": true
+      },
+      "communication_policy": {
+        "style": "ambiguous",
+        "clarification": "ask"
+      },
+      "state_memory": { "scope": "scenario", "max_facts": 8 },
+      "friction_behaviors": ["provide ambiguous input once"],
+      "abstention": { "when_unsupported": true, "when_conflicted": true },
+      "slices": ["risk"]
+    }
+  ],
+  "generator": {
+    "kind": "deterministic-manifest",
+    "name": "cascade-persona-derivation",
+    "version": "1.0.0",
+    "input_digest": "0c9f608f12aeda9cd4437921aea40ccc8d08dae910ca704d636ee6552376d5aa"
+  },
+  "evidence_sources": [
+    {
+      "id": "framework-fixture-source",
+      "kind": "framework-fixture",
+      "reference": "P-999 exists only to exercise contract mechanics.",
+      "minimized": true,
+      "source_authority": "Cascade harness maintainer",
+      "reference_window": "not applicable",
+      "usage_rights": "fixture",
+      "sensitivity": "none",
+      "retention_policy": {
+        "mode": "source-controlled",
+        "deletion_owner": "Cascade harness maintainer",
+        "expires_at": null
+      },
+      "permitted_purpose": "deterministic framework contract testing",
+      "prohibited_uses": [
+        "product behavior claims",
+        "population prevalence claims",
+        "release eligibility claims"
+      ],
+      "operator_attestation": null
+    }
+  ],
+  "review": {
+    "status": "approved",
+    "reviewer_identity": "cascade-harness-maintainer",
+    "reviewed_at": "2026-08-03T00:00:00Z"
+  }
+}

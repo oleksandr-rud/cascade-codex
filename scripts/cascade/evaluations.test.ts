@@ -78,7 +78,7 @@ function request(): EvaluationRequest {
       model: "gpt-5.6-sol",
       reasoning_effort: "high",
       timeout_ms: 300000,
-      rubric_file: "evals/rubrics/simulation-evaluator-v1.json",
+      rubric_file: "product-evals/rubrics/simulation-evaluator-v1.json",
     },
     rubric: {
       schema_version: 1,
@@ -185,7 +185,7 @@ describe("Codex simulation evaluation", () => {
 
   test("conservatively merges Codex judgments", async () => {
     const resolved = await resolveCampaign(
-      "evals/campaigns/simulation-codex-evaluation-smoke.json",
+      "product-evals/campaigns/simulation-codex-evaluation-smoke.json",
     );
     const value = validateCodexEvaluationOutput(
       output(),
@@ -210,7 +210,7 @@ describe("Codex simulation evaluation", () => {
 
   test("binds refinement proposals to current persona derivations", async () => {
     const resolved = await resolveCampaign(
-      "evals/campaigns/simulation-codex-evaluation-smoke.json",
+      "product-evals/campaigns/simulation-codex-evaluation-smoke.json",
     );
     const value = output();
     value.refinement_proposals = [
@@ -238,6 +238,20 @@ describe("Codex simulation evaluation", () => {
     expect(proposals[0]!.status).toBe("PROPOSED");
     expect(proposals[0]!.direct_persona_mutation_allowed).toBe(false);
     expect(proposals[0]!.external_evidence_required).toBe(true);
+    const receipt = buildCodexEvaluationReceipt(
+      resolved,
+      identity(),
+      mechanical(),
+      request(),
+      value,
+      "f".repeat(64),
+      "e".repeat(64),
+      { input_tokens: 10 },
+    );
+    expect(receipt.refinement_proposal_bindings).toHaveLength(1);
+    expect(receipt.refinement_proposal_bindings[0]!.proposal_id).toBe(
+      "fixture-research-question",
+    );
 
     value.refinement_proposals[0]!.persona_id = "P-001";
     expect(() =>
@@ -247,7 +261,7 @@ describe("Codex simulation evaluation", () => {
 
   test("rejects stale receipts before aggregation", async () => {
     const resolved = await resolveCampaign(
-      "evals/campaigns/simulation-contract-smoke.json",
+      "product-evals/campaigns/simulation-contract-smoke.json",
     );
     const fixtureIdentity = {
       ...identity(),
@@ -259,6 +273,7 @@ describe("Codex simulation evaluation", () => {
       fixtureIdentity,
       mechanical(),
     );
+    expect(receipt.refinement_proposal_bindings).toEqual([]);
     assertEvaluationReceiptFresh(resolved, fixtureIdentity, receipt);
     expect(() =>
       assertEvaluationReceiptFresh(

@@ -82,7 +82,7 @@ do not weaken the scenario expectation to accept the current behavior.
 
 ## Run Storage
 
-Canonical cases and schemas live in `evals/harness/`. Generated live evidence
+Canonical cases and schemas live in `harness-evals/`. Generated live evidence
 lives under ignored `.artifacts/harness-evals/<run-id>/`. Durable summaries
 belong in `docs/work/reports/` only when requested, decision-heavy, blocked, or
 needed for handoff.

@@ -195,7 +195,7 @@ Application contours are architecture classifications:
 `backend-service`, `backend-worker`, `web-frontend`, `native-app`, `cli`,
 `experiment`, and `library`. They are independent deployed, versioned, or
 distributed stack decisions and are not the
-command, terminal, browser, desktop, mobile, or agent-response contours used by
+command, HTTP, terminal, browser, desktop, mobile, or agent-response contours used by
 simulation campaigns.
 
 ## Stack Extension Tree

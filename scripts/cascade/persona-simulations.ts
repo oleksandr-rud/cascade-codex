@@ -6,6 +6,7 @@ import {
   sha256File,
   stableJson,
   utcNow,
+  valueDigest,
 } from "./common";
 
 const ID = /^[a-z0-9][a-z0-9.-]+$/;
@@ -44,11 +45,24 @@ export interface PersonaActorDefinition {
   invariants: string[];
   knowledge: { known: string[]; unknown: string[] };
   uncertainty: string[];
-  decision_policy: Record<string, unknown>;
-  communication_policy: Record<string, unknown>;
-  state_memory: Record<string, unknown>;
+  decision_policy: {
+    strategy: "goal-directed" | "rule-based" | "scripted" | "exploratory";
+    retry_limit: number;
+    stop_on_blocked: boolean;
+  };
+  communication_policy: {
+    style: "direct" | "concise" | "detailed" | "ambiguous" | "adversarial";
+    clarification: "ask" | "infer-within-evidence" | "abstain";
+  };
+  state_memory: {
+    scope: "turn" | "scenario" | "session";
+    max_facts: number;
+  };
   friction_behaviors: string[];
-  abstention: Record<string, unknown>;
+  abstention: {
+    when_unsupported: true;
+    when_conflicted: boolean;
+  };
   slices: string[];
 }
 
@@ -58,6 +72,14 @@ export interface PersonaDerivationManifest {
   simulation_id: string;
   population_id: string;
   mode: PersonaDerivationMode;
+  weight_semantics: "estimated-prevalence" | "test-allocation";
+  prevalence_evidence?: {
+    source_id: string;
+    reference_window: string;
+    sample_description: string;
+    sha256: string;
+    reviewed_by: string;
+  };
   product_personas: ProductPersonaReference[];
   dimensions: Array<{
     id: string;
@@ -83,6 +105,28 @@ export interface PersonaDerivationManifest {
     reference: string;
     sha256?: string;
     minimized: true;
+    source_authority: string;
+    reference_window: string;
+    usage_rights:
+      | "fixture"
+      | "internal-research"
+      | "public"
+      | "licensed"
+      | "consented";
+    sensitivity: "none" | "low" | "restricted";
+    retention_policy: {
+      mode: "source-controlled" | "manual-review" | "retain-until";
+      deletion_owner: string;
+      expires_at: string | null;
+    };
+    permitted_purpose: string;
+    prohibited_uses: string[];
+    operator_attestation: {
+      identity: string;
+      attested_at: string;
+      encryption_at_rest_confirmed: true;
+      access_scope_confirmed: true;
+    } | null;
   }>;
   review: {
     status: "draft" | "reviewed" | "approved" | "superseded";
@@ -161,6 +205,73 @@ export interface PersonaRefinementProposal {
   promotion_blockers: string[];
 }
 
+export interface ExternalPersonaEvidenceManifest {
+  schema_version: 1;
+  id: string;
+  kind: "research" | "feedback" | "behavioral-data" | "expert-review" | "product-spec";
+  reference: string;
+  evidence_sha256: string;
+  source_authority: string;
+  reference_window: string;
+  usage_rights: "internal-research" | "public" | "licensed" | "consented";
+  sensitivity: "none" | "low" | "restricted";
+  retention_policy: {
+    mode: "manual-review" | "retain-until";
+    deletion_owner: string;
+    expires_at: string | null;
+  };
+  permitted_purpose: string;
+  prohibited_uses: string[];
+  reviewed_by: string;
+  reviewed_at: string;
+}
+
+export type RefinementDispositionDecision =
+  | "ACCEPTED"
+  | "REJECTED"
+  | "NEEDS_EVIDENCE"
+  | "SIMULATOR_REPAIR";
+
+export interface PersonaRefinementDisposition {
+  schema_version: 1;
+  disposition_id: string;
+  proposal: { proposal_id: string; path: string; sha256: string };
+  persona: ProductPersonaReference;
+  derivation: { id: string; path: string; sha256: string };
+  decision: RefinementDispositionDecision;
+  reviewer_identity: string;
+  reviewed_at: string;
+  external_evidence: Array<{
+    evidence_id: string;
+    manifest_path: string;
+    manifest_sha256: string;
+    evidence_sha256: string;
+  }>;
+  persona_revision_authorized: boolean;
+  direct_persona_mutation_allowed: false;
+  next_route: "synthesis-to-spec" | "collect-external-evidence" | "repair-simulator" | "none";
+  status: "REVIEWED";
+  blockers: string[];
+}
+
+export function refinementProposalCandidateDigest(
+  proposal: PersonaRefinementProposal,
+): string {
+  return valueDigest({
+    proposal_id: proposal.proposal_id,
+    persona_id: proposal.persona.persona_id,
+    derivation_id: proposal.derivation.id,
+    proposal_type: proposal.proposal_type,
+    target_field: proposal.target_field,
+    summary: proposal.summary,
+    rationale: proposal.rationale,
+    recommended_change: proposal.recommended_change,
+    evidence_paths: proposal.evidence_paths,
+    confidence: proposal.confidence,
+    disposition_route: proposal.disposition_route,
+  } satisfies RefinementProposalCandidate);
+}
+
 function objectValue(value: unknown, label: string): Record<string, unknown> {
   if (!value || typeof value !== "object" || Array.isArray(value)) {
     throw new CascadeError(`${label} must be an object`);
@@ -229,6 +340,20 @@ function assertId(value: string, label: string, pattern = ID): void {
 
 function assertDigest(value: string, label: string): void {
   if (!DIGEST.test(value)) throw new CascadeError(`${label} must be a sha256 digest`);
+}
+
+function assertSafeRelativePath(
+  value: string,
+  label: string,
+  allowed: RegExp,
+): void {
+  if (
+    !allowed.test(value) ||
+    value.startsWith("/") ||
+    value.split("/").some((part) => !part || part === "." || part === "..")
+  ) {
+    throw new CascadeError(`${label} is outside its allowed relative root`);
+  }
 }
 
 function assertEnum(value: string, allowed: readonly string[], label: string): void {
@@ -325,6 +450,34 @@ function validateActor(
   personaIds.forEach((item) => assertId(item, `${label}.persona_ids`, PERSONA_ID));
   const knowledge = objectValue(value.knowledge, `${label}.knowledge`);
   exactKeys(knowledge, ["known", "unknown"], `${label}.knowledge`);
+  const decisionPolicy = objectValue(value.decision_policy, `${label}.decision_policy`);
+  exactKeys(decisionPolicy, ["strategy", "retry_limit", "stop_on_blocked"], `${label}.decision_policy`);
+  const strategy = requiredString(decisionPolicy, "strategy", `${label}.decision_policy`);
+  assertEnum(strategy, ["goal-directed", "rule-based", "scripted", "exploratory"], `${label}.decision_policy.strategy`);
+  if (!Number.isInteger(decisionPolicy.retry_limit) || (decisionPolicy.retry_limit as number) < 0 || (decisionPolicy.retry_limit as number) > 10) {
+    throw new CascadeError(`${label}.decision_policy.retry_limit must be an integer from 0 to 10`);
+  }
+  if (typeof decisionPolicy.stop_on_blocked !== "boolean") {
+    throw new CascadeError(`${label}.decision_policy.stop_on_blocked must be boolean`);
+  }
+  const communicationPolicy = objectValue(value.communication_policy, `${label}.communication_policy`);
+  exactKeys(communicationPolicy, ["style", "clarification"], `${label}.communication_policy`);
+  const style = requiredString(communicationPolicy, "style", `${label}.communication_policy`);
+  assertEnum(style, ["direct", "concise", "detailed", "ambiguous", "adversarial"], `${label}.communication_policy.style`);
+  const clarification = requiredString(communicationPolicy, "clarification", `${label}.communication_policy`);
+  assertEnum(clarification, ["ask", "infer-within-evidence", "abstain"], `${label}.communication_policy.clarification`);
+  const stateMemory = objectValue(value.state_memory, `${label}.state_memory`);
+  exactKeys(stateMemory, ["scope", "max_facts"], `${label}.state_memory`);
+  const scope = requiredString(stateMemory, "scope", `${label}.state_memory`);
+  assertEnum(scope, ["turn", "scenario", "session"], `${label}.state_memory.scope`);
+  if (!Number.isInteger(stateMemory.max_facts) || (stateMemory.max_facts as number) < 0 || (stateMemory.max_facts as number) > 100) {
+    throw new CascadeError(`${label}.state_memory.max_facts must be an integer from 0 to 100`);
+  }
+  const abstention = objectValue(value.abstention, `${label}.abstention`);
+  exactKeys(abstention, ["when_unsupported", "when_conflicted"], `${label}.abstention`);
+  if (abstention.when_unsupported !== true || typeof abstention.when_conflicted !== "boolean") {
+    throw new CascadeError(`${label}.abstention must fail closed on unsupported behavior and declare conflict handling`);
+  }
   return {
     id,
     weight: value.weight,
@@ -337,11 +490,24 @@ function validateActor(
       unknown: stringArray(knowledge, "unknown", `${label}.knowledge`, { empty: true }),
     },
     uncertainty: stringArray(value, "uncertainty", label, { empty: true }),
-    decision_policy: objectValue(value.decision_policy, `${label}.decision_policy`),
-    communication_policy: objectValue(value.communication_policy, `${label}.communication_policy`),
-    state_memory: objectValue(value.state_memory, `${label}.state_memory`),
+    decision_policy: {
+      strategy: strategy as PersonaActorDefinition["decision_policy"]["strategy"],
+      retry_limit: decisionPolicy.retry_limit as number,
+      stop_on_blocked: decisionPolicy.stop_on_blocked as boolean,
+    },
+    communication_policy: {
+      style: style as PersonaActorDefinition["communication_policy"]["style"],
+      clarification: clarification as PersonaActorDefinition["communication_policy"]["clarification"],
+    },
+    state_memory: {
+      scope: scope as PersonaActorDefinition["state_memory"]["scope"],
+      max_facts: stateMemory.max_facts as number,
+    },
     friction_behaviors: stringArray(value, "friction_behaviors", label, { empty: true }),
-    abstention: objectValue(value.abstention, `${label}.abstention`),
+    abstention: {
+      when_unsupported: true,
+      when_conflicted: abstention.when_conflicted as boolean,
+    },
     slices: stringArray(value, "slices", label),
   };
 }
@@ -354,6 +520,7 @@ export function validatePersonaDerivation(
     value,
     [
       "schema_version", "id", "simulation_id", "population_id", "mode",
+      "weight_semantics", "prevalence_evidence",
       "product_personas", "dimensions", "invariants", "mutation_axes", "actors",
       "generator", "evidence_sources", "review",
     ],
@@ -366,6 +533,17 @@ export function validatePersonaDerivation(
   assertId(requiredString(value, "population_id", label), `${label}.population_id`);
   const mode = requiredString(value, "mode", label);
   assertEnum(mode, ["representative", "coverage", "stress", "counterfactual"], `${label}.mode`);
+  const weightSemantics = requiredString(value, "weight_semantics", label);
+  assertEnum(
+    weightSemantics,
+    ["estimated-prevalence", "test-allocation"],
+    `${label}.weight_semantics`,
+  );
+  if (mode !== "representative" && weightSemantics !== "test-allocation") {
+    throw new CascadeError(
+      `${label} non-representative weights must use test-allocation semantics`,
+    );
+  }
 
   const personas = objectArray(value, "product_personas", label).map((item, index) =>
     validatePersonaReference(item, `${label}.product_personas[${index}]`),
@@ -425,19 +603,118 @@ export function validatePersonaDerivation(
     throw new CascadeError(`${label}.${mode} mode requires a ${requiredClass} actor`);
   }
 
-  validateGenerator(objectValue(value.generator, `${label}.generator`), `${label}.generator`);
+  const generator = validateGenerator(
+    objectValue(value.generator, `${label}.generator`),
+    `${label}.generator`,
+  );
   const evidence = objectArray(value, "evidence_sources", label).map((item, index) => {
     const itemLabel = `${label}.evidence_sources[${index}]`;
-    exactKeys(item, ["id", "kind", "reference", "sha256", "minimized"], itemLabel);
+    exactKeys(item, [
+      "id", "kind", "reference", "sha256", "minimized", "source_authority",
+      "reference_window", "usage_rights", "sensitivity", "retention_policy",
+      "permitted_purpose", "prohibited_uses", "operator_attestation",
+    ], itemLabel);
     const evidenceId = requiredString(item, "id", itemLabel);
     assertId(evidenceId, `${itemLabel}.id`);
-    assertEnum(requiredString(item, "kind", itemLabel), ["research", "feedback", "behavioral-data", "expert-review", "product-spec", "framework-fixture"], `${itemLabel}.kind`);
+    const kind = requiredString(item, "kind", itemLabel);
+    assertEnum(kind, ["research", "feedback", "behavioral-data", "expert-review", "product-spec", "framework-fixture"], `${itemLabel}.kind`);
     requiredString(item, "reference", itemLabel);
     if (item.sha256 !== undefined) assertDigest(requiredString(item, "sha256", itemLabel), `${itemLabel}.sha256`);
+    if (kind !== "framework-fixture" && item.sha256 === undefined) {
+      throw new CascadeError(`${itemLabel}.sha256 is required for non-fixture evidence`);
+    }
     if (item.minimized !== true) throw new CascadeError(`${itemLabel}.minimized must be true`);
-    return { id: evidenceId };
+    requiredString(item, "source_authority", itemLabel);
+    requiredString(item, "reference_window", itemLabel);
+    const usageRights = requiredString(item, "usage_rights", itemLabel);
+    assertEnum(usageRights, ["fixture", "internal-research", "public", "licensed", "consented"], `${itemLabel}.usage_rights`);
+    if ((kind === "framework-fixture") !== (usageRights === "fixture")) {
+      throw new CascadeError(`${itemLabel}.usage_rights fixture is reserved for framework fixtures`);
+    }
+    const sensitivity = requiredString(item, "sensitivity", itemLabel);
+    assertEnum(sensitivity, ["none", "low", "restricted"], `${itemLabel}.sensitivity`);
+    const retention = objectValue(item.retention_policy, `${itemLabel}.retention_policy`);
+    exactKeys(retention, ["mode", "deletion_owner", "expires_at"], `${itemLabel}.retention_policy`);
+    const retentionMode = requiredString(retention, "mode", `${itemLabel}.retention_policy`);
+    assertEnum(retentionMode, ["source-controlled", "manual-review", "retain-until"], `${itemLabel}.retention_policy.mode`);
+    requiredString(retention, "deletion_owner", `${itemLabel}.retention_policy`);
+    if (retention.expires_at !== null && (typeof retention.expires_at !== "string" || Number.isNaN(Date.parse(retention.expires_at)))) {
+      throw new CascadeError(`${itemLabel}.retention_policy.expires_at must be an ISO timestamp or null`);
+    }
+    if (retentionMode === "retain-until" && retention.expires_at === null) {
+      throw new CascadeError(`${itemLabel}.retention_policy retain-until requires expires_at`);
+    }
+    requiredString(item, "permitted_purpose", itemLabel);
+    stringArray(item, "prohibited_uses", itemLabel);
+    if (item.operator_attestation !== null) {
+      const attestation = objectValue(item.operator_attestation, `${itemLabel}.operator_attestation`);
+      exactKeys(attestation, ["identity", "attested_at", "encryption_at_rest_confirmed", "access_scope_confirmed"], `${itemLabel}.operator_attestation`);
+      requiredString(attestation, "identity", `${itemLabel}.operator_attestation`);
+      const attestedAt = requiredString(attestation, "attested_at", `${itemLabel}.operator_attestation`);
+      if (Number.isNaN(Date.parse(attestedAt))) throw new CascadeError(`${itemLabel}.operator_attestation.attested_at must be an ISO timestamp`);
+      if (attestation.encryption_at_rest_confirmed !== true || attestation.access_scope_confirmed !== true) {
+        throw new CascadeError(`${itemLabel}.operator_attestation must confirm encryption and access scope`);
+      }
+    } else if (sensitivity === "restricted") {
+      throw new CascadeError(`${itemLabel}.operator_attestation is required for restricted evidence`);
+    }
+    return {
+      id: evidenceId,
+      kind: kind as PersonaDerivationManifest["evidence_sources"][number]["kind"],
+      sha256: item.sha256 as string | undefined,
+    };
   });
   uniqueIds(evidence, `${label}.evidence_sources`);
+
+  if (weightSemantics === "estimated-prevalence") {
+    if (mode !== "representative") {
+      throw new CascadeError(
+        `${label} estimated-prevalence weights require representative mode`,
+      );
+    }
+    const prevalence = objectValue(
+      value.prevalence_evidence,
+      `${label}.prevalence_evidence`,
+    );
+    exactKeys(
+      prevalence,
+      ["source_id", "reference_window", "sample_description", "sha256", "reviewed_by"],
+      `${label}.prevalence_evidence`,
+    );
+    const sourceId = requiredString(
+      prevalence,
+      "source_id",
+      `${label}.prevalence_evidence`,
+    );
+    const source = evidence.find((item) => item.id === sourceId);
+    if (
+      !source ||
+      !["research", "behavioral-data"].includes(source.kind) ||
+      !source.sha256
+    ) {
+      throw new CascadeError(
+        `${label}.prevalence_evidence must bind digest-backed research or behavioral-data`,
+      );
+    }
+    const digest = requiredString(
+      prevalence,
+      "sha256",
+      `${label}.prevalence_evidence`,
+    );
+    assertDigest(digest, `${label}.prevalence_evidence.sha256`);
+    if (digest !== source.sha256) {
+      throw new CascadeError(
+        `${label}.prevalence_evidence digest does not match its evidence source`,
+      );
+    }
+    for (const key of ["reference_window", "sample_description", "reviewed_by"] as const) {
+      requiredString(prevalence, key, `${label}.prevalence_evidence`);
+    }
+  } else if (value.prevalence_evidence !== undefined) {
+    throw new CascadeError(
+      `${label}.prevalence_evidence is only allowed for estimated-prevalence weights`,
+    );
+  }
 
   const review = objectValue(value.review, `${label}.review`);
   exactKeys(review, ["status", "reviewer_identity", "reviewed_at"], `${label}.review`);
@@ -452,6 +729,56 @@ export function validatePersonaDerivation(
   if (status === "approved" && (!review.reviewer_identity || !review.reviewed_at)) {
     throw new CascadeError(`${label}.review approved status requires reviewer identity and time`);
   }
+  const expectedInputDigest = personaGeneratorInputDigest(value);
+  if (generator.input_digest !== expectedInputDigest) {
+    throw new CascadeError(
+      `${label}.generator.input_digest is stale; expected ${expectedInputDigest}`,
+    );
+  }
+}
+
+export function personaGeneratorInputDigest(
+  value: PersonaDerivationManifest | Record<string, unknown>,
+): string {
+  const input = structuredClone(value) as unknown as Record<string, unknown>;
+  const generator = objectValue(input.generator, "persona derivation generator");
+  delete generator.input_digest;
+  return valueDigest(input);
+}
+
+export function validateProductPersonaSourceMetadata(
+  source: string,
+  persona: ProductPersonaReference,
+  label: string,
+): void {
+  const id = source.match(/^ID:\s*(P-[0-9]{3})\s*$/m)?.[1];
+  const revision = Number(source.match(/^Revision:\s*(\d+)\s*$/m)?.[1]);
+  const status = source.match(
+    /^Status:\s*`?(draft|reviewed|approved|superseded)`?\s*$/m,
+  )?.[1];
+  if (id !== persona.persona_id || revision !== persona.revision) {
+    throw new CascadeError(`${label} persona metadata mismatch: ${persona.persona_id}`);
+  }
+  if (!status) {
+    throw new CascadeError(`${label} persona status is missing or invalid: ${persona.persona_id}`);
+  }
+  if (!new Set(["reviewed", "approved"]).has(status)) {
+    throw new CascadeError(
+      `${label} persona must be reviewed or approved: ${persona.persona_id} is ${status}`,
+    );
+  }
+  const requiredSignals: Array<[RegExp, string]> = [
+    [/^Reference Window:\s*\S.+$/m, "Reference Window"],
+    [/^## Evidence, Confidence, And Uncertainty\s*$/m, "evidence and uncertainty section"],
+    [/^## Permitted Uses And Prohibited Claims\s*$/m, "permitted/prohibited use section"],
+    [/^- Review owner:\s*\S.+$/m, "review owner"],
+    [/Invalidation Signal/, "invalidation signal"],
+  ];
+  for (const [pattern, field] of requiredSignals) {
+    if (!pattern.test(source)) {
+      throw new CascadeError(`${label} persona source lacks governed ${field}: ${persona.persona_id}`);
+    }
+  }
 }
 
 export async function verifyPersonaDerivationSources(
@@ -465,11 +792,7 @@ export async function verifyPersonaDerivationSources(
     const digest = await sha256File(path);
     if (digest !== persona.sha256) throw new CascadeError(`${label} persona digest mismatch: ${persona.persona_id}`);
     const source = await readText(path);
-    const id = source.match(/^ID:\s*(P-[0-9]{3})\s*$/m)?.[1];
-    const revision = Number(source.match(/^Revision:\s*(\d+)\s*$/m)?.[1]);
-    if (id !== persona.persona_id || revision !== persona.revision) {
-      throw new CascadeError(`${label} persona metadata mismatch: ${persona.persona_id}`);
-    }
+    validateProductPersonaSourceMetadata(source, persona, label);
   }
 }
 
@@ -484,13 +807,13 @@ export function derivePopulationFromManifest(
     throw new CascadeError(`${manifest.id} derivation must be approved`);
   }
   if (manifest.generator.kind !== "deterministic-manifest") {
-    throw new CascadeError(`${manifest.id} model-backed derivation is not allowed by the dry-run tool`);
+    throw new CascadeError(`${manifest.id} model-backed derivation requires a separately authorized generator path`);
   }
   const population: PersonaDerivedPopulation = {
     schema_version: 2,
     id: manifest.population_id,
     mode: manifest.mode,
-    weight_semantics: manifest.mode === "representative" ? "estimated-prevalence" : "test-allocation",
+    weight_semantics: manifest.weight_semantics,
     source: {
       kind: "persona-derived",
       description: `Derived from approved manifest ${manifest.id}; synthetic evidence remains proposal-only.`,
@@ -529,7 +852,11 @@ export function validatePersonaDerivedPopulation(
   exactKeys(derivation, ["id", "path", "sha256"], `${label}.source.derivation`);
   assertId(requiredString(derivation, "id", `${label}.source.derivation`), `${label}.source.derivation.id`);
   const derivationPath = requiredString(derivation, "path", `${label}.source.derivation`);
-  if (!/^evals\/simulations\/.+\/derivations\/.+\.json$/.test(derivationPath)) {
+  if (
+    !/^product-evals\/simulations\/(harness|product)\/.+\/derivations\/.+\.json$/.test(
+      derivationPath,
+    )
+  ) {
     throw new CascadeError(`${label}.source.derivation.path is invalid`);
   }
   assertDigest(requiredString(derivation, "sha256", `${label}.source.derivation`), `${label}.source.derivation.sha256`);
@@ -571,7 +898,13 @@ export function validateRefinementProposalCandidate(
   const dispositionRoute = requiredString(value, "disposition_route", label);
   assertEnum(dispositionRoute, ["collect-external-evidence", "repair-simulator", "synthesis-to-spec"], `${label}.disposition_route`);
   const evidencePaths = stringArray(value, "evidence_paths", label);
-  if (evidencePaths.some((path) => path.startsWith("/") || path.split("/").includes(".."))) {
+  if (
+    evidencePaths.some(
+      (path) =>
+        path.startsWith("/") ||
+        path.split("/").some((part) => !part || part === "." || part === ".."),
+    )
+  ) {
     throw new CascadeError(`${label}.evidence_paths must stay inside the frozen evaluation packet`);
   }
   return {
@@ -666,7 +999,11 @@ export function validatePersonaRefinementProposal(
   const derivationId = requiredString(derivation, "id", `${label}.derivation`);
   assertId(derivationId, `${label}.derivation.id`);
   const derivationPath = requiredString(derivation, "path", `${label}.derivation`);
-  if (!/^evals\/simulations\/.+\/derivations\/.+\.json$/.test(derivationPath)) {
+  if (
+    !/^product-evals\/simulations\/(harness|product)\/.+\/derivations\/.+\.json$/.test(
+      derivationPath,
+    )
+  ) {
     throw new CascadeError(`${label}.derivation.path is invalid`);
   }
   assertDigest(requiredString(derivation, "sha256", `${label}.derivation`), `${label}.derivation.sha256`);
@@ -689,6 +1026,9 @@ export function validatePersonaRefinementProposal(
   for (const key of ["run_id", "campaign_id", "evaluation_id", "proposed_by"] as const) {
     requiredString(value, key, label);
   }
+  if (!/^[A-Za-z0-9][A-Za-z0-9._-]*$/.test(String(value.evaluation_id))) {
+    throw new CascadeError(`${label}.evaluation_id is unsafe`);
+  }
   const createdAt = requiredString(value, "created_at", label);
   if (Number.isNaN(Date.parse(createdAt))) throw new CascadeError(`${label}.created_at must be an ISO timestamp`);
   if (
@@ -702,6 +1042,224 @@ export function validatePersonaRefinementProposal(
   if (stringArray(value, "promotion_blockers", label).length < 2) {
     throw new CascadeError(`${label}.promotion_blockers must include external evidence and human review`);
   }
+}
+
+export function validateExternalPersonaEvidenceManifest(
+  value: Record<string, unknown>,
+  label: string,
+): ExternalPersonaEvidenceManifest {
+  exactKeys(value, [
+    "schema_version", "id", "kind", "reference", "evidence_sha256",
+    "source_authority", "reference_window", "usage_rights", "sensitivity",
+    "retention_policy", "permitted_purpose", "prohibited_uses", "reviewed_by",
+    "reviewed_at",
+  ], label);
+  if (value.schema_version !== 1) throw new CascadeError(`${label}.schema_version must be 1`);
+  const id = requiredString(value, "id", label);
+  assertId(id, `${label}.id`);
+  const kind = requiredString(value, "kind", label);
+  assertEnum(kind, ["research", "feedback", "behavioral-data", "expert-review", "product-spec"], `${label}.kind`);
+  const evidenceDigest = requiredString(value, "evidence_sha256", label);
+  assertDigest(evidenceDigest, `${label}.evidence_sha256`);
+  const usageRights = requiredString(value, "usage_rights", label);
+  assertEnum(usageRights, ["internal-research", "public", "licensed", "consented"], `${label}.usage_rights`);
+  const sensitivity = requiredString(value, "sensitivity", label);
+  assertEnum(sensitivity, ["none", "low", "restricted"], `${label}.sensitivity`);
+  const retention = objectValue(value.retention_policy, `${label}.retention_policy`);
+  exactKeys(retention, ["mode", "deletion_owner", "expires_at"], `${label}.retention_policy`);
+  const retentionMode = requiredString(retention, "mode", `${label}.retention_policy`);
+  assertEnum(retentionMode, ["manual-review", "retain-until"], `${label}.retention_policy.mode`);
+  requiredString(retention, "deletion_owner", `${label}.retention_policy`);
+  if (retention.expires_at !== null && (typeof retention.expires_at !== "string" || Number.isNaN(Date.parse(retention.expires_at)))) {
+    throw new CascadeError(`${label}.retention_policy.expires_at must be an ISO timestamp or null`);
+  }
+  if (retentionMode === "retain-until" && retention.expires_at === null) {
+    throw new CascadeError(`${label}.retention_policy retain-until requires expires_at`);
+  }
+  const reviewedAt = requiredString(value, "reviewed_at", label);
+  if (Number.isNaN(Date.parse(reviewedAt))) throw new CascadeError(`${label}.reviewed_at must be an ISO timestamp`);
+  return {
+    schema_version: 1,
+    id,
+    kind: kind as ExternalPersonaEvidenceManifest["kind"],
+    reference: requiredString(value, "reference", label),
+    evidence_sha256: evidenceDigest,
+    source_authority: requiredString(value, "source_authority", label),
+    reference_window: requiredString(value, "reference_window", label),
+    usage_rights: usageRights as ExternalPersonaEvidenceManifest["usage_rights"],
+    sensitivity: sensitivity as ExternalPersonaEvidenceManifest["sensitivity"],
+    retention_policy: {
+      mode: retentionMode as ExternalPersonaEvidenceManifest["retention_policy"]["mode"],
+      deletion_owner: retention.deletion_owner as string,
+      expires_at: retention.expires_at as string | null,
+    },
+    permitted_purpose: requiredString(value, "permitted_purpose", label),
+    prohibited_uses: stringArray(value, "prohibited_uses", label),
+    reviewed_by: requiredString(value, "reviewed_by", label),
+    reviewed_at: reviewedAt,
+  };
+}
+
+export function buildPersonaRefinementDisposition(binding: {
+  dispositionId: string;
+  proposalPath: string;
+  proposalDigest: string;
+  proposal: PersonaRefinementProposal;
+  decision: RefinementDispositionDecision;
+  reviewerIdentity: string;
+  evidence: Array<{
+    path: string;
+    digest: string;
+    manifest: ExternalPersonaEvidenceManifest;
+  }>;
+  reviewedAt?: string;
+}): PersonaRefinementDisposition {
+  assertId(binding.dispositionId, "disposition_id");
+  assertDigest(binding.proposalDigest, "proposal.sha256");
+  validatePersonaRefinementProposal(
+    binding.proposal as unknown as Record<string, unknown>,
+    binding.proposalPath,
+  );
+  if (!/^\.artifacts\/product-evals\/.+\/refinements\/.+\.json$/.test(binding.proposalPath)) {
+    throw new CascadeError("refinement proposal must be a frozen product-evals run artifact");
+  }
+  assertSafeRelativePath(
+    binding.proposalPath,
+    "proposal.path",
+    /^\.artifacts\/product-evals\/.+\/refinements\/.+\.json$/,
+  );
+  assertEnum(binding.decision, ["ACCEPTED", "REJECTED", "NEEDS_EVIDENCE", "SIMULATOR_REPAIR"], "decision");
+  if (!binding.reviewerIdentity.trim()) throw new CascadeError("reviewer identity is required");
+  const reviewedAt = binding.reviewedAt ?? utcNow();
+  if (Number.isNaN(Date.parse(reviewedAt))) throw new CascadeError("reviewed_at must be an ISO timestamp");
+  if (binding.decision === "ACCEPTED") {
+    if (binding.proposal.disposition_route !== "synthesis-to-spec") {
+      throw new CascadeError("ACCEPTED is only valid for synthesis-to-spec proposals");
+    }
+    if (binding.evidence.length === 0) {
+      throw new CascadeError("ACCEPTED requires reviewed external evidence");
+    }
+  }
+  if (binding.decision === "SIMULATOR_REPAIR" && binding.proposal.disposition_route !== "repair-simulator") {
+    throw new CascadeError("SIMULATOR_REPAIR requires a repair-simulator proposal");
+  }
+  const evidenceIds = new Set<string>();
+  const evidence = binding.evidence.map((item, index) => {
+    const manifest = validateExternalPersonaEvidenceManifest(
+      item.manifest as unknown as Record<string, unknown>,
+      `external_evidence[${index}]`,
+    );
+    if (evidenceIds.has(manifest.id)) throw new CascadeError("external evidence IDs must be unique");
+    evidenceIds.add(manifest.id);
+    assertSafeRelativePath(
+      item.path,
+      `external_evidence[${index}].manifest_path`,
+      /^(docs\/product\/evidence|\.artifacts\/product-evals\/evidence-manifests)\/.+\.json$/,
+    );
+    assertDigest(item.digest, `external_evidence[${index}].manifest_sha256`);
+    return {
+      evidence_id: manifest.id,
+      manifest_path: item.path,
+      manifest_sha256: item.digest,
+      evidence_sha256: manifest.evidence_sha256,
+    };
+  });
+  const authorized = binding.decision === "ACCEPTED";
+  const nextRoute = binding.decision === "ACCEPTED"
+    ? "synthesis-to-spec"
+    : binding.decision === "NEEDS_EVIDENCE"
+      ? "collect-external-evidence"
+      : binding.decision === "SIMULATOR_REPAIR"
+        ? "repair-simulator"
+        : "none";
+  const disposition: PersonaRefinementDisposition = {
+    schema_version: 1,
+    disposition_id: binding.dispositionId,
+    proposal: {
+      proposal_id: binding.proposal.proposal_id,
+      path: binding.proposalPath,
+      sha256: binding.proposalDigest,
+    },
+    persona: structuredClone(binding.proposal.persona),
+    derivation: structuredClone(binding.proposal.derivation),
+    decision: binding.decision,
+    reviewer_identity: binding.reviewerIdentity,
+    reviewed_at: reviewedAt,
+    external_evidence: evidence,
+    persona_revision_authorized: authorized,
+    direct_persona_mutation_allowed: false,
+    next_route: nextRoute,
+    status: "REVIEWED",
+    blockers: authorized
+      ? ["new persona revision must be authored and reviewed through synthesis-to-spec"]
+      : ["persona revision is not authorized by this disposition"],
+  };
+  validatePersonaRefinementDisposition(disposition as unknown as Record<string, unknown>, binding.dispositionId);
+  return disposition;
+}
+
+export function validatePersonaRefinementDisposition(
+  value: Record<string, unknown>,
+  label: string,
+): void {
+  exactKeys(value, [
+    "schema_version", "disposition_id", "proposal", "persona", "derivation",
+    "decision", "reviewer_identity", "reviewed_at", "external_evidence",
+    "persona_revision_authorized", "direct_persona_mutation_allowed", "next_route",
+    "status", "blockers",
+  ], label);
+  if (value.schema_version !== 1) throw new CascadeError(`${label}.schema_version must be 1`);
+  assertId(requiredString(value, "disposition_id", label), `${label}.disposition_id`);
+  const proposal = objectValue(value.proposal, `${label}.proposal`);
+  exactKeys(proposal, ["proposal_id", "path", "sha256"], `${label}.proposal`);
+  assertId(requiredString(proposal, "proposal_id", `${label}.proposal`), `${label}.proposal.proposal_id`);
+  assertSafeRelativePath(
+    requiredString(proposal, "path", `${label}.proposal`),
+    `${label}.proposal.path`,
+    /^\.artifacts\/product-evals\/.+\/refinements\/.+\.json$/,
+  );
+  assertDigest(requiredString(proposal, "sha256", `${label}.proposal`), `${label}.proposal.sha256`);
+  validatePersonaReference(objectValue(value.persona, `${label}.persona`), `${label}.persona`);
+  const derivation = objectValue(value.derivation, `${label}.derivation`);
+  exactKeys(derivation, ["id", "path", "sha256"], `${label}.derivation`);
+  assertId(requiredString(derivation, "id", `${label}.derivation`), `${label}.derivation.id`);
+  if (!/^product-evals\/simulations\/(harness|product)\/.+\/derivations\/.+\.json$/.test(requiredString(derivation, "path", `${label}.derivation`))) {
+    throw new CascadeError(`${label}.derivation.path is invalid`);
+  }
+  assertDigest(requiredString(derivation, "sha256", `${label}.derivation`), `${label}.derivation.sha256`);
+  const decision = requiredString(value, "decision", label);
+  assertEnum(decision, ["ACCEPTED", "REJECTED", "NEEDS_EVIDENCE", "SIMULATOR_REPAIR"], `${label}.decision`);
+  requiredString(value, "reviewer_identity", label);
+  const reviewedAt = requiredString(value, "reviewed_at", label);
+  if (Number.isNaN(Date.parse(reviewedAt))) throw new CascadeError(`${label}.reviewed_at must be an ISO timestamp`);
+  const evidence = objectArray(value, "external_evidence", label, { empty: true });
+  for (const [index, item] of evidence.entries()) {
+    const itemLabel = `${label}.external_evidence[${index}]`;
+    exactKeys(item, ["evidence_id", "manifest_path", "manifest_sha256", "evidence_sha256"], itemLabel);
+    assertId(requiredString(item, "evidence_id", itemLabel), `${itemLabel}.evidence_id`);
+    assertSafeRelativePath(
+      requiredString(item, "manifest_path", itemLabel),
+      `${itemLabel}.manifest_path`,
+      /^(docs\/product\/evidence|\.artifacts\/product-evals\/evidence-manifests)\/.+\.json$/,
+    );
+    assertDigest(requiredString(item, "manifest_sha256", itemLabel), `${itemLabel}.manifest_sha256`);
+    assertDigest(requiredString(item, "evidence_sha256", itemLabel), `${itemLabel}.evidence_sha256`);
+  }
+  if (new Set(evidence.map((item) => item.evidence_id)).size !== evidence.length) {
+    throw new CascadeError(`${label}.external_evidence contains duplicate IDs`);
+  }
+  const authorized = decision === "ACCEPTED";
+  const expectedRoute = decision === "ACCEPTED" ? "synthesis-to-spec" : decision === "NEEDS_EVIDENCE" ? "collect-external-evidence" : decision === "SIMULATOR_REPAIR" ? "repair-simulator" : "none";
+  if (
+    value.persona_revision_authorized !== authorized ||
+    value.direct_persona_mutation_allowed !== false ||
+    value.next_route !== expectedRoute ||
+    value.status !== "REVIEWED" ||
+    (authorized && evidence.length === 0)
+  ) {
+    throw new CascadeError(`${label} violates governed refinement disposition controls`);
+  }
+  stringArray(value, "blockers", label);
 }
 
 export function samePersonaReferences(

@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "id": "simulation-partition-leakage-smoke",
+  "title": "Simulation partition leakage smoke",
+  "purpose": "Prove exclusive case identities across development, regression, holdout, and calibration-reference partitions.",
+  "owner_lane": "W-004",
+  "tier": "deterministic-fixture",
+  "evaluation_profile_file": "product-evals/rubrics/deterministic-fixture-v1.json",
+  "simulation_file": "product-evals/simulations/harness/simulation-correctness-fixture/manifest.json",
+  "task_files": [
+    "product-evals/tasks/SIMULATION-STATE-SMOKE.json"
+  ],
+  "claim_files": [
+    "product-evals/claims/fixture-state-transition.json",
+    "product-evals/claims/fixture-population-coverage.json",
+    "product-evals/claims/fixture-release-eligibility.json"
+  ],
+  "policy_files": [
+    "product-evals/policies/allow-fixture-state-actions-v1.json"
+  ],
+  "oracle_files": [
+    "product-evals/oracles/account-resolved-v1.json",
+    "product-evals/oracles/account-attempt-recorded-v1.json"
+  ]
+}

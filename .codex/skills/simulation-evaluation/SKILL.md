@@ -1,6 +1,6 @@
 ---
 name: simulation-evaluation
-description: Use when a frozen simulation run across command, terminal, browser, desktop, mobile, or agent-response contours needs independent read-only evidence validation, policy and oracle assessment, semantic judgment, claim-ledger reduction, or an evaluation receipt.
+description: Use when a frozen simulation run across command, HTTP, terminal, browser, desktop, mobile, or agent-response contours needs independent read-only evidence validation, policy and oracle assessment, semantic judgment, claim-ledger reduction, or an evaluation receipt.
 ---
 
 # Simulation Evaluation
@@ -12,7 +12,8 @@ or deciding a broader release from incomplete scope.
 
 ## Source Order
 
-1. Exact campaign ID, run ID, requested claim scope, and execution receipt.
+1. Exact campaign ID, run ID, requested claim scope, frozen READY simulation
+   intake, and execution receipt.
 2. Frozen `run.json`, source manifest, task results, policy decisions, oracle
    results, evidence bodies, cleanup result, and handoff receipt.
 3. Digest-bound campaign, task, simulation, population, scenario, world,
@@ -32,6 +33,8 @@ applicable definition is absent or mutable, return `BLOCKED` or `INVALID`.
 Use for:
 
 - verifying run-package completeness, identity, digests, and lineage;
+- verifying that intake claims and the bound Task Envelope/product brief did
+  not drift between authoring and execution;
 - checking policy applicability and recorded action decisions;
 - checking declared deterministic-oracle results and evidence sufficiency;
 - performing an allowed semantic judgment only from frozen evidence;
@@ -65,8 +68,8 @@ implementation defects after evaluation to `codex-maintenance` or
      failed required oracles, stale identity, unsafe actions, failed cleanup,
      and unsupported platform scope before semantic judgment.
 4. Select the evaluation route.
-   - Use frozen product-visible oracle results for command, terminal, browser,
-     desktop, and mobile behavior.
+   - Use frozen product-visible oracle results for command, HTTP, terminal,
+     browser, desktop, and mobile behavior.
    - Require the specialized harness-evaluator receipt for Cascade
      agent-response trace claims.
    - Use a declared semantic rubric only for claims that require human-like
@@ -95,14 +98,17 @@ implementation defects after evaluation to `codex-maintenance` or
 8. Emit the evaluation receipt.
    - Bind evaluator, rubric, judge, run, evidence, claim-ledger, verdict,
      uncertainty, and next route identities.
+   - Bind every emitted refinement candidate by unique proposal ID and
+     canonical candidate digest so terminal artifact validation can prove an
+     exact one-to-one relationship to the evaluator output.
    - Return digestable receipt content without writing into the run package;
      campaign aggregation stores it as a sibling immutable evaluation
      artifact under a new evaluation ID after identity checks and refuses to
      overwrite an existing receipt.
-   - Return proposal candidates separately from the evaluation receipt. The
-     operator-side artifact writer validates their bindings and freezes them
-     as `PROPOSED`; the evaluator cannot mark them accepted or mutate persona
-     source files.
+   - Return proposal candidates with the evaluation result. The receipt binds
+     their IDs and digests; the operator-side artifact writer validates source
+     and frozen-evidence bindings and freezes them as `PROPOSED`. The evaluator
+     cannot mark them accepted or mutate persona source files.
 
 ## Hard Gates
 

@@ -57,7 +57,7 @@ before Gate A, Gate B, and the relevant live canary would be unsupported.
 | Simulation operator and evaluator role contracts | `IMPLEMENTED` | intended mutable/read-only permission separation is authored |
 | W-004–W-010 and W-012 worklines | `PLANNED` | scope, ownership, acceptance, and dependencies exist |
 | `WG-001` revision 4 | `PLANNED` | implementation order, gates, invalidation, and merge ownership exist |
-| Current `evals/campaigns/`, tasks, claims, policies, oracles, and rubrics | `GAP` | no current canonical runtime definitions exist |
+| Current `product-evals/campaigns/`, tasks, claims, policies, oracles, and rubrics | `GAP` | no current canonical runtime definitions exist |
 | Current runner and typed adapters | `GAP` | no current command, browser, agent, PTY, desktop, or mobile execution path exists |
 | Immutable run and receipt artifacts | `NOT_RUN` | no current execution/evaluation chain has been produced |
 | Computer Use, Codex, desktop, Android, and iOS canaries | `NOT_RUN` | no live capability or platform coverage is established |
@@ -214,7 +214,7 @@ act as the operator or evaluator for the receipt it projects.
    stage identities to evaluation and aggregation linkage.
 3. Split execution, specialized evaluation, general evaluation, and
    aggregation into append-only sibling namespaces.
-4. Added canonical `evals/oracles/` and `evals/rubrics/` source authorities.
+4. Added canonical `product-evals/oracles/` and `product-evals/rubrics/` source authorities.
 5. Added schema migration, reservation race, unknown outcome, unsafe evidence,
    receipt-chain, and batched Computer Use failure cases.
 6. Required per-action validation of Computer Use action batches and stopping

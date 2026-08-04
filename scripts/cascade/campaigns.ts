@@ -1,5 +1,5 @@
 import { mkdir } from "node:fs/promises";
-import { dirname, relative, resolve } from "node:path";
+import { dirname, relative, resolve, sep } from "node:path";
 
 import {
   CascadeError,
@@ -51,6 +51,7 @@ import {
   type ClaimDefinition,
   type ClaimStatus,
   type DriverType,
+  type HttpMethod,
   type MetricDefinition,
   type OracleDefinition,
   type PolicyDefinition,
@@ -58,14 +59,25 @@ import {
   type ScoreRow,
   type TaskAction,
   type TaskDefinition,
+  type SimulationAction,
   findCampaignPath,
   resolveCampaign,
 } from "./simulation-definitions";
 import type { PersonaRefinementProposal } from "./persona-simulations";
+import {
+  runSimulationSession,
+  type SimulationSessionCheckpoint,
+  type SimulationSessionContract,
+  type SimulationSessionPersistence,
+  type SimulationSessionStep,
+  type SimulationSessionStepResult,
+  type SimulationSurfaceSession,
+  type SimulationSurfaceUpdate,
+} from "./simulation-sessions";
 
-const CAMPAIGN_ROOT = rootPath("evals/campaigns");
-const ARTIFACT_ROOT = rootPath(".artifacts/campaigns");
-const CATALOG_PATH = rootPath("evals/campaigns/catalog.generated.json");
+const CAMPAIGN_ROOT = rootPath("product-evals/campaigns");
+const ARTIFACT_ROOT = rootPath(".artifacts/product-evals");
+const CATALOG_PATH = rootPath("product-evals/campaigns/catalog.generated.json");
 
 export type PolicyDecision = CampaignPolicyDecision;
 
@@ -115,6 +127,36 @@ export interface TaskCommandResult {
   };
 }
 
+export interface TaskHttpResult {
+  method: HttpMethod;
+  url: string;
+  status: number;
+  content_type: string | null;
+  body: string;
+  redirected: boolean;
+  output_control: {
+    policy_id: string;
+    max_output_bytes: number;
+    original_bytes: number;
+    retained_bytes: number;
+    redacted: boolean;
+    truncated: boolean;
+  };
+}
+
+export interface TaskSurfaceRef {
+  kind: TaskDefinition["kind"];
+  session_id: string;
+  surface_id: string;
+  screen_id?: string;
+}
+
+export interface TaskObservation {
+  type: string;
+  surface: TaskSurfaceRef;
+  payload: Record<string, unknown>;
+}
+
 export interface TaskCleanupResult {
   status: TaskCleanupStatus;
   attempted: boolean;
@@ -148,6 +190,16 @@ export type TaskAdapterEvent =
       exit_code: number;
       timed_out: boolean;
       aborted: boolean;
+      status: "PASS" | "BLOCKED";
+    }
+  | {
+      event_type: "HTTP";
+      index: 0;
+      type: "http-request";
+      method: HttpMethod;
+      url: string;
+      response_status: number | null;
+      response_bytes: number;
       status: "PASS" | "BLOCKED";
     };
 
@@ -183,13 +235,22 @@ type TaskEventPayload =
   | {
       event_type: "ADAPTER";
       type: "adapter";
-      status: "BLOCKED";
-      reason: string;
+      status: "READY" | "BLOCKED";
+      adapter_id: string;
+      adapter_version: string;
+      capabilities: string[];
+      reason: string | null;
     }
   | {
       event_type: "BOUNDARY";
       type: "lifecycle-bound";
-      phase: "EXECUTE" | "ORACLE" | "RECOVERY" | "CLEANUP" | "FINALIZE";
+      phase:
+        | "PREFLIGHT"
+        | "EXECUTE"
+        | "ORACLE"
+        | "RECOVERY"
+        | "CLEANUP"
+        | "FINALIZE";
       status: "TIMED_OUT" | "CANCELLED";
       reason: string;
     };
@@ -212,7 +273,7 @@ export interface TaskAdapterContext {
   readonly budget_usage: CampaignPolicyBudgetUsage;
   readonly authorize_action: (input: {
     action_index: number;
-    action: TaskAction | { type: "process-exec"; argv: string[] };
+    action: SimulationAction;
     projected_output_bytes: number;
   }) => PolicyDecision;
   readonly control_output: (
@@ -228,10 +289,11 @@ export interface TaskAdapterResult {
   earliest_failure: string | null;
   side_effects: TaskSideEffectStatus;
   policy_decisions: PolicyDecision[];
-  policy_decision_digest: string;
   events: TaskAdapterEvent[];
   final_state?: Record<string, unknown>;
   command?: TaskCommandResult;
+  http?: TaskHttpResult;
+  observations?: TaskObservation[];
 }
 
 export interface TaskAdapterFailure {
@@ -240,7 +302,14 @@ export interface TaskAdapterFailure {
 }
 
 export interface TaskAdapter {
+  id: string;
+  version: string;
   driver: DriverType;
+  capabilities: readonly string[];
+  preflight(context: TaskAdapterContext): Promise<{
+    status: "READY" | "BLOCKED";
+    reason: string | null;
+  }>;
   execute(context: TaskAdapterContext): Promise<TaskAdapterResult>;
   recover(
     context: TaskAdapterContext,
@@ -258,6 +327,7 @@ export interface TaskOracleEvaluator {
     context: {
       final_state: Record<string, unknown> | undefined;
       command: TaskCommandResult | undefined;
+      http: TaskHttpResult | undefined;
       signal?: AbortSignal;
     },
   ): Promise<OracleResult>;
@@ -271,7 +341,7 @@ export interface ExecuteCampaignTaskInput {
   target_actor_identity: string;
   run_id?: string;
   platform?: string;
-  adapters?: ReadonlyMap<DriverType, TaskAdapter>;
+  adapters?: ReadonlyMap<string, TaskAdapter>;
   oracle_evaluator?: TaskOracleEvaluator;
   confirmation_receipts?: PolicyConfirmationReceipt[];
   confirmation_secrets?: Record<string, string>;
@@ -284,6 +354,11 @@ export interface TaskResult {
   task_id: string;
   kind: string;
   driver: string;
+  adapter: {
+    id: string;
+    version: string;
+    capabilities: string[];
+  } | null;
   required: boolean;
   status: CampaignStatus;
   outcome: TaskExecutionOutcome;
@@ -296,10 +371,13 @@ export interface TaskResult {
   earliest_failure: string | null;
   side_effects: TaskSideEffectStatus;
   policy_decisions: PolicyDecision[];
+  policy_decision_digest: string;
   oracle_results: OracleResult[];
   events: TaskEvent[];
   final_state?: Record<string, unknown>;
   command?: TaskCommandResult;
+  http?: TaskHttpResult;
+  observations?: TaskObservation[];
   evidence: FrozenCampaignArtifact[];
   recovery: TaskRecoveryResult;
   cleanup: TaskCleanupResult;
@@ -355,6 +433,19 @@ interface AggregationReceipt {
   release_claims: Array<{ claim_id: string; status: ClaimStatus }>;
   status: CampaignStatus;
   created_at: string;
+}
+
+interface CampaignSessionTaskSummary {
+  task_id: string;
+  required: boolean;
+  status: CampaignStatus;
+  outcome: TaskExecutionOutcome;
+  result_digest: string;
+}
+
+interface CampaignSessionState {
+  task_results: CampaignSessionTaskSummary[];
+  budget_usage?: CampaignPolicyBudgetUsage;
 }
 
 function clone<T>(value: T): T {
@@ -442,6 +533,7 @@ async function evaluateOracle(
   oracle: OracleDefinition,
   state: Record<string, unknown> | undefined,
   command: TaskCommandResult | undefined,
+  http: TaskHttpResult | undefined,
 ): Promise<OracleResult> {
   if (oracle.type === "state-equals") {
     const actual = state && oracle.path ? getStatePath(state, oracle.path) : undefined;
@@ -463,6 +555,16 @@ async function evaluateOracle(
       actual,
     };
   }
+  if (oracle.type === "http-status") {
+    const actual = http?.status;
+    return {
+      oracle_id: oracle.id,
+      type: oracle.type,
+      status: actual === oracle.expected_status ? "PASS" : "FAIL",
+      expected: oracle.expected_status,
+      actual,
+    };
+  }
   const file = oracle.file!;
   const present = await isFile(boundedPath(file));
   return {
@@ -478,12 +580,18 @@ async function evaluateOracle(
 export function createTaskOracleEvaluator(): TaskOracleEvaluator {
   return {
     evaluate: (oracle, context) =>
-      evaluateOracle(oracle, context.final_state, context.command),
+      evaluateOracle(oracle, context.final_state, context.command, context.http),
   };
 }
 
 const fakeTaskAdapter: TaskAdapter = {
+  id: "builtin-fake",
+  version: "1.0.0",
   driver: "fake",
+  capabilities: ["deterministic-state", "policy-actions", "cleanup-verified"],
+  async preflight() {
+    return { status: "READY", reason: null };
+  },
   async execute(context): Promise<TaskAdapterResult> {
     const state = clone(context.fixture);
     const policyDecisions: PolicyDecision[] = [];
@@ -590,7 +698,15 @@ const fakeTaskAdapter: TaskAdapter = {
 };
 
 const directProcessTaskAdapter: TaskAdapter = {
+  id: "builtin-direct-process",
+  version: "1.0.0",
   driver: "direct-process",
+  capabilities: ["bounded-process", "captured-output", "abort-signal"],
+  async preflight(context) {
+    return context.task.command?.length
+      ? { status: "READY", reason: null }
+      : { status: "BLOCKED", reason: "command is missing" };
+  },
   async execute(context): Promise<TaskAdapterResult> {
     const policyDecision = context.authorize_action({
       action_index: 0,
@@ -755,17 +871,279 @@ const directProcessTaskAdapter: TaskAdapter = {
   },
 };
 
+async function readBoundedResponseBody(
+  response: Response,
+  maxBytes: number,
+): Promise<{ value: string; observed_bytes: number; truncated: boolean }> {
+  if (!response.body) {
+    return { value: "", observed_bytes: 0, truncated: false };
+  }
+  const reader = response.body.getReader();
+  const chunks: Uint8Array[] = [];
+  let observedBytes = 0;
+  let retainedBytes = 0;
+  let truncated = false;
+  try {
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      observedBytes += value.byteLength;
+      const remaining = Math.max(0, maxBytes - retainedBytes);
+      if (remaining > 0) {
+        const retained = value.subarray(0, remaining);
+        chunks.push(retained);
+        retainedBytes += retained.byteLength;
+      }
+      if (value.byteLength > remaining) {
+        truncated = true;
+        await reader.cancel("response exceeded policy output budget");
+        break;
+      }
+    }
+  } finally {
+    reader.releaseLock();
+  }
+  const merged = new Uint8Array(retainedBytes);
+  let offset = 0;
+  for (const chunk of chunks) {
+    merged.set(chunk, offset);
+    offset += chunk.byteLength;
+  }
+  return {
+    value: new TextDecoder().decode(merged),
+    observed_bytes: observedBytes,
+    truncated,
+  };
+}
+
+const httpTaskAdapter: TaskAdapter = {
+  id: "builtin-http-client",
+  version: "1.0.0",
+  driver: "http-client",
+  capabilities: [
+    "http-request",
+    "manual-redirect",
+    "bounded-response",
+    "abort-signal",
+  ],
+  async preflight(context) {
+    return context.task.request
+      ? { status: "READY", reason: null }
+      : { status: "BLOCKED", reason: "HTTP request is missing" };
+  },
+  async execute(context): Promise<TaskAdapterResult> {
+    const request = context.task.request!;
+    const action = {
+      type: "http-request" as const,
+      method: request.method,
+      url: request.url,
+      headers: request.headers,
+      body: request.body,
+    };
+    const policyDecision = context.authorize_action({
+      action_index: 0,
+      action,
+      projected_output_bytes: 0,
+    });
+    const policyDecisions = [policyDecision];
+    const requestPolicy = context.policies.find(
+      (policy) =>
+        policy.id === policyDecision.policy_id &&
+        policy.version === policyDecision.policy_version,
+    );
+    if (policyDecision.decision !== "ALLOW" || !requestPolicy) {
+      return {
+        outcome:
+          policyDecision.decision === "REQUIRE_CONFIRMATION" ||
+          policyDecision.decision === "BLOCKED"
+            ? "BLOCKED"
+            : "FAILED",
+        earliest_failure: policyDecision.reason,
+        side_effects: "NONE",
+        policy_decisions: policyDecisions,
+        events: [],
+      };
+    }
+    if (context.signal?.aborted) {
+      return {
+        outcome: "CANCELLED",
+        earliest_failure: "HTTP request cancelled before dispatch",
+        side_effects: "NONE",
+        policy_decisions: policyDecisions,
+        events: [],
+      };
+    }
+    consumePolicyBudget(policyDecision, context.budget_usage);
+    const outputLimit = policyDecision.budgets!.remaining_after.output_bytes;
+    try {
+      const response = await fetch(request.url, {
+        method: request.method,
+        headers: request.headers,
+        body: request.body,
+        redirect: "manual",
+        signal: context.signal,
+      });
+      const bounded = await readBoundedResponseBody(
+        response,
+        outputLimit,
+      );
+      const controlled = context.control_output(bounded.value, requestPolicy);
+      consumePolicyOutputBudget(
+        policyDecision,
+        context.budget_usage,
+        bounded.observed_bytes + (bounded.truncated ? 1 : 0),
+      );
+      const body = controlled.value;
+      const outputBudgetExceeded =
+        bounded.truncated ||
+        policyDecision.budgets!.consumed_after.output_bytes >
+          requestPolicy.budgets.max_output_bytes;
+      const http: TaskHttpResult = {
+        method: request.method,
+        url: request.url,
+        status: response.status,
+        content_type: response.headers.get("content-type"),
+        body,
+        redirected: response.redirected,
+        output_control: {
+          policy_id: requestPolicy.id,
+          max_output_bytes: outputLimit,
+          original_bytes:
+            bounded.observed_bytes + (bounded.truncated ? 1 : 0),
+          retained_bytes: Buffer.byteLength(body),
+          redacted: controlled.redacted,
+          truncated: outputBudgetExceeded || controlled.truncated,
+        },
+      };
+      return {
+        outcome: outputBudgetExceeded ? "FAILED" : "SUCCEEDED",
+        earliest_failure: outputBudgetExceeded
+          ? "HTTP response exceeded the governing policy budget"
+          : null,
+        side_effects: "KNOWN",
+        policy_decisions: policyDecisions,
+        events: [
+          {
+            event_type: "HTTP",
+            index: 0,
+            type: "http-request",
+            method: request.method,
+            url: request.url,
+            response_status: response.status,
+            response_bytes: bounded.observed_bytes,
+            status: outputBudgetExceeded ? "BLOCKED" : "PASS",
+          },
+        ],
+        http,
+        observations: [
+          {
+            type: "http-response",
+            surface: {
+              kind: "http",
+              session_id: context.run_id,
+              surface_id: new URL(request.url).origin,
+            },
+            payload: {
+              method: request.method,
+              url: request.url,
+              status: response.status,
+              content_type: response.headers.get("content-type"),
+              retained_bytes: Buffer.byteLength(body),
+              truncated: http.output_control.truncated,
+            },
+          },
+        ],
+      };
+    } catch (error) {
+      const cancelled = context.signal?.aborted;
+      return {
+        outcome: "UNKNOWN_OUTCOME",
+        earliest_failure: cancelled
+          ? "HTTP request cancelled after dispatch; side effects are unknown"
+          : `HTTP request failed after dispatch; side effects are unknown: ${error instanceof Error ? error.message : String(error)}`,
+        side_effects: "UNKNOWN",
+        policy_decisions: policyDecisions,
+        events: [],
+      };
+    }
+  },
+  async recover(): Promise<TaskRecoveryResult> {
+    return {
+      status: "UNSUPPORTED",
+      attempted: false,
+      reason: "HTTP side effects cannot be reconstructed safely",
+    };
+  },
+  async cleanup(_context, result): Promise<TaskCleanupResult> {
+    const dispatched = result?.policy_decisions[0]?.decision === "ALLOW";
+    return {
+      status: dispatched ? "VERIFIED" : "NOT_REQUIRED",
+      attempted: dispatched,
+      verified: true,
+      residual_resources: [],
+      reason: dispatched ? "HTTP fetch resources released" : "request was not dispatched",
+    };
+  },
+};
+
 export function createTaskAdapterRegistry(
   additional: TaskAdapter[] = [],
-): ReadonlyMap<DriverType, TaskAdapter> {
-  const adapters = new Map<DriverType, TaskAdapter>();
-  for (const adapter of [fakeTaskAdapter, directProcessTaskAdapter, ...additional]) {
-    if (adapters.has(adapter.driver)) {
-      throw new CascadeError(`duplicate task adapter: ${adapter.driver}`);
+): ReadonlyMap<string, TaskAdapter> {
+  const adapters = new Map<string, TaskAdapter>();
+  for (const adapter of [
+    fakeTaskAdapter,
+    directProcessTaskAdapter,
+    httpTaskAdapter,
+    ...additional,
+  ]) {
+    if (!/^[a-z0-9][a-z0-9.-]+$/.test(adapter.id)) {
+      throw new CascadeError(`invalid task adapter id: ${adapter.id}`);
     }
-    adapters.set(adapter.driver, adapter);
+    if (!/^[0-9]+\.[0-9]+\.[0-9]+$/.test(adapter.version)) {
+      throw new CascadeError(
+        `invalid task adapter version: ${adapter.driver}:${adapter.id}`,
+      );
+    }
+    if (
+      adapter.capabilities.length === 0 ||
+      new Set(adapter.capabilities).size !== adapter.capabilities.length ||
+      adapter.capabilities.some((capability) => !capability.trim())
+    ) {
+      throw new CascadeError(
+        `invalid task adapter capabilities: ${adapter.driver}:${adapter.id}`,
+      );
+    }
+    const key = `${adapter.driver}:${adapter.id}`;
+    if (adapters.has(key)) {
+      throw new CascadeError(`duplicate task adapter: ${key}`);
+    }
+    adapters.set(key, adapter);
   }
   return adapters;
+}
+
+const DEFAULT_ADAPTER_IDS: Partial<Record<DriverType, string>> = {
+  fake: "builtin-fake",
+  "direct-process": "builtin-direct-process",
+  "http-client": "builtin-http-client",
+};
+
+function taskAdapterKey(task: TaskDefinition): string {
+  const adapterId = task.driver.adapter ?? DEFAULT_ADAPTER_IDS[task.driver.type];
+  return `${task.driver.type}:${adapterId ?? "unsupported"}`;
+}
+
+function selectTaskAdapter(
+  task: TaskDefinition,
+  adapters: ReadonlyMap<string, TaskAdapter>,
+): TaskAdapter | undefined {
+  if (task.driver.adapter || DEFAULT_ADAPTER_IDS[task.driver.type]) {
+    return adapters.get(taskAdapterKey(task));
+  }
+  const matches = [...adapters.values()].filter(
+    (adapter) => adapter.driver === task.driver.type,
+  );
+  return matches.length === 1 ? matches[0] : undefined;
 }
 
 function campaignStatus(outcome: TaskExecutionOutcome): CampaignStatus {
@@ -865,7 +1243,7 @@ const LIFECYCLE_ABORT_GRACE_MS = 100;
 const DIRECT_PROCESS_TERMINATION_ALLOWANCE_MS = 1_000;
 
 async function runBoundedTaskStep<T>(
-  phase: "EXECUTE" | "ORACLE" | "RECOVERY" | "CLEANUP",
+  phase: "PREFLIGHT" | "EXECUTE" | "ORACLE" | "RECOVERY" | "CLEANUP",
   timeoutMs: number,
   parentSignal: AbortSignal | undefined,
   operation: (signal: AbortSignal) => Promise<T>,
@@ -1041,11 +1419,15 @@ export async function executeCampaignTask(
     ...adapterContext,
     signal,
   });
-  const adapter =
-    (input.adapters ?? createTaskAdapterRegistry()).get(task.driver.type);
-  if (adapter && adapter.driver !== task.driver.type) {
+  const adapterRegistry = input.adapters ?? createTaskAdapterRegistry();
+  const adapter = selectTaskAdapter(task, adapterRegistry);
+  if (
+    adapter &&
+    (adapter.driver !== task.driver.type ||
+      (task.driver.adapter !== undefined && adapter.id !== task.driver.adapter))
+  ) {
     throw new CascadeError(
-      `task adapter registry mismatch: ${task.driver.type}/${adapter.driver}`,
+      `task adapter registry mismatch: ${taskAdapterKey(task)}/${adapter.driver}:${adapter.id}`,
     );
   }
   let adapterResult: TaskAdapterResult | null = null;
@@ -1058,52 +1440,98 @@ export async function executeCampaignTask(
     earliestFailure = "task cancelled before adapter dispatch";
   } else if (!adapter) {
     outcome = "BLOCKED";
-    earliestFailure = `runtime adapter not implemented: ${task.driver.type}`;
+    earliestFailure = `runtime adapter not implemented: ${taskAdapterKey(task)}`;
     emit({
       event_type: "ADAPTER",
       type: "adapter",
       status: "BLOCKED",
+      adapter_id: task.driver.adapter ?? "unsupported",
+      adapter_version: "unknown",
+      capabilities: [],
       reason: earliestFailure,
     });
   } else {
     try {
-      adapterDispatched = true;
-      const executionBound =
-        task.timeout_ms +
-        (adapter.driver === "direct-process"
-          ? DIRECT_PROCESS_TERMINATION_ALLOWANCE_MS
-          : 0);
-      const step = await runBoundedTaskStep(
-        "EXECUTE",
-        executionBound,
+      const preflight = await runBoundedTaskStep(
+        "PREFLIGHT",
+        task.timeout_ms,
         input.signal,
-        (signal) => adapter.execute(contextWithSignal(signal)),
+        (signal) => adapter.preflight(contextWithSignal(signal)),
       );
-      if (step.status === "COMPLETED") {
-        assertTaskAdapterResult(step.value);
-        adapterResult = step.value;
-        outcome = adapterResult.outcome;
-        earliestFailure = adapterResult.earliest_failure;
-        sideEffects = adapterResult.side_effects;
-        for (const event of adapterResult.events) emit(event);
-      } else {
-        outcome =
-          step.status === "CANCELLED" ? "CANCELLED" : "UNKNOWN_OUTCOME";
-        sideEffects = "UNKNOWN";
-        earliestFailure = step.reason;
+      if (preflight.status !== "COMPLETED") {
+        outcome = preflight.status === "CANCELLED" ? "CANCELLED" : "BLOCKED";
+        earliestFailure = preflight.reason;
         emit({
-          event_type: "BOUNDARY",
-          type: "lifecycle-bound",
-          phase: "EXECUTE",
-          status: step.status,
-          reason: step.reason,
+          event_type: "ADAPTER",
+          type: "adapter",
+          status: "BLOCKED",
+          adapter_id: adapter.id,
+          adapter_version: adapter.version,
+          capabilities: [...adapter.capabilities],
+          reason: earliestFailure,
         });
+      } else if (preflight.value.status === "BLOCKED") {
+        outcome = "BLOCKED";
+        earliestFailure = preflight.value.reason ?? "adapter preflight blocked";
+        emit({
+          event_type: "ADAPTER",
+          type: "adapter",
+          status: "BLOCKED",
+          adapter_id: adapter.id,
+          adapter_version: adapter.version,
+          capabilities: [...adapter.capabilities],
+          reason: earliestFailure,
+        });
+      } else {
+        emit({
+          event_type: "ADAPTER",
+          type: "adapter",
+          status: "READY",
+          adapter_id: adapter.id,
+          adapter_version: adapter.version,
+          capabilities: [...adapter.capabilities],
+          reason: null,
+        });
+        adapterDispatched = true;
+        const executionBound =
+          task.timeout_ms +
+          (adapter.driver === "direct-process"
+            ? DIRECT_PROCESS_TERMINATION_ALLOWANCE_MS
+            : 0);
+        const step = await runBoundedTaskStep(
+          "EXECUTE",
+          executionBound,
+          input.signal,
+          (signal) => adapter.execute(contextWithSignal(signal)),
+        );
+        if (step.status === "COMPLETED") {
+          assertTaskAdapterResult(step.value);
+          adapterResult = step.value;
+          outcome = adapterResult.outcome;
+          earliestFailure = adapterResult.earliest_failure;
+          sideEffects = adapterResult.side_effects;
+          for (const event of adapterResult.events) emit(event);
+        } else {
+          outcome =
+            step.status === "CANCELLED" ? "CANCELLED" : "UNKNOWN_OUTCOME";
+          sideEffects = "UNKNOWN";
+          earliestFailure = step.reason;
+          emit({
+            event_type: "BOUNDARY",
+            type: "lifecycle-bound",
+            phase: "EXECUTE",
+            status: step.status,
+            reason: step.reason,
+          });
+        }
       }
     } catch (error) {
-      outcome = "UNKNOWN_OUTCOME";
-      sideEffects = "UNKNOWN";
       const detail = error instanceof Error ? error.message : String(error);
-      earliestFailure = `adapter failed after dispatch: ${detail}`;
+      outcome = adapterDispatched ? "UNKNOWN_OUTCOME" : "BLOCKED";
+      sideEffects = adapterDispatched ? "UNKNOWN" : "NONE";
+      earliestFailure = adapterDispatched
+        ? `adapter failed after dispatch: ${detail}`
+        : `adapter preflight failed: ${detail}`;
     }
   }
 
@@ -1121,6 +1549,7 @@ export async function executeCampaignTask(
             oracleEvaluator.evaluate(oracle, {
               final_state: adapterResult?.final_state,
               command: adapterResult?.command,
+              http: adapterResult?.http,
               signal,
             }),
         );
@@ -1338,6 +1767,22 @@ export async function executeCampaignTask(
       adapterResult.command.stderr,
     );
   }
+  if (adapterResult?.http) {
+    await writeTaskText(
+      resolve(taskRoot, "response-body.log"),
+      adapterResult.http.body,
+    );
+    await writeTaskJson(
+      resolve(taskRoot, "http.json"),
+      adapterResult.http,
+    );
+  }
+  if (adapterResult?.observations) {
+    await writeTaskJson(
+      resolve(taskRoot, "observations.json"),
+      adapterResult.observations,
+    );
+  }
   latchParentCancellation();
   const status = campaignStatus(outcome);
   emit({
@@ -1370,6 +1815,13 @@ export async function executeCampaignTask(
     task_id: task.id,
     kind: task.kind,
     driver: task.driver.type,
+    adapter: adapter
+      ? {
+          id: adapter.id,
+          version: adapter.version,
+          capabilities: [...adapter.capabilities],
+        }
+      : null,
     required: task.required,
     status,
     outcome,
@@ -1389,6 +1841,10 @@ export async function executeCampaignTask(
       ? { final_state: adapterResult.final_state }
       : {}),
     ...(adapterResult?.command ? { command: adapterResult.command } : {}),
+    ...(adapterResult?.http ? { http: adapterResult.http } : {}),
+    ...(adapterResult?.observations
+      ? { observations: adapterResult.observations }
+      : {}),
     evidence,
     recovery,
     cleanup,
@@ -1627,11 +2083,68 @@ export function buildCalibrationReceipt(
   };
 }
 
+export function evaluatePopulationAuthority(
+  resolved: ResolvedCampaign,
+  claim: ClaimDefinition,
+  calibration: CalibrationReceipt | null,
+): { status: ClaimStatus; reason: string; evidence: string[] } | null {
+  const populationId = claim.scope.population_id as string | undefined;
+  const population = populationId
+    ? resolved.populations.find((item) => item.id === populationId)
+    : undefined;
+  const populationDerivation = population?.schema_version === 2
+    ? resolved.personaDerivations.find(
+        (item) => item.manifest.population_id === population.id,
+      )
+    : undefined;
+  if (
+    claim.population_authority === "persona-derived" &&
+    !populationDerivation
+  ) {
+    return {
+      status: "NOT_RUN",
+      reason: "claim requires an approved digest-bound product-persona derivation",
+      evidence: [],
+    };
+  }
+  if (claim.population_authority === "estimated-prevalence") {
+    const prevalenceDerivation = populationDerivation &&
+      populationDerivation.manifest.mode === "representative" &&
+      populationDerivation.manifest.weight_semantics === "estimated-prevalence" &&
+      populationDerivation.manifest.evidence_sources.some(
+        (source) => source.kind !== "framework-fixture" && Boolean(source.sha256),
+      )
+        ? populationDerivation
+        : undefined;
+    if (
+      resolved.simulation.simulation_scope !== "product" ||
+      !prevalenceDerivation ||
+      !calibration ||
+      calibration.framework_fixture
+    ) {
+      return {
+        status: "NOT_RUN",
+        reason:
+          "estimated-prevalence authority requires a product-scoped representative derivation with digest-bound non-fixture evidence and non-fixture calibration",
+        evidence: prevalenceDerivation ? [prevalenceDerivation.path] : [],
+      };
+    }
+  }
+  return null;
+}
+
 function claimStatus(
+  resolved: ResolvedCampaign,
   claim: ClaimDefinition,
   taskResults: TaskResult[],
   calibration: CalibrationReceipt | null,
 ): { status: ClaimStatus; reason: string; evidence: string[] } {
+  const populationAuthority = evaluatePopulationAuthority(
+    resolved,
+    claim,
+    calibration,
+  );
+  if (populationAuthority) return populationAuthority;
   const oracleResults = taskResults.flatMap((task) => task.oracle_results);
   const policyDecisions = taskResults.flatMap((task) => task.policy_decisions);
   const missingOracles = claim.required_oracle_ids.filter(
@@ -1768,7 +2281,7 @@ function buildMechanicalEvaluation(
   const claimLedger = resolved.claims.map((claim) => ({
     claim_id: claim.id,
     class: claim.class,
-    ...claimStatus(claim, taskResults, calibration),
+    ...claimStatus(resolved, claim, taskResults, calibration),
   }));
   const requiredFailures = claimLedger.filter(
     (claim) =>
@@ -1883,6 +2396,30 @@ export function assertEvaluationReceiptFresh(
   ) {
     throw new CascadeError("fixture evaluation receipt has provider trace data");
   }
+  if (!Array.isArray(evaluation.refinement_proposal_bindings)) {
+    throw new CascadeError("evaluation receipt refinement proposal bindings are invalid");
+  }
+  const proposalIds = new Set<string>();
+  for (const [index, binding] of evaluation.refinement_proposal_bindings.entries()) {
+    if (
+      !binding ||
+      typeof binding.proposal_id !== "string" ||
+      !binding.proposal_id ||
+      !isDigest(binding.candidate_digest) ||
+      proposalIds.has(binding.proposal_id)
+    ) {
+      throw new CascadeError(
+        `evaluation receipt refinement proposal binding ${index} is invalid or duplicated`,
+      );
+    }
+    proposalIds.add(binding.proposal_id);
+  }
+  if (
+    resolved.evaluationProfile.provider === "fixture" &&
+    evaluation.refinement_proposal_bindings.length
+  ) {
+    throw new CascadeError("fixture evaluation receipt cannot bind refinement proposals");
+  }
   if (
     evaluation.evaluator_identity === evaluation.operator_identity ||
     evaluation.evaluator_identity === identity.targetActorIdentity
@@ -1956,9 +2493,24 @@ export async function buildCampaignCatalog(): Promise<Record<string, unknown>> {
       manifest: rel(path),
       manifest_digest: await sha256File(path),
       simulation_id: resolved.simulation.id,
+      simulation_scope: resolved.simulation.simulation_scope,
+      intake_file: resolved.campaign.intake_file ?? null,
+      intake_id: resolved.intake?.id ?? null,
+      intake_status: resolved.intake?.status ?? null,
+      intake_task_envelope_id: resolved.intake?.task_envelope?.envelope_id ?? null,
+      intake_brief_id: resolved.intake?.product_context?.brief_id ?? null,
       contours: [...new Set(resolved.tasks.map((task) => task.kind))].sort(),
       drivers: [
         ...new Set(resolved.tasks.map((task) => task.driver.type)),
+      ].sort(),
+      adapters: [
+        ...new Set(
+          resolved.tasks.map((task) =>
+            task.driver.adapter || DEFAULT_ADAPTER_IDS[task.driver.type]
+              ? taskAdapterKey(task)
+              : `${task.driver.type}:unspecified`,
+          ),
+        ),
       ].sort(),
       task_ids: resolved.tasks.map((task) => task.id),
       claim_ids: resolved.claims.map((claim) => claim.id),
@@ -1980,7 +2532,7 @@ export async function buildCampaignCatalog(): Promise<Record<string, unknown>> {
   }
   return {
     schema_version: 1,
-    generated_from: "evals/campaigns/*.json",
+    generated_from: "product-evals/campaigns/*.json",
     entries,
     digest: valueDigest(entries),
   };
@@ -2035,6 +2587,7 @@ async function commandValidate(value: string): Promise<number> {
   console.log(
     `campaign_validation_status=PASS campaign=${resolved.campaign.id} ` +
       `tasks=${resolved.tasks.length} claims=${resolved.claims.length} ` +
+      `intake=${resolved.intake?.status ?? "NOT_APPLICABLE"} ` +
       `sources=${resolved.sourceFiles.length}`,
   );
   return 0;
@@ -2086,115 +2639,551 @@ async function sourceRevision(
   };
 }
 
-async function commandRun(value: string, argv: string[]): Promise<number> {
+export function campaignSessionContract(
+  resolved: ResolvedCampaign,
+  runId: string,
+): { contract: SimulationSessionContract; lease_ttl_ms: number } {
+  const taskCount = resolved.tasks.length;
+  const maximumTaskTimeout = Math.max(
+    ...resolved.tasks.map((task) => task.timeout_ms),
+  );
+  const maximumTaskLifecycle = maximumTaskTimeout * 6 + 5_000;
+  const configured = resolved.campaign.session;
+  const maxSteps = configured?.max_steps ?? taskCount;
+  const maxStepsPerEpisode =
+    configured?.max_steps_per_episode ?? Math.min(25, maxSteps);
+  const maxDurationMs =
+    configured?.max_duration_ms ??
+    Math.max(
+      60_000,
+      resolved.tasks.reduce(
+        (total, task) => total + task.timeout_ms * 6 + 5_000,
+        0,
+      ),
+    );
+  return {
+    contract: {
+      schema_version: 1,
+      session_id: runId,
+      purpose: resolved.campaign.purpose,
+      limits: {
+        max_duration_ms: maxDurationMs,
+        max_step_duration_ms:
+          configured?.max_step_duration_ms ??
+          Math.min(maximumTaskLifecycle, maxDurationMs),
+        max_steps: maxSteps,
+        max_parallel_steps: configured?.max_parallel_steps ?? 1,
+        max_steps_per_episode: maxStepsPerEpisode,
+        max_surfaces: configured?.max_surfaces ?? Math.max(1, taskCount * 2),
+        max_checkpoint_bytes:
+          configured?.max_checkpoint_bytes ?? 10 * 1_024 * 1_024,
+      },
+    },
+    lease_ttl_ms:
+      configured?.lease_ttl_ms ??
+      Math.min(
+        24 * 60 * 60 * 1_000,
+        Math.max(60_000, maximumTaskLifecycle + 1_000),
+      ),
+  };
+}
+
+function campaignTaskSurface(
+  task: TaskDefinition,
+  runId: string,
+): SimulationSurfaceSession {
+  return {
+    surface_id: `task:${task.id}`,
+    kind: task.kind,
+    context_id: `${runId}:${task.driver.type}:${task.id}`,
+    lifecycle: "READY",
+    generation: 0,
+  };
+}
+
+function taskSurfaceUpdates(
+  task: TaskDefinition,
+  result: TaskResult,
+): SimulationSurfaceUpdate[] {
+  const lifecycle = result.cleanup.verified ? "CLOSED" : "LOST";
+  const updates: SimulationSurfaceUpdate[] = [
+    {
+      surface_id: `task:${task.id}`,
+      lifecycle,
+      generation: 0,
+      last_observation_digest: valueDigest(result.observations ?? []),
+    },
+  ];
+  for (const observation of result.observations ?? []) {
+    updates.push({
+      surface_id: observation.surface.surface_id,
+      kind: observation.surface.kind,
+      context_id: observation.surface.session_id,
+      screen_id: observation.surface.screen_id,
+      lifecycle,
+      generation: 0,
+      last_observation_digest: valueDigest(observation),
+    });
+  }
+  return updates;
+}
+
+export function campaignTaskConflictKeys(
+  task: Pick<TaskDefinition, "id" | "driver" | "policy_ids" | "request">,
+): string[] {
+  const keys = [
+    `task:${task.id}`,
+    ...(task.policy_ids ?? []).map((policyId) => `policy:${policyId}`),
+  ];
+  if (task.driver.type === "http-client" && task.request) {
+    keys.push(`http-origin:${new URL(task.request.url).origin}`);
+  } else if (task.driver.type !== "fake") {
+    keys.push(
+      `driver:${task.driver.type}:${task.driver.adapter ?? "default"}`,
+    );
+  }
+  return [...new Set(keys)].sort();
+}
+
+export function selectCampaignTaskBatch<TTask extends Pick<
+  TaskDefinition,
+  "id" | "driver" | "policy_ids" | "request"
+>>(
+  tasks: TTask[],
+  completedTaskIds: ReadonlySet<string>,
+  maxParallel: number,
+): TTask[] {
+  if (!Number.isSafeInteger(maxParallel) || maxParallel < 1) {
+    throw new CascadeError("campaign max parallel task count must be positive");
+  }
+  const selected: TTask[] = [];
+  const occupied = new Set<string>();
+  for (const task of tasks) {
+    if (completedTaskIds.has(task.id)) continue;
+    const conflictKeys = campaignTaskConflictKeys(task);
+    if (conflictKeys.some((key) => occupied.has(key))) continue;
+    selected.push(task);
+    conflictKeys.forEach((key) => occupied.add(key));
+    if (selected.length === maxParallel) break;
+  }
+  return selected;
+}
+
+function sessionStepOutcome(result: TaskResult): SimulationSessionStepResult<TaskResult>["outcome"] {
+  if (result.status === "PASS") return "PASS";
+  if (result.outcome === "UNKNOWN_OUTCOME") return "UNKNOWN_OUTCOME";
+  if (result.outcome === "CANCELLED") return "CANCELLED";
+  if (result.status === "BLOCKED") return "BLOCKED";
+  return "FAIL";
+}
+
+interface CampaignSourceManifest {
+  schema_version: 1;
+  run_id: string;
+  campaign_id: string;
+  platform: string;
+  source_revision: string;
+  dirty_source: boolean;
+  definitions: Array<{ path: string; sha256: string }>;
+  frozen_sources: FrozenCampaignArtifact[];
+  source_digest: string;
+}
+
+async function validateResumeSourceManifest(
+  resolved: ResolvedCampaign,
+  runRoot: string,
+  runId: string,
+  manifest: CampaignSourceManifest,
+): Promise<void> {
+  if (
+    manifest.schema_version !== 1 ||
+    manifest.run_id !== runId ||
+    manifest.campaign_id !== resolved.campaign.id ||
+    !manifest.platform?.trim() ||
+    !valuesEqual(manifest.definitions, resolved.sourceDigests) ||
+    manifest.source_digest !== valueDigest(resolved.sourceDigests)
+  ) {
+    throw new CascadeError(
+      "campaign resume source manifest is stale or mismatched",
+    );
+  }
+  if (
+    !Array.isArray(manifest.frozen_sources) ||
+    manifest.frozen_sources.length !== resolved.sourceFiles.length
+  ) {
+    throw new CascadeError(
+      "campaign resume source manifest has incomplete frozen sources",
+    );
+  }
+  const expectedSourcePaths = new Set(
+    resolved.sourceFiles.map((file) => rootPath(file)),
+  );
+  const frozenSourcePaths = new Set(
+    manifest.frozen_sources.map((frozen) => resolve(frozen.source_path)),
+  );
+  if (
+    frozenSourcePaths.size !== manifest.frozen_sources.length ||
+    !valuesEqual(
+      [...frozenSourcePaths].sort(),
+      [...expectedSourcePaths].sort(),
+    )
+  ) {
+    throw new CascadeError(
+      "campaign resume frozen-source bindings are incomplete or duplicated",
+    );
+  }
+  for (const frozen of manifest.frozen_sources) {
+    const path = resolve(runRoot, frozen.path);
+    if (
+      path === runRoot ||
+      !path.startsWith(`${runRoot}${sep}`) ||
+      !(await isFile(path)) ||
+      (await sha256File(path)) !== frozen.sha256 ||
+      frozen.lineage.run_id !== runId ||
+      frozen.lineage.source_digest !== frozen.sha256
+    ) {
+      throw new CascadeError(
+        `campaign resume frozen source is missing or stale: ${frozen.path}`,
+      );
+    }
+  }
+}
+
+export async function restoreCampaignBudgetUsage(
+  checkpoint: Pick<
+    SimulationSessionCheckpoint<CampaignSessionState>,
+    "domain_state"
+  > | null,
+  executionRoot: string,
+): Promise<CampaignPolicyBudgetUsage> {
+  const restored: CampaignPolicyBudgetUsage = {};
+  for (const summary of checkpoint?.domain_state.task_results ?? []) {
+    const result = await readJson<TaskResult>(
+      resolve(executionRoot, "tasks", summary.task_id, "result.json"),
+    );
+    if (valueDigest(result) !== summary.result_digest) {
+      throw new CascadeError(
+        `campaign session task result digest mismatch: ${summary.task_id}`,
+      );
+    }
+    for (const decision of result.policy_decisions) {
+      if (!decision.policy_id || !decision.budgets) continue;
+      const consumed = decision.budgets.consumed_after;
+      const current = restored[decision.policy_id] ?? {
+        action_count: 0,
+        output_bytes: 0,
+      };
+      restored[decision.policy_id] = {
+        action_count: Math.max(current.action_count, consumed.action_count),
+        output_bytes: Math.max(current.output_bytes, consumed.output_bytes),
+      };
+    }
+  }
+  const checkpointUsage = checkpoint?.domain_state.budget_usage;
+  if (checkpointUsage && !valuesEqual(checkpointUsage, restored)) {
+    throw new CascadeError(
+      "campaign checkpoint policy budget usage is stale or mismatched",
+    );
+  }
+  return restored;
+}
+
+function withoutFields(
+  value: Record<string, unknown>,
+  fields: readonly string[],
+): Record<string, unknown> {
+  return Object.fromEntries(
+    Object.entries(value).filter(([key]) => !fields.includes(key)),
+  );
+}
+
+async function persistOrReuseStageJson<T extends object>(
+  store: CampaignArtifactStore,
+  runRoot: string,
+  relativePath: string,
+  value: T,
+  resume: boolean,
+  volatileFields: readonly string[] = [],
+): Promise<T> {
+  const existingPath = resolve(runRoot, relativePath);
+  if (!(await isFile(existingPath))) {
+    await store.writeStageJson(relativePath, value);
+    return value;
+  }
+  if (!resume) {
+    throw new CascadeError(
+      `campaign stage already exists outside resume: ${relativePath}`,
+    );
+  }
+  const existing = await readJson<T>(existingPath);
+  if (
+    !valuesEqual(
+      withoutFields(existing as Record<string, unknown>, volatileFields),
+      withoutFields(value as Record<string, unknown>, volatileFields),
+    )
+  ) {
+    throw new CascadeError(
+      `campaign resume stage is stale or mismatched: ${relativePath}`,
+    );
+  }
+  return existing;
+}
+
+async function commandRun(
+  value: string,
+  argv: string[],
+  resume = false,
+): Promise<number> {
   const args = parseArgs(argv);
   await assertCampaignCatalogCurrent(await buildCampaignCatalog());
-  const path = await findCampaignPath(value);
-  const resolved = await resolveCampaign(path);
-  const runId =
-    flag(args, "run-id") ??
-    `${resolved.campaign.id}-${new Date()
-      .toISOString()
-      .replace(/[-:.TZ]/g, "")
-      .slice(0, 14)}`;
+  let runId = value;
+  let artifactStore: CampaignArtifactStore;
+  let path: string;
+  let resolved: ResolvedCampaign;
+  let identities: CampaignIdentityEnvelope;
+  if (resume) {
+    if (
+      flag(args, "run-id") ||
+      flag(args, "attempt") ||
+      flag(args, "parent-run-id")
+    ) {
+      throw new CascadeError(
+        "campaign resume cannot change run, attempt, or parent identity",
+      );
+    }
+    artifactStore = new CampaignArtifactStore(ARTIFACT_ROOT, runId);
+    const reservation = await artifactStore.readReservation();
+    path = await findCampaignPath(reservation.campaign_id);
+    resolved = await resolveCampaign(path);
+    if (resolved.simulation.simulation_scope === "product" && resolved.intake?.status !== "READY") {
+      throw new CascadeError("product campaign execution requires a READY simulation intake");
+    }
+    if ((await sha256File(path)) !== reservation.campaign_digest) {
+      throw new CascadeError(
+        "campaign resume manifest digest does not match the reservation",
+      );
+    }
+    identities = reservation.identities;
+    for (const [name, expected] of [
+      ["operator", identities.operator.subject],
+      ["evaluator", identities.evaluator.subject],
+      ["aggregator", identities.aggregator.subject],
+    ] as const) {
+      const supplied = flag(args, name);
+      if (supplied && supplied !== expected) {
+        throw new CascadeError(
+          `campaign resume ${name} identity does not match the reservation`,
+        );
+      }
+    }
+  } else {
+    path = await findCampaignPath(value);
+    resolved = await resolveCampaign(path);
+    if (resolved.simulation.simulation_scope === "product" && resolved.intake?.status !== "READY") {
+      throw new CascadeError("product campaign execution requires a READY simulation intake");
+    }
+    runId =
+      flag(args, "run-id") ??
+      `${resolved.campaign.id}-${new Date()
+        .toISOString()
+        .replace(/[-:.TZ]/g, "")
+        .slice(0, 14)}`;
+    const operatorIdentity = flag(
+      args,
+      "operator",
+      "local-simulation-operator",
+    )!;
+    const evaluatorIdentity = flag(
+      args,
+      "evaluator",
+      resolved.evaluationProfile.provider === "codex"
+        ? `codex:simulation-evaluator:${resolved.evaluationProfile.model}`
+        : "fixture:simulation-evaluator",
+    )!;
+    const aggregatorIdentity = flag(
+      args,
+      "aggregator",
+      "local-campaign-aggregator",
+    )!;
+    const recoveryIdentity = flag(
+      args,
+      "recovery",
+      "local-simulation-recovery",
+    )!;
+    identities = {
+      operator: {
+        role: "simulation-operator",
+        session_id: `${runId}:operator`,
+        subject: operatorIdentity,
+      },
+      evaluator: {
+        role: "simulation-evaluator",
+        session_id: `${runId}:evaluator`,
+        subject: evaluatorIdentity,
+      },
+      aggregator: {
+        role: "campaign-aggregator",
+        session_id: `${runId}:aggregator`,
+        subject: aggregatorIdentity,
+      },
+      target: {
+        role: "target-actor",
+        session_id: `${runId}:target`,
+        subject: `target:${resolved.simulation.id}`,
+      },
+      simulator: {
+        role: "simulator",
+        session_id: `${runId}:simulator`,
+        subject: `simulator:${resolved.simulation.id}`,
+      },
+      recovery: {
+        role: "simulation-recovery",
+        session_id: `${runId}:recovery`,
+        subject: recoveryIdentity,
+      },
+    };
+    artifactStore = new CampaignArtifactStore(ARTIFACT_ROOT, runId);
+  }
   if (!/^[a-zA-Z0-9][a-zA-Z0-9._-]+$/.test(runId)) {
     throw new CascadeError(`invalid run ID: ${runId}`);
   }
-  const operatorIdentity = flag(args, "operator", "local-simulation-operator")!;
-  const evaluatorIdentity = flag(
-    args,
-    "evaluator",
-    resolved.evaluationProfile.provider === "codex"
-      ? `codex:simulation-evaluator:${resolved.evaluationProfile.model}`
-      : "fixture:simulation-evaluator",
-  )!;
-  const aggregatorIdentity = flag(args, "aggregator", "local-campaign-aggregator")!;
-  const targetActorIdentity = `target:${resolved.simulation.id}`;
-  const simulatorIdentity = `simulator:${resolved.simulation.id}`;
-  const recoveryIdentity = flag(args, "recovery", "local-simulation-recovery")!;
-  const platform = flag(args, "platform", process.platform)!;
-  if (!platform.trim()) {
-    throw new CascadeError("campaign platform must be non-empty");
-  }
-  const identities: CampaignIdentityEnvelope = {
-    operator: {
-      role: "simulation-operator",
-      session_id: `${runId}:operator`,
-      subject: operatorIdentity,
-    },
-    evaluator: {
-      role: "simulation-evaluator",
-      session_id: `${runId}:evaluator`,
-      subject: evaluatorIdentity,
-    },
-    aggregator: {
-      role: "campaign-aggregator",
-      session_id: `${runId}:aggregator`,
-      subject: aggregatorIdentity,
-    },
-    target: {
-      role: "target-actor",
-      session_id: `${runId}:target`,
-      subject: targetActorIdentity,
-    },
-    simulator: {
-      role: "simulator",
-      session_id: `${runId}:simulator`,
-      subject: simulatorIdentity,
-    },
-    recovery: {
-      role: "simulation-recovery",
-      session_id: `${runId}:recovery`,
-      subject: recoveryIdentity,
-    },
-  };
-
   const runRoot = resolve(ARTIFACT_ROOT, runId);
-  let artifactStore = new CampaignArtifactStore(ARTIFACT_ROOT, runId);
   const campaignDigest = await sha256File(path);
-  const leaseAcquiredAt = new Date();
-  const leaseExpiresAt = new Date(leaseAcquiredAt.getTime() + 60 * 60 * 1000);
-  const leaseId = flag(args, "lease-id", crypto.randomUUID())!;
-  await artifactStore.reserve({
-    campaign_id: resolved.campaign.id,
-    campaign_digest: campaignDigest,
-    attempt: Number(flag(args, "attempt", "1")),
-    parent_run_id: flag(args, "parent-run-id") ?? null,
-    identities,
-    lease: {
+  const sessionDefinition = campaignSessionContract(resolved, runId);
+  let resumeSourceManifest: CampaignSourceManifest | null = null;
+  if (resume) {
+    resumeSourceManifest = await readJson<CampaignSourceManifest>(
+      resolve(runRoot, "execution/source-manifest.json"),
+    );
+    await validateResumeSourceManifest(
+      resolved,
+      runRoot,
+      runId,
+      resumeSourceManifest,
+    );
+    const suppliedPlatform = flag(args, "platform");
+    if (
+      suppliedPlatform &&
+      suppliedPlatform !== resumeSourceManifest.platform
+    ) {
+      throw new CascadeError(
+        "campaign resume platform does not match the source manifest",
+      );
+    }
+  }
+  if (await isFile(resolve(runRoot, "finalization.json"))) {
+    throw new CascadeError(`campaign run ${runId} is already finalized`);
+  }
+  let leaseId: string;
+  if (resume) {
+    const currentLease = await artifactStore.readCurrentLease();
+    if (Date.now() < Date.parse(currentLease.expires_at)) {
+      leaseId = flag(args, "lease-id") ?? "";
+      if (leaseId !== currentLease.lease_id) {
+        throw new CascadeError(
+          "campaign resume requires the exact active --lease-id",
+        );
+      }
+    } else {
+      const suppliedRecovery = flag(args, "recovery");
+      if (suppliedRecovery !== identities.recovery.subject) {
+        throw new CascadeError(
+          "expired campaign resume requires the exact reserved --recovery identity",
+        );
+      }
+      leaseId = flag(
+        args,
+        "lease-id",
+        `recovery-${valueDigest({
+          run_id: runId,
+          previous_lease_id: currentLease.lease_id,
+          previous_generation: currentLease.generation,
+        }).slice(0, 32)}`,
+      )!;
+      const replacement = await artifactStore
+        .withAuthority(identities.recovery)
+        .takeoverExpiredLease({
+          lease_id: leaseId,
+          ttl_ms: sessionDefinition.lease_ttl_ms,
+          reason: flag(
+            args,
+            "recovery-reason",
+            "operator process ended before campaign finalization",
+          )!,
+        });
+      leaseId = replacement.lease_id;
+    }
+    artifactStore = artifactStore.withAuthority(identities.operator, leaseId);
+    await artifactStore.appendLifecycle({
+      status: "RESUMING",
+      at: utcNow(),
+      campaign_id: resolved.campaign.id,
+      operator_identity: identities.operator.subject,
       lease_id: leaseId,
-      owner_session_id: identities.operator.session_id,
-      acquired_at: leaseAcquiredAt.toISOString(),
-      expires_at: leaseExpiresAt.toISOString(),
-      recovery_mode: "FINALIZE_UNKNOWN_OUTCOME",
-    },
-  });
-  artifactStore = artifactStore.withAuthority(identities.operator, leaseId);
-  await artifactStore.appendLifecycle({
-    status: "RESERVED",
-    at: utcNow(),
-    campaign_id: resolved.campaign.id,
-    operator_identity: operatorIdentity,
-  });
+    });
+  } else {
+    const leaseAcquiredAt = new Date();
+    const leaseExpiresAt = new Date(
+      leaseAcquiredAt.getTime() + sessionDefinition.lease_ttl_ms,
+    );
+    leaseId = flag(args, "lease-id", crypto.randomUUID())!;
+    await artifactStore.reserve({
+      campaign_id: resolved.campaign.id,
+      campaign_digest: campaignDigest,
+      attempt: Number(flag(args, "attempt", "1")),
+      parent_run_id: flag(args, "parent-run-id") ?? null,
+      identities,
+      lease: {
+        lease_id: leaseId,
+        owner_session_id: identities.operator.session_id,
+        acquired_at: leaseAcquiredAt.toISOString(),
+        expires_at: leaseExpiresAt.toISOString(),
+        recovery_mode: "FINALIZE_UNKNOWN_OUTCOME",
+      },
+    });
+    artifactStore = artifactStore.withAuthority(identities.operator, leaseId);
+    await artifactStore.appendLifecycle({
+      status: "RESERVED",
+      at: utcNow(),
+      campaign_id: resolved.campaign.id,
+      operator_identity: identities.operator.subject,
+    });
+  }
+
+  const operatorIdentity = identities.operator.subject;
+  const evaluatorIdentity = identities.evaluator.subject;
+  const aggregatorIdentity = identities.aggregator.subject;
+  const targetActorIdentity = identities.target.subject;
+  const simulatorIdentity = identities.simulator.subject;
 
   const executionRoot = resolve(runRoot, "execution");
-  const frozenSources = await freezeSources(resolved, artifactStore, platform);
-  const repositorySource = await sourceRevision(resolved.sourceFiles);
-  const sourceManifest = {
-    schema_version: 1,
-    run_id: runId,
-    campaign_id: resolved.campaign.id,
-    platform,
-    source_revision: repositorySource.revision,
-    dirty_source: repositorySource.dirty,
-    definitions: resolved.sourceDigests,
-    frozen_sources: frozenSources,
-    source_digest: valueDigest(resolved.sourceDigests),
-  };
-  await artifactStore.writeStageJson(
-    "execution/source-manifest.json",
-    sourceManifest,
-  );
+  let sourceManifest: CampaignSourceManifest;
+  if (resume) {
+    sourceManifest = resumeSourceManifest!;
+  } else {
+    const platform = flag(args, "platform", process.platform)!;
+    if (!platform.trim()) {
+      throw new CascadeError("campaign platform must be non-empty");
+    }
+    const frozenSources = await freezeSources(resolved, artifactStore, platform);
+    const repositorySource = await sourceRevision(resolved.sourceFiles);
+    sourceManifest = {
+      schema_version: 1,
+      run_id: runId,
+      campaign_id: resolved.campaign.id,
+      platform,
+      source_revision: repositorySource.revision,
+      dirty_source: repositorySource.dirty,
+      definitions: resolved.sourceDigests,
+      frozen_sources: frozenSources,
+      source_digest: valueDigest(resolved.sourceDigests),
+    };
+    await artifactStore.writeStageJson(
+      "execution/source-manifest.json",
+      sourceManifest,
+    );
+  }
+  const platform = sourceManifest.platform;
   await artifactStore.appendLifecycle({
     status: "RUNNING",
     at: utcNow(),
@@ -2228,12 +3217,64 @@ async function commandRun(value: string, argv: string[]): Promise<number> {
   artifactStore = artifactStore.withSensitiveValues(
     Object.values(confirmationSecrets),
   );
-  const budgetUsage: CampaignPolicyBudgetUsage = {};
+  const resumeCheckpoint = resume
+    ? await artifactStore.readLatestSessionCheckpoint<CampaignSessionState>()
+    : null;
+  const budgetUsage = await restoreCampaignBudgetUsage(
+    resumeCheckpoint,
+    executionRoot,
+  );
 
-  const taskResults: TaskResult[] = [];
-  for (const task of resolved.tasks) {
-    taskResults.push(
-      await executeCampaignTask({
+  const sessionPersistence: SimulationSessionPersistence<CampaignSessionState> = {
+    appendEvent: (event) => artifactStore.appendSessionEvent(event),
+    writeCheckpoint: (checkpoint) =>
+      artifactStore.writeSessionCheckpoint(checkpoint),
+    readLatestCheckpoint: () => artifactStore.readLatestSessionCheckpoint(),
+    readEvents: () => artifactStore.readSessionEvents(),
+    heartbeat: async () => {
+      await artifactStore.renewLease(sessionDefinition.lease_ttl_ms);
+    },
+  };
+  const session = await runSimulationSession<
+    CampaignSessionState,
+    TaskDefinition,
+    TaskResult
+  >({
+    contract: sessionDefinition.contract,
+    initial_state: { task_results: [], budget_usage: {} },
+    surfaces: resolved.tasks.map((task) => campaignTaskSurface(task, runId)),
+    persistence: sessionPersistence,
+    resume,
+    async next_steps({ checkpoint }) {
+      if (
+        checkpoint.domain_state.budget_usage &&
+        !valuesEqual(checkpoint.domain_state.budget_usage, budgetUsage)
+      ) {
+        throw new CascadeError(
+          "campaign runtime policy budget usage diverged from its checkpoint",
+        );
+      }
+      const completed = new Set(
+        checkpoint.domain_state.task_results.map((result) => result.task_id),
+      );
+      return selectCampaignTaskBatch(
+        resolved.tasks,
+        completed,
+        sessionDefinition.contract.limits.max_parallel_steps,
+      ).map(
+        (task) => ({
+          step_id: `task:${task.id}`,
+          idempotency_key: `${runId}:task:${task.id}`,
+          surface_id: `task:${task.id}`,
+          conflict_keys: campaignTaskConflictKeys(task),
+          required: task.required,
+          payload: task,
+        }) satisfies SimulationSessionStep<TaskDefinition>,
+      );
+    },
+    async execute_step(step, context) {
+      const task = step.payload;
+      const result = await executeCampaignTask({
         resolved,
         task,
         task_root: resolve(executionRoot, "tasks", task.id),
@@ -2245,9 +3286,77 @@ async function commandRun(value: string, argv: string[]): Promise<number> {
         confirmation_secrets: confirmationSecrets,
         budget_usage: budgetUsage,
         artifact_store: artifactStore,
-      }),
-    );
-  }
+        signal: context.signal,
+      });
+      return {
+        step_id: step.step_id,
+        outcome: sessionStepOutcome(result),
+        reason: result.earliest_failure,
+        observation: result,
+        surface_updates: taskSurfaceUpdates(task, result),
+      } satisfies SimulationSessionStepResult<TaskResult>;
+    },
+    reduce_state(state, _step, result) {
+      const taskResult = result.observation;
+      if (!taskResult) {
+        throw new CascadeError(
+          `campaign session step lacks its persisted task result: ${result.step_id}`,
+        );
+      }
+      return {
+        task_results: [
+          ...state.task_results,
+          {
+            task_id: taskResult.task_id,
+            required: taskResult.required,
+            status: taskResult.status,
+            outcome: taskResult.outcome,
+            result_digest: valueDigest(taskResult),
+          },
+        ],
+        budget_usage: clone(budgetUsage),
+      };
+    },
+    async evaluate_goal({ checkpoint }) {
+      if (checkpoint.domain_state.task_results.length < resolved.tasks.length) {
+        return { status: "CONTINUE", reason: null };
+      }
+      const required = checkpoint.domain_state.task_results.filter(
+        (result) => result.required && result.status !== "PASS",
+      );
+      if (required.some((result) => result.status === "BLOCKED")) {
+        return {
+          status: "BLOCKED",
+          reason: required[0]?.task_id
+            ? `required campaign task blocked: ${required[0].task_id}`
+            : "required campaign task blocked",
+        };
+      }
+      if (required.length) {
+        return {
+          status: "FAILED",
+          reason: `required campaign task failed: ${required[0]!.task_id}`,
+        };
+      }
+      return {
+        status: "ACHIEVED",
+        reason: "all campaign tasks and required task oracles passed",
+      };
+    },
+  });
+  const taskResults = await Promise.all(
+    session.domain_state.task_results.map(async (summary) => {
+      const result = await readJson<TaskResult>(
+        resolve(executionRoot, "tasks", summary.task_id, "result.json"),
+      );
+      if (valueDigest(result) !== summary.result_digest) {
+        throw new CascadeError(
+          `campaign session task result digest mismatch: ${summary.task_id}`,
+        );
+      }
+      return result;
+    }),
+  );
   const requiredFailures = taskResults.filter(
     (task) => task.required && task.status !== "PASS",
   );
@@ -2255,7 +3364,14 @@ async function commandRun(value: string, argv: string[]): Promise<number> {
     (task) => task.status === "BLOCKED",
   );
   const cleanupVerified = taskResults.every((task) => task.cleanup.verified);
-  const executionReceipt = {
+  const sessionBlocked = new Set([
+    "BLOCKED",
+    "TIMED_OUT",
+    "BUDGET_EXHAUSTED",
+    "CANCELLED",
+    "UNKNOWN_OUTCOME",
+  ]).has(session.status);
+  const executionReceiptCandidate = {
     schema_version: 1,
     run_id: runId,
     campaign_id: resolved.campaign.id,
@@ -2275,31 +3391,50 @@ async function commandRun(value: string, argv: string[]): Promise<number> {
       result_digest: valueDigest(task),
     })),
     cleanup_verified: cleanupVerified,
+    session: {
+      status: session.status,
+      purpose: session.purpose,
+      episode_count: session.episode,
+      step_count: session.step_count,
+      checkpoint_digest: session.checkpoint_digest,
+      surfaces: session.surfaces,
+    },
     status:
-      requiredBlocked.length
+      sessionBlocked || requiredBlocked.length
         ? "BLOCKED"
-        : requiredFailures.length || !cleanupVerified
+        : session.status === "FAILED" || requiredFailures.length || !cleanupVerified
           ? "FAIL"
           : "PASS",
-    earliest_failure: requiredFailures[0]?.earliest_failure ?? null,
+    earliest_failure:
+      session.status === "ACHIEVED"
+        ? requiredFailures[0]?.earliest_failure ?? null
+        : session.reason,
     evidence_root: rel(executionRoot),
     created_at: utcNow(),
   };
-  await artifactStore.writeStageJson(
+  const executionReceipt = await persistOrReuseStageJson(
+    artifactStore,
+    runRoot,
     "execution/execution-receipt.json",
-    executionReceipt,
+    executionReceiptCandidate,
+    resume,
+    ["created_at"],
   );
   const executionReceiptDigest = valueDigest(executionReceipt);
 
-  const calibration = buildCalibrationReceipt(
+  let calibration = buildCalibrationReceipt(
     resolved,
     runId,
     aggregatorIdentity,
   );
   if (calibration) {
-    await artifactStore.writeStageJson(
+    calibration = await persistOrReuseStageJson(
+      artifactStore,
+      runRoot,
       `calibrations/${calibration.calibration_id}.json`,
       calibration,
+      resume,
+      ["created_at"],
     );
   }
   const mechanicalEvaluation = buildMechanicalEvaluation(
@@ -2328,7 +3463,29 @@ async function commandRun(value: string, argv: string[]): Promise<number> {
   let refinementProposals: PersonaRefinementProposal[] = [];
   let evaluationAttempt: string | null = null;
   let evaluationBlockedReason: string | null = null;
-  if (resolved.evaluationProfile.provider === "codex") {
+  const evaluationReceiptPath = `evaluations/${runId}-evaluation/receipt.json`;
+  if (resume && (await isFile(resolve(runRoot, evaluationReceiptPath)))) {
+    evaluation = await readJson<EvaluationReceipt>(
+      resolve(runRoot, evaluationReceiptPath),
+    );
+    assertEvaluationReceiptFresh(resolved, evaluationIdentity, evaluation);
+    const persistedAttempt = `evaluations/${runId}-evaluation/attempt.json`;
+    evaluationAttempt = (await isFile(resolve(runRoot, persistedAttempt)))
+      ? persistedAttempt
+      : null;
+  } else if (
+    resume &&
+    resolved.evaluationProfile.provider === "codex" &&
+    (await walkFiles(resolve(runRoot, `evaluations/${runId}-evaluation`))).length
+  ) {
+    evaluation = null;
+    const persistedAttempt = `evaluations/${runId}-evaluation/attempt.json`;
+    evaluationAttempt = (await isFile(resolve(runRoot, persistedAttempt)))
+      ? persistedAttempt
+      : null;
+    evaluationBlockedReason =
+      "a prior Codex evaluation attempt has no durable receipt; automatic provider replay is forbidden";
+  } else if (resolved.evaluationProfile.provider === "codex") {
     const result = await runCodexEvaluation(
       resolved,
       runRoot,
@@ -2346,9 +3503,13 @@ async function commandRun(value: string, argv: string[]): Promise<number> {
       evaluationIdentity,
       mechanicalEvaluation,
     );
-    await artifactStore.writeStageJson(
+    evaluation = await persistOrReuseStageJson(
+      artifactStore,
+      runRoot,
       `evaluations/${evaluation.evaluation_id}/receipt.json`,
       evaluation,
+      resume,
+      ["created_at"],
     );
   }
   if (!evaluation) {
@@ -2371,7 +3532,14 @@ async function commandRun(value: string, argv: string[]): Promise<number> {
       aggregation_receipt_digest: null,
       completed_at: utcNow(),
     };
-    await artifactStore.writeStageJson("summary.json", blockedSummary);
+    await persistOrReuseStageJson(
+      artifactStore,
+      runRoot,
+      "summary.json",
+      blockedSummary,
+      resume,
+      ["completed_at"],
+    );
     await artifactStore.appendLifecycle({
       status: "BLOCKED",
       at: utcNow(),
@@ -2397,7 +3565,7 @@ async function commandRun(value: string, argv: string[]): Promise<number> {
       proposal,
     );
   }
-  const aggregation = buildAggregationReceipt(
+  const aggregationCandidate = buildAggregationReceipt(
     resolved,
     runId,
     aggregatorIdentity,
@@ -2405,9 +3573,13 @@ async function commandRun(value: string, argv: string[]): Promise<number> {
     evaluation,
     calibration,
   );
-  await artifactStore.writeStageJson(
-    `aggregations/${aggregation.aggregation_id}.json`,
-    aggregation,
+  const aggregation = await persistOrReuseStageJson(
+    artifactStore,
+    runRoot,
+    `aggregations/${aggregationCandidate.aggregation_id}.json`,
+    aggregationCandidate,
+    resume,
+    ["created_at"],
   );
   const summary = {
     schema_version: 1,
@@ -2436,24 +3608,31 @@ async function commandRun(value: string, argv: string[]): Promise<number> {
     aggregation_receipt_digest: valueDigest(aggregation),
     completed_at: utcNow(),
   };
-  await artifactStore.writeStageJson("summary.json", summary);
+  const persistedSummary = await persistOrReuseStageJson(
+    artifactStore,
+    runRoot,
+    "summary.json",
+    summary,
+    resume,
+    ["completed_at"],
+  );
   await artifactStore.appendLifecycle({
     status: "COMPLETED",
     at: utcNow(),
-    campaign_status: summary.campaign_status,
-    release_eligible: summary.release_eligible,
+    campaign_status: persistedSummary.campaign_status,
+    release_eligible: persistedSummary.release_eligible,
   });
   await artifactStore.finalize({
     status: "COMPLETED",
     finalized_by: identities.operator,
   });
   console.log(
-    `campaign_status=${summary.campaign_status} campaign=${resolved.campaign.id} ` +
+    `campaign_status=${persistedSummary.campaign_status} campaign=${resolved.campaign.id} ` +
       `run=${runId} calibration=${summary.calibration_status} ` +
       `evaluation=${summary.evaluation_status}/${summary.evaluation_provider} ` +
       `release_eligible=${summary.release_eligible} output=${rel(runRoot)}`,
   );
-  return summary.campaign_status === "PASS" ? 0 : 1;
+  return persistedSummary.campaign_status === "PASS" ? 0 : 1;
 }
 
 async function commandVerify(runId: string): Promise<number> {
@@ -2506,6 +3685,7 @@ export async function main(argv: string[]): Promise<number> {
   if (command === "catalog") return commandCatalog([...(value ? [value] : []), ...rest]);
   if (command === "validate" && value) return commandValidate(value);
   if (command === "run" && value) return commandRun(value, rest);
+  if (command === "resume" && value) return commandRun(value, rest, true);
   if (command === "verify" && value) return commandVerify(value);
   if (command === "self-test") return commandSelfTest();
   console.log(`Usage:
@@ -2514,6 +3694,9 @@ export async function main(argv: string[]): Promise<number> {
   bun scripts/cascade.ts campaign validate <campaign-id-or-path>
   bun scripts/cascade.ts campaign run <campaign-id-or-path> [--run-id ID]
     [--attempt N] [--parent-run-id ID] [--lease-id ID]
+    [--platform NAME] [--confirmation-receipt PATH]
+  bun scripts/cascade.ts campaign resume <run-id> --lease-id ID
+    [--recovery SUBJECT] [--recovery-reason TEXT]
     [--platform NAME] [--confirmation-receipt PATH]
   bun scripts/cascade.ts campaign verify <run-id>
   bun scripts/cascade.ts campaign self-test

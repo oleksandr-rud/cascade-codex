@@ -1,0 +1,83 @@
+schema_version: 1
+brief_id: PB-001
+revision: 1
+status: reviewed
+title: Governed Persona-Derived Simulation
+catalog_path: docs/product/catalog.yaml
+domain_id: PD-001
+capability_id: PC-001
+coverage_mode: complete
+purpose: Assemble the current product, evidence, simulation-authority, and reusable-rule context for planning or reviewing persona-derived simulation work.
+audiences:
+  - Cascade maintainers
+  - product researchers
+  - simulation authors and evaluators
+product_refs:
+  requirement_ids: [PR-001, PR-002, PR-003, PR-004, PR-005]
+  journey_ids: []
+  scenario_ids: [PS-001, PS-002, PS-003, PS-004, PS-005]
+  persona_ids: []
+omissions: []
+source_documents:
+  - docs/specs/persona-simulation-governance/contract.md
+  - docs/product/personas/_index.md
+  - docs/specs/product-context-briefs/contract.md
+evidence:
+  - id: EVD-001
+    kind: peer-reviewed-research
+    authority: methodological
+    title: Evaluating Large Language Models as Generative User Simulators for Conversational Recommendation
+    url: https://aclanthology.org/2024.naacl-long.83/
+    reference_date: 2024-06-01
+    supports: [PSG-002, PSG-003, PCB-003]
+    limitations: Domain-specific simulator evaluation does not establish a Cascade target persona or universal behavioral validity.
+    status: reviewed
+  - id: EVD-002
+    kind: peer-reviewed-research
+    authority: methodological
+    title: SimulatorArena - Are User Simulators Reliable Proxies for Multi-Turn Evaluation of AI Assistants?
+    url: https://aclanthology.org/2025.emnlp-main.1786/
+    reference_date: 2025-11-01
+    supports: [PSG-001, PSG-002, PCB-003]
+    limitations: Task-specific alignment against annotated conversations does not authorize uncalibrated reuse in another product domain.
+    status: reviewed
+  - id: EVD-003
+    kind: primary-research
+    authority: methodological
+    title: Generative Agent Simulations of 1,000 People
+    url: https://arxiv.org/abs/2411.10109
+    reference_date: 2024-11-15
+    supports: [PSG-001, PSG-003, PCB-003]
+    limitations: Interview-grounded survey and experiment replication is not a substitute for target-product research or persona review.
+    status: reviewed
+  - id: EVD-004
+    kind: primary-research
+    authority: methodological
+    title: Lost in Simulation - LLM-Simulated Users are Unreliable Proxies for Human Users in Agentic Evaluations
+    url: https://arxiv.org/abs/2601.17087
+    reference_date: 2026-01-23
+    supports: [PSG-003, PSG-004, PCB-003]
+    limitations: One benchmark identifies robustness, calibration, and fairness risks but does not quantify every target domain.
+    status: reviewed
+pattern_context:
+  - pack_id: product-context-core
+    section_ids: [product-authority-graph, brief-manifest-and-compilation, evidence-promotion-boundary, simulation-feedback-bridge]
+  - pack_id: context-memory-core
+    section_ids: [semantic-core-packages]
+  - pack_id: testing-core
+    section_ids: [scenario-tests]
+simulation_context:
+  - path: product-evals/simulations/harness/simulation-correctness-fixture/manifest.json
+    scope: harness-simulation
+    authority: mechanics-only
+    status: authored
+    purpose: Proves deterministic schema and runtime mechanics only; it is not product or persona evidence.
+gaps:
+  - No reviewed non-fixture product persona or governed target-user evidence is currently available.
+  - No target-product simulation, human calibration set, or executed product evidence is currently available.
+non_goals:
+  - Infer or fabricate P-001.
+  - Treat harness fixtures or synthetic agreement as product-persona validation.
+  - Estimate population prevalence from test-allocation weights.
+  - Mutate a product persona from a generated brief or simulation proposal.
+output_path: docs/specs/persona-simulation-governance/brief.generated.md

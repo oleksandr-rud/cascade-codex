@@ -12,7 +12,7 @@ repair a failing skill, or claim calibration without human-labeled evidence.
 ## Source Order
 
 1. Evaluation objective, risk, decision, and requested effectiveness claims.
-2. Existing `evals/harness/judge-profiles.json`, rubrics, response schema, and
+2. Existing `harness-evals/judge-profiles.json`, rubrics, response schema, and
    calibration evidence when present.
 3. Representative target prompts, traces, outputs, failure reports, and
    protected mechanical contracts.

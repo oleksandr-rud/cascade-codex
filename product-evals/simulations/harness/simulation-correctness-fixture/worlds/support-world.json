@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "id": "support-world-v1",
+  "fixture_file": "product-evals/simulations/harness/simulation-correctness-fixture/worlds/support-world.fixture.json",
+  "allowed_actions": [
+    "assert",
+    "set",
+    "increment",
+    "deny",
+    "fail"
+  ],
+  "negative_behaviors": [
+    "unknown actions are denied by default",
+    "state assertions fail on mismatched values",
+    "non-numeric increments fail without mutation"
+  ],
+  "cleanup": {
+    "reset_to_fixture": true
+  }
+}

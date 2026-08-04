@@ -1,0 +1,90 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://cascade.local/schemas/simulation.schema.json",
+  "title": "Cascade simulation definition",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "id",
+    "simulation_scope",
+    "title",
+    "population_files",
+    "scenario_files",
+    "world_file",
+    "dataset_file",
+    "metric_files",
+    "treatment_files"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9.-]+$"
+    },
+    "simulation_scope": {
+      "enum": [
+        "harness",
+        "product"
+      ]
+    },
+    "title": {
+      "type": "string",
+      "minLength": 1
+    },
+    "purpose": {
+      "type": "string",
+      "minLength": 1
+    },
+    "population_files": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "pattern": "^product-evals/simulations/(harness|product)/.+/populations/.+\\.json$"
+      }
+    },
+    "scenario_files": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "pattern": "^product-evals/simulations/(harness|product)/.+/scenarios/.+\\.json$"
+      }
+    },
+    "world_file": {
+      "type": "string",
+      "pattern": "^product-evals/simulations/(harness|product)/.+/worlds/.+\\.json$"
+    },
+    "dataset_file": {
+      "type": "string",
+      "pattern": "^product-evals/simulations/(harness|product)/.+/datasets/.+\\.json$"
+    },
+    "metric_files": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "pattern": "^product-evals/metrics/.+\\.json$"
+      }
+    },
+    "treatment_files": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "pattern": "^product-evals/treatments/.+\\.json$"
+      }
+    },
+    "calibration_file": {
+      "type": "string",
+      "pattern": "^product-evals/calibrations/.+\\.json$"
+    }
+  }
+}

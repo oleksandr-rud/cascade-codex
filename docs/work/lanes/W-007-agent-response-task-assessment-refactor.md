@@ -70,7 +70,7 @@ Out:
 |---|---|---|---|
 | Annotation 1 | current response annotation | standalone versus Cascade requirement | current |
 | Program | W-004 Gate A and program report | common task/result contract | pending canonical gate |
-| Existing eval | `scripts/cascade/evals.ts`; `evals/harness/` | Codex trace, grading, catalog, and self-test coverage | current checkout |
+| Existing eval | `scripts/cascade/evals.ts`; `harness-evals/` | Codex trace, grading, catalog, and self-test coverage | current checkout |
 | Candidate | branch `scripts/cascade/evals.ts`; campaign task kind | Bun/Codex adapter candidate | candidate branch snapshot |
 | W-001 | lane and report | current regression and evidence rules | executed snapshot |
 
@@ -161,6 +161,11 @@ standalone-agent or Cascade-harness canaries.
    linkage to W-012; preserve agent and surface task results separately.
 
 ## Parallel Dependencies
+
+Product-scoped agent-response campaigns additionally require accepted
+`WG-001-N18` / W-032 intake readiness before any operator run. Harness-only
+agent-response fixtures preserve their harness-evaluator boundary and do not
+inherit product-brief authority.
 
 - Can run with: W-005 and W-006 after W-004 Gate A.
 - Must wait for: W-004 Gate A and a fixed current harness catalog.

@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "id": "fixture-population-coverage",
+  "class": "coverage",
+  "assertion": "The framework calibration contains the required standard and risk slices for every declared treatment.",
+  "scope": {
+    "population_id": "support-actors-v2",
+    "dataset_id": "support-cases-v1"
+  },
+  "population_authority": "persona-derived",
+  "required_policy_ids": [],
+  "required_oracle_ids": [
+    "account-resolved-v1"
+  ],
+  "required_metric_ids": [
+    "task-success-v1"
+  ],
+  "requires_calibration": false,
+  "evidence_requirements": [
+    "source-manifest",
+    "execution-receipt",
+    "oracle",
+    "calibration-receipt"
+  ]
+}

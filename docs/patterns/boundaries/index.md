@@ -17,8 +17,8 @@ Current scaffold boundaries:
 | UI/features | none yet | Project maintainers | Add source roots and ownership when application implementation starts. |
 | State/store | `docs/work/` | Project maintainers | Active work state, lane packets, examples, and reports. |
 | External adapters | `.codex/config.toml` | Project maintainers | MCP server configuration and future tool integrations. |
-| Generated catalogs | `evals/harness/scenarios.generated.json`; `evals/campaigns/catalog.generated.json` | Harness evaluators and campaign tooling | Tracked generated registries must match current sources and fail stale checks. |
-| Ignored run artifacts | `.artifacts/harness-evals/`; `.artifacts/campaigns/` | Harness and simulation runners | Append-only local evidence; never use mutable external paths as the sole evidence authority. |
+| Generated catalogs | `harness-evals/scenarios.generated.json`; `product-evals/campaigns/catalog.generated.json` | Harness evaluators and campaign tooling | Tracked generated registries must match current sources and fail stale checks. |
+| Ignored run artifacts | `.artifacts/harness-evals/`; `.artifacts/product-evals/` | Harness and product-evaluation runners | Append-only local evidence; never use mutable external paths as the sole evidence authority. Historical `.artifacts/campaigns/` runs are retained, not rewritten. |
 
 ## Reference Architecture Defaults
 
@@ -129,6 +129,31 @@ Rules:
 - Retries, idempotency keys, rate limits, and timeouts are explicit.
 - Do not add an adapter abstraction until there is real variation or the
   provider boundary is costly to test directly.
+
+## Multi-Surface Simulation Sessions
+
+One simulation purpose may coordinate command, HTTP, terminal, browser,
+desktop, mobile, and agent-response surfaces through a shared session
+controller. The controller owns goal state, budgets, episode rollover,
+surface identity, dispatch ordering, checkpoints, and terminal status. Each
+surface adapter still owns its driver-specific execution, observations,
+permissions, oracle inputs, and cleanup.
+
+- Treat a surface as a stable logical identity with contour, context/window,
+  current screen, lifecycle, and generation; a screenshot is evidence, not
+  the surface identity.
+- Journal dispatch before execution and durably checkpoint the resulting state
+  before acknowledging completion.
+- Resume only a verified completed checkpoint under valid authority. An
+  unmatched dispatched action is `UNKNOWN_OUTCOME` and is never replayed.
+- Permit parallel steps only when both surface IDs and declared conflict keys
+  are disjoint. Otherwise serialize them.
+- Roll long trajectories into bounded episodes and persistence segments,
+  renew the execution lease between bounded steps, and enforce finite total
+  duration, per-step duration, total-step, per-episode, parallelism, surface-
+  cardinality, and checkpoint-size limits.
+- Let required deterministic goal oracles establish `ACHIEVED`. Driver
+  completion and synthetic-actor assertions are observations, not success.
 
 ## Agentic Runtime Invariant
 

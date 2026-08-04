@@ -1,0 +1,190 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://cascade.local/schemas/simulation-policy.schema.json",
+  "title": "Cascade simulation policy",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "id",
+    "version",
+    "effect",
+    "scope",
+    "budgets",
+    "redaction_profile",
+    "reason"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": 2
+    },
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9.-]+$"
+    },
+    "version": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+    },
+    "effect": {
+      "enum": [
+        "ALLOW",
+        "DENY",
+        "REQUIRE_CONFIRMATION"
+      ]
+    },
+    "scope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "campaign_ids",
+        "task_ids",
+        "task_kinds",
+        "driver_types",
+        "action_types"
+      ],
+      "properties": {
+        "campaign_ids": {
+          "$ref": "#/$defs/nonEmptyUniqueStrings"
+        },
+        "task_ids": {
+          "$ref": "#/$defs/nonEmptyUniqueStrings"
+        },
+        "task_kinds": {
+          "$ref": "#/$defs/nonEmptyUniqueStrings"
+        },
+        "driver_types": {
+          "$ref": "#/$defs/nonEmptyUniqueStrings"
+        },
+        "action_types": {
+          "$ref": "#/$defs/nonEmptyUniqueStrings"
+        },
+        "action_paths": {
+          "$ref": "#/$defs/nonEmptyUniqueStrings"
+        },
+        "command_prefix": {
+          "$ref": "#/$defs/nonEmptyUniqueStrings"
+        },
+        "http_methods": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "enum": [
+              "GET",
+              "POST",
+              "PUT",
+              "PATCH",
+              "DELETE",
+              "HEAD",
+              "OPTIONS"
+            ]
+          }
+        },
+        "http_origins": {
+          "$ref": "#/$defs/nonEmptyUniqueStrings"
+        }
+      }
+    },
+    "budgets": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "required_dimensions",
+        "max_actions",
+        "max_output_bytes"
+      ],
+      "properties": {
+        "required_dimensions": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "enum": [
+              "action_count",
+              "output_bytes",
+              "token_count",
+              "cost_usd"
+            ]
+          }
+        },
+        "max_actions": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "max_output_bytes": {
+          "type": "integer",
+          "minimum": 1
+        }
+      }
+    },
+    "redaction_profile": {
+      "enum": [
+        "no-secrets-v1",
+        "source-code-v1"
+      ]
+    },
+    "confirmation_authority": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "key_id",
+        "secret_env",
+        "allowed_confirmers"
+      ],
+      "properties": {
+        "key_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "secret_env": {
+          "type": "string",
+          "pattern": "^[A-Z][A-Z0-9_]+$"
+        },
+        "allowed_confirmers": {
+          "$ref": "#/$defs/nonEmptyUniqueStrings"
+        }
+      }
+    },
+    "reason": {
+      "type": "string",
+      "minLength": 1
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "effect": {
+            "const": "REQUIRE_CONFIRMATION"
+          }
+        },
+        "required": [
+          "effect"
+        ]
+      },
+      "then": {
+        "required": [
+          "confirmation_authority"
+        ]
+      },
+      "else": {
+        "not": {
+          "required": [
+            "confirmation_authority"
+          ]
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "nonEmptyUniqueStrings": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    }
+  }
+}

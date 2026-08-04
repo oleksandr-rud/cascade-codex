@@ -8,6 +8,7 @@ import {
   rel,
   rootPath,
   sha256File,
+  sha256Text,
   stableJson,
 } from "./common";
 import {
@@ -21,6 +22,7 @@ import {
 
 export type TaskKind =
   | "command"
+  | "http"
   | "terminal"
   | "browser"
   | "desktop"
@@ -30,6 +32,7 @@ export type TaskKind =
 export type DriverType =
   | "fake"
   | "direct-process"
+  | "http-client"
   | "pty"
   | "playwright"
   | "platform-automation"
@@ -37,6 +40,7 @@ export type DriverType =
   | "agent-runtime";
 
 export type CampaignStatus = "PASS" | "FAIL" | "BLOCKED" | "NOT_RUN" | "GAP";
+export type SimulationScope = "harness" | "product";
 export type ClaimStatus =
   | "SUPPORTED"
   | "PARTIALLY_SUPPORTED"
@@ -65,12 +69,72 @@ export interface CampaignDefinition {
     | "controlled-integration"
     | "platform-canary"
     | "semantic-evaluation";
+  session?: {
+    max_duration_ms: number;
+    max_step_duration_ms: number;
+    max_steps: number;
+    max_parallel_steps: number;
+    max_steps_per_episode: number;
+    max_surfaces: number;
+    max_checkpoint_bytes: number;
+    lease_ttl_ms: number;
+  };
   evaluation_profile_file: string;
   simulation_file: string;
   task_files: string[];
   claim_files: string[];
   policy_files: string[];
   oracle_files: string[];
+  intake_file?: string;
+}
+
+export interface SimulationIntakeDefinition {
+  schema_version: 1;
+  artifact_type: "cascade-simulation-intake";
+  id: string;
+  status: "DRAFT" | "READY" | "BLOCKED";
+  scope: SimulationScope;
+  campaign_id: string;
+  produced_at: string;
+  task_envelope: null | {
+    path: string;
+    envelope_id: string;
+    revision: number;
+    sha256: string;
+  };
+  product_context: null | {
+    brief_path: string;
+    brief_id: string;
+    revision: number;
+    sha256: string;
+    output_path: string;
+    output_sha256: string;
+    domain_id: string;
+    capability_id: string;
+    product_refs: Record<string, string[]>;
+  };
+  claims: Array<{
+    claim_id: string;
+    source_claim_id: string;
+    statement: string;
+    status: string;
+    policy_tags: string[];
+  }>;
+  tasks: Array<{
+    task_id: string;
+    declared_policy_ids: string[];
+    applicable_policy_ids: string[];
+    actions: Array<{
+      action_index: number;
+      action_digest: string;
+      applicable_policy_ids: string[];
+      policy_digests: string[];
+      decision: "ALLOW" | "DENY" | "REQUIRE_CONFIRMATION" | "GAP" | "AMBIGUOUS";
+    }>;
+  }>;
+  blockers: string[];
+  gaps: string[];
+  invalidation: string[];
 }
 
 export interface EvaluationProfileDefinition {
@@ -94,6 +158,7 @@ export interface RubricDefinition {
 export interface SimulationDefinition {
   schema_version: 1;
   id: string;
+  simulation_scope: SimulationScope;
   title: string;
   purpose?: string;
   population_files: string[];
@@ -240,6 +305,56 @@ export interface TaskAction {
   reason?: string;
 }
 
+export type HttpMethod =
+  | "GET"
+  | "POST"
+  | "PUT"
+  | "PATCH"
+  | "DELETE"
+  | "HEAD"
+  | "OPTIONS";
+
+export interface HttpRequestDefinition {
+  method: HttpMethod;
+  url: string;
+  headers?: Record<string, string>;
+  body?: string;
+}
+
+export interface ProcessExecAction {
+  type: "process-exec";
+  argv: string[];
+}
+
+export interface HttpRequestAction {
+  type: "http-request";
+  method: HttpMethod;
+  url: string;
+  headers?: Record<string, string>;
+  body?: string;
+}
+
+export type SimulationAction =
+  | TaskAction
+  | ProcessExecAction
+  | HttpRequestAction;
+
+export function taskPolicyActions(task: TaskDefinition): SimulationAction[] {
+  if (task.driver.type === "direct-process") {
+    return [{ type: "process-exec", argv: task.command ?? [] }];
+  }
+  if (task.driver.type === "http-client") {
+    return [{
+      type: "http-request",
+      method: task.request!.method,
+      url: task.request!.url,
+      headers: task.request!.headers,
+      body: task.request!.body,
+    }];
+  }
+  return task.actions ?? [];
+}
+
 export interface TaskDefinition {
   schema_version: 1;
   id: string;
@@ -248,6 +363,7 @@ export interface TaskDefinition {
   required: boolean;
   timeout_ms: number;
   command?: string[];
+  request?: HttpRequestDefinition;
   actions?: TaskAction[];
   inputs?: string[];
   evidence?: string[];
@@ -268,11 +384,30 @@ export interface ClaimDefinition {
     | "release-eligibility";
   assertion: string;
   scope: Record<string, unknown>;
+  population_authority: "none" | "persona-derived" | "estimated-prevalence";
   required_policy_ids: string[];
   required_oracle_ids: string[];
   required_metric_ids: string[];
   requires_calibration: boolean;
   evidence_requirements: string[];
+}
+
+export interface SimulationArtifactPolicy {
+  schema_version: 1;
+  artifact_root: ".artifacts/product-evals";
+  storage_mode: "local-append-only";
+  source_material_mode: "digest-and-minimized-metadata-only";
+  raw_sensitive_material_allowed: false;
+  encryption_at_rest: "host-filesystem-required";
+  access_scope: "maintainers-only";
+  operator_attestation: "required-for-restricted";
+  retention: {
+    mode: "manual-review";
+    review_after_days: number;
+    deletion_owner: string;
+  };
+  remote_storage: "disabled";
+  export: "disabled";
 }
 
 export interface PolicyDefinition {
@@ -288,6 +423,8 @@ export interface PolicyDefinition {
     action_types: string[];
     action_paths?: string[];
     command_prefix?: string[];
+    http_methods?: HttpMethod[];
+    http_origins?: string[];
   };
   budgets: {
     required_dimensions: Array<
@@ -310,7 +447,7 @@ export interface PolicyObservation {
   task_id: string;
   task_kind: string;
   driver_type: string;
-  action: TaskAction | { type: "process-exec"; argv: string[] };
+  action: SimulationAction;
 }
 
 export function policyAppliesToObservation(
@@ -340,16 +477,34 @@ export function policyAppliesToObservation(
   ) {
     return false;
   }
+  if (
+    scope.http_methods &&
+    (!("method" in observation.action) ||
+      !scope.http_methods.includes(observation.action.method))
+  ) {
+    return false;
+  }
+  if (scope.http_origins) {
+    if (!("url" in observation.action)) return false;
+    let origin: string;
+    try {
+      origin = new URL(observation.action.url).origin;
+    } catch {
+      return false;
+    }
+    if (!scope.http_origins.includes(origin)) return false;
+  }
   return true;
 }
 
 export interface OracleDefinition {
   schema_version: 1;
   id: string;
-  type: "state-equals" | "exit-code" | "file-exists";
+  type: "state-equals" | "exit-code" | "file-exists" | "http-status";
   path?: string;
   expected?: unknown;
   expected_exit_code?: number;
+  expected_status?: number;
   file?: string;
 }
 
@@ -372,8 +527,10 @@ export interface ResolvedCampaign {
   referenceScores: ScoreRow[];
   tasks: TaskDefinition[];
   claims: ClaimDefinition[];
+  artifactPolicy: SimulationArtifactPolicy;
   policies: PolicyDefinition[];
   oracles: OracleDefinition[];
+  intake?: SimulationIntakeDefinition;
   sourceFiles: string[];
   sourceDigests: Array<{ path: string; sha256: string }>;
 }
@@ -488,8 +645,80 @@ function validateCampaign(
   if (!tiers.has(requireString(value, "tier", label))) {
     throw new CascadeError(`${label}.tier is invalid`);
   }
+  if (value.session !== undefined) {
+    const session = objectValue(value.session, `${label}.session`);
+    const keys = [
+      "max_duration_ms",
+      "max_step_duration_ms",
+      "max_steps",
+      "max_parallel_steps",
+      "max_steps_per_episode",
+      "max_surfaces",
+      "max_checkpoint_bytes",
+      "lease_ttl_ms",
+    ] as const;
+    const unknown = Object.keys(session).filter(
+      (key) => !keys.includes(key as (typeof keys)[number]),
+    );
+    if (unknown.length) {
+      throw new CascadeError(
+        `${label}.session has unknown fields: ${unknown.sort().join(", ")}`,
+      );
+    }
+    for (const key of keys) {
+      if (!Number.isSafeInteger(session[key]) || Number(session[key]) < 1) {
+        throw new CascadeError(`${label}.session.${key} must be a positive safe integer`);
+      }
+    }
+    if (Number(session.max_steps) > 1_000_000) {
+      throw new CascadeError(`${label}.session.max_steps exceeds 1000000`);
+    }
+    if (Number(session.max_parallel_steps) > 64) {
+      throw new CascadeError(`${label}.session.max_parallel_steps exceeds 64`);
+    }
+    if (Number(session.max_surfaces) > 10_000) {
+      throw new CascadeError(`${label}.session.max_surfaces exceeds 10000`);
+    }
+    if (
+      Number(session.max_steps_per_episode) > 10_000
+    ) {
+      throw new CascadeError(`${label}.session episode bound exceeds 10000`);
+    }
+    if (
+      Number(session.max_checkpoint_bytes) < 1_024 ||
+      Number(session.max_checkpoint_bytes) > 10 * 1_024 * 1_024
+    ) {
+      throw new CascadeError(
+        `${label}.session.max_checkpoint_bytes must be between 1024 and 10485760`,
+      );
+    }
+    if (
+      Number(session.lease_ttl_ms) < 1_000 ||
+      Number(session.lease_ttl_ms) > 24 * 60 * 60 * 1_000
+    ) {
+      throw new CascadeError(
+        `${label}.session.lease_ttl_ms must be between 1000 and 86400000`,
+      );
+    }
+    if (Number(session.max_parallel_steps) > Number(session.max_steps)) {
+      throw new CascadeError(
+        `${label}.session.max_parallel_steps cannot exceed max_steps`,
+      );
+    }
+    if (Number(session.max_steps_per_episode) > Number(session.max_steps)) {
+      throw new CascadeError(
+        `${label}.session.max_steps_per_episode cannot exceed max_steps`,
+      );
+    }
+    if (Number(session.max_step_duration_ms) > Number(session.max_duration_ms)) {
+      throw new CascadeError(
+        `${label}.session.max_step_duration_ms cannot exceed max_duration_ms`,
+      );
+    }
+  }
   requireString(value, "evaluation_profile_file", label);
   requireString(value, "simulation_file", label);
+  if (value.intake_file !== undefined) requireString(value, "intake_file", label);
   for (const key of [
     "task_files",
     "claim_files",
@@ -506,6 +735,117 @@ function validateCampaign(
   }
   if (!requireArray(value, "oracle_files", label).length) {
     throw new CascadeError(`${label}.oracle_files must not be empty`);
+  }
+}
+
+export function validateSimulationIntake(
+  value: Record<string, unknown>,
+  label: string,
+): void {
+  if (value.schema_version !== 1 || value.artifact_type !== "cascade-simulation-intake") {
+    throw new CascadeError(`${label} simulation intake identity is invalid`);
+  }
+  if (!/^SI-[a-f0-9]{16}$/.test(requireString(value, "id", label))) {
+    throw new CascadeError(`${label}.id is invalid`);
+  }
+  if (!new Set(["DRAFT", "READY", "BLOCKED"]).has(requireString(value, "status", label))) {
+    throw new CascadeError(`${label}.status is invalid`);
+  }
+  const scope = requireString(value, "scope", label);
+  if (!new Set(["harness", "product"]).has(scope)) {
+    throw new CascadeError(`${label}.scope is invalid`);
+  }
+  assertId(requireString(value, "campaign_id", label), `${label}.campaign_id`);
+  if (Number.isNaN(Date.parse(requireString(value, "produced_at", label)))) {
+    throw new CascadeError(`${label}.produced_at is invalid`);
+  }
+  for (const key of ["claims", "tasks", "blockers", "gaps", "invalidation"] as const) {
+    requireArray(value, key, label);
+  }
+  if (value.status === "READY" && value.blockers instanceof Array && value.blockers.length) {
+    throw new CascadeError(`${label} READY intake cannot contain blockers`);
+  }
+  if (value.status === "READY" && !value.task_envelope) {
+    throw new CascadeError(`${label} READY intake requires a task envelope`);
+  }
+  if (value.scope === "product" && value.status === "READY" && !value.product_context) {
+    throw new CascadeError(`${label} READY product intake requires product context`);
+  }
+  if (value.scope === "harness" && value.product_context !== null) {
+    throw new CascadeError(`${label} harness intake cannot bind product context`);
+  }
+  if (value.task_envelope !== null) {
+    const envelope = objectValue(value.task_envelope, `${label}.task_envelope`);
+    const envelopeId = requireString(envelope, "envelope_id", label);
+    const envelopePath = requireString(envelope, "path", label);
+    if (envelopePath !== `product-evals/intakes/${scope}/task-envelopes/${envelopeId}.json`) {
+      throw new CascadeError(`${label}.task_envelope.path is outside the intake source boundary`);
+    }
+    if (!/^TE-[a-f0-9]{16}$/.test(envelopeId) ||
+      !Number.isInteger(envelope.revision) || Number(envelope.revision) < 1 ||
+      !DIGEST.test(requireString(envelope, "sha256", label))) {
+      throw new CascadeError(`${label}.task_envelope binding is invalid`);
+    }
+  }
+  if (value.product_context !== null) {
+    const context = objectValue(value.product_context, `${label}.product_context`);
+    if (!/^docs\/specs\/.+\/brief\.yaml$/.test(requireString(context, "brief_path", label)) ||
+      !/^PB-[0-9]{3}$/.test(requireString(context, "brief_id", label)) ||
+      !DIGEST.test(requireString(context, "sha256", label)) ||
+      !/^docs\/specs\/.+\/brief\.generated\.md$/.test(requireString(context, "output_path", label)) ||
+      !DIGEST.test(requireString(context, "output_sha256", label))) {
+      throw new CascadeError(`${label}.product_context binding is invalid`);
+    }
+  }
+  const claims = value.claims as Array<Record<string, unknown>>;
+  uniqueStrings(claims.map((claim) => requireString(claim, "claim_id", label)), `${label}.claim_id`);
+  uniqueStrings(claims.map((claim) => requireString(claim, "source_claim_id", label)), `${label}.source_claim_id`);
+  for (const claim of claims) {
+    if (!new Set(["PROVIDED", "VERIFIED", "INFERRED", "UNKNOWN", "CONFLICTING"]).has(requireString(claim, "status", label))) {
+      throw new CascadeError(`${label} claim status is invalid`);
+    }
+    uniqueStrings(requireArray<string>(claim, "policy_tags", label), `${label}.claim policy tags`);
+  }
+  const tasks = value.tasks as Array<Record<string, unknown>>;
+  uniqueStrings(tasks.map((task) => requireString(task, "task_id", label)), `${label}.task_id`);
+  for (const task of tasks) {
+    requireString(task, "task_id", label);
+    const declaredPolicyIds = requireArray<string>(task, "declared_policy_ids", label);
+    const applicablePolicyIds = requireArray<string>(task, "applicable_policy_ids", label);
+    uniqueStrings(declaredPolicyIds, `${label}.declared_policy_ids`);
+    uniqueStrings(applicablePolicyIds, `${label}.applicable_policy_ids`);
+    if (value.status === "READY" && stableJson([...declaredPolicyIds].sort()) !== stableJson([...applicablePolicyIds].sort())) {
+      throw new CascadeError(`${label} READY intake declared and applicable policy sets differ`);
+    }
+    const actions = requireArray<Record<string, unknown>>(task, "actions", label);
+    const actionIndexes = actions.map((action) => Number(action.action_index));
+    if (new Set(actionIndexes).size !== actionIndexes.length) {
+      throw new CascadeError(`${label} action indexes contain duplicates`);
+    }
+    const actionPolicyIds = new Set<string>();
+    for (const action of actions) {
+      if (!Number.isInteger(action.action_index) || Number(action.action_index) < 0 ||
+        !DIGEST.test(requireString(action, "action_digest", label))) {
+        throw new CascadeError(`${label} action binding is invalid`);
+      }
+      const actionApplicablePolicyIds = requireArray<string>(action, "applicable_policy_ids", label);
+      uniqueStrings(actionApplicablePolicyIds, `${label}.action policies`);
+      actionApplicablePolicyIds.forEach((id) => actionPolicyIds.add(id));
+      const policyDigests = requireArray<string>(action, "policy_digests", label);
+      if (policyDigests.length !== actionApplicablePolicyIds.length || policyDigests.some((digest) => !DIGEST.test(digest))) {
+        throw new CascadeError(`${label} action policy digest is invalid`);
+      }
+      const decision = requireString(action, "decision", label);
+      if (!new Set(["ALLOW", "DENY", "REQUIRE_CONFIRMATION", "GAP", "AMBIGUOUS"]).has(decision)) {
+        throw new CascadeError(`${label} action decision is invalid`);
+      }
+      if (value.status === "READY" && !new Set(["ALLOW", "REQUIRE_CONFIRMATION"]).has(decision)) {
+        throw new CascadeError(`${label} READY intake contains a blocking action decision`);
+      }
+    }
+    if (value.status === "READY" && stableJson([...actionPolicyIds].sort()) !== stableJson([...applicablePolicyIds].sort())) {
+      throw new CascadeError(`${label} READY intake action and task policy sets differ`);
+    }
   }
 }
 
@@ -559,25 +899,65 @@ function validateRubric(
   }
 }
 
-function validateSimulation(
+export function validateSimulation(
   value: Record<string, unknown>,
   label: string,
 ): void {
   assertSchema(value, label);
-  assertId(requireString(value, "id", label), label);
+  const id = requireString(value, "id", label);
+  assertId(id, label);
+  const simulationScope = requireString(value, "simulation_scope", label);
+  if (!new Set(["harness", "product"]).has(simulationScope)) {
+    throw new CascadeError(`${label}.simulation_scope is invalid`);
+  }
+  const simulationRoot = `product-evals/simulations/${simulationScope}/${id}`;
+  if (label !== `${simulationRoot}/manifest.json`) {
+    throw new CascadeError(
+      `${label}.simulation_scope path mismatch: expected ${simulationRoot}/manifest.json`,
+    );
+  }
   requireString(value, "title", label);
-  for (const key of [
-    "population_files",
-    "scenario_files",
-    "metric_files",
-    "treatment_files",
-  ]) {
+  for (const key of ["population_files", "scenario_files"]) {
+    const values = requireArray<string>(value, key, label);
+    if (!values.length) throw new CascadeError(`${label}.${key} must not be empty`);
+    uniqueStrings(values, `${label}.${key}`);
+    const subdirectory = key === "population_files" ? "populations" : "scenarios";
+    for (const file of values) {
+      if (!file.startsWith(`${simulationRoot}/${subdirectory}/`)) {
+        throw new CascadeError(
+          `${label}.${key} must stay inside ${simulationRoot}/${subdirectory}/`,
+        );
+      }
+    }
+  }
+  for (const key of ["metric_files", "treatment_files"]) {
     const values = requireArray<string>(value, key, label);
     if (!values.length) throw new CascadeError(`${label}.${key} must not be empty`);
     uniqueStrings(values, `${label}.${key}`);
   }
-  requireString(value, "world_file", label);
-  requireString(value, "dataset_file", label);
+  const worldFile = requireString(value, "world_file", label);
+  if (!worldFile.startsWith(`${simulationRoot}/worlds/`)) {
+    throw new CascadeError(`${label}.world_file must stay inside ${simulationRoot}/worlds/`);
+  }
+  const datasetFile = requireString(value, "dataset_file", label);
+  if (!datasetFile.startsWith(`${simulationRoot}/datasets/`)) {
+    throw new CascadeError(`${label}.dataset_file must stay inside ${simulationRoot}/datasets/`);
+  }
+}
+
+export function validateSimulationCalibrationAuthority(
+  simulation: SimulationDefinition,
+  calibration: CalibrationDefinition | undefined,
+): void {
+  if (
+    simulation.simulation_scope === "harness" &&
+    calibration !== undefined &&
+    !calibration.framework_fixture
+  ) {
+    throw new CascadeError(
+      `${simulation.id} harness simulation cannot bind non-framework calibration`,
+    );
+  }
 }
 
 export function validatePopulation(
@@ -883,8 +1263,15 @@ export function validateTask(
   const kind = requireString(value, "kind", label) as TaskKind;
   const driver = objectValue(value.driver, `${label}.driver`);
   const driverType = requireString(driver, "type", `${label}.driver`) as DriverType;
+  if (driver.adapter !== undefined) {
+    assertId(
+      requireString(driver, "adapter", `${label}.driver`),
+      `${label}.driver.adapter`,
+    );
+  }
   const valid: Record<TaskKind, Set<DriverType>> = {
     command: new Set(["fake", "direct-process"]),
+    http: new Set(["fake", "http-client"]),
     terminal: new Set(["fake", "pty", "computer-use"]),
     browser: new Set(["fake", "playwright", "computer-use"]),
     desktop: new Set(["fake", "platform-automation", "computer-use"]),
@@ -897,8 +1284,12 @@ export function validateTask(
   if (typeof value.required !== "boolean") {
     throw new CascadeError(`${label}.required must be boolean`);
   }
-  if (!Number.isInteger(value.timeout_ms) || Number(value.timeout_ms) < 1) {
-    throw new CascadeError(`${label}.timeout_ms must be positive`);
+  if (
+    !Number.isInteger(value.timeout_ms) ||
+    Number(value.timeout_ms) < 1 ||
+    Number(value.timeout_ms) > 3_600_000
+  ) {
+    throw new CascadeError(`${label}.timeout_ms must be between 1 and 3600000`);
   }
   const oracles = requireArray<string>(value, "oracle_ids", label);
   if (!oracles.length) throw new CascadeError(`${label}.oracle_ids must not be empty`);
@@ -939,6 +1330,55 @@ export function validateTask(
     const command = requireArray<string>(value, "command", label);
     if (!command.length) throw new CascadeError(`${label}.command must not be empty`);
   }
+  if (driverType === "http-client") {
+    const request = objectValue(value.request, `${label}.request`);
+    assertExactKeys(
+      request,
+      ["method", "url", "headers", "body"],
+      `${label}.request`,
+    );
+    const method = requireString(request, "method", `${label}.request`);
+    if (
+      !new Set(["GET", "POST", "PUT", "PATCH", "DELETE", "HEAD", "OPTIONS"]).has(
+        method,
+      )
+    ) {
+      throw new CascadeError(`${label}.request.method is invalid`);
+    }
+    const requestUrl = requireString(request, "url", `${label}.request`);
+    let parsedUrl: URL;
+    try {
+      parsedUrl = new URL(requestUrl);
+    } catch {
+      throw new CascadeError(`${label}.request.url must be an absolute URL`);
+    }
+    if (!new Set(["http:", "https:"]).has(parsedUrl.protocol)) {
+      throw new CascadeError(`${label}.request.url must use http or https`);
+    }
+    if (parsedUrl.username || parsedUrl.password || parsedUrl.hash) {
+      throw new CascadeError(
+        `${label}.request.url must not contain credentials or a fragment`,
+      );
+    }
+    if (request.headers !== undefined) {
+      const headers = objectValue(request.headers, `${label}.request.headers`);
+      for (const [name, headerValue] of Object.entries(headers)) {
+        if (!name.trim() || typeof headerValue !== "string") {
+          throw new CascadeError(
+            `${label}.request.headers must contain non-empty string pairs`,
+          );
+        }
+      }
+    }
+    if (request.body !== undefined && typeof request.body !== "string") {
+      throw new CascadeError(`${label}.request.body must be a string`);
+    }
+    if (["GET", "HEAD"].includes(method) && request.body !== undefined) {
+      throw new CascadeError(`${label}.request.body is not allowed for ${method}`);
+    }
+  } else if (value.request !== undefined) {
+    throw new CascadeError(`${label}.request requires the http-client driver`);
+  }
 }
 
 export function validateClaim(
@@ -961,6 +1401,17 @@ export function validateClaim(
   }
   requireString(value, "assertion", label);
   objectValue(value.scope, `${label}.scope`);
+  const populationAuthority = requireString(value, "population_authority", label);
+  if (!new Set(["none", "persona-derived", "estimated-prevalence"]).has(populationAuthority)) {
+    throw new CascadeError(`${label}.population_authority is invalid`);
+  }
+  if (
+    populationAuthority !== "none" &&
+    (typeof (value.scope as Record<string, unknown>).population_id !== "string" ||
+      !(value.scope as Record<string, unknown>).population_id)
+  ) {
+    throw new CascadeError(`${label}.scope.population_id is required for population authority`);
+  }
   for (const key of [
     "required_policy_ids",
     "required_oracle_ids",
@@ -994,6 +1445,41 @@ export function validateClaim(
   if (typeof value.requires_calibration !== "boolean") {
     throw new CascadeError(`${label}.requires_calibration must be boolean`);
   }
+}
+
+export function validateSimulationArtifactPolicy(
+  value: Record<string, unknown>,
+  label: string,
+): void {
+  assertExactKeys(value, [
+    "schema_version", "artifact_root", "storage_mode", "source_material_mode",
+    "raw_sensitive_material_allowed", "encryption_at_rest", "access_scope",
+    "operator_attestation", "retention", "remote_storage", "export",
+  ], label);
+  if (value.schema_version !== 1) throw new CascadeError(`${label}.schema_version must be 1`);
+  const constants: Array<[string, string]> = [
+    ["artifact_root", ".artifacts/product-evals"],
+    ["storage_mode", "local-append-only"],
+    ["source_material_mode", "digest-and-minimized-metadata-only"],
+    ["encryption_at_rest", "host-filesystem-required"],
+    ["access_scope", "maintainers-only"],
+    ["operator_attestation", "required-for-restricted"],
+    ["remote_storage", "disabled"],
+    ["export", "disabled"],
+  ];
+  for (const [key, expected] of constants) {
+    if (value[key] !== expected) throw new CascadeError(`${label}.${key} must be ${expected}`);
+  }
+  if (value.raw_sensitive_material_allowed !== false) {
+    throw new CascadeError(`${label}.raw_sensitive_material_allowed must be false`);
+  }
+  const retention = objectValue(value.retention, `${label}.retention`);
+  assertExactKeys(retention, ["mode", "review_after_days", "deletion_owner"], `${label}.retention`);
+  if (retention.mode !== "manual-review") throw new CascadeError(`${label}.retention.mode must be manual-review`);
+  if (!Number.isInteger(retention.review_after_days) || (retention.review_after_days as number) < 1) {
+    throw new CascadeError(`${label}.retention.review_after_days must be a positive integer`);
+  }
+  requireString(retention, "deletion_owner", `${label}.retention`);
 }
 
 export function validatePolicy(value: Record<string, unknown>, label: string): void {
@@ -1076,6 +1562,8 @@ export function validatePolicy(value: Record<string, unknown>, label: string): v
       "action_types",
       "action_paths",
       "command_prefix",
+      "http_methods",
+      "http_origins",
     ],
     `${label}.scope`,
   );
@@ -1109,6 +1597,58 @@ export function validatePolicy(value: Record<string, unknown>, label: string): v
       throw new CascadeError(`${label}.scope.command_prefix is empty`);
     }
     uniqueStrings(prefix, `${label}.scope.command_prefix`);
+  }
+  if (scope.http_methods !== undefined) {
+    const methods = requireArray<string>(
+      scope,
+      "http_methods",
+      `${label}.scope`,
+    );
+    if (!methods.length) {
+      throw new CascadeError(`${label}.scope.http_methods is empty`);
+    }
+    const validMethods = new Set([
+      "GET",
+      "POST",
+      "PUT",
+      "PATCH",
+      "DELETE",
+      "HEAD",
+      "OPTIONS",
+    ]);
+    for (const method of methods) {
+      if (!validMethods.has(method)) {
+        throw new CascadeError(`${label}.scope.http_methods is invalid`);
+      }
+    }
+    uniqueStrings(methods, `${label}.scope.http_methods`);
+  }
+  if (scope.http_origins !== undefined) {
+    const origins = requireArray<string>(
+      scope,
+      "http_origins",
+      `${label}.scope`,
+    );
+    if (!origins.length) {
+      throw new CascadeError(`${label}.scope.http_origins is empty`);
+    }
+    for (const origin of origins) {
+      let parsed: URL;
+      try {
+        parsed = new URL(origin);
+      } catch {
+        throw new CascadeError(`${label}.scope.http_origins is invalid`);
+      }
+      if (
+        !new Set(["http:", "https:"]).has(parsed.protocol) ||
+        parsed.origin !== origin
+      ) {
+        throw new CascadeError(
+          `${label}.scope.http_origins must contain exact http(s) origins`,
+        );
+      }
+    }
+    uniqueStrings(origins, `${label}.scope.http_origins`);
   }
   const budgets = objectValue(value.budgets, `${label}.budgets`);
   assertExactKeys(
@@ -1155,7 +1695,11 @@ function validateOracle(value: Record<string, unknown>, label: string): void {
   assertSchema(value, label);
   assertId(requireString(value, "id", label), label);
   const type = requireString(value, "type", label);
-  if (!new Set(["state-equals", "exit-code", "file-exists"]).has(type)) {
+  if (
+    !new Set(["state-equals", "exit-code", "file-exists", "http-status"]).has(
+      type,
+    )
+  ) {
     throw new CascadeError(`${label}.type is invalid`);
   }
   if (type === "state-equals" && typeof value.path !== "string") {
@@ -1163,6 +1707,14 @@ function validateOracle(value: Record<string, unknown>, label: string): void {
   }
   if (type === "exit-code" && !Number.isInteger(value.expected_exit_code)) {
     throw new CascadeError(`${label}.expected_exit_code is required`);
+  }
+  if (
+    type === "http-status" &&
+    (!Number.isInteger(value.expected_status) ||
+      Number(value.expected_status) < 100 ||
+      Number(value.expected_status) > 599)
+  ) {
+    throw new CascadeError(`${label}.expected_status is required`);
   }
   if (type === "file-exists") requireString(value, "file", label);
 }
@@ -1208,51 +1760,74 @@ export function validateTaskPolicyApplicability(
       );
     }
   }
-  if (task.driver.type !== "direct-process") return;
+  const validateSingleActionPolicy = (
+    action: SimulationAction,
+    description: string,
+  ): void => {
+    const matchingPolicies = policies.filter(
+      (policy) =>
+        referencedPolicyIds.includes(policy.id) &&
+        policyAppliesToObservation(policy, {
+          campaign_id: campaign.id,
+          task_id: task.id,
+          task_kind: task.kind,
+          driver_type: task.driver.type,
+          action,
+        }),
+    );
+    if (referencedPolicyIds.length > 0 && matchingPolicies.length === 0) {
+      throw new CascadeError(
+        `${task.id} ${description} has no applicable referenced policy ` +
+          `for campaign ${campaign.id}`,
+      );
+    }
+    if (matchingPolicies.length > 1) {
+      throw new CascadeError(
+        `${task.id} ${description} has overlapping policies: ` +
+          matchingPolicies.map((policy) => policy.id).join(", "),
+      );
+    }
+  };
 
-  const processPolicies = policies.filter(
-    (policy) =>
-      referencedPolicyIds.includes(policy.id) &&
-      policyAppliesToObservation(policy, {
-        campaign_id: campaign.id,
-        task_id: task.id,
-        task_kind: task.kind,
-        driver_type: task.driver.type,
-        action: { type: "process-exec", argv: task.command ?? [] },
-      }),
-  );
-  if (referencedPolicyIds.length > 0 && processPolicies.length === 0) {
-    throw new CascadeError(
-      `${task.id} process execution has no applicable referenced policy ` +
-        `for campaign ${campaign.id}`,
+  if (task.driver.type === "direct-process") {
+    validateSingleActionPolicy(
+      { type: "process-exec", argv: task.command ?? [] },
+      "process execution",
     );
   }
-  if (processPolicies.length > 1) {
-    throw new CascadeError(
-      `${task.id} process execution has overlapping policies: ` +
-        processPolicies.map((policy) => policy.id).join(", "),
+  if (task.driver.type === "http-client") {
+    validateSingleActionPolicy(
+      {
+        type: "http-request",
+        method: task.request!.method,
+        url: task.request!.url,
+        headers: task.request!.headers,
+        body: task.request!.body,
+      },
+      "HTTP request",
     );
   }
 }
 
 export async function resolveCampaign(
   campaignPath: string,
+  options: { allowStaleIntake?: boolean } = {},
 ): Promise<ResolvedCampaign> {
-  const path = boundedPath(campaignPath, "evals/campaigns/");
+  const path = boundedPath(campaignPath, "product-evals/campaigns/");
   const campaign = await loadFile<CampaignDefinition>(
     rel(path),
-    "evals/campaigns/",
+    "product-evals/campaigns/",
     validateCampaign,
   );
   const evaluationProfile = await loadFile<EvaluationProfileDefinition>(
     campaign.evaluation_profile_file,
-    "evals/rubrics/",
+    "product-evals/rubrics/",
     validateEvaluationProfile,
   );
   const rubric = evaluationProfile.rubric_file
     ? await loadFile<RubricDefinition>(
         evaluationProfile.rubric_file,
-        "evals/rubrics/",
+        "product-evals/rubrics/",
         validateRubric,
       )
     : undefined;
@@ -1274,14 +1849,28 @@ export async function resolveCampaign(
   }
   const simulation = await loadFile<SimulationDefinition>(
     campaign.simulation_file,
-    "evals/simulations/",
+    "product-evals/simulations/",
     validateSimulation,
   );
+  if (simulation.simulation_scope === "product" && !campaign.intake_file) {
+    throw new CascadeError(`${campaign.id} product campaign requires intake_file`);
+  }
+  const intake = campaign.intake_file
+    ? await loadFile<SimulationIntakeDefinition>(
+        campaign.intake_file,
+        "product-evals/intakes/",
+        validateSimulationIntake,
+      )
+    : undefined;
+  if (intake && (intake.scope !== simulation.simulation_scope || intake.campaign_id !== campaign.id)) {
+    throw new CascadeError(`${campaign.id} simulation intake scope or campaign binding is mismatched`);
+  }
+  const simulationRoot = campaign.simulation_file.slice(0, -"/manifest.json".length);
   const populations = await Promise.all(
     simulation.population_files.map((file) =>
       loadFile<PopulationDefinition>(
         file,
-        "evals/simulations/",
+        "product-evals/simulations/",
         validatePopulation,
       ),
     ),
@@ -1291,13 +1880,18 @@ export async function resolveCampaign(
   for (const population of populations) {
     if (population.schema_version !== 2) continue;
     const reference = population.source.derivation;
+    if (!reference.path.startsWith(`${simulationRoot}/derivations/`)) {
+      throw new CascadeError(
+        `${population.id} persona derivation must stay inside ${simulationRoot}/derivations/`,
+      );
+    }
     if (derivationPaths.has(reference.path)) {
       throw new CascadeError(`duplicate persona derivation path: ${reference.path}`);
     }
     derivationPaths.add(reference.path);
     const manifest = await loadFile<PersonaDerivationManifest>(
       reference.path,
-      "evals/simulations/",
+      "product-evals/simulations/",
       validatePersonaDerivation,
     );
     await verifyPersonaDerivationSources(manifest, reference.path);
@@ -1322,17 +1916,22 @@ export async function resolveCampaign(
     simulation.scenario_files.map((file) =>
       loadFile<ScenarioDefinition>(
         file,
-        "evals/simulations/",
+        "product-evals/simulations/",
         validateScenario,
       ),
     ),
   );
   const world = await loadFile<WorldDefinition>(
     simulation.world_file,
-    "evals/simulations/",
+    "product-evals/simulations/",
     validateWorld,
   );
-  const fixturePath = boundedPath(world.fixture_file, "evals/simulations/");
+  if (!world.fixture_file.startsWith(`${simulationRoot}/worlds/`)) {
+    throw new CascadeError(
+      `${world.id} fixture must stay inside ${simulationRoot}/worlds/`,
+    );
+  }
+  const fixturePath = boundedPath(world.fixture_file, "product-evals/simulations/");
   if (!(await isFile(fixturePath))) {
     throw new CascadeError(`world fixture missing: ${world.fixture_file}`);
   }
@@ -1342,19 +1941,19 @@ export async function resolveCampaign(
   );
   const dataset = await loadFile<DatasetDefinition>(
     simulation.dataset_file,
-    "evals/simulations/",
+    "product-evals/simulations/",
     validateDataset,
   );
   const metrics = await Promise.all(
     simulation.metric_files.map((file) =>
-      loadFile<MetricDefinition>(file, "evals/metrics/", validateMetric),
+      loadFile<MetricDefinition>(file, "product-evals/metrics/", validateMetric),
     ),
   );
   const treatments = await Promise.all(
     simulation.treatment_files.map((file) =>
       loadFile<TreatmentDefinition>(
         file,
-        "evals/treatments/",
+        "product-evals/treatments/",
         validateTreatment,
       ),
     ),
@@ -1362,16 +1961,17 @@ export async function resolveCampaign(
   const calibration = simulation.calibration_file
     ? await loadFile<CalibrationDefinition>(
         simulation.calibration_file,
-        "evals/calibrations/",
+        "product-evals/calibrations/",
         validateCalibration,
       )
     : undefined;
+  validateSimulationCalibrationAuthority(simulation, calibration);
   const simulatedScores = calibration
     ? validateScoreRows(
         await readJson(
           boundedPath(
             calibration.simulated_scores_file,
-            "evals/calibrations/fixtures/",
+            "product-evals/calibrations/fixtures/",
           ),
         ),
         calibration.simulated_scores_file,
@@ -1382,7 +1982,7 @@ export async function resolveCampaign(
         await readJson(
           boundedPath(
             calibration.reference_scores_file,
-            "evals/calibrations/fixtures/",
+            "product-evals/calibrations/fixtures/",
           ),
         ),
         calibration.reference_scores_file,
@@ -1390,22 +1990,57 @@ export async function resolveCampaign(
     : [];
   const tasks = await Promise.all(
     campaign.task_files.map((file) =>
-      loadFile<TaskDefinition>(file, "evals/tasks/", validateTask),
+      loadFile<TaskDefinition>(file, "product-evals/tasks/", validateTask),
     ),
   );
+  if (campaign.session) {
+    if (campaign.session.max_steps < tasks.length) {
+      throw new CascadeError(
+        `${campaign.id} session max_steps cannot cover all campaign tasks`,
+      );
+    }
+    const maximumLifecycleBound = Math.max(
+      ...tasks.map((task) => task.timeout_ms * 6 + 5_000),
+    );
+    if (campaign.session.max_step_duration_ms < maximumLifecycleBound) {
+      throw new CascadeError(
+        `${campaign.id} session max_step_duration_ms cannot cover the largest bounded task lifecycle (${maximumLifecycleBound}ms)`,
+      );
+    }
+    if (campaign.session.max_surfaces < tasks.length) {
+      throw new CascadeError(
+        `${campaign.id} session max_surfaces cannot cover all campaign tasks`,
+      );
+    }
+    if (campaign.session.lease_ttl_ms <= maximumLifecycleBound) {
+      throw new CascadeError(
+        `${campaign.id} session lease_ttl_ms must exceed the largest bounded task lifecycle (${maximumLifecycleBound}ms)`,
+      );
+    }
+    if (campaign.session.lease_ttl_ms <= campaign.session.max_step_duration_ms) {
+      throw new CascadeError(
+        `${campaign.id} session lease_ttl_ms must exceed max_step_duration_ms`,
+      );
+    }
+  }
   const claims = await Promise.all(
     campaign.claim_files.map((file) =>
-      loadFile<ClaimDefinition>(file, "evals/claims/", validateClaim),
+      loadFile<ClaimDefinition>(file, "product-evals/claims/", validateClaim),
     ),
+  );
+  const artifactPolicy = await loadFile<SimulationArtifactPolicy>(
+    "product-evals/artifact-policy.json",
+    "product-evals/",
+    validateSimulationArtifactPolicy,
   );
   const policies = await Promise.all(
     campaign.policy_files.map((file) =>
-      loadFile<PolicyDefinition>(file, "evals/policies/", validatePolicy),
+      loadFile<PolicyDefinition>(file, "product-evals/policies/", validatePolicy),
     ),
   );
   const oracles = await Promise.all(
     campaign.oracle_files.map((file) =>
-      loadFile<OracleDefinition>(file, "evals/oracles/", validateOracle),
+      loadFile<OracleDefinition>(file, "product-evals/oracles/", validateOracle),
     ),
   );
 
@@ -1450,7 +2085,70 @@ export async function resolveCampaign(
     }
     validateTaskPolicyApplicability(campaign, task, policies);
   }
+  if (intake?.status === "READY" && !options.allowStaleIntake) {
+    const envelope = intake.task_envelope!;
+    const envelopePath = boundedPath(envelope.path, `product-evals/intakes/${intake.scope}/task-envelopes/`);
+    if (!(await isFile(envelopePath)) || await sha256File(envelopePath) !== envelope.sha256) {
+      throw new CascadeError(`${intake.id} task envelope binding is stale`);
+    }
+    if (intake.product_context) {
+      const context = intake.product_context;
+      const briefPath = boundedPath(context.brief_path, "docs/specs/");
+      const outputPath = boundedPath(context.output_path, "docs/specs/");
+      if (!(await isFile(briefPath)) || await sha256File(briefPath) !== context.sha256 ||
+        !(await isFile(outputPath)) || await sha256File(outputPath) !== context.output_sha256) {
+        throw new CascadeError(`${intake.id} product context binding is stale`);
+      }
+    }
+    if (intake.tasks.length !== tasks.length) {
+      throw new CascadeError(`${intake.id} task coverage is incomplete`);
+    }
+    const policyDigestById = new Map(
+      await Promise.all(policies.map(async (policy, index) => [policy.id, await sha256File(rootPath(campaign.policy_files[index]!))] as const)),
+    );
+    for (const task of tasks) {
+      const binding = intake.tasks.find((item) => item.task_id === task.id);
+      const policyActions = taskPolicyActions(task);
+      if (!binding || binding.actions.length !== policyActions.length) {
+        throw new CascadeError(`${intake.id} task action coverage is incomplete: ${task.id}`);
+      }
+      const applicable = new Set<string>();
+      for (const [actionIndex, action] of policyActions.entries()) {
+        const actionBinding = binding.actions.find((item) => item.action_index === actionIndex);
+        const matching = policies.filter((policy) => policyAppliesToObservation(policy, {
+          campaign_id: campaign.id,
+          task_id: task.id,
+          task_kind: task.kind,
+          driver_type: task.driver.type,
+          action,
+        }));
+        matching.forEach((policy) => applicable.add(policy.id));
+        const expectedIds = matching.map((policy) => policy.id).sort();
+        const expectedDigests = expectedIds.map((id) => policyDigestById.get(id)!).sort();
+        const expectedDecision = matching.length === 0
+          ? "GAP"
+          : matching.length > 1
+          ? "AMBIGUOUS"
+          : matching[0]!.effect;
+        if (!actionBinding || actionBinding.action_digest !== sha256Text(stableJson(action)) ||
+          stableJson([...actionBinding.applicable_policy_ids].sort()) !== stableJson(expectedIds) ||
+          stableJson([...actionBinding.policy_digests].sort()) !== stableJson(expectedDigests) ||
+          actionBinding.decision !== expectedDecision) {
+          throw new CascadeError(`${intake.id} action policy binding is stale: ${task.id}/${actionIndex}`);
+        }
+      }
+      if (stableJson([...binding.declared_policy_ids].sort()) !== stableJson([...(task.policy_ids ?? [])].sort()) ||
+        stableJson([...binding.applicable_policy_ids].sort()) !== stableJson([...applicable].sort()) ||
+        stableJson([...(task.policy_ids ?? [])].sort()) !== stableJson([...applicable].sort())) {
+        throw new CascadeError(`${intake.id} declared and applicable policy sets differ: ${task.id}`);
+      }
+    }
+  }
   for (const claim of claims) {
+    if (claim.population_authority !== "none") {
+      const populationId = claim.scope.population_id as string;
+      assertReferences([populationId], new Set(populations.map((item) => item.id)), `${claim.id}.scope.population_id`);
+    }
     assertReferences(
       claim.required_policy_ids,
       policyIds,
@@ -1554,6 +2252,7 @@ export async function resolveCampaign(
     "scripts/cascade/campaigns.ts",
     "scripts/cascade/evaluations.ts",
     "scripts/cascade/simulations.ts",
+    "scripts/cascade/simulation-intake.ts",
     "scripts/cascade/simulation-definitions.ts",
     "scripts/cascade/persona-simulations.ts",
     ".codex/skills/simulation-campaigns/templates/starter/package.template.json",
@@ -1563,29 +2262,34 @@ export async function resolveCampaign(
     ".codex/agents/simulation-evaluator/skills.yaml",
     ".codex/skills/simulation-evaluation/SKILL.md",
     ".codex/skills/simulation-evaluation/checklists/evaluation-quality.md",
-    "evals/campaigns/schema.json",
-    "evals/campaigns/run-artifact.schema.json",
-    "evals/rubrics/schema.json",
-    "evals/rubrics/evaluation-profile.schema.json",
-    "evals/rubrics/simulation-evaluation-output.schema.json",
-    "evals/rubrics/evaluation-receipt.schema.json",
+    "product-evals/campaigns/schema.json",
+    "product-evals/campaigns/run-artifact.schema.json",
+    "product-evals/intakes/schema.json",
+    "product-evals/rubrics/schema.json",
+    "product-evals/rubrics/evaluation-profile.schema.json",
+    "product-evals/rubrics/simulation-evaluation-output.schema.json",
+    "product-evals/rubrics/evaluation-receipt.schema.json",
     campaign.evaluation_profile_file,
     ...(evaluationProfile.rubric_file ? [evaluationProfile.rubric_file] : []),
-    "evals/simulations/schema.json",
-    "evals/simulations/population.schema.json",
-    "evals/simulations/persona-derivation.schema.json",
-    "evals/simulations/refinement-proposal.schema.json",
-    "evals/simulations/scenario.schema.json",
-    "evals/simulations/world.schema.json",
-    "evals/simulations/dataset.schema.json",
-    "evals/tasks/schema.json",
-    "evals/claims/schema.json",
-    "evals/policies/schema.json",
-    "evals/policies/confirmation-receipt.schema.json",
-    "evals/oracles/schema.json",
-    "evals/metrics/schema.json",
-    "evals/treatments/schema.json",
-    "evals/calibrations/schema.json",
+    "product-evals/simulations/schema.json",
+    "product-evals/simulations/population.schema.json",
+    "product-evals/simulations/persona-derivation.schema.json",
+    "product-evals/simulations/refinement-proposal.schema.json",
+    "product-evals/simulations/refinement-disposition.schema.json",
+    "product-evals/simulations/external-persona-evidence.schema.json",
+    "product-evals/artifact-policy.schema.json",
+    "product-evals/artifact-policy.json",
+    "product-evals/simulations/scenario.schema.json",
+    "product-evals/simulations/world.schema.json",
+    "product-evals/simulations/dataset.schema.json",
+    "product-evals/tasks/schema.json",
+    "product-evals/claims/schema.json",
+    "product-evals/policies/schema.json",
+    "product-evals/policies/confirmation-receipt.schema.json",
+    "product-evals/oracles/schema.json",
+    "product-evals/metrics/schema.json",
+    "product-evals/treatments/schema.json",
+    "product-evals/calibrations/schema.json",
     rel(path),
     campaign.simulation_file,
     ...simulation.population_files,
@@ -1607,6 +2311,11 @@ export async function resolveCampaign(
     ...campaign.claim_files,
     ...campaign.policy_files,
     ...campaign.oracle_files,
+    ...(campaign.intake_file ? [campaign.intake_file] : []),
+    ...(intake?.status === "READY" && intake.task_envelope ? [intake.task_envelope.path] : []),
+    ...(intake?.status === "READY" && intake.product_context
+      ? [intake.product_context.brief_path, intake.product_context.output_path]
+      : []),
   ];
   uniqueStrings(sourceFiles, "resolved source files");
   const sourceDigests = await Promise.all(
@@ -1635,8 +2344,10 @@ export async function resolveCampaign(
     referenceScores,
     tasks,
     claims,
+    artifactPolicy,
     policies,
     oracles,
+    intake,
     sourceFiles,
     sourceDigests,
   };
@@ -1645,7 +2356,7 @@ export async function resolveCampaign(
 export async function findCampaignPath(value: string): Promise<string> {
   const direct = resolve(rootPath(), value);
   if (await isFile(direct)) return direct;
-  const byId = rootPath("evals/campaigns", `${value}.json`);
+  const byId = rootPath("product-evals/campaigns", `${value}.json`);
   if (await isFile(byId)) return byId;
   throw new CascadeError(`campaign not found: ${value}`);
 }

@@ -25,8 +25,9 @@ import {
   writeJson,
 } from "./common";
 import { runFixtureSelfTest } from "./target";
+import { runAdmissionCorpus } from "./admission";
 
-const EVAL_ROOT = rootPath("evals/harness");
+const EVAL_ROOT = rootPath("harness-evals");
 const CASE_SOURCE = resolve(EVAL_ROOT, "skill-cases.json");
 const INTERACTION_SOURCE = resolve(EVAL_ROOT, "interactions.json");
 const CATALOG_PATH = resolve(EVAL_ROOT, "scenarios.generated.json");
@@ -135,7 +136,7 @@ export async function generateCatalog(): Promise<JsonObject> {
         owner: item.owner,
         prompt,
         expectation: expected,
-        source: "evals/harness/skill-cases.json",
+        source: "harness-evals/skill-cases.json",
       });
     };
     add("implicit-trigger", item.implicit, expectation(skill, skill));
@@ -179,7 +180,7 @@ export async function generateCatalog(): Promise<JsonObject> {
         forbiddenPrimary: item.forbidden_primary ?? [],
         allowedSupporting: item.allowed_supporting ?? [],
       }),
-      source: "evals/harness/interactions.json",
+      source: "harness-evals/interactions.json",
     });
   }
   if (new Set(scenarios.map((item) => item.id)).size !== scenarios.length) {
@@ -201,15 +202,23 @@ async function sourceManifest(): Promise<JsonObject> {
     "CODEX.md",
     "harness.config.yaml",
     ".codex/config.toml",
+    ".codex/hooks.json",
+    ".codex/task-admission/task-envelope.schema.json",
+    ".codex/task-admission/policy.schema.json",
+    ".codex/task-admission/control-catalog.json",
+    ".codex/task-admission/policies/core.json",
     ".codex/harness-tooling/package.json",
     ".codex/harness-tooling/bun.lock",
     "scripts/cascade.ts",
-    "evals/harness/skill-cases.json",
-    "evals/harness/interactions.json",
-    "evals/harness/response.schema.json",
-    "evals/harness/judge-response.schema.json",
-    "evals/harness/judge-profiles.json",
-  ].map(rootPath);
+    "harness-evals/skill-cases.json",
+    "harness-evals/interactions.json",
+    "harness-evals/response.schema.json",
+    "harness-evals/judge-response.schema.json",
+    "harness-evals/judge-profiles.json",
+    "harness-evals/task-admission/case.schema.json",
+    "harness-evals/task-admission/assessment.schema.json",
+    "harness-evals/task-admission/cases.json",
+  ].map((path) => rootPath(path));
   const dynamic = [
     ...(await walkFiles(rootPath("scripts/cascade"))),
     ...(await walkFiles(rootPath(".codex/skills"))),
@@ -251,7 +260,7 @@ Rules:
 - Work only with this repository and do not edit any file.
 - Do not access the network, external apps, connectors, or MCP servers.
 - Do not spawn or delegate to another agent.
-- Do not read evals/harness/, .artifacts/harness-evals/, prior runs, expected answers, or evaluator rubrics.
+- Do not read harness-evals/, .artifacts/harness-evals/, prior runs, expected answers, or evaluator rubrics.
 - Read AGENTS.md, CODEX.md, and only the skill and role sources needed to route the request.
 - Select one primary Cascade skill. \`supporting_skills\` may contain only existing
   repository skills that you actually loaded and used for this response; put
@@ -1091,6 +1100,7 @@ function syntheticTrace(
 }
 
 async function commandSelfTest(): Promise<number> {
+  const admissionCorpus = await runAdmissionCorpus();
   const scenario = {
     id: "SELF-001",
     kind: "implicit-trigger",
@@ -1180,6 +1190,7 @@ async function commandSelfTest(): Promise<number> {
     [(await agentPaths()).size > 0, "agents discovered"],
     [targetPrompt(scenario).includes("future handoffs"), "prompt separates handoffs"],
     [valueDigest({ a: 1 }) === valueDigest({ a: 1 }), "stable digest"],
+    [admissionCorpus.status === "PASS", "task admission shadow corpus passes"],
   ];
   const failures = assertions.filter(([passed]) => !passed);
   for (const [, message] of failures) console.error(`FAIL: ${message}`);

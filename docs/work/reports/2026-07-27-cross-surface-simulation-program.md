@@ -8,7 +8,7 @@ Scope: Cascade campaign tasks, execution adapters, evidence, and evaluation
 ## Responsible Skill And Route
 
 The simulation workflow has three explicit responsibility stages across all
-six contours:
+seven contours:
 
 - `simulation-campaigns`, owned by Agent Engineer, authors and selects
   campaigns, prepares dispatch/replay plans, aggregates identity-matched
@@ -62,6 +62,7 @@ deterministic drivers remain available for lower-cost mechanical proof.
 | Task kind | Default driver | Optional driver | Primary public boundary |
 |---|---|---|---|
 | `command` | direct process | none | argv, exit code, stdout/stderr, files |
+| `http` | bounded HTTP client | none | request method/origin, response status/body, observable server effects |
 | `terminal` | PTY | Computer Use only for a visible terminal/TUI | terminal screen, keys, signals, exit |
 | `browser` | Playwright | Computer Use | rendered web UI and observable effects |
 | `desktop` | platform automation | Computer Use | native application UI and OS-visible effects |
@@ -70,6 +71,12 @@ deterministic drivers remain available for lower-cost mechanical proof.
 
 Computer Use is a driver, not an oracle. Every model-driven task must still
 verify success through a deterministic public boundary when one exists.
+
+The application-type adapter maps without creating duplicate task families:
+CLI uses `command` or `terminal`; protocol/API checks use `http`; web apps use
+`browser`; native desktop apps use `desktop`; installed mobile apps use
+`mobile`; and a synthetic actor or other agent uses `agent-response` while
+calling those typed surface seams.
 
 ## Annotation 1: Agent Response Boundary
 
@@ -103,8 +110,8 @@ Proposed shape:
   "target": {
     "mode": "standalone-agent",
     "agent": "agent-engineer",
-    "prompt_file": "evals/tasks/prompts/agent-smoke.md",
-    "output_schema": "evals/tasks/schemas/agent-smoke-output.json"
+    "prompt_file": "product-evals/tasks/prompts/agent-smoke.md",
+    "output_schema": "product-evals/tasks/schemas/agent-smoke-output.json"
   },
   "evaluation": {
     "profile": "response-contract"
@@ -221,13 +228,13 @@ failed cleanup, stale identity, or unsupported coverage scope.
 The foundation lane owns the planned source layout:
 
 ```text
-evals/claims/                         versioned claim definitions and schema
-evals/policies/                       versioned policy definitions and schema
-evals/oracles/                        reusable deterministic oracle definitions
-evals/rubrics/                        semantic rubrics and evaluation profiles
-evals/simulations/<simulation-id>/    simulation manifest and controlled fixtures
-evals/tasks/                          reusable typed tasks
-evals/campaigns/                      versioned execution plans
+product-evals/claims/                         versioned claim definitions and schema
+product-evals/policies/                       versioned policy definitions and schema
+product-evals/oracles/                        reusable deterministic oracle definitions
+product-evals/rubrics/                        semantic rubrics and evaluation profiles
+product-evals/simulations/<harness|product>/<simulation-id>/    scoped simulation manifest and controlled fixtures
+product-evals/tasks/                          reusable typed tasks
+product-evals/campaigns/                      versioned execution plans
 ```
 
 Each execution freezes a self-contained run package:
@@ -327,8 +334,9 @@ ambiguous pass.
 | `mobile-android-emulator-smoke` | W-010 | mobile / Android automation | deterministic platform | Exercise boot, install, launch, lifecycle, permission denial, state oracle, logs, and reset |
 | `mobile-ios-simulator-canary` | W-010 | mobile / iOS automation | macOS-gated platform | Prove only the exact iOS Simulator/runtime/app-build tuple or return an explicit blocker |
 | `mobile-computer-use-canary` | W-010 | mobile / Computer Use | isolated live canary | Exercise visual mobile interaction with device/app policies and independent device/app oracles |
-| `agent-tool-composition-smoke` | W-012 | agent response -> all five surface seams / fake adapters | PR deterministic integration | Prove tool-event linkage, independent agent/surface results, policy enforcement, oracle and cleanup failures, execution/evaluation receipts, and composed-claim reduction without model or surface runtime |
+| `agent-tool-composition-smoke` | W-012 | agent response -> all six surface seams / fake adapters | PR deterministic integration | Prove tool-event linkage, independent agent/surface results, policy enforcement, oracle and cleanup failures, execution/evaluation receipts, and composed-claim reduction without model or surface runtime |
 | `agent-command-tool-canary` | W-012; W-005/W-007 inputs | agent response / Codex adapter -> command / direct-process tool | bounded live integration | Evaluate one source-blind agent using one allowlisted command tool with exact argv/cwd/env policy, output oracle, budgets, frozen trace/logs, and cleanup |
+| `agent-http-tool-canary` | W-012; W-004/W-007 inputs | agent response / Codex adapter -> HTTP / bounded client tool | bounded live integration | Evaluate one source-blind agent using one exact method/origin HTTP tool with bounded response evidence, independent oracle, budgets, and cleanup |
 | `agent-browser-tool-canary` | W-012; W-006/W-007 inputs | agent response / Codex adapter -> browser / structured browser tool | bounded live integration | Evaluate one source-blind agent operating one isolated controlled browser with exact profile/fixture, navigation/action policy, public-state oracle, frozen trace/visual evidence, and cleanup |
 | `agent-terminal-tool-canary` | W-012; W-007/W-008 inputs | agent response / Codex adapter -> terminal / PTY tool | bounded live integration | Evaluate one source-blind agent operating one isolated PTY/TUI with exact runtime/dimensions, input/signal policy, transcript/screen oracle, budgets, and cleanup |
 | `agent-desktop-tool-canary` | W-012; W-007/W-009 inputs | agent response / Codex adapter -> desktop / native tool | isolated live platform | Evaluate one source-blind agent operating one disposable native fixture with exact OS/image/app build, app/window policy, native oracle, budgets, reset, and artifact transfer |
@@ -342,7 +350,7 @@ optional pass.
 ### Campaign Catalog And Selection
 
 Campaign manifests are authored source. The implementation generates
-`evals/campaigns/catalog.generated.json` as a normalized inventory containing
+`product-evals/campaigns/catalog.generated.json` as a normalized inventory containing
 campaign ID, owner lane, contours, drivers, execution tier, required runtimes,
 claim/policy/oracle references, and manifest digest. `campaign catalog --check`
 fails on stale catalog entries, duplicate IDs, unresolved references, invalid
@@ -406,9 +414,9 @@ W-002/W-003 architecture-default work before implementation begins.
 
 Public contracts and hidden consumers at risk:
 
-- `evals/tasks/schema.json` and every reusable task definition;
-- `evals/campaigns/schema.json` and campaign manifests;
-- `evals/claims/`, `evals/policies/`, `evals/oracles/`, `evals/rubrics/`, and
+- `product-evals/tasks/schema.json` and every reusable task definition;
+- `product-evals/campaigns/schema.json` and campaign manifests;
+- `product-evals/claims/`, `product-evals/policies/`, `product-evals/oracles/`, `product-evals/rubrics/`, and
   simulation manifests/fixtures;
 - generated campaign catalog and any report/coverage consumer of campaign IDs;
 - campaign list, validation, preflight, execution, result reduction, and
@@ -507,7 +515,7 @@ visual-action seam; mobile does not consume the desktop provider.
 | W-008 | `terminal` | ground-up | PTY execution, screen/transcript evidence, TUI handling |
 | W-009 | `desktop` | ground-up | isolated native-app automation and Computer Use loop |
 | W-010 | `mobile` | ground-up | emulator/simulator lifecycle, platform automation, Computer Use |
-| W-012 | `agent-response` + five typed tool contours | integration | deterministic composition matrix and separate live command/browser/terminal/desktop/mobile canaries without hybrid task kinds |
+| W-012 | `agent-response` + six typed tool contours | integration | deterministic composition matrix and separate live command/HTTP/browser/terminal/desktop/mobile canaries without hybrid task kinds |
 
 ## Common Behavior Examples
 
@@ -530,7 +538,7 @@ visual-action seam; mobile does not consume the desktop provider.
 | `SIM-015` | Given an authored campaign changes, `campaign catalog --check` detects the stale normalized catalog before execution. | catalog drift failure |
 | `SIM-016` | Given a source-blind agent operates any accepted typed surface tool, a composed claim is supported only when the agent task and surface task independently satisfy their required policies, oracles, evidence, cleanup, and receipt gates. | linked agent/surface results, policy decisions, oracle evidence, cleanup, receipts, and joined claim ledger |
 | `SIM-017` | Given the agent requests an action outside the selected surface policy, the action is denied and final model prose or driver completion cannot compensate or support the composed claim. | tool-call event, surface deny decision, independent task verdicts, and unsupported composed claim |
-| `SIM-018` | Given the five-contour fake composition matrix passes, reporting proves only composition-contract readiness and leaves every live model, browser, PTY, desktop, and mobile capability `NOT_RUN`. | deterministic matrix receipt and live capability ledger |
+| `SIM-018` | Given the six-contour fake composition matrix passes, reporting proves only composition-contract readiness and leaves every live model, HTTP, browser, PTY, desktop, and mobile capability `NOT_RUN`. | deterministic matrix receipt and live capability ledger |
 | `SIM-019` | Given one live agent-tool canary is blocked or fails, every other contour retains its independent status, evidence scope, and coverage disposition. | five named campaign projections without substitution |
 | `SIM-020` | Given two operators request the same run ID concurrently, exactly one atomic reservation succeeds and the other emits no target action. | reservation/lease race fixture and zero duplicate side effects |
 | `SIM-021` | Given execution is interrupted after a possibly external action, recovery performs cleanup and finalizes the attempt with explicit uncertainty but never resumes or retries the target action automatically. | interrupted run, recovery identity, cleanup result, and unknown-outcome disposition |
@@ -605,15 +613,151 @@ passed its oracle, was semantically graded, or is release-eligible.
 - Live Computer Use and Codex-agent runs require separate provider/runtime
   readiness and cost approval; offline validation must report them `NOT_RUN`.
 
+## 2026-08-03 Adapter And Duration Readiness Audit
+
+Historical snapshot; superseded for shared-controller capability by the
+2026-08-04 update below. Its `NOT_IMPLEMENTED` and `PARTIAL` rows remain the
+recorded pre-controller state, not the current verdict.
+
+Current verdict: `PARTIAL`; the shared runtime is suitable for bounded,
+single-session tasks and deterministic HTTP integration checks, but it is not
+yet suitable for unattended multi-screen, long-running simulations.
+
+Implemented current-source foundation:
+
+- exact `driver:adapter-id` selection with versioned capabilities and a
+  fail-closed preflight event;
+- one bounded lifecycle for fake, direct-process, and HTTP adapters;
+- typed observations with session, surface, and optional screen identity;
+- exact HTTP method/origin policy matching, manual redirects, bounded and
+  redacted response capture, cancellation, conservative unknown outcomes,
+  cleanup, and an independent status oracle;
+- immutable terminal artifacts, atomic run reservation, fixed execution
+  leases, recovery and cleanup phases, and policy/output budgets.
+
+Missing multi-screen and long-run controls:
+
+| Requirement | Current evidence | Verdict |
+|---|---|---|
+| Multiple tabs, windows, displays, or app screens | Observation envelopes can name a `screen_id`, but no adapter inventories surfaces, tracks focus/context transitions, or implements browser/native/mobile multi-screen actions | `NOT_IMPLEMENTED` |
+| Durable progress | Task events are accumulated in memory and written at terminal completion; no append-only live journal or checkpoint/resume state exists | `NOT_IMPLEMENTED` |
+| Long-lived ownership | Run reservation has a fixed one-hour lease and expiry checks, but no heartbeat, renewal, or lease takeover protocol | `PARTIAL` |
+| Bounded history and evidence | Per-task action/output/time budgets exist, but there is no episode rollover, evidence compaction, retention policy, or backpressure for a long trajectory | `PARTIAL` |
+| Crash continuation | Recovery intentionally cleans up and finalizes without resuming target actions; there is no idempotent checkpointed continuation | `NOT_IMPLEMENTED` |
+| Runtime proof | Fake/direct-process/HTTP deterministic tests exist; browser, PTY, desktop, mobile, agent-runtime, multi-screen, soak, kill/recover, and platform canaries remain unexecuted | `NOT_RUN` |
+
+The next sound slice is an episode controller above `TaskAdapter`: an
+append-only step journal, renewable fenced lease and heartbeat, checkpointed
+actor/world state, surface registry with explicit focus/context transitions,
+per-episode budgets and evidence rollover, idempotency keys, and a
+kill/restart/cleanup conformance campaign. Browser adapters should bind their
+surface registry to Playwright pages or WebDriver BiDi browsing contexts;
+native/mobile adapters should expose platform context/window identities behind
+the same observation contract. Long-running execution should roll to a fresh
+episode before history or evidence limits are approached rather than retaining
+one unbounded in-memory task.
+
+Research anchors: [Playwright multiple pages](https://playwright.dev/docs/pages),
+[W3C WebDriver BiDi browsing contexts](https://www.w3.org/TR/webdriver-bidi/),
+[Appium driver interface model](https://appium.io/docs/en/latest/intro/drivers/),
+and [Temporal durable execution and Continue-As-New](https://docs.temporal.io/workflow-execution/continue-as-new).
+
+## 2026-08-04 Multi-Surface Session Controller Update
+
+Current verdict remains `PARTIAL`. The shared runtime now supports
+policy-bounded, goal-driven sessions across any number of registered logical
+surfaces within configured step, duration, episode, parallelism, artifact, and
+checkpoint limits. It does not promise literally unlimited duration or an
+arbitrary screen without a conforming adapter and environment.
+
+Implemented current-source controls:
+
+- typed session, surface, step, result, goal, event, and checkpoint contracts;
+- one stable surface registry across command, HTTP, terminal, browser,
+  desktop, mobile, and agent-response contours, including context/window,
+  optional screen, lifecycle, generation, and observation digest;
+- conflict-safe parallel batches requiring distinct surfaces and disjoint
+  conflict keys; overlapping work fails before dispatch;
+- hash-linked append-only dispatch events and exclusive revisioned
+  checkpoints, with checkpoint-before-completion acknowledgement;
+- exact step and idempotency accounting, bounded episodes, finite total-step,
+  duration, parallel-step, per-episode, and checkpoint-size controls;
+- renewable operator leases with monotonic heartbeat generations;
+- deterministic goal-oracle termination using `ACHIEVED`, `FAILED`,
+  `BLOCKED`, `TIMED_OUT`, `BUDGET_EXHAUSTED`, `CANCELLED`, or
+  `UNKNOWN_OUTCOME`;
+- conservative continuation: a completed verified checkpoint may resume under
+  valid authority, while an unmatched dispatched action terminates as
+  `UNKNOWN_OUTCOME` and is never replayed;
+- campaign-runner integration and execution-receipt projection for session
+  status, purpose, episode/step counts, checkpoint digest, and final surface
+  registry.
+
+| Capability | Current evidence | Verdict |
+|---|---|---|
+| Multiple logical screens/surfaces | Generic surface registry, focus/context transition tests, and three-surface goal journey | `IMPLEMENTED` at shared-contract/fixture level |
+| Concurrent surfaces | Independent browser/HTTP fixture steps execute together; duplicate surface or conflict key fails before dispatch | `IMPLEMENTED` at controller level |
+| Long trajectory | 120-step three-surface soak rolls across ten episodes with bounded checkpoints | `PASS` for deterministic fixture |
+| Durable progress | Hash-linked journal and exclusive revisioned checkpoints are frozen in the run artifact | `IMPLEMENTED` |
+| Long-lived ownership | Lease heartbeat renews a monotonic generation between bounded steps; expired ownership still fails closed | `IMPLEMENTED` without cross-operator takeover |
+| Crash/restart | Controller API can rehydrate a verified completed checkpoint; unmatched dispatch becomes `UNKNOWN_OUTCOME` | `PARTIAL`; public campaign resume command and kill/restart process canary are `NOT_RUN` |
+| Real browser tabs/windows | No Playwright/WebDriver BiDi campaign adapter inventories or controls pages/contexts yet | `NOT_IMPLEMENTED` in W-006 |
+| Real desktop/mobile/PTY screens | Platform, Appium/device, and PTY adapters remain owned by W-008 through W-010 | `NOT_IMPLEMENTED` |
+| Live unattended duration | No provider-backed soak, process kill/restart, lease-expiry, or platform cleanup canary has run | `NOT_RUN` |
+
+Deterministic public-boundary evidence: focused session, artifact, definition,
+and campaign tests pass; current-source run
+`session-runtime-smoke-20260804-r3` completed with
+`campaign_status=PASS`, `release_eligible=false`, verified cleanup, an
+`ACHIEVED` session checkpoint, and a valid frozen 87-file artifact manifest
+with digest
+`2a73060fae9a9d43384b781bdc5ee6a85582d7baf82a2d98b45eea08eccace68`.
+This proves the framework runtime and fixture only. It does not prove a target
+product, real application surface, deployment, or release eligibility.
+
+### Plan Revision 24 hardening result
+
+The shared controller is now suitable for bounded multi-surface campaigns
+whose adapters satisfy the typed contract; it is still not an unlimited or
+adapter-independent promise.
+
+- every dispatch has a per-step watchdog bounded by the remaining total
+  session duration;
+- session contracts include explicit `max_step_duration_ms` and
+  `max_surfaces` defaults/validation;
+- journal events bind the exact session contract and digest-only step inputs,
+  while resume rejects checkpoints that do not connect to the journal;
+- journal and checkpoint persistence rolls into 1,000-entry segments so each
+  append checks a bounded predecessor rather than rescanning all history;
+- the public campaign runner now schedules independent task surfaces together
+  up to `max_parallel_steps`, but serializes shared policy budgets, HTTP
+  origins, and non-fixture driver instances;
+- the 120-step three-surface soak, all 118 aggregate tests, repository/catalog
+  gates, and immutable run `session-hardening-smoke-20260804-r3` pass. The run
+  remains fixture-only and `release_eligible=false`.
+
+Plan revision 25 closed the process-level continuation gap: the public
+campaign CLI can reopen an interrupted, unfinalized run only after exact
+source/reservation/checkpoint/budget validation, with recovery-only expired
+lease takeover and no replay of ambiguous dispatch or provider evaluation.
+Real page/window/device inventories and provider-backed duration soaks remain
+owned by their contour lanes.
+
+The next implementation boundary after independent W-004 acceptance is
+W-006's Playwright multi-page adapter. PTY, native desktop, Android, and iOS
+adapters remain independent
+downstream worklines and must retain their own permissions, evidence, oracles,
+isolation, and cleanup.
+
 ## Planning Artifact Validation
 
 | Check | Result | Evidence boundary |
 |---|---|---|
 | Lane registration and required packet sections | `PASS` | W-004 through W-010 plus W-012 each exist, are registered, and contain the required lane sections |
 | Separate work graph | `PASS` | `WG-001` defines 19 unique work-graph node/gate IDs, Gate A/Gate B contracts, execution waves, ownership, invalidation, and partial repair without creating duplicate W-IDs |
-| Named contour campaign ownership | `PASS` | 22 planned campaign IDs are assigned once across W-004 through W-010 plus W-012 with explicit execution tier, evidence boundary, and current `OPEN` or `NOT_RUN` status |
+| Named contour campaign ownership | `PASS` | 23 planned campaign IDs are assigned once across W-004 through W-010 plus W-012 with explicit execution tier, evidence boundary, and current `OPEN` or `NOT_RUN` status |
 | Claim/policy/identity/artifact/handoff planning coverage | `PASS` | W-004 owns one shared authority; W-005 through W-010 provide surface seams and W-012 owns composition criteria, profiles, manifests, examples, and validation gates |
-| Campaign-plan focused structure and diff checks | `PASS` | all eight simulation lane packets contain campaign deliverables and required sections; 22 campaign IDs are unique and assigned once; diff whitespace is clean |
+| Campaign-plan focused structure and diff checks | `PASS` | all eight simulation lane packets contain campaign deliverables and required sections; 23 campaign IDs are unique and assigned once; diff whitespace is clean |
 | Full dependency-excluded source tree | `PASS` | current aggregate output reports no source-file finding; all 36 findings are inside ignored dependency trees |
 | Aggregate Cascade validator | `FAIL` | 36 false-positive legacy/project-token matches in root and `.codex/harness-tooling` Playwright `node_modules`; no campaign-plan, role, skill, lane, or work-graph finding |
 | Responsible skills, agents, and docs | `PASS` | `simulation-campaigns`, `simulation-execution`, and `simulation-evaluation` packages; Agent Engineer, simulation-operator, simulation-evaluator, and harness-evaluator boundaries; route docs; structure map; glossary; and design report |
@@ -626,7 +770,7 @@ passed its oracle, was semantically graded, or is release-eligible.
 | Diff whitespace | `PASS` | `git diff --check` |
 | Task-scoped dependency-excluded source validator | `PASS` | after excluding installed dependencies: 9 agents, 41 skills, zero project-specific leakage, zero standalone legacy review aliases |
 | Campaign/task implementation | `NOT_RUN` | plans and lane packets only |
-| Computer Use, standalone Codex-agent, five-contour agent-tool composition, desktop, and mobile execution | `NOT_RUN` | direct surfaces are owned by W-006 through W-010; composition by W-012; W-004 aggregates |
+| Computer Use, standalone Codex-agent, six-contour agent-tool composition, desktop, and mobile execution | `NOT_RUN` | direct surfaces are owned by W-004 and W-006 through W-010; composition by W-012; W-004 aggregates |
 
 The aggregate validator now passes after the repository validator excluded
 generated dependency trees from source leakage checks. Installed Playwright
@@ -634,20 +778,14 @@ dependencies remain tooling inputs, not project-source evidence.
 
 ### Current Status Reconciliation
 
-The table above is execution-time evidence for the earlier source identity.
-WG-001 plan revision 13 binds current work to
-`master@21ba5288b27700f94ecad92ec0cf3d1e5dca5f29` plus WG-001-N03 implementation
-diff `a964ee6a736727b13a7e25fef18fc87f13a8128b119f8863a42de2c620e71491`.
-Exact Bun 1.3.3 validation passes through an ephemeral `pnpm dlx` runner; the
-generated harness catalog contains 44 skills and 368 scenarios. W-004
-WG-001-N03 is `ACCEPTED`. WG-001-N04 and WG-001-N05 are implemented at fixed
-point `0ccb25a3eb88d58289d47e920d5924e78390dd11b69e20b354c4ce53d069d940`;
-52 focused and 62 aggregate tests pass, deterministic run
-`wg001-frontier-repair-20260731-r1` passes with platform-bound evidence, and
-its 72-file terminal manifest verifies.
-Both nodes remain `REVIEW` because independent GF-004/GF-101 review is
-`NOT_RUN`. No older branch implementation was imported; N06 through N08 and
-Gate A remain unopened.
+The planning table above is execution-time evidence for an earlier source
+identity. WG-001 plan revision 22/work-graph revision 11 preserves the
+historical base and receipts, records W-025 through W-029 shared-source
+invalidation, and includes the user-authorized adapter/HTTP and multi-surface
+session-controller slices. Current deterministic controller and campaign
+evidence passes locally; independent acceptance remains pending. This scoped
+implementation does not accept N04/N05, open Gate A, dispatch downstream real
+surface adapters, or prove live/platform or release-eligible behavior.
 
 ## Doc Routing Decisions
 
@@ -655,13 +793,14 @@ Gate A remain unopened.
 |---|---|---|---|---|---|---|
 | Task kind and execution driver are separate axes | current request | this program report and W-004 | `UPDATED` | provisional architecture belongs with the implementation program until validated in code | lane structure and source-only validator pass | W-004 |
 | `agent-response` supports standalone Codex agents and Cascade profiles through one adapter boundary | Annotation 1 | W-007 | `UPDATED` | no unimplemented provider-neutral rule added to durable architecture patterns | W-007 criteria and examples | W-007 |
-| Agent-driven tool evaluation composes `agent-response` with command, browser, terminal, desktop, and mobile tasks rather than creating hybrid task kinds | current follow-up | W-012 with W-005 through W-010 inputs and W-004 merge authority | `UPDATED` | one composition lane avoids duplicate adapters while each composed claim retains agent and surface evidence boundaries | `agent-tool-composition-smoke`, five live canaries, `SIM-016` through `SIM-019`, and W-012 examples | WG-001-N16 then WG-001-N17 |
+| Agent-driven tool evaluation composes `agent-response` with command, HTTP, browser, terminal, desktop, and mobile tasks rather than creating hybrid task kinds | current follow-up | W-012 with W-004 through W-010 inputs and W-004 merge authority | `UPDATED` | one composition lane avoids duplicate adapters while each composed claim retains agent and surface evidence boundaries | `agent-tool-composition-smoke`, six live canaries, `SIM-016` through `SIM-019`, and W-012 examples | WG-001-N16 then WG-001-N17 |
 | Mobile is a separate native task kind with Android/iOS simulator evidence split from real devices | current request | W-010 | `UPDATED` | platform claims remain in the implementation lane until executed | W-010 criteria and coverage examples | W-010 |
 | Claims resolve to versioned policies, independent oracles, frozen evidence, exact identity, and runtime handoff receipts | simulation audit | this program report and W-004 through W-010 plus W-012 | `UPDATED` | one shared foundation owns the contract; W-012 consumes it without a parallel reducer or artifact authority | updated criteria, behavior examples, and validation gates | W-004 Gate A |
 | Execution and evaluation use separate identities and matching receipts, with specialized Cascade trace evaluation preserved | role-separation follow-up | W-004 and W-007 | `UPDATED` | one operator and one read-only evaluator serve every contour; per-contour agent duplication is avoided | skill/agent contracts, receipt templates, W-004 Gate A criteria, and W-007 profile rules | W-004 Gate A |
-| Each contour has named deterministic, live, platform, or composed campaign manifests with explicit selection and independent verdicts | contour campaign follow-up | this program report and W-004 through W-010 plus W-012 | `UPDATED` | one composition lane extends the surface lanes without an umbrella pass or hybrid task kind | 22 campaign deliverables, catalog rules, and deferred real-platform boundaries | W-004 Gate A |
+| Each contour has named deterministic, live, platform, or composed campaign manifests with explicit selection and independent verdicts | contour campaign follow-up | this program report and W-004 through W-010 plus W-012 | `UPDATED` | one composition lane extends the surface lanes without an umbrella pass or hybrid task kind | 23 campaign deliverables, catalog rules, and deferred real-platform boundaries | W-004 Gate A |
 | Campaign, contour, driver, claim ledger, and runtime handoff terminology | implemented skill/docs contract | `docs/glossary.md` | `UPDATED` | only shared terms needed to interpret campaign sources and reports were added | glossary rows and validator pass | W-004 Gate A |
 
-No product, design, brand, or reusable architecture-pattern diff was written.
-The glossary and workflow docs now describe the implemented responsibility
-contract; they do not claim that the planned campaign runtime exists.
+No product, design, or brand diff was needed. The boundary pattern, glossary,
+and workflow docs now describe the implemented session-controller
+responsibility contract while keeping real adapter and live/platform claims
+explicitly unproven.

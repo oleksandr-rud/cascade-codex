@@ -13,7 +13,8 @@ judgment remains owned by the specialized `harness-evaluator`.
 
 ## Evidence Order
 
-1. Exact campaign ID, run ID, claim scope, and execution receipt.
+1. Exact campaign ID, run ID, claim scope, READY simulation intake, and
+   execution receipt.
 2. Frozen run manifest, source manifest, task results, policy decisions,
    oracles, evidence bodies, cleanup result, and handoff receipt.
 3. Digest-bound claim, policy, oracle, rubric, and judge definitions.
@@ -25,6 +26,8 @@ judgment remains owned by the specialized `harness-evaluator`.
 
 - Verify packet completeness, immutability, operator/target/evaluator identity
   separation, digests, lineage, cleanup, and platform scope.
+- Verify the frozen run used the intake-bound Task Envelope, product brief,
+  action digests, and exact applicable policy set.
 - Apply deterministic, permission, safety, evidence, oracle, trace, and
   cleanup hard gates before semantic judgment.
 - Judge only declared semantic claims from frozen evidence.

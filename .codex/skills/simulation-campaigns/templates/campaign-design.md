@@ -5,6 +5,7 @@
 - Status:
 - Owner and lane:
 - Campaign ID and version:
+- Simulation scope and root (`harness` or `product`):
 - Source revision:
 - Current authority state:
 - Requested outcome:
@@ -47,6 +48,10 @@
 - Identity and permission scope:
 - Isolation boundary:
 - Reservation, lease, and recovery authority:
+- Session total/per-step duration, steps, episode, parallelism, surface, and
+  checkpoint bounds:
+- Journal contract/step binding and checkpoint continuity:
+- Parallel task conflict keys and serialization boundary:
 - Policy scope, version, default-deny, and ambiguity behavior:
 - Confirmation receipt binding and expiry:
 - Timeout and required budget dimensions:
@@ -66,8 +71,9 @@
 ## Population, Data, And Calibration
 
 - Population source and reference window:
-- Product-persona revision/path/digest and approved derivation, when applicable:
-- Derivation mode, generator identity, invariants, mutation axes, and weight semantics:
+- Product-persona status plus revision/path/digest and approved derivation, when applicable:
+- Derivation mode, generator identity and reproducible input digest, invariants, mutation axes, and weight semantics (`test-allocation` by default):
+- Prevalence evidence source/digest, reference window, sample, and reviewer, only when `estimated-prevalence` is claimed:
 - Actor weights and required risk slices:
 - Scenario distribution and stop conditions:
 - Stateful world and negative behavior:
@@ -78,7 +84,7 @@
 - Reference labels and reviewer identity:
 - Sample, slice, agreement, correlation, and freshness thresholds:
 - Calibration invalidation inputs:
-- Refinement proposal types, frozen evidence binding, and promotion blockers:
+- Refinement proposal types, evaluation candidate digest bindings, frozen evidence paths, source-manifest bindings, and promotion blockers:
 
 ## Lifecycle
 

@@ -20,13 +20,25 @@ import {
   sha256Text,
   stableJson,
   utcNow,
+  writeJsonAtomic,
   writeJsonAtomicExclusive,
   writeJsonExclusive,
 } from "./common";
-import { validatePersonaRefinementProposal } from "./persona-simulations";
+import {
+  simulationCheckpointDigest,
+  simulationEventDigest,
+  type SimulationSessionCheckpoint,
+  type SimulationSessionEvent,
+} from "./simulation-sessions";
+import {
+  type PersonaRefinementProposal,
+  refinementProposalCandidateDigest,
+  validatePersonaRefinementProposal,
+} from "./persona-simulations";
 
 export const CAMPAIGN_ARTIFACT_SCHEMA_VERSION = "1.0.0";
 export const DEFAULT_EVIDENCE_LIMIT_BYTES = 10 * 1024 * 1024;
+export const SESSION_ARTIFACT_SEGMENT_SIZE = 1_000;
 
 const PRINCIPAL_ROLES = {
   operator: "simulation-operator",
@@ -46,8 +58,14 @@ const MUTABLE_NAMESPACES = new Set([
   "aggregations",
   "recovery",
 ]);
+
+function sessionSegment(sequence: number): string {
+  return String(Math.floor(sequence / SESSION_ARTIFACT_SEGMENT_SIZE)).padStart(
+    8,
+    "0",
+  );
+}
 const MUTATION_LOCK_TIMEOUT_MS = 10_000;
-const MUTATION_LOCK_STALE_MS = 60_000;
 
 const SECRET_PATTERNS = [
   /-----BEGIN [A-Z ]*PRIVATE KEY-----/,
@@ -85,6 +103,27 @@ export interface CampaignLease {
   acquired_at: string;
   expires_at: string;
   recovery_mode: "FINALIZE_UNKNOWN_OUTCOME";
+}
+
+export interface CampaignLeaseState extends CampaignLease {
+  schema_version: typeof CAMPAIGN_ARTIFACT_SCHEMA_VERSION;
+  artifact_type: "campaign-run-lease";
+  run_id: string;
+  generation: number;
+  renewed_at: string;
+}
+
+export interface CampaignLeaseTakeoverReceipt {
+  schema_version: typeof CAMPAIGN_ARTIFACT_SCHEMA_VERSION;
+  artifact_type: "campaign-lease-takeover";
+  run_id: string;
+  previous_lease: CampaignLeaseState;
+  previous_lease_digest: string;
+  previous_generation: number;
+  replacement_lease: CampaignLeaseState;
+  recovery_identity: CampaignPrincipal;
+  reason: string;
+  created_at: string;
 }
 
 export interface CampaignArtifactAuthority {
@@ -365,6 +404,66 @@ export class CampaignArtifactStore {
     return path;
   }
 
+  private sessionJournalSegmentPath(sequence: number): string {
+    return this.path(
+      `execution/session/journal/${sessionSegment(sequence)}.jsonl`,
+    );
+  }
+
+  private sessionCheckpointPath(revision: number): string {
+    const name = `${String(revision).padStart(8, "0")}.json`;
+    return this.path(
+      `execution/session/checkpoints/${sessionSegment(revision)}/${name}`,
+    );
+  }
+
+  private async readSessionEventFile(
+    path: string,
+  ): Promise<SimulationSessionEvent[]> {
+    if (!(await exists(path))) return [];
+    const text = await readFile(path, "utf8");
+    return text
+      .split("\n")
+      .filter(Boolean)
+      .map((line) => JSON.parse(line) as SimulationSessionEvent);
+  }
+
+  private async readLastSessionEvent(): Promise<SimulationSessionEvent | null> {
+    const directory = this.path("execution/session/journal");
+    const entries = await readdir(directory, { withFileTypes: true }).catch(
+      (error) => {
+        if (
+          error &&
+          typeof error === "object" &&
+          "code" in error &&
+          error.code === "ENOENT"
+        ) {
+          return [];
+        }
+        throw error;
+      },
+    );
+    const latest = entries
+      .filter((entry) => {
+        if (entry.isSymbolicLink()) {
+          throw new CascadeError("simulation journal segment cannot be a symlink");
+        }
+        return entry.isFile() && /^\d{8}\.jsonl$/.test(entry.name);
+      })
+      .sort((left, right) => left.name.localeCompare(right.name))
+      .at(-1);
+    if (latest) {
+      const events = await this.readSessionEventFile(
+        resolve(directory, latest.name),
+      );
+      if (events.length) return events.at(-1)!;
+    }
+    const legacyEvents = await this.readSessionEventFile(
+      this.path("execution/session/journal.jsonl"),
+    );
+    return legacyEvents.at(-1) ?? null;
+  }
+
   private async assertMutable(): Promise<void> {
     if (
       (await exists(this.path("terminal.lock"))) ||
@@ -376,6 +475,7 @@ export class CampaignArtifactStore {
 
   private async withMutationLock<T>(operation: () => Promise<T>): Promise<T> {
     const started = Date.now();
+    const lockToken = crypto.randomUUID();
     await assertNoSymlinkAncestors(this.artifactRoot, "artifact root");
     await mkdir(this.artifactRoot, { recursive: true });
     while (true) {
@@ -385,6 +485,7 @@ export class CampaignArtifactStore {
           stableJson({
             run_id: this.runId,
             pid: process.pid,
+            token: lockToken,
             acquired_at: utcNow(),
           }),
           { encoding: "utf8", flag: "wx" },
@@ -405,14 +506,9 @@ export class CampaignArtifactStore {
         ) {
           throw new CascadeError(`campaign run ${this.runId} is already finalized`);
         }
-        const lock = await stat(this.mutationLockPath).catch(() => null);
-        if (lock && Date.now() - lock.mtimeMs > MUTATION_LOCK_STALE_MS) {
-          await unlink(this.mutationLockPath).catch(() => undefined);
-          continue;
-        }
         if (Date.now() - started >= MUTATION_LOCK_TIMEOUT_MS) {
           throw new CascadeError(
-            `timed out acquiring campaign mutation lock: ${this.runId}`,
+            `timed out acquiring campaign mutation lock: ${this.runId}; stale locks fail closed and require explicit recovery`,
           );
         }
         await Bun.sleep(5);
@@ -422,8 +518,40 @@ export class CampaignArtifactStore {
       await this.assertMutable();
       return await operation();
     } finally {
-      await unlink(this.mutationLockPath).catch(() => undefined);
+      const lock = await readJson<Record<string, unknown>>(
+        this.mutationLockPath,
+      ).catch(() => null);
+      if (lock?.token === lockToken) {
+        await unlink(this.mutationLockPath).catch(() => undefined);
+      }
     }
+  }
+
+  async readCurrentLease(): Promise<CampaignLeaseState> {
+    const reservation = await this.readReservation();
+    const path = this.path("lease.json");
+    if (!(await exists(path))) {
+      return {
+        schema_version: CAMPAIGN_ARTIFACT_SCHEMA_VERSION,
+        artifact_type: "campaign-run-lease",
+        run_id: this.runId,
+        generation: 0,
+        renewed_at: reservation.lease.acquired_at,
+        ...reservation.lease,
+      };
+    }
+    const lease = await readJson<CampaignLeaseState>(path);
+    if (
+      lease.schema_version !== CAMPAIGN_ARTIFACT_SCHEMA_VERSION ||
+      lease.artifact_type !== "campaign-run-lease" ||
+      lease.run_id !== this.runId ||
+      !Number.isInteger(lease.generation) ||
+      lease.generation < 0
+    ) {
+      throw new CascadeError(`campaign lease state is invalid: ${this.runId}`);
+    }
+    validateLease(lease);
+    return lease;
   }
 
   private async assertOperatorLease(): Promise<CampaignRunReservation> {
@@ -431,19 +559,20 @@ export class CampaignArtifactStore {
       throw new CascadeError("campaign artifact mutation requires explicit authority");
     }
     const reservation = await this.readReservation();
+    const lease = await this.readCurrentLease();
     const operator = reservation.identities.operator;
     if (
       this.authority.principal.role !== "simulation-operator" ||
       this.authority.principal.session_id !== operator.session_id ||
       this.authority.principal.subject !== operator.subject ||
-      this.authority.lease_id !== reservation.lease.lease_id ||
-      reservation.lease.owner_session_id !== operator.session_id
+      this.authority.lease_id !== lease.lease_id ||
+      lease.owner_session_id !== operator.session_id
     ) {
       throw new CascadeError(
         "campaign artifact mutation requires the reserved operator lease",
       );
     }
-    if (Date.now() >= Date.parse(reservation.lease.expires_at)) {
+    if (Date.now() >= Date.parse(lease.expires_at)) {
       throw new CascadeError("campaign operator lease is expired");
     }
     return reservation;
@@ -513,11 +642,157 @@ export class CampaignArtifactStore {
       lease: input.lease,
     };
     await writeJsonExclusive(this.path("reservation.json"), reservation);
+    await writeJsonExclusive(this.path("lease.json"), {
+      schema_version: CAMPAIGN_ARTIFACT_SCHEMA_VERSION,
+      artifact_type: "campaign-run-lease",
+      run_id: this.runId,
+      generation: 0,
+      renewed_at: input.lease.acquired_at,
+      ...input.lease,
+    } satisfies CampaignLeaseState);
     return reservation;
   }
 
   async readReservation(): Promise<CampaignRunReservation> {
-    return readJson<CampaignRunReservation>(this.path("reservation.json"));
+    const reservation = await readJson<CampaignRunReservation>(
+      this.path("reservation.json"),
+    );
+    if (
+      reservation.schema_version !== CAMPAIGN_ARTIFACT_SCHEMA_VERSION ||
+      reservation.artifact_type !== "campaign-run-reservation" ||
+      reservation.run_id !== this.runId ||
+      !Number.isInteger(reservation.attempt) ||
+      reservation.attempt < 1
+    ) {
+      throw new CascadeError(
+        `campaign reservation contract is invalid: ${this.runId}`,
+      );
+    }
+    requireNonEmpty("reservation campaign id", reservation.campaign_id);
+    requireNonEmpty("reservation campaign digest", reservation.campaign_digest);
+    validateIdentities(reservation.identities);
+    validateLease(reservation.lease);
+    if (
+      reservation.lease.owner_session_id !==
+      reservation.identities.operator.session_id
+    ) {
+      throw new CascadeError(
+        "campaign reservation lease owner does not match the operator session",
+      );
+    }
+    return reservation;
+  }
+
+  private async validateRefinementLinkage(
+    proposal: PersonaRefinementProposal,
+    reservation: CampaignRunReservation,
+    sourceManifest?: Record<string, unknown>,
+    evaluationReceipt?: Record<string, unknown>,
+  ): Promise<void> {
+    const source = sourceManifest ?? requireRecord(
+      await readJson<unknown>(this.path("execution/source-manifest.json")),
+      "source manifest",
+    );
+    const evaluation = evaluationReceipt ?? requireRecord(
+      await readJson<unknown>(
+        this.path(`evaluations/${proposal.evaluation_id}/receipt.json`),
+      ),
+      "evaluation receipt",
+    );
+    assertIdentity(source, reservation, "source manifest");
+    assertIdentity(evaluation, reservation, "evaluation receipt");
+    if (
+      evaluation.evaluation_id !== proposal.evaluation_id ||
+      evaluation.evaluator_identity !== proposal.proposed_by ||
+      evaluation.evaluator_identity !== reservation.identities.evaluator.subject
+    ) {
+      throw new CascadeError(
+        `refinement ${proposal.proposal_id} is not bound to the reserved evaluation and evaluator`,
+      );
+    }
+    if (!Array.isArray(evaluation.refinement_proposal_bindings)) {
+      throw new CascadeError(
+        `evaluation ${proposal.evaluation_id} lacks refinement proposal bindings`,
+      );
+    }
+    const bindings = evaluation.refinement_proposal_bindings.map((value, index) =>
+      requireRecord(value, `refinement proposal binding ${index}`),
+    );
+    const binding = bindings.find(
+      (value) => value.proposal_id === proposal.proposal_id,
+    );
+    if (
+      !binding ||
+      binding.candidate_digest !== refinementProposalCandidateDigest(proposal)
+    ) {
+      throw new CascadeError(
+        `refinement ${proposal.proposal_id} does not match its evaluation candidate digest`,
+      );
+    }
+    const inputManifest = requireRecord(
+      await readJson<unknown>(
+        this.path(`evaluations/${proposal.evaluation_id}/input/input-manifest.json`),
+      ),
+      "evaluation input manifest",
+    );
+    if (!Array.isArray(inputManifest.files)) {
+      throw new CascadeError("evaluation input manifest files are missing");
+    }
+    const inputFiles = inputManifest.files.map((value, index) =>
+      requireRecord(value, `evaluation input file ${index}`),
+    );
+    const inputPaths = inputFiles.map((file) => String(file.path));
+    if (
+      new Set(inputPaths).size !== inputPaths.length ||
+      inputManifest.manifest_digest !== sha256Text(stableJson(inputFiles)) ||
+      inputManifest.manifest_digest !== evaluation.input_manifest_digest
+    ) {
+      throw new CascadeError(
+        `refinement ${proposal.proposal_id} evaluation input manifest is stale or mismatched`,
+      );
+    }
+    if (!Array.isArray(source.definitions)) {
+      throw new CascadeError("source manifest definitions are missing");
+    }
+    const definitions = source.definitions.map((value, index) =>
+      requireRecord(value, `source definition ${index}`),
+    );
+    for (const reference of [proposal.persona, proposal.derivation]) {
+      if (
+        !definitions.some(
+          (definition) =>
+            definition.path === reference.path &&
+            definition.sha256 === reference.sha256,
+        )
+      ) {
+        throw new CascadeError(
+          `refinement ${proposal.proposal_id} source binding is absent from the source manifest: ${reference.path}`,
+        );
+      }
+    }
+    for (const evidencePath of proposal.evidence_paths) {
+      const inputFile = inputFiles.find((file) => file.path === evidencePath);
+      const evidence = this.path(
+        `evaluations/${proposal.evaluation_id}/input/${evidencePath}`,
+      );
+      const metadata = await lstat(evidence).catch(() => null);
+      if (
+        !inputFile ||
+        typeof inputFile.sha256 !== "string" ||
+        !/^[a-f0-9]{64}$/.test(inputFile.sha256) ||
+        !metadata?.isFile() ||
+        metadata.isSymbolicLink()
+      ) {
+        throw new CascadeError(
+          `refinement ${proposal.proposal_id} cites missing frozen evaluation evidence: ${evidencePath}`,
+        );
+      }
+      if ((await sha256File(evidence)) !== inputFile.sha256) {
+        throw new CascadeError(
+          `refinement ${proposal.proposal_id} frozen evaluation evidence digest is stale: ${evidencePath}`,
+        );
+      }
+    }
   }
 
   async writeStageJson(
@@ -525,7 +800,7 @@ export class CampaignArtifactStore {
     value: unknown,
   ): Promise<void> {
     await this.withMutationLock(async () => {
-      await this.assertOperatorLease();
+      const reservation = await this.assertOperatorLease();
       const normalized = relativePath.replaceAll("\\", "/");
       if (
         normalized.startsWith("/") ||
@@ -544,9 +819,33 @@ export class CampaignArtifactStore {
         );
       }
       if (namespace === "refinements") {
+        if (!value || typeof value !== "object" || Array.isArray(value)) {
+          throw new CascadeError(
+            `campaign refinement ${relativePath} must be an object`,
+          );
+        }
+        const proposal = value as Record<string, unknown>;
         validatePersonaRefinementProposal(
-          value as Record<string, unknown>,
+          proposal,
           `campaign refinement ${relativePath}`,
+        );
+        if (
+          proposal.run_id !== this.runId ||
+          proposal.campaign_id !== reservation.campaign_id ||
+          proposal.proposed_by !== reservation.identities.evaluator.subject
+        ) {
+          throw new CascadeError(
+            `campaign refinement ${relativePath} does not match the reserved run, campaign, and evaluator`,
+          );
+        }
+        if (normalized !== `refinements/${proposal.proposal_id}.json`) {
+          throw new CascadeError(
+            `campaign refinement path must match proposal_id: ${proposal.proposal_id}`,
+          );
+        }
+        await this.validateRefinementLinkage(
+          proposal as unknown as PersonaRefinementProposal,
+          reservation,
         );
       }
       const serialized = stableJson(value);
@@ -680,6 +979,378 @@ export class CampaignArtifactStore {
     });
   }
 
+  async renewLease(
+    ttlMs: number,
+    now: Date = new Date(),
+  ): Promise<CampaignLeaseState> {
+    if (!Number.isInteger(ttlMs) || ttlMs < 1_000 || ttlMs > 24 * 60 * 60 * 1000) {
+      throw new CascadeError(
+        "campaign lease renewal ttl must be between 1000ms and 24 hours",
+      );
+    }
+    return this.withMutationLock(async () => {
+      await this.assertOperatorLease();
+      const current = await this.readCurrentLease();
+      if (now.getTime() >= Date.parse(current.expires_at)) {
+        throw new CascadeError("campaign operator lease is expired");
+      }
+      if (now.getTime() < Date.parse(current.renewed_at)) {
+        throw new CascadeError("campaign lease renewal time cannot move backwards");
+      }
+      const renewed: CampaignLeaseState = {
+        ...current,
+        generation: current.generation + 1,
+        renewed_at: now.toISOString(),
+        expires_at: new Date(
+          Math.max(Date.parse(current.expires_at), now.getTime() + ttlMs),
+        ).toISOString(),
+      };
+      validateLease(renewed);
+      await writeJsonAtomic(this.path("lease.json"), renewed);
+      await appendFile(
+        this.path("lifecycle.jsonl"),
+        `${stableJson({
+          status: "HEARTBEAT",
+          at: renewed.renewed_at,
+          lease_id: renewed.lease_id,
+          lease_generation: renewed.generation,
+          expires_at: renewed.expires_at,
+        })}\n`,
+        { encoding: "utf8", flag: "a" },
+      );
+      return renewed;
+    });
+  }
+
+  async takeoverExpiredLease(input: {
+    lease_id: string;
+    ttl_ms: number;
+    reason: string;
+    now?: Date;
+  }): Promise<CampaignLeaseState> {
+    requireNonEmpty("replacement lease id", input.lease_id);
+    requireNonEmpty("lease takeover reason", input.reason);
+    if (
+      !Number.isInteger(input.ttl_ms) ||
+      input.ttl_ms < 1_000 ||
+      input.ttl_ms > 24 * 60 * 60 * 1_000
+    ) {
+      throw new CascadeError(
+        "campaign lease takeover ttl must be between 1000ms and 24 hours",
+      );
+    }
+    return this.withMutationLock(async () => {
+      if (!this.authority) {
+        throw new CascadeError(
+          "campaign lease takeover requires explicit recovery authority",
+        );
+      }
+      const reservation = await this.readReservation();
+      const recovery = reservation.identities.recovery;
+      if (
+        this.authority.principal.role !== "simulation-recovery" ||
+        this.authority.principal.session_id !== recovery.session_id ||
+        this.authority.principal.subject !== recovery.subject
+      ) {
+        throw new CascadeError(
+          "campaign lease takeover requires the reserved recovery identity",
+        );
+      }
+      const current = await this.readCurrentLease();
+      const now = input.now ?? new Date();
+      if (now.getTime() < Date.parse(current.expires_at)) {
+        throw new CascadeError(
+          "campaign operator lease is still active and cannot be taken over",
+        );
+      }
+      if (input.lease_id === current.lease_id) {
+        throw new CascadeError(
+          "campaign replacement lease id must differ from the expired lease",
+        );
+      }
+      const nextGeneration = current.generation + 1;
+      const receiptPath = this.path(
+        `recovery/lease-takeovers/${String(nextGeneration).padStart(8, "0")}.json`,
+      );
+      if (await exists(receiptPath)) {
+        const pending = await readJson<CampaignLeaseTakeoverReceipt>(receiptPath);
+        if (
+          pending.schema_version !== CAMPAIGN_ARTIFACT_SCHEMA_VERSION ||
+          pending.artifact_type !== "campaign-lease-takeover" ||
+          pending.run_id !== this.runId ||
+          stableJson(pending.previous_lease) !== stableJson(current) ||
+          pending.previous_generation !== current.generation ||
+          pending.previous_lease_digest !== sha256Text(stableJson(current)) ||
+          pending.replacement_lease.generation !== nextGeneration ||
+          pending.replacement_lease.lease_id !== input.lease_id ||
+          stableJson(pending.recovery_identity) !== stableJson(recovery)
+        ) {
+          throw new CascadeError(
+            "pending campaign lease takeover receipt is stale or mismatched",
+          );
+        }
+        validateLease(pending.replacement_lease);
+        scanForSecrets(
+          Buffer.from(stableJson(pending), "utf8"),
+          "no-secrets-v1",
+          this.sensitiveValues,
+        );
+        if (now.getTime() >= Date.parse(pending.replacement_lease.expires_at)) {
+          throw new CascadeError(
+            "pending campaign replacement lease expired before activation",
+          );
+        }
+        await writeJsonAtomic(this.path("lease.json"), pending.replacement_lease);
+        await appendFile(
+          this.path("lifecycle.jsonl"),
+          `${stableJson({
+            status: "LEASE_TAKEOVER_RECOVERED",
+            at: now.toISOString(),
+            lease_id: pending.replacement_lease.lease_id,
+            lease_generation: pending.replacement_lease.generation,
+            takeover_receipt_digest: sha256Text(stableJson(pending)),
+          })}\n`,
+          { encoding: "utf8", flag: "a" },
+        );
+        return pending.replacement_lease;
+      }
+      const replacement: CampaignLeaseState = {
+        schema_version: CAMPAIGN_ARTIFACT_SCHEMA_VERSION,
+        artifact_type: "campaign-run-lease",
+        run_id: this.runId,
+        lease_id: input.lease_id,
+        owner_session_id: reservation.identities.operator.session_id,
+        acquired_at: now.toISOString(),
+        expires_at: new Date(now.getTime() + input.ttl_ms).toISOString(),
+        recovery_mode: "FINALIZE_UNKNOWN_OUTCOME",
+        generation: nextGeneration,
+        renewed_at: now.toISOString(),
+      };
+      validateLease(replacement);
+      const receipt: CampaignLeaseTakeoverReceipt = {
+        schema_version: CAMPAIGN_ARTIFACT_SCHEMA_VERSION,
+        artifact_type: "campaign-lease-takeover",
+        run_id: this.runId,
+        previous_lease: current,
+        previous_lease_digest: sha256Text(stableJson(current)),
+        previous_generation: current.generation,
+        replacement_lease: replacement,
+        recovery_identity: recovery,
+        reason: input.reason,
+        created_at: now.toISOString(),
+      };
+      scanForSecrets(
+        Buffer.from(stableJson(receipt), "utf8"),
+        "no-secrets-v1",
+        this.sensitiveValues,
+      );
+      await this.assertSafeAncestors(receiptPath);
+      await writeJsonExclusive(receiptPath, receipt);
+      await writeJsonAtomic(this.path("lease.json"), replacement);
+      await appendFile(
+        this.path("lifecycle.jsonl"),
+        `${stableJson({
+          status: "LEASE_TAKEOVER",
+          at: replacement.renewed_at,
+          previous_lease_digest: receipt.previous_lease_digest,
+          lease_id: replacement.lease_id,
+          lease_generation: replacement.generation,
+          recovery_identity: recovery.subject,
+          takeover_receipt_digest: sha256Text(stableJson(receipt)),
+        })}\n`,
+        { encoding: "utf8", flag: "a" },
+      );
+      return replacement;
+    });
+  }
+
+  async appendSessionEvent(event: SimulationSessionEvent): Promise<void> {
+    await this.withMutationLock(async () => {
+      await this.assertOperatorLease();
+      if (event.session_id !== this.runId) {
+        throw new CascadeError(
+          `simulation session event does not match run: ${event.session_id}/${this.runId}`,
+        );
+      }
+      if (
+        !/^[a-f0-9]{64}$/.test(event.contract_digest) ||
+        event.event_digest !== simulationEventDigest(event)
+      ) {
+        throw new CascadeError("simulation session event digest is invalid");
+      }
+      const previousEvent = await this.readLastSessionEvent();
+      if (
+        event.sequence !== (previousEvent?.sequence ?? -1) + 1 ||
+        event.previous_event_digest !== (previousEvent?.event_digest ?? null) ||
+        (previousEvent !== null &&
+          previousEvent.contract_digest !== event.contract_digest)
+      ) {
+        throw new CascadeError(
+          "simulation session event does not extend the current journal",
+        );
+      }
+      const serialized = stableJson(event);
+      scanForSecrets(
+        Buffer.from(serialized, "utf8"),
+        "no-secrets-v1",
+        this.sensitiveValues,
+      );
+      const path = this.sessionJournalSegmentPath(event.sequence);
+      await this.assertSafeAncestors(path);
+      await mkdir(dirname(path), { recursive: true });
+      await appendFile(path, `${serialized}\n`, { encoding: "utf8", flag: "a" });
+    });
+  }
+
+  async writeSessionCheckpoint<TState>(
+    checkpoint: SimulationSessionCheckpoint<TState>,
+  ): Promise<void> {
+    await this.withMutationLock(async () => {
+      await this.assertOperatorLease();
+      if (checkpoint.session_id !== this.runId) {
+        throw new CascadeError(
+          `simulation checkpoint does not match run: ${checkpoint.session_id}/${this.runId}`,
+        );
+      }
+      if (
+        !/^[a-f0-9]{64}$/.test(checkpoint.contract_digest) ||
+        checkpoint.checkpoint_digest !== simulationCheckpointDigest(checkpoint) ||
+        checkpoint.checkpoint_id !==
+          `${this.runId}:checkpoint:${String(checkpoint.revision).padStart(8, "0")}`
+      ) {
+        throw new CascadeError("simulation checkpoint digest or identity is invalid");
+      }
+      const previousCheckpointPath =
+        checkpoint.revision > 0
+          ? this.sessionCheckpointPath(checkpoint.revision - 1)
+          : null;
+      const legacyPreviousCheckpointPath =
+        checkpoint.revision > 0
+          ? this.path(
+              `execution/session/checkpoints/${String(
+                checkpoint.revision - 1,
+              ).padStart(8, "0")}.json`,
+            )
+          : null;
+      if (
+        checkpoint.revision === 0
+          ? (await this.readLatestSessionCheckpoint<TState>()) !== null
+          : !(
+              (await exists(previousCheckpointPath!)) ||
+              (await exists(legacyPreviousCheckpointPath!))
+            )
+      ) {
+        throw new CascadeError(
+          "simulation checkpoint does not extend the current revision",
+        );
+      }
+      const journalHead = await this.readLastSessionEvent();
+      if (
+        checkpoint.last_event_digest !==
+        (journalHead?.event_digest ?? null)
+      ) {
+        throw new CascadeError(
+          "simulation checkpoint does not bind the current journal head",
+        );
+      }
+      const serialized = stableJson(checkpoint);
+      scanForSecrets(
+        Buffer.from(serialized, "utf8"),
+        "no-secrets-v1",
+        this.sensitiveValues,
+      );
+      const path = this.sessionCheckpointPath(checkpoint.revision);
+      await this.assertSafeAncestors(path);
+      await writeJsonExclusive(path, checkpoint);
+    });
+  }
+
+  async readSessionEvents(): Promise<SimulationSessionEvent[]> {
+    const paths: string[] = [];
+    const legacyPath = this.path("execution/session/journal.jsonl");
+    if (await exists(legacyPath)) paths.push(legacyPath);
+    const directory = this.path("execution/session/journal");
+    const entries = await readdir(directory, { withFileTypes: true }).catch(
+      (error) => {
+        if (
+          error &&
+          typeof error === "object" &&
+          "code" in error &&
+          error.code === "ENOENT"
+        ) {
+          return [];
+        }
+        throw error;
+      },
+    );
+    for (const entry of entries) {
+      if (entry.isSymbolicLink()) {
+        throw new CascadeError("simulation journal segment cannot be a symlink");
+      }
+      if (entry.isFile() && /^\d{8}\.jsonl$/.test(entry.name)) {
+        paths.push(resolve(directory, entry.name));
+      }
+    }
+    const events: SimulationSessionEvent[] = [];
+    for (const path of paths.sort()) {
+      events.push(...(await this.readSessionEventFile(path)));
+    }
+    return events.sort((left, right) => left.sequence - right.sequence);
+  }
+
+  async readLatestSessionCheckpoint<TState>(): Promise<
+    SimulationSessionCheckpoint<TState> | null
+  > {
+    const directory = this.path("execution/session/checkpoints");
+    const entries = await readdir(directory, { withFileTypes: true }).catch((error) => {
+      if (
+        error &&
+        typeof error === "object" &&
+        "code" in error &&
+        error.code === "ENOENT"
+      ) {
+        return [];
+      }
+      throw error;
+    });
+    const candidates: string[] = [];
+    for (const entry of entries) {
+      if (entry.isSymbolicLink()) {
+        throw new CascadeError("simulation checkpoint segment cannot be a symlink");
+      }
+      if (entry.isFile() && /^\d{8}\.json$/.test(entry.name)) {
+        candidates.push(resolve(directory, entry.name));
+        continue;
+      }
+      if (entry.isDirectory() && /^\d{8}$/.test(entry.name)) {
+        const segmentDirectory = resolve(directory, entry.name);
+        const segmentEntries = await readdir(segmentDirectory, {
+          withFileTypes: true,
+        });
+        for (const segmentEntry of segmentEntries) {
+          if (segmentEntry.isSymbolicLink()) {
+            throw new CascadeError(
+              "simulation checkpoint cannot be a symlink",
+            );
+          }
+          if (segmentEntry.isFile() && /^\d{8}\.json$/.test(segmentEntry.name)) {
+            candidates.push(resolve(segmentDirectory, segmentEntry.name));
+          }
+        }
+      }
+    }
+    const latest = candidates
+      .sort((left, right) => {
+        const leftRevision = Number(left.match(/(\d{8})\.json$/)?.[1] ?? -1);
+        const rightRevision = Number(right.match(/(\d{8})\.json$/)?.[1] ?? -1);
+        return leftRevision - rightRevision;
+      })
+      .at(-1);
+    return latest
+      ? readJson<SimulationSessionCheckpoint<TState>>(latest)
+      : null;
+  }
+
   async freezeFile(
     input: FreezeCampaignFileInput,
   ): Promise<FrozenCampaignArtifact> {
@@ -807,11 +1478,138 @@ export class CampaignArtifactStore {
     });
   }
 
+  private async validateLeaseTakeoverHistory(
+    reservation: CampaignRunReservation,
+  ): Promise<void> {
+    const current = await this.readCurrentLease();
+    const directory = this.path("recovery/lease-takeovers");
+    const entries = await readdir(directory, { withFileTypes: true }).catch(
+      (error) => {
+        if (
+          error &&
+          typeof error === "object" &&
+          "code" in error &&
+          error.code === "ENOENT"
+        ) {
+          return [];
+        }
+        throw error;
+      },
+    );
+    const receipts: CampaignLeaseTakeoverReceipt[] = [];
+    for (const entry of entries.sort((left, right) =>
+      left.name.localeCompare(right.name)
+    )) {
+      if (entry.isSymbolicLink() || !entry.isFile()) {
+        throw new CascadeError(
+          "campaign lease takeover history contains an unsafe entry",
+        );
+      }
+      if (!/^\d{8}\.json$/.test(entry.name)) {
+        throw new CascadeError(
+          `campaign lease takeover history has an invalid path: ${entry.name}`,
+        );
+      }
+      const receipt = await readJson<CampaignLeaseTakeoverReceipt>(
+        resolve(directory, entry.name),
+      );
+      const previous = receipt.previous_lease;
+      const replacement = receipt.replacement_lease;
+      if (
+        receipt.schema_version !== CAMPAIGN_ARTIFACT_SCHEMA_VERSION ||
+        receipt.artifact_type !== "campaign-lease-takeover" ||
+        receipt.run_id !== this.runId ||
+        previous.schema_version !== CAMPAIGN_ARTIFACT_SCHEMA_VERSION ||
+        previous.artifact_type !== "campaign-run-lease" ||
+        previous.run_id !== this.runId ||
+        previous.owner_session_id !==
+          reservation.identities.operator.session_id ||
+        !/^[a-f0-9]{64}$/.test(receipt.previous_lease_digest) ||
+        receipt.previous_lease_digest !== sha256Text(stableJson(previous)) ||
+        !Number.isInteger(receipt.previous_generation) ||
+        receipt.previous_generation < 0 ||
+        receipt.previous_generation !== previous.generation ||
+        replacement.schema_version !== CAMPAIGN_ARTIFACT_SCHEMA_VERSION ||
+        replacement.artifact_type !== "campaign-run-lease" ||
+        replacement.run_id !== this.runId ||
+        replacement.generation !== receipt.previous_generation + 1 ||
+        replacement.owner_session_id !==
+          reservation.identities.operator.session_id ||
+        stableJson(receipt.recovery_identity) !==
+          stableJson(reservation.identities.recovery) ||
+        typeof receipt.reason !== "string" ||
+        !receipt.reason.trim() ||
+        Number.isNaN(Date.parse(receipt.created_at))
+      ) {
+        throw new CascadeError(
+          "campaign lease takeover receipt is invalid or mismatched",
+        );
+      }
+      validateLease(previous);
+      validateLease(replacement);
+      if (
+        Date.parse(replacement.acquired_at) < Date.parse(previous.expires_at)
+      ) {
+        throw new CascadeError(
+          "campaign replacement lease was acquired before the prior lease expired",
+        );
+      }
+      if (
+        entry.name !==
+        `${String(replacement.generation).padStart(8, "0")}.json`
+      ) {
+        throw new CascadeError(
+          "campaign lease takeover path does not match its generation",
+        );
+      }
+      receipts.push(receipt);
+    }
+    const generations = receipts.map(
+      (receipt) => receipt.replacement_lease.generation,
+    );
+    if (
+      new Set(generations).size !== generations.length ||
+      generations.some(
+        (generation, index) =>
+          index > 0 && generation <= generations[index - 1]!,
+      )
+    ) {
+      throw new CascadeError(
+        "campaign lease takeover generations are duplicated or unordered",
+      );
+    }
+    const latest = receipts.at(-1);
+    for (const [index, receipt] of receipts.entries()) {
+      const priorReplacement = receipts[index - 1]?.replacement_lease;
+      if (
+        index === 0
+          ? receipt.previous_lease.lease_id !== reservation.lease.lease_id
+          : receipt.previous_lease.lease_id !== priorReplacement!.lease_id ||
+            receipt.previous_lease.generation < priorReplacement!.generation
+      ) {
+        throw new CascadeError(
+          "campaign lease takeover history does not form a monotonic lease chain",
+        );
+      }
+    }
+    if (
+      latest
+        ? current.lease_id !== latest.replacement_lease.lease_id ||
+          current.generation < latest.replacement_lease.generation
+        : current.lease_id !== reservation.lease.lease_id
+    ) {
+      throw new CascadeError(
+        "campaign current lease is not bound to its takeover history",
+      );
+    }
+  }
+
   private async validateTerminalEvidence(
     status: CampaignRunFinalization["status"],
     reservation: CampaignRunReservation,
     relativeFiles: string[],
   ): Promise<void> {
+    await this.validateLeaseTakeoverHistory(reservation);
     const lifecyclePath = this.path("lifecycle.jsonl");
     if (!relativeFiles.includes("lifecycle.jsonl")) {
       throw new CascadeError(`${status} finalization requires lifecycle evidence`);
@@ -932,6 +1730,62 @@ export class CampaignArtifactStore {
     ) {
       throw new CascadeError(
         "COMPLETED terminal evidence has invalid evaluation or aggregation linkage",
+      );
+    }
+    const expectedEvaluationPath = `evaluations/${String(evaluation.evaluation_id)}/receipt.json`;
+    if (
+      evaluationPaths[0] !== expectedEvaluationPath ||
+      evaluation.evaluator_identity !== reservation.identities.evaluator.subject
+    ) {
+      throw new CascadeError(
+        "COMPLETED terminal evidence has an invalid evaluation path or evaluator identity",
+      );
+    }
+    if (!Array.isArray(evaluation.refinement_proposal_bindings)) {
+      throw new CascadeError(
+        "COMPLETED evaluation receipt lacks refinement proposal bindings",
+      );
+    }
+    const bindings = evaluation.refinement_proposal_bindings.map((value, index) =>
+      requireRecord(value, `refinement proposal binding ${index}`),
+    );
+    const bindingIds = bindings.map((binding) => String(binding.proposal_id));
+    if (new Set(bindingIds).size !== bindingIds.length) {
+      throw new CascadeError(
+        "COMPLETED evaluation receipt has duplicate refinement proposal bindings",
+      );
+    }
+    const refinementPaths = relativeFiles.filter(
+      (path) => path.startsWith("refinements/") && path.endsWith(".json"),
+    );
+    const proposalIds: string[] = [];
+    for (const refinementPath of refinementPaths) {
+      const proposal = requireRecord(
+        await readJson<unknown>(this.path(refinementPath)),
+        `refinement ${refinementPath}`,
+      );
+      validatePersonaRefinementProposal(
+        proposal,
+        `refinement ${refinementPath}`,
+      );
+      if (refinementPath !== `refinements/${String(proposal.proposal_id)}.json`) {
+        throw new CascadeError(
+          `COMPLETED refinement path does not match proposal_id: ${refinementPath}`,
+        );
+      }
+      await this.validateRefinementLinkage(
+        proposal as unknown as PersonaRefinementProposal,
+        reservation,
+        sourceManifest,
+        evaluation,
+      );
+      proposalIds.push(String(proposal.proposal_id));
+    }
+    if (
+      stableJson([...proposalIds].sort()) !== stableJson([...bindingIds].sort())
+    ) {
+      throw new CascadeError(
+        "COMPLETED refinement artifacts do not match evaluation proposal bindings",
       );
     }
   }

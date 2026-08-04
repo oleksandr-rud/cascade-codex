@@ -60,7 +60,7 @@ Reference Window: not applicable
 - Brand/design/spec dependencies: none.
 - Prior revision or supersession: none.
 - Approved derivation manifests:
-  `evals/simulations/simulation-correctness-fixture/derivations/P-999-coverage-v1.json`.
+  `product-evals/simulations/harness/simulation-correctness-fixture/derivations/P-999-coverage-v1.json`.
 
 ## Doc Routing Decisions
 

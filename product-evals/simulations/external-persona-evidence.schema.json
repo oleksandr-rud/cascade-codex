@@ -1,0 +1,49 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://cascade.local/schemas/external-persona-evidence.schema.json",
+  "title": "Cascade external persona evidence manifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version", "id", "kind", "reference", "evidence_sha256",
+    "source_authority", "reference_window", "usage_rights", "sensitivity",
+    "retention_policy", "permitted_purpose", "prohibited_uses", "reviewed_by",
+    "reviewed_at"
+  ],
+  "properties": {
+    "schema_version": { "const": 1 },
+    "id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9.-]+$" },
+    "kind": { "enum": ["research", "feedback", "behavioral-data", "expert-review", "product-spec"] },
+    "reference": { "type": "string", "minLength": 1 },
+    "evidence_sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "source_authority": { "type": "string", "minLength": 1 },
+    "reference_window": { "type": "string", "minLength": 1 },
+    "usage_rights": { "enum": ["internal-research", "public", "licensed", "consented"] },
+    "sensitivity": { "enum": ["none", "low", "restricted"] },
+    "retention_policy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["mode", "deletion_owner", "expires_at"],
+      "properties": {
+        "mode": { "enum": ["manual-review", "retain-until"] },
+        "deletion_owner": { "type": "string", "minLength": 1 },
+        "expires_at": { "type": ["string", "null"], "format": "date-time" }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "mode": { "const": "retain-until" } }, "required": ["mode"] },
+          "then": { "properties": { "expires_at": { "type": "string", "format": "date-time" } } }
+        }
+      ]
+    },
+    "permitted_purpose": { "type": "string", "minLength": 1 },
+    "prohibited_uses": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "reviewed_by": { "type": "string", "minLength": 1 },
+    "reviewed_at": { "type": "string", "format": "date-time" }
+  }
+}

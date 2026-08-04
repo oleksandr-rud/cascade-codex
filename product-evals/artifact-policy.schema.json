@@ -1,0 +1,34 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://cascade.local/schemas/product-eval-artifact-policy.schema.json",
+  "title": "Cascade product-evaluation artifact policy",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version", "artifact_root", "storage_mode", "source_material_mode",
+    "raw_sensitive_material_allowed", "encryption_at_rest", "access_scope",
+    "operator_attestation", "retention", "remote_storage", "export"
+  ],
+  "properties": {
+    "schema_version": { "const": 1 },
+    "artifact_root": { "const": ".artifacts/product-evals" },
+    "storage_mode": { "const": "local-append-only" },
+    "source_material_mode": { "const": "digest-and-minimized-metadata-only" },
+    "raw_sensitive_material_allowed": { "const": false },
+    "encryption_at_rest": { "const": "host-filesystem-required" },
+    "access_scope": { "const": "maintainers-only" },
+    "operator_attestation": { "const": "required-for-restricted" },
+    "retention": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["mode", "review_after_days", "deletion_owner"],
+      "properties": {
+        "mode": { "const": "manual-review" },
+        "review_after_days": { "type": "integer", "minimum": 1 },
+        "deletion_owner": { "type": "string", "minLength": 1 }
+      }
+    },
+    "remote_storage": { "const": "disabled" },
+    "export": { "const": "disabled" }
+  }
+}

@@ -43,28 +43,40 @@ runs remain the dominant latency in live evaluations.
 | `.codex/harness-tooling/` | Isolated pinned Bun/Playwright package; installing it never mutates the target application's root package manifest or lockfile. |
 | `.codex/skills/` | Reusable workflow skills with trigger-focused frontmatter, source order, output contracts, templates, checklists, and references where needed. |
 | `.codex/agents/` | Codex-compatible custom-agent TOML files plus local role contracts, skill maps, delegation policy, and specialist checklists. |
-| `evals/harness/` | Curated per-skill cases, cross-skill collisions, a generated catalog, judge profiles, anchored rubrics, and response schemas. |
-| `evals/tasks/`, `evals/campaigns/` | Reusable typed execution tasks and immutable campaign plans for deterministic commands, browser simulations, or agent-response evaluations. |
-| `evals/simulations/` | Controlled product-like browser fixtures and Playwright task probes. |
+| `harness-evals/` | Curated per-skill cases, cross-skill collisions, a generated catalog, judge profiles, anchored rubrics, and response schemas. |
+| `product-evals/tasks/`, `product-evals/campaigns/` | Reusable typed execution tasks and immutable campaign plans for deterministic commands, browser simulations, or agent-response evaluations. |
+| `product-evals/simulations/` | Shared schemas plus explicit `harness/` framework fixtures and `product/` target-product simulation definitions; scope never upgrades evidence authority. |
 | `.artifacts/harness-evals/` | Ignored local JSONL traces, normalized runs, deterministic grades, and reports. |
-| `.artifacts/campaigns/` | Ignored immutable campaign manifests, task logs, evidence digests, and summaries. |
+| `.artifacts/product-evals/` | Ignored immutable product-evaluation campaign manifests, task logs, evidence digests, and summaries. |
 | `harness.config.example.yaml` | Target-repository adapter template for stack, roots, validation commands, routing, functional acceptance, memory, tracker, and pattern paths. |
 | `docs/structure.md` | Folder/write-target map for specs, product, design, brand, active work, backlog, patterns, and architecture facts. |
-| `docs/patterns/` | Reusable workflow, boundary, testing, and context-memory entries with YAML metadata and selectable context packs. |
+| `docs/patterns/` | Reusable workflow, boundary, testing, context-memory, and product-context entries with YAML metadata and selectable context packs. |
 | `docs/work/` | Active work registry, lane and Coordination Graph templates, first-class graph entries, examples, lane packets, reports, and handoffs. |
 | `docs/archive/work-reports/` | Compact archive capsules and relocated frozen completed-work artifacts. |
-| `docs/specs/`, `docs/product/`, `docs/design/`, `docs/brand/` | Durable owner docs for source material, per-slice spec packets, product intent, design constraints, and naming/content direction. |
+| `docs/specs/`, `docs/product/`, `docs/design/`, `docs/brand/` | Durable owner docs for source material, per-slice spec packets and generated brief selections, product domain/capability intent, design constraints, and naming/content direction. |
 | `docs/backlog/`, `docs/glossary.md` | Follow-up candidates and shared codebase/product vocabulary. |
-| `scripts/cascade.ts` | Bun entrypoint for validation, target inventory, pattern packs, harness evals, and campaigns. |
+| `scripts/cascade.ts` | Bun entrypoint for validation, target inventory, product briefs, pattern packs, harness evals, and campaigns. |
 | `scripts/cascade/` | Focused TypeScript modules for each harness-tooling responsibility. |
 
 `CODEX.md`, `docs/structure.md`, `docs/patterns/`, and the validator also
 reserve `.codex/skills/` and `.codex/agents/` as the canonical locations for
 reusable workflow skills and role contracts in a complete release package.
 
-## Workflow Model
+## Workload Admission And Workflow Model
 
-Cascade routes non-atomic engineering work through this path:
+Cascade first compiles every request into a versioned Task Envelope. The
+admission layer keeps direct answers and atomic edits lightweight while adding
+independent security, scan, evidence, persistence, and program controls only
+when their claims match. It recommends durable work but never dispatches it.
+
+```bash
+bun scripts/cascade.ts admission validate
+bun scripts/cascade.ts admission assess --request "Implement a bounded CLI change"
+bun scripts/cascade.ts admission corpus
+```
+
+For non-atomic engineering work, the compiled controls select applicable
+stages from this path:
 
 ```text
 context -> ingest-spec/discover/market-validation/synthesis-to-spec/compose-spec if needed -> docs-impact-map when durable docs may affect sibling rules -> pattern-context when reusable pattern packs are needed -> orchestrate-work -> plan-change -> functional-qa -> implement-change -> review-change -> validate-change -> test-autorepair only if stale tests -> closeout
@@ -201,6 +213,18 @@ document `sections`. Use
 available packs and `--pack`, `--section`, `--tag`, or `--query` to compile
 only the needed rule text.
 
+Product briefs use a separate product-fact graph rather than storing product
+facts in pattern packs. `docs/product/catalog.yaml` maps stable domains and
+capabilities to exact owner rows. A per-slice `brief.yaml` selects those rows,
+evidence metadata, evaluation authority, and reusable pattern sections. Check
+the deterministic projection with:
+
+```bash
+bun scripts/cascade.ts brief list
+bun scripts/cascade.ts brief validate PB-001
+bun scripts/cascade.ts brief generate PB-001 --check
+```
+
 `docs/patterns/architecture-defaults/` currently provides 34 validated
 reference graph/spec pairs. `stack-selection` is the stable selection authority.
 `app-stack` routes application units to backend, frontend, native,
@@ -287,7 +311,8 @@ rsync -a --backup --suffix=.pre-cascade \
   "$CASCADE_SRC"/.github \
   "$CASCADE_SRC"/.codex \
   "$CASCADE_SRC"/docs \
-  "$CASCADE_SRC"/evals \
+  "$CASCADE_SRC"/harness-evals \
+  "$CASCADE_SRC"/product-evals \
   "$CASCADE_SRC"/scripts \
   "$TARGET_REPO"/
 
@@ -363,7 +388,13 @@ complete Cascade release should pass:
 ```bash
 bun install --cwd .codex/harness-tooling --frozen-lockfile
 bun scripts/cascade.ts validate
+bun scripts/cascade.ts eval catalog --check
+bun scripts/cascade.ts campaign catalog --check
+bun scripts/cascade.ts brief check
+bun scripts/cascade.ts eval self-test
 bun scripts/cascade.ts target self-test
+bun scripts/cascade.ts campaign self-test
+bun test scripts/cascade
 ```
 
 Expected output includes:
@@ -404,7 +435,7 @@ bun scripts/cascade.ts target drift
 A campaign is a versioned execution plan, not a test result. It groups typed
 tasks, records the exact campaign and reusable-task digests, executes argv
 arrays without a shell, and writes immutable local evidence under
-`.artifacts/campaigns/<run-id>/`.
+`.artifacts/product-evals/<run-id>/`.
 
 - `command` tasks run deterministic harness or target commands.
 - `browser` tasks run Playwright against a controlled fixture or application.
@@ -419,7 +450,8 @@ configured, permissioned browser-tool adapter.
 
 ```bash
 bun scripts/cascade.ts campaign list
-bun scripts/cascade.ts campaign validate harness-static-smoke
-bun scripts/cascade.ts campaign run harness-static-smoke
-bun scripts/cascade.ts campaign run browser-simulation-smoke
+bun scripts/cascade.ts campaign validate simulation-contract-smoke
+bun scripts/cascade.ts campaign run simulation-contract-smoke
+bun scripts/cascade.ts campaign resume <run-id> --lease-id <lease-id>
+bun scripts/cascade.ts campaign verify <run-id>
 ```

@@ -64,7 +64,7 @@ Out:
 | Feature / Flow | Source Docs Or Spec IDs | Code Areas / Public Contracts | Touched Directly? | Protected Adjacent Behavior | Required Check | Status | Route |
 |---|---|---|---|---|---|---|---|
 | Custom agents | official schema; request | `.codex/agents/*.toml`; companion role files | yes | existing role behavior and delegation policy | `codex doctor --json`; Cascade validator | `PASS` | `codex-maintenance` |
-| Skill routing | all `SKILL.md` files | `evals/harness/`; `CODEX.md`; skill maps | yes | current canonical cascade | catalog and live route cases | `PASS` | `harness-evaluation` |
+| Skill routing | all `SKILL.md` files | `harness-evals/`; `CODEX.md`; skill maps | yes | current canonical cascade | catalog and live route cases | `PASS` | `harness-evaluation` |
 | Validation | request | both Python scripts | yes | existing Cascade checks and output labels | compile, self-test, validator | `PASS` | `validate-change` |
 | Durable patterns | request | `docs/patterns/agent-evaluation/` | yes | existing pack schema and retrieval | context-pack builder and validator | `PASS` | `pattern-context` |
 
@@ -73,7 +73,7 @@ Out:
 | Path Or Area | Owner | Access | Notes |
 |---|---|---|---|
 | `.codex/agents/`; `.codex/skills/harness-evaluation/` | Agent Engineer | write | custom-agent and skill contracts |
-| `evals/harness/`; `scripts/run_harness_evals.py` | Agent Engineer | write | corpus, schema, runner, grader |
+| `harness-evals/`; `scripts/run_harness_evals.py` | Agent Engineer | write | corpus, schema, runner, grader |
 | `.artifacts/harness-evals/` | eval runner | write | ignored local evidence only |
 | product/spec/design/brand source docs | user/current work | read | no unrelated edits |
 

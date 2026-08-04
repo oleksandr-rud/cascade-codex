@@ -21,6 +21,7 @@ decide unsupported product intent, implement code, or repair tests.
    market-validation finding.
 2. Existing product/spec docs:
    - `docs/product/_index.md`
+   - `docs/product/catalog.yaml`
    - `docs/product/requirements.md`
    - `docs/product/journeys.md`
    - `docs/product/scenarios.md`
@@ -47,6 +48,8 @@ Use this skill for:
 - journeys with carried state;
 - product scenario rows for functional checks;
 - plan-ready spec packets;
+- stable product domain/capability catalog entries and deterministic brief
+  manifests when one slice needs reusable planning or prompt context;
 - backlog-ready candidates with acceptance criteria;
 - trajectory-backed source promotion decisions;
 - traceability between source, product docs, scenarios, functional evidence,
@@ -75,8 +78,13 @@ implementation, or test autorepair.
    - `templates/journey.md` for `docs/product/journeys.md` or a journey doc;
    - `templates/scenario-row.md` for `docs/product/scenarios.md`;
    - `templates/spec-packet.md` for `docs/specs/{slice-slug}/`.
+   - `templates/product-brief.yaml` when an existing cataloged capability needs
+     a deterministic source selection and generated context projection.
 3. Allocate names and IDs before writing. Check existing docs first and choose
    the next stable ID or path:
+   - product domain IDs: next `PD-XXX` in `docs/product/catalog.yaml`;
+   - product capability IDs: next `PC-XXX` in `docs/product/catalog.yaml`;
+   - product brief IDs: next `PB-XXX` across `docs/specs/*/brief.yaml`;
    - PRD or product spec path: `docs/product/<capability-slug>.md`;
    - domain-owned product spec path:
      `docs/product/<domain-slug>/<capability-slug>.md` only when the target
@@ -101,16 +109,19 @@ implementation, or test autorepair.
    - update the owning index or registry when the target structure requires it.
 6. Compose artifacts in dependency order:
    - source identity and spec packet;
+   - domain and capability catalog relationships;
    - source-context trajectory and contradiction summary when provided;
    - personas;
    - PRD or compact product spec;
    - requirements;
    - journeys;
    - scenarios;
+   - brief manifest and generated projection only after all selected owner rows
+     and reusable context sections resolve;
    - backlog candidates;
    - Doc Routing Decision Matrix rows.
 7. Preserve traceability:
-   `source -> artifact -> requirement/scenario IDs -> functional evidence -> work lane`.
+   `source -> domain/capability -> artifact -> requirement/scenario IDs -> brief selection -> functional evidence -> work lane`.
 8. Use exact IDs and paths in references. Do not reference placeholder IDs in
    final docs. If an ID cannot be allocated safely, mark the row `GAP` or
    `BLOCKED` and route to `docs-impact-map`.
@@ -120,12 +131,19 @@ implementation, or test autorepair.
    - requirements should cite scenario IDs when known;
    - journeys should cite scenario IDs and carried state;
    - scenarios should cite source and functional evidence.
+   - every cataloged capability must name exact owner rows, source paths, and
+     evaluation authority; generated briefs remain projections;
    - persona revisions must record a positive revision, evidence/confidence,
      uncertainty and abstention rules, reference window, permitted uses,
      prohibited claims, invalidation signals, and accountable review owner;
+   - only a persona revision marked `reviewed` or `approved` may be referenced
+     by an approved simulation derivation; `draft` and `superseded` revisions
+     remain authoring/history states and fail executable source validation;
    - a simulation refinement proposal is never sufficient source evidence by
      itself. Require external evidence and human review before authoring a new
-     persona revision, and link any approved derivation manifest explicitly.
+     persona revision, require an `ACCEPTED` append-only refinement disposition
+     when the change originated in simulation, and link any approved derivation
+     manifest explicitly. The disposition authorizes synthesis, not mutation.
 10. Use the Doc Routing Decision Matrix for every durable fact, gap, deferred
    item, blocked item, or explicit `NO_DOC_NEEDED` decision.
 11. Preserve current/superseded status and contradiction owner when source
@@ -169,6 +187,9 @@ implementation, or test autorepair.
 - Journeys: `docs/product/journeys.md` or `docs/product/<journey-slug>.md`
 - Scenarios: `docs/product/scenarios.md`
 - Spec packets: `docs/specs/{slice-slug}/<slug>.md`
+- Product domain/capability relationships: `docs/product/catalog.yaml`
+- Brief selections and generated projections:
+  `docs/specs/{slice-slug}/brief.yaml` and `brief.generated.md`
 - Backlog candidates: `docs/backlog/_index.md`
 - Product vocabulary: `docs/glossary.md`
 - Impact reports: `docs/work/reports/` when requested, blocked, multi-turn, or
@@ -183,6 +204,7 @@ implementation, or test autorepair.
 - `templates/journey.md`
 - `templates/scenario-row.md`
 - `templates/spec-packet.md`
+- `templates/product-brief.yaml`
 
 ## Output
 

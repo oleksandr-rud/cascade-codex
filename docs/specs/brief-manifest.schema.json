@@ -1,0 +1,94 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://cascade.local/schemas/brief-manifest.schema.json",
+  "title": "Cascade product brief manifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "brief_id", "revision", "status", "title", "catalog_path", "domain_id", "capability_id", "coverage_mode", "purpose", "audiences", "product_refs", "omissions", "source_documents", "evidence", "pattern_context", "simulation_context", "gaps", "non_goals", "output_path"],
+  "properties": {
+    "schema_version": { "const": 1 },
+    "brief_id": { "type": "string", "pattern": "^PB-[0-9]{3}$" },
+    "revision": { "type": "integer", "minimum": 1 },
+    "status": { "enum": ["draft", "reviewed", "approved", "superseded"] },
+    "title": { "type": "string", "minLength": 1 },
+    "catalog_path": { "const": "docs/product/catalog.yaml" },
+    "domain_id": { "type": "string", "pattern": "^PD-[0-9]{3}$" },
+    "capability_id": { "type": "string", "pattern": "^PC-[0-9]{3}$" },
+    "coverage_mode": { "enum": ["complete", "selected"] },
+    "purpose": { "type": "string", "minLength": 1 },
+    "audiences": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } },
+    "product_refs": { "$ref": "#/$defs/productRefs" },
+    "omissions": { "type": "array", "items": { "$ref": "#/$defs/omission" } },
+    "source_documents": { "type": "array", "minItems": 1, "items": { "type": "string", "pattern": "^docs/" } },
+    "evidence": { "type": "array", "items": { "$ref": "#/$defs/evidence" } },
+    "pattern_context": { "type": "array", "items": { "$ref": "#/$defs/patternSelection" } },
+    "simulation_context": { "type": "array", "items": { "$ref": "#/$defs/simulationContext" } },
+    "gaps": { "type": "array", "items": { "type": "string", "minLength": 1 } },
+    "non_goals": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } },
+    "output_path": { "type": "string", "pattern": "^docs/specs/.+/brief\\.generated\\.md$" }
+  },
+  "$defs": {
+    "productRefs": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["requirement_ids", "journey_ids", "scenario_ids", "persona_ids"],
+      "properties": {
+        "requirement_ids": { "type": "array", "items": { "type": "string", "pattern": "^PR-[0-9]{3}$" } },
+        "journey_ids": { "type": "array", "items": { "type": "string", "pattern": "^J-[0-9]{3}$" } },
+        "scenario_ids": { "type": "array", "items": { "type": "string", "pattern": "^PS-[0-9]{3}$" } },
+        "persona_ids": { "type": "array", "items": { "type": "string", "pattern": "^P-[0-9]{3}$" } }
+      }
+    },
+    "omission": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["ref_id", "reason"],
+      "properties": {
+        "ref_id": { "type": "string", "pattern": "^(PR|J|PS|P)-[0-9]{3}$" },
+        "reason": { "type": "string", "minLength": 1 }
+      }
+    },
+    "evidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "kind", "authority", "title", "reference_date", "supports", "limitations", "status"],
+      "properties": {
+        "id": { "type": "string", "pattern": "^EVD-[0-9]{3}$" },
+        "kind": { "enum": ["user-provided", "approved-product", "primary-research", "peer-reviewed-research", "harness-evaluation", "harness-simulation", "product-simulation", "synthetic-proposal"] },
+        "authority": { "enum": ["product", "methodological", "harness-only", "mechanics-only", "target-product", "proposal-only"] },
+        "title": { "type": "string", "minLength": 1 },
+        "url": { "type": "string", "format": "uri" },
+        "path": { "type": "string", "pattern": "^(docs|harness-evals|product-evals)/" },
+        "reference_date": { "type": "string", "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$" },
+        "supports": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "type": "string", "pattern": "^[A-Z][A-Z0-9]*-[0-9]{3}$" } },
+        "limitations": { "type": "string", "minLength": 1 },
+        "status": { "enum": ["provided", "reviewed", "validated", "executed", "not-run"] }
+      },
+      "oneOf": [
+        { "required": ["url"], "not": { "required": ["path"] } },
+        { "required": ["path"], "not": { "required": ["url"] } }
+      ]
+    },
+    "patternSelection": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["pack_id", "section_ids"],
+      "properties": {
+        "pack_id": { "type": "string", "minLength": 1 },
+        "section_ids": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } }
+      }
+    },
+    "simulationContext": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "scope", "authority", "status", "purpose"],
+      "properties": {
+        "path": { "type": "string", "pattern": "^(scripts/cascade|harness-evals|product-evals)/" },
+        "scope": { "enum": ["contract-test", "harness-evaluation", "harness-simulation", "product-simulation"] },
+        "authority": { "enum": ["implementation", "harness-only", "mechanics-only", "target-product"] },
+        "status": { "enum": ["authored", "validated", "executed", "reviewed", "accepted", "not-run"] },
+        "purpose": { "type": "string", "minLength": 1 }
+      }
+    }
+  }
+}

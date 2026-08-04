@@ -7,7 +7,7 @@ import { expect, test } from "@playwright/test";
 const toolingRoot = dirname(fileURLToPath(import.meta.url));
 const fixture = resolve(
   toolingRoot,
-  "../../evals/simulations/browser-fixture.html",
+  "../../product-evals/simulations/harness/browser-fixture.html",
 );
 const evidencePath = resolve(
   toolingRoot,

@@ -11,7 +11,7 @@ config; keep reusable workflow rules in skills, agents, and patterns.
 | `docs/work/` | Active work lanes, first-class Coordination Graphs, copyable examples, lane packets, reports, handoffs | `orchestrate-work`, `market-validation`, `plan-change`, `validate-change`, `closeout` |
 | `docs/archive/work-reports/` | Compact archive capsules and relocated frozen lane, graph, and report history | `archive-work` automatically after closeout or for direct historical cleanup |
 | `docs/specs/` | Incoming and spec packets | `ingest-spec`, `synthesis-to-spec`, `compose-spec`, `discover`, `docs-impact-map`, `adapt-harness` |
-| `docs/product/` | Product intent, requirements, journeys, personas, scenarios | `discover`, `market-validation`, `synthesis-to-spec`, `compose-spec`, `ingest-spec`, `docs-impact-map` |
+| `docs/product/` | Product intent plus stable domain/capability relationships, requirements, journeys, personas, and scenarios | `discover`, `market-validation`, `synthesis-to-spec`, `compose-spec`, `ingest-spec`, `docs-impact-map` |
 | `docs/design/` | Interaction model, tokens, components, design constraints | `discover`, `design-system`, `ingest-spec`, `docs-impact-map` |
 | `docs/brand/` | Naming, tone, content, visual direction | `discover`, `brand-positioning`, `ingest-spec`, `docs-impact-map` |
 | `docs/backlog/` | Follow-up candidates with acceptance criteria | `discover`, `synthesis-to-spec`, `compose-spec`, `validation-experiments`, `docs-impact-map`, `issue-intake`, `closeout` |
@@ -19,11 +19,12 @@ config; keep reusable workflow rules in skills, agents, and patterns.
 | `.codex/skills/` | Reusable workflow skills | `develop-skill`, Agent Engineer skills |
 | `.codex/agents/` | Role contracts and skill maps | Agent Engineer skills |
 | `.codex/harness-tooling/` | Isolated pinned browser-simulation dependencies and Playwright runner files | Harness maintainers |
-| `evals/harness/` | Canonical scenarios, generated catalog, target schema, judge profiles, anchored rubrics, and judgment schema | `harness-evaluation`, `judge-eval-builder` |
+| `harness-evals/` | Canonical scenarios, generated catalog, target schema, judge profiles, anchored rubrics, and judgment schema | `harness-evaluation`, `judge-eval-builder` |
 | `.artifacts/harness-evals/` | Ignored raw JSONL traces, normalized runs, eligibility, judgments, and local reports | `scripts/cascade/evals.ts` |
-| `evals/campaigns/`, `evals/tasks/`, `evals/simulations/` | Canonical simulation campaigns, reusable tasks, populations, scenarios, worlds, datasets, and generated catalog | `simulation-campaigns`, Agent Engineer |
-| `evals/claims/`, `evals/policies/`, `evals/oracles/`, `evals/metrics/`, `evals/treatments/`, `evals/calibrations/`, `evals/rubrics/` | Versioned claim, policy, oracle, metric, treatment, calibration, evaluator-profile, rubric, and evaluation-schema authorities | `simulation-campaigns`, `simulation-evaluation`, Agent Engineer |
-| `.artifacts/campaigns/` | Ignored append-only execution, evaluation, calibration, and aggregation receipts | `scripts/cascade/campaigns.ts`, `simulation-execution`, `simulation-evaluation` |
+| `product-evals/campaigns/`, `product-evals/tasks/`, `product-evals/simulations/` | Canonical simulation campaigns, reusable tasks, populations, scenarios, worlds, datasets, and generated catalog | `simulation-campaigns`, Agent Engineer |
+| `product-evals/intakes/harness/`, `product-evals/intakes/product/` | Scope-separated Task Envelope/product-context/action-policy bindings; product campaigns require a current READY intake before execution | `simulation-campaigns`, Agent Engineer; consumed by Simulation Operator and Simulation Evaluator |
+| `product-evals/claims/`, `product-evals/policies/`, `product-evals/oracles/`, `product-evals/metrics/`, `product-evals/treatments/`, `product-evals/calibrations/`, `product-evals/rubrics/` | Versioned claim, policy, oracle, metric, treatment, calibration, evaluator-profile, rubric, and evaluation-schema authorities | `simulation-campaigns`, `simulation-evaluation`, Agent Engineer |
+| `.artifacts/product-evals/` | Ignored append-only product-evaluation execution, evaluation, calibration, and aggregation receipts | `scripts/cascade/campaigns.ts`, `simulation-execution`, `simulation-evaluation` |
 | `.codex/skills/simulation-campaigns/` | Campaign authoring, selection, dispatch/replay planning, receipt aggregation, claim projection, and reporting contract | `develop-skill`, `codex-maintenance`, Agent Engineer |
 | `.codex/skills/simulation-execution/` | Bounded selected-run lifecycle and execution receipt contract | `simulation-operator`, `develop-skill`, `codex-maintenance` |
 | `.codex/skills/simulation-evaluation/` | Read-only frozen-evidence, policy, oracle, semantic, and claim-support contract | `simulation-evaluator`, `develop-skill`, `codex-maintenance` |
@@ -79,6 +80,13 @@ not rewritten.
   issue, capability, or workflow slice. Use it for plan-ready packets with
   source classification, behavior examples, acceptance checks, open questions,
   package files, prompt scripts, and module catalogs.
+- Product relationship catalog and schema:
+  `docs/product/catalog.{yaml,schema.json}`; stable `PD-XXX` domains and
+  `PC-XXX` capabilities point to exact owner rows and evaluation references.
+- Product brief manifest schema and per-slice selections:
+  `docs/specs/brief-manifest.schema.json` and
+  `docs/specs/<slice-slug>/brief.yaml`. Generated `brief.generated.md` files
+  are digest-bound projections checked through `scripts/cascade.ts brief`.
 - Product scenarios: `docs/product/scenarios.md`
 - Product intent, requirements, journeys, and personas: `docs/product/`
 - Domain-owned product folders under `docs/product/<domain>/` are allowed only
@@ -103,6 +111,14 @@ not rewritten.
   `docs/patterns/context-memory/index.md`.
 - Pattern context packs: `docs/patterns/{entry}/*.pack.yaml`; build selected
   text with `scripts/cascade.ts patterns`.
+- Task-admission schemas, controls, and deterministic policies:
+  `.codex/task-admission/`; compile or validate them with
+  `scripts/cascade.ts admission`. Project-scoped hook wiring lives in
+  `.codex/hooks.json`, while shadow classification cases live in
+  `harness-evals/task-admission/`.
+- Product-context briefs: assemble exact product/catalog sources and selected
+  reusable rules with `scripts/cascade.ts brief`; do not use generated output
+  as a replacement product authority.
 - Plan-ready product synthesis and authoring: existing owner docs under
   `docs/product/`, `docs/specs/{slice-slug}/`, and `docs/backlog/_index.md`.
 - Source preservation: `docs/specs/source/` only when `ingest-spec` decides a
@@ -196,6 +212,7 @@ Each pattern entry is a folder:
 - `docs/patterns/architecture-defaults/`
 - `docs/patterns/testing/`
 - `docs/patterns/context-memory/`
+- `docs/patterns/product-context/`
 
 Required files per entry:
 
@@ -218,12 +235,12 @@ overwrite target files.
 
 ## Harness Evaluation Paths
 
-- Source cases: `evals/harness/skill-cases.json`
-- Cross-skill collisions: `evals/harness/interactions.json`
-- Generated catalog: `evals/harness/scenarios.generated.json`
-- Target response schema: `evals/harness/response.schema.json`
-- Judgment schema: `evals/harness/judge-response.schema.json`
-- Judge profiles and rubrics: `evals/harness/judge-profiles.json`, `evals/harness/rubrics/`
+- Source cases: `harness-evals/skill-cases.json`
+- Cross-skill collisions: `harness-evals/interactions.json`
+- Generated catalog: `harness-evals/scenarios.generated.json`
+- Target response schema: `harness-evals/response.schema.json`
+- Judgment schema: `harness-evals/judge-response.schema.json`
+- Judge profiles and rubrics: `harness-evals/judge-profiles.json`, `harness-evals/rubrics/`
 - Runner, eligibility checks, scoring, and aggregation: `scripts/cascade/evals.ts`
 - Ignored live run evidence: `.artifacts/harness-evals/<run-id>/`
 - Durable scenario and trace rules: `docs/patterns/agent-evaluation/index.md`
@@ -256,17 +273,24 @@ Implemented skill and runtime authority:
 
 Canonical deterministic runtime authority owned by W-004:
 
-- Campaign manifests and generated catalog: `evals/campaigns/`
-- Typed reusable tasks: `evals/tasks/`
-- Simulation manifests and fixtures: `evals/simulations/`
-- Versioned claims and policies: `evals/claims/` and `evals/policies/`
-- Deterministic oracle definitions: `evals/oracles/`
-- Versioned metrics and exact treatment identities: `evals/metrics/` and
-  `evals/treatments/`
+- Campaign manifests and generated catalog: `product-evals/campaigns/`
+- Typed reusable tasks: `product-evals/tasks/`
+- Shared simulation schemas: `product-evals/simulations/`
+- Product-evaluation artifact and privacy default:
+  `product-evals/artifact-policy.json`
+- Harness-only simulation fixtures: `product-evals/simulations/harness/`
+- Target-product simulations: `product-evals/simulations/product/`
+- Harness and product simulation intakes: `product-evals/intakes/harness/` and
+  `product-evals/intakes/product/`; Task Envelope snapshots remain beneath the
+  same selected scope root.
+- Versioned claims and policies: `product-evals/claims/` and `product-evals/policies/`
+- Deterministic oracle definitions: `product-evals/oracles/`
+- Versioned metrics and exact treatment identities: `product-evals/metrics/` and
+  `product-evals/treatments/`
 - Calibration definitions and frozen framework/reference score fixtures:
-  `evals/calibrations/`
+  `product-evals/calibrations/`
 - Semantic rubrics, fixture/Codex evaluation profiles, provider output schema,
-  and stored receipt schema: `evals/rubrics/`
+  and stored receipt schema: `product-evals/rubrics/`
 - Bun 1.3.3 runner and deterministic reducers: `scripts/cascade.ts` and
   `scripts/cascade/`
 - Isolated Playwright package and configuration: `.codex/harness-tooling/`
@@ -275,11 +299,15 @@ Canonical deterministic runtime authority owned by W-004:
 - Human design template:
   `.codex/skills/simulation-campaigns/templates/campaign-design.md`
 - Ignored append-only run container:
-  `.artifacts/campaigns/<run-id>/`, with an immutable `execution/` namespace
+  `.artifacts/product-evals/<run-id>/`, with an immutable `execution/` namespace
   plus sibling `specialized-evaluations/`, `calibrations/`, and
   `aggregations/` receipt namespaces; each
   `evaluations/<evaluation-id>/` contains an immutable frozen `input/`,
   provider command/trace/stderr, attempt record, and accepted `receipt.json`
+- Ignored append-only refinement review receipts:
+  `.artifacts/product-evals/refinement-reviews/<disposition-id>/`; these bind a
+  frozen proposal and reviewed external-evidence manifests, and never mutate a
+  persona source file.
 
 The deterministic framework fixture proves definition resolution, stateful
 fake execution, policy/oracle reduction, evidence freezing, treatment
@@ -287,6 +315,13 @@ ranking, and calibration-receipt mechanics. It cannot support target-project
 release eligibility. Missing surface adapters or target reference data remain
 `GAP`, `BLOCKED`, or `NOT_RUN`; an authored campaign that has not executed is
 `NOT_RUN`.
+
+Every simulation manifest declares `simulation_scope` and lives under its
+matching root. Resolver validation rejects cross-root manifests and co-located
+definitions. Harness scope permits framework calibration only. Product scope
+states intended target authority but does not prove target behavior. The
+separate `harness-evals/` corpus evaluates Cascade skills, routes, responses,
+and traces rather than product or framework simulation definitions.
 
 Bootstrap a target-project package by reviewing the dry-run first:
 
@@ -299,11 +334,30 @@ bun scripts/cascade.ts simulation init <simulation-id> --owner-lane W-NNN
 Initialization creates the simulation model, population, scenario, world,
 fixture, partitioned dataset, metric, baseline/candidate treatments,
 framework calibration and score fixtures, policy, oracle, task, claims,
-campaign, and co-located `simulation-design.md`. It then validates the graph
+campaign, and co-located product-scoped `simulation-design.md` under
+`product-evals/simulations/product/`. It then validates the graph
 and atomically regenerates the registry. Any existing output path aborts the
 operation without overwrite.
 
-W-012 will own only the agent-to-command/browser/terminal/desktop/mobile
+An approved deterministic persona derivation can be previewed or materialized
+without overwrite:
+
+```bash
+bun scripts/cascade.ts simulation derive-population P-NNN \
+  --simulation <simulation-id> --mode <mode> --dry-run
+bun scripts/cascade.ts simulation derive-population P-NNN \
+  --simulation <simulation-id> --mode <mode> --write
+```
+
+Refinement proposals remain immutable run evidence. Reviewers record a separate
+disposition with `simulation dispose-refinement`; the command first verifies
+the completed run manifest and exact proposal/run binding. `ACCEPTED` requires at least
+one reviewed external-evidence manifest and authorizes only the
+`synthesis-to-spec` route. Remote storage and export are disabled by default,
+raw sensitive material is excluded, and restricted evidence requires operator
+attestation under `product-evals/artifact-policy.json`.
+
+W-012 will own only the agent-to-command/HTTP/browser/terminal/desktop/mobile
 composition profiles, manifests, fake matrix, tool-event linkage, and joined
 results. W-004 remains the shared schema, policy, reducer, artifact, and final
 merge authority; W-005 through W-010 retain their surface adapters and

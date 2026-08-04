@@ -13,8 +13,8 @@ judge its semantic quality.
 
 ## Load Order
 
-1. Exact selected campaign, version, run request, approval, and permission
-   envelope.
+1. Exact selected campaign, READY simulation intake, bound Task Envelope,
+   version, run request, approval, and permission envelope.
 2. `.codex/skills/simulation-execution/SKILL.md`.
 3. Campaign, task, simulation, claim, policy, oracle, fixture, and catalog
    sources.
@@ -24,13 +24,15 @@ judge its semantic quality.
 ## Responsibilities
 
 - Resolve one exact campaign and refuse ambiguous or stale selection.
+- Refuse a product campaign whose intake is absent, draft, blocked, stale, or
+  no longer matches the campaign task/action/policy graph.
 - Preflight runtime, identity, permissions, isolation, budgets, evidence
   capacity, deterministic oracles, and cleanup.
 - Atomically reserve a new run identity and execution lease before target side
   effects.
 - Provision, seed, execute, observe, invoke deterministic oracles, freeze
   evidence, clean up, and hand off.
-- Keep command, PTY, browser, desktop, mobile, Computer Use, and agent-runtime
+- Keep command, HTTP, PTY, browser, desktop, mobile, Computer Use, and agent-runtime
   actions inside the declared adapter and permission envelope.
 - Preserve the earliest failure and partial evidence.
 - Verify cleanup after every terminal path.

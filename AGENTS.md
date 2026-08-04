@@ -57,7 +57,13 @@ product-visible behavior change should start with a short plan before edits:
 - Map likely regressions across touched boundaries and user paths.
 - Define validation before editing.
 
-Use the new-task route for non-atomic work:
+Run the cheap task-admission microkernel for every request. The compiled Task
+Envelope selects the proportional route and controls; it does not grant
+authority, create work, or dispatch an agent. If the project hook is unavailable,
+apply the same contract in-process through `scripts/cascade.ts admission`.
+
+For a Task Envelope that selects non-atomic bounded, connected, or program work,
+use only the applicable parts of this route:
 
 `context -> ingest-spec/discover if needed -> docs-impact-map when durable docs may affect sibling rules -> pattern-context when reusable pattern packs are needed -> orchestrate-work -> plan-change -> functional-qa -> implement-change -> review-change -> validate-change -> test-autorepair only if stale tests -> closeout`
 
@@ -73,11 +79,14 @@ cleanup, or single-line changes with no behavior or contract impact.
 
 ```bash
 bun scripts/cascade.ts validate
+bun scripts/cascade.ts admission validate
+bun scripts/cascade.ts admission corpus
 bun scripts/cascade.ts eval catalog --check
 bun scripts/cascade.ts eval self-test
 bun scripts/cascade.ts target self-test
 bun scripts/cascade.ts campaign catalog --check
 bun scripts/cascade.ts campaign self-test
+bun scripts/cascade.ts brief check
 bun test scripts/cascade
 ```
 

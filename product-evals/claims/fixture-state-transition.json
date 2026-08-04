@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "id": "fixture-state-transition",
+  "class": "mechanical-behavior",
+  "assertion": "The deterministic world applies the declared state transition and preserves the resulting state for oracle evaluation.",
+  "scope": {
+    "simulation_id": "simulation-correctness-fixture",
+    "world_id": "support-world-v1"
+  },
+  "population_authority": "none",
+  "required_policy_ids": [
+    "allow-fixture-state-actions-v1"
+  ],
+  "required_oracle_ids": [
+    "account-resolved-v1",
+    "account-attempt-recorded-v1"
+  ],
+  "required_metric_ids": [],
+  "requires_calibration": false,
+  "evidence_requirements": [
+    "source-manifest",
+    "execution-receipt",
+    "task-result",
+    "trajectory",
+    "policy-decisions",
+    "oracle",
+    "cleanup"
+  ]
+}
