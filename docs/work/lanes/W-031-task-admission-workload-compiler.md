@@ -1,14 +1,14 @@
 # Work Lane: W-031 Task Admission And Workload Compiler
 
-Status: `IN_REVIEW`
-Planning Status: `IMPLEMENTED_CURRENT_SOURCE`
-Plan Revision: `4`
+Status: `IN_PROGRESS`
+Planning Status: `IMPLEMENTATION_REPAIR`
+Plan Revision: `5`
 Owner: `agent-engineer`
 Created: 2026-08-04
 Lane Model: `sequential-pipeline`
 Next Gate: `independent GF-004/GF-008/GF-009/GF-101 review and terminal evidence join`
 Execution Surface: `root`
-Dispatch State: `IMPLEMENTATION_COMPLETE`
+Dispatch State: `IMPLEMENTATION_IN_PROGRESS`
 Dispatch Authorization: `2026-08-04 user instruction: Implement until done`
 Runtime Handle: `none`
 
@@ -66,7 +66,7 @@ Out:
 |---|---|---|---|---|---|
 | `SRC-01` | user request | current task | 2026-08-04 current | objective and planning authorization | `AUTHORITATIVE` |
 | `SRC-02` | contract | `docs/specs/task-admission-workload/contract.md` | revision 1 | `TA-001` through `TA-012` | `AUTHORITATIVE` |
-| `SRC-03` | implementation plan | `docs/specs/task-admission-workload/implementation-plan.md` | revision 2 | worklines, slices, traceability, validation | `AUTHORITATIVE` |
+| `SRC-03` | implementation plan | `docs/specs/task-admission-workload/implementation-plan.md` | revision 5 | worklines, slices, traceability, validation | `AUTHORITATIVE` |
 | `SRC-04` | current source | branch `master`, HEAD `7112546cc856`, dirty worktree | checked 2026-08-04 | runtime/config/eval boundaries and overlap | `AUTHORITATIVE_CURRENT_SOURCE` |
 | `SRC-05` | active work | `docs/work/active.md`; W-004 lane | checked 2026-08-04 | shared-file ownership and serialization | `AUTHORITATIVE_CURRENT_STATE` |
 | `SRC-06` | official Codex hooks | `https://learn.chatgpt.com/docs/hooks` | checked 2026-08-04 | prompt, pre-tool, permission, trust boundaries | `EXTERNAL_AUTHORITATIVE` |
@@ -93,6 +93,7 @@ Out:
 | `Q-03` | `KNOWN_DEFECT` | `eval coverage --list-missing` passed array-callback arguments to `rootPath`. | replaced with an explicit unary callback; command now completes and truthfully reports current live coverage as `0/368` after source invalidation | W-031-N03 | `RESOLVED` |
 | `Q-04` | `HOOK_RUNTIME` | Hook runtime must be bounded and network-free. | exact `npx --offline --yes bun@1.3.3` stdin/stdout fixtures passed; normal Codex trust review is still required on first use | W-031-N04 | `SATISFIED_LOCAL` |
 | `Q-05` | `NEGATIVE_CONSTRAINT` | No hook may scan, call model/network, write durable state, create work, or expand authority at prompt submission. | failure blocks N04/N05 | GF-101 security gate | `ACCEPTED` |
+| `Q-06` | `KNOWN_DEFECT` | Continuation requests using an inflected change verb such as `implementing` can be misclassified as `ANSWER`, suppressing simulation governance. | reopen compiler, corpus, and route-integration evidence without changing topology | W-031-N02/N03/N06 | `IN_REPAIR` |
 
 ## Behavior Examples
 
@@ -110,8 +111,9 @@ Out:
 | `S-010` | Given a persistence recommendation without dispatch authority, no agent, task, branch, or worktree is created. | negative promotion fixture | `PASS_LOCAL` |
 | `S-011` | Given a product or synthetic-persona simulation change/operation, admission selects connected `SIMULATION_GOVERNANCE`, high assurance, independent evidence, and `simulation-campaigns`. | admission unit and corpus fixtures | `PASS_LOCAL` |
 | `S-012` | Given current `exec_command` or `functions.exec_command` shell identities, destructive/external commands retain legacy `Bash` hard-action classification. | hook/tool classification fixtures | `PASS_LOCAL` |
-| `S-011` | Given a product simulation authoring or execution request, admission selects connected delivery plus simulation governance. | product-simulation route and policy fixture | `PASS_LOCAL` |
-| `S-012` | Given a synthetic-persona simulation request, admission preserves persona-specific authority while selecting the shared simulation-governance control. | persona-simulation route and policy fixture | `PASS_LOCAL` |
+| `S-013` | Given a product simulation authoring or execution request, admission selects connected delivery plus simulation governance. | product-simulation route and policy fixture | `PASS_LOCAL` |
+| `S-014` | Given a synthetic-persona simulation request, admission preserves persona-specific authority while selecting the shared simulation-governance control. | persona-simulation route and policy fixture | `PASS_LOCAL` |
+| `S-015` | Given a continuation request using `implementing`, admission preserves `CHANGE` intent and simulation governance. | continuation-inflection unit and corpus fixtures | `NOT_RUN` |
 
 ## Feature Impact Matrix
 
@@ -149,7 +151,7 @@ Out:
 
 | Graph Revision | Plan Revision | Lane-State Owner | Authoritative Records | Derived Projections | Instruction-Driven Limit |
 |---|---|---|---|---|---|
-| `2` | `3` | `orchestrator in the root task` | this Task Graph; Evidence Gates; amendments; lane-owner transitions/repairs | Current Frontier and `docs/work/active.md` | implementation was serialized in root; no agent/task/worktree auto-creation or independent self-acceptance |
+| `2` | `5` | `orchestrator in the root task` | this Task Graph; Evidence Gates; amendments; lane-owner transitions/repairs | Current Frontier and `docs/work/active.md` | implementation was serialized in root; no agent/task/worktree auto-creation or independent self-acceptance |
 
 ### Graph Fragment Instances
 
@@ -170,11 +172,11 @@ accessibility, or visual behavior changes.
 | Node ID | Workline | Obligation | Requires Nodes | Requires Gates | External Conditions | Expected Receipt | Write Scope | Tools / Permissions | Per-Node Gate | Attempt / Max | Repair / Exhaustion | Status |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|
 | `W-031-N01` | WL-01 | reconcile current source/W-004 overlap; implement schemas, catalog, and policies | none | none | `EXT-01`, `EXT-02` | version-bound contract bundle receipt | `.codex/task-admission/**`; narrow validator/docs | local filesystem, Git inspection, Bun; scoped writes after authorization; no external action | `W-031-G1` | `1/3` | repair contract; after max block for replan | `REVIEW` |
-| `W-031-N02` | WL-02 | implement pure compiler, CLI, trace, and reclassification | `W-031-N01` | terminal independent join per revision 2 | `EXT-01` | compiler/CLI receipt | admission source/tests and CLI wiring | local filesystem and Bun; scoped writes; no network or live tool action | `W-031-G2` | `1/3` | repair compiler; after max replan | `REVIEW` |
-| `W-031-N03` | WL-03 | repair eval coverage callback; add shadow corpus and metrics | `W-031-N02` | terminal independent join per revision 2 | `EXT-01` | complete shadow-eval receipt | admission eval schemas/cases and eval tests | local filesystem and Bun; deterministic fixtures; provider-backed semantic runs require separate authority | `W-031-G3` | `1/3` | repair earliest corpus/runner defect; after max block | `REVIEW` |
+| `W-031-N02` | WL-02 | implement pure compiler, CLI, trace, and reclassification | `W-031-N01` | terminal independent join per revision 2 | `EXT-01` | compiler/CLI receipt | admission source/tests and CLI wiring | local filesystem and Bun; scoped writes; no network or live tool action | `W-031-G2` | `2/3` | repair compiler; after max replan | `IN_PROGRESS` |
+| `W-031-N03` | WL-03 | repair eval coverage callback; add shadow corpus and metrics | `W-031-N02` | terminal independent join per revision 2 | `EXT-01` | complete shadow-eval receipt | admission eval schemas/cases and eval tests | local filesystem and Bun; deterministic fixtures; provider-backed semantic runs require separate authority | `W-031-G3` | `2/3` | repair earliest corpus/runner defect; after max block | `IN_PROGRESS` |
 | `W-031-N04` | WL-04 | implement advisory `UserPromptSubmit` adapter in a trusted fixture | `W-031-N03` | terminal independent join per revision 2 | `EXT-01`, `EXT-03` | bounded no-side-effect hook receipt | hook adapter/tests/config | trusted local hook fixture; no network/model call, project-state mutation, or external action | `W-031-G4` | `1/3` | keep runtime bridge fallback; block hook activation | `REVIEW` |
 | `W-031-N05` | WL-05 | implement deterministic PreToolUse/PermissionRequest hard controls and security probes | `W-031-N04` | terminal independent join per revision 2 | `EXT-01`, `EXT-04` | enforcement and security receipts | narrow hook/policy/security files | local deny/allow fixtures; activation needs explicit authority; real side effects forbidden in tests | `W-031-G5` | `1/3` | reopen earliest contract/compiler/hook; after max security replan | `REVIEW` |
-| `W-031-N06` | WL-06 | migrate route consumers, remove blanket default where superseded, and run terminal validation | `W-031-N05` | terminal independent join per revision 2 | `EXT-01`, `EXT-02` | integrated current-source receipt | boot/config/skills/docs/catalog/validator consumers | local filesystem, Git inspection, Bun; scoped writes; no broad stage, commit, push, publish, or deploy | `W-031-G6` | `1/3` | restore existing explicit route until fixed; no dual authority at launch | `REVIEW` |
+| `W-031-N06` | WL-06 | migrate route consumers, remove blanket default where superseded, and run terminal validation | `W-031-N05` | terminal independent join per revision 2 | `EXT-01`, `EXT-02` | integrated current-source receipt | boot/config/skills/docs/catalog/validator consumers | local filesystem, Git inspection, Bun; scoped writes; no broad stage, commit, push, publish, or deploy | `W-031-G6` | `2/3` | restore existing explicit route until fixed; no dual authority at launch | `IN_PROGRESS` |
 
 ### External Conditions
 
@@ -215,17 +217,17 @@ Worker or tool output proposes a transition and cannot self-accept a gate.
 
 ### Current Frontier (Derived)
 
-- Graph revision / plan revision: `2 / 3`
-- Ready: none; all implementation nodes have produced current-source review candidates.
-- In progress: none.
-- In review: `W-031-N01` through `W-031-N06`.
+- Graph revision / plan revision: `2 / 5`
+- Ready: none.
+- In progress: `W-031-N02`, `W-031-N03`, and `W-031-N06` on repair attempt 2.
+- In review: `W-031-N01`, `W-031-N04`, and `W-031-N05`.
 - Blocked: acceptance only, because independent reviewers were not authorized or dispatched.
 - Accepted: none.
 - Open gates: `W-031-G1` through `W-031-G6`.
 - External conditions: locally satisfied; first-use hook trust and every real hard
   action retain their normal operator/permission boundary.
-- Next executable node: independent GF-004/GF-008/GF-009/GF-101 review; no
-  implementation repair is currently indicated.
+- Next executable node: finish the continuation-inflection compiler/corpus
+  repair, then return N02/N03/N06 to review before independent gates execute.
 - Projection reconciliation: current with this lane revision and active row.
 
 ## File Ownership
@@ -296,6 +298,7 @@ Worker or tool output proposes a transition and cannot self-accept a gate.
 | `2` | user instructed implementation until done; independent reviewers were not authorized | six worklines, gate owners, no-auto-dispatch and permission boundaries | serialized root implementation may continue across locally green prerequisites; independent acceptance remains terminal | planning-only and strict per-node review serialization superseded | all | N01-N06 reach `REVIEW`; G1-G6 remain open |
 | `3` | W-032 consumes admission for simulation authoring/execution and current hook tool names differ from legacy `Bash` | six worklines, Task Graph topology, permission boundary, separate W-004 action-policy authority | `TAP-011`, `SIMULATION_GOVERNANCE`, two corpus cases, and shell-tool normalization | 10-policy/9-control and 12-case evidence superseded | N01-N03, N05-N06 | 11 policies, 10 controls, 14/14 corpus, and 19 focused tests pass locally; independent gates remain open |
 | `4` | fixed-point review found `TAP-011` had not advanced the admission policy-bundle identity | six worklines, Task Graph topology, policy/control meaning, route results, permission boundary | policy bundle advances to `cascade-core@2`; stale bundle-1 envelopes fail closed | bundle-1 envelope evidence superseded | N01-N03, N05-N06 | admission corpus and 19 focused tests pass locally; independent gates remain open |
+| `5` | resumed admission classified `continue implementing ... simulation workload` as read-only because intent matching omitted inflected change verbs | graph revision 2, policy/control semantics, permission boundary, independent gates | reopen N02/N03/N06 for bounded compiler, corpus, and projection repair attempt 2 | prior continuation-route evidence and 14-case/19-test counts superseded | N02, N03, N06 | pending focused and full regression evidence; independent gates remain open |
 
 ## Compact Resume Contract
 

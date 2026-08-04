@@ -320,14 +320,14 @@ describe("CampaignArtifactStore", () => {
         lease_id: "lease-2",
         ttl_ms: 60_000,
         reason: "operator process exited",
-        now: new Date("2026-08-04T10:02:00.000Z"),
+        now: new Date("2099-07-30T10:02:00.000Z"),
       });
     expect(replacement).toMatchObject({
       lease_id: "lease-2",
       owner_session_id: identity.operator.session_id,
       generation: 1,
-      renewed_at: "2026-08-04T10:02:00.000Z",
-      expires_at: "2026-08-04T10:03:00.000Z",
+      renewed_at: "2099-07-30T10:02:00.000Z",
+      expires_at: "2099-07-30T10:03:00.000Z",
     });
     expect(
       JSON.parse(
@@ -354,7 +354,7 @@ describe("CampaignArtifactStore", () => {
         lease_id: "lease-2",
         ttl_ms: 60_000,
         reason: "operator process exited",
-        now: new Date("2026-08-04T10:02:30.000Z"),
+        now: new Date("2099-07-30T10:02:30.000Z"),
       }),
     ).toEqual(replacement);
     await base

@@ -91,7 +91,7 @@ describe("task admission compiler", () => {
 
   test("passes the complete shadow corpus without over- or under-control", async () => {
     const result = await runAdmissionCorpus();
-    expect(result).toMatchObject({ status: "PASS", total: 14, passed: 14, failed: 0, over_control: 0, under_control: 0, trace_complete: true });
+    expect(result).toMatchObject({ status: "PASS", total: 15, passed: 15, failed: 0, over_control: 0, under_control: 0, trace_complete: true });
   });
 
   test("routes product and persona simulations through governed connected delivery", async () => {
@@ -103,6 +103,19 @@ describe("task admission compiler", () => {
     expect(result.route).toBe("CONNECTED");
     expect(result.workload.assurance).toBe("HIGH");
     expect(result.workload.evidence).toBe("INDEPENDENT");
+    expect(result.control_packs).toContain("SIMULATION_GOVERNANCE");
+    expect(result.required_skills).toContain("simulation-campaigns");
+  });
+
+  test("preserves change intent for an inflected continuation request", async () => {
+    const result = await compileTaskEnvelope({
+      request: "Continue implementing the remaining product simulation workload through terminal gates.",
+      authority: ["local-write"],
+      produced_at: fixed,
+    });
+    expect(result.relation).toBe("CONTINUE");
+    expect(result.intent).toBe("CHANGE");
+    expect(result.route).toBe("CONNECTED");
     expect(result.control_packs).toContain("SIMULATION_GOVERNANCE");
     expect(result.required_skills).toContain("simulation-campaigns");
   });

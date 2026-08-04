@@ -152,8 +152,8 @@ function inferRelation(text: string): Relation {
 }
 
 function inferIntent(text: string): Intent {
-  if (/\b(run|operate|deploy|publish|send|execute|rotate)\b/i.test(text)) return "OPERATE";
-  if (/\b(implement|fix|change|build|create|update|remove|refactor)\b/i.test(text)) return "CHANGE";
+  if (/\b(run|running|operate|operating|deploy(?:ed|ing)?|publish(?:ed|ing)?|send(?:ing)?|execute|executing|rotate|rotating)\b/i.test(text)) return "OPERATE";
+  if (/\b(implement(?:ed|ing)?|fix(?:ed|ing)?|chang(?:e|ed|ing)|build(?:ing)?|creat(?:e|ed|ing)|updat(?:e|ed|ing)|remov(?:e|ed|ing)|refactor(?:ed|ing)?)\b/i.test(text)) return "CHANGE";
   if (/\b(validate|test|verify|check)\b/i.test(text)) return "VALIDATE";
   if (/\b(review|audit)\b/i.test(text)) return "REVIEW";
   if (/\b(diagnose|debug|root cause|why failing)\b/i.test(text)) return "DIAGNOSE";

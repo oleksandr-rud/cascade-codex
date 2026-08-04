@@ -1,7 +1,7 @@
 # Task Admission And Workload Compiler Implementation Plan
 
-Status: `IMPLEMENTED_IN_REVIEW`
-Plan Revision: `4`
+Status: `IMPLEMENTATION_REPAIR`
+Plan Revision: `5`
 Request Or Source ID: `2026-08-04-task-admission-workload-request`
 Coordinator: `orchestrator`
 Active Lane Reference: `W-031`
@@ -233,6 +233,7 @@ requirements. No framework compliance is claimed from this plan.
 | `TR-12` | plan recommends a workline without dispatch authority | promotion evaluated | artifact may be authored only when requested/policy-required; dispatch stays `NOT_AUTHORIZED` | no agent/task/worktree created | promotion fixture |
 | `TR-13` | product simulation authoring or execution request | admitted | `CONNECTED` plus `SIMULATION_GOVERNANCE`, high assurance, and independent evidence | generic task admission does not replace campaign policy or execution authority | product-simulation fixture |
 | `TR-14` | synthetic-persona simulation request | admitted | shared simulation governance composes with persona-specific provenance and refinement contracts | product persona or model output cannot self-validate the synthetic actor | persona-simulation fixture |
+| `TR-15` | continuation request says `continue implementing` a simulation workload | admitted | inflected change verb remains `CHANGE`; route composes connected delivery with simulation governance | continuation relation cannot silently downgrade intent to `ANSWER` | continuation-inflection fixture |
 
 ## Graph Fragment Composition
 
@@ -370,6 +371,7 @@ live harness coverage, merge/deploy, and release evidence remain `NOT_RUN`.
 | `2` | user authorized implementation until done | independent axes, six worklines, no-auto-dispatch and normal permission boundaries | current schemas/compiler/corpus/hooks/default route; locally gated serialized implementation | planning-only state and blanket default route superseded | local evidence passes; independent gates remain open |
 | `3` | W-032 simulation-intake consumer and current hook tool identities exposed under-control gaps | six worklines, Task Graph topology, W-004 ownership, permission boundaries | simulation governance control/policy, two corpus trajectories, and shell-tool normalization | 10-policy/9-control, 12-case, and legacy-Bash-only evidence superseded | 11 policies, 10 controls, 14/14 corpus, and 19 focused tests pass locally; independent gates remain open |
 | `4` | fixed-point review found the new simulation policy had not advanced its bundle identity | six worklines, topology, policy/control meaning, route outputs, permission boundaries | policy bundle advances to `cascade-core@2`; stale bundle-1 envelopes fail closed | bundle-1 envelope evidence superseded | 14/14 corpus and 19 focused tests pass locally; independent gates remain open |
+| `5` | resumed continuation request exposed inflected change-verb under-classification | graph topology, policies, controls, authority, and independent gates | bounded compiler/corpus repair for `implementing`; N02/N03/N06 reopen at attempt 2 | prior continuation-route evidence and 14-case/19-test counts superseded | focused and full validation pending; independent gates remain open |
 
 ## Compact Resume Contract
 
