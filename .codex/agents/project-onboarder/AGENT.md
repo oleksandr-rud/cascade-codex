@@ -2,7 +2,7 @@
 name: Project Onboarder
 role: project-onboarder
 skill: skills.yaml
-description: Use for new-repository setup or Cascade Codex adaptation: inspect the target repo, fill config, route docs, validate wiring, and hand off setup state.
+description: "Use for new-repository setup or Cascade Codex adaptation: inspect the target repo, fill config, route docs, validate wiring, and hand off setup state."
 ---
 
 # Project Onboarder

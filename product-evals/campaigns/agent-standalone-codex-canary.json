@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "id": "agent-standalone-codex-canary",
+  "title": "Standalone explicit-instruction Codex agent canary",
+  "purpose": "Prove the bounded Codex invocation, JSONL normalization, structured response, source-blind policy, immutable evidence, and cleanup without claiming model effectiveness or named custom-agent selection.",
+  "owner_lane": "W-007",
+  "tier": "platform-canary",
+  "session": {
+    "max_duration_ms": 480000,
+    "max_step_duration_ms": 370000,
+    "max_steps": 1,
+    "max_parallel_steps": 1,
+    "max_steps_per_episode": 1,
+    "max_surfaces": 1,
+    "max_checkpoint_bytes": 1048576,
+    "lease_ttl_ms": 480000
+  },
+  "evaluation_profile_file": "product-evals/rubrics/codex-independent-v1.json",
+  "simulation_file": "product-evals/simulations/harness/agent-standalone-codex/manifest.json",
+  "task_files": ["product-evals/tasks/AGENT-STANDALONE-CODEX-CANARY.json"],
+  "claim_files": ["product-evals/claims/agent-standalone-codex-execution.json"],
+  "policy_files": ["product-evals/policies/allow-agent-standalone-codex-v1.json"],
+  "oracle_files": ["product-evals/oracles/agent-response-contract-valid-v1.json"],
+  "specialized_evaluation": {
+    "applicability": "NOT_APPLICABLE",
+    "route_ids": [],
+    "trace_ids": [],
+    "claim_ids": [],
+    "reason": "This standalone target does not evaluate a Cascade skill, route, or harness trace; model effectiveness remains outside the deterministic fixture evaluator."
+  }
+}

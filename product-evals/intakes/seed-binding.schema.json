@@ -1,0 +1,121 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://cascade.local/schemas/simulation-seed-binding.v1.schema.json",
+  "title": "Cascade authored simulation seed binding",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "artifact_type", "id", "status", "campaign_id", "campaign_sha256", "source", "mappings"],
+  "properties": {
+    "schema_version": { "const": 1 },
+    "artifact_type": { "const": "cascade-simulation-seed-binding" },
+    "id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9.-]+$" },
+    "status": { "enum": ["DRAFT", "READY"] },
+    "campaign_id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9.-]+$" },
+    "campaign_sha256": { "$ref": "#/$defs/digest" },
+    "source": { "$ref": "#/$defs/source" },
+    "mappings": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/mapping" }
+    }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "status": { "const": "READY" } } },
+      "then": {
+        "properties": {
+          "source": {
+            "properties": {
+              "task_envelope_id": { "type": "string", "pattern": "^TE-[a-f0-9]{16}$" },
+              "task_envelope_revision": { "type": "integer", "minimum": 1 },
+              "request_digest": { "$ref": "#/$defs/digest" },
+              "source_digest": { "$ref": "#/$defs/digest" }
+            }
+          },
+          "mappings": { "minItems": 1 }
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "digest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "nullableDigest": {
+      "oneOf": [
+        { "type": "null" },
+        { "$ref": "#/$defs/digest" }
+      ]
+    },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["task_envelope_id", "task_envelope_revision", "request_digest", "source_digest"],
+      "properties": {
+        "task_envelope_id": {
+          "oneOf": [
+            { "type": "null" },
+            { "type": "string", "pattern": "^TE-[a-f0-9]{16}$" }
+          ]
+        },
+        "task_envelope_revision": {
+          "oneOf": [
+            { "type": "null" },
+            { "type": "integer", "minimum": 1 }
+          ]
+        },
+        "request_digest": { "$ref": "#/$defs/nullableDigest" },
+        "source_digest": { "$ref": "#/$defs/nullableDigest" }
+      }
+    },
+    "mapping": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["source_claim_id", "disposition", "campaign_claim_ids", "scenario_ids", "task_ids", "rationale"],
+      "properties": {
+        "source_claim_id": { "type": "string", "pattern": "^CL-[0-9]{3}$" },
+        "disposition": { "enum": ["SEEDED", "CONTEXT_ONLY", "OUT_OF_SCOPE"] },
+        "campaign_claim_ids": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "scenario_ids": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "task_ids": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "rationale": {
+          "oneOf": [
+            { "type": "null" },
+            { "type": "string", "minLength": 1 }
+          ]
+        }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "disposition": { "const": "SEEDED" } } },
+          "then": {
+            "properties": {
+              "campaign_claim_ids": { "minItems": 1 }
+            },
+            "anyOf": [
+              { "properties": { "scenario_ids": { "minItems": 1 } } },
+              { "properties": { "task_ids": { "minItems": 1 } } }
+            ]
+          },
+          "else": {
+            "properties": {
+              "campaign_claim_ids": { "maxItems": 0 },
+              "scenario_ids": { "maxItems": 0 },
+              "task_ids": { "maxItems": 0 },
+              "rationale": { "type": "string", "minLength": 1 }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

@@ -465,7 +465,7 @@ exact independent disposition.
 | Python compilation | `PASS` | validator, harness evaluator, scaffold generator, and evidence validator compile |
 | Harness catalog | `PASS` | 41 skills, 319 scenarios, digest `f975c361819767d05319b7f4b636fa8b9e211e3c56b2005de930dd4d665d6552` |
 | Harness self-test | `PASS` | 15 cases |
-| Isolated source validator | `PASS` | 9 agents, 41 skills, zero project leakage, and zero standalone-QA references |
+| Isolated source validator | `PASS` | 9 agents, 41 skills, zero project leakage, and zero retired QA-label references |
 | Diff whitespace | `PASS` | `git diff --check` |
 | Direct dirty-checkout validator | `FAIL_UNRELATED` | 36 findings under root and `.codex/harness-tooling` Playwright `node_modules`; no Stage 1 source finding |
 | Standards review | `PASS` | direct cutover, thin entrypoints, ownership boundaries, and protected dirty work conform to repository rules |

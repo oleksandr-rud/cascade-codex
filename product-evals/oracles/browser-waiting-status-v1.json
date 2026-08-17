@@ -1,0 +1,7 @@
+{
+  "schema_version": 1,
+  "id": "browser-waiting-status-v1",
+  "type": "state-equals",
+  "path": "browser.visible_status",
+  "expected": "Waiting"
+}

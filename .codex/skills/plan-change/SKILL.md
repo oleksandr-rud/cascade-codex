@@ -1,6 +1,6 @@
 ---
 name: plan-change
-description: Use before or during replanning of non-atomic implementation, bug fixes, refactors, public contracts, state changes, or product-visible behavior to preserve definitions, boundaries, workline coverage, behavior examples, implementation slices, risks, and validation.
+description: Use before or during replanning of non-atomic implementation, bug fixes, refactors, public contracts, state changes, or product-visible behavior to define behavior, boundaries, implementation slices, risks, and validation before delivery sequencing.
 ---
 
 # Plan Change
@@ -8,11 +8,12 @@ description: Use before or during replanning of non-atomic implementation, bug f
 Use before non-trivial implementation, bug fixes, refactors, public-contract
 work, state changes, agent/runtime changes, or product-visible UI/API flows.
 
-This skill turns customer pain and product/design intent into behavior examples
-and validation evidence before editing. It uses codebase-specific terms instead
-of generic modeling vocabulary and borrows only the useful product-side ideas:
-user outcome, boundary of responsibility, and names that make current code
-easier to navigate.
+This skill turns customer pain and product/design intent into behavior examples,
+implementation slices, and validation evidence before editing. It defines what
+can be built and proved. `plan-iterations` separately ranks slices, assigns
+delivery dispositions, traces the MVP boundary, and proposes or records an
+authorized first-iteration commitment; `orchestrate-work` instantiates only
+committed first-iteration scope as active worklines when coordination is needed.
 
 ## Source Order
 
@@ -58,14 +59,18 @@ If code and docs disagree, follow code and report the drift.
 - Use `ingest-spec` when incoming specs must be normalized before planning.
 - Use `docs-impact-map` when source docs changed and sibling product, design,
   brand, spec, backlog, glossary, or pattern effects have not been checked.
-- Use `orchestrate-work` when the work may split into parallel lanes or needs
-  dependency/conflict tracking.
+- Use `plan-iterations` after slices are grounded when the request spans more
+  than one delivery horizon or asks for an Agile, iteration, MVP, phase, or
+  roadmap plan.
+- Use `orchestrate-work` after committed first-iteration scope is selected when
+  it needs multiple worklines, dependency/conflict tracking, ownership, or
+  graph coordination.
 - Use `reconcile-work-graph` before creating or amending a Coordination Graph
   from existing lanes/worklines whose identity, duplication, staleness,
   completion, ownership, or inbound consumers have not been reconciled.
-- Derive worklines through `orchestrate-work` from inspected boundaries. Do not
-  ask the user to choose a number of plans or worklines unless that number is
-  itself a delivery constraint.
+- Do not activate worklines across the whole plan. Group slices into candidate
+  delivery obligations, then let `plan-iterations` rank and disposition them;
+  `orchestrate-work` may instantiate only committed first-iteration scope.
 - Evaluate reusable graph fragments before final workline selection. Fragment
   evaluation does not force graph creation: record `SELECTED`, `MERGED`,
   `NOT_APPLICABLE`, or `BLOCKED`, and instantiate only the smallest applicable
@@ -78,10 +83,9 @@ If code and docs disagree, follow code and report the drift.
 - `DRAFT`: source coverage, definitions, or boundary decisions remain open.
 - `DEFINITION_READY`: important terms, authority, boundaries, lifecycle, and
   failure behavior are coherent.
-- `IMPLEMENTATION_READY`: worklines, slices, writes, dependencies, validation,
-  and stop conditions are mapped; any applicable Coordination Graph also has
-  authoritative dispatch, immutable transport, materialization, batch,
-  integrated-evidence, repair, and terminal-gate contracts.
+- `IMPLEMENTATION_READY`: slices, writes, dependencies, validation, and stop
+  conditions are mapped. Delivery-horizon or workline readiness remains owned
+  by `plan-iterations` and `orchestrate-work` when those routes apply.
 - `BLOCKED`: a required source, decision, permission, or validation
   precondition is unavailable.
 - `SUPERSEDED`: a later revision replaced the plan while preserving its
@@ -134,27 +138,28 @@ first satisfy the definition-readiness and traceability checks in
 11. Compare implementation approaches only when credible alternatives exist.
 12. Name the highest useful test seam: the public/product boundary where a check
    can prove behavior without coupling to private helper shape.
-13. Run the delivery-surface and assurance-overlay audit from
-   `docs/patterns/workflow/fragments/`. For each fragment, record activation
+13. Run a proportional delivery-surface and assurance scan. Load fragment
+   definitions from `docs/patterns/workflow/fragments/` only when the impact
+   signals show a real cross-surface, integration, or assurance obligation.
+   A bounded single-surface plan may record one catalog-bypass reason. For each
+   loaded fragment, record activation
    evidence, disposition/reason, required/provided ports, actor capabilities,
    skill calls, tests, evaluator authority, and omission consequence. Bind
    selected required ports to selected producers, authoritative external
    sources, or explicit conditional omissions. Unsupported required actor,
    skill, test-command, fixture, environment, or evaluator capability is
    `BLOCKED`, not an implied fallback.
-14. Use `orchestrate-work` to compose selected fragments and discover candidate
-   worklines from outcomes,
-   criteria, boundaries, writes, dependencies, and validation seams. Select the
-   smallest coherent set; do not target a count. Give every criterion one
-   primary workline owner and every provided port one primary producer; record
-   connected consumers. Merge fragments that share one owner, write scope, and
-   acceptance seam. Split only for independently meaningful ownership, writes,
-   handoff, or evidence.
-15. Convert selected worklines into implementation slices that name their
-   inputs, files/contracts, output, evidence, and repair or stop boundary.
+14. Compose selected fragment obligations into the smallest coherent
+   implementation slices. Give every criterion and provided port one primary
+   slice owner; record connected consumers. Merge obligations that share one
+   outcome, write scope, and acceptance seam. Split only for independently
+   meaningful behavior, ownership, writes, handoff, or evidence.
+15. Name each slice's inputs, files/contracts, output, evidence, and repair or
+   stop boundary. If slices span delivery horizons, route them to
+   `plan-iterations`; otherwise identify the one current coherent slice.
 16. Run a traceability pass from request and definitions through selected
-   fragments, worklines,
-   slices, artifacts, and checks. Orphan rows keep the plan in `DRAFT`.
+   fragments, slices, artifacts, and checks. Orphan rows keep the plan in
+   `DRAFT`.
 17. Map regressions across touched boundaries and Feature Impact Matrix rows.
 18. Name functional and automated validation before editing. Resolve every
    selected fragment's abstract test strategy to exact target commands,
@@ -166,14 +171,18 @@ first satisfy the definition-readiness and traceability checks in
    preserved, changed, added, invalidated, or superseded before replacing
    current projections. Re-evaluate affected fragments, worklines, and evidence
    only.
-21. Update `docs/work/active.md`, a lane packet, or an authoritative
-   Coordination Graph only when the plan changes its owned active state. Keep
-   generated/source specs free of graph boilerplate and use stable references
-   to their narrow owners.
+21. Do not create active rows, lane packets, or graph state for future delivery
+   horizons. Existing active-state changes remain authority-bound; new
+   committed workline state is instantiated through `orchestrate-work` after
+   `plan-iterations` when that route applies.
 22. Check the plan with `checklists/planning-completeness.md` before claiming
    `DEFINITION_READY` or `IMPLEMENTATION_READY`.
 
 ## Graph-Shaped Planning When Applicable
+
+Apply this section only when changing an existing graph-bound contract or after
+a current delivery horizon is committed. Future candidate horizons never emit
+Task Graph or Coordination Graph state.
 
 - Treat selected fragments as planning inputs, not active graph state. Generate
   stable instance IDs only after composition and preserve each instance's source
@@ -300,8 +309,10 @@ first satisfy the definition-readiness and traceability checks in
 - codebase context and slice boundary;
 - graph-fragment selection ledger, port bindings, resolved actor/role and skill
   calls, per-fragment test/evaluator strategy, and omission reasons;
-- adaptively derived workline map with one primary owner per criterion;
+- implementation-slice map with one primary owner per criterion;
 - implementation slices and request-to-evidence traceability;
+- delivery handoff to `plan-iterations` when slices span horizons, or the one
+  current slice when they do not;
 - chosen approach and rejected alternatives when relevant;
 - risks and deferred items;
 - replanning preservation and invalidation delta when applicable;

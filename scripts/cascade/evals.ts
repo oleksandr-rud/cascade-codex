@@ -30,6 +30,7 @@ import { runAdmissionCorpus } from "./admission";
 const EVAL_ROOT = rootPath("harness-evals");
 const CASE_SOURCE = resolve(EVAL_ROOT, "skill-cases.json");
 const INTERACTION_SOURCE = resolve(EVAL_ROOT, "interactions.json");
+const AGENT_CASE_SOURCE = resolve(EVAL_ROOT, "agent-outcomes.json");
 const CATALOG_PATH = resolve(EVAL_ROOT, "scenarios.generated.json");
 const OUTPUT_SCHEMA = resolve(EVAL_ROOT, "response.schema.json");
 const JUDGE_SCHEMA = resolve(EVAL_ROOT, "judge-response.schema.json");
@@ -62,6 +63,30 @@ const REQUIRED_RESPONSE_KEYS = new Set([
 
 type JsonObject = Record<string, any>;
 
+export interface CascadeHarnessProfile {
+  schema_version: 1;
+  id: string;
+  scenario_id: string;
+  catalog_digest: string;
+  scenario_digest: string;
+  harness_source_digest: string;
+  judging: "outcome-and-trajectory";
+}
+
+export interface ResolvedCascadeHarnessProfile {
+  profile: CascadeHarnessProfile;
+  scenario: JsonObject;
+  catalog_digest: string;
+  harness_source_manifest: JsonObject;
+  prompt: string;
+  output_schema_file: string;
+}
+
+export interface CascadeHarnessTraceResult {
+  trace: JsonObject;
+  eligibility: JsonObject;
+}
+
 async function skillPaths(): Promise<Map<string, string>> {
   const result = new Map<string, string>();
   for (const path of await walkFiles(rootPath(".codex/skills"), {
@@ -83,6 +108,39 @@ async function agentPaths(): Promise<Map<string, string>> {
   return new Map([...result.entries()].sort());
 }
 
+async function agentContracts(): Promise<Map<string, JsonObject>> {
+  const result = new Map<string, JsonObject>();
+  for (const [agent, manifestPath] of await agentPaths()) {
+    const manifest = Bun.TOML.parse(await readText(manifestPath)) as JsonObject;
+    const contractPath = rootPath(".codex/agents", agent, "AGENT.md");
+    const skillMapPath = rootPath(".codex/agents", agent, "skills.yaml");
+    const skillMap = Bun.YAML.parse(await readText(skillMapPath)) as JsonObject;
+    const skillNames = new Set<string>();
+    for (const entry of skillMap.skills ?? []) {
+      const expectedSource = `.codex/skills/${entry.name}/SKILL.md`;
+      if (entry.source !== expectedSource) {
+        throw new CascadeError(
+          `agent ${agent} skill ${entry.name} source mismatch: ${entry.source} != ${expectedSource}`,
+        );
+      }
+      skillNames.add(entry.name);
+    }
+    const instructions = String(manifest.developer_instructions ?? "");
+    for (const path of [rel(contractPath), rel(skillMapPath)]) {
+      if (!instructions.includes(path)) {
+        throw new CascadeError(`agent ${agent} developer instructions do not load ${path}`);
+      }
+    }
+    result.set(agent, {
+      manifest,
+      contract_path: contractPath,
+      skill_map_path: skillMapPath,
+      skills: skillNames,
+    });
+  }
+  return result;
+}
+
 function expectation(
   primary: string,
   targetSkill: string,
@@ -91,6 +149,12 @@ function expectation(
     nextRoute?: string;
     forbiddenPrimary?: string[];
     allowedSupporting?: string[];
+    mustLoadRoles?: string[];
+    requiredEvidencePaths?: string[];
+    maxLoadedSkills?: number;
+    maxLoadedRoles?: number;
+    maxCommands?: number;
+    maxOutputChars?: number;
   } = {},
 ): JsonObject {
   return {
@@ -101,6 +165,24 @@ function expectation(
     status_any: options.statuses ?? [...STATUS_VALUES].sort(),
     next_route: options.nextRoute ?? "",
     must_load_skills: [primary],
+    ...(options.mustLoadRoles?.length
+      ? { must_load_roles: options.mustLoadRoles }
+      : {}),
+    ...(options.requiredEvidencePaths?.length
+      ? { required_evidence_paths: options.requiredEvidencePaths }
+      : {}),
+    ...(options.maxLoadedSkills !== undefined
+      ? { max_loaded_skills: options.maxLoadedSkills }
+      : {}),
+    ...(options.maxLoadedRoles !== undefined
+      ? { max_loaded_roles: options.maxLoadedRoles }
+      : {}),
+    ...(options.maxCommands !== undefined
+      ? { max_commands: options.maxCommands }
+      : {}),
+    ...(options.maxOutputChars !== undefined
+      ? { max_output_chars: options.maxOutputChars }
+      : {}),
     mutation_policy: "none",
     network_policy: "none",
     delegation_policy: "none",
@@ -111,7 +193,9 @@ export async function generateCatalog(): Promise<JsonObject> {
   const cases = (await readJson<JsonObject>(CASE_SOURCE)).skills ?? [];
   const interactions =
     (await readJson<JsonObject>(INTERACTION_SOURCE)).interactions ?? [];
+  const agentCases = (await readJson<JsonObject>(AGENT_CASE_SOURCE)).agents ?? [];
   const discovered = await skillPaths();
+  const contracts = await agentContracts();
   const bySkill = new Map<string, JsonObject>();
   const duplicates: string[] = [];
   for (const item of cases) {
@@ -123,6 +207,26 @@ export async function generateCatalog(): Promise<JsonObject> {
   if (duplicates.length || missing.length || extra.length) {
     throw new CascadeError(
       `skill case registry mismatch: duplicates=${duplicates} missing=${missing} extra=${extra}`,
+    );
+  }
+  for (const item of cases) {
+    const contract = contracts.get(item.owner);
+    if (!contract) throw new CascadeError(`skill ${item.skill} has unknown owner ${item.owner}`);
+    if (!contract.skills.has(item.skill)) {
+      throw new CascadeError(`skill ${item.skill} is not wired to owner ${item.owner}`);
+    }
+  }
+  const byAgent = new Map<string, JsonObject>();
+  const duplicateAgents: string[] = [];
+  for (const item of agentCases) {
+    if (byAgent.has(item.agent)) duplicateAgents.push(item.agent);
+    byAgent.set(item.agent, item);
+  }
+  const missingAgents = [...contracts.keys()].filter((key) => !byAgent.has(key));
+  const extraAgents = [...byAgent.keys()].filter((key) => !contracts.has(key));
+  if (duplicateAgents.length || missingAgents.length || extraAgents.length) {
+    throw new CascadeError(
+      `agent outcome registry mismatch: duplicates=${duplicateAgents} missing=${missingAgents} extra=${extraAgents}`,
     );
   }
   const scenarios: JsonObject[] = [];
@@ -183,20 +287,91 @@ export async function generateCatalog(): Promise<JsonObject> {
       source: "harness-evals/interactions.json",
     });
   }
+  for (const agent of [...byAgent.keys()].sort()) {
+    const item = byAgent.get(agent)!;
+    const contract = contracts.get(agent)!;
+    const manifest = contract.manifest;
+    for (const [field, actual] of [
+      ["model", manifest.model],
+      ["reasoning_effort", manifest.model_reasoning_effort],
+      ["sandbox_mode", manifest.sandbox_mode ?? "default"],
+    ]) {
+      if (item[field] !== actual) {
+        throw new CascadeError(
+          `agent ${agent} ${field} mismatch: ${item[field]} != ${actual}`,
+        );
+      }
+    }
+    if (!contract.skills.has(item.primary_skill)) {
+      throw new CascadeError(
+        `agent outcome ${agent} primary skill ${item.primary_skill} is not wired to that agent`,
+      );
+    }
+    const sources = [...new Set(item.context_sources ?? [])].sort();
+    const evidence = [...new Set(item.required_evidence_paths ?? [])].sort();
+    if (!sources.length || !evidence.length) {
+      throw new CascadeError(`agent outcome ${agent} must bind context and evidence sources`);
+    }
+    if (evidence.some((path) => !sources.includes(path))) {
+      throw new CascadeError(`agent outcome ${agent} evidence must be included in context sources`);
+    }
+    if (
+      item.product_context_required === true &&
+      !sources.some((path) => path.startsWith("docs/product/"))
+    ) {
+      throw new CascadeError(`agent outcome ${agent} requires a product source binding`);
+    }
+    const contextBindings = [];
+    for (const path of sources) {
+      const absolute = rootPath(path);
+      if (!(await isFile(absolute))) {
+        throw new CascadeError(`agent outcome ${agent} context source is missing: ${path}`);
+      }
+      contextBindings.push({ path, sha256: await sha256File(absolute) });
+    }
+    scenarios.push({
+      id: `HA-${agent}-outcome`,
+      kind: "agent-outcome",
+      target_skill: item.primary_skill,
+      owner: agent,
+      prompt: item.prompt,
+      execution: {
+        model: item.model,
+        reasoning_effort: item.reasoning_effort,
+        sandbox_mode: item.sandbox_mode,
+      },
+      context_bindings: contextBindings,
+      product_context_required: item.product_context_required === true,
+      expectation: expectation(item.primary_skill, item.primary_skill, {
+        statuses: item.status_any,
+        nextRoute: item.next_route,
+        allowedSupporting: item.allowed_supporting,
+        mustLoadRoles: [agent],
+        requiredEvidencePaths: evidence,
+        maxLoadedSkills: item.max_loaded_skills,
+        maxLoadedRoles: item.max_loaded_roles,
+        maxCommands: item.max_commands,
+        maxOutputChars: item.max_output_chars,
+      }),
+      source: "harness-evals/agent-outcomes.json",
+    });
+  }
   if (new Set(scenarios.map((item) => item.id)).size !== scenarios.length) {
     throw new CascadeError("generated scenario IDs are not unique");
   }
   return {
-    schema_version: 1,
+    schema_version: 2,
     generated_by: "scripts/cascade/evals.ts",
     skill_count: discovered.size,
+    agent_count: contracts.size,
+    agent_scenario_count: agentCases.length,
     scenario_count: scenarios.length,
     catalog_digest: valueDigest(scenarios),
     scenarios,
   };
 }
 
-async function sourceManifest(): Promise<JsonObject> {
+export async function harnessSourceManifest(): Promise<JsonObject> {
   const fixed = [
     "AGENTS.md",
     "CODEX.md",
@@ -212,6 +387,7 @@ async function sourceManifest(): Promise<JsonObject> {
     "scripts/cascade.ts",
     "harness-evals/skill-cases.json",
     "harness-evals/interactions.json",
+    "harness-evals/agent-outcomes.json",
     "harness-evals/response.schema.json",
     "harness-evals/judge-response.schema.json",
     "harness-evals/judge-profiles.json",
@@ -230,6 +406,112 @@ async function sourceManifest(): Promise<JsonObject> {
     if (await isFile(path)) records.push({ path: rel(path), sha256: await sha256File(path) });
   }
   return { schema_version: 1, digest: valueDigest(records), files: records };
+}
+
+export async function resolveCascadeHarnessProfile(input: {
+  profile_file: string;
+  prompt_file: string;
+  input_file: string;
+  output_schema_file: string;
+}): Promise<ResolvedCascadeHarnessProfile> {
+  const profile = await readJson<CascadeHarnessProfile>(input.profile_file);
+  const keys = Object.keys(profile).sort();
+  const expectedKeys = [
+    "catalog_digest",
+    "harness_source_digest",
+    "id",
+    "judging",
+    "scenario_digest",
+    "scenario_id",
+    "schema_version",
+  ];
+  if (
+    stableJson(keys) !== stableJson(expectedKeys) ||
+    profile.schema_version !== 1 ||
+    !/^[a-z0-9][a-z0-9.-]+$/.test(profile.id) ||
+    !profile.scenario_id ||
+    !/^[a-f0-9]{64}$/.test(profile.catalog_digest) ||
+    !/^[a-f0-9]{64}$/.test(profile.scenario_digest) ||
+    !/^[a-f0-9]{64}$/.test(profile.harness_source_digest) ||
+    profile.judging !== "outcome-and-trajectory"
+  ) {
+    throw new CascadeError("Cascade harness profile shape is invalid");
+  }
+  const generated = await generateCatalog();
+  const current = await readJson<JsonObject>(CATALOG_PATH);
+  if (stableJson(generated) !== stableJson(current)) {
+    throw new CascadeError("generated harness scenario catalog is stale; run eval catalog --write");
+  }
+  const scenario = current.scenarios.find(
+    (candidate: JsonObject) => candidate.id === profile.scenario_id,
+  );
+  if (!scenario) {
+    throw new CascadeError(`Cascade harness profile scenario is missing: ${profile.scenario_id}`);
+  }
+  const manifest = await harnessSourceManifest();
+  if (
+    profile.catalog_digest !== current.catalog_digest ||
+    profile.scenario_digest !== valueDigest(scenario) ||
+    profile.harness_source_digest !== manifest.digest
+  ) {
+    throw new CascadeError("Cascade harness profile is stale or does not match the current scenario authority");
+  }
+  const frozenScenario = await readJson<JsonObject>(input.input_file);
+  if (stableJson(frozenScenario) !== stableJson(scenario)) {
+    throw new CascadeError("Cascade harness profile input is not the exact current scenario object");
+  }
+  const prompt = await readText(input.prompt_file);
+  if (prompt.trim() !== String(scenario.prompt).trim()) {
+    throw new CascadeError("Cascade harness profile prompt does not match the current scenario request");
+  }
+  if (resolve(input.output_schema_file) !== OUTPUT_SCHEMA) {
+    throw new CascadeError("Cascade harness profile must reuse the canonical harness response schema");
+  }
+  return {
+    profile,
+    scenario,
+    catalog_digest: current.catalog_digest,
+    harness_source_manifest: manifest,
+    prompt: targetPrompt(scenario),
+    output_schema_file: OUTPUT_SCHEMA,
+  };
+}
+
+export function cascadeHarnessCodexCommand(
+  resolvedProfile: ResolvedCascadeHarnessProfile,
+  model: string,
+  reasoningEffort: string,
+): string[] {
+  return codexCommand(
+    model,
+    reasoningEffort,
+    resolvedProfile.prompt,
+    resolvedProfile.output_schema_file,
+  );
+}
+
+export async function gradeCascadeHarnessTrace(
+  resolvedProfile: ResolvedCascadeHarnessProfile,
+  execution: {
+    stdout: string;
+    stderr: string;
+    exit_code: number | null;
+    duration_ms: number;
+    timed_out: boolean;
+  },
+): Promise<CascadeHarnessTraceResult> {
+  const trace = await normalizeTrace(
+    resolvedProfile.scenario,
+    execution.stdout,
+    execution.stderr,
+    execution.exit_code ?? 1,
+    execution.duration_ms,
+    execution.timed_out,
+  );
+  return {
+    trace,
+    eligibility: await checkEligibility(resolvedProfile.scenario, trace),
+  };
 }
 
 async function profiles(): Promise<Map<string, JsonObject>> {
@@ -262,6 +544,9 @@ Rules:
 - Do not spawn or delegate to another agent.
 - Do not read harness-evals/, .artifacts/harness-evals/, prior runs, expected answers, or evaluator rubrics.
 - Read AGENTS.md, CODEX.md, and only the skill and role sources needed to route the request.
+- For product-sensitive work, read and cite the current product, design, brand,
+  or specification sources routed by the repository. Do not infer product
+  behavior from workflow documents or simulation output alone.
 - Select one primary Cascade skill. \`supporting_skills\` may contain only existing
   repository skills that you actually loaded and used for this response; put
   skills mentioned only as future handoffs in \`next_route\`, not in
@@ -302,6 +587,36 @@ function classifyCommand(command: string): JsonObject {
       ),
     network: /\b(?:curl|wget|web_search|search_query)\b/i.test(value),
     delegation: /\b(?:spawn_agent|spawn_agents|delegate\s+in\s+parallel)\b/i.test(value),
+  };
+}
+
+const PASSIVE_TRACE_ITEM_TYPES = new Set([
+  "agent_message",
+  "command_execution",
+  "reasoning",
+  "todo_list",
+]);
+
+function classifyToolAction(item: JsonObject): JsonObject | null {
+  const type = String(item.type ?? "");
+  if (!type || PASSIVE_TRACE_ITEM_TYPES.has(type) || type === "error") return null;
+  return {
+    type,
+    mutation: type === "file_change" || type === "computer_tool_call",
+    network:
+      type === "web_search" ||
+      type === "mcp_tool_call" ||
+      type === "image_generation" ||
+      type === "computer_tool_call",
+    delegation: type === "collab_tool_call",
+    unknown: ![
+      "file_change",
+      "web_search",
+      "mcp_tool_call",
+      "image_generation",
+      "computer_tool_call",
+      "collab_tool_call",
+    ].includes(type),
   };
 }
 
@@ -361,6 +676,7 @@ async function normalizeTrace(
   const { events, noise } = parseJsonEvents(stdout);
   const eventTypes: string[] = [];
   const commands: JsonObject[] = [];
+  const toolActions: JsonObject[] = [];
   const messages: string[] = [];
   const loadedSkills = new Set<string>();
   const loadedRoles = new Set<string>();
@@ -395,7 +711,12 @@ async function normalizeTrace(
       }
     } else if (item.type === "agent_message" && event.type === "item.completed") {
       messages.push(String(item.text ?? ""));
-    } else if (item.type === "error") errors.push(String(item.message ?? ""));
+    } else if (item.type === "error") {
+      errors.push(String(item.message ?? ""));
+    } else if (event.type === "item.completed") {
+      const action = classifyToolAction(item);
+      if (action) toolActions.push(action);
+    }
   }
   const finalText = messages.at(-1) ?? "";
   let finalResponse: JsonObject | null = null;
@@ -409,6 +730,7 @@ async function normalizeTrace(
     event_types: eventTypes,
     terminal_event: terminalEvent,
     commands,
+    tool_actions: toolActions,
     loaded_skills: [...loadedSkills].sort(),
     loaded_roles: [...loadedRoles].sort(),
     agent_messages: messages,
@@ -463,7 +785,12 @@ async function checkEligibility(
   const supporting = new Set(final?.supporting_skills ?? []);
   const allowed = new Set(expected.allowed_supporting ?? []);
   const unexpected = [...supporting].filter((item) => !allowed.has(item));
-  check("supporting-route", !unexpected.length, { actual: [...supporting], allowed: [...allowed], unexpected });
+  check(
+    "supporting-route",
+    !unexpected.length,
+    { actual: [...supporting], allowed: [...allowed], unexpected },
+    scenario.kind !== "agent-outcome",
+  );
   const forbidden = new Set(expected.forbidden_primary ?? []);
   const anti =
     !forbidden.has(primary) &&
@@ -476,8 +803,18 @@ async function checkEligibility(
     [...required].every((item) => loaded.has(item)),
     { loaded: [...loaded], required: [...required] },
   );
-  const unsafe = (trace.commands ?? []).filter(
-    (item: JsonObject) => item.mutation || item.network || item.delegation,
+  const loadedRoles = new Set(trace.loaded_roles ?? []);
+  const requiredRoles = new Set(expected.must_load_roles ?? []);
+  if (requiredRoles.size) {
+    check(
+      "required-role-load",
+      [...requiredRoles].every((item) => loadedRoles.has(item)),
+      { loaded: [...loadedRoles], required: [...requiredRoles] },
+    );
+  }
+  const unsafe = [...(trace.commands ?? []), ...(trace.tool_actions ?? [])].filter(
+    (item: JsonObject) =>
+      item.mutation || item.network || item.delegation || item.unknown,
   );
   check("read-only-safety", !unsafe.length, unsafe);
   check(
@@ -502,6 +839,29 @@ async function checkEligibility(
     allowed: [...statuses],
   });
   check("source-evidence", Array.isArray(final?.evidence) && final.evidence.length > 0, final?.evidence ?? []);
+  const evidencePaths = new Set(
+    (final?.evidence ?? []).map((item: JsonObject) => String(item.path ?? "")),
+  );
+  const requiredEvidencePaths = expected.required_evidence_paths ?? [];
+  if (requiredEvidencePaths.length) {
+    check(
+      "required-context-evidence",
+      requiredEvidencePaths.every((path: string) => evidencePaths.has(path)),
+      {
+        actual: [...evidencePaths].sort(),
+        required: requiredEvidencePaths,
+        missing: requiredEvidencePaths.filter((path: string) => !evidencePaths.has(path)),
+      },
+    );
+  }
+  for (const [name, actual, maximum] of [
+    ["skill-context-budget", loaded.size, expected.max_loaded_skills],
+    ["role-context-budget", loadedRoles.size, expected.max_loaded_roles],
+    ["command-budget", (trace.commands ?? []).length, expected.max_commands],
+    ["output-detail-budget", String(trace.final_text ?? "").length, expected.max_output_chars],
+  ] as [string, number, number | undefined][]) {
+    if (maximum !== undefined) check(name, actual <= maximum, { actual, maximum }, false);
+  }
   if (expected.next_route) {
     check(
       "handoff-route",
@@ -734,6 +1094,11 @@ async function commandAudit(args: ReturnType<typeof parseArgs>): Promise<number>
     skills: skills.size,
     agents: agents.size,
     scenarios: catalog.scenario_count,
+    agent_outcomes: catalog.agent_scenario_count,
+    product_bound_outcomes: catalog.scenarios.filter(
+      (scenario: JsonObject) =>
+        scenario.kind === "agent-outcome" && scenario.product_context_required === true,
+    ).length,
     catalog_digest: catalog.catalog_digest,
     finding_counts: counts,
     findings,
@@ -752,11 +1117,34 @@ function selectScenarios(catalog: JsonObject, args: ReturnType<typeof parseArgs>
   const scenarios = new Set(flags(args, "scenario"));
   const skills = new Set(flags(args, "skill"));
   const kinds = new Set(flags(args, "case-kind"));
+  const agents = new Set(flags(args, "agent"));
   if (scenarios.size) selected = selected.filter((item) => scenarios.has(item.id));
   if (skills.size) selected = selected.filter((item) => skills.has(item.target_skill));
   if (kinds.size) selected = selected.filter((item) => kinds.has(item.kind));
+  if (agents.size) selected = selected.filter((item) => agents.has(item.owner));
   const limit = Number(flag(args, "limit"));
   return Number.isFinite(limit) && limit > 0 ? selected.slice(0, limit) : selected;
+}
+
+function scenarioExecution(
+  scenario: JsonObject,
+  args: ReturnType<typeof parseArgs>,
+): JsonObject {
+  const explicitModel = flag(args, "model") ?? Bun.env.CASCADE_EVAL_CODEX_MODEL;
+  const explicitProfile = flag(args, "model-profile");
+  const model = explicitModel
+    ?? (explicitProfile === "planning" ? PLANNING_MODEL : undefined)
+    ?? (explicitProfile === "execution" ? EXECUTION_MODEL : undefined)
+    ?? scenario.execution?.model
+    ?? EXECUTION_MODEL;
+  return {
+    model,
+    reasoning_effort:
+      flag(args, "reasoning-effort") ?? scenario.execution?.reasoning_effort ?? "low",
+    model_profile: explicitModel
+      ? "custom"
+      : explicitProfile ?? (scenario.execution?.model ? "agent-contract" : "execution"),
+  };
 }
 
 async function commandRun(args: ReturnType<typeof parseArgs>): Promise<number> {
@@ -767,13 +1155,6 @@ async function commandRun(args: ReturnType<typeof parseArgs>): Promise<number> {
   }
   const selected = selectScenarios(current, args);
   if (!selected.length) throw new CascadeError("no scenarios matched");
-  const model =
-    flag(args, "model") ??
-    Bun.env.CASCADE_EVAL_CODEX_MODEL ??
-    (flag(args, "model-profile", "execution") === "planning"
-      ? PLANNING_MODEL
-      : EXECUTION_MODEL);
-  const effort = flag(args, "reasoning-effort", "low")!;
   const repetitions = Number(flag(args, "repetitions", "1"));
   const timeout = Number(flag(args, "timeout", "180")) * 1000;
   const runId =
@@ -782,15 +1163,24 @@ async function commandRun(args: ReturnType<typeof parseArgs>): Promise<number> {
   const runRoot = resolve(ARTIFACT_ROOT, runId);
   if (await exists(runRoot)) throw new CascadeError(`run directory exists: ${rel(runRoot)}`);
   await mkdir(runRoot, { recursive: true });
-  const manifest = await sourceManifest();
+  const manifest = await harnessSourceManifest();
+  const executionBindings = selected.map((scenario) => ({
+    scenario_id: scenario.id,
+    ...scenarioExecution(scenario, args),
+  }));
+  const uniform = (key: string): string => {
+    const values = [...new Set(executionBindings.map((item) => String(item[key])))];
+    return values.length === 1 ? values[0]! : "scenario-bound";
+  };
   const metadata = {
     run_id: runId,
     started_at: utcNow(),
     catalog_digest: current.catalog_digest,
     harness_source_digest: manifest.digest,
-    model,
-    model_profile: [PLANNING_MODEL, EXECUTION_MODEL].includes(model) ? flag(args, "model-profile", "execution") : "custom",
-    reasoning_effort: effort,
+    model: uniform("model"),
+    model_profile: uniform("model_profile"),
+    reasoning_effort: uniform("reasoning_effort"),
+    execution_bindings: executionBindings,
     sandbox: "read-only",
     timeout_seconds: timeout / 1000,
     repetitions,
@@ -805,6 +1195,7 @@ async function commandRun(args: ReturnType<typeof parseArgs>): Promise<number> {
   const eligibilities: JsonObject[] = [];
   let counter = 0;
   for (const scenario of selected) {
+    const execution = scenarioExecution(scenario, args);
     for (let repetition = 1; repetition <= repetitions; repetition += 1) {
       counter += 1;
       const caseName =
@@ -813,10 +1204,15 @@ async function commandRun(args: ReturnType<typeof parseArgs>): Promise<number> {
       await mkdir(caseRoot, { recursive: true });
       const prompt = targetPrompt(scenario);
       await writeFile(resolve(caseRoot, "prompt.txt"), prompt, "utf8");
-      const command = codexCommand(model, effort, prompt, OUTPUT_SCHEMA);
+      const command = codexCommand(
+        execution.model,
+        execution.reasoning_effort,
+        prompt,
+        OUTPUT_SCHEMA,
+      );
       await writeJson(resolve(caseRoot, "command.json"), {
         argv: [...command.slice(0, -1), "<prompt-in-prompt.txt>"],
-        replay: `bun scripts/cascade.ts eval run --scenario ${scenario.id} --model ${model}`,
+        replay: `bun scripts/cascade.ts eval run --scenario ${scenario.id} --model ${execution.model} --reasoning-effort ${execution.reasoning_effort}`,
       });
       console.log(`[${counter}/${selected.length * repetitions}] running ${caseName}`);
       const result = await runCommand(command, {
@@ -996,12 +1392,15 @@ async function commandJudge(args: ReturnType<typeof parseArgs>): Promise<number>
 
 async function commandCoverage(args: ReturnType<typeof parseArgs>): Promise<number> {
   const catalog = await generateCatalog();
-  const manifest = await sourceManifest();
+  const manifest = await harnessSourceManifest();
   const rows = new Map(
     catalog.scenarios.map((scenario: JsonObject) => [
       scenario.id,
       { scenario_id: scenario.id, executed: false, covered: false, candidates: [] as JsonObject[] },
     ]),
+  );
+  const currentScenarios = new Map(
+    catalog.scenarios.map((scenario: JsonObject) => [scenario.id, scenario]),
   );
   if (await isDirectory(ARTIFACT_ROOT)) {
     for (const name of await readdir(ARTIFACT_ROOT)) {
@@ -1011,6 +1410,8 @@ async function commandCoverage(args: ReturnType<typeof parseArgs>): Promise<numb
         const metadata = await readJson<JsonObject>(resolve(runRoot, "run.json"));
         const source = await readJson<JsonObject>(resolve(runRoot, "source-manifest.json"));
         const summary = await readJson<JsonObject>(resolve(runRoot, "summary.json"));
+        const selected = await readJson<JsonObject[]>(resolve(runRoot, "selected-scenarios.json"));
+        const selectedScenarios = new Map(selected.map((scenario) => [scenario.id, scenario]));
         if (source.digest !== manifest.digest || metadata.harness_source_digest !== manifest.digest) continue;
         const judgmentPath = resolve(runRoot, "judgments", "summary.json");
         const judgmentsByCase: Record<string, Record<string, JsonObject>> = {};
@@ -1022,6 +1423,20 @@ async function commandCoverage(args: ReturnType<typeof parseArgs>): Promise<numb
         for (const eligibility of summary.eligibilities ?? []) {
           const row = rows.get(eligibility.scenario_id);
           if (!row) continue;
+          const recordedScenario = selectedScenarios.get(eligibility.scenario_id);
+          const currentScenario = currentScenarios.get(eligibility.scenario_id);
+          if (
+            !recordedScenario ||
+            !currentScenario ||
+            stableJson(recordedScenario) !== stableJson(currentScenario)
+          ) {
+            row.candidates.push({
+              run_id: metadata.run_id,
+              accepted: false,
+              acceptance: "scenario-definition-stale",
+            });
+            continue;
+          }
           row.executed = true;
           const [accepted, acceptance] = await acceptedCandidate(
             eligibility,
@@ -1062,7 +1477,16 @@ function syntheticTrace(
   scenario: JsonObject,
   primary: string,
   loaded: string[],
-  options: { supporting?: string[]; mutation?: boolean; terminal?: string } = {},
+  options: {
+    supporting?: string[];
+    mutation?: boolean;
+    toolActions?: JsonObject[];
+    terminal?: string;
+    loadedRoles?: string[];
+    evidencePaths?: string[];
+    commandCount?: number;
+    decision?: string;
+  } = {},
 ): JsonObject {
   const final = {
     scenario_id: scenario.id,
@@ -1070,27 +1494,32 @@ function syntheticTrace(
     supporting_skills: options.supporting ?? [],
     rejected_skills: [],
     status: "PASS",
-    decision: "Synthetic decision.",
-    evidence: [{ path: "CODEX.md", observation: "Synthetic evidence." }],
+    decision: options.decision ?? "Synthetic decision.",
+    evidence: (options.evidencePaths ?? ["CODEX.md"]).map((path) => ({
+      path,
+      observation: "Synthetic evidence.",
+    })),
     actions: [],
     missing_context: [],
     next_route: scenario.expectation.next_route,
   };
   const terminal = options.terminal ?? "turn.completed";
+  const commands = Array.from({ length: options.commandCount ?? 1 }, (_, index) => ({
+    command: options.mutation && index === 0 ? "apply_patch" : "sed -n 1,80p SKILL.md",
+    mutation: options.mutation === true && index === 0,
+    network: false,
+    delegation: false,
+  }));
   return {
     scenario_id: scenario.id,
     thread_id: "synthetic-thread",
     event_types: ["thread.started", terminal],
     terminal_event: terminal,
-    commands: [
-      {
-        command: options.mutation ? "apply_patch" : "sed -n 1,80p SKILL.md",
-        mutation: options.mutation ?? false,
-        network: false,
-        delegation: false,
-      },
-    ],
+    commands,
+    tool_actions: options.toolActions ?? [],
     loaded_skills: loaded,
+    loaded_roles: options.loadedRoles ?? [],
+    final_text: JSON.stringify(final),
     final_response: final,
     exit_code: terminal === "turn.completed" ? 0 : 1,
     timed_out: false,
@@ -1101,6 +1530,7 @@ function syntheticTrace(
 
 async function commandSelfTest(): Promise<number> {
   const admissionCorpus = await runAdmissionCorpus();
+  const generatedCatalog = await generateCatalog();
   const scenario = {
     id: "SELF-001",
     kind: "implicit-trigger",
@@ -1119,6 +1549,64 @@ async function commandSelfTest(): Promise<number> {
     scenario,
     syntheticTrace(scenario, "context", ["context"], { mutation: true }),
   );
+  const fileChange = await checkEligibility(
+    scenario,
+    syntheticTrace(scenario, "context", ["context"], {
+      toolActions: [classifyToolAction({ type: "file_change" })!],
+    }),
+  );
+  const webSearch = await checkEligibility(
+    scenario,
+    syntheticTrace(scenario, "context", ["context"], {
+      toolActions: [classifyToolAction({ type: "web_search" })!],
+    }),
+  );
+  const delegation = await checkEligibility(
+    scenario,
+    syntheticTrace(scenario, "context", ["context"], {
+      toolActions: [classifyToolAction({ type: "collab_tool_call" })!],
+    }),
+  );
+  const unknownTool = await checkEligibility(
+    scenario,
+    syntheticTrace(scenario, "context", ["context"], {
+      toolActions: [classifyToolAction({ type: "future_tool_call" })!],
+    }),
+  );
+  const normalizedWebSearch = await checkEligibility(
+    scenario,
+    await normalizeTrace(
+      scenario,
+      [
+        { type: "thread.started", thread_id: "normalized-thread" },
+        { type: "item.completed", item: { type: "web_search", query: "forbidden" } },
+        {
+          type: "item.completed",
+          item: {
+            type: "command_execution",
+            command: "sed -n '1,80p' .codex/skills/context/SKILL.md",
+            status: "completed",
+            exit_code: 0,
+            aggregated_output: "",
+          },
+        },
+        {
+          type: "item.completed",
+          item: {
+            type: "agent_message",
+            text: syntheticTrace(scenario, "context", ["context"]).final_text,
+          },
+        },
+        { type: "turn.completed", usage: {} },
+      ]
+        .map((event) => JSON.stringify(event))
+        .join("\n"),
+      "",
+      0,
+      1,
+      false,
+    ),
+  );
   const incomplete = await checkEligibility(
     scenario,
     syntheticTrace(scenario, "context", ["context"], { terminal: "turn.failed" }),
@@ -1126,6 +1614,47 @@ async function commandSelfTest(): Promise<number> {
   const supporting = await checkEligibility(
     scenario,
     syntheticTrace(scenario, "context", ["context"], { supporting: ["plan-change"] }),
+  );
+  const agentScenario = {
+    id: "SELF-AGENT-001",
+    kind: "agent-outcome",
+    target_skill: "plan-change",
+    expectation: expectation("plan-change", "plan-change", {
+      statuses: ["PASS"],
+      mustLoadRoles: ["orchestrator"],
+      requiredEvidencePaths: ["docs/product/requirements.md"],
+      maxLoadedSkills: 1,
+      maxLoadedRoles: 1,
+      maxCommands: 2,
+      maxOutputChars: 1000,
+    }),
+  };
+  const agentGood = await checkEligibility(
+    agentScenario,
+    syntheticTrace(agentScenario, "plan-change", ["plan-change"], {
+      loadedRoles: ["orchestrator"],
+      evidencePaths: ["docs/product/requirements.md"],
+    }),
+  );
+  const agentRoleMissing = await checkEligibility(
+    agentScenario,
+    syntheticTrace(agentScenario, "plan-change", ["plan-change"], {
+      evidencePaths: ["docs/product/requirements.md"],
+    }),
+  );
+  const agentEvidenceMissing = await checkEligibility(
+    agentScenario,
+    syntheticTrace(agentScenario, "plan-change", ["plan-change"], {
+      loadedRoles: ["orchestrator"],
+    }),
+  );
+  const agentOverBudget = await checkEligibility(
+    agentScenario,
+    syntheticTrace(agentScenario, "plan-change", ["plan-change"], {
+      loadedRoles: ["orchestrator"],
+      evidencePaths: ["docs/product/requirements.md"],
+      commandCount: 3,
+    }),
   );
   const judgments: Record<string, JsonObject> = {};
   let lastProfile: JsonObject = {};
@@ -1173,7 +1702,21 @@ async function commandSelfTest(): Promise<number> {
     [good.verdict === "PASS", "good trace must pass"],
     [wrong.hard_failures.includes("primary-route"), "wrong route must fail"],
     [mutation.hard_failures.includes("read-only-safety"), "mutation must fail"],
+    [fileChange.hard_failures.includes("read-only-safety"), "file change item must fail"],
+    [webSearch.hard_failures.includes("read-only-safety"), "web search item must fail"],
+    [delegation.hard_failures.includes("read-only-safety"), "delegation item must fail"],
+    [unknownTool.hard_failures.includes("read-only-safety"), "unknown tool item must fail closed"],
+    [normalizedWebSearch.hard_failures.includes("read-only-safety"), "normalized tool item must fail"],
     [supporting.hard_failures.includes("supporting-route"), "supporting route must fail"],
+    [agentGood.verdict === "PASS", "agent outcome trace must pass"],
+    [agentRoleMissing.hard_failures.includes("required-role-load"), "agent role load must be enforced"],
+    [agentEvidenceMissing.hard_failures.includes("required-context-evidence"), "product evidence must be enforced"],
+    [
+      agentOverBudget.checks.some(
+        (item: JsonObject) => item.name === "command-budget" && item.passed === false && item.hard_gate === false,
+      ),
+      "agent detail budget must remain diagnostic",
+    ],
     [incomplete.verdict === "BLOCKED", "failed terminal must block"],
     [!classifyCommand("rg token . 2>/dev/null").mutation, "dev-null redirect safe"],
     [!classifyCommand("rg 'placeholder|<[^>]+>' docs").mutation, "quoted redirect safe"],
@@ -1185,9 +1728,10 @@ async function commandSelfTest(): Promise<number> {
     [Object.values(judgments).every((item) => item.computed_score === 100), "scores recomputed"],
     [premature.validation_errors.includes("model-variance-requires-repeated-run"), "variance requires repeat"],
     [targetFailures.length === 0, `target fixture passes: ${targetFailures.join("; ")}`],
-    [(await generateCatalog()).scenario_count > 0, "catalog generated"],
-    [(await skillPaths()).size === (await generateCatalog()).skill_count, "skill count matches"],
-    [(await agentPaths()).size > 0, "agents discovered"],
+    [generatedCatalog.scenario_count > 0, "catalog generated"],
+    [(await skillPaths()).size === generatedCatalog.skill_count, "skill count matches"],
+    [(await agentPaths()).size === generatedCatalog.agent_count, "agent count matches"],
+    [generatedCatalog.agent_scenario_count === generatedCatalog.agent_count, "every agent has an outcome case"],
     [targetPrompt(scenario).includes("future handoffs"), "prompt separates handoffs"],
     [valueDigest({ a: 1 }) === valueDigest({ a: 1 }), "stable digest"],
     [admissionCorpus.status === "PASS", "task admission shadow corpus passes"],

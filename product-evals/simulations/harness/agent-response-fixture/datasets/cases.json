@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "id": "agent-response-fixture-cases-v1",
+  "leakage_policy": "exclusive-case-identity",
+  "cases": [
+    {
+      "id": "agent-response-fixture-development",
+      "scenario_id": "standalone-agent-response-v1",
+      "actor_id": "agent-response-fixture-actor",
+      "partition": "development",
+      "slices": ["agent-response-fixture"]
+    },
+    {
+      "id": "agent-response-fixture-regression",
+      "scenario_id": "standalone-agent-response-v1",
+      "actor_id": "agent-response-fixture-actor",
+      "partition": "regression",
+      "slices": ["agent-response-fixture"]
+    },
+    {
+      "id": "agent-response-fixture-holdout",
+      "scenario_id": "standalone-agent-response-v1",
+      "actor_id": "agent-response-fixture-actor",
+      "partition": "holdout",
+      "slices": ["agent-response-fixture"]
+    },
+    {
+      "id": "agent-response-fixture-calibration",
+      "scenario_id": "standalone-agent-response-v1",
+      "actor_id": "agent-response-fixture-actor",
+      "partition": "calibration-reference",
+      "slices": ["agent-response-fixture"]
+    }
+  ]
+}

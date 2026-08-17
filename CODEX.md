@@ -34,25 +34,36 @@ Every turn first receives the deterministic admission microkernel defined by
 The Task Envelope independently records topology, effort, assurance, authority,
 evidence, duration, and context. Its selected control packs determine which
 parts of the Cascade route apply. It never grants permission, dispatches work,
-or converts authored evidence into acceptance.
+or converts authored evidence into acceptance. Schema validation replays the
+redacted canonical derivation input against the current policy and control
+sources; this proves deterministic self-consistency, not user-origin
+authenticity. Authority-bearing consumers must separately bind the externally
+expected request and source digests.
 
-`UserPromptSubmit` adds only bounded advisory context. `PreToolUse` and
-`PermissionRequest` fail closed for external, privileged, or destructive
-actions without a current envelope and explicit authority, but never
-auto-approve an action. Project hooks require normal Codex trust review. When
-hooks are unavailable, perform the same microkernel in-process; do not make
-conversation depend on hook availability.
+`UserPromptSubmit` adds only bounded advisory context. The repository
+`PreToolUse` and `PermissionRequest` hook has no production
+`TrustedAuthorityHost`; it therefore hard-denies external, privileged, and
+destructive actions by default even when a structurally valid envelope exists,
+and it never auto-approves an action. Host receipt integration, user-origin
+authenticity, trusted current-envelope selection, revocation, and atomic
+single-use consumption are `NOT_IMPLEMENTED` and `NOT_RUN`. A future host may
+defer a verified exact action to the normal Codex approval flow only after all
+of those host-owned checks pass. Project hooks still require normal Codex trust
+review. When hooks are unavailable, perform the requirements-only microkernel
+in-process; do not make conversation depend on hook availability. Do not
+persist prompts containing raw secrets.
 
-Hard-action envelopes are opt-in runtime state, not prompt-hook output. Compile
-one below `.artifacts/task-admission/` with its exact session ID and explicit
-authority, then expose that exact path as `CASCADE_TASK_ENVELOPE` to the Codex
-process. The hook resolves symlinks, requires the artifact root, binds
-`task_id` to `session_id`, rejects stale policy/time state, and still defers to
-the normal approval flow. Do not persist prompts containing raw secrets.
+`PostToolUse` separately inspects completed `apply_patch` payloads for actual
+harness-evaluation impact. It is a deterministic classifier, not an evaluator:
+ordinary edits emit no context; eval-runner changes request focused mechanical
+checks; assertion or judge-contract changes request bounded assertion review.
+It never launches a model, grants authority, or establishes a pass. The active
+agent records the hook decision and decides whether a changed semantic
+assertion needs one affected live scenario and independent judgment.
 
 For non-atomic work, select only the applicable stages from:
 
-`context -> ingest-spec/discover/market-validation/synthesis-to-spec/compose-spec if needed -> docs-impact-map when durable docs may affect sibling rules -> pattern-context when reusable pattern packs are needed -> orchestrate-work -> plan-change -> functional-qa when new product-visible proof is needed -> implement-change -> review-change -> validate-change -> test-autorepair only if stale tests -> closeout`
+`context -> ingest-spec/discover/market-validation/synthesis-to-spec/compose-spec if needed -> docs-impact-map when durable docs may affect sibling rules -> pattern-context when reusable pattern packs are needed -> plan-change -> plan-iterations when delivery spans horizons -> orchestrate-work when feasible committed first-iteration scope needs coordination -> functional-qa when new product-visible proof is needed -> implement-change -> review-change -> validate-change -> test-autorepair only if stale tests -> closeout`
 
 - `context`: re-orient to branch, active work lanes, recent handoff state, and
   backlog.
@@ -80,13 +91,21 @@ For non-atomic work, select only the applicable stages from:
 - `pattern-context`: retrieve, compile, create, or update bounded
   `docs/patterns/{entry}/` metadata and context packs when reusable pattern
   memory is in scope.
-- `orchestrate-work`: discover, split, connect, serialize, schedule, or track
-  worklines and their coordination/materialization gates.
+- `plan-change`: capture product/design intent, codebase vocabulary, behavior
+  examples, implementation slices, risks, and validation without activating a
+  roadmap.
+- `plan-iterations`: when grounded slices span more than one delivery horizon,
+  rank them, assign exclusive delivery dispositions, trace the orthogonal MVP
+  outcome boundary, and propose or record an authorized first-iteration
+  commitment without making future scope active. Unknown capacity or
+  commitment authority produces `ITERATION_PROPOSED`, not committed scope.
+- `orchestrate-work`: instantiate, connect, serialize, schedule, or track
+  worklines from feasible committed first-iteration scope and own their coordination or
+  materialization gates. Graph creation remains a downstream applicability and
+  authorization decision.
 - `reconcile-work-graph`: audit and canonicalize existing lanes, worklines,
   and graph records before graph creation, cutover, deduplication, or
   active-row retirement proposals.
-- `plan-change`: capture product/design intent, codebase vocabulary, behavior
-  examples, slice boundary, risks, and validation plan.
 - `functional-qa`: execute or author product-visible browser, API, journey,
   scenario, and functional-test proof when new acceptance evidence is needed.
 - `implement-change`: scoped behavior-slice implementation.
@@ -145,6 +164,9 @@ standalone workflow router.
   spec packets are authored.
 - `compose-spec`: use when product/spec artifacts need to be written
   from validated findings or approved source material.
+- `plan-iterations`: use after `plan-change` when implementation slices need a
+  ranked delivery plan, orthogonal MVP boundary, and progressive
+  first/next/later dispositions.
 - `pain-mining`, `competitive-map`, `market-economics`,
   `hypothesis-scoring`, `validation-experiments`, and `adversarial-critic`:
   use as focused market-validation lane skills.
@@ -184,6 +206,10 @@ standalone workflow router.
   surface audits across `AGENTS.md`, `CODEX.md`, skills, agents, config,
   hooks, MCP/tools, plugins, subagents, permissions, memory, observability,
   evals, scope, handoffs, file-tree inventories, and validator changes.
+- `cascade-simulations:simulate`: when the separately installed
+  `cascade-simulations` plugin is available, use it for one bounded actor doing
+  meaningful work through a declared interface toward an observable outcome.
+  Its compact contract is the ordinary simulation route.
 - `simulation-campaigns`: use for versioned command, terminal, browser,
   desktop, mobile, or agent-response campaign definition, selection,
   coordination, replay planning, receipt aggregation, claims, and reporting.
@@ -216,8 +242,8 @@ delegate only when the user explicitly authorizes parallel agents.
   migration, validation, and setup handoff.
 - `agent-engineer`: Cascade maintenance, target-project agent/LLM system
   design, Codex surface best practices, agentic workflow checklists, skills,
-  source-context, tool contracts, simulation campaigns, observability, and
-  evals.
+  source-context, tool contracts, dynamic actor simulation routing, simulation
+  campaigns, observability, and evals.
 - `business-analyst`: long business-analysis discovery, live market research,
   market validation lanes, evidence grading, and synthesis into specs.
 - `security`: security-sensitive review, auth/session/RBAC and
@@ -284,9 +310,9 @@ dispatch. Graph readiness and dependency gates establish eligibility only;
 they are not authorization. If the declared surface is unavailable, report
 `BLOCKED` instead of substituting another surface.
 
-The `.codex/config.toml` `max_threads` value limits internal agent-execution
-capacity. It neither counts user-visible Codex tasks nor causes automatic
-dispatch.
+Agent-execution capacity is runtime-selected because this repository does not
+set a project concurrency override. Capacity neither counts user-visible Codex
+tasks nor causes automatic dispatch.
 
 ### Automatic Status Reconciliation
 
@@ -305,6 +331,36 @@ authorize removing open or unresolved work. After terminal evidence is
 preserved in the lane packet, durable report, graph, and receipt, remove the
 completed active projection in the same closeout so `docs/work/active.md`
 contains active work only.
+
+### Scheduled Work Audit
+
+Use the repository-owned, read-only audit before asking a scheduled task to
+reason about active work:
+
+```bash
+npx --yes bun@1.3.3 scripts/cascade.ts work audit --json --check
+```
+
+The command reads `docs/work/active.md`, its matching lane packets, and active
+work-graph reports. It reports ready, review-pending, dependency-pending,
+blocked, closeout, and reconciliation candidates without changing their state.
+`--check` fails only for structural errors such as a missing packet or status/
+owner mismatch; projection wording drift remains visible as a warning.
+
+Use `bun scripts/cascade.ts work automation-prompt --mode audit` to print the
+durable prompt for a read-only Codex scheduled task. Use `--mode orchestrate`
+only after the user explicitly authorizes recurring continuation of the current
+task. That mode may execute one smallest already-authorized local slice per run;
+it does not expand scope or permit new agents/tasks, worktrees, Git publication,
+live/provider actions, destructive work, or self-acceptance of an independent
+review gate.
+
+Keep recurring work checks attached to one task so each run can compare prior
+findings without creating a new retained task per run. Audit mode reports
+material changes and requests explicit authorization before implementation,
+reconciliation, review execution, or closeout. Orchestrate mode stops when no
+eligible local slice exists or the next step needs new authority, an external
+action, an unresolved dependency, or an independent evaluator.
 
 Use `docs/work/work-graph-template.md` when several worklines, dependency gates,
 merge owners, dispatch surfaces, or evidence joins require explicit
@@ -424,12 +480,45 @@ changes and append only thin sourced doc diffs to the existing owner docs.
 Persist only reusable lessons, required handoff state, or required thin diffs;
 avoid decorative documentation churn.
 
+## Dynamic Actor Simulations
+
+Ordinary simulation means one actor doing real work through a declared
+interface until an observable outcome is achieved or a bounded terminal state
+occurs. When the separately installed `cascade-simulations` plugin is
+available, route this work to `cascade-simulations:simulate`.
+
+The minimum contract is:
+
+- an interface adapter with observations, allowed actions, permissions,
+  confirmation, idempotency, recovery, errors, and cleanup;
+- a persona source plus a run-specific actor contract;
+- one domain-and-feature brief containing only relevant facts and constraints;
+- an outcome contract expressed as observable completion and failure
+  conditions; and
+- finite step, tool-call, time, and recovery limits.
+
+The adapter policy and run contract stay fixed. Only observations, beliefs,
+uncertainty, progress, and strategy change during the run. The actor chooses
+the next permitted action from current interface state; do not prescribe a
+click checklist, bypass the interface, or infer success from actor narration.
+A synthetic actor remains a hypothesis rather than product-persona evidence.
+
+The admission microkernel distinguishes this bounded route from an explicit
+campaign. Controlled comparison, populations, datasets, treatments,
+calibration, release evidence, or independent evaluation select
+`simulation-campaigns`; the word `simulation` alone does not. If the optional
+plugin is unavailable, report that integration gap. A direct narrow
+`functional-qa` check may satisfy a request for behavior proof, but must not be
+misrepresented as an actor simulation or inflated into a campaign.
+
 ## Simulation Campaigns
 
-Use `simulation-campaigns` when a request concerns a versioned campaign across
-command, terminal, browser, desktop, mobile, or agent-response contours. The
-skill owns campaign manifests, selection, dispatch coordination, replay
-planning, receipt aggregation, claim projection, and reporting.
+This is optional evaluation infrastructure, not the ordinary dynamic-actor
+route. Use `simulation-campaigns` when a request explicitly concerns a
+versioned campaign across command, terminal, browser, desktop, mobile, or
+agent-response contours. The skill owns campaign manifests, selection,
+dispatch coordination, replay planning, receipt aggregation, claim projection,
+and reporting.
 
 After selection and authorization, `simulation-operator` uses
 `simulation-execution` for the mutable runtime lifecycle. It produces the
@@ -504,6 +593,22 @@ execution and eligibility; no live trace means no live scenario pass. Run
 `bun scripts/cascade.ts eval judge --run-dir
 .artifacts/harness-evals/<run-id>` for independent outcome and trajectory
 judgments of every eligible case. Accepted coverage requires both.
+
+Harness evaluation is not part of ordinary implementation validation. Use the
+post-patch harness-impact decision proportionally:
+
+- `NOT_APPLICABLE`: no actual evaluation implementation or assertion changed;
+- `MECHANICAL_CHECK`: run catalog freshness and eval self-test only;
+- `ASSERTION_REVIEW`: inspect the changed trigger, scenario, expectation, or
+  role assertion, then run only affected live cases when mechanical evidence
+  cannot decide it;
+- `JUDGE_CONTRACT_REVIEW`: validate the changed judge contract and its bounded
+  calibration/adversarial cases without rerunning unrelated targets.
+
+Final validation output records the decision, changed harness paths, checks
+run, assertion disposition, and focused live review as `PASS`, `FAIL`,
+`BLOCKED`, `NOT_RUN`, or `NOT_APPLICABLE`. A hook instruction is advisory and
+is not itself evaluation evidence.
 
 ## Campaign Execution
 

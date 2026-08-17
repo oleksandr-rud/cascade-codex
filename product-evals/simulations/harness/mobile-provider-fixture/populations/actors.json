@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "id": "mobile-provider-actors-v1",
+  "source": {
+    "kind": "synthetic",
+    "description": "Deterministic harness-only actor; it does not represent product users.",
+    "minimized": true
+  },
+  "actors": [
+    {
+      "id": "mobile-provider-actor",
+      "weight": 1,
+      "behavior": { "strategy": "follow only the authored launch, wait, and capture sequence" },
+      "slices": ["mobile-provider"]
+    }
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "required_bindings": [
+    "exact device id and platform version",
+    "exact fixture app id and build",
+    "named clean snapshot",
+    "network-denied action runner",
+    "screenshot and log export",
+    "snapshot restore verification"
+  ],
+  "status": "PROVIDER_REQUIRED"
+}

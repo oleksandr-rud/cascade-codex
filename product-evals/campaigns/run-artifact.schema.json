@@ -1,5 +1,5 @@
 {
-  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$schema": "https://cascade.local/meta/campaign-run-artifact/v1",
   "$id": "https://cascade.local/schemas/campaign-run-artifact.schema.json",
   "title": "Cascade campaign run artifact",
   "oneOf": [
@@ -10,13 +10,65 @@
       "$ref": "#/$defs/leaseState"
     },
     {
+      "$ref": "#/$defs/legacyLeaseState"
+    },
+    {
       "$ref": "#/$defs/leaseTakeover"
     },
     {
       "$ref": "#/$defs/finalization"
+    },
+    {
+      "$ref": "#/$defs/legacyReservation"
+    },
+    {
+      "$ref": "#/$defs/legacyFinalization"
+    },
+    {
+      "$ref": "#/$defs/terminalIntent"
+    },
+    {
+      "$ref": "#/$defs/legacyTerminalLock"
+    },
+    {
+      "$ref": "#/$defs/mutationTakeoverClaim"
+    },
+    {
+      "$ref": "#/$defs/mutationTakeoverReceipt"
+    },
+    {
+      "$ref": "#/$defs/claimAuthority"
     }
   ],
   "$defs": {
+    "claimAuthority": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schema_version", "artifact_type", "run_id", "campaign_id", "campaign_digest", "claims"],
+      "properties": {
+        "schema_version": { "const": 1 },
+        "artifact_type": { "const": "campaign-claim-authority" },
+        "run_id": { "type": "string", "minLength": 1 },
+        "campaign_id": { "type": "string", "minLength": 1 },
+        "campaign_digest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+        "claims": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["claim_id", "class", "source_path", "source_sha256"],
+            "properties": {
+              "claim_id": { "type": "string", "minLength": 1 },
+              "class": { "enum": ["authorship", "execution", "mechanical-behavior", "semantic-quality", "safety-compliance", "coverage", "release-eligibility"] },
+              "source_path": { "type": "string", "minLength": 1, "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.(?:/|$)).+$" },
+              "source_sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+            }
+          }
+        }
+      }
+    },
     "principal": {
       "type": "object",
       "additionalProperties": false,
@@ -33,7 +85,8 @@
             "campaign-aggregator",
             "target-actor",
             "simulator",
-            "simulation-recovery"
+            "simulation-recovery",
+            "harness-evaluator"
           ]
         },
         "session_id": {
@@ -44,6 +97,76 @@
           "type": "string",
           "minLength": 1
         }
+      }
+    },
+    "specializedEvaluatorPrincipal": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["role", "session_id", "subject"],
+      "properties": {
+        "role": { "const": "harness-evaluator" },
+        "session_id": { "type": "string", "minLength": 1 },
+        "subject": { "type": "string", "minLength": 1 }
+      }
+    },
+    "operatorPrincipal": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["role", "session_id", "subject"],
+      "properties": {
+        "role": { "const": "simulation-operator" },
+        "session_id": { "type": "string", "minLength": 1 },
+        "subject": { "type": "string", "minLength": 1 }
+      }
+    },
+    "evaluatorPrincipal": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["role", "session_id", "subject"],
+      "properties": {
+        "role": { "const": "simulation-evaluator" },
+        "session_id": { "type": "string", "minLength": 1 },
+        "subject": { "type": "string", "minLength": 1 }
+      }
+    },
+    "aggregatorPrincipal": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["role", "session_id", "subject"],
+      "properties": {
+        "role": { "const": "campaign-aggregator" },
+        "session_id": { "type": "string", "minLength": 1 },
+        "subject": { "type": "string", "minLength": 1 }
+      }
+    },
+    "targetPrincipal": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["role", "session_id", "subject"],
+      "properties": {
+        "role": { "const": "target-actor" },
+        "session_id": { "type": "string", "minLength": 1 },
+        "subject": { "type": "string", "minLength": 1 }
+      }
+    },
+    "simulatorPrincipal": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["role", "session_id", "subject"],
+      "properties": {
+        "role": { "const": "simulator" },
+        "session_id": { "type": "string", "minLength": 1 },
+        "subject": { "type": "string", "minLength": 1 }
+      }
+    },
+    "recoveryPrincipal": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["role", "session_id", "subject"],
+      "properties": {
+        "role": { "const": "simulation-recovery" },
+        "session_id": { "type": "string", "minLength": 1 },
+        "subject": { "type": "string", "minLength": 1 }
       }
     },
     "file": {
@@ -86,7 +209,7 @@
       ],
       "properties": {
         "schema_version": {
-          "const": "1.0.0"
+          "enum": ["1.1.0", "1.2.0"]
         },
         "artifact_type": {
           "const": "campaign-run-lease"
@@ -124,6 +247,34 @@
         }
       }
     },
+    "legacyLeaseState": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema_version",
+        "artifact_type",
+        "run_id",
+        "lease_id",
+        "owner_session_id",
+        "acquired_at",
+        "expires_at",
+        "recovery_mode",
+        "generation",
+        "renewed_at"
+      ],
+      "properties": {
+        "schema_version": { "const": "1.0.0" },
+        "artifact_type": { "const": "campaign-run-lease" },
+        "run_id": { "type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$" },
+        "lease_id": { "type": "string", "minLength": 1 },
+        "owner_session_id": { "type": "string", "minLength": 1 },
+        "acquired_at": { "type": "string", "format": "date-time" },
+        "expires_at": { "type": "string", "format": "date-time" },
+        "recovery_mode": { "const": "FINALIZE_UNKNOWN_OUTCOME" },
+        "generation": { "type": "integer", "minimum": 0 },
+        "renewed_at": { "type": "string", "format": "date-time" }
+      }
+    },
     "leaseTakeover": {
       "type": "object",
       "additionalProperties": false,
@@ -141,7 +292,7 @@
       ],
       "properties": {
         "schema_version": {
-          "const": "1.0.0"
+          "enum": ["1.1.0", "1.2.0"]
         },
         "artifact_type": {
           "const": "campaign-lease-takeover"
@@ -165,7 +316,7 @@
           "$ref": "#/$defs/leaseState"
         },
         "recovery_identity": {
-          "$ref": "#/$defs/principal"
+          "$ref": "#/$defs/recoveryPrincipal"
         },
         "reason": {
           "type": "string",
@@ -180,6 +331,52 @@
     "reservation": {
       "type": "object",
       "additionalProperties": false,
+      "allOf": [
+        {
+          "if": { "properties": { "schema_version": { "const": "1.2.0" } } },
+          "then": { "required": ["claim_ids", "specialized_evaluation"] }
+        },
+        {
+          "if": { "properties": { "schema_version": { "const": "1.2.0" } } },
+          "then": {
+            "if": { "properties": { "attempt": { "const": 1 } } },
+            "then": { "properties": { "parent_run_id": { "type": "null" } } },
+            "else": { "properties": { "parent_run_id": { "type": "string", "minLength": 1 } } }
+          }
+        }
+      ],
+      "oneOf": [
+        {
+          "type": "object",
+          "required": ["simulation_scope", "identities"],
+          "properties": {
+            "simulation_scope": { "const": "harness" },
+            "specialized_evaluation": { "type": "object" },
+            "identities": {
+              "type": "object",
+              "required": ["specialized_evaluator"],
+              "properties": {
+                "specialized_evaluator": { "$ref": "#/$defs/specializedEvaluatorPrincipal" }
+              }
+            }
+          }
+        },
+        {
+          "type": "object",
+          "required": ["simulation_scope", "identities"],
+          "properties": {
+            "simulation_scope": { "const": "product" },
+            "specialized_evaluation": { "type": "null" },
+            "identities": {
+              "type": "object",
+              "required": ["specialized_evaluator"],
+              "properties": {
+                "specialized_evaluator": { "type": "null" }
+              }
+            }
+          }
+        }
+      ],
       "required": [
         "schema_version",
         "artifact_type",
@@ -189,12 +386,13 @@
         "attempt",
         "parent_run_id",
         "reserved_at",
+        "simulation_scope",
         "identities",
         "lease"
       ],
       "properties": {
         "schema_version": {
-          "const": "1.0.0"
+          "enum": ["1.1.0", "1.2.0"]
         },
         "artifact_type": {
           "const": "campaign-run-reservation"
@@ -225,11 +423,37 @@
           "type": "string",
           "format": "date-time"
         },
+        "simulation_scope": { "enum": ["harness", "product"] },
+        "claim_ids": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "specialized_evaluation": {
+          "oneOf": [
+            { "type": "null" },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["applicability", "route_ids", "trace_ids", "claim_ids", "reason"],
+              "properties": {
+                "applicability": { "enum": ["REQUIRED", "NOT_APPLICABLE"] },
+                "route_ids": { "type": "array", "uniqueItems": true, "items": { "type": "string", "minLength": 1 } },
+                "trace_ids": { "type": "array", "uniqueItems": true, "items": { "type": "string", "minLength": 1 } },
+                "claim_ids": { "type": "array", "uniqueItems": true, "items": { "type": "string", "minLength": 1 } },
+                "reason": { "type": "string", "minLength": 1 }
+              }
+            }
+          ]
+        },
         "identities": {
           "type": "object",
           "additionalProperties": false,
           "required": [
+            "schema_version",
             "operator",
+            "specialized_evaluator",
             "evaluator",
             "aggregator",
             "target",
@@ -237,24 +461,30 @@
             "recovery"
           ],
           "properties": {
-            "operator": {
-              "$ref": "#/$defs/principal"
+            "schema_version": { "const": 2 },
+            "operator": { "$ref": "#/$defs/operatorPrincipal" },
+            "evaluator": { "$ref": "#/$defs/evaluatorPrincipal" },
+            "specialized_evaluator": {
+              "oneOf": [{ "$ref": "#/$defs/specializedEvaluatorPrincipal" }, { "type": "null" }]
             },
-            "evaluator": {
-              "$ref": "#/$defs/principal"
-            },
-            "aggregator": {
-              "$ref": "#/$defs/principal"
-            },
-            "target": {
-              "$ref": "#/$defs/principal"
-            },
-            "simulator": {
-              "$ref": "#/$defs/principal"
-            },
-            "recovery": {
-              "$ref": "#/$defs/principal"
-            }
+            "aggregator": { "$ref": "#/$defs/aggregatorPrincipal" },
+            "target": { "$ref": "#/$defs/targetPrincipal" },
+            "simulator": { "$ref": "#/$defs/simulatorPrincipal" },
+            "recovery": { "$ref": "#/$defs/recoveryPrincipal" }
+          },
+          "x-cascade-pairwise-distinct-fields": {
+            "version": 1,
+            "properties": [
+              "operator",
+              "specialized_evaluator",
+              "evaluator",
+              "aggregator",
+              "target",
+              "simulator",
+              "recovery"
+            ],
+            "fields": ["session_id", "subject"],
+            "ignore_null": true
           }
         },
         "lease": {
@@ -291,9 +521,166 @@
         }
       }
     },
+    "legacyReservation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema_version",
+        "artifact_type",
+        "run_id",
+        "campaign_id",
+        "campaign_digest",
+        "attempt",
+        "parent_run_id",
+        "reserved_at",
+        "identities",
+        "lease"
+      ],
+      "properties": {
+        "schema_version": { "enum": ["1.0.0", "1.1.0"] },
+        "artifact_type": { "const": "campaign-run-reservation" },
+        "run_id": { "type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$" },
+        "campaign_id": { "type": "string", "minLength": 1 },
+        "campaign_digest": { "type": "string", "minLength": 1 },
+        "attempt": { "type": "integer", "minimum": 1 },
+        "parent_run_id": { "type": ["string", "null"] },
+        "reserved_at": { "type": "string", "format": "date-time" },
+        "identities": {
+          "type": "object",
+          "additionalProperties": false,
+          "oneOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "operator",
+                "evaluator",
+                "aggregator",
+                "target",
+                "simulator",
+                "recovery"
+              ],
+              "properties": {
+                "operator": { "$ref": "#/$defs/operatorPrincipal" },
+                "evaluator": { "$ref": "#/$defs/evaluatorPrincipal" },
+                "aggregator": { "$ref": "#/$defs/aggregatorPrincipal" },
+                "target": { "$ref": "#/$defs/targetPrincipal" },
+                "simulator": { "$ref": "#/$defs/simulatorPrincipal" },
+                "recovery": { "$ref": "#/$defs/recoveryPrincipal" }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "schema_version",
+                "operator",
+                "specialized_evaluator",
+                "evaluator",
+                "aggregator",
+                "target",
+                "simulator",
+                "recovery"
+              ],
+              "properties": {
+                "schema_version": { "const": 2 },
+                "operator": { "$ref": "#/$defs/operatorPrincipal" },
+                "specialized_evaluator": { "$ref": "#/$defs/specializedEvaluatorPrincipal" },
+                "evaluator": { "$ref": "#/$defs/evaluatorPrincipal" },
+                "aggregator": { "$ref": "#/$defs/aggregatorPrincipal" },
+                "target": { "$ref": "#/$defs/targetPrincipal" },
+                "simulator": { "$ref": "#/$defs/simulatorPrincipal" },
+                "recovery": { "$ref": "#/$defs/recoveryPrincipal" }
+              }
+            }
+          ],
+          "properties": {
+            "schema_version": { "const": 2 },
+            "operator": { "$ref": "#/$defs/operatorPrincipal" },
+            "evaluator": { "$ref": "#/$defs/evaluatorPrincipal" },
+            "specialized_evaluator": { "$ref": "#/$defs/specializedEvaluatorPrincipal" },
+            "aggregator": { "$ref": "#/$defs/aggregatorPrincipal" },
+            "target": { "$ref": "#/$defs/targetPrincipal" },
+            "simulator": { "$ref": "#/$defs/simulatorPrincipal" },
+            "recovery": { "$ref": "#/$defs/recoveryPrincipal" }
+          },
+          "x-cascade-pairwise-distinct-fields": {
+            "version": 1,
+            "properties": [
+              "operator",
+              "specialized_evaluator",
+              "evaluator",
+              "aggregator",
+              "target",
+              "simulator",
+              "recovery"
+            ],
+            "fields": ["session_id", "subject"],
+            "ignore_null": true
+          }
+        },
+        "lease": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "lease_id",
+            "owner_session_id",
+            "acquired_at",
+            "expires_at",
+            "recovery_mode"
+          ],
+          "properties": {
+            "lease_id": { "type": "string", "minLength": 1 },
+            "owner_session_id": { "type": "string", "minLength": 1 },
+            "acquired_at": { "type": "string", "format": "date-time" },
+            "expires_at": { "type": "string", "format": "date-time" },
+            "recovery_mode": { "const": "FINALIZE_UNKNOWN_OUTCOME" }
+          }
+        }
+      }
+    },
     "finalization": {
       "type": "object",
       "additionalProperties": false,
+      "oneOf": [
+        {
+          "type": "object",
+          "required": ["status", "finalized_by", "completed_by", "terminal_lock_producer"],
+          "properties": {
+            "status": { "const": "UNKNOWN_OUTCOME" },
+            "finalized_by": { "$ref": "#/$defs/recoveryPrincipal" },
+            "completed_by": { "$ref": "#/$defs/recoveryPrincipal" },
+            "terminal_lock_producer": { "$ref": "#/$defs/recoveryPrincipal" }
+          }
+        },
+        {
+          "type": "object",
+          "required": ["status", "finalized_by", "completed_by", "terminal_lock_producer"],
+          "properties": {
+            "status": { "enum": ["COMPLETED", "BLOCKED"] },
+            "finalized_by": { "$ref": "#/$defs/operatorPrincipal" },
+            "completed_by": { "$ref": "#/$defs/operatorPrincipal" },
+            "terminal_lock_producer": { "$ref": "#/$defs/operatorPrincipal" }
+          }
+        },
+        {
+          "type": "object",
+          "required": [
+            "status",
+            "finalized_by",
+            "completed_by",
+            "terminal_lock_producer",
+            "recovery_reason"
+          ],
+          "properties": {
+            "status": { "enum": ["COMPLETED", "BLOCKED"] },
+            "finalized_by": { "$ref": "#/$defs/recoveryPrincipal" },
+            "completed_by": { "$ref": "#/$defs/recoveryPrincipal" },
+            "terminal_lock_producer": { "$ref": "#/$defs/operatorPrincipal" },
+            "recovery_reason": { "type": "string", "pattern": "\\S" }
+          }
+        }
+      ],
       "required": [
         "schema_version",
         "artifact_type",
@@ -301,13 +688,21 @@
         "status",
         "finalized_at",
         "finalized_by",
+        "completed_at",
+        "completed_by",
+        "terminal_lock_producer",
+        "terminal_lock_digest",
         "recovery_reason",
+        "application_files",
+        "application_manifest_digest",
+        "post_intent_recovery_files",
+        "post_intent_recovery_manifest_digest",
         "files",
         "manifest_digest"
       ],
       "properties": {
         "schema_version": {
-          "const": "1.0.0"
+          "enum": ["1.1.0", "1.2.0"]
         },
         "artifact_type": {
           "const": "campaign-run-finalization"
@@ -328,13 +723,56 @@
           "format": "date-time"
         },
         "finalized_by": {
-          "$ref": "#/$defs/principal"
+          "oneOf": [
+            { "$ref": "#/$defs/operatorPrincipal" },
+            { "$ref": "#/$defs/recoveryPrincipal" }
+          ]
+        },
+        "completed_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "completed_by": {
+          "oneOf": [
+            { "$ref": "#/$defs/operatorPrincipal" },
+            { "$ref": "#/$defs/recoveryPrincipal" }
+          ]
+        },
+        "terminal_lock_producer": {
+          "oneOf": [
+            { "$ref": "#/$defs/operatorPrincipal" },
+            { "$ref": "#/$defs/recoveryPrincipal" }
+          ]
+        },
+        "terminal_lock_digest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
         },
         "recovery_reason": {
           "type": [
             "string",
             "null"
           ]
+        },
+        "application_files": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/file"
+          }
+        },
+        "application_manifest_digest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "post_intent_recovery_files": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/file"
+          }
+        },
+        "post_intent_recovery_manifest_digest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
         },
         "files": {
           "type": "array",
@@ -346,6 +784,248 @@
           "type": "string",
           "pattern": "^[a-f0-9]{64}$"
         }
+      }
+    },
+    "legacyFinalization": {
+      "type": "object",
+      "additionalProperties": false,
+      "oneOf": [
+        {
+          "type": "object",
+          "required": ["status", "finalized_by"],
+          "properties": {
+            "status": { "const": "UNKNOWN_OUTCOME" },
+            "finalized_by": { "$ref": "#/$defs/recoveryPrincipal" }
+          }
+        },
+        {
+          "type": "object",
+          "required": ["status", "finalized_by"],
+          "properties": {
+            "status": { "enum": ["COMPLETED", "BLOCKED"] },
+            "finalized_by": { "$ref": "#/$defs/operatorPrincipal" }
+          }
+        }
+      ],
+      "required": [
+        "schema_version",
+        "artifact_type",
+        "run_id",
+        "status",
+        "finalized_at",
+        "finalized_by",
+        "recovery_reason",
+        "files",
+        "manifest_digest"
+      ],
+      "properties": {
+        "schema_version": { "const": "1.0.0" },
+        "artifact_type": { "const": "campaign-run-finalization" },
+        "run_id": { "type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$" },
+        "status": { "enum": ["COMPLETED", "BLOCKED", "UNKNOWN_OUTCOME"] },
+        "finalized_at": { "type": "string", "format": "date-time" },
+        "finalized_by": {
+          "oneOf": [
+            { "$ref": "#/$defs/operatorPrincipal" },
+            { "$ref": "#/$defs/recoveryPrincipal" }
+          ]
+        },
+        "recovery_reason": { "type": ["string", "null"] },
+        "files": { "type": "array", "items": { "$ref": "#/$defs/file" } },
+        "manifest_digest": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+      }
+    },
+    "terminalIntent": {
+      "type": "object",
+      "additionalProperties": false,
+      "oneOf": [
+        {
+          "type": "object",
+          "required": ["status", "produced_by"],
+          "properties": {
+            "status": { "const": "UNKNOWN_OUTCOME" },
+            "produced_by": { "$ref": "#/$defs/recoveryPrincipal" }
+          }
+        },
+        {
+          "type": "object",
+          "required": ["status", "produced_by"],
+          "properties": {
+            "status": { "enum": ["COMPLETED", "BLOCKED"] },
+            "produced_by": { "$ref": "#/$defs/operatorPrincipal" }
+          }
+        }
+      ],
+      "required": [
+        "schema_version",
+        "artifact_type",
+        "run_id",
+        "status",
+        "produced_at",
+        "produced_by",
+        "application_files",
+        "application_manifest_digest"
+      ],
+      "properties": {
+        "schema_version": { "enum": ["1.1.0", "1.2.0"] },
+        "artifact_type": { "const": "campaign-terminal-intent" },
+        "run_id": { "type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$" },
+        "status": { "enum": ["COMPLETED", "BLOCKED", "UNKNOWN_OUTCOME"] },
+        "produced_at": { "type": "string", "format": "date-time" },
+        "produced_by": {
+          "oneOf": [
+            { "$ref": "#/$defs/operatorPrincipal" },
+            { "$ref": "#/$defs/recoveryPrincipal" }
+          ]
+        },
+        "application_files": { "type": "array", "items": { "$ref": "#/$defs/file" } },
+        "application_manifest_digest": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+      }
+    },
+    "legacyTerminalLock": {
+      "type": "object",
+      "additionalProperties": false,
+      "oneOf": [
+        {
+          "type": "object",
+          "required": ["status", "locked_by"],
+          "properties": {
+            "status": { "const": "UNKNOWN_OUTCOME" },
+            "locked_by": { "$ref": "#/$defs/recoveryPrincipal" }
+          }
+        },
+        {
+          "type": "object",
+          "required": ["status", "locked_by"],
+          "properties": {
+            "status": { "enum": ["COMPLETED", "BLOCKED"] },
+            "locked_by": { "$ref": "#/$defs/operatorPrincipal" }
+          }
+        }
+      ],
+      "required": ["schema_version", "run_id", "status", "locked_at", "locked_by"],
+      "properties": {
+        "schema_version": { "const": "1.0.0" },
+        "run_id": { "type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$" },
+        "status": { "enum": ["COMPLETED", "BLOCKED", "UNKNOWN_OUTCOME"] },
+        "locked_at": { "type": "string", "format": "date-time" },
+        "locked_by": {
+          "oneOf": [
+            { "$ref": "#/$defs/operatorPrincipal" },
+            { "$ref": "#/$defs/recoveryPrincipal" }
+          ]
+        }
+      }
+    },
+    "mutationLock": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema_version",
+        "artifact_type",
+        "run_id",
+        "pid",
+        "token",
+        "acquired_at",
+        "owner",
+        "lease_id",
+        "lease_generation",
+        "takeover_claim_digest"
+      ],
+      "properties": {
+        "schema_version": { "enum": ["1.1.0", "1.2.0"] },
+        "artifact_type": { "const": "campaign-mutation-lock" },
+        "run_id": { "type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$" },
+        "pid": { "type": "integer", "minimum": 1 },
+        "token": { "type": "string", "minLength": 1 },
+        "acquired_at": { "type": "string", "format": "date-time" },
+        "owner": {
+          "oneOf": [
+            { "$ref": "#/$defs/operatorPrincipal" },
+            { "$ref": "#/$defs/recoveryPrincipal" },
+            { "type": "null" }
+          ]
+        },
+        "lease_id": { "type": ["string", "null"] },
+        "lease_generation": { "type": ["integer", "null"], "minimum": 0 },
+        "takeover_claim_digest": {
+          "oneOf": [
+            { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+            { "type": "null" }
+          ]
+        }
+      }
+    },
+    "mutationTakeoverClaim": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema_version",
+        "artifact_type",
+        "run_id",
+        "previous_lock",
+        "previous_lock_digest",
+        "lease_state",
+        "lease_state_digest",
+        "lease_generation",
+        "recovery_identity",
+        "reason",
+        "quarantined_path",
+        "successor_token",
+        "created_at"
+      ],
+      "properties": {
+        "schema_version": { "enum": ["1.1.0", "1.2.0"] },
+        "artifact_type": { "const": "campaign-mutation-lock-takeover-claim" },
+        "run_id": { "type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$" },
+        "previous_lock": { "$ref": "#/$defs/mutationLock" },
+        "previous_lock_digest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+        "lease_state": { "$ref": "#/$defs/leaseState" },
+        "lease_state_digest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+        "lease_generation": { "type": "integer", "minimum": 0 },
+        "recovery_identity": { "$ref": "#/$defs/recoveryPrincipal" },
+        "reason": { "type": "string", "minLength": 1 },
+        "quarantined_path": { "type": "string", "minLength": 1 },
+        "successor_token": { "type": "string", "minLength": 1 },
+        "created_at": { "type": "string", "format": "date-time" }
+      }
+    },
+    "mutationTakeoverReceipt": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema_version",
+        "artifact_type",
+        "run_id",
+        "previous_lock",
+        "previous_lock_digest",
+        "lease_state",
+        "lease_state_digest",
+        "lease_generation",
+        "recovery_identity",
+        "reason",
+        "quarantined_path",
+        "successor_token",
+        "created_at",
+        "claim_digest",
+        "quarantined_at"
+      ],
+      "properties": {
+        "schema_version": { "enum": ["1.1.0", "1.2.0"] },
+        "artifact_type": { "const": "campaign-mutation-lock-takeover" },
+        "run_id": { "type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$" },
+        "previous_lock": { "$ref": "#/$defs/mutationLock" },
+        "previous_lock_digest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+        "lease_state": { "$ref": "#/$defs/leaseState" },
+        "lease_state_digest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+        "lease_generation": { "type": "integer", "minimum": 0 },
+        "recovery_identity": { "$ref": "#/$defs/recoveryPrincipal" },
+        "reason": { "type": "string", "minLength": 1 },
+        "quarantined_path": { "type": "string", "minLength": 1 },
+        "successor_token": { "type": "string", "minLength": 1 },
+        "created_at": { "type": "string", "format": "date-time" },
+        "claim_digest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+        "quarantined_at": { "type": "string", "format": "date-time" }
       }
     }
   }

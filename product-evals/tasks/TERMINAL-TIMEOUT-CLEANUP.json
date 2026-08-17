@@ -1,0 +1,52 @@
+{
+  "schema_version": 6,
+  "id": "TERMINAL-TIMEOUT-CLEANUP",
+  "kind": "terminal",
+  "driver": {
+    "type": "pty",
+    "adapter": "builtin-pty"
+  },
+  "required": false,
+  "timeout_ms": 2000,
+  "command": [
+    "/bin/sh",
+    "-c",
+    "printf 'WAITING\\n'; read answer"
+  ],
+  "terminal": {
+    "working_directory": "task-root",
+    "environment": {},
+    "network": "deny",
+    "filesystem": {
+      "read": "host",
+      "write": "task-root"
+    },
+    "cols": 80,
+    "rows": 24,
+    "steps": [
+      {
+        "type": "terminal-wait",
+        "text": "WAITING",
+        "timeout_ms": 500
+      },
+      {
+        "type": "terminal-wait",
+        "text": "NEVER-EMITTED",
+        "timeout_ms": 100
+      }
+    ],
+    "expected_exit_code": 0,
+    "evidence": {
+      "raw_stream": true,
+      "transcript": true,
+      "final_screen": true
+    }
+  },
+  "oracle_ids": [
+    "terminal-completed-v1"
+  ],
+  "policy_ids": [
+    "allow-terminal-timeout-cleanup-spawn-v1",
+    "allow-terminal-timeout-cleanup-steps-v1"
+  ]
+}

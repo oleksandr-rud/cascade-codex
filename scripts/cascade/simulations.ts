@@ -1,5 +1,14 @@
-import { readdir, rmdir, unlink } from "node:fs/promises";
-import { dirname } from "node:path";
+import {
+  lstat,
+  open,
+  realpath,
+  readdir,
+  rmdir,
+  stat,
+  unlink,
+} from "node:fs/promises";
+import { constants } from "node:fs";
+import { dirname, resolve, sep } from "node:path";
 
 import {
   CascadeError,
@@ -22,7 +31,10 @@ import {
   writeTextExclusive,
 } from "./common";
 import { buildCampaignCatalog } from "./campaigns";
-import { CampaignArtifactStore } from "./campaign-artifacts";
+import {
+  CampaignArtifactStore,
+  DEFAULT_EVIDENCE_LIMIT_BYTES,
+} from "./campaign-artifacts";
 import {
   resolveCampaign,
   type SimulationDefinition,
@@ -331,6 +343,7 @@ export async function renderStarterPackage(
       `${options.simulationId}:candidate:tools`,
     ),
     HARNESS_DIGEST: sha256Text("cascade-simulation-starter-v1"),
+    CAMPAIGN_SHA256: "0".repeat(64),
     REFERENCE_LABEL_DIGEST: sha256Text(
       `${options.simulationId}:framework-reference-labels`,
     ),
@@ -341,6 +354,16 @@ export async function renderStarterPackage(
     content: replaceTokens(file.content, tokens),
     format: "json" as const,
   }));
+  const campaignPath = `product-evals/campaigns/${options.simulationId}-smoke.json`;
+  const seedBindingPath = `product-evals/intakes/product/seed-bindings/${options.simulationId}-smoke.json`;
+  const campaignFile = rendered.find((file) => file.path === campaignPath);
+  const seedBindingFile = rendered.find((file) => file.path === seedBindingPath);
+  if (!campaignFile || !seedBindingFile || campaignFile.format !== "json" || seedBindingFile.format !== "json") {
+    throw new CascadeError("simulation starter template is missing its product seed-binding pair");
+  }
+  (seedBindingFile.content as Record<string, unknown>).campaign_sha256 = sha256Text(
+    `${stableJson(campaignFile.content, true)}\n`,
+  );
   rendered.push(await renderDesignReport(options, title));
   const paths = rendered.map((file) => file.path);
   if (new Set(paths).size !== paths.length) {
@@ -526,36 +549,230 @@ export async function previewDerivedPopulation(
   };
 }
 
+type ExternalEvidenceReadCheckpoint = (
+  phase: "opened",
+  path: string,
+) => Promise<void>;
+
+async function assertExternalEvidenceAncestors(
+  path: string,
+  root: string,
+  label: string,
+): Promise<void> {
+  let current = dirname(path);
+  while (current === root || current.startsWith(`${root}${sep}`)) {
+    const metadata = await lstat(current).catch(() => null);
+    if (!metadata?.isDirectory() || metadata.isSymbolicLink()) {
+      throw new CascadeError(`${label} has an invalid physical ancestor`);
+    }
+    if (current === root) break;
+    current = dirname(current);
+  }
+}
+
+async function assertOpenedExternalEvidenceContained(
+  path: string,
+  fileDescriptor: number,
+  opened: { dev: number; ino: number },
+  canonicalRoot: string,
+  label: string,
+): Promise<void> {
+  let canonicalFile: string | null = null;
+  for (const descriptorPath of [
+    `/proc/self/fd/${fileDescriptor}`,
+    `/dev/fd/${fileDescriptor}`,
+  ]) {
+    try {
+      canonicalFile = await realpath(descriptorPath);
+      break;
+    } catch {
+      // Platform-specific descriptor paths are not available everywhere.
+    }
+  }
+  if (canonicalFile === null) {
+    canonicalFile = await realpath(path).catch(() => null);
+  }
+  if (
+    canonicalFile === null ||
+    (canonicalFile !== canonicalRoot &&
+      !canonicalFile.startsWith(`${canonicalRoot}${sep}`))
+  ) {
+    throw new CascadeError(`${label} escapes its physical root after open`);
+  }
+  const metadata = await stat(canonicalFile).catch(() => null);
+  if (
+    !metadata?.isFile() ||
+    metadata.dev !== opened.dev ||
+    metadata.ino !== opened.ino
+  ) {
+    throw new CascadeError(`${label} changed identity after open`);
+  }
+}
+
+async function readExternalEvidenceManifestSnapshot(
+  path: string,
+  checkpoint?: ExternalEvidenceReadCheckpoint,
+): Promise<{
+  path: string;
+  digest: string;
+  manifest: ExternalPersonaEvidenceManifest;
+}> {
+  const prefix = path.startsWith("docs/product/evidence/")
+    ? "docs/product/evidence/"
+    : ".artifacts/product-evals/evidence-manifests/";
+  const absolute = boundedPath(path, prefix);
+  const physicalRoot = resolve(rootPath(prefix));
+  await assertExternalEvidenceAncestors(absolute, physicalRoot, path);
+  const canonicalRoot = await realpath(physicalRoot).catch(() => null);
+  if (canonicalRoot === null) {
+    throw new CascadeError(`external evidence physical root is missing: ${path}`);
+  }
+  let handle;
+  try {
+    handle = await open(
+      absolute,
+      constants.O_RDONLY | constants.O_NONBLOCK | constants.O_NOFOLLOW,
+    );
+  } catch (error) {
+    if (
+      error &&
+      typeof error === "object" &&
+      "code" in error &&
+      ["ELOOP", "EMLINK"].includes(String(error.code))
+    ) {
+      throw new CascadeError(`external evidence manifest must not be a symbolic link: ${path}`);
+    }
+    throw error;
+  }
+  let bytes: Buffer;
+  try {
+    const before = await handle.stat();
+    if (!before.isFile()) {
+      throw new CascadeError(`external evidence manifest must be a regular file: ${path}`);
+    }
+    if (before.size > DEFAULT_EVIDENCE_LIMIT_BYTES) {
+      throw new CascadeError(
+        `external evidence manifest exceeds ${DEFAULT_EVIDENCE_LIMIT_BYTES} bytes: ${path}`,
+      );
+    }
+    await checkpoint?.("opened", absolute);
+    await assertExternalEvidenceAncestors(absolute, physicalRoot, path);
+    await assertOpenedExternalEvidenceContained(
+      absolute,
+      handle.fd,
+      before,
+      canonicalRoot,
+      path,
+    );
+    const bounded = Buffer.alloc(DEFAULT_EVIDENCE_LIMIT_BYTES + 1);
+    let offset = 0;
+    while (offset < bounded.byteLength) {
+      const chunk = await handle.read(
+        bounded,
+        offset,
+        bounded.byteLength - offset,
+        offset,
+      );
+      if (chunk.bytesRead === 0) break;
+      offset += chunk.bytesRead;
+    }
+    if (offset > DEFAULT_EVIDENCE_LIMIT_BYTES) {
+      throw new CascadeError(
+        `external evidence manifest exceeds ${DEFAULT_EVIDENCE_LIMIT_BYTES} bytes while being read: ${path}`,
+      );
+    }
+    const after = await handle.stat();
+    if (
+      !after.isFile() ||
+      after.dev !== before.dev ||
+      after.ino !== before.ino ||
+      after.size !== before.size ||
+      after.mtimeMs !== before.mtimeMs ||
+      after.ctimeMs !== before.ctimeMs
+    ) {
+      throw new CascadeError(`external evidence manifest changed while being read: ${path}`);
+    }
+    await assertExternalEvidenceAncestors(absolute, physicalRoot, path);
+    await assertOpenedExternalEvidenceContained(
+      absolute,
+      handle.fd,
+      after,
+      canonicalRoot,
+      path,
+    );
+    const current = await lstat(absolute).catch(() => null);
+    if (
+      !current?.isFile() ||
+      current.isSymbolicLink() ||
+      current.dev !== before.dev ||
+      current.ino !== before.ino ||
+      current.size !== before.size ||
+      current.mtimeMs !== before.mtimeMs ||
+      current.ctimeMs !== before.ctimeMs
+    ) {
+      throw new CascadeError(`external evidence manifest changed while being read: ${path}`);
+    }
+    bytes = bounded.subarray(0, offset);
+  } finally {
+    await handle.close();
+  }
+  let text: string;
+  try {
+    text = new TextDecoder("utf-8", { fatal: true }).decode(bytes);
+  } catch {
+    throw new CascadeError(`external evidence manifest is not valid UTF-8: ${path}`);
+  }
+  let value: unknown;
+  try {
+    value = JSON.parse(text);
+  } catch {
+    throw new CascadeError(`external evidence manifest is invalid JSON: ${path}`);
+  }
+  const manifest = validateExternalPersonaEvidenceManifest(
+    value as Record<string, unknown>,
+    path,
+  );
+  const hasher = new Bun.CryptoHasher("sha256");
+  hasher.update(bytes);
+  return {
+    path,
+    digest: hasher.digest("hex"),
+    manifest,
+  };
+}
+
 export async function disposeRefinement(
   options: DisposeRefinementOptions,
   dependencies: {
-    verifyFrozenRun?: (runId: string) => Promise<void>;
+    externalEvidenceReadCheckpoint?: ExternalEvidenceReadCheckpoint;
   } = {},
 ) {
   if (!/^\.artifacts\/product-evals\/.+\/refinements\/.+\.json$/.test(options.proposalPath)) {
     throw new CascadeError("--proposal must reference a frozen .artifacts/product-evals refinement");
   }
-  const proposalPath = boundedPath(options.proposalPath, ".artifacts/product-evals/");
-  if (!(await isFile(proposalPath))) throw new CascadeError(`refinement proposal missing: ${options.proposalPath}`);
-  const proposal = await readJson<PersonaRefinementProposal>(proposalPath);
+  const runId = options.proposalPath.split("/")[2]!;
+  const store = new CampaignArtifactStore(
+    rootPath(".artifacts/product-evals"),
+    runId,
+  );
+  const proposalRelativePath = options.proposalPath
+    .split("/")
+    .slice(3)
+    .join("/");
+  const verifiedProposal = await store.readVerifiedArtifactJson<PersonaRefinementProposal>(
+    proposalRelativePath,
+    "refinement proposal",
+  );
+  if (verifiedProposal.verification.finalization_status !== "COMPLETED") {
+    throw new CascadeError("refinement proposal requires a completed verified run");
+  }
+  const proposal = verifiedProposal.value;
   validatePersonaRefinementProposal(
     proposal as unknown as Record<string, unknown>,
     options.proposalPath,
   );
-  const runId = options.proposalPath.split("/")[2]!;
   if (proposal.run_id !== runId) {
     throw new CascadeError("refinement proposal run identity does not match its frozen path");
-  }
-  if (dependencies.verifyFrozenRun) {
-    await dependencies.verifyFrozenRun(runId);
-  } else {
-    const verification = await new CampaignArtifactStore(
-      rootPath(".artifacts/product-evals"),
-      runId,
-    ).verify();
-    if (verification.finalization_status !== "COMPLETED") {
-      throw new CascadeError("refinement proposal requires a completed verified run");
-    }
   }
   const evidence = await Promise.all(
     options.evidenceManifestPaths.map(async (path) => {
@@ -564,20 +781,16 @@ export async function disposeRefinement(
           `external evidence manifest must stay under docs/product/evidence/ or .artifacts/product-evals/evidence-manifests/: ${path}`,
         );
       }
-      const absolute = boundedPath(path);
-      if (!(await isFile(absolute))) throw new CascadeError(`external evidence manifest missing: ${path}`);
-      const manifest = await readJson<ExternalPersonaEvidenceManifest>(absolute);
-      validateExternalPersonaEvidenceManifest(
-        manifest as unknown as Record<string, unknown>,
+      return readExternalEvidenceManifestSnapshot(
         path,
+        dependencies.externalEvidenceReadCheckpoint,
       );
-      return { path, digest: await sha256File(absolute), manifest };
     }),
   );
   const disposition = buildPersonaRefinementDisposition({
     dispositionId: options.dispositionId,
     proposalPath: options.proposalPath,
-    proposalDigest: await sha256File(proposalPath),
+    proposalDigest: verifiedProposal.record.sha256,
     proposal,
     decision: options.decision,
     reviewerIdentity: options.reviewerIdentity,
@@ -674,15 +887,26 @@ async function commandDisposeRefinement(argv: string[]): Promise<number> {
   return 0;
 }
 
-async function commandIntake(campaign: string | undefined, argv: string[]): Promise<number> {
+export function simulationIntakeCliOptions(campaign: string | undefined, argv: string[]) {
   if (!campaign) throw new CascadeError("simulation intake requires a campaign ID or path");
   const args = parseArgs(argv);
   const envelopePath = flag(args, "envelope");
   if (!envelopePath) throw new CascadeError("simulation intake requires --envelope PATH");
+  return {
+    campaign,
+    envelopePath,
+    brief: flag(args, "brief"),
+    expectedRequestDigest: flag(args, "expected-request-digest"),
+    expectedSourceDigest: flag(args, "expected-source-digest"),
+  };
+}
+
+async function commandIntake(campaign: string | undefined, argv: string[]): Promise<number> {
+  const options = simulationIntakeCliOptions(campaign, argv);
+  const args = parseArgs(argv);
   const write = boolFlag(args, "write");
   const check = boolFlag(args, "check");
   if (write && check) throw new CascadeError("simulation intake accepts only one of --write or --check");
-  const options = { campaign, envelopePath, brief: flag(args, "brief") };
   const result = write
     ? await writeCompiledSimulationIntake(options)
     : (await compileSimulationIntake(options)).intake;
@@ -716,6 +940,7 @@ export async function main(argv: string[]): Promise<number> {
     --disposition-id <id> --decision <accepted|rejected|needs-evidence|simulator-repair>
     --reviewer <identity> [--evidence-manifest <path>] (--dry-run|--write)
   bun scripts/cascade.ts simulation intake <campaign-id-or-path> --envelope <path>
+    --expected-request-digest <sha256> --expected-source-digest <sha256>
     [--brief PB-NNN|docs/specs/.../brief.yaml] [--check|--write]
 `);
   return command ? 1 : 0;

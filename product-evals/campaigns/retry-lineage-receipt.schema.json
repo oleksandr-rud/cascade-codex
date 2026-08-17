@@ -1,0 +1,105 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://cascade.local/schemas/campaign-retry-lineage-receipt.v1.schema.json",
+  "title": "Cascade campaign retry lineage receipt",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "artifact_type",
+    "receipt_id",
+    "child",
+    "parent",
+    "retry_mode",
+    "created_at"
+  ],
+  "properties": {
+    "schema_version": { "const": 1 },
+    "artifact_type": { "const": "campaign-retry-lineage-receipt" },
+    "receipt_id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*-retry-lineage$"
+    },
+    "child": { "$ref": "#/$defs/child" },
+    "parent": { "$ref": "#/$defs/parent" },
+    "retry_mode": { "enum": ["AUTOMATIC", "MANUAL"] },
+    "created_at": { "type": "string", "format": "date-time" }
+  },
+  "$defs": {
+    "child": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "run_id",
+        "campaign_id",
+        "attempt",
+        "campaign_digest",
+        "source_digest"
+      ],
+      "properties": {
+        "run_id": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$"
+        },
+        "campaign_id": { "type": "string", "pattern": "\\S" },
+        "attempt": { "type": "integer", "minimum": 1 },
+        "campaign_digest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "source_digest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        }
+      }
+    },
+    "parent": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "verification_status",
+        "run_id",
+        "campaign_id",
+        "attempt",
+        "campaign_digest",
+        "source_digest",
+        "reservation_digest",
+        "finalization_manifest_digest",
+        "source_manifest_digest",
+        "status"
+      ],
+      "properties": {
+        "verification_status": { "const": "VALID" },
+        "run_id": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$"
+        },
+        "campaign_id": { "type": "string", "pattern": "\\S" },
+        "attempt": { "type": "integer", "minimum": 1 },
+        "campaign_digest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "source_digest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "reservation_digest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "finalization_manifest_digest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "source_manifest_digest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "status": {
+          "enum": ["COMPLETED", "BLOCKED", "UNKNOWN_OUTCOME"]
+        }
+      }
+    }
+  }
+}

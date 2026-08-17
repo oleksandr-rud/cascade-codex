@@ -1,0 +1,6 @@
+interface:
+  display_name: "Cascade Prompt"
+  short_description: "Build reliable AI prompts"
+  default_prompt: "Use $prompt to compile my task contract, ask only for unresolved material decisions, load the minimum relevant context, choose a provider-neutral model tier after the contract is coherent, produce a reliable prompt tailored to the task and target surface, repair known omissions without re-questioning me, and design bounded validation cases. If Cascade Simulations is separately installed, offer it only as an optional execution handoff."
+policy:
+  allow_implicit_invocation: true

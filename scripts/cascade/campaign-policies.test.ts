@@ -9,10 +9,14 @@ import {
   signPolicyConfirmationReceipt,
   validatePolicyConfirmationReceipt,
 } from "./campaign-policies";
-import { type PolicyDefinition } from "./simulation-definitions";
+import {
+  ACTION_BINDING_VERSION,
+  actionBindingDigest,
+  type PolicyDefinition,
+} from "./simulation-definitions";
 import { valueDigest } from "./common";
 
-const CONFIRMATION_SECRET = "test-confirmation-secret";
+const CONFIRMATION_SECRET = "test-confirmation-secret-32-bytes!!";
 const CONFIRMATION_AUTHORITY = {
   key_id: "test-key",
   secret_env: "CASCADE_TEST_CONFIRMATION_SECRET",
@@ -79,7 +83,7 @@ function confirmation(
   override: Partial<PolicyConfirmationReceipt> = {},
 ): PolicyConfirmationReceipt {
   const receipt = {
-    schema_version: 1,
+    schema_version: 2,
     receipt_id: "confirmation-1",
     run_id: actionContext.run_id,
     policy_id: governingPolicy.id,
@@ -88,7 +92,8 @@ function confirmation(
     campaign_id: actionContext.campaign_id,
     task_id: actionContext.task_id,
     action_index: actionContext.action_index,
-    action_digest: valueDigest(actionContext.action),
+    action_binding_version: ACTION_BINDING_VERSION,
+    action_binding_digest: actionBindingDigest(actionContext.action),
     decision: "CONFIRM",
     issued_at: "2026-07-30T10:00:00.000Z",
     expires_at: "2026-07-30T11:00:00.000Z",
@@ -105,6 +110,40 @@ function confirmation(
 }
 
 describe("campaign policy resolver", () => {
+  test("rejects short and non-ASCII confirmation signing keys", () => {
+    const receipt = confirmation(
+      policy({ effect: "REQUIRE_CONFIRMATION", confirmation_authority: CONFIRMATION_AUTHORITY }),
+      context(),
+    );
+    const unsigned = { ...receipt, signature: undefined };
+    expect(() => signPolicyConfirmationReceipt(unsigned, "too-short")).toThrow(
+      "32 to 512 bytes",
+    );
+    expect(() =>
+      signPolicyConfirmationReceipt(
+        unsigned,
+        `${"A".repeat(32)}é`,
+      )
+    ).toThrow("visible US-ASCII");
+  });
+
+  test("rejects prototype and malformed confirmation authority key IDs", () => {
+    const governing = policy({
+      effect: "REQUIRE_CONFIRMATION",
+      confirmation_authority: CONFIRMATION_AUTHORITY,
+    });
+    const base = confirmation(governing, context());
+    for (const authorityKeyId of ["__proto__", "constructor", "prototype", "bad key"]) {
+      expect(() => validatePolicyConfirmationReceipt({
+        ...base,
+        authority_key_id: authorityKeyId,
+      })).toThrow("authority_key_id is invalid");
+    }
+    expect(() => validatePolicyConfirmationReceipt({
+      ...base,
+      authority_key_id: "normal.key:id-1",
+    })).not.toThrow();
+  });
   test("allows only an exactly scoped action and binds decision digests", () => {
     const governingPolicy = policy();
     const decision = resolvePolicyDecision([governingPolicy], context());
@@ -116,7 +155,8 @@ describe("campaign policy resolver", () => {
       redaction_profile: "no-secrets-v1",
     });
     expect(decision.policy_digest).toBe(valueDigest(governingPolicy));
-    expect(decision.action_digest).toBe(valueDigest(context().action));
+    expect(decision.action_binding_version).toBe(ACTION_BINDING_VERSION);
+    expect(decision.action_binding_digest).toBe(actionBindingDigest(context().action));
     expect(decision.applicability).toBe("APPLICABLE");
   });
 
@@ -187,20 +227,80 @@ describe("campaign policy resolver", () => {
         ...actionContext,
         confirmation_receipts: [
           confirmation(governingPolicy, actionContext, {
-            action_digest: valueDigest({ wrong: true }),
+            action_binding_digest: valueDigest({ wrong: true }),
           }),
         ],
       }).decision,
     ).toBe("REQUIRE_CONFIRMATION");
 
     const receipt = confirmation(governingPolicy, actionContext);
+    const confirmationUsage = {};
     const confirmed = resolvePolicyDecision([governingPolicy], {
       ...actionContext,
       confirmation_receipts: [receipt],
+      confirmation_usage: confirmationUsage,
     });
     expect(confirmed.decision).toBe("ALLOW");
     expect(confirmed.confirmation_receipt_id).toBe(receipt.receipt_id);
     expect(confirmed.confirmation_receipt_digest).toBe(valueDigest(receipt));
+    expect(
+      resolvePolicyDecision([governingPolicy], {
+        ...actionContext,
+        confirmation_receipts: [receipt],
+        confirmation_usage: confirmationUsage,
+      }),
+    ).toMatchObject({
+      decision: "BLOCKED",
+      reason: expect.stringContaining("already consumed"),
+    });
+    expect(
+      resolvePolicyDecision([governingPolicy], {
+        ...actionContext,
+        confirmation_receipts: [
+          {
+            ...receipt,
+            action_binding_digest: valueDigest({ different: true }),
+          },
+        ],
+        confirmation_usage: confirmationUsage,
+      }),
+    ).toMatchObject({
+      decision: "BLOCKED",
+      reason: expect.stringContaining("receipt id collision"),
+    });
+
+    const coherentMismatches: Array<Partial<PolicyConfirmationReceipt>> = [
+      { run_id: "run-2" },
+      { campaign_id: "campaign-2" },
+      { task_id: "TASK-2" },
+      { action_index: 1 },
+      { action_binding_digest: valueDigest({ type: "set", path: "workflow.status", value: "other" }) },
+      { policy_id: "policy-2" },
+      { policy_version: "2.0.1" },
+      { policy_digest: "1".repeat(64) },
+      { confirmed_by: "human:other" },
+      { authority_key_id: "other-key" },
+      { issued_at: "2026-07-30T10:30:00.001Z" },
+      { expires_at: actionContext.now },
+    ];
+    for (const override of coherentMismatches) {
+      const mismatch = confirmation(governingPolicy, actionContext, override);
+      expect(
+        resolvePolicyDecision([governingPolicy], {
+          ...actionContext,
+          confirmation_receipts: [mismatch],
+          confirmation_usage: {},
+        }).decision,
+      ).toBe("REQUIRE_CONFIRMATION");
+    }
+    const plusOneMillisecond = confirmation(governingPolicy, actionContext, {
+      expires_at: "2026-07-30T10:30:00.001Z",
+    });
+    expect(resolvePolicyDecision([governingPolicy], {
+      ...actionContext,
+      confirmation_receipts: [plusOneMillisecond],
+      confirmation_usage: {},
+    }).decision).toBe("ALLOW");
   });
 
   test("rejects schema-invalid, unsigned, or untrusted confirmation receipts", () => {
@@ -339,6 +439,93 @@ describe("campaign policy resolver", () => {
     expect(decision.reason).toContain("redaction profile");
   });
 
+  test("blocks inline sensitive HTTP sinks before any action binding for every policy effect", () => {
+    const governingPolicy = policy({
+      scope: {
+        campaign_ids: ["campaign-1"],
+        task_ids: ["TASK-1"],
+        task_kinds: ["http"],
+        driver_types: ["http-client"],
+        action_types: ["http-request"],
+        http_methods: ["GET"],
+        http_origins: ["https://example.test"],
+      },
+      redaction_profile: "source-code-v1",
+    });
+    for (const effect of ["ALLOW", "DENY", "REQUIRE_CONFIRMATION"] as const) {
+      for (const header of ["authorization", "X-aPi-KeY", "COOKIE", "x-password"]) {
+        expect(() => resolvePolicyDecision(
+          [{
+            ...governingPolicy,
+            effect,
+            ...(effect === "REQUIRE_CONFIRMATION"
+              ? { confirmation_authority: CONFIRMATION_AUTHORITY }
+              : {}),
+          }],
+          context({
+            task_kind: "http",
+            driver_type: "http-client",
+            action: {
+              type: "http-request",
+              method: "GET",
+              url: "https://example.test/resource",
+              headers: { [header]: "x" } as never,
+            },
+          }),
+        )).toThrow("action contains prohibited inline sensitive material");
+      }
+    }
+  });
+
+  test("binds HTTP references stably and invalidates rotation or sink substitution", () => {
+    const reference = {
+      kind: "secret-reference" as const,
+      reference_id: "vault/http/service-token",
+      immutable_version: "version-7",
+      lease_id: "lease-3",
+    };
+    const action = {
+      type: "http-request" as const,
+      method: "GET" as const,
+      url: "https://example.test/resource",
+      headers: { Authorization: reference },
+    };
+    const stable = actionBindingDigest(action);
+    expect(actionBindingDigest(structuredClone(action))).toBe(stable);
+    expect(actionBindingDigest({
+      ...action,
+      headers: { Authorization: { ...reference, immutable_version: "version-8" } },
+    })).not.toBe(stable);
+    expect(actionBindingDigest({
+      ...action,
+      headers: { "X-API-Key": reference },
+    })).not.toBe(stable);
+    for (const candidate of ["0", "1", "test", "admin", "secret", "letmein"]) {
+      expect(stable).not.toBe(valueDigest({
+        type: "http-request",
+        method: "GET",
+        url: "https://example.test/resource",
+        headers: { Authorization: candidate },
+      }));
+    }
+  });
+
+  test("blocks exact authority secrets in actions under every profile", () => {
+    const decision = resolvePolicyDecision(
+      [policy({ redaction_profile: "source-code-v1" })],
+      context({
+        action: {
+          type: "set",
+          path: "workflow.status",
+          value: CONFIRMATION_SECRET,
+        },
+      }),
+    );
+
+    expect(decision.decision).toBe("DENY");
+    expect(decision.redaction_status).toBe("BLOCKED");
+  });
+
   test("redacts and bounds process output before persistence", () => {
     const governingPolicy = policy({
       budgets: {
@@ -374,6 +561,18 @@ describe("campaign policy resolver", () => {
       ["standalone-confirmation-secret"],
     );
     expect(controlled.value).toBe("result=[REDACTED]");
+    expect(controlled.redacted).toBe(true);
+  });
+
+  test("redacts every non-empty resolved secret regardless of entropy", () => {
+    const controlled = applyPolicyOutputControls(
+      "echo=1 pin=2 AUTH=3",
+      policy({ redaction_profile: "no-secrets-v1" }),
+      ["1"],
+    );
+    expect(controlled.value).not.toContain("1");
+    expect(controlled.value).not.toContain("pin=2");
+    expect(controlled.value).not.toContain("AUTH=3");
     expect(controlled.redacted).toBe(true);
   });
 });

@@ -21,5 +21,12 @@
   "oracle_files": [
     "product-evals/oracles/account-resolved-v1.json",
     "product-evals/oracles/account-attempt-recorded-v1.json"
-  ]
+  ],
+  "specialized_evaluation": {
+    "applicability": "NOT_APPLICABLE",
+    "route_ids": [],
+    "trace_ids": [],
+    "claim_ids": [],
+    "reason": "mechanical simulation-correctness fixture has no Cascade route or trace claims"
+  }
 }

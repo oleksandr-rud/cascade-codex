@@ -1,0 +1,21 @@
+{
+  "schema_version": 2,
+  "id": "deny-browser-forbidden-domain-v1",
+  "version": "1.0.0",
+  "effect": "DENY",
+  "scope": {
+    "campaign_ids": ["browser-simulation-smoke"],
+    "task_ids": ["BROWSER-FORBIDDEN-DOMAIN-DENIED"],
+    "task_kinds": ["browser"],
+    "driver_types": ["playwright"],
+    "action_types": ["browser-navigate"],
+    "http_origins": ["https://forbidden.invalid"]
+  },
+  "budgets": {
+    "required_dimensions": ["action_count", "output_bytes"],
+    "max_actions": 1,
+    "max_output_bytes": 65536
+  },
+  "redaction_profile": "no-secrets-v1",
+  "reason": "Deny the source-bound forbidden-domain navigation before browser dispatch."
+}

@@ -23,6 +23,11 @@ commands. It can also route explicit requests for agentic workflow packets to
 ## Flow
 
 1. Sense: inspect the request, branch, active work registry, and current state.
+   For recurring queue checks, run `bun scripts/cascade.ts work audit --json
+   --check` and treat its output as a read-only projection, never as dispatch
+   or mutation authority. A user-authorized recurring continuation may use
+   `work automation-prompt --mode orchestrate`; the prompt permits one bounded
+   local slice and carries no authority beyond the current task.
 2. Gather: read only the source files and docs needed to remove uncertainty.
 3. Workflow packet: when the requested output is an agent/skill workflow
    packet, workflow checklist, prompt bank, delegation workflow, or multi-agent
@@ -44,31 +49,37 @@ commands. It can also route explicit requests for agentic workflow packets to
    backlog, glossary, or pattern docs may affect sibling rules.
 6. Pattern context: use `pattern-context` when reusable pattern entries or
    context packs need retrieval, creation, or update.
-7. Orchestrate: use `orchestrate-work` to keep work single-lane, split into
-   parallel-safe lanes, or serialize conflicting lanes. Record execution
-   surface, dispatch state, authorization evidence, and runtime handles;
-   readiness is not dispatch.
-8. Simulate: route campaign authoring, selection, replay planning, aggregation,
+7. Plan: use `plan-change` to define behavior, boundaries, implementation
+   slices, risks, and validation for non-atomic work.
+8. Iterate: use `plan-iterations` when the slices span more than one delivery
+   horizon or the user asks for a first iteration, MVP, phase, or roadmap.
+   Rank grounded slices, keep MVP as an orthogonal outcome boundary, and mark
+   the selected first iteration `PROPOSED` until capacity and commitment
+   authority support `COMMITTED` scope. Keep future candidates inactive.
+9. Orchestrate: use `orchestrate-work` only when feasible committed first-iteration scope
+   needs workline ownership, dependencies, scheduling, or graph coordination.
+   Record execution surface, dispatch state, authorization evidence, and
+   runtime handles; readiness is not dispatch.
+10. Simulate: route campaign authoring, selection, replay planning, aggregation,
    and reporting to `simulation-campaigns`. When the user explicitly authorizes
    delegated execution, dispatch the approved run to `simulation-operator`,
    then dispatch its frozen evidence to the read-only `simulation-evaluator`;
    Cascade route/trace runs first require the specialized
    `harness-evaluator` receipt.
-9. Plan: use `plan-change` for non-atomic work.
-10. Accept: use `functional-qa` to author or execute product-visible proof when
+11. Accept: use `functional-qa` to author or execute product-visible proof when
     new browser/API/CLI/journey/scenario/functional evidence is needed.
-11. Act: use `implement-change` for scoped behavior-slice edits.
-12. Review: use `review-change` for fixed-point Standards/Spec review when a
+12. Act: use `implement-change` for scoped behavior-slice edits.
+13. Review: use `review-change` for fixed-point Standards/Spec review when a
    non-atomic diff needs explicit review before closeout.
-13. Validate: use `validate-change` to aggregate existing evidence and assess
+14. Validate: use `validate-change` to aggregate existing evidence and assess
     freshness, invalidation, gate impact, earliest responsible contracts, and
     bounded reopen sets, including for graph-shaped subjects.
-14. Repair tests: use `test-autorepair` only for stale or failing tests when
+15. Repair tests: use `test-autorepair` only for stale or failing tests when
    behavior still matches the expected contract.
-15. Intake: use `issue-intake` only when a durable issue body or tracker ticket
+16. Intake: use `issue-intake` only when a durable issue body or tracker ticket
    is requested.
-16. Close: use `closeout` for final evidence and memory.
-17. Archive: after a lane or graph completes, automatically use `archive-work`
+17. Close: use `closeout` for final evidence and memory.
+18. Archive: after a lane or graph completes, automatically use `archive-work`
     for the exact closed set and record `ARCHIVED`, `ARCHIVE_DEFERRED`, or
     `NOT_APPLICABLE`.
 
@@ -84,8 +95,8 @@ commands. It can also route explicit requests for agentic workflow packets to
   threads.
 - Never describe an internal subagent as a separate Codex task. After dispatch,
   record its agent ID or task ID in the lane or graph receipt.
-- Treat `max_threads` as internal agent-execution capacity, not as an automatic
-  task count or dispatch instruction.
+- Treat agent-execution capacity as a runtime limit, not as an automatic task
+  count or dispatch instruction.
 - Treat a request to check, refresh, or actualize task status as authorization
   to reconcile the in-scope local lane/graph state from current evidence. When
   every required criterion and gate passes, mark it `COMPLETE` immediately and
@@ -98,6 +109,12 @@ commands. It can also route explicit requests for agentic workflow packets to
 - Route explicit workflow-packet requests to `agentic-workflow-builder`; route
   active lane scheduling, dependencies, and merge ownership to
   `orchestrate-work`.
+- Use `plan-change` to define implementation slices and `plan-iterations` to
+  rank them, assign exclusive delivery dispositions, trace the orthogonal MVP
+  boundary, and propose or record an authorized first-iteration commitment.
+  Unknown capacity or commitment authority produces `ITERATION_PROPOSED`.
+  Instantiate active worklines or graph state only from feasible committed
+  first-iteration scope.
 - Route completed-work compaction to `archive-work`, not to `closeout` or
   `reconcile-work-graph`; those routes must finish registry cleanup and
   identity reconciliation before archival can pass.

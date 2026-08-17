@@ -1,0 +1,9 @@
+{
+  "schema_version": 1,
+  "id": "strict-static-command-v1",
+  "goal": "Execute the exact isolated static command and preserve its evidence.",
+  "actor_ids": ["command-static-actor"],
+  "initial_state": {},
+  "stop_conditions": ["declared exit-code oracle passes"],
+  "claim_ids": ["harness-static-command-execution"]
+}

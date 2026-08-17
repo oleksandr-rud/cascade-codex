@@ -1,0 +1,20 @@
+{
+  "schema_version": 2,
+  "id": "allow-browser-external-navigation-probe-v1",
+  "version": "1.0.0",
+  "effect": "ALLOW",
+  "scope": {
+    "campaign_ids": ["browser-simulation-smoke"],
+    "task_ids": ["BROWSER-EXTERNAL-NAVIGATION-DENIED"],
+    "task_kinds": ["browser"],
+    "driver_types": ["playwright"],
+    "action_types": ["browser-click"]
+  },
+  "budgets": {
+    "required_dimensions": ["action_count", "output_bytes"],
+    "max_actions": 1,
+    "max_output_bytes": 65536
+  },
+  "redaction_profile": "no-secrets-v1",
+  "reason": "Allow only the source-bound external-link click so the isolated runtime can prove that external navigation is denied."
+}

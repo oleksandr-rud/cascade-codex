@@ -8,6 +8,7 @@ import {
   boundedPath,
   exists,
   parseArgs,
+  readBoundedRegularFile,
   readText,
   rel,
   rootPath,
@@ -125,6 +126,7 @@ interface MarkdownTable {
 
 export interface ResolvedBrief {
   path: string;
+  manifestSha256: string;
   manifest: BriefManifest;
   catalog: ProductCatalog;
   domain: ProductDomain;
@@ -141,6 +143,28 @@ export interface ResolvedBrief {
   evaluationDigests: Array<{ path: string; sha256: string }>;
   compilerContractDigests: Array<{ path: string; sha256: string }>;
 }
+
+export interface ProductBriefBinding {
+  brief_path: string;
+  brief_id: string;
+  revision: number;
+  sha256: string;
+  output_path: string;
+  output_sha256: string;
+  domain_id: string;
+  capability_id: string;
+  product_refs: BriefManifest["product_refs"];
+}
+
+export interface ResolvedCurrentBriefProjection {
+  resolved: ResolvedBrief;
+  binding: ProductBriefBinding;
+  generated: string;
+  currentOutput: string;
+}
+
+export const MAX_BRIEF_MANIFEST_BYTES = 1024 * 1024;
+export const MAX_BRIEF_PROJECTION_BYTES = 8 * 1024 * 1024;
 
 function object(value: unknown, label: string): Record<string, unknown> {
   if (!value || typeof value !== "object" || Array.isArray(value)) {
@@ -258,6 +282,43 @@ function selectRows(table: MarkdownTable, ids: string[], label: string): Markdow
 async function loadYaml<T>(path: string, label: string): Promise<T> {
   try {
     return Bun.YAML.parse(await readText(path)) as T;
+  } catch (error) {
+    throw new CascadeError(
+      `invalid ${label} ${rel(path)}: ${error instanceof Error ? error.message : String(error)}`,
+    );
+  }
+}
+
+function sha256Bytes(value: Uint8Array): string {
+  const hasher = new Bun.CryptoHasher("sha256");
+  hasher.update(value);
+  return hasher.digest("hex");
+}
+
+async function readBoundedUtf8(
+  path: string,
+  label: string,
+  maxBytes: number,
+): Promise<{ text: string; sha256: string }> {
+  const bytes = await readBoundedRegularFile(path, label, { maxBytes });
+  try {
+    return {
+      text: new TextDecoder("utf-8", { fatal: true }).decode(bytes),
+      sha256: sha256Bytes(bytes),
+    };
+  } catch {
+    throw new CascadeError(`${label} is not valid UTF-8`);
+  }
+}
+
+async function loadBoundedYaml<T>(
+  path: string,
+  label: string,
+): Promise<{ value: T; sha256: string }> {
+  let source: { text: string; sha256: string };
+  try {
+    source = await readBoundedUtf8(path, label, MAX_BRIEF_MANIFEST_BYTES);
+    return { value: Bun.YAML.parse(source.text) as T, sha256: source.sha256 };
   } catch (error) {
     throw new CascadeError(
       `invalid ${label} ${rel(path)}: ${error instanceof Error ? error.message : String(error)}`,
@@ -640,7 +701,8 @@ async function resolveBriefPath(value: string): Promise<string> {
   if (paths.includes(direct)) return direct;
   const matches: string[] = [];
   for (const path of paths) {
-    const manifest = validateBriefManifestShape(await loadYaml<unknown>(path, "brief manifest"));
+    const source = await loadBoundedYaml<unknown>(path, "brief manifest");
+    const manifest = validateBriefManifestShape(source.value);
     if (manifest.brief_id === value) matches.push(path);
   }
   if (matches.length !== 1) throw new CascadeError(`brief does not resolve once: ${value}`);
@@ -711,7 +773,11 @@ export function validateCompleteBriefBindings(
 
 export async function resolveBrief(value: string): Promise<ResolvedBrief> {
   const path = await resolveBriefPath(value);
-  const manifest = validateBriefManifestShape(await loadYaml<unknown>(path, "brief manifest"));
+  const source = await loadBoundedYaml<unknown>(path, "brief manifest");
+  const manifest = validateBriefManifestShape(source.value);
+  if (/^PB-\d{3}$/.test(value) && manifest.brief_id !== value) {
+    throw new CascadeError(`brief identity changed while resolving: ${value}`);
+  }
   if (manifest.catalog_path !== "docs/product/catalog.yaml") {
     throw new CascadeError("brief must use docs/product/catalog.yaml");
   }
@@ -773,6 +839,7 @@ export async function resolveBrief(value: string): Promise<ResolvedBrief> {
   const patternSections = await compilePatternSelections(manifest.pattern_context);
   return {
     path,
+    manifestSha256: source.sha256,
     manifest,
     catalog,
     domain,
@@ -811,8 +878,7 @@ function sectionBody(content: string): string {
   return lines.join("\n");
 }
 
-export async function generateBrief(value: string): Promise<string> {
-  const resolved = await resolveBrief(value);
+async function renderBrief(resolved: ResolvedBrief): Promise<string> {
   const { manifest, catalog, domain, capability } = resolved;
   const requirements = selectRows(
     resolved.tables.requirements,
@@ -948,6 +1014,38 @@ export async function generateBrief(value: string): Promise<string> {
     );
   }
   return `${lines.join("\n").trimEnd()}\n`;
+}
+
+export async function generateBrief(value: string): Promise<string> {
+  return renderBrief(await resolveBrief(value));
+}
+
+export async function resolveCurrentBriefProjection(
+  value: string,
+): Promise<ResolvedCurrentBriefProjection> {
+  const resolved = await resolveBrief(value);
+  const generated = await renderBrief(resolved);
+  const output = await readBoundedUtf8(
+    rootPath(resolved.manifest.output_path),
+    `${resolved.manifest.brief_id} generated brief projection`,
+    MAX_BRIEF_PROJECTION_BYTES,
+  );
+  return {
+    resolved,
+    generated,
+    currentOutput: output.text,
+    binding: {
+      brief_path: rel(resolved.path),
+      brief_id: resolved.manifest.brief_id,
+      revision: resolved.manifest.revision,
+      sha256: resolved.manifestSha256,
+      output_path: resolved.manifest.output_path,
+      output_sha256: output.sha256,
+      domain_id: resolved.manifest.domain_id,
+      capability_id: resolved.manifest.capability_id,
+      product_refs: structuredClone(resolved.manifest.product_refs),
+    },
+  };
 }
 
 export async function validateBriefRepository(checkGenerated = true): Promise<string[]> {

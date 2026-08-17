@@ -1,0 +1,9 @@
+{
+  "schema_version": 1,
+  "id": "cascade-harness-profile-v1",
+  "scenario_id": "HX-055",
+  "catalog_digest": "61efa70833a482aef32fee07964f88ad86df94a1620967f605f3fb8556450e91",
+  "scenario_digest": "1cf2269b75dcbc537d1ad4a7bf994ff5b17f8d301303098aaf64db7f2c1e1ab0",
+  "harness_source_digest": "cff26af02cb3f5c83c2296470ec71c29fab69afcddb35e79b9e70674aa4ad065",
+  "judging": "outcome-and-trajectory"
+}

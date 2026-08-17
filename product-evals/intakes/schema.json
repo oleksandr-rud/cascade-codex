@@ -1,12 +1,12 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://cascade.local/schemas/simulation-intake.schema.json",
+  "$id": "https://cascade.local/schemas/simulation-intake.v6.schema.json",
   "title": "Cascade simulation intake",
   "type": "object",
   "additionalProperties": false,
-  "required": ["schema_version", "artifact_type", "id", "status", "scope", "campaign_id", "produced_at", "task_envelope", "product_context", "claims", "tasks", "blockers", "gaps", "invalidation"],
+  "required": ["schema_version", "artifact_type", "id", "status", "scope", "campaign_id", "produced_at", "task_envelope", "product_context", "seed_binding", "claims", "tasks", "blockers", "gaps", "invalidation"],
   "properties": {
-    "schema_version": { "const": 1 },
+    "schema_version": { "const": 6 },
     "artifact_type": { "const": "cascade-simulation-intake" },
     "id": { "type": "string", "pattern": "^SI-[a-f0-9]{16}$" },
     "status": { "enum": ["DRAFT", "READY", "BLOCKED"] },
@@ -15,6 +15,7 @@
     "produced_at": { "type": "string", "format": "date-time" },
     "task_envelope": { "oneOf": [{ "type": "null" }, { "$ref": "#/$defs/taskEnvelope" }] },
     "product_context": { "oneOf": [{ "type": "null" }, { "$ref": "#/$defs/productContext" }] },
+    "seed_binding": { "oneOf": [{ "type": "null" }, { "$ref": "#/$defs/seedBinding" }] },
     "claims": { "type": "array", "items": { "$ref": "#/$defs/claim" } },
     "tasks": { "type": "array", "items": { "$ref": "#/$defs/task" } },
     "blockers": { "type": "array", "items": { "type": "string", "minLength": 1 } },
@@ -23,14 +24,38 @@
   },
   "$defs": {
     "digest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "seedBindingPath": {
+      "type": "string",
+      "pattern": "^product-evals/intakes/product/seed-bindings/(?:\\.*[A-Za-z0-9_-][A-Za-z0-9._-]*/)*\\.*[A-Za-z0-9_-][A-Za-z0-9._-]*\\.json$"
+    },
     "taskEnvelope": {
       "type": "object", "additionalProperties": false,
-      "required": ["path", "envelope_id", "revision", "sha256"],
+      "required": ["path", "envelope_id", "revision", "sha256", "request_digest", "source_digest", "derivation_input_digest", "provenance_version", "provenance_mode", "source_segments_digest", "direct_user_attestation", "expected_request_digest", "expected_source_digest"],
       "properties": {
         "path": { "type": "string", "pattern": "^product-evals/intakes/(harness|product)/task-envelopes/TE-[a-f0-9]{16}\\.json$" },
         "envelope_id": { "type": "string", "pattern": "^TE-[a-f0-9]{16}$" },
         "revision": { "type": "integer", "minimum": 1 },
-        "sha256": { "$ref": "#/$defs/digest" }
+        "sha256": { "$ref": "#/$defs/digest" },
+        "request_digest": { "$ref": "#/$defs/digest" },
+        "source_digest": { "oneOf": [{ "type": "null" }, { "$ref": "#/$defs/digest" }] },
+        "derivation_input_digest": { "$ref": "#/$defs/digest" },
+        "provenance_version": { "const": 2 },
+        "provenance_mode": { "enum": ["TRUSTED_SOURCE_SEGMENTS", "LEXICAL_FALLBACK"] },
+        "source_segments_digest": { "$ref": "#/$defs/digest" },
+        "direct_user_attestation": { "oneOf": [{ "type": "null" }, { "$ref": "#/$defs/directUserAttestation" }] },
+        "expected_request_digest": { "oneOf": [{ "type": "null" }, { "$ref": "#/$defs/digest" }] },
+        "expected_source_digest": { "oneOf": [{ "type": "null" }, { "$ref": "#/$defs/digest" }] }
+      }
+    },
+    "directUserAttestation": {
+      "type": "object", "additionalProperties": false,
+      "required": ["schema_version", "attestation_id", "issuer", "request_digest", "source_segments_digest"],
+      "properties": {
+        "schema_version": { "const": 1 },
+        "attestation_id": { "type": "string", "minLength": 1, "maxLength": 200 },
+        "issuer": { "type": "string", "minLength": 1, "maxLength": 200 },
+        "request_digest": { "$ref": "#/$defs/digest" },
+        "source_segments_digest": { "$ref": "#/$defs/digest" }
       }
     },
     "productContext": {
@@ -48,12 +73,72 @@
         "product_refs": { "type": "object" }
       }
     },
+    "seedBinding": {
+      "type": "object", "additionalProperties": false,
+      "required": ["path", "sha256", "id", "status", "campaign_id", "campaign_sha256", "source", "mappings"],
+      "properties": {
+        "path": { "$ref": "#/$defs/seedBindingPath" },
+        "sha256": { "$ref": "#/$defs/digest" },
+        "id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9.-]+$" },
+        "status": { "enum": ["DRAFT", "READY"] },
+        "campaign_id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9.-]+$" },
+        "campaign_sha256": { "$ref": "#/$defs/digest" },
+        "source": {
+          "type": "object", "additionalProperties": false,
+          "required": ["task_envelope_id", "task_envelope_revision", "request_digest", "source_digest"],
+          "properties": {
+            "task_envelope_id": { "oneOf": [{ "type": "null" }, { "type": "string", "pattern": "^TE-[a-f0-9]{16}$" }] },
+            "task_envelope_revision": { "oneOf": [{ "type": "null" }, { "type": "integer", "minimum": 1 }] },
+            "request_digest": { "oneOf": [{ "type": "null" }, { "$ref": "#/$defs/digest" }] },
+            "source_digest": { "oneOf": [{ "type": "null" }, { "$ref": "#/$defs/digest" }] }
+          }
+        },
+        "mappings": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/seedMapping" }
+        }
+      }
+    },
+    "seedMapping": {
+      "type": "object", "additionalProperties": false,
+      "required": ["source_claim_id", "disposition", "campaign_claim_ids", "scenario_ids", "task_ids", "rationale"],
+      "properties": {
+        "source_claim_id": { "type": "string", "pattern": "^CL-[0-9]{3}$" },
+        "disposition": { "enum": ["SEEDED", "CONTEXT_ONLY", "OUT_OF_SCOPE"] },
+        "campaign_claim_ids": { "type": "array", "uniqueItems": true, "items": { "type": "string", "minLength": 1 } },
+        "scenario_ids": { "type": "array", "uniqueItems": true, "items": { "type": "string", "minLength": 1 } },
+        "task_ids": { "type": "array", "uniqueItems": true, "items": { "type": "string", "minLength": 1 } },
+        "rationale": { "oneOf": [{ "type": "null" }, { "type": "string", "minLength": 1 }] }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "disposition": { "const": "SEEDED" } } },
+          "then": {
+            "properties": { "campaign_claim_ids": { "minItems": 1 } },
+            "anyOf": [
+              { "properties": { "scenario_ids": { "minItems": 1 } } },
+              { "properties": { "task_ids": { "minItems": 1 } } }
+            ]
+          },
+          "else": {
+            "properties": {
+              "campaign_claim_ids": { "maxItems": 0 },
+              "scenario_ids": { "maxItems": 0 },
+              "task_ids": { "maxItems": 0 },
+              "rationale": { "type": "string", "minLength": 1 }
+            }
+          }
+        }
+      ]
+    },
     "claim": {
       "type": "object", "additionalProperties": false,
-      "required": ["claim_id", "source_claim_id", "statement", "status", "policy_tags"],
+      "required": ["claim_id", "source_claim_id", "kind", "source", "statement", "status", "policy_tags"],
       "properties": {
         "claim_id": { "type": "string", "pattern": "^SIC-[0-9]{3}$" },
         "source_claim_id": { "type": "string", "pattern": "^CL-[0-9]{3}$" },
+        "kind": { "enum": ["OUTCOME", "CURRENT_STATE", "CRITERION", "CONSTRAINT", "NON_GOAL", "BOUNDARY", "HAZARD", "AUTHORITY", "EVIDENCE", "INFERENCE"] },
+        "source": { "enum": ["USER", "TRUSTED_INSTRUCTION", "CURRENT_SOURCE", "TOOL_EVIDENCE", "EXTERNAL_SOURCE", "MODEL_INFERENCE"] },
         "statement": { "type": "string", "minLength": 1 },
         "status": { "enum": ["PROVIDED", "VERIFIED", "INFERRED", "UNKNOWN", "CONFLICTING"] },
         "policy_tags": { "type": "array", "uniqueItems": true, "items": { "type": "string", "minLength": 1 } }
@@ -61,10 +146,11 @@
     },
     "action": {
       "type": "object", "additionalProperties": false,
-      "required": ["action_index", "action_digest", "applicable_policy_ids", "policy_digests", "decision"],
+      "required": ["action_index", "action_binding_version", "action_binding_digest", "applicable_policy_ids", "policy_digests", "decision"],
       "properties": {
         "action_index": { "type": "integer", "minimum": 0 },
-        "action_digest": { "$ref": "#/$defs/digest" },
+        "action_binding_version": { "const": "cascade-action-binding-v2" },
+        "action_binding_digest": { "$ref": "#/$defs/digest" },
         "applicable_policy_ids": { "type": "array", "uniqueItems": true, "items": { "type": "string", "minLength": 1 } },
         "policy_digests": { "type": "array", "uniqueItems": true, "items": { "$ref": "#/$defs/digest" } },
         "decision": { "enum": ["ALLOW", "DENY", "REQUIRE_CONFIRMATION", "GAP", "AMBIGUOUS"] }

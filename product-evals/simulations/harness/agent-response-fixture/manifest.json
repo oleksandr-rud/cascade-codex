@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "id": "agent-response-fixture",
+  "simulation_scope": "harness",
+  "title": "Provider-neutral agent response fixture",
+  "purpose": "Exercise only the deterministic W-007 source-blind agent response contract.",
+  "population_files": ["product-evals/simulations/harness/agent-response-fixture/populations/actors.json"],
+  "scenario_files": ["product-evals/simulations/harness/agent-response-fixture/scenarios/standalone-response.json"],
+  "world_file": "product-evals/simulations/harness/agent-response-fixture/worlds/world.json",
+  "dataset_file": "product-evals/simulations/harness/agent-response-fixture/datasets/cases.json",
+  "metric_files": ["product-evals/metrics/agent-response-contract-rate-v1.json"],
+  "treatment_files": ["product-evals/treatments/baseline-v1.json"]
+}

@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "id": "agent-response-contract-rate-v1",
+  "kind": "deterministic",
+  "direction": "higher-is-better",
+  "unit": "rate",
+  "aggregation": "rate",
+  "hard_gate": true,
+  "required_slices": ["agent-response-fixture"],
+  "uncertainty": "none",
+  "source": { "oracle_id": "agent-response-contract-valid-v1" }
+}

@@ -6,8 +6,8 @@ Created: 2026-07-27
 Lane Model: `sequential-pipeline`
 Next Gate: `implement-change at WG-001-N16 after WG-001-N15`
 Execution Surface: `internal-subagent`
-Dispatch State: `NOT_AUTHORIZED`
-Dispatch Authorization: `none`
+Dispatch State: `AUTHORIZED`
+Dispatch Authorization: explicit user authorization for delegated workline implementation, 2026-08-05
 Runtime Handle: `none`
 
 ## Request
@@ -181,10 +181,12 @@ platform behavior, mobile platform behavior, or release eligibility.
 
 ## Parallel Dependencies
 
-Every product-scoped composed canary in `WG-001-N17` additionally requires a
-READY W-032 intake that binds the current Task Envelope, product brief, and
-exact policies for each composed task action. Harness-only deterministic
-composition remains gated by Gate B and cannot satisfy this product intake.
+Every product-scoped composed canary in `WG-001-N17` additionally requires
+`WG-001-N18 ACCEPTED` and the exact READY W-032 intake bound by that receipt to
+the current Task Envelope, product brief, and policies for each composed task
+action. A READY intake without accepted N18 is insufficient. Harness-only
+deterministic composition remains gated by Gate B and cannot satisfy this
+product intake.
 
 - Can run with: no deterministic implementation before WG-001-N15; after Gate B,
   live canaries may run independently when their exact environments and

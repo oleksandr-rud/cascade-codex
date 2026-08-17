@@ -160,16 +160,22 @@ plausible delivery fragment and assurance overlay.
 - Terminal evidence join:
 - Rejected topology or unresolved bindings:
 
-## Workline Discovery
+## Candidate Delivery Obligations (Optional)
 
-Discover candidate worklines from the request and inspected boundaries. Do not
-start from a requested or default number.
+Use this section only to identify possible obligation boundaries. Do not create
+active worklines here. When slices span horizons, `plan-iterations` assigns
+candidate work one exclusive delivery disposition and an orthogonal MVP
+membership before `orchestrate-work` instantiates committed first-iteration
+scope.
 
 | Candidate | Independent Outcome | Definitions / Criteria Owned | Write Scope | Dependencies | Validation Seam | Disposition / Reason |
 |---|---|---|---|---|---|---|
 | `C-01` | `<OUTCOME>` | `<IDS>` | `<PATHS>` | `<IDS_OR_NONE>` | `<CHECK>` | `<SELECT_MERGE_SERIALIZE_DEFER>` |
 
-## Selected Workline Map
+## Committed Workline Map (Only After Horizon Selection)
+
+Omit this table until a current horizon is committed. Future candidate horizons
+never appear here.
 
 | Workline | Fragment Instances | Outcome | Primary Criteria | Requires / Produces Ports | Ownership / Writes | Actor / Skills | Validation / Evaluator | Materialization | Status |
 |---|---|---|---|---|---|---|---|---|---|
@@ -186,9 +192,18 @@ needs independent status, ownership, dependencies, validation, or handoff.
 |---|---|---|---|---|---|---|---|
 | `SL-01` | `WL-01 / FI-01` | `<DEF_CRITERION_TRAJECTORY_IDS>` | `<SOURCE_BOUNDARY_PORT_IDS>` | `<PATHS>` | `<OUTPUT>` | `<EVIDENCE>` | `<ROUTE>` |
 
+## Delivery Horizon Handoff
+
+- Horizon planning applicability: `<NOT_NEEDED | PLAN_ITERATIONS_REQUIRED | CURRENT_HORIZON_ALREADY_COMMITTED>`
+- Current coherent slice or source slice IDs:
+- MVP-boundary owner:
+- Next route: `<plan-iterations | orchestrate-work | functional-qa | implement-change>`
+- Future-scope activation rule: only committed first-iteration scope may become
+  active workline or graph state.
+
 ## Traceability
 
-| Requirement / Definition | Primary Workline | Implementation Slice | Artifact | Evidence | Status |
+| Requirement / Definition | Primary Slice / Candidate Workline | Implementation Slice | Artifact | Evidence | Status |
 |---|---|---|---|---|---|
 | `<ID>` | `<WL-ID>` | `<SL-ID>` | `<PATH_OR_OUTPUT>` | `<CHECK_OR_JOIN>` | `<OPEN_COVERED_BLOCKED_DEFERRED>` |
 

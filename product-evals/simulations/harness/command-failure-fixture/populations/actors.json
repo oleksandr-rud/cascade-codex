@@ -1,0 +1,15 @@
+{
+  "schema_version": 1,
+  "id": "command-failure-actors-v1",
+  "source": {
+    "kind": "synthetic",
+    "description": "Deterministic harness-only actor; it does not represent product users.",
+    "minimized": true
+  },
+  "actors": [{
+    "id": "command-failure-actor",
+    "weight": 1,
+    "behavior": { "strategy": "observe only the authored expected-nonzero command" },
+    "slices": ["command-failure"]
+  }]
+}

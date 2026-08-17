@@ -1,0 +1,104 @@
+{
+  "schema_version": 1,
+  "purpose": "Structural routing fixtures. They test policy decisions, not provider model quality.",
+  "cases": [
+    {
+      "id": "invoice-field-extraction",
+      "request_summary": "Extract fixed invoice fields from high-volume OCR text into a strict schema.",
+      "task_profile": {
+        "reasoning": "LOW",
+        "output_rigidity": "HIGH",
+        "latency_volume": "HIGH",
+        "risk": "MEDIUM"
+      },
+      "expected_selected_tier": "efficient-structured",
+      "expected_actions": ["use-extraction-overlay", "use-schema", "include-missing-value-policy", "include-boundary-examples"]
+    },
+    {
+      "id": "everyday-tool-workflow",
+      "request_summary": "Read approved project sources, update one document, and run bounded checks.",
+      "task_profile": {
+        "reasoning": "MEDIUM",
+        "tool_breadth": "MEDIUM",
+        "autonomy": "MEDIUM",
+        "risk": "MEDIUM"
+      },
+      "expected_selected_tier": "balanced-production",
+      "expected_actions": ["use-tool-overlay", "define-permissions", "define-done-condition", "include-bounded-repair"]
+    },
+    {
+      "id": "hard-root-cause-diagnosis",
+      "request_summary": "Diagnose an intermittent cross-service failure from code, logs, traces, and conflicting hypotheses.",
+      "task_profile": {
+        "reasoning": "HIGH",
+        "context_dispersion": "HIGH",
+        "ambiguity": "HIGH",
+        "risk": "MEDIUM"
+      },
+      "expected_selected_tier": "frontier-generalist",
+      "expected_actions": ["use-research-overlay", "separate-evidence-from-inference", "allow-targeted-retrieval", "define-validation"]
+    },
+    {
+      "id": "long-running-multi-repo-agent",
+      "request_summary": "Coordinate a long-running change across repositories with tools, checkpoints, recovery, and external approvals.",
+      "task_profile": {
+        "reasoning": "HIGH",
+        "tool_breadth": "HIGH",
+        "autonomy": "HIGH",
+        "risk": "HIGH"
+      },
+      "expected_selected_tier": "frontier-autonomous",
+      "expected_actions": ["define-durable-state", "define-checkpoints", "define-recovery", "define-approval-boundaries", "define-terminal-evidence"]
+    },
+    {
+      "id": "explicit-efficient-model-complex-task",
+      "request_summary": "Use a named efficient model for a complex autonomous migration.",
+      "explicit_model": "gpt-5.6-luna",
+      "task_profile": {
+        "reasoning": "HIGH",
+        "tool_breadth": "HIGH",
+        "autonomy": "HIGH",
+        "cost_sensitivity": "HIGH"
+      },
+      "expected_selected_tier": "efficient-structured",
+      "expected_recommended_tier": "frontier-autonomous",
+      "expected_actions": ["preserve-explicit-model", "warn-capability-mismatch", "decompose-task", "recommend-fallback", "do-not-silently-override"]
+    },
+    {
+      "id": "current-research-missing-sources",
+      "request_summary": "Summarize the latest regulatory position without any current sources.",
+      "task_profile": {
+        "reasoning": "MEDIUM",
+        "freshness": "HIGH",
+        "risk": "HIGH",
+        "context_availability": "LOW"
+      },
+      "expected_selected_tier": "balanced-production",
+      "expected_actions": ["repair-context-before-tier", "retrieve-authoritative-sources", "require-freshness", "separate-claims-and-inference"]
+    },
+    {
+      "id": "high-stakes-simple-classification",
+      "request_summary": "Classify a bounded high-stakes form into an explicit taxonomy with mandatory abstention and human review.",
+      "task_profile": {
+        "reasoning": "LOW",
+        "output_rigidity": "HIGH",
+        "risk": "HIGH",
+        "evaluation_availability": "HIGH"
+      },
+      "expected_selected_tier": "efficient-structured",
+      "expected_actions": ["use-classification-overlay", "add-abstention", "add-independent-review", "do-not-auto-escalate-for-risk"]
+    },
+    {
+      "id": "multimodal-creative-brief",
+      "request_summary": "Create a campaign brief from images, audience research, and brand constraints, with three bounded concepts.",
+      "task_profile": {
+        "reasoning": "MEDIUM",
+        "multimodal": "HIGH",
+        "creativity": "HIGH",
+        "risk": "LOW"
+      },
+      "expected_selected_tier": "balanced-production",
+      "expected_actions": ["require-multimodal-capability", "use-creative-overlay", "use-multimodal-overlay", "preserve-novelty-budget"]
+    }
+  ]
+}

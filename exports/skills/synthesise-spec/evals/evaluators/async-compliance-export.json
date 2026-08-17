@@ -1,0 +1,69 @@
+{
+  "schema_version": 1,
+  "mechanical_type": "text_contract",
+  "depth_band": "gated",
+  "expected_readiness": "NEEDS_INPUT",
+  "question_min": 3,
+  "question_max": 3,
+  "diagram_min": 0,
+  "diagram_max": 0,
+  "allowed_level2_headings": [
+    "Readiness",
+    "Source Inventory",
+    "Established Facts",
+    "Conflicts Or Invariant Gap",
+    "Questions",
+    "Affected Artifacts",
+    "Next Owner Or Action"
+  ],
+  "required_headings": [
+    "Readiness",
+    "Source Inventory",
+    "Established Facts",
+    "Conflicts Or Invariant Gap",
+    "Questions",
+    "Affected Artifacts",
+    "Next Owner Or Action"
+  ],
+  "required_patterns": [
+    "NEEDS_INPUT",
+    "DELIVERED",
+    "ACTION_REQUIRED",
+    "partial unique constraint",
+    "permanently",
+    "Compliance Data owner",
+    "Check again",
+    "request-body dispatch",
+    "provider-call count",
+    "Decision:",
+    "Why it matters:",
+    "Recommended default:",
+    "If different:"
+  ],
+  "forbidden_patterns": [
+    "## Product And Change",
+    "## Integrations",
+    "timeout proves failure",
+    "live provider validation passed"
+  ],
+  "max_words": 1200,
+  "semantic_anchors": {
+    "must_preserve": [
+      "one delivered logical export must permanently satisfy a tenant and reporting period",
+      "the stated partial constraint can stop enforcing that rule when archive unavailability moves DELIVERED to ACTION_REQUIRED",
+      "the missing durable mechanism is a material invariant gap rather than a minor implementation detail",
+      "the question asks the Compliance Data owner to choose an immutable marker, tombstone, separate archive-health state, or equally durable mechanism",
+      "a separate question aligns the generic Check again control with reason-specific API guards and safe actions",
+      "a third question covers callback races across attempt authorization, durable queueing, worker claim, the last pre-dispatch fence, and request-body dispatch",
+      "the recovery decision requires deterministic race outcomes, provider-call count evidence, and handling when dispatch already began",
+      "known no-blind-resubmission, reconciliation, support-verification, and late-callback rules remain established facts",
+      "no polished final implementation specification is presented"
+    ],
+    "must_avoid": [
+      "asserting the mutable-state partial constraint is sufficient",
+      "blind retry or resubmission",
+      "inventing a mechanism or live evidence",
+      "burying the invariant gap as a non-blocking risk"
+    ]
+  }
+}

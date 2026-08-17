@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "id": "desktop-linux-actors-v1",
+  "source": {
+    "kind": "synthetic",
+    "description": "Deterministic harness-only actor; it does not represent product users.",
+    "minimized": true
+  },
+  "actors": [
+    {
+      "id": "desktop-linux-actor",
+      "weight": 1,
+      "behavior": {
+        "strategy": "follow only the authored launch, type, key, wait, and capture sequence"
+      },
+      "slices": [
+        "desktop-linux"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "id": "command-failure-cases-v1",
+  "leakage_policy": "exclusive-case-identity",
+  "cases": [
+    {
+      "id": "command-failure-development",
+      "scenario_id": "expected-command-failure-v1",
+      "actor_id": "command-failure-actor",
+      "partition": "development",
+      "slices": ["command-failure"]
+    },
+    {
+      "id": "command-failure-regression",
+      "scenario_id": "expected-command-failure-v1",
+      "actor_id": "command-failure-actor",
+      "partition": "regression",
+      "slices": ["command-failure"]
+    },
+    {
+      "id": "command-failure-holdout",
+      "scenario_id": "expected-command-failure-v1",
+      "actor_id": "command-failure-actor",
+      "partition": "holdout",
+      "slices": ["command-failure"]
+    },
+    {
+      "id": "command-failure-calibration",
+      "scenario_id": "expected-command-failure-v1",
+      "actor_id": "command-failure-actor",
+      "partition": "calibration-reference",
+      "slices": ["command-failure"]
+    }
+  ]
+}

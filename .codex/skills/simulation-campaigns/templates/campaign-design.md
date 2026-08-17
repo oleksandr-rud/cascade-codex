@@ -32,6 +32,7 @@
 | World and reset fixture | | | |
 | Dataset partitions | | | |
 | Claims | | | |
+| Authored product seed binding | | | |
 | Policies | | | |
 | Oracles | | | |
 | Metrics | | | |
@@ -67,6 +68,17 @@
 | Claim ID | Statement and scope | Policies | Required oracles/metrics | Calibration required | Evidence target | Reduction rule |
 |---|---|---|---|---|---|---|
 | | | | | | | |
+
+## Product Source Seed Map
+
+For product scope, author this table into the campaign's
+`product-evals/intakes/product/seed-bindings/*.json` artifact by stable IDs.
+Harness campaigns leave it not applicable. Do not derive dispositions by
+matching claim text.
+
+| Source claim ID | Disposition | Campaign claim IDs | Scenario IDs | Task IDs | Rationale |
+|---|---|---|---|---|---|
+| | | | | | |
 
 ## Population, Data, And Calibration
 

@@ -1,0 +1,15 @@
+{
+  "schema_version": 1,
+  "id": "desktop-form-v1",
+  "goal": "Complete the exact isolated desktop form and preserve screen-scoped evidence.",
+  "actor_ids": [
+    "desktop-linux-actor"
+  ],
+  "initial_state": {},
+  "stop_conditions": [
+    "the required desktop task and completion oracle pass"
+  ],
+  "claim_ids": [
+    "desktop-platform-execution"
+  ]
+}

@@ -7,6 +7,7 @@
     "bun": ">=1.3.3 <2"
   },
   "scripts": {
+    "postinstall": "node scripts/prepare-node-pty.mjs",
     "cascade": "bun scripts/cascade.ts",
     "validate": "bun scripts/cascade.ts validate",
     "eval:catalog": "bun scripts/cascade.ts eval catalog --check",
@@ -18,5 +19,11 @@
     "tooling:install": "bun install --cwd .codex/harness-tooling --frozen-lockfile",
     "test:browser": "bun run --cwd .codex/harness-tooling playwright test --config playwright.config.ts browser-task.spec.ts",
     "test": "bun test scripts/cascade"
-  }
+  },
+  "dependencies": {
+    "node-pty": "1.1.0"
+  },
+  "trustedDependencies": [
+    "node-pty"
+  ]
 }

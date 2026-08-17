@@ -1,0 +1,15 @@
+{
+  "schema_version": 1,
+  "id": "command-static-actors-v1",
+  "source": {
+    "kind": "synthetic",
+    "description": "Deterministic harness-only actor; it does not represent product users.",
+    "minimized": true
+  },
+  "actors": [{
+    "id": "command-static-actor",
+    "weight": 1,
+    "behavior": { "strategy": "execute only the authored argv" },
+    "slices": ["command-static"]
+  }]
+}

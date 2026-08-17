@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "id": "terminal-pty-fixture",
+  "simulation_scope": "harness",
+  "title": "Deterministic PTY terminal fixture",
+  "purpose": "Exercise only the W-008 PTY adapter and exact darwin isolation contract.",
+  "population_files": [
+    "product-evals/simulations/harness/terminal-pty-fixture/populations/actors.json"
+  ],
+  "scenario_files": [
+    "product-evals/simulations/harness/terminal-pty-fixture/scenarios/interactive-terminal.json"
+  ],
+  "world_file": "product-evals/simulations/harness/terminal-pty-fixture/worlds/world.json",
+  "dataset_file": "product-evals/simulations/harness/terminal-pty-fixture/datasets/cases.json",
+  "metric_files": [
+    "product-evals/metrics/terminal-completion-rate-v1.json"
+  ],
+  "treatment_files": [
+    "product-evals/treatments/baseline-v1.json"
+  ]
+}

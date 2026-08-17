@@ -11,6 +11,8 @@ skills:
     source: .codex/skills/archive-work/SKILL.md
   - name: plan-change
     source: .codex/skills/plan-change/SKILL.md
+  - name: plan-iterations
+    source: .codex/skills/plan-iterations/SKILL.md
   - name: functional-qa
     source: .codex/skills/functional-qa/SKILL.md
   - name: implement-change

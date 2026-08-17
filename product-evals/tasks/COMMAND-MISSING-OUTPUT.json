@@ -1,0 +1,30 @@
+{
+  "schema_version": 3,
+  "id": "COMMAND-MISSING-OUTPUT",
+  "kind": "command",
+  "driver": {
+    "type": "direct-process",
+    "adapter": "builtin-direct-process"
+  },
+  "required": false,
+  "timeout_ms": 1000,
+  "command": [
+    "/usr/bin/true"
+  ],
+  "process": {
+    "working_directory": "task-root",
+    "environment": {},
+    "interactive": false,
+    "network": "deny",
+    "filesystem": {
+      "read": "host",
+      "write": "task-root"
+    }
+  },
+  "oracle_ids": [
+    "command-output-required-v1"
+  ],
+  "policy_ids": [
+    "allow-command-missing-output-v1"
+  ]
+}

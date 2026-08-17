@@ -1,0 +1,35 @@
+{
+  "schema_version": 4,
+  "id": "BROWSER-EXTERNAL-NAVIGATION-DENIED",
+  "kind": "browser",
+  "driver": {
+    "type": "playwright",
+    "adapter": "builtin-playwright"
+  },
+  "required": false,
+  "timeout_ms": 15000,
+  "browser": {
+    "fixture_file": "product-evals/simulations/harness/browser-fixture.html",
+    "profile": "ephemeral",
+    "network": "deny",
+    "downloads": false,
+    "uploads": false,
+    "actions": [
+      {
+        "type": "browser-click",
+        "locator": {
+          "kind": "role",
+          "role": "link",
+          "name": "Open external admin"
+        }
+      }
+    ],
+    "observation": {
+      "locator": { "kind": "role", "role": "status" },
+      "expected_text": "Waiting"
+    },
+    "evidence": { "screenshot": true, "trace": true }
+  },
+  "oracle_ids": ["browser-waiting-status-v1"],
+  "policy_ids": ["allow-browser-external-navigation-probe-v1"]
+}

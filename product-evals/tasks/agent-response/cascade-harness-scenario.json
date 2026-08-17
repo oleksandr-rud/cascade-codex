@@ -1,0 +1,30 @@
+{
+  "expectation": {
+    "allowed_supporting": [],
+    "delegation_policy": "none",
+    "forbidden_primary": [
+      "simulation-campaigns"
+    ],
+    "must_load_skills": [
+      "harness-evaluation"
+    ],
+    "mutation_policy": "none",
+    "network_policy": "none",
+    "next_route": "",
+    "primary_skill": "harness-evaluation",
+    "status_any": [
+      "BLOCKED",
+      "FAIL",
+      "GAP",
+      "NOT_RUN",
+      "PASS"
+    ],
+    "target_skill": "harness-evaluation"
+  },
+  "id": "HX-055",
+  "kind": "interaction",
+  "owner": "orchestrator",
+  "prompt": "Evaluate generated Cascade routing scenarios and JSONL traces with deterministic hard gates and independent semantic judgment.",
+  "source": "harness-evals/interactions.json",
+  "target_skill": "harness-evaluation"
+}

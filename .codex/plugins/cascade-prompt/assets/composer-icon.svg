@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title desc">
+  <title id="title">Cascade Prompt icon</title>
+  <desc id="desc">A prompt chevron with descending cascade bars.</desc>
+  <rect width="512" height="512" rx="112" fill="#4F46E5"/>
+  <path d="M126 132h260l-48 54H174z" fill="#C7D2FE"/>
+  <path d="M154 218h204l-44 48H198z" fill="#A5B4FC"/>
+  <path d="M188 294h136l-36 40h-64z" fill="#818CF8"/>
+  <path d="M193 150l80 106-80 106" fill="none" stroke="#FFFFFF" stroke-width="34" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M282 362h70" fill="none" stroke="#FFFFFF" stroke-width="34" stroke-linecap="round"/>
+</svg>

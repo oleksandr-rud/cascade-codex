@@ -1,15 +1,15 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://cascade.local/schemas/task-admission-policy.schema.json",
+  "$id": "https://cascade.local/schemas/task-admission-policy.v41.schema.json",
   "type": "object",
   "additionalProperties": false,
   "required": ["schema_version", "bundle_id", "bundle_version", "policies"],
   "properties": {
-    "schema_version": { "const": 1 },
+    "schema_version": { "const": 41 },
     "bundle_id": { "const": "cascade-core" },
-    "bundle_version": { "type": "integer", "minimum": 1 },
+    "bundle_version": { "const": 42 },
     "policies": {
-      "type": "array", "minItems": 1,
+      "type": "array", "minItems": 1, "uniqueItems": true,
       "items": {
         "type": "object", "additionalProperties": false,
         "required": ["id", "version", "priority", "match_all", "match_any", "required_controls", "forbidden_controls", "minimum_route", "minimum_assurance", "minimum_evidence", "approval", "conflict_set", "rationale", "invalidation"],
@@ -17,19 +17,23 @@
           "id": { "type": "string", "pattern": "^TAP-[0-9]{3}$" },
           "version": { "type": "integer", "minimum": 1 },
           "priority": { "enum": ["HARD_DENY", "APPROVAL", "HAZARD", "ASSURANCE", "TOPOLOGY", "OPTIONAL"] },
-          "match_all": { "type": "array", "uniqueItems": true, "items": { "type": "string" } },
-          "match_any": { "type": "array", "uniqueItems": true, "items": { "type": "string" } },
-          "required_controls": { "type": "array", "uniqueItems": true, "items": { "type": "string" } },
-          "forbidden_controls": { "type": "array", "uniqueItems": true, "items": { "type": "string" } },
-          "minimum_route": { "type": ["string", "null"] },
-          "minimum_assurance": { "type": ["string", "null"] },
-          "minimum_evidence": { "type": ["string", "null"] },
-          "approval": { "type": ["string", "null"] },
-          "conflict_set": { "type": ["string", "null"] },
-          "rationale": { "type": "string", "minLength": 1 },
-          "invalidation": { "type": "array", "items": { "type": "string" } }
+          "match_all": { "$ref": "#/$defs/tags" },
+          "match_any": { "$ref": "#/$defs/tags" },
+          "required_controls": { "$ref": "#/$defs/controls" },
+          "forbidden_controls": { "$ref": "#/$defs/controls" },
+          "minimum_route": { "type": ["string", "null"], "enum": [null, "NO_WORKFLOW", "DIRECT_READ", "DIRECT_CHANGE", "BOUNDED", "CONNECTED", "PROGRAM"] },
+          "minimum_assurance": { "type": ["string", "null"], "enum": [null, "BASIC", "STANDARD", "HIGH", "REGULATED"] },
+          "minimum_evidence": { "type": ["string", "null"], "enum": [null, "EXPLANATION", "TARGETED", "REGRESSION", "INDEPENDENT", "RELEASE"] },
+          "approval": { "type": ["string", "null"], "pattern": "^[a-z0-9-]+$" },
+          "conflict_set": { "type": ["string", "null"], "pattern": "^[a-z0-9-]+$" },
+          "rationale": { "type": "string", "minLength": 1, "maxLength": 500 },
+          "invalidation": { "$ref": "#/$defs/tags" }
         }
       }
     }
+  },
+  "$defs": {
+    "tags": { "type": "array", "uniqueItems": true, "items": { "type": "string", "pattern": "^[a-z0-9-]+$" } },
+    "controls": { "type": "array", "uniqueItems": true, "items": { "enum": ["BASE", "GROUNDED_READ", "ATOMIC_CHANGE", "STANDARD_CHANGE", "CONNECTED_DELIVERY", "PROGRAM_CONTROL", "SIMULATION_GOVERNANCE", "SECURITY_ASSURANCE", "FULL_SCAN", "RELEASE_EVIDENCE"] } }
   }
 }

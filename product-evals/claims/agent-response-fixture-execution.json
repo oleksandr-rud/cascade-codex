@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "id": "agent-response-fixture-execution",
+  "class": "execution",
+  "assertion": "The provider-neutral agent fixture emits one schema-valid source-bound response with individually evidenced material claims and a proposal-only next route.",
+  "scope": {
+    "task_id": "AGENT-RESPONSE-FIXTURE-SMOKE",
+    "driver": "agent-runtime",
+    "runtime_provider": "fixture",
+    "target_mode": "explicit-instructions"
+  },
+  "population_authority": "none",
+  "required_policy_ids": ["allow-agent-response-fixture-v1"],
+  "required_oracle_ids": ["agent-response-contract-valid-v1"],
+  "required_metric_ids": [],
+  "requires_calibration": false,
+  "evidence_requirements": [
+    "source-manifest",
+    "execution-receipt",
+    "task-result",
+    "trajectory",
+    "policy-decisions",
+    "oracle",
+    "cleanup"
+  ]
+}

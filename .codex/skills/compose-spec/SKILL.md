@@ -152,8 +152,10 @@ implementation, or test autorepair.
    design, brand, spec, backlog, glossary, or pattern docs.
 13. Keep doc changes thin. Add the minimum durable artifact or row needed for
    future planning and validation.
-14. Route implementation-ready behavior to `plan-change` and product-visible
-   checks to `functional-qa`.
+14. Route implementation-ready behavior to `plan-change`; route grounded
+   slices to `plan-iterations` when they need ranked delivery dispositions and
+   MVP coverage across more than one iteration; route product-visible checks
+   to `functional-qa`.
 
 ## Naming And Reference Rules
 
@@ -214,4 +216,5 @@ implementation, or test autorepair.
 - assumptions, non-goals, open questions, and gaps;
 - Doc Routing Decision Matrix rows;
 - next route: `docs-impact-map`, `synthesis-to-spec`, `plan-change`,
-  `functional-qa`, `ingest-spec`, `market-validation`, or `closeout`.
+  `plan-iterations`, `functional-qa`, `ingest-spec`, `market-validation`, or
+  `closeout`.

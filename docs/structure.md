@@ -7,6 +7,7 @@ config; keep reusable workflow rules in skills, agents, and patterns.
 
 | Folder | Purpose | Written By |
 |---|---|---|
+| `.agents/plugins/` | Repo-local plugin marketplace catalog | `plugin-creator`, `codex-maintenance` |
 | `.github/` | Pull request description contract and GitHub Copilot repository instructions | `codex-maintenance`, `adapt-harness` |
 | `docs/work/` | Active work lanes, first-class Coordination Graphs, copyable examples, lane packets, reports, handoffs | `orchestrate-work`, `market-validation`, `plan-change`, `validate-change`, `closeout` |
 | `docs/archive/work-reports/` | Compact archive capsules and relocated frozen lane, graph, and report history | `archive-work` automatically after closeout or for direct historical cleanup |
@@ -18,6 +19,7 @@ config; keep reusable workflow rules in skills, agents, and patterns.
 | `docs/patterns/` | Reusable workflow, boundary, testing, context rules, and selectable context packs | `pattern-context`, `closeout`, `adapt-harness`, Agent Engineer skills |
 | `.codex/skills/` | Reusable workflow skills | `develop-skill`, Agent Engineer skills |
 | `.codex/agents/` | Role contracts and skill maps | Agent Engineer skills |
+| `.codex/plugins/` | Repo-local plugin source packages referenced by the repository marketplace | `plugin-creator`, `codex-maintenance` |
 | `.codex/harness-tooling/` | Isolated pinned browser-simulation dependencies and Playwright runner files | Harness maintainers |
 | `harness-evals/` | Canonical scenarios, generated catalog, target schema, judge profiles, anchored rubrics, and judgment schema | `harness-evaluation`, `judge-eval-builder` |
 | `.artifacts/harness-evals/` | Ignored raw JSONL traces, normalized runs, eligibility, judgments, and local reports | `scripts/cascade/evals.ts` |
@@ -28,6 +30,18 @@ config; keep reusable workflow rules in skills, agents, and patterns.
 | `.codex/skills/simulation-campaigns/` | Campaign authoring, selection, dispatch/replay planning, receipt aggregation, claim projection, and reporting contract | `develop-skill`, `codex-maintenance`, Agent Engineer |
 | `.codex/skills/simulation-execution/` | Bounded selected-run lifecycle and execution receipt contract | `simulation-operator`, `develop-skill`, `codex-maintenance` |
 | `.codex/skills/simulation-evaluation/` | Read-only frozen-evidence, policy, oracle, semantic, and claim-support contract | `simulation-evaluator`, `develop-skill`, `codex-maintenance` |
+
+The repository marketplace at `.agents/plugins/marketplace.json` catalogs the
+Cascade Prompt source at `.codex/plugins/cascade-prompt/`. Keeping catalog and
+source in the repository makes the package portable; it does not by itself
+mean the plugin is installed, active, or published.
+
+The optional `cascade-simulations` personal plugin is installed outside this
+repository and is intentionally not mirrored into `.codex/skills/` or
+`.codex/plugins/`. Cascade references its `cascade-simulations:simulate`
+entrypoint through `.codex/config.toml`; the plugin owns compact dynamic-actor
+definitions, while the `product-evals/` tree below remains campaign evaluation
+infrastructure.
 
 ## Active Work Paths
 
@@ -246,6 +260,10 @@ overwrite target files.
 - Durable scenario and trace rules: `docs/patterns/agent-evaluation/index.md`
 
 ## Simulation Campaign Paths
+
+These paths are optional controlled-evaluation infrastructure. Ordinary
+single-actor simulations use the separately installed
+`cascade-simulations:simulate` plugin and do not initialize this package.
 
 Implemented skill and runtime authority:
 

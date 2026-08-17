@@ -95,8 +95,8 @@ Out:
 - Root coordinator: `orchestrator`.
 - Merge and shared-contract owner: one `agent-engineer` instance assigned to
   W-018.
-- Required route:
-  `context -> architecture-review -> orchestrate-work -> plan-change -> implement-change`.
+- Historical pre-cutover route: `context`, `architecture-review`, coordination,
+  planning, and implementation.
 - Dispatch rule: W-019-W-022 receive direct, depth-one subagents only after
   WG-003-N01 publishes the frozen contract and exclusive file map.
 - Merge rule: section agents return identity-bound receipts; they do not edit

@@ -6,6 +6,8 @@ import {
   simulationCheckpointDigest,
   simulationEventDigest,
   simulationSessionContractDigest,
+  validateSimulationJournal,
+  validateSimulationSessionHistory,
   type SimulationGoalResult,
   type SimulationSessionCheckpoint,
   type SimulationSessionContract,
@@ -47,6 +49,10 @@ class MemoryPersistence implements SimulationSessionPersistence<TestState> {
     return structuredClone(this.checkpoints.at(-1) ?? null);
   }
 
+  async readCheckpoints(): Promise<Array<SimulationSessionCheckpoint<TestState>>> {
+    return structuredClone(this.checkpoints);
+  }
+
   async readEvents(): Promise<SimulationSessionEvent[]> {
     return structuredClone(this.events);
   }
@@ -56,11 +62,63 @@ class MemoryPersistence implements SimulationSessionPersistence<TestState> {
   }
 }
 
+class FaultAfterDurableWritePersistence extends MemoryPersistence {
+  durableWrites = 0;
+  failAfter: number | null;
+
+  constructor(failAfter: number | null) {
+    super();
+    this.failAfter = failAfter;
+  }
+
+  private failIfSelected(): void {
+    this.durableWrites += 1;
+    if (this.failAfter === this.durableWrites) {
+      this.failAfter = null;
+      throw new Error(`injected crash after durable write ${this.durableWrites}`);
+    }
+  }
+
+  override async appendEvent(event: SimulationSessionEvent): Promise<void> {
+    await super.appendEvent(event);
+    this.failIfSelected();
+  }
+
+  override async writeCheckpoint(
+    checkpoint: SimulationSessionCheckpoint<TestState>,
+  ): Promise<void> {
+    await super.writeCheckpoint(checkpoint);
+    this.failIfSelected();
+  }
+}
+
 function contract(overrides: Partial<SimulationSessionContract["limits"]> = {}): SimulationSessionContract {
   return {
     schema_version: 1,
     session_id: "session-test",
     purpose: "complete the cross-surface fixture",
+    initial_surfaces: surfaces().map(({ surface_id, kind, context_id }) => ({
+      surface_id,
+      kind,
+      context_id,
+    })),
+    authorized_surfaces: [
+      ...surfaces().map(({ surface_id, kind, context_id }) => ({
+        surface_id,
+        kind,
+        context_id,
+      })),
+      {
+        surface_id: "browser:receipt",
+        kind: "browser",
+        context_id: "customer-session",
+      },
+      {
+        surface_id: "browser:popup",
+        kind: "browser",
+        context_id: "customer-session",
+      },
+    ],
     limits: {
       max_duration_ms: 60_000,
       max_step_duration_ms: 5_000,
@@ -144,7 +202,321 @@ function goal(required: string[]): (input: {
   });
 }
 
+function resealJournal(events: SimulationSessionEvent[]): void {
+  let previous: string | null = null;
+  for (const [sequence, event] of events.entries()) {
+    event.sequence = sequence;
+    event.previous_event_digest = previous;
+    event.event_digest = simulationEventDigest({ ...event, event_digest: "" });
+    previous = event.event_digest;
+  }
+}
+
+function initialSessionPrefix(
+  baseContract: SimulationSessionContract,
+): {
+  persistence: MemoryPersistence;
+  checkpoint: SimulationSessionCheckpoint<TestState>;
+} {
+  const persistence = new MemoryPersistence();
+  const at = new Date().toISOString();
+  const checkpoint: SimulationSessionCheckpoint<TestState> = {
+    schema_version: 1,
+    checkpoint_id: `${baseContract.session_id}:checkpoint:00000000`,
+    checkpoint_digest: "",
+    contract_digest: simulationSessionContractDigest(baseContract),
+    session_id: baseContract.session_id,
+    purpose: baseContract.purpose,
+    status: "RUNNING",
+    reason: null,
+    revision: 0,
+    started_at: at,
+    updated_at: at,
+    episode: 1,
+    episode_step_count: 0,
+    step_count: 0,
+    completed_step_ids: [],
+    completed_idempotency_keys: [],
+    last_batch_step_ids: [],
+    surfaces: surfaces(),
+    domain_state: { completed: [], values: {} },
+    last_event_digest: null,
+  };
+  checkpoint.checkpoint_digest = simulationCheckpointDigest(checkpoint);
+  const started: SimulationSessionEvent = {
+    schema_version: 1,
+    session_id: baseContract.session_id,
+    contract_digest: simulationSessionContractDigest(baseContract),
+    sequence: 0,
+    event_type: "SESSION_STARTED",
+    at,
+    episode: 1,
+    step_ids: [],
+    surface_ids: baseContract.initial_surfaces.map((surface) => surface.surface_id),
+    status: "RUNNING",
+    reason: null,
+    checkpoint_digest: checkpoint.checkpoint_digest,
+    previous_event_digest: null,
+    event_digest: "",
+  };
+  started.event_digest = simulationEventDigest(started);
+  persistence.checkpoints.push(structuredClone(checkpoint));
+  persistence.events.push(started);
+  return { persistence, checkpoint };
+}
+
 describe("simulation session controller", () => {
+  test("recovers every durable session write prefix without redispatch", async () => {
+    const baseContract = contract({
+      max_steps: 3,
+      max_parallel_steps: 1,
+      max_steps_per_episode: 1,
+    });
+    const required = ["fault-one", "fault-two", "fault-three"];
+    const run = (
+      persistence: FaultAfterDurableWritePersistence,
+      executed: Map<string, number>,
+      resume: boolean,
+    ) => runSimulationSession({
+      contract: baseContract,
+      initial_state: { completed: [], values: {} },
+      surfaces: surfaces(),
+      persistence,
+      resume,
+      async next_steps({ checkpoint }) {
+        const id = required.find(
+          (candidate) => !checkpoint.completed_step_ids.includes(candidate),
+        );
+        return id ? [step(id, "http:orders")] : [];
+      },
+      async execute_step(current) {
+        executed.set(current.step_id, (executed.get(current.step_id) ?? 0) + 1);
+        return {
+          step_id: current.step_id,
+          outcome: "PASS" as const,
+          reason: null,
+          observation: { value: current.payload.value },
+        };
+      },
+      reduce_state: reducer,
+      evaluate_goal: goal(required),
+    });
+
+    const baseline = new FaultAfterDurableWritePersistence(null);
+    await run(baseline, new Map(), false);
+    const durableWriteCount = baseline.durableWrites;
+    expect(durableWriteCount).toBeGreaterThan(10);
+
+    for (let failurePoint = 1; failurePoint <= durableWriteCount; failurePoint += 1) {
+      const persistence = new FaultAfterDurableWritePersistence(failurePoint);
+      const executed = new Map<string, number>();
+      await expect(run(persistence, executed, false)).rejects.toThrow(
+        `injected crash after durable write ${failurePoint}`,
+      );
+      const result = await run(persistence, executed, true);
+      expect(["ACHIEVED", "UNKNOWN_OUTCOME"]).toContain(result.status);
+      expect([...executed.values()].every((count) => count === 1)).toBe(true);
+      expect(() => validateSimulationSessionHistory(
+        persistence.events,
+        persistence.checkpoints,
+        baseContract,
+      )).not.toThrow();
+    }
+  });
+
+  test("rejects coherently resealed lifecycle violations and post-terminal events", async () => {
+    const persistence = new MemoryPersistence();
+    const baseContract = contract({
+      max_steps: 1,
+      max_parallel_steps: 1,
+      max_steps_per_episode: 1,
+    });
+    const clockStart = Date.parse("2026-08-06T00:00:00.000Z");
+    let clockTick = 0;
+    await runSimulationSession({
+      contract: baseContract,
+      initial_state: { completed: [], values: {} },
+      surfaces: surfaces(),
+      persistence,
+      now: () => new Date(clockStart + clockTick++),
+      async next_steps() {
+        return [step("one-step", "http:orders")];
+      },
+      async execute_step(current) {
+        return {
+          step_id: current.step_id,
+          outcome: "PASS",
+          reason: null,
+          observation: { value: current.payload.value },
+        };
+      },
+      reduce_state: reducer,
+      evaluate_goal: goal(["one-step"]),
+    });
+
+    const mutate = (
+      operation: (events: SimulationSessionEvent[]) => void,
+    ): SimulationSessionEvent[] => {
+      const events = structuredClone(persistence.events);
+      operation(events);
+      resealJournal(events);
+      return events;
+    };
+    const startedIndex = persistence.events.findIndex(
+      (event) => event.event_type === "STEP_STARTED",
+    );
+    const completedIndex = persistence.events.findIndex(
+      (event) => event.event_type === "STEP_COMPLETED",
+    );
+    const terminalIndex = persistence.events.findIndex(
+      (event) => event.event_type === "SESSION_TERMINATED",
+    );
+    const invalidJournals = [
+      mutate((events) => events.splice(startedIndex, 1)),
+      mutate((events) => {
+        events[startedIndex]!.episode = 2;
+      }),
+      mutate((events) => {
+        events.splice(completedIndex, 0, structuredClone(events[startedIndex]!));
+      }),
+      mutate((events) => {
+        events[terminalIndex]!.status = "RUNNING";
+      }),
+      mutate((events) => {
+        events.push({
+          ...structuredClone(events.at(-1)!),
+          event_type: "SESSION_RESUMED",
+          step_ids: [],
+          surface_ids: [],
+          status: "RUNNING",
+          reason: null,
+        });
+      }),
+    ];
+    for (const events of invalidJournals) {
+      expect(() => validateSimulationJournal(events, baseContract)).toThrow();
+    }
+  });
+
+  test("resumes the exact initialization checkpoint prefix and rejects malformed resume order or identity", async () => {
+    const baseContract = contract({
+      max_steps: 1,
+      max_parallel_steps: 1,
+      max_steps_per_episode: 1,
+    });
+    const { persistence, checkpoint: initialCheckpoint } = initialSessionPrefix(
+      baseContract,
+    );
+    const result = await runSimulationSession({
+      contract: baseContract,
+      initial_state: { completed: [], values: {} },
+      surfaces: surfaces(),
+      persistence,
+      resume: true,
+      async next_steps() {
+        return [step("resumed-step", "http:orders")];
+      },
+      async execute_step(current) {
+        return {
+          step_id: current.step_id,
+          outcome: "PASS",
+          reason: null,
+          observation: { value: current.payload.value },
+        };
+      },
+      reduce_state: reducer,
+      evaluate_goal: goal(["resumed-step"]),
+    });
+    expect(result.status).toBe("ACHIEVED");
+    expect(persistence.events.map((event) => event.event_type)).toEqual([
+      "SESSION_STARTED",
+      "SESSION_RESUMED",
+      "STEP_STARTED",
+      "STEP_COMPLETED",
+      "SESSION_TERMINATED",
+    ]);
+    expect(() =>
+      validateSimulationSessionHistory(
+        persistence.events,
+        persistence.checkpoints,
+        baseContract,
+      )
+    ).not.toThrow();
+
+    const validResumePrefix = structuredClone(persistence.events.slice(0, 2));
+    const episodeAfterResume = structuredClone(validResumePrefix);
+    const invalidEpisode = {
+      ...structuredClone(episodeAfterResume[1]!),
+      event_type: "EPISODE_STARTED" as const,
+      checkpoint_digest: undefined,
+    };
+    episodeAfterResume.push(invalidEpisode);
+    resealJournal(episodeAfterResume);
+    expect(() => validateSimulationJournal(episodeAfterResume, baseContract))
+      .toThrow("lifecycle is invalid at sequence 2");
+
+    const resumeWhileStepPending = structuredClone(
+      persistence.events.slice(0, 3),
+    );
+    resumeWhileStepPending.push({
+      ...structuredClone(validResumePrefix[1]!),
+      at: resumeWhileStepPending.at(-1)!.at,
+    });
+    resealJournal(resumeWhileStepPending);
+    expect(() => validateSimulationJournal(resumeWhileStepPending, baseContract))
+      .toThrow("lifecycle is invalid at sequence 3");
+
+    const wrongEpisode = structuredClone(validResumePrefix);
+    wrongEpisode[1]!.episode = 2;
+    resealJournal(wrongEpisode);
+    expect(() => validateSimulationJournal(wrongEpisode, baseContract))
+      .toThrow("lifecycle is invalid at sequence 1");
+
+    const foreignCheckpoint = structuredClone(validResumePrefix);
+    foreignCheckpoint[1]!.checkpoint_digest = "f".repeat(64);
+    resealJournal(foreignCheckpoint);
+    expect(() =>
+      validateSimulationSessionHistory(
+        foreignCheckpoint,
+        [initialCheckpoint],
+        baseContract,
+      )
+    ).toThrow("checkpoint reference is stale at sequence 1");
+  });
+
+  test("rejects a resealed checkpoint whose digest occurs away from its exact boundary", async () => {
+    const persistence = new MemoryPersistence();
+    const baseContract = contract({
+      max_steps: 1,
+      max_parallel_steps: 1,
+      max_steps_per_episode: 1,
+    });
+    await runSimulationSession({
+      contract: baseContract,
+      initial_state: { completed: [], values: {} },
+      surfaces: surfaces(),
+      persistence,
+      async next_steps() {
+        return [step("boundary-step", "http:orders")];
+      },
+      async execute_step(current) {
+        return { step_id: current.step_id, outcome: "PASS", reason: null };
+      },
+      reduce_state: reducer,
+      evaluate_goal: goal(["boundary-step"]),
+    });
+    const checkpoints = structuredClone(persistence.checkpoints);
+    const events = structuredClone(persistence.events);
+    const latest = checkpoints.at(-1)!;
+    latest.last_event_digest = events[0]!.event_digest;
+    latest.checkpoint_digest = simulationCheckpointDigest(latest);
+    events.at(-1)!.checkpoint_digest = latest.checkpoint_digest;
+    resealJournal(events);
+    expect(() =>
+      validateSimulationSessionHistory(events, checkpoints, baseContract)
+    ).toThrow("exact journal boundary");
+  });
+
   test("runs several surfaces until the goal oracle passes and rolls episodes", async () => {
     const persistence = new MemoryPersistence();
     const planned = [
@@ -318,11 +690,44 @@ describe("simulation session controller", () => {
     };
     checkpoint.checkpoint_digest = simulationCheckpointDigest(checkpoint);
     persistence.checkpoints.push(checkpoint);
-    const started: SimulationSessionEvent = {
+    const sessionStarted: SimulationSessionEvent = {
       schema_version: 1,
       session_id: baseContract.session_id,
       contract_digest: simulationSessionContractDigest(baseContract),
       sequence: 0,
+      event_type: "SESSION_STARTED",
+      at: checkpoint.updated_at,
+      episode: 1,
+      step_ids: [],
+      surface_ids: baseContract.initial_surfaces.map((surface) => surface.surface_id),
+      status: "RUNNING",
+      reason: null,
+      checkpoint_digest: checkpoint.checkpoint_digest,
+      previous_event_digest: null,
+      event_digest: "",
+    };
+    sessionStarted.event_digest = simulationEventDigest(sessionStarted);
+    const episodeStarted: SimulationSessionEvent = {
+      schema_version: 1,
+      session_id: baseContract.session_id,
+      contract_digest: simulationSessionContractDigest(baseContract),
+      sequence: 1,
+      event_type: "EPISODE_STARTED",
+      at: checkpoint.updated_at,
+      episode: 1,
+      step_ids: [],
+      surface_ids: [],
+      status: "RUNNING",
+      reason: null,
+      previous_event_digest: sessionStarted.event_digest,
+      event_digest: "",
+    };
+    episodeStarted.event_digest = simulationEventDigest(episodeStarted);
+    const started: SimulationSessionEvent = {
+      schema_version: 1,
+      session_id: baseContract.session_id,
+      contract_digest: simulationSessionContractDigest(baseContract),
+      sequence: 2,
       event_type: "STEP_STARTED",
       at: new Date().toISOString(),
       episode: 1,
@@ -340,11 +745,11 @@ describe("simulation session controller", () => {
       ],
       status: "RUNNING",
       reason: null,
-      previous_event_digest: null,
+      previous_event_digest: episodeStarted.event_digest,
       event_digest: "",
     };
     started.event_digest = simulationEventDigest(started);
-    persistence.events.push(started);
+    persistence.events.push(sessionStarted, episodeStarted, started);
 
     const result = await runSimulationSession({
       contract: baseContract,
@@ -392,6 +797,24 @@ describe("simulation session controller", () => {
     };
     checkpoint.checkpoint_digest = simulationCheckpointDigest(checkpoint);
     persistence.checkpoints.push(checkpoint);
+    const sessionStarted: SimulationSessionEvent = {
+      schema_version: 1,
+      session_id: baseContract.session_id,
+      contract_digest: simulationSessionContractDigest(baseContract),
+      sequence: 0,
+      event_type: "SESSION_STARTED",
+      at: checkpoint.updated_at,
+      episode: 1,
+      step_ids: [],
+      surface_ids: baseContract.initial_surfaces.map((surface) => surface.surface_id),
+      status: "RUNNING",
+      reason: null,
+      checkpoint_digest: checkpoint.checkpoint_digest,
+      previous_event_digest: null,
+      event_digest: "",
+    };
+    sessionStarted.event_digest = simulationEventDigest(sessionStarted);
+    persistence.events.push(sessionStarted);
 
     await expect(
       runSimulationSession({
@@ -409,7 +832,7 @@ describe("simulation session controller", () => {
         reduce_state: reducer,
         evaluate_goal: goal([]),
       }),
-    ).rejects.toThrow("checkpoint is not bound to the current journal");
+    ).rejects.toThrow("exact journal boundary");
   });
 
   test("rejects an initial checkpoint from a different session contract", async () => {
@@ -439,10 +862,29 @@ describe("simulation session controller", () => {
     };
     checkpoint.checkpoint_digest = simulationCheckpointDigest(checkpoint);
     persistence.checkpoints.push(checkpoint);
+    const changedContract = contract({ max_steps: 11 });
+    const sessionStarted: SimulationSessionEvent = {
+      schema_version: 1,
+      session_id: changedContract.session_id,
+      contract_digest: simulationSessionContractDigest(changedContract),
+      sequence: 0,
+      event_type: "SESSION_STARTED",
+      at: checkpoint.updated_at,
+      episode: 1,
+      step_ids: [],
+      surface_ids: changedContract.initial_surfaces.map((surface) => surface.surface_id),
+      status: "RUNNING",
+      reason: null,
+      checkpoint_digest: checkpoint.checkpoint_digest,
+      previous_event_digest: null,
+      event_digest: "",
+    };
+    sessionStarted.event_digest = simulationEventDigest(sessionStarted);
+    persistence.events.push(sessionStarted);
 
     await expect(
       runSimulationSession({
-        contract: contract({ max_steps: 11 }),
+        contract: changedContract,
         initial_state: { completed: [], values: {} },
         surfaces: surfaces(),
         persistence,
@@ -489,6 +931,10 @@ describe("simulation session controller", () => {
     expect(aborted).toBe(true);
     expect(result.status).toBe("UNKNOWN_OUTCOME");
     expect(result.reason).toContain("step duration bound");
+    expect(result.last_batch_step_ids).toEqual(["hung-write"]);
+    expect(result.completed_step_ids).toEqual([]);
+    const started = persistence.events.find((event) => event.event_type === "STEP_STARTED");
+    expect(started?.step_bindings?.[0]?.step_id).toBe("hung-write");
   });
 
   test("bounds non-cooperative goal and planning callbacks", async () => {

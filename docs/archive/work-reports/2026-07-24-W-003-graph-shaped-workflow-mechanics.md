@@ -366,7 +366,7 @@ rule from Historical Revision 6.
 
 ## Current Plan 24 Exact Test And Evaluator Binding
 
-All commands run from `/Users/royrud1902/Documents/cascade-codex` with Python
+All commands run from `REPOSITORY_ROOT` with Python
 from the current shell, no application server, no browser fixture, no external
 service, and read-only model target/judges except ignored artifacts under
 `.artifacts/harness-evals/`.
@@ -718,7 +718,7 @@ goal; the root owner confirms all required terminal gates.
 | `SRC-07` | context-pack contract | `docs/patterns/context-pack-schema.yaml`; `scripts/build_pattern_context_pack.py` | current working tree | selectable documents/sections without schema or compiler change | `AUTHORITATIVE` |
 | `SRC-08` | workflow skill contracts | `.codex/skills/{context,orchestrate-work,plan-change,implement-change,functional-qa,review-change,validate-change,test-autorepair,closeout}/SKILL.md` | current working tree | graph creation, execution, evidence, repair, resume, closeout consumers | `AUTHORITATIVE` |
 | `SRC-09` | completed W-002 evaluation contract | `docs/work/lanes/W-002-judged-harness-evals.md`; `docs/work/reports/2026-07-22-judged-harness-evaluations.md`; `evals/harness/`; `scripts/run_harness_evals.py` | completed lane; working-tree implementation | eligibility, judge, scenario, catalog, and evidence boundaries | `AUTHORITATIVE`; reinspect before `WL-05` |
-| `SRC-10` | original graph proposal | `/Users/royrud1902/.codex/attachments/75f59569-bac3-4e95-ab37-3b4377419e6e/pasted-text.txt` | historical input | original direction and examples | `SUPPORTING`; shared phase-join example superseded |
+| `SRC-10` | original graph proposal | private local attachment (absolute path redacted) | historical input | original direction and examples | `SUPPORTING`; shared phase-join example superseded |
 | `SRC-11` | derived implementation packet | `docs/work/lanes/W-003-graph-shaped-workflow-implementation-packet.md` | task revision 22; derived from plan revision 24 and `CG-001@4`; task revisions 2 through 21 retained as history | plan-24 current-head integration/canary projection plus retained earlier receipts and materialization history | `SUPPORTING`; W-003 owns definitions and CG-001 owns current coordination state |
 | `SRC-12` | user | current parallel-thread request | current, 2026-07-22 | separate workline threads/worktrees, root-thread orchestration, and status chart | `AUTHORITATIVE` |
 | `SRC-13` | user | revision-5 graph-placement and reconciliation request | current, 2026-07-23 | first-class work-folder graph, clean source/spec boundary, audit/dedupe/stale retirement skill | `AUTHORITATIVE` |
@@ -1405,7 +1405,7 @@ validation remain lower-level structural checks.
 - Current blockers: none for W-003. Focused coverage remains `1/331`, not a
   full-catalog execution claim.
 - Coordination-state/materialization owner: root `agent-engineer` only.
-- Integrated target: `/Users/royrud1902/Documents/cascade-codex` at HEAD
+- Integrated target: `REPOSITORY_ROOT` at HEAD
   `40433de...`; root binds the current unstaged repair digest without
   automatically committing.
 - Stop on a critical definition conflict, partial cutover, dual authority,

@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "id": "browser-local-world-v1",
+  "fixture_file": "product-evals/simulations/harness/browser-local-fixture/worlds/world.fixture.json",
+  "allowed_actions": ["assert"],
+  "negative_behaviors": [
+    "external network is denied",
+    "downloads and uploads are denied",
+    "undeclared locators and actions are denied"
+  ],
+  "cleanup": { "reset_to_fixture": true }
+}

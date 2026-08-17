@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "id": "agent-cascade-harness-canary",
+  "title": "Exact Cascade harness profile canary",
+  "purpose": "Prove exact current-scenario binding, shared JSONL normalization and deterministic hard gates, and the required specialized harness-evaluator handoff without treating general simulation evaluation as route authority.",
+  "owner_lane": "W-007",
+  "tier": "platform-canary",
+  "session": {
+    "max_duration_ms": 1200000,
+    "max_step_duration_ms": 1090000,
+    "max_steps": 1,
+    "max_parallel_steps": 1,
+    "max_steps_per_episode": 1,
+    "max_surfaces": 1,
+    "max_checkpoint_bytes": 1048576,
+    "lease_ttl_ms": 1200000
+  },
+  "evaluation_profile_file": "product-evals/rubrics/codex-independent-v1.json",
+  "simulation_file": "product-evals/simulations/harness/agent-cascade-harness/manifest.json",
+  "task_files": ["product-evals/tasks/AGENT-CASCADE-HARNESS-CANARY.json"],
+  "claim_files": ["product-evals/claims/agent-cascade-harness-coverage.json"],
+  "policy_files": ["product-evals/policies/allow-agent-cascade-harness-v1.json"],
+  "oracle_files": ["product-evals/oracles/agent-response-contract-valid-v1.json"],
+  "specialized_evaluation": {
+    "applicability": "REQUIRED",
+    "route_ids": ["harness-evaluation"],
+    "trace_ids": ["HX-055"],
+    "claim_ids": ["agent-cascade-harness-coverage"],
+    "reason": "This campaign evaluates a Cascade route and trace, so deterministic eligibility and independent harness-evaluator evidence must precede general simulation evaluation."
+  }
+}

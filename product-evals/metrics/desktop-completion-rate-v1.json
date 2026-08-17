@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "id": "desktop-completion-rate-v1",
+  "kind": "deterministic",
+  "direction": "higher-is-better",
+  "unit": "ratio",
+  "aggregation": "mean",
+  "hard_gate": true,
+  "required_slices": [
+    "desktop-linux"
+  ],
+  "uncertainty": "none",
+  "source": {
+    "oracle_id": "desktop-completed-v1"
+  }
+}

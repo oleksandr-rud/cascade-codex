@@ -1,0 +1,74 @@
+{
+  "schema_version": 6,
+  "id": "TERMINAL-PTY-SMOKE",
+  "kind": "terminal",
+  "driver": {
+    "type": "pty",
+    "adapter": "builtin-pty"
+  },
+  "required": true,
+  "timeout_ms": 5000,
+  "command": [
+    "/bin/sh",
+    "-c",
+    "trap 'printf \"\\033[2JRESIZED:\"; stty size' WINCH; printf '\\033[?1049hContinue? '; read answer; printf '\\033[?1049laccepted:%s\\n' \"$answer\""
+  ],
+  "terminal": {
+    "working_directory": "task-root",
+    "environment": {},
+    "network": "deny",
+    "filesystem": {
+      "read": "host",
+      "write": "task-root"
+    },
+    "cols": 80,
+    "rows": 24,
+    "steps": [
+      {
+        "type": "terminal-wait",
+        "text": "Continue? ",
+        "timeout_ms": 1000
+      },
+      {
+        "type": "terminal-resize",
+        "cols": 100,
+        "rows": 30
+      },
+      {
+        "type": "terminal-wait",
+        "text": "RESIZED:30 100",
+        "timeout_ms": 1000
+      },
+      {
+        "type": "terminal-input",
+        "value": {
+          "kind": "public-literal",
+          "value": "yes"
+        },
+        "append_enter": true
+      },
+      {
+        "type": "terminal-wait",
+        "text": "accepted:yes",
+        "timeout_ms": 1000
+      },
+      {
+        "type": "terminal-capture",
+        "label": "completed"
+      }
+    ],
+    "expected_exit_code": 0,
+    "evidence": {
+      "raw_stream": true,
+      "transcript": true,
+      "final_screen": true
+    }
+  },
+  "oracle_ids": [
+    "terminal-completed-v1"
+  ],
+  "policy_ids": [
+    "allow-terminal-pty-smoke-spawn-v1",
+    "allow-terminal-pty-smoke-steps-v1"
+  ]
+}

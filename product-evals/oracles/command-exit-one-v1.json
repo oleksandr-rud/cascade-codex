@@ -1,0 +1,6 @@
+{
+  "schema_version": 1,
+  "id": "command-exit-one-v1",
+  "type": "exit-code",
+  "expected_exit_code": 1
+}

@@ -749,6 +749,31 @@ adapters remain independent
 downstream worklines and must retain their own permissions, evidence, oracles,
 isolation, and cleanup.
 
+## 2026-08-08 Contour Candidate Update
+
+- W-005 now has a strict direct-process candidate with task-root output
+  authority. `harness-static-smoke` r8 and `command-failure-recovery` r10 are
+  `VALID`/`COMPLETED`/`FRESH`; an exit-zero command with a missing required
+  output remains a task failure. Interactive command-to-terminal handoff stays
+  owned by W-008/N07.
+- W-006 now has a deterministic Playwright candidate with structured
+  navigation, pre-dispatch deny, external-request interception, independent
+  missing-effect failure, and a bounded provider-neutral Computer Use action
+  loop. Browser r18 is `VALID`/`COMPLETED`/`FRESH`. This does not prove a live
+  Computer Use provider, arbitrary tabs/windows, cross-browser coverage, or a
+  product application.
+- W-007 now has a provider-neutral task v5, fixture adapter, and bounded Codex
+  explicit-instruction adapter. Fixture r5 and standalone live r4 are
+  `VALID`/`COMPLETED`/`FRESH`; r4 received independent `PASS/codex` evaluation
+  and remains `release_eligible=false`. Named custom-agent selection and the
+  exact Cascade-profile/specialized-harness route fail closed or remain
+  `NOT_RUN` until their attributable seams exist.
+- Combined review subject r62 binds the current W-005/W-006/W-007 plus
+  scheduler source. It
+  is a deterministic review candidate, not Gate A, a surface acceptance, or a
+  release receipt. PTY, desktop, mobile, composed tools, live Computer Use,
+  and Cascade-profile execution remain owned by their named downstream gates.
+
 ## Planning Artifact Validation
 
 | Check | Result | Evidence boundary |
@@ -759,18 +784,18 @@ isolation, and cleanup.
 | Claim/policy/identity/artifact/handoff planning coverage | `PASS` | W-004 owns one shared authority; W-005 through W-010 provide surface seams and W-012 owns composition criteria, profiles, manifests, examples, and validation gates |
 | Campaign-plan focused structure and diff checks | `PASS` | all eight simulation lane packets contain campaign deliverables and required sections; 23 campaign IDs are unique and assigned once; diff whitespace is clean |
 | Full dependency-excluded source tree | `PASS` | current aggregate output reports no source-file finding; all 36 findings are inside ignored dependency trees |
-| Aggregate Cascade validator | `FAIL` | 36 false-positive legacy/project-token matches in root and `.codex/harness-tooling` Playwright `node_modules`; no campaign-plan, role, skill, lane, or work-graph finding |
+| Aggregate Cascade validator | `PASS` | 9 agents, 45 skills, and zero project-specific leakage |
 | Responsible skills, agents, and docs | `PASS` | `simulation-campaigns`, `simulation-execution`, and `simulation-evaluation` packages; Agent Engineer, simulation-operator, simulation-evaluator, and harness-evaluator boundaries; route docs; structure map; glossary; and design report |
-| Operator/evaluator runtime conformance | `NOT_RUN` | the authored role contracts are implemented; W-004 still owns receipt schemas, identity enforcement, fake-runtime conformance, and live execution evidence |
+| Operator/evaluator runtime conformance | `PARTIAL_PASS_CANDIDATE` | fixture conformance and the standalone Codex r4 operator/evaluator split pass; Cascade specialized evaluation and remaining live contours are `NOT_RUN` |
 | New-skill package validation | `PASS` | skill-creator `quick_validate.py` completed with a PyYAML-capable Python environment |
-| Harness catalog | `PASS` | 41 skills, 319 scenarios, digest `f975c361819767d05319b7f4b636fa8b9e211e3c56b2005de930dd4d665d6552`; execution, evaluation, specialized-harness, and receipt-aggregation routes are covered |
-| Harness grader self-test | `PASS` | 15 cases |
-| Harness static audit | `PASS` | zero P0, P1, P2, or P3 findings across 9 agents, 41 skills, and 319 scenarios |
+| Harness catalog | `PASS` | 45 skills, 386 scenarios, digest `6ec8a0f7804f2a20368975dddfb9305df8249f311b552c2a6462c2fe8b94fe0b` |
+| Harness grader self-test | `PASS` | 31 cases |
+| Harness static audit | `PASS` | aggregate Cascade validator passes across 9 agents and 45 skills |
 | Python compilation | `PASS` | current validator and harness runner |
 | Diff whitespace | `PASS` | `git diff --check` |
 | Task-scoped dependency-excluded source validator | `PASS` | after excluding installed dependencies: 9 agents, 41 skills, zero project-specific leakage, zero standalone legacy review aliases |
-| Campaign/task implementation | `NOT_RUN` | plans and lane packets only |
-| Computer Use, standalone Codex-agent, six-contour agent-tool composition, desktop, and mobile execution | `NOT_RUN` | direct surfaces are owned by W-004 and W-006 through W-010; composition by W-012; W-004 aggregates |
+| Campaign/task implementation | `PARTIAL_PASS_CANDIDATE` | 12-entry campaign catalog; W-005 r8/r10, W-006 r18, W-007 fixture r5, and combined r62 are fresh deterministic candidates; acceptance remains open |
+| Live contours | `PARTIAL_PASS_CANDIDATE` | standalone explicit-instruction Codex r4 passes narrowly; Computer Use, Cascade profile, six-contour agent-tool composition, PTY, desktop, and mobile execution remain `NOT_RUN` |
 
 The aggregate validator now passes after the repository validator excluded
 generated dependency trees from source leakage checks. Installed Playwright
@@ -779,13 +804,16 @@ dependencies remain tooling inputs, not project-source evidence.
 ### Current Status Reconciliation
 
 The planning table above is execution-time evidence for an earlier source
-identity. WG-001 plan revision 22/work-graph revision 11 preserves the
-historical base and receipts, records W-025 through W-029 shared-source
-invalidation, and includes the user-authorized adapter/HTTP and multi-surface
-session-controller slices. Current deterministic controller and campaign
-evidence passes locally; independent acceptance remains pending. This scoped
-implementation does not accept N04/N05, open Gate A, dispatch downstream real
-surface adapters, or prove live/platform or release-eligible behavior.
+identity. The authoritative current topology, revisions, receipts, repair
+frontier, and dispatch state live in WG-001 at
+`docs/work/reports/2026-07-27-cross-surface-simulation-work-graph.md`; this
+program report remains architecture and criteria authority only. Current
+WG-001 work-graph revision 14 accepts N03/N04/N05, holds N06 revision-76,
+W-031 revision-41, W-032 revision-24, and W-005/W-006/W-007 candidate source
+at immutable r62, and keeps N07/N08, Gate A, accepted surface seams,
+downstream contours, composition, platform coverage, and release eligibility
+behind their named gates. Earlier plan-revision projections in this report are
+historical and do not override that current graph state.
 
 ## Doc Routing Decisions
 

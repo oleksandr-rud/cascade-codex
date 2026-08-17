@@ -11,6 +11,8 @@
     "campaign_id",
     "operator_identity",
     "evaluator_identity",
+    "principal_identities",
+    "specialized_evaluation",
     "provider",
     "profile_id",
     "profile_digest",
@@ -38,7 +40,7 @@
   "properties": {
     "schema_version": {
       "type": "integer",
-      "const": 2
+      "const": 3
     },
     "evaluation_id": {
       "type": "string",
@@ -59,6 +61,15 @@
     "evaluator_identity": {
       "type": "string",
       "minLength": 1
+    },
+    "principal_identities": {
+      "$ref": "#/$defs/principalIdentities"
+    },
+    "specialized_evaluation": {
+      "oneOf": [
+        { "$ref": "#/$defs/specializedEvaluation" },
+        { "type": "null" }
+      ]
     },
     "provider": {
       "type": "string",
@@ -188,7 +199,6 @@
     },
     "claim_ledger": {
       "type": "array",
-      "minItems": 1,
       "items": {
         "$ref": "#/$defs/claim"
       }
@@ -197,8 +207,18 @@
       "$ref": "#/$defs/status"
     },
     "root_cause": {
-      "type": "string",
-      "minLength": 1
+      "enum": [
+        "none",
+        "mechanical-gate",
+        "execution",
+        "evidence",
+        "policy",
+        "oracle",
+        "cleanup",
+        "calibration",
+        "evaluator",
+        "environment"
+      ]
     },
     "earliest_failure": {
       "type": [
@@ -222,6 +242,35 @@
     }
   },
   "$defs": {
+    "principalIdentities": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["operator", "specialized_evaluator", "evaluator", "aggregator", "target", "simulator", "recovery"],
+      "properties": {
+        "operator": { "type": "string", "minLength": 1 },
+        "specialized_evaluator": { "type": ["string", "null"] },
+        "evaluator": { "type": "string", "minLength": 1 },
+        "aggregator": { "type": "string", "minLength": 1 },
+        "target": { "type": "string", "minLength": 1 },
+        "simulator": { "type": "string", "minLength": 1 },
+        "recovery": { "type": "string", "minLength": 1 }
+      }
+    },
+    "specializedEvaluation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["receipt_id", "receipt_digest", "status", "claim_ids"],
+      "properties": {
+        "receipt_id": { "type": "string", "minLength": 1 },
+        "receipt_digest": { "$ref": "#/$defs/digest" },
+        "status": { "enum": ["PASS", "FAIL", "BLOCKED", "NOT_APPLICABLE"] },
+        "claim_ids": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "type": "string", "minLength": 1 }
+        }
+      }
+    },
     "digest": {
       "type": "string",
       "pattern": "^[a-f0-9]{64}$"
@@ -313,6 +362,33 @@
           "provider_output_digest": {
             "$ref": "#/$defs/digest"
           }
+        }
+      },
+      "else": {
+        "properties": {
+          "model": { "type": "null" },
+          "reasoning_effort": { "type": "null" },
+          "rubric_id": { "type": "null" },
+          "rubric_digest": { "type": "null" },
+          "input_manifest_digest": { "type": "null" },
+          "provider_trace_digest": { "type": "null" },
+          "provider_output_digest": { "type": "null" },
+          "usage": { "type": "null" }
+        }
+      }
+    },
+    {
+      "if": { "properties": { "status": { "const": "PASS" } } },
+      "then": {
+        "properties": {
+          "root_cause": { "const": "none" },
+          "earliest_failure": { "type": "null" }
+        }
+      },
+      "else": {
+        "properties": {
+          "root_cause": { "not": { "const": "none" } },
+          "earliest_failure": { "type": "string", "minLength": 1 }
         }
       }
     }

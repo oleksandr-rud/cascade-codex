@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "id": "mobile-provider-fixture",
+  "simulation_scope": "harness",
+  "title": "Mobile provider readiness fixture",
+  "purpose": "Exercise only the W-010 exact mobile provider preflight and fail-closed boundary.",
+  "population_files": ["product-evals/simulations/harness/mobile-provider-fixture/populations/actors.json"],
+  "scenario_files": ["product-evals/simulations/harness/mobile-provider-fixture/scenarios/mobile-ready.json"],
+  "world_file": "product-evals/simulations/harness/mobile-provider-fixture/worlds/world.json",
+  "dataset_file": "product-evals/simulations/harness/mobile-provider-fixture/datasets/cases.json",
+  "metric_files": ["product-evals/metrics/mobile-completion-rate-v1.json"],
+  "treatment_files": ["product-evals/treatments/baseline-v1.json"]
+}

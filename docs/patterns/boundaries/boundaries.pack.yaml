@@ -106,6 +106,15 @@ documents:
           - adapters
           - integrations
           - reliability
+      - id: dynamic-actor-simulation-boundary
+        title: Dynamic Actor Simulation Boundary
+        anchor: "## Dynamic Actor Simulation Boundary"
+        summary: "Defines the compact fixed-contract and mutable-state boundary for one goal-directed actor using declared interfaces."
+        routing_description: "Use for ordinary actor simulations; escalate to campaign infrastructure only for explicit controlled evaluation."
+        tags:
+          - simulation
+          - actor-runtime
+          - adapters
       - id: agentic-runtime-invariant
         title: Agentic Runtime Invariant
         anchor: "## Agentic Runtime Invariant"

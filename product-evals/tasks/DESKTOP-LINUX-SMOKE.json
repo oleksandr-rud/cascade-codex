@@ -1,0 +1,82 @@
+{
+  "schema_version": 7,
+  "id": "DESKTOP-LINUX-SMOKE",
+  "kind": "desktop",
+  "driver": {
+    "type": "platform-automation",
+    "adapter": "builtin-platform-automation"
+  },
+  "required": true,
+  "timeout_ms": 30000,
+  "desktop": {
+    "provider": {
+      "container_runtime": "docker",
+      "image": "cascade-desktop-linux-fixture:20260808",
+      "image_id": "sha256:0fda65b94650590b429111bef22ef8f6bae6fe9b4e763f849de725393cea6f85",
+      "platform": "linux/arm64",
+      "fixture_root": "product-evals/simulations/harness/desktop-linux-fixture/runtime"
+    },
+    "app": {
+      "id": "cascade.desktop.fixture",
+      "build": "20260808.1"
+    },
+    "environment": {
+      "display_server": "xvfb",
+      "display": ":99",
+      "resolution": {
+        "width": 800,
+        "height": 600,
+        "scale": 1
+      },
+      "locale": "C.UTF-8"
+    },
+    "network": "deny",
+    "filesystem": {
+      "root": "read-only",
+      "write": "task-root"
+    },
+    "reset": "container-remove",
+    "actions": [
+      {
+        "type": "desktop-launch",
+        "app_id": "cascade.desktop.fixture",
+        "window_title": "Cascade Desktop Fixture"
+      },
+      {
+        "type": "desktop-type",
+        "value": {
+          "kind": "public-literal",
+          "value": "Replace desktop fixture"
+        }
+      },
+      {
+        "type": "desktop-key",
+        "key": "Tab"
+      },
+      {
+        "type": "desktop-key",
+        "key": "space"
+      },
+      {
+        "type": "desktop-wait-file",
+        "file": "completed.json",
+        "timeout_ms": 3000
+      },
+      {
+        "type": "desktop-capture",
+        "label": "completed"
+      }
+    ],
+    "evidence": {
+      "screenshots": true,
+      "result": true,
+      "logs": true
+    }
+  },
+  "oracle_ids": [
+    "desktop-completed-v1"
+  ],
+  "policy_ids": [
+    "allow-desktop-linux-smoke-v1"
+  ]
+}

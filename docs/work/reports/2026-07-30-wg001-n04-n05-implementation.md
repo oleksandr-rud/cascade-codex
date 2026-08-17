@@ -1,7 +1,7 @@
 # WG-001 N04 And N05 Implementation
 
-Date: 2026-07-30; repaired 2026-07-31
-Status: `IN_PROGRESS_REPAIR`
+Date: 2026-07-30; repaired 2026-07-31; historical reconciliation 2026-08-06
+Status: `HISTORICAL_SUPERSEDED_EVIDENCE`
 Work Graph: `WG-001`
 Plan Revision: `14`
 Nodes: `WG-001-N04`, `WG-001-N05`
@@ -13,9 +13,10 @@ Runtime: root task `019fb3c2-bd84-7282-9df0-5477a8321233`
 
 ## Outcome
 
-The prepared N04 and N05 slices are implemented in the current working tree.
-Both nodes are in `REVIEW`, not `ACCEPTED`: required independent GF-004/GF-101
-review was not run in this implementation turn.
+This report preserves the original N04/N05 implementation and repair evidence.
+Its `REVIEW` state is historical: later fixed-point receipts in the W-004 lane
+and authoritative WG-001 report accepted N04 and N05. Use those current owners
+for live state; retain the attempts and failures below as source-bound history.
 
 N04 now owns:
 
@@ -77,25 +78,20 @@ evidence.
 
 ## Review And Remaining Gates
 
-- Local implementation review found and repaired stage-path traversal and
-  missing action-path/command-prefix applicability edge cases.
-- Plan-revision-13 local Standards/Spec review found no remaining blocking
-  issue in the bounded repair. This self-review is not the independent
-  acceptance authority.
-- Independent GF-004 architecture review: `NOT_RUN`.
-- Independent GF-101 security review: `NOT_RUN`.
-- N04 and N05 therefore remain `REVIEW`.
-- WG-001-N06 through WG-001-N08, Gate A, every surface node, live/platform
-  execution, commit, push, and deployment remain `NOT_RUN` or
-  `NOT_AUTHORIZED` according to the Work Graph.
+- The bullets that originally recorded local review and missing independent
+  receipts described this report's 2026-07-30 fixed point only.
+- Later fixed-point receipts accepted both N04 and N05. Their current state is
+  `ACCEPTED` in the W-004 lane and authoritative WG-001 revision 13 report.
+- This report does not project the active N06 repair, Gate A, surface, live, or
+  release frontier; consult WG-001 revision 13 for those current states.
 
 ## Resume Contract
 
-Run independent GF-004 and GF-101 review against the fixed-point digest above.
-Repair only blocking findings, rerun the current validation matrix, and move
-each node from `REVIEW` to `ACCEPTED` only when its review receipt binds the
-unchanged implementation identity. N06 becomes dependency-ready only after
-both acceptances and still requires explicit implementation authorization.
+Historical only: the original resume route required independent GF-004 and
+GF-101 review against this report's fixed-point digest. That route completed in
+later accepted receipts and must not be restarted from this stale source
+identity. Any new invalidation or repair follows the current W-004 lane and
+WG-001 revision 13.
 
 ## Attempt 2 Receipt And Closeout
 

@@ -20,6 +20,14 @@ this skill owns the behavior examples and acceptance oracles.
 cleanup, and handoff; `simulation-evaluation` independently consumes the
 frozen oracle evidence.
 
+When a user wants one actor to perform meaningful work toward an observable
+product outcome, use the separately installed `cascade-simulations:simulate`
+skill for the actor loop. This skill still owns expected visible behavior and
+the narrow acceptance evidence it produces. If the optional plugin is absent,
+either run a direct functional check when behavior proof is sufficient or
+report a simulation capability `GAP`; do not create a campaign merely as a
+fallback.
+
 This skill produces new product-visible proof. It is not the route for a
 read-only request to aggregate existing evidence, assess its freshness or
 invalidation, determine graph-gate impact, identify the earliest responsible

@@ -11,13 +11,13 @@ Use filenames like `YYYY-MM-DD-slug.md`.
 
 | Date | Work Graph | Purpose |
 |---|---|---|
-| 2026-07-27 | `2026-07-27-cross-surface-simulation-work-graph.md` | Active plan revision 28/work-graph revision 12; public process resume, strict READY-intake checks, PB-002, catalog `73e0a208...`, 152-test regression, and immutable run `wg001-resume-hardening-20260804-r7` pass locally; independent reviews, Gate A/B, real adapters, product/provider runs, platform proof, and release eligibility remain `NOT_RUN`. |
+| 2026-07-27 | `2026-07-27-cross-surface-simulation-work-graph.md` | Active work-graph revision 13; N03/N04/N05 are accepted; N06 revision-74 and W-031 revision-39 are root-integrated as unaccepted immutable-r55 review candidates, while W-032 revision 22 has current intake-v6/action-binding-v2 and v40/core@41 parity with G5 accepted and G1-G4/G6/GT open or blocked; N07-N18, Gate A/B, downstream adapters/composition, provider/live/product runs, platform proof, and release eligibility remain blocked, open, or `NOT_RUN` under their named gates. |
 
 ## Reports
 
 | Date | Report | Purpose |
 |---|---|---|
-| 2026-07-30 | `2026-07-30-wg001-n04-n05-implementation.md` | N04/N05 implementation and scenario-building repair receipts, deterministic validation, fixed-point identity, and independent-review boundary. |
+| 2026-07-30 | `2026-07-30-wg001-n04-n05-implementation.md` | Historical N04/N05 implementation and scenario-building repair receipts; current acceptance lives in W-004 and WG-001 revision 13. |
 | 2026-07-30 | `2026-07-30-wg001-next-frontier-preparation.md` | Version-bound architecture, security, fragment, write-scope, behavior, validation, repair, and review packets that governed the completed N04/N05 implementation attempts. |
 | 2026-06-22 | `2026-06-22-pattern-context-pack-orchestration-report.md` | Recent PR analysis, skills/agents orchestration tree, pattern context-pack system, onboarding wiring, and validation evidence. |
 | 2026-06-23 | `2026-06-23-context-pattern-context-skill-analysis.md` | Context versus pattern-context skill analysis and graph-shaped context-pack schema update. |

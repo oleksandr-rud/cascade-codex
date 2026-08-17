@@ -1,0 +1,9 @@
+{
+  "schema_version": 1,
+  "id": "cascade-harness-hx-055-v1",
+  "goal": "Route and answer exact current harness scenario HX-055 without mutation, network access, delegation, golden expectations, or prior-run evidence.",
+  "actor_ids": ["agent-cascade-harness-actor"],
+  "initial_state": {},
+  "stop_conditions": ["deterministic harness eligibility passes and specialized evaluation is accepted"],
+  "claim_ids": ["agent-cascade-harness-coverage"]
+}

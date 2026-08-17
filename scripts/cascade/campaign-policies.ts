@@ -1,11 +1,20 @@
 import { createHmac, timingSafeEqual } from "node:crypto";
 
 import {
+  ACTION_BINDING_VERSION,
+  actionBindingDigest,
+  assertSafeSimulationAction,
+  assertCampaignConfirmationKeyId,
   type PolicyDefinition,
-  type TaskAction,
+  type SimulationAction,
   policyAppliesToObservation,
 } from "./simulation-definitions";
-import { CascadeError, stableJson, valueDigest } from "./common";
+import {
+  CascadeError,
+  confirmationSecretBytes,
+  stableJson,
+  valueDigest,
+} from "./common";
 
 const HIGH_CONFIDENCE_SECRET_PATTERNS = [
   /-----BEGIN [A-Z ]*PRIVATE KEY-----/g,
@@ -16,11 +25,20 @@ const HIGH_CONFIDENCE_SECRET_PATTERNS = [
 
 const SECRET_PATTERNS = [
   ...HIGH_CONFIDENCE_SECRET_PATTERNS,
-  /\b(?:password|secret|token)\s*[:=]\s*["']?[^\s"']{8,}/gi,
+  /\b(?:auth(?:orization)?|api[-_ ]?key|cookie|password|passwd|passcode|pin|otp|secret|token|credentials?)\s*[:=]\s*["']?[^\s"']+/gi,
+] as const;
+
+export const CAMPAIGN_SUPPORTED_BUDGET_DIMENSIONS = [
+  "action_count",
+  "output_bytes",
+] as const;
+export const CAMPAIGN_REDACTION_CAPABILITIES = [
+  "no-secrets-v1",
+  "source-code-v1",
 ] as const;
 
 export interface PolicyConfirmationReceipt {
-  schema_version: 1;
+  schema_version: 2;
   receipt_id: string;
   run_id: string;
   policy_id: string;
@@ -29,7 +47,8 @@ export interface PolicyConfirmationReceipt {
   campaign_id: string;
   task_id: string;
   action_index: number;
-  action_digest: string;
+  action_binding_version: typeof ACTION_BINDING_VERSION;
+  action_binding_digest: string;
   decision: "CONFIRM";
   issued_at: string;
   expires_at: string;
@@ -45,6 +64,16 @@ export interface CampaignPolicyBudgetUsage {
   };
 }
 
+export interface CampaignPolicyConfirmationUsage {
+  [receiptId: string]: {
+    receipt_digest: string;
+    policy_id: string;
+    action_binding_version: typeof ACTION_BINDING_VERSION;
+    action_binding_digest: string;
+    consumed_at: string;
+  };
+}
+
 export interface PolicyActionContext {
   run_id: string;
   campaign_id: string;
@@ -52,21 +81,23 @@ export interface PolicyActionContext {
   task_kind: string;
   driver_type: string;
   action_index: number;
-  action: TaskAction | { type: "process-exec"; argv: string[] };
+  action: SimulationAction;
   projected_output_bytes: number;
   supported_budget_dimensions: Array<"action_count" | "output_bytes">;
   redaction_capabilities: Array<"no-secrets-v1" | "source-code-v1">;
   now: string;
   confirmation_receipts?: PolicyConfirmationReceipt[];
   confirmation_secrets?: Record<string, string>;
+  confirmation_usage?: CampaignPolicyConfirmationUsage;
   budget_usage?: CampaignPolicyBudgetUsage;
 }
 
 export interface CampaignPolicyDecision {
   decided_at: string;
   action_index: number;
-  action_type: string;
-  action_digest: string;
+  action_type: SimulationAction["type"];
+  action_binding_version: typeof ACTION_BINDING_VERSION;
+  action_binding_digest: string;
   policy_id: string | null;
   policy_version: string | null;
   policy_digest: string | null;
@@ -111,11 +142,17 @@ export interface PolicyOutputControl {
   truncated: boolean;
 }
 
-function containsSecret(value: string): boolean {
+function containsSecret(
+  value: string,
+  sensitiveValues: readonly string[] = [],
+): boolean {
   return SECRET_PATTERNS.some((pattern) => {
     pattern.lastIndex = 0;
     return pattern.test(value);
-  });
+  }) || sensitiveValues.some(
+    (sensitiveValue) =>
+      sensitiveValue.length > 0 && value.includes(sensitiveValue),
+  );
 }
 
 export function applyPolicyOutputControls(
@@ -135,7 +172,7 @@ export function applyPolicyOutputControls(
       controlled = controlled.replace(pattern, "[REDACTED]");
   }
   for (const sensitiveValue of sensitiveValues) {
-    if (sensitiveValue.length >= 8) {
+    if (sensitiveValue.length > 0) {
       controlled = controlled.replaceAll(sensitiveValue, "[REDACTED]");
     }
   }
@@ -173,13 +210,15 @@ function baseDecision(
   context: PolicyActionContext,
 ): Pick<
   CampaignPolicyDecision,
-  "decided_at" | "action_index" | "action_type" | "action_digest"
+  "decided_at" | "action_index" | "action_type" | "action_binding_version" | "action_binding_digest"
 > {
+  assertSafeSimulationAction(context.action);
   return {
     decided_at: context.now,
     action_index: context.action_index,
     action_type: context.action.type,
-    action_digest: valueDigest(context.action),
+    action_binding_version: ACTION_BINDING_VERSION,
+    action_binding_digest: actionBindingDigest(context.action),
   };
 }
 
@@ -198,8 +237,9 @@ function receiptMatches(
   const issued = Date.parse(receipt.issued_at);
   const expires = Date.parse(receipt.expires_at);
   const authority = policy.confirmation_authority;
-  const secret = authority
-    ? context.confirmation_secrets?.[authority.key_id]
+  const secret = authority && context.confirmation_secrets &&
+      Object.hasOwn(context.confirmation_secrets, authority.key_id)
+    ? context.confirmation_secrets[authority.key_id]
     : undefined;
   const expectedSignature =
     secret && authority
@@ -219,7 +259,7 @@ function receiptMatches(
       Buffer.from(receipt.signature, "utf8"),
     );
   return (
-    receipt.schema_version === 1 &&
+    receipt.schema_version === 2 &&
     receipt.receipt_id.trim().length > 0 &&
     Number.isFinite(now) &&
     Number.isFinite(issued) &&
@@ -233,13 +273,22 @@ function receiptMatches(
     receipt.campaign_id === context.campaign_id &&
     receipt.task_id === context.task_id &&
     receipt.action_index === context.action_index &&
-    receipt.action_digest === actionDigest &&
+    receipt.action_binding_version === ACTION_BINDING_VERSION &&
+    receipt.action_binding_digest === actionDigest &&
     receipt.decision === "CONFIRM" &&
     !!authority &&
     receipt.authority_key_id === authority.key_id &&
     authority.allowed_confirmers.includes(receipt.confirmed_by) &&
     signatureMatches
   );
+}
+
+export function policyConfirmationReceiptMatches(
+  receipt: PolicyConfirmationReceipt,
+  policy: PolicyDefinition,
+  context: PolicyActionContext,
+): boolean {
+  return receiptMatches(receipt, policy, context, actionBindingDigest(context.action));
 }
 
 type UnsignedConfirmationReceipt = Omit<
@@ -251,11 +300,9 @@ export function signPolicyConfirmationReceipt(
   receipt: UnsignedConfirmationReceipt,
   secret: string,
 ): string {
-  if (!secret) {
-    throw new CascadeError("confirmation signing secret must be non-empty");
-  }
+  const key = confirmationSecretBytes(secret, "confirmation signing secret");
   const { signature: _ignored, ...payload } = receipt;
-  return createHmac("sha256", secret).update(stableJson(payload)).digest("hex");
+  return createHmac("sha256", key).update(stableJson(payload)).digest("hex");
 }
 
 export function validatePolicyConfirmationReceipt(
@@ -275,7 +322,8 @@ export function validatePolicyConfirmationReceipt(
     "campaign_id",
     "task_id",
     "action_index",
-    "action_digest",
+    "action_binding_version",
+    "action_binding_digest",
     "decision",
     "issued_at",
     "expires_at",
@@ -289,8 +337,8 @@ export function validatePolicyConfirmationReceipt(
       `confirmation receipt has unknown fields: ${unknownKeys.sort().join(", ")}`,
     );
   }
-  if (receipt.schema_version !== 1) {
-    throw new CascadeError("confirmation receipt schema_version must be 1");
+  if (receipt.schema_version !== 2) {
+    throw new CascadeError("confirmation receipt schema_version must be 2");
   }
   for (const key of [
     "receipt_id",
@@ -300,7 +348,7 @@ export function validatePolicyConfirmationReceipt(
     "policy_digest",
     "campaign_id",
     "task_id",
-    "action_digest",
+    "action_binding_digest",
     "decision",
     "issued_at",
     "expires_at",
@@ -312,6 +360,13 @@ export function validatePolicyConfirmationReceipt(
       throw new CascadeError(`confirmation receipt ${key} must be non-empty`);
     }
   }
+  if (receipt.action_binding_version !== ACTION_BINDING_VERSION) {
+    throw new CascadeError("confirmation receipt action binding version is invalid");
+  }
+  assertCampaignConfirmationKeyId(
+    receipt.authority_key_id,
+    "confirmation receipt authority_key_id",
+  );
   if (!Number.isInteger(receipt.action_index) || Number(receipt.action_index) < 0) {
     throw new CascadeError(
       "confirmation receipt action_index must be a non-negative integer",
@@ -320,7 +375,7 @@ export function validatePolicyConfirmationReceipt(
   if (!/^[0-9]+\.[0-9]+\.[0-9]+$/.test(String(receipt.policy_version))) {
     throw new CascadeError("confirmation receipt policy_version must be semver");
   }
-  for (const key of ["policy_digest", "action_digest", "signature"]) {
+  for (const key of ["policy_digest", "action_binding_digest", "signature"]) {
     if (!/^[a-f0-9]{64}$/.test(String(receipt[key]))) {
       throw new CascadeError(`confirmation receipt ${key} must be sha256 hex`);
     }
@@ -374,7 +429,10 @@ export function consumePolicyOutputBudget(
     action_count: 0,
     output_bytes: 0,
   };
-  current.output_bytes += outputBytes;
+  current.output_bytes = Math.min(
+    decision.budgets.max_output_bytes,
+    current.output_bytes + outputBytes,
+  );
   usage[decision.policy_id] = current;
   decision.budgets.consumed_after = { ...current };
   decision.budgets.remaining_after = {
@@ -525,8 +583,10 @@ export function resolvePolicyDecision(
     };
   }
   if (
-    policy.redaction_profile === "no-secrets-v1" &&
-    containsSecret(stableJson(context.action))
+    containsSecret(
+      stableJson(context.action),
+      Object.values(context.confirmation_secrets ?? {}),
+    )
   ) {
     return {
       ...common,
@@ -543,16 +603,48 @@ export function resolvePolicyDecision(
     };
   }
   if (policy.effect === "REQUIRE_CONFIRMATION") {
-    const receipt = (context.confirmation_receipts ?? []).find((candidate) =>
-      receiptMatches(candidate, policy, context, base.action_digest),
-    );
-    if (!receipt) {
+    const suppliedReceipts = context.confirmation_receipts ?? [];
+    const collision = suppliedReceipts.find((candidate) => {
+      const usage = context.confirmation_usage?.[candidate.receipt_id];
+      return usage && usage.receipt_digest !== valueDigest(candidate);
+    });
+    if (collision) {
       return {
         ...common,
-        decision: "REQUIRE_CONFIRMATION",
-        reason: `${policy.reason}; valid confirmation receipt required`,
+        decision: "BLOCKED",
+        reason: `${policy.reason}; confirmation receipt id collision: ${collision.receipt_id}`,
       };
     }
+    const matchingReceipts = suppliedReceipts.filter((candidate) =>
+      receiptMatches(candidate, policy, context, base.action_binding_digest),
+    );
+    if (matchingReceipts.length && !context.confirmation_usage) {
+      return {
+        ...common,
+        decision: "BLOCKED",
+        reason: `${policy.reason}; confirmation usage authority is required`,
+      };
+    }
+    const receipt = matchingReceipts.find(
+      (candidate) => !context.confirmation_usage?.[candidate.receipt_id],
+    );
+    if (!receipt) {
+      const consumed = matchingReceipts.length > 0;
+      return {
+        ...common,
+        decision: consumed ? "BLOCKED" : "REQUIRE_CONFIRMATION",
+        reason: consumed
+          ? `${policy.reason}; confirmation receipt already consumed`
+          : `${policy.reason}; valid confirmation receipt required`,
+      };
+    }
+    context.confirmation_usage![receipt.receipt_id] = {
+      receipt_digest: valueDigest(receipt),
+      policy_id: policy.id,
+      action_binding_version: ACTION_BINDING_VERSION,
+      action_binding_digest: base.action_binding_digest,
+      consumed_at: context.now,
+    };
     return {
       ...common,
       decision: "ALLOW",

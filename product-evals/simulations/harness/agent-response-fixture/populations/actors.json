@@ -1,0 +1,15 @@
+{
+  "schema_version": 1,
+  "id": "agent-response-fixture-actors-v1",
+  "source": {
+    "kind": "synthetic",
+    "description": "Deterministic harness-only actor for the provider-neutral agent contract; it does not represent product users.",
+    "minimized": true
+  },
+  "actors": [{
+    "id": "agent-response-fixture-actor",
+    "weight": 1,
+    "behavior": { "strategy": "return only the source-bound structured fixture response" },
+    "slices": ["agent-response-fixture"]
+  }]
+}

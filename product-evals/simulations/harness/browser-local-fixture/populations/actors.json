@@ -1,0 +1,15 @@
+{
+  "schema_version": 1,
+  "id": "browser-local-actors-v1",
+  "source": {
+    "kind": "synthetic",
+    "description": "Deterministic harness-only browser actor; it does not represent product users.",
+    "minimized": true
+  },
+  "actors": [{
+    "id": "browser-local-actor",
+    "weight": 1,
+    "behavior": { "strategy": "execute only the authored structured browser actions" },
+    "slices": ["browser-local-fixture"]
+  }]
+}

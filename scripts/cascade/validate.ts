@@ -9,7 +9,6 @@ import {
   isDirectory,
   isFile,
   parseArgs,
-  parseFrontmatter,
   readJson,
   readText,
   rel,
@@ -31,8 +30,13 @@ const REQUIRED_FILES = [
   "harness.config.yaml",
   ".codex/config.toml",
   ".codex/hooks.json",
+  ".agents/plugins/marketplace.json",
+  ".codex/plugins/cascade-prompt/.codex-plugin/plugin.json",
+  ".codex/plugins/cascade-prompt/skills/prompt/references/model-system/model-registry.json",
+  ".codex/plugins/cascade-prompt/skills/prompt/runtime/model-index.json",
   ".codex/task-admission/task-envelope.schema.json",
   ".codex/task-admission/policy.schema.json",
+  ".codex/task-admission/control-catalog.schema.json",
   ".codex/task-admission/control-catalog.json",
   ".codex/task-admission/policies/core.json",
   ".codex/harness-tooling/package.json",
@@ -84,7 +88,10 @@ const REQUIRED_FILES = [
   "scripts/cascade/admission.ts",
   "scripts/cascade/admission.test.ts",
   "scripts/cascade/task-admission-hook.ts",
+  "scripts/cascade/harness-impact-hook.ts",
   "scripts/cascade/briefs.ts",
+  "scripts/cascade/work-audit.ts",
+  "scripts/cascade/work-audit.test.ts",
   "scripts/cascade/persona-simulations.ts",
   "scripts/cascade/simulation-intake.ts",
   "scripts/cascade/simulation-intake.test.ts",
@@ -97,6 +104,7 @@ const REQUIRED_FILES = [
   "harness-evals/README.md",
   "harness-evals/skill-cases.json",
   "harness-evals/interactions.json",
+  "harness-evals/agent-outcomes.json",
   "harness-evals/scenarios.generated.json",
   "harness-evals/response.schema.json",
   "harness-evals/judge-response.schema.json",
@@ -111,6 +119,7 @@ const REQUIRED_FILES = [
   "product-evals/campaigns/catalog.generated.json",
   "product-evals/campaigns/simulation-contract-smoke.json",
   "product-evals/intakes/schema.json",
+  "product-evals/intakes/seed-binding.schema.json",
   "product-evals/tasks/schema.json",
   "product-evals/tasks/SIMULATION-STATE-SMOKE.json",
   "product-evals/simulations/schema.json",
@@ -143,8 +152,11 @@ const REQUIRED_FILES = [
 ];
 
 const REQUIRED_FOLDERS = [
+  ".agents/plugins",
   ".codex/skills",
   ".codex/agents",
+  ".codex/plugins",
+  ".codex/plugins/cascade-prompt",
   ".codex/harness-tooling",
   "docs",
   "docs/product",
@@ -166,6 +178,7 @@ const REQUIRED_FOLDERS = [
   "product-evals/intakes",
   "product-evals/intakes/harness",
   "product-evals/intakes/product",
+  "product-evals/intakes/product/seed-bindings",
   "product-evals/metrics",
   "product-evals/calibrations",
   "product-evals/claims",
@@ -202,10 +215,36 @@ const ARCHIVE_CHAIN_SURFACES: Record<string, string[]> = {
 
 const FORBIDDEN = [
   new RegExp(["Lee", "ra"].join(""), "i"),
-  /\bportable-codex-harness\b/i,
-  /\bstandalone[- ]qa\b/i,
+  new RegExp(["roy", "rud1902"].join(""), "i"),
+  new RegExp(["", "Users", "[^/\\s]+", ""].join("/")),
+  new RegExp(`\\b${["portable", "codex", "harness"].join("-")}\\b`, "i"),
+  new RegExp(`\\b${["standalone", "qa"].join("[- ]")}\\b`, "i"),
   /\bgpt-5\.(?:1|2|3|4|5)(?:-[a-z0-9-]+)?\b/i,
+  new RegExp(`\\b${["max", "threads"].join("_")}\\b`),
+  new RegExp(["orchestrate-work", "plan-change"].join("\\s*->\\s*")),
 ];
+
+const CANONICAL_NON_ATOMIC_ROUTE = [
+  "context",
+  "plan-change",
+  "plan-iterations",
+  "orchestrate-work",
+  "functional-qa",
+  "implement-change",
+  "review-change",
+  "validate-change",
+  "test-autorepair",
+  "closeout",
+] as const;
+const CONFIG_NON_ATOMIC_ROUTE = CANONICAL_NON_ATOMIC_ROUTE.filter(
+  (token) => token !== "plan-iterations",
+);
+const REPO_PLUGIN_NAME = "cascade-prompt";
+const REPO_PLUGIN_ROOT = `.codex/plugins/${REPO_PLUGIN_NAME}`;
+const REPO_PLUGIN_SOURCE = `./${REPO_PLUGIN_ROOT}`;
+const REPO_PLUGIN_MARKETPLACE = ".agents/plugins/marketplace.json";
+const SEMVER = /^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-(?:0|[1-9]\d*|\d*[A-Za-z-][0-9A-Za-z-]*)(?:\.(?:0|[1-9]\d*|\d*[A-Za-z-][0-9A-Za-z-]*))*)?(?:\+[0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*)?$/;
+const MODEL_REGISTRY_MAX_AGE_DAYS = 45;
 
 const ALLOWED_DOC_ROOTS = new Set([
   "_index.md",
@@ -220,6 +259,155 @@ const ALLOWED_DOC_ROOTS = new Set([
   "specs",
   "work",
 ]);
+
+function errorMessage(error: unknown): string {
+  return error instanceof Error ? error.message : String(error);
+}
+
+function isWithin(base: string, candidate: string): boolean {
+  const relativePath = rel(candidate, base);
+  return relativePath === "." || (relativePath !== ".." && !relativePath.startsWith("../"));
+}
+
+function parseYamlFrontmatterRecord(text: string): Record<string, any> {
+  if (!text.startsWith("---\n")) throw new Error("missing opening delimiter");
+  const end = text.indexOf("\n---\n", 4);
+  if (end < 0) throw new Error("missing closing delimiter");
+  const parsed = Bun.YAML.parse(text.slice(4, end));
+  if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) {
+    throw new Error("frontmatter must be a YAML object");
+  }
+  return parsed as Record<string, any>;
+}
+
+export function agentContractFrontmatterErrors(
+  label: string,
+  text: string,
+  expectedRole: string,
+): string[] {
+  let frontmatter: Record<string, any>;
+  try {
+    frontmatter = parseYamlFrontmatterRecord(text);
+  } catch (error) {
+    return [`invalid agent YAML frontmatter: ${label}: ${errorMessage(error)}`];
+  }
+  const errors: string[] = [];
+  for (const key of ["name", "role", "skill", "description"]) {
+    if (typeof frontmatter[key] !== "string" || !frontmatter[key].trim()) {
+      errors.push(`${label} missing frontmatter field: ${key}`);
+    }
+  }
+  if (frontmatter.role !== expectedRole) errors.push(`${label} role mismatch`);
+  if (frontmatter.skill !== "skills.yaml") errors.push(`${label} skill map mismatch`);
+  return errors;
+}
+
+export function routeOrderErrors(
+  label: string,
+  route: string,
+  required: readonly string[] = CANONICAL_NON_ATOMIC_ROUTE,
+): string[] {
+  const errors: string[] = [];
+  let cursor = 0;
+  for (const token of required) {
+    const index = route.indexOf(token, cursor);
+    if (index < 0) {
+      errors.push(`${label} missing or misordered route stage: ${token}`);
+      continue;
+    }
+    cursor = index + token.length;
+  }
+  return errors;
+}
+
+function inlineNonAtomicRoute(text: string): string | undefined {
+  return /`(context\s*->[^`\n]+)`/.exec(text)?.[1]
+    ?? /(?:^|\n)(context\s*->[^\n]+)(?=\n|$)/.exec(text)?.[1];
+}
+
+export function agentConcurrencyErrors(config: Record<string, any> | undefined): string[] {
+  const errors: string[] = [];
+  const currentKey = "max_concurrent_threads_per_session";
+  const legacyKey = ["max", "threads"].join("_");
+  const agents = config?.agents;
+  if (agents?.[currentKey] !== undefined) {
+    errors.push(`project agent concurrency override must remain unset: agents.${currentKey}`);
+  }
+  if (config && Object.prototype.hasOwnProperty.call(config, legacyKey)) {
+    errors.push("legacy top-level agent concurrency key is forbidden");
+  }
+  if (agents && Object.prototype.hasOwnProperty.call(agents, legacyKey)) {
+    errors.push(`legacy agent concurrency key is forbidden; use agents.${currentKey} or omit the override`);
+  }
+  return errors;
+}
+
+export function repoPluginMetadataErrors(
+  marketplace: Record<string, any>,
+  manifest: Record<string, any>,
+): string[] {
+  const errors: string[] = [];
+  if (typeof marketplace.name !== "string" || !marketplace.name.trim()) {
+    errors.push("repo plugin marketplace missing name");
+  }
+  if (typeof marketplace.interface?.displayName !== "string" || !marketplace.interface.displayName.trim()) {
+    errors.push("repo plugin marketplace missing interface.displayName");
+  }
+  const entries = Array.isArray(marketplace.plugins)
+    ? marketplace.plugins.filter((entry: any) => entry?.name === REPO_PLUGIN_NAME)
+    : [];
+  if (entries.length !== 1) {
+    errors.push(`repo plugin marketplace must contain exactly one ${REPO_PLUGIN_NAME} entry`);
+  }
+  const entry = entries[0] ?? {};
+  if (entry.source?.source !== "local" || entry.source?.path !== REPO_PLUGIN_SOURCE) {
+    errors.push(`${REPO_PLUGIN_NAME} marketplace source must be ${REPO_PLUGIN_SOURCE}`);
+  }
+  if (!["NOT_AVAILABLE", "AVAILABLE", "INSTALLED_BY_DEFAULT"].includes(entry.policy?.installation)) {
+    errors.push(`${REPO_PLUGIN_NAME} marketplace installation policy is invalid`);
+  }
+  if (!["ON_INSTALL", "ON_USE"].includes(entry.policy?.authentication)) {
+    errors.push(`${REPO_PLUGIN_NAME} marketplace authentication policy is invalid`);
+  }
+  if (typeof entry.category !== "string" || !entry.category.trim()) {
+    errors.push(`${REPO_PLUGIN_NAME} marketplace category is missing`);
+  }
+  if (manifest.name !== REPO_PLUGIN_NAME) errors.push(`${REPO_PLUGIN_NAME} manifest name mismatch`);
+  if (typeof manifest.version !== "string" || !SEMVER.test(manifest.version)) {
+    errors.push(`${REPO_PLUGIN_NAME} manifest version must be strict semver`);
+  }
+  if (typeof manifest.description !== "string" || !manifest.description.trim()) {
+    errors.push(`${REPO_PLUGIN_NAME} manifest description is missing`);
+  }
+  if (typeof manifest.author?.name !== "string" || !manifest.author.name.trim()) {
+    errors.push(`${REPO_PLUGIN_NAME} manifest author.name is missing`);
+  }
+  if (manifest.skills !== "./skills/") errors.push(`${REPO_PLUGIN_NAME} manifest skills path mismatch`);
+  for (const key of ["displayName", "shortDescription", "longDescription", "developerName", "category"]) {
+    if (typeof manifest.interface?.[key] !== "string" || !manifest.interface[key].trim()) {
+      errors.push(`${REPO_PLUGIN_NAME} manifest interface.${key} is missing`);
+    }
+  }
+  return errors;
+}
+
+export function modelRegistryFreshnessErrors(
+  checkedAt: unknown,
+  now = new Date(),
+): string[] {
+  if (typeof checkedAt !== "string" || !/^\d{4}-\d{2}-\d{2}$/.test(checkedAt)) {
+    return ["Cascade Prompt model registry checked_at must use YYYY-MM-DD"];
+  }
+  const checked = Date.parse(`${checkedAt}T00:00:00Z`);
+  if (!Number.isFinite(checked)) return ["Cascade Prompt model registry checked_at is invalid"];
+  const today = Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate());
+  const ageDays = Math.floor((today - checked) / 86_400_000);
+  if (ageDays < 0) return ["Cascade Prompt model registry checked_at is in the future"];
+  if (ageDays > MODEL_REGISTRY_MAX_AGE_DAYS) {
+    return [`Cascade Prompt model registry is stale (${ageDays} days old)`];
+  }
+  return [];
+}
 
 export interface WorkGraphDocument {
   path: string;
@@ -452,6 +640,193 @@ async function validateRuntimePackage(errors: string[]): Promise<void> {
   }
 }
 
+async function validateRoutingContracts(
+  config: Record<string, any>,
+  errors: string[],
+): Promise<void> {
+  for (const path of ["AGENTS.md", "CODEX.md", "README.md", ".codex/README.md"]) {
+    const route = inlineNonAtomicRoute(await readText(rootPath(path)));
+    if (!route) errors.push(`${path} missing inline non-atomic route`);
+    else errors.push(...routeOrderErrors(path, route));
+  }
+
+  let harnessConfig: Record<string, any>;
+  try {
+    harnessConfig = Bun.YAML.parse(await readText(rootPath("harness.config.yaml"))) as Record<string, any>;
+  } catch (error) {
+    errors.push(`invalid harness.config.yaml routing contract: ${errorMessage(error)}`);
+    return;
+  }
+  const harnessRoute = harnessConfig.routing?.non_atomic_fallback_path;
+  if (!Array.isArray(harnessRoute)) {
+    errors.push("harness.config.yaml missing routing.non_atomic_fallback_path");
+  } else {
+    errors.push(...routeOrderErrors("harness.config.yaml", harnessRoute.join(" -> ")));
+  }
+
+  const configRoute = config.cascade?.fallback_non_atomic;
+  if (!Array.isArray(configRoute)) {
+    errors.push(".codex/config.toml missing cascade.fallback_non_atomic");
+  } else {
+    errors.push(...routeOrderErrors(".codex/config.toml", configRoute.join(" -> "), CONFIG_NON_ATOMIC_ROUTE));
+  }
+  if (config.cascade?.conditional_iteration_planning !== "plan-iterations") {
+    errors.push(".codex/config.toml must route conditional iteration planning to plan-iterations");
+  }
+}
+
+async function validateRepoPlugin(errors: string[]): Promise<void> {
+  let marketplace: Record<string, any>;
+  let manifest: Record<string, any>;
+  try {
+    marketplace = await readJson<Record<string, any>>(rootPath(REPO_PLUGIN_MARKETPLACE));
+    manifest = await readJson<Record<string, any>>(rootPath(REPO_PLUGIN_ROOT, ".codex-plugin/plugin.json"));
+  } catch (error) {
+    errors.push(`invalid repo plugin metadata: ${errorMessage(error)}`);
+    return;
+  }
+  errors.push(...repoPluginMetadataErrors(marketplace, manifest));
+
+  const pluginRoot = rootPath(REPO_PLUGIN_ROOT);
+  const skillsRoot = resolve(pluginRoot, String(manifest.skills ?? ""));
+  if (!isWithin(pluginRoot, skillsRoot) || !(await isDirectory(skillsRoot))) {
+    errors.push(`${REPO_PLUGIN_NAME} skills path must stay inside the plugin and exist`);
+  } else {
+    const skillFiles = await walkFiles(skillsRoot, {
+      include: (path) => path.endsWith("/SKILL.md"),
+    });
+    if (!skillFiles.length) errors.push(`${REPO_PLUGIN_NAME} contains no skills`);
+    for (const path of skillFiles) {
+      try {
+        const frontmatter = parseYamlFrontmatterRecord(await readText(path));
+        if (frontmatter.name !== basename(dirname(path))) {
+          errors.push(`${REPO_PLUGIN_NAME} skill name mismatch: ${rel(path)}`);
+        }
+        if (typeof frontmatter.description !== "string" || frontmatter.description.length < 20) {
+          errors.push(`${REPO_PLUGIN_NAME} skill description is not trigger-focused: ${rel(path)}`);
+        }
+      } catch (error) {
+        errors.push(`invalid ${REPO_PLUGIN_NAME} skill YAML: ${rel(path)}: ${errorMessage(error)}`);
+      }
+    }
+  }
+
+  const assetPaths = [
+    manifest.interface?.composerIcon,
+    manifest.interface?.logo,
+    manifest.interface?.logoDark,
+    ...(Array.isArray(manifest.interface?.screenshots) ? manifest.interface.screenshots : []),
+  ].filter((path): path is string => typeof path === "string");
+  for (const assetPath of assetPaths) {
+    const resolvedAsset = resolve(pluginRoot, assetPath);
+    if (!assetPath.startsWith("./") || !isWithin(pluginRoot, resolvedAsset) || !(await isFile(resolvedAsset))) {
+      errors.push(`${REPO_PLUGIN_NAME} asset path is invalid: ${assetPath}`);
+    }
+  }
+
+  try {
+    const registry = await readJson<Record<string, any>>(
+      rootPath(REPO_PLUGIN_ROOT, "skills/prompt/references/model-system/model-registry.json"),
+    );
+    const index = await readJson<Record<string, any>>(
+      rootPath(REPO_PLUGIN_ROOT, "skills/prompt/runtime/model-index.json"),
+    );
+    errors.push(...modelRegistryFreshnessErrors(registry.checked_at));
+    errors.push(...modelRegistryFreshnessErrors(index.checked_at));
+    if (registry.checked_at !== index.checked_at) {
+      errors.push("Cascade Prompt model registry and runtime index freshness differ");
+    }
+    const registryIds = new Set<string>();
+    const indexIds = new Set<string>();
+    for (const [label, payload, ids] of [
+      ["registry", registry, registryIds],
+      ["runtime index", index, indexIds],
+    ] as const) {
+      if (!Array.isArray(payload.models)) {
+        errors.push(`Cascade Prompt model ${label} must contain a models array`);
+        continue;
+      }
+      for (const model of payload.models) {
+        if (typeof model?.id !== "string" || !model.id.trim()) {
+          errors.push(`Cascade Prompt model ${label} contains an invalid id`);
+          continue;
+        }
+        if (ids.has(model.id)) errors.push(`Cascade Prompt model ${label} duplicates ${model.id}`);
+        ids.add(model.id);
+        if (model.status !== "current-candidate") {
+          errors.push(`Cascade Prompt active model ${label} contains non-current entry: ${model.id}`);
+        }
+      }
+    }
+    for (const id of registryIds) {
+      if (!indexIds.has(id)) errors.push(`Cascade Prompt runtime model index is missing ${id}`);
+    }
+    for (const id of indexIds) {
+      if (!registryIds.has(id)) errors.push(`Cascade Prompt model registry is missing ${id}`);
+    }
+  } catch (error) {
+    errors.push(`invalid ${REPO_PLUGIN_NAME} model registry: ${errorMessage(error)}`);
+  }
+}
+
+const TASK_ADMISSION_HOOK_PATH = ".codex/hooks.json";
+const TASK_ADMISSION_HOOK_COMMAND = "npx --offline --yes bun@1.3.3 \"$(git rev-parse --show-toplevel)/scripts/cascade/task-admission-hook.ts\"";
+const HARNESS_IMPACT_HOOK_COMMAND = "npx --offline --yes bun@1.3.3 \"$(git rev-parse --show-toplevel)/scripts/cascade/harness-impact-hook.ts\"";
+const TASK_ADMISSION_HOOK_MAX_TIMEOUT_SECONDS = 30;
+const TASK_ADMISSION_HOOK_MIN_CONTEXT_CHARACTERS = 1200;
+const TASK_ADMISSION_HOOK_MAX_CONTEXT_CHARACTERS = 16_000;
+
+export function admissionHookWiringErrors(config: Record<string, any>, hooks: Record<string, any>): string[] {
+  const errors: string[] = [];
+  if (config.cascade?.admission_hook !== TASK_ADMISSION_HOOK_PATH) errors.push("Cascade admission hook path is invalid");
+  for (const event of ["UserPromptSubmit", "PreToolUse", "PermissionRequest"]) {
+    const groups = hooks.hooks?.[event];
+    if (!Array.isArray(groups) || groups.length !== 1 || !Array.isArray(groups[0]?.hooks) || groups[0].hooks.length !== 1) {
+      errors.push(`Cascade admission hook wiring is invalid for ${event}`);
+      continue;
+    }
+    if (event === "UserPromptSubmit" ? groups[0].matcher !== undefined : groups[0].matcher !== "*") {
+      errors.push(`Cascade admission hook matcher is invalid for ${event}`);
+    }
+    const hook = groups[0].hooks[0];
+    if (hook?.type !== "command" || hook.command !== TASK_ADMISSION_HOOK_COMMAND) errors.push(`Cascade admission hook command is invalid for ${event}`);
+    if (!Number.isInteger(hook?.timeout) || hook.timeout < 1 || hook.timeout > TASK_ADMISSION_HOOK_MAX_TIMEOUT_SECONDS) {
+      errors.push(`Cascade admission hook timeout is invalid for ${event}`);
+    }
+    if (event === "UserPromptSubmit" && (!Number.isInteger(hook?.additionalContextLimit)
+      || hook.additionalContextLimit < TASK_ADMISSION_HOOK_MIN_CONTEXT_CHARACTERS
+      || hook.additionalContextLimit > TASK_ADMISSION_HOOK_MAX_CONTEXT_CHARACTERS)) {
+      errors.push("Cascade admission hook additional context limit is invalid for UserPromptSubmit");
+    }
+  }
+  const postToolGroups = hooks.hooks?.PostToolUse;
+  if (
+    !Array.isArray(postToolGroups)
+    || postToolGroups.length !== 1
+    || postToolGroups[0]?.matcher !== "apply_patch"
+    || !Array.isArray(postToolGroups[0]?.hooks)
+    || postToolGroups[0].hooks.length !== 1
+  ) {
+    errors.push("Cascade harness impact hook wiring is invalid for PostToolUse");
+  } else {
+    const hook = postToolGroups[0].hooks[0];
+    if (hook?.type !== "command" || hook.command !== HARNESS_IMPACT_HOOK_COMMAND) {
+      errors.push("Cascade harness impact hook command is invalid for PostToolUse");
+    }
+    if (!Number.isInteger(hook?.timeout) || hook.timeout < 1 || hook.timeout > TASK_ADMISSION_HOOK_MAX_TIMEOUT_SECONDS) {
+      errors.push("Cascade harness impact hook timeout is invalid for PostToolUse");
+    }
+    if (
+      !Number.isInteger(hook?.additionalContextLimit)
+      || hook.additionalContextLimit < TASK_ADMISSION_HOOK_MIN_CONTEXT_CHARACTERS
+      || hook.additionalContextLimit > TASK_ADMISSION_HOOK_MAX_CONTEXT_CHARACTERS
+    ) {
+      errors.push("Cascade harness impact hook additional context limit is invalid for PostToolUse");
+    }
+  }
+  return errors;
+}
+
 async function validateConfigToml(
   agents: Map<string, string>,
   errors: string[],
@@ -477,6 +852,8 @@ async function validateConfigToml(
   if (config.cascade?.admission_policy_bundle !== ".codex/task-admission/policies/core.json") {
     errors.push("Cascade admission policy bundle path is invalid");
   }
+  const hooks = await readJson<Record<string, any>>(rootPath(TASK_ADMISSION_HOOK_PATH));
+  errors.push(...admissionHookWiringErrors(config, hooks));
   if (config.cascade?.default !== undefined) {
     errors.push("blanket Cascade default route must be removed after task-admission cutover");
   }
@@ -486,6 +863,8 @@ async function validateConfigToml(
   if (config.product_briefs?.runner !== "scripts/cascade/briefs.ts") {
     errors.push("product brief runner must point to scripts/cascade/briefs.ts");
   }
+  errors.push(...agentConcurrencyErrors(config));
+  await validateRoutingContracts(config, errors);
   const registry = config.harness_agents ?? {};
   const registered = new Set(Object.values(registry));
   for (const agent of agents.keys()) {
@@ -514,6 +893,11 @@ async function validateSkills(
     const contract = rootPath(".codex/agents", agent, "AGENT.md");
     const mapPath = rootPath(".codex/agents", agent, "skills.yaml");
     if (!(await isFile(contract))) errors.push(`agent contract missing: ${rel(contract)}`);
+    else {
+      errors.push(
+        ...agentContractFrontmatterErrors(rel(contract), await readText(contract), agent),
+      );
+    }
     if (!(await isFile(mapPath))) {
       errors.push(`agent skill map missing: ${rel(mapPath)}`);
       continue;
@@ -530,7 +914,13 @@ async function validateSkills(
     }
   }
   for (const [skill, path] of skills) {
-    const frontmatter = parseFrontmatter(await readText(path));
+    let frontmatter: Record<string, any>;
+    try {
+      frontmatter = parseYamlFrontmatterRecord(await readText(path));
+    } catch (error) {
+      errors.push(`invalid skill YAML frontmatter: ${rel(path)}: ${errorMessage(error)}`);
+      continue;
+    }
     if (frontmatter.name !== skill) errors.push(`skill name mismatch: ${rel(path)}`);
     if (!frontmatter.description || frontmatter.description.length < 20) {
       errors.push(`skill description is not trigger-focused: ${rel(path)}`);
@@ -705,11 +1095,19 @@ async function validateLeakage(errors: string[]): Promise<number> {
     rootPath("AGENTS.md"),
     rootPath("CODEX.md"),
     rootPath("README.md"),
+    rootPath("harness.config.yaml"),
+    rootPath("package.json"),
+    rootPath(".agents"),
     rootPath(".codex"),
-    rootPath("docs/patterns"),
+    rootPath("docs"),
+    rootPath("exports"),
+    rootPath("harness-evals"),
+    rootPath("product-evals"),
+    rootPath("scripts"),
   ];
   const files: string[] = [];
   for (const root of roots) {
+    if (!(await exists(root))) continue;
     if (await isFile(root)) files.push(root);
     else files.push(...(await walkFiles(root)));
   }
@@ -747,6 +1145,7 @@ async function validateHarness(errors: string[]): Promise<{
     if (!ALLOWED_DOC_ROOTS.has(entry)) errors.push(`unexpected docs root: docs/${entry}`);
   }
   await validateRuntimePackage(errors);
+  await validateRepoPlugin(errors);
   const skills = await discoverSkills();
   const agents = await discoverAgents();
   await validateConfigToml(agents, errors);

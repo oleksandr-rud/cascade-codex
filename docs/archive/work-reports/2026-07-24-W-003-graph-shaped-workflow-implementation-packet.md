@@ -723,7 +723,7 @@ checks.
 
 This table is historical `CG-001@2` evidence, not current readiness. The
 authoritative current queue is in `CG-001@4`. The designated active worktree was
-`/Users/royrud1902/Documents/cascade-codex` on
+`REPOSITORY_ROOT` on
 `agent/w003-integration-r4-g3`, HEAD `a14a9bc...`. Root applies accepted scoped
 transports without automatically committing, preserves unrelated dirty paths,
 and records target HEAD before/after plus the combined diff fingerprint.

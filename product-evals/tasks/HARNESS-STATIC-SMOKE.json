@@ -1,0 +1,31 @@
+{
+  "schema_version": 3,
+  "id": "HARNESS-STATIC-SMOKE",
+  "kind": "command",
+  "driver": {
+    "type": "direct-process",
+    "adapter": "builtin-direct-process"
+  },
+  "required": true,
+  "timeout_ms": 1000,
+  "command": [
+    "/usr/bin/printf",
+    "cascade-static-ok"
+  ],
+  "process": {
+    "working_directory": "task-root",
+    "environment": {},
+    "interactive": false,
+    "network": "deny",
+    "filesystem": {
+      "read": "host",
+      "write": "task-root"
+    }
+  },
+  "oracle_ids": [
+    "command-exit-zero-v1"
+  ],
+  "policy_ids": [
+    "allow-harness-static-command-v1"
+  ]
+}

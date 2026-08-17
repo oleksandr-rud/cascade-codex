@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "id": "command-failure-fixture",
+  "simulation_scope": "harness",
+  "title": "Strict direct-process expected-failure fixture",
+  "purpose": "Exercise only the deterministic W-005 expected-nonzero command contract.",
+  "population_files": ["product-evals/simulations/harness/command-failure-fixture/populations/actors.json"],
+  "scenario_files": ["product-evals/simulations/harness/command-failure-fixture/scenarios/expected-failure.json"],
+  "world_file": "product-evals/simulations/harness/command-failure-fixture/worlds/world.json",
+  "dataset_file": "product-evals/simulations/harness/command-failure-fixture/datasets/cases.json",
+  "metric_files": ["product-evals/metrics/command-exit-one-observed-v1.json"],
+  "treatment_files": ["product-evals/treatments/baseline-v1.json"]
+}

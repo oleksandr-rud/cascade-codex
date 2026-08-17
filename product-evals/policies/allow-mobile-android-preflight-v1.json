@@ -1,0 +1,24 @@
+{
+  "schema_version": 2,
+  "id": "allow-mobile-android-preflight-v1",
+  "version": "2.0.0",
+  "effect": "ALLOW",
+  "scope": {
+    "campaign_ids": ["mobile-provider-preflight"],
+    "task_ids": ["MOBILE-ANDROID-PREFLIGHT"],
+    "task_kinds": ["mobile"],
+    "driver_types": ["platform-automation"],
+    "action_types": [
+      "mobile-launch",
+      "mobile-wait-text",
+      "mobile-capture"
+    ]
+  },
+  "budgets": {
+    "required_dimensions": ["action_count", "output_bytes"],
+    "max_actions": 3,
+    "max_output_bytes": 32768
+  },
+  "redaction_profile": "no-secrets-v1",
+  "reason": "Authorize the bounded Android fixture sequence only after exact device, app, snapshot, and runner preflight succeeds."
+}

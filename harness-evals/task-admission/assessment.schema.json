@@ -1,17 +1,73 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://cascade.local/schemas/task-admission-assessment.v41.schema.json",
   "type": "object",
   "additionalProperties": false,
-  "required": ["schema_version", "status", "total", "passed", "failed", "over_control", "under_control", "trace_complete", "results"],
+  "required": ["schema_version", "policy_bundle_version", "case_set_version", "version_bijection", "status", "total", "metric_population", "passed", "failed", "over_control", "under_control", "trace_complete", "axes_complete", "metrics", "results"],
   "properties": {
-    "schema_version": { "const": 1 },
+    "schema_version": { "const": 41 },
+    "policy_bundle_version": { "const": "cascade-core@42" },
+    "case_set_version": { "const": 41 },
+    "version_bijection": { "const": true },
     "status": { "enum": ["PASS", "FAIL"] },
-    "total": { "type": "integer", "minimum": 1 },
-    "passed": { "type": "integer", "minimum": 0 },
-    "failed": { "type": "integer", "minimum": 0 },
-    "over_control": { "type": "integer", "minimum": 0 },
-    "under_control": { "type": "integer", "minimum": 0 },
+    "total": { "type": "integer", "minimum": 981, "maximum": 981 },
+    "metric_population": { "type": "integer", "minimum": 981, "maximum": 981 },
+    "passed": { "type": "integer", "minimum": 0, "maximum": 981 },
+    "failed": { "type": "integer", "minimum": 0, "maximum": 981 },
+    "over_control": { "type": "integer", "minimum": 0, "maximum": 981 },
+    "under_control": { "type": "integer", "minimum": 0, "maximum": 981 },
     "trace_complete": { "type": "boolean" },
-    "results": { "type": "array" }
+    "axes_complete": { "type": "boolean" },
+    "metrics": {
+      "type": "object", "additionalProperties": false,
+      "required": ["relation_correct", "intent_correct", "workload_correct", "route_correct", "controls_exact", "skills_exact", "blocked_correct", "persistence_applicable", "persistence_correct", "claims_applicable", "claims_correct"],
+      "properties": {
+        "relation_correct": { "$ref": "#/$defs/count" },
+        "intent_correct": { "$ref": "#/$defs/count" },
+        "workload_correct": { "$ref": "#/$defs/count" },
+        "route_correct": { "$ref": "#/$defs/count" },
+        "controls_exact": { "$ref": "#/$defs/count" },
+        "skills_exact": { "$ref": "#/$defs/count" },
+        "blocked_correct": { "$ref": "#/$defs/count" },
+        "persistence_applicable": { "$ref": "#/$defs/count" },
+        "persistence_correct": { "$ref": "#/$defs/count" },
+        "claims_applicable": { "$ref": "#/$defs/count" },
+        "claims_correct": { "$ref": "#/$defs/count" }
+      }
+    },
+    "results": {
+      "type": "array", "minItems": 981, "maxItems": 981,
+      "items": {
+        "type": "object", "additionalProperties": false,
+        "required": ["id", "criterion", "status", "relation_match", "intent_match", "workload_match", "skills_match", "persistence_match", "claims_match", "expected_route", "actual_route", "missing_controls", "unexpected_controls", "forbidden_controls", "missing_skills", "unexpected_skills", "blocked_match", "trace_complete", "over_control", "under_control"],
+        "properties": {
+          "id": { "type": "string", "pattern": "^TA-C[0-9]{3}$" },
+          "criterion": { "type": "string", "pattern": "^TR-[0-9]{2,3}$" },
+          "status": { "enum": ["PASS", "FAIL"] },
+          "relation_match": { "type": "boolean" },
+          "intent_match": { "type": "boolean" },
+          "workload_match": { "type": "boolean" },
+          "skills_match": { "type": "boolean" },
+          "persistence_match": { "type": "boolean" },
+          "claims_match": { "type": "boolean" },
+          "expected_route": { "enum": ["NO_WORKFLOW", "DIRECT_READ", "DIRECT_CHANGE", "BOUNDED", "CONNECTED", "PROGRAM"] },
+          "actual_route": { "enum": ["NO_WORKFLOW", "DIRECT_READ", "DIRECT_CHANGE", "BOUNDED", "CONNECTED", "PROGRAM"] },
+          "missing_controls": { "$ref": "#/$defs/controls" },
+          "unexpected_controls": { "$ref": "#/$defs/controls" },
+          "forbidden_controls": { "$ref": "#/$defs/controls" },
+          "missing_skills": { "$ref": "#/$defs/skills" },
+          "unexpected_skills": { "$ref": "#/$defs/skills" },
+          "blocked_match": { "type": "boolean" },
+          "trace_complete": { "type": "boolean" },
+          "over_control": { "type": "boolean" },
+          "under_control": { "type": "boolean" }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "count": { "type": "integer", "minimum": 0, "maximum": 981 },
+    "controls": { "type": "array", "uniqueItems": true, "items": { "enum": ["BASE", "GROUNDED_READ", "ATOMIC_CHANGE", "STANDARD_CHANGE", "CONNECTED_DELIVERY", "PROGRAM_CONTROL", "SIMULATION_GOVERNANCE", "SECURITY_ASSURANCE", "FULL_SCAN", "RELEASE_EVIDENCE"] } },
+    "skills": { "type": "array", "uniqueItems": true, "items": { "type": "string", "pattern": "^[a-z0-9-]+(?::[a-z0-9-]+)?$" } }
   }
 }

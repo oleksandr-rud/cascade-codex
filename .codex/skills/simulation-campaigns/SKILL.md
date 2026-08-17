@@ -22,6 +22,8 @@ role and does not treat an authored campaign as an executed result.
    - `product-evals/campaigns/`
    - simulation intakes and Task Envelope snapshots under
      `product-evals/intakes/harness/` or `product-evals/intakes/product/`;
+   - authored product seed bindings under
+     `product-evals/intakes/product/seed-bindings/`;
    - `product-evals/tasks/`
    - shared simulation schemas under `product-evals/simulations/`;
    - framework-only simulation fixtures under `product-evals/simulations/harness/`;
@@ -133,10 +135,22 @@ materially.
    - Reject duplicate IDs, unknown references, stale generated catalogs, and
      ambiguous versions.
    - For product scope, resolve one campaign `intake_file`. Require a READY
-     intake compiled from the current W-031 Task Envelope and a current
+     schema-v6 intake compiled from the current W-031 Task Envelope and a current
      reviewed/approved `PB-XXX` brief. Reject missing, draft, blocked, stale,
-     cross-scope, or campaign-mismatched intakes. Harness scope may use only a
+     cross-scope, campaign-mismatched, or legacy-v1-v5 intakes. Legacy intakes
+     are replacement-only and cannot be READY. Harness scope may use only a
      harness intake and cannot claim product-brief authority.
+   - For product scope, author one campaign `seed_binding_file` after the
+     campaign claims, scenarios, tasks, and source Task Envelope are stable.
+     Bind the exact campaign digest plus Task Envelope ID, revision, request
+     digest, and source digest. Map every active Task Envelope claim exactly
+     once by `source_claim_id` to `SEEDED`, `CONTEXT_ONLY`, or `OUT_OF_SCOPE`.
+     `SEEDED` names at least one current campaign claim and at least one current
+     scenario or task. The other dispositions name no targets and carry a
+     nonempty rationale. Require at least one `SEEDED` row. Do not infer this
+     map from claim text, a product brief, or model similarity; the authored
+     ID map is the sole seed classification artifact. Harness campaigns and
+     harness intakes do not bind this artifact.
    - For persona-derived populations, resolve the approved derivation manifest,
      exact `reviewed` or `approved` product-persona ID/revision/path/digest,
      reproducible generator input digest,
@@ -162,6 +176,10 @@ materially.
      task, policy, target-resource, and driver conflict keys.
    - Resolve each referenced policy against the exact campaign, task, kind,
      driver, action, and optional path or command prefix before provisioning.
+     Bind every populated intake action with
+     `action_binding_version: cascade-action-binding-v2` and its current
+     `action_binding_digest`; do not author or accept the legacy
+     `action_digest` field.
      Zero applicable referenced policies and ambiguous matches fail closed.
      Require the task's declared policy IDs, the intake's computed applicable
      policy IDs, and their current content digests to be exactly equal.
@@ -224,6 +242,13 @@ materially.
 ## Hard Gates
 
 - Unknown or duplicate references and stale catalogs invalidate selection.
+- A product campaign without an exact READY authored seed binding, complete
+  active-source-claim coverage, or current campaign/source digests cannot
+  produce a READY intake or dispatch. Unknown mapping targets, duplicate or
+  missing source claim IDs, and implicit text matching fail closed.
+- Intake schemas v1 through v5 are replacement-only and cannot be READY. Every
+  populated schema-v6 action requires the exact action-binding-v2 version and
+  digest; legacy action-digest projections fail closed.
 - A referenced policy that cannot apply to its task action invalidates
   selection before provisioning; an unreferenced action remains default-denied
   at execution.
@@ -274,6 +299,8 @@ report.
 - campaign and run identity;
 - contour, driver, tier, platform, runtime, and selection reason;
 - resolved source graph and digests;
+- authored product seed-binding path/digest and exact source-claim mapping
+  projection, when product-scoped;
 - population/scenario coverage, dataset partitions, metrics, treatment
   identities, and calibration status;
 - persona derivation identities and allocation semantics, plus proposal IDs

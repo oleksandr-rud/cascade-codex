@@ -1,13 +1,13 @@
 ---
 name: orchestrate-work
-description: Use to discover, split, merge, serialize, schedule, track, or connect one or several worklines when a request crosses dependencies, ownership, write scopes, shared decisions, validation gates, or handoff boundaries.
+description: Use to instantiate, split, merge, serialize, schedule, track, or connect committed-horizon worklines when current delivery crosses dependencies, ownership, write scopes, shared decisions, validation gates, or handoff boundaries.
 ---
 
 # Orchestrate Work
 
-Use this skill before or during non-atomic work when there may be multiple
-independent lanes, dynamic subtasks, incoming specs, or parallel validation
-opportunities.
+Use this skill after the current delivery horizon is known and that horizon may
+need multiple independently tracked obligations, lanes, dynamic subtasks, or
+parallel validation opportunities.
 
 This skill coordinates work; it does not patch product/runtime code by itself.
 
@@ -24,17 +24,19 @@ permissions, review, validation, or closeout.
 ## Source Order
 
 1. Latest user request and active goal.
-2. `docs/work/active.md`, relevant `docs/work/graphs/*.md`, any relevant
+2. Current `plan-iterations` output when delivery spans horizons, otherwise the
+   current slice from `plan-change`.
+3. `docs/work/active.md`, relevant `docs/work/graphs/*.md`, any relevant
    `docs/work/lanes/*.md`, and `docs/work/examples/` when creating the first
    populated lane or graph in a target repository.
-3. Current code, tests, changed files, and planned validation commands.
-4. `CODEX.md`, `AGENTS.md`, `harness.config.yaml`, and relevant workflow
+4. Current code, tests, changed files, and planned validation commands.
+5. `CODEX.md`, `AGENTS.md`, `harness.config.yaml`, and relevant workflow
    skills.
-5. `docs/patterns/workflow/index.md` and
+6. `docs/patterns/workflow/index.md` and
    `docs/patterns/workflow/fragments/_index.md`; load only materially plausible
    `GF-*.fragment.json` definitions after the impact scan.
-6. `docs/structure.md` for lane/example/report write targets.
-7. `docs/patterns/context-memory/index.md` when workline planning must survive
+7. `docs/structure.md` for lane/example/report write targets.
+8. `docs/patterns/context-memory/index.md` when workline planning must survive
    compaction, handoff, or replanning.
 
 ## Task Routing Table
@@ -42,10 +44,10 @@ permissions, review, validation, or closeout.
 | Task type | Next route |
 |---|---|
 | New project setup, harness install, onboarding, or adaptation | `project-onboarder` or `adapt-harness` |
-| New feature, ticket, screenshot, design note, or source spec | `ingest-spec -> plan-change` |
+| New feature, ticket, screenshot, design note, or source spec | `ingest-spec -> plan-change -> plan-iterations when horizons apply` |
 | Unclear product/design intent, missing persona, or missing journey | `discover` |
 | Behavior-visible change | `functional-qa` before or alongside implementation evidence |
-| Implementation, bug fix, or refactor | `plan-change -> implement-change` unless atomic |
+| Implementation, bug fix, or refactor | `plan-change -> plan-iterations when horizons apply -> implement-change` unless atomic |
 | Cross-boundary architecture risk | `architecture-review -> plan-change` |
 | Existing lanes/worklines need graph reconstruction, stale-state audit, deduplication, or disposition | `reconcile-work-graph` before graph cutover |
 | Standards/Spec review for WIP, branch, or PR | `review-change` |
@@ -63,6 +65,12 @@ A workline is one bounded obligation with an outcome, primary criteria,
 dependencies, ownership/write scope, expected output, and validation seam. A
 workline is a planning unit; create a separate active lane only when it needs
 independent tracking, ownership, validation, integration, or handoff.
+
+Discover and instantiate worklines only from feasible committed first-iteration scope.
+`NEXT`, `LATER`, and `DEFERRED` candidates remain owned by the iteration plan
+until promotion; do not register, graph, dispatch, or assign active workline
+IDs to the whole roadmap. MVP membership is orthogonal to delivery disposition
+and never activates a candidate.
 
 Do not ask the user how many worklines or plans to create unless the number is
 itself an explicit delivery constraint. Derive the smallest coherent set:
@@ -91,8 +99,9 @@ and materialization rules after discovery.
 
 ## Graph Fragment Selection And Composition
 
-For non-atomic product or implementation work, compose from the reusable
-catalog under `docs/patterns/workflow/fragments/` before finalizing worklines.
+For committed non-atomic product or implementation work whose impact signals
+justify reusable composition, compose from the catalog under
+`docs/patterns/workflow/fragments/` before finalizing current worklines.
 Fragments are planning inputs, not active lanes, Task Graph nodes,
 Coordination Graph entries, or runtime objects.
 
@@ -327,8 +336,8 @@ nodes whose gates and ownership constraints are satisfied. If the declared
 execution surface is unavailable, report `BLOCKED`; do not silently substitute
 another surface.
 
-`max_threads` is an internal agent-execution capacity limit. It is not a number
-of user-visible tasks and never triggers automatic dispatch.
+Agent-execution capacity is a runtime limit. It is not a number of user-visible
+tasks and never triggers automatic dispatch.
 
 ## Status Reconciliation Rules
 
@@ -434,58 +443,61 @@ planning implementation.
 
 1. Discover candidate worklines without a target count and record why each is
    selected, merged, serialized, deferred, or rejected.
-2. Evaluate materially plausible graph fragments and overlays, bind selected
+2. Bind discovery to feasible committed first-iteration scope and reject activation of
+   next, later, deferred, or removed candidates.
+3. Evaluate materially plausible graph fragments and overlays, bind selected
    ports, resolve actor/role, skill, test, environment, evidence, and evaluator
    contracts, and record explicit omission consequences.
-3. Verify every request criterion and provided port has one primary workline
+4. Verify every committed first-iteration criterion and provided port has one primary workline
    owner and no
    workline lacks an independently meaningful outcome or validation seam.
-4. Classify execution as `single-lane`, `parallel-sectioning`, `parallel-voting`,
+5. Classify execution as `single-lane`, `parallel-sectioning`, `parallel-voting`,
    `orchestrator-workers`, or `evaluator-optimizer`.
-5. Record only instantiated lanes in `docs/work/active.md`; reserve
+6. Record only instantiated lanes in `docs/work/active.md`; reserve
    "materialization" for applying accepted workline changes to an active
    worktree.
-6. Create lane packets only for worklines that need more detail than a row or
+7. Create lane packets only for worklines that need more detail than a row or
    must preserve connected request-level planning context.
-7. Use `docs/work/examples/` when a first-time lane needs a populated model.
-8. Assign each lane a next gate from the task routing table.
-9. Apply lane boundary detection before authoring Feature Impact Matrix rows.
-10. Track dependencies, file ownership, source inputs, and MCP/tool context
+8. Use `docs/work/examples/` when a first-time lane needs a populated model.
+9. Assign each lane a next gate from the task routing table.
+10. Apply lane boundary detection before authoring Feature Impact Matrix rows.
+11. Track dependencies, file ownership, source inputs, and MCP/tool context
    before starting edits.
-11. Decide Task Graph and Coordination Graph applicability separately. If a
+12. Decide Task Graph and Coordination Graph applicability separately. If a
     Coordination Graph applies, create/reference its first-class entry from
     `docs/work/work-graph-template.md` and
     record the sole owner, canonical worklines/edges, dispatch/transport
     bindings, gates, materialization, batches, repair, terminal gate, and
     plan/graph revisions.
-12. Reject cycles, duplicate IDs, dangling fragment ports, unsupported required
+13. Reject cycles, duplicate IDs, dangling fragment ports, unsupported required
     fragment capabilities, contradictory dispositions, critical open definitions, undefined resume
     routes, invalid transitions, dual authority, and ambiguous state,
     integration, or materialization ownership before
     scheduling.
-13. For an ownership transfer, increment graph revision and keep both prior and
+14. For an ownership transfer, increment graph revision and keep both prior and
     incoming owners mutation-blocked until explicit handoff acceptance records
     the incoming owner and revision.
-14. Recompute graph readiness and derived frontier from authoritative state;
+15. Recompute graph readiness and derived frontier from authoritative state;
     schedule only current `READY` nodes/worklines and require accepted
     producer-gate evidence plus immutable transport/presence proof for dependent
     worktrees.
-15. During replanning, preserve fragment-instance and workline IDs where their
+16. During replanning, preserve fragment-instance and workline IDs where their
     contracts remain current; record added, merged, split, omitted, serialized,
     invalidated, and superseded fragments/worklines.
-16. For dedicated worktrees, define the Materialization Queue, dirty-target
+17. For dedicated worktrees, define the Materialization Queue, dirty-target
     blocking, no-commit boundary, Batch Evaluation Matrix, integrated target
     HEAD/diff binding, and partial-repair route before dispatch.
-17. Project accepted evidence into `docs/work/active.md` before closeout; do not
+18. Project accepted evidence into `docs/work/active.md` before closeout; do not
     make it a second authority. Reconcile proven-complete checked lanes
     automatically and synchronize their registry, graph, lane, and receipt
     state.
-18. Write a report under `docs/work/reports/` only when requested, multi-turn,
+19. Write a report under `docs/work/reports/` only when requested, multi-turn,
    blocked, or decision-heavy.
 
 ## Output
 
 - candidate and selected workline map with boundary rationale;
+- committed delivery-horizon identity and excluded future candidate horizons;
 - graph-fragment disposition ledger, instance/version map, port bindings,
   omission consequences, resolved actors/roles, skill calls, test commands,
   fixtures/environments, evaluator authorities, overlays, and emission mode;

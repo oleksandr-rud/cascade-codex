@@ -1,0 +1,9 @@
+{
+  "schema_version": 1,
+  "id": "expected-command-failure-v1",
+  "goal": "Preserve an expected nonzero exit and evaluate it through the declared oracle.",
+  "actor_ids": ["command-failure-actor"],
+  "initial_state": {},
+  "stop_conditions": ["declared expected-nonzero oracle passes"],
+  "claim_ids": ["command-expected-failure-execution"]
+}

@@ -1,14 +1,14 @@
 # Work Lane: W-006 Browser Task Assessment And Refactor
 
-Status: `OPEN`
+Status: `IN_PROGRESS`
 Owner: `agent-engineer`
 Created: 2026-07-27
 Lane Model: `single-lane`
-Next Gate: `implement-change after W-004 Gate A`
-Execution Surface: `internal-subagent`
-Dispatch State: `NOT_AUTHORIZED`
-Dispatch Authorization: `none`
-Runtime Handle: `none`
+Next Gate: `obtain focused review, live Computer Use disposition, and Gate A acceptance`
+Execution Surface: `root`
+Dispatch State: `RUNNING`
+Dispatch Authorization: explicit user implementation instruction, 2026-08-08
+Runtime Handle: `current root task`
 
 ## Request
 
@@ -73,7 +73,7 @@ Out:
 
 | Campaign ID | Tier | Required Evidence Boundary | Status |
 |---|---|---|---|
-| `browser-simulation-smoke` | deterministic | Controlled fixture, exact browser/profile/driver identity, Playwright trace, independent oracle, frozen evidence, and cleanup | `OPEN` |
+| `browser-simulation-smoke` | deterministic | Controlled fixture, exact browser/profile/driver identity, Playwright trace, independent oracle, frozen evidence, cleanup, denied navigation, and failed-effect negatives | `PASS_LOCAL_REVIEW_PENDING`; immutable run `w006-browser-simulation-smoke-20260808-r18` is `VALID`/`COMPLETED`/`FRESH` |
 | `browser-computer-use-canary` | isolated live canary | Screenshot/action loop, policy decisions, injection resistance, action budgets, independent public-state oracle, and isolated-profile cleanup | `NOT_RUN` |
 
 The deterministic smoke is an infrastructure canary only. The Computer Use
@@ -89,21 +89,21 @@ merge authority. This does not create another browser task kind.
 
 | ID | Example | Expected Evidence | Status |
 |---|---|---|---|
-| `BR-001` | Given the controlled maintenance fixture, Playwright completes it through public controls and the oracle verifies visible status. | Playwright trace and oracle | `OPEN` |
-| `BR-002` | Given a Computer Use run, every proposed action is validated, executed, and followed by an observation until budget or completion. | action/observation JSONL | `OPEN` |
-| `BR-003` | Given a forbidden domain, navigation is blocked and recorded without page interaction. | policy event | `OPEN` |
-| `BR-004` | Given a plausible final screenshot but failed backend/file oracle, the task fails. | screenshot plus oracle failure | `OPEN` |
-| `BR-005` | Given prompt injection in page content, it is treated as untrusted input and cannot expand permissions. | negative safety case | `OPEN` |
-| `BR-006` | Given a successful browser smoke, the claim ledger supports only the exact fixture, browser identity, driver, and oracle scope. | scoped claim and coverage row | `OPEN` |
-| `BR-007` | Given repeated runs write the same Playwright evidence path, each campaign freezes its own trace, screenshot, and evidence body before reduction. | independent per-run artifacts | `OPEN` |
+| `BR-001` | Given the controlled maintenance fixture, Playwright completes it through public controls and the oracle verifies visible status. | Playwright trace and oracle | `PASS_LOCAL_REVIEW_PENDING` |
+| `BR-002` | Given a Computer Use run, every proposed action is validated, executed, and followed by an observation until budget or completion. | action/observation JSONL | `PASS_LOCAL_SEAM`; bounded provider-neutral loop and fake batches pass; live provider canary remains `NOT_RUN` |
+| `BR-003` | Given a forbidden domain, navigation is blocked and recorded without page interaction. | policy event | `PASS_CANDIDATE`; optional negative task records W-004 `DENY` before dispatch in immutable r18 |
+| `BR-004` | Given a plausible final screenshot but failed backend/file oracle, the task fails. | screenshot plus oracle failure | `PASS_CANDIDATE`; optional negative task retains screenshot/trace but fails missing `outputs/backend-effect.json` oracle in immutable r18 |
+| `BR-005` | Given prompt injection in page content, it is treated as untrusted input and cannot expand permissions. | negative safety case | `PASS_LOCAL_SEAM`; fake Computer Use batch proves page text cannot alter the authorization callback |
+| `BR-006` | Given a successful browser smoke, the claim ledger supports only the exact fixture, browser identity, driver, and oracle scope. | scoped claim and coverage row | `PASS_LOCAL_REVIEW_PENDING` |
+| `BR-007` | Given repeated runs write the same Playwright evidence path, each campaign freezes its own trace, screenshot, and evidence body before reduction. | independent per-run artifacts | `PASS_LOCAL_REVIEW_PENDING` |
 | `BR-008` | Given an agent invokes the structured browser tool, every requested action passes the same browser policy and oracle boundary as a direct browser task, and the browser result remains independently attributable. | tool-call, browser action/policy trace, and browser result | `OPEN` |
-| `BR-009` | Given one Computer Use response contains several actions, each action is validated immediately before execution and no later action runs after a denial or pending confirmation. | batched action trace, policy decisions, and next screenshot | `OPEN` |
+| `BR-009` | Given one Computer Use response contains several actions, each action is validated immediately before execution and no later action runs after a denial or pending confirmation. | batched action trace, policy decisions, and next screenshot | `PASS_LOCAL_SEAM`; batch normalization, per-action policy, stop-before-denial, and next observation pass focused tests |
 
 ## Feature Impact Matrix
 
 | Feature / Flow | Source Docs Or Spec IDs | Code Areas / Public Contracts | Touched Directly? | Protected Adjacent Behavior | Required Check | Status | Route |
 |---|---|---|---|---|---|---|---|
-| Browser smoke | candidate branch | Playwright tooling, task, fixture | yes | existing deterministic completion proof | replayed smoke | `NOT_RUN` | `implement-change` |
+| Browser smoke | candidate branch | Playwright tooling, task, fixture | yes | existing deterministic completion proof | replayed smoke | `PASS_LOCAL_REVIEW_PENDING` | `validate-change` |
 | Computer Use | current request | browser driver/action policy | yes | deterministic browser remains cheaper default | driver matrix test | `NOT_RUN` | `functional-qa` |
 | Desktop reuse | W-009 | visual action/observation contract | no | browser-specific DOM and profile logic stays local | adapter API review | `NOT_RUN` | `architecture-review` |
 
@@ -171,29 +171,38 @@ merge authority. This does not create another browser task kind.
 
 | Check | Command Or Evidence | Status |
 |---|---|---|
-| Deterministic browser | controlled fixture campaign | `OPEN` |
-| Isolation/policy | profile, env, domain, filesystem negative probes | `OPEN` |
-| Claims/artifacts | scoped coverage, mutable-path overwrite, and frozen-evidence verification | `OPEN` |
-| Computer Use adapter | fake action-loop self-test | `OPEN` |
+| Deterministic browser | controlled fixture campaign | `PASS_LOCAL_REVIEW_PENDING`; `w006-browser-simulation-smoke-20260808-r18` |
+| Isolation/policy | ephemeral profile, external-network deny, upload/download deny, action-bound policy evidence | `PASS_LOCAL_REVIEW_PENDING`; pre-dispatch policy deny and runtime external-request interception are frozen as separate optional failures |
+| Claims/artifacts | scoped claim plus per-run screenshot/trace freeze and artifact verification | `PASS_LOCAL_REVIEW_PENDING`; 181-file immutable run verifies fresh at manifest `9774257b28232f9429d51659393a60672515f18082b7b25615aa4dc185566101` |
+| Computer Use adapter | fake action-loop self-test | `PASS_LOCAL_SEAM`; provider execution remains `NOT_RUN` |
 | Live Computer Use | isolated browser canary | `NOT_RUN` |
-| Cleanup | profile/context reset verification | `OPEN` |
+| Cleanup | profile/context reset verification | `PASS_LOCAL_REVIEW_PENDING` |
 
 ## Status Reconciliation
 
-- Last checked: `2026-07-30`
-- Source identity: clean implementation base
-  `master@21ba5288b27700f94ecad92ec0cf3d1e5dca5f29`; accepted WG-001-N03
-  current-source implementation and revision-11 status records applied on top
+- Last checked: `2026-08-08`
+- Source identity: current preserved dirty work against the accepted
+  `WG-001-GI` provisional baseline; browser candidate revision 1 is not yet
+  frozen into the combined program review subject
 - Completion disposition: `KEEP_OPEN`
-- Reason: isolated Playwright harness tooling exists, but the browser campaign
-  adapter, definitions, deterministic evidence, and Computer Use evidence are
-  absent. Required gates remain `OPEN`/`NOT_RUN`.
-- Synchronized surfaces: lane, active registry, report index, and WG-001 plan
-  revision 10.
+- Reason: schema-v4 browser definitions, structured fill/click/navigation action
+  binding,
+  per-action policy decisions, exact Playwright/Chromium binding, local-fixture
+  network isolation, visible-state oracle, per-run screenshot/trace freeze,
+  verified cleanup, denied-action, external-navigation, missing-effect, and
+  bounded Computer Use batch semantics are implemented. The deterministic
+  campaign passes and verifies fresh. Live Computer Use provider execution,
+  the W-012 agent-browser tool seam, independent review, and Gate A acceptance
+  remain `NOT_RUN` or open.
+- Synchronized surfaces: lane, active registry, generated campaign catalog,
+  and WG-001 plan revision 78.
 
 ## Closeout
 
-- Merge evidence: pending.
+- Merge evidence: deterministic candidate run
+  `w006-browser-simulation-smoke-20260808-r18`, manifest
+  `9774257b28232f9429d51659393a60672515f18082b7b25615aa4dc185566101`;
+  release eligibility remains false.
 - Report: program report.
 - Remaining risk: browser-engine and provider drift require version-bound
   evidence.

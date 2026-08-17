@@ -9,6 +9,7 @@ import { main as patternsMain } from "./cascade/patterns";
 import { main as simulationMain } from "./cascade/simulations";
 import { main as targetMain } from "./cascade/target";
 import { main as validateMain } from "./cascade/validate";
+import { main as workMain } from "./cascade/work-audit";
 
 const [command, ...args] = Bun.argv.slice(2);
 
@@ -30,6 +31,8 @@ async function main(): Promise<number> {
       return briefMain(args);
     case "simulation":
       return simulationMain(args);
+    case "work":
+      return workMain(args);
     case "--help":
     case "-h":
     case undefined:
@@ -49,8 +52,9 @@ Usage:
   bun scripts/cascade.ts campaign verify <run-id>
   bun scripts/cascade.ts campaign self-test
   bun scripts/cascade.ts admission validate
-  bun scripts/cascade.ts admission assess --request "..." [--authority VALUE]
+  bun scripts/cascade.ts admission assess --request "..." [--authority UNTRUSTED_CANDIDATE]
     [--task-id SESSION] [--output .artifacts/task-admission/FILE.json]
+    --authority records an untrusted candidate only; it never grants access.
   bun scripts/cascade.ts admission explain --request "..."
   bun scripts/cascade.ts admission check-envelope --file PATH
   bun scripts/cascade.ts admission corpus
@@ -58,6 +62,8 @@ Usage:
   bun scripts/cascade.ts brief validate <brief-id-or-path>
   bun scripts/cascade.ts brief generate <brief-id-or-path> [--check|--write]
   bun scripts/cascade.ts brief check
+  bun scripts/cascade.ts work audit [--json] [--check]
+  bun scripts/cascade.ts work automation-prompt [--mode audit|orchestrate]
   bun scripts/cascade.ts simulation init <simulation-id> --owner-lane W-NNN
     [--title "Title"] [--reference-date YYYY-MM-DD] [--dry-run]
     Output root: product-evals/simulations/product/<simulation-id>/
@@ -68,6 +74,7 @@ Usage:
     --disposition-id <id> --decision <accepted|rejected|needs-evidence|simulator-repair>
     --reviewer <identity> [--evidence-manifest <path>] (--dry-run|--write)
   bun scripts/cascade.ts simulation intake <campaign-id-or-path> --envelope <path>
+    --expected-request-digest <sha256> --expected-source-digest <sha256>
     [--brief PB-NNN|docs/specs/.../brief.yaml] [--check|--write]
 `);
       return 0;

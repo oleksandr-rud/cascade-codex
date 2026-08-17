@@ -1,0 +1,60 @@
+{
+  "schema_version": 6,
+  "id": "TERMINAL-SIGNAL-SMOKE",
+  "kind": "terminal",
+  "driver": {
+    "type": "pty",
+    "adapter": "builtin-pty"
+  },
+  "required": true,
+  "timeout_ms": 5000,
+  "command": [
+    "/bin/sh",
+    "-c",
+    "trap 'printf \"INTERRUPTED\\n\"; exit 0' INT; printf 'READY\\n'; while :; do sleep 1; done"
+  ],
+  "terminal": {
+    "working_directory": "task-root",
+    "environment": {},
+    "network": "deny",
+    "filesystem": {
+      "read": "host",
+      "write": "task-root"
+    },
+    "cols": 80,
+    "rows": 24,
+    "steps": [
+      {
+        "type": "terminal-wait",
+        "text": "READY",
+        "timeout_ms": 1000
+      },
+      {
+        "type": "terminal-signal",
+        "signal": "SIGINT"
+      },
+      {
+        "type": "terminal-wait",
+        "text": "INTERRUPTED",
+        "timeout_ms": 2000
+      },
+      {
+        "type": "terminal-capture",
+        "label": "interrupted"
+      }
+    ],
+    "expected_exit_code": 0,
+    "evidence": {
+      "raw_stream": true,
+      "transcript": true,
+      "final_screen": true
+    }
+  },
+  "oracle_ids": [
+    "terminal-completed-v1"
+  ],
+  "policy_ids": [
+    "allow-terminal-signal-smoke-spawn-v1",
+    "allow-terminal-signal-smoke-steps-v1"
+  ]
+}

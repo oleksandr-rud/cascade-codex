@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "id": "browser-local-fixture",
+  "simulation_scope": "harness",
+  "title": "Deterministic local browser fixture",
+  "purpose": "Exercise only the W-006 structured Playwright adapter contract.",
+  "population_files": ["product-evals/simulations/harness/browser-local-fixture/populations/actors.json"],
+  "scenario_files": ["product-evals/simulations/harness/browser-local-fixture/scenarios/complete-task.json"],
+  "world_file": "product-evals/simulations/harness/browser-local-fixture/worlds/world.json",
+  "dataset_file": "product-evals/simulations/harness/browser-local-fixture/datasets/cases.json",
+  "metric_files": ["product-evals/metrics/browser-completion-rate-v1.json"],
+  "treatment_files": ["product-evals/treatments/baseline-v1.json"]
+}

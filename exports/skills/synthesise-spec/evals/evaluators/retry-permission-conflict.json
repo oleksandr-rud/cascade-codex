@@ -1,0 +1,66 @@
+{
+  "schema_version": 1,
+  "mechanical_type": "text_contract",
+  "depth_band": "gated",
+  "expected_readiness": "NEEDS_INPUT",
+  "question_min": 3,
+  "question_max": 3,
+  "diagram_min": 0,
+  "diagram_max": 0,
+  "allowed_level2_headings": [
+    "Readiness",
+    "Source Inventory",
+    "Established Facts",
+    "Conflicts Or Invariant Gap",
+    "Questions",
+    "Affected Artifacts",
+    "Next Owner Or Action"
+  ],
+  "required_headings": [
+    "Readiness",
+    "Source Inventory",
+    "Established Facts",
+    "Conflicts Or Invariant Gap",
+    "Questions",
+    "Affected Artifacts",
+    "Next Owner Or Action"
+  ],
+  "required_patterns": [
+    "NEEDS_INPUT",
+    "PROD-017",
+    "OPS-009",
+    "Returns Governance Committee",
+    "Carrier Integration Council",
+    "15-minute",
+    "durable server-side",
+    "unknown outcome",
+    "Decision:",
+    "Why it matters:",
+    "Recommended default:",
+    "If different:"
+  ],
+  "forbidden_patterns": [
+    "## Product And Change",
+    "## Expected Outputs",
+    "current code is authoritative for the target permission"
+  ],
+  "max_words": 1200,
+  "semantic_anchors": {
+    "must_preserve": [
+      "two approved permission sources materially conflict and no supersession authority is defined",
+      "current permissive code and draft design establish current or proposed state, not intended policy",
+      "one question asks the Returns Governance Committee to resolve permission precedence",
+      "a separate question asks the Carrier Integration Council to define unknown-outcome reconciliation and when a new external mutation is safe",
+      "a third question requires durable race-safe enforcement if the one-retry 15-minute warehouse-agent exception is approved",
+      "the output asks no more than three material questions using all four required labels",
+      "the current immediate new-request retry remains an established unsafe defect",
+      "no polished final specification is presented"
+    ],
+    "must_avoid": [
+      "choosing either permission rule without authority",
+      "using current behavior as product intent",
+      "collapsing permission and unknown-outcome safety into one vague question",
+      "presenting immediate new-request retry as safe"
+    ]
+  }
+}

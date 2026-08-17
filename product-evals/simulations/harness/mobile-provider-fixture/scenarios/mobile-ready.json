@@ -1,0 +1,9 @@
+{
+  "schema_version": 1,
+  "id": "mobile-ready-v1",
+  "goal": "Verify an exact snapshot-bound mobile provider before any action dispatch.",
+  "actor_ids": ["mobile-provider-actor"],
+  "initial_state": {},
+  "stop_conditions": ["provider preflight blocks or the required mobile completion oracle passes"],
+  "claim_ids": ["mobile-platform-execution"]
+}

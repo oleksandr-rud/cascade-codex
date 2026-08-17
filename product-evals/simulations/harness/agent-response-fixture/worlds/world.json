@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "id": "agent-response-fixture-world-v1",
+  "fixture_file": "product-evals/simulations/harness/agent-response-fixture/worlds/world.fixture.json",
+  "allowed_actions": ["assert"],
+  "negative_behaviors": [
+    "prompt sources cannot include evaluation leakage markers",
+    "tools and network access are denied",
+    "a proposed next route is not an accepted handoff"
+  ],
+  "cleanup": { "reset_to_fixture": true }
+}

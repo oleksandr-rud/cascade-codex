@@ -60,6 +60,26 @@ Do not use it to author, execute, or aggregate a cross-surface campaign
 portfolio. Route those phases to `simulation-campaigns`,
 `simulation-execution`, and `simulation-evaluation`.
 
+## Proportional Hook Route
+
+The post-patch harness-impact hook is an advisory classifier. It activates only
+for actual harness-evaluation implementation, assertion, or judge-contract
+paths. Do not treat a general Cascade, product, documentation, or test change
+as a harness-evaluation request merely because the global validator or catalog
+also observes that file.
+
+- `MECHANICAL_CHECK` requires catalog freshness and the deterministic eval
+  self-test, not a live model run.
+- `ASSERTION_REVIEW` requires inspection of the changed trigger, scenario,
+  expectation, or role assertion. Run only affected live cases when that
+  assertion cannot be decided mechanically.
+- `JUDGE_CONTRACT_REVIEW` requires bounded judge calibration/adversarial cases,
+  not unrelated target scenarios.
+
+Record the hook decision, changed harness paths, checks run, assertion
+disposition, and focused live review status in validation output. The hook does
+not grant authority, execute an evaluator, or prove a pass.
+
 ## Evaluation Loop
 
 1. Inventory all discovered skills and agents. The source case registry must

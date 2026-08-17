@@ -1,0 +1,15 @@
+{
+  "schema_version": 1,
+  "id": "agent-standalone-codex-actors-v1",
+  "source": {
+    "kind": "synthetic",
+    "description": "Bounded harness canary actor for one explicit-instruction Codex runtime; it does not represent product users.",
+    "minimized": true
+  },
+  "actors": [{
+    "id": "agent-standalone-codex-actor",
+    "weight": 1,
+    "behavior": { "strategy": "respond only from the supplied maintenance input" },
+    "slices": ["agent-standalone-codex"]
+  }]
+}

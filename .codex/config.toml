@@ -16,8 +16,8 @@ fallback_non_atomic = [
   "ingest-spec",
   "docs-impact-map",
   "pattern-context",
-  "orchestrate-work",
   "plan-change",
+  "orchestrate-work",
   "functional-qa",
   "implement-change",
   "review-change",
@@ -28,19 +28,17 @@ fallback_non_atomic = [
 conditional_discovery = "discover"
 conditional_business_analysis = "market-validation"
 conditional_spec_composition = "compose-spec"
+conditional_iteration_planning = "plan-iterations"
 conditional_harness_evaluation = "harness-evaluation"
+optional_dynamic_actor_simulation = "cascade-simulations:simulate"
 conditional_simulation_campaigns = "simulation-campaigns"
 conditional_simulation_execution = "simulation-execution"
 conditional_simulation_evaluation = "simulation-evaluation"
 test_autorepair_condition = "only if stale tests"
 exception_paths = ["issue-intake"]
 
-[agents]
-# Internal root-plus-subagent execution capacity only. This value neither
-# counts user-visible Codex tasks nor authorizes automatic dispatch.
-max_threads = 6
-max_depth = 1
-
+# Agent concurrency is intentionally left to the active Codex runtime so this
+# project config remains portable across supported client versions.
 [memory]
 glossary = "docs/glossary.md"
 work = "docs/work"

@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title desc">
+  <title id="title">Cascade Prompt</title>
+  <desc id="desc">A layered cascade and prompt chevron on a dark square.</desc>
+  <rect width="512" height="512" rx="112" fill="#0F172A"/>
+  <path d="M104 112h304l-68 76H172z" fill="#818CF8"/>
+  <path d="M136 218h240l-60 68H196z" fill="#6366F1"/>
+  <path d="M176 314h160l-48 54h-64z" fill="#4F46E5"/>
+  <path d="M205 154l76 102-76 102" fill="none" stroke="#FFFFFF" stroke-width="34" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M284 358h70" fill="none" stroke="#FFFFFF" stroke-width="34" stroke-linecap="round"/>
+</svg>

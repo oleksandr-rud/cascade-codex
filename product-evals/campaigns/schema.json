@@ -16,7 +16,50 @@
     "task_files",
     "claim_files",
     "policy_files",
-    "oracle_files"
+    "oracle_files",
+    "specialized_evaluation"
+  ],
+  "oneOf": [
+    {
+      "required": [
+        "simulation_file",
+        "intake_file",
+        "seed_binding_file"
+      ],
+      "properties": {
+        "simulation_file": {
+          "pattern": "^product-evals/simulations/product/(?:(?!\\.{1,2}(?:/|$))[^/]+/)+manifest\\.json$"
+        },
+        "intake_file": {
+          "pattern": "^product-evals/intakes/product/(?:(?!\\.{1,2}(?:/|$))[^/]+/)*(?!\\.{1,2}(?:/|$))[^/]+\\.json$"
+        },
+        "seed_binding_file": {
+          "$ref": "#/$defs/seedBindingPath"
+        },
+        "specialized_evaluation": {
+          "type": "null"
+        }
+      }
+    },
+    {
+      "required": [
+        "simulation_file"
+      ],
+      "properties": {
+        "simulation_file": {
+          "pattern": "^product-evals/simulations/harness/(?:(?!\\.{1,2}(?:/|$))[^/]+/)+manifest\\.json$"
+        },
+        "intake_file": {
+          "pattern": "^product-evals/intakes/harness/(?:(?!\\.{1,2}(?:/|$))[^/]+/)*(?!\\.{1,2}(?:/|$))[^/]+\\.json$"
+        },
+        "seed_binding_file": {
+          "type": "null"
+        },
+        "specialized_evaluation": {
+          "$ref": "#/$defs/specializedEvaluation"
+        }
+      }
+    }
   ],
   "properties": {
     "schema_version": {
@@ -148,6 +191,63 @@
     "intake_file": {
       "type": "string",
       "pattern": "^product-evals/intakes/(harness|product)/.+\\.json$"
+    },
+    "seed_binding_file": {
+      "$ref": "#/$defs/seedBindingPath"
+    },
+    "specialized_evaluation": {
+      "oneOf": [
+        { "type": "null" },
+        { "$ref": "#/$defs/specializedEvaluation" }
+      ]
+    }
+  },
+  "$defs": {
+    "specializedEvaluation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["applicability", "route_ids", "trace_ids", "claim_ids", "reason"],
+      "properties": {
+        "applicability": { "enum": ["REQUIRED", "NOT_APPLICABLE"] },
+        "route_ids": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "trace_ids": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "claim_ids": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "reason": { "type": "string", "minLength": 1 }
+      },
+      "oneOf": [
+        {
+          "properties": {
+            "applicability": { "const": "REQUIRED" },
+            "route_ids": { "minItems": 1 },
+            "trace_ids": { "minItems": 1 },
+            "claim_ids": { "minItems": 1 }
+          }
+        },
+        {
+          "properties": {
+            "applicability": { "const": "NOT_APPLICABLE" },
+            "route_ids": { "maxItems": 0 },
+            "trace_ids": { "maxItems": 0 },
+            "claim_ids": { "maxItems": 0 }
+          }
+        }
+      ]
+    },
+    "seedBindingPath": {
+      "type": "string",
+      "pattern": "^product-evals/intakes/product/seed-bindings/(?:\\.*[A-Za-z0-9_-][A-Za-z0-9._-]*/)*\\.*[A-Za-z0-9_-][A-Za-z0-9._-]*\\.json$"
     }
   }
 }

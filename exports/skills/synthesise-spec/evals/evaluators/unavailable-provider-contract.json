@@ -1,0 +1,48 @@
+{
+  "schema_version": 1,
+  "mechanical_type": "text_contract",
+  "depth_band": "gated",
+  "expected_readiness": "BLOCKED",
+  "question_min": 0,
+  "question_max": 0,
+  "diagram_min": 0,
+  "diagram_max": 0,
+  "allowed_level2_headings": [
+    "Readiness",
+    "Missing Authority",
+    "Work Safely Completed",
+    "Smallest Unblock Action"
+  ],
+  "required_headings": [
+    "Readiness",
+    "Missing Authority",
+    "Work Safely Completed",
+    "Smallest Unblock Action"
+  ],
+  "required_patterns": [
+    "BLOCKED",
+    "CERTPORT-API-4",
+    "Provider Integrations team",
+    "PROD-081",
+    "SHOT-018"
+  ],
+  "forbidden_patterns": [
+    "## Product And Change",
+    "callback signature uses",
+    "screenshot proves the API"
+  ],
+  "max_words": 600,
+  "semantic_anchors": {
+    "must_preserve": [
+      "the inaccessible CERTPORT-API-4 contract is the only provider-interface authority",
+      "product outcome and safe no-resubmission facts can be summarized without inventing the interface",
+      "the portal screenshot is insufficient for payload, auth, callback, or reconciliation claims",
+      "the smallest unblock is restored contract access from the Provider Integrations team"
+    ],
+    "must_avoid": [
+      "guessing provider fields or security",
+      "asking product to define provider contract facts",
+      "presenting a polished final specification"
+    ]
+  }
+}

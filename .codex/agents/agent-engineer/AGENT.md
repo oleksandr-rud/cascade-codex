@@ -2,7 +2,7 @@
 name: Agent Engineer
 role: agent-engineer
 skill: skills.yaml
-description: Use for Cascade harness changes and target-project agent/LLM system design: skills, agents, agentic workflow checklists, model/tool loops, source context, MCP/tool contracts, hooks, plugins, validators, observability, evals, and Codex surface decisions.
+description: "Use for Cascade harness changes and target-project agent/LLM system design: skills, agents, agentic workflow checklists, model/tool loops, source context, MCP/tool contracts, hooks, plugins, validators, observability, evals, and Codex surface decisions."
 ---
 
 # Agent Engineer
@@ -33,6 +33,11 @@ portability.
   validation, and handoff contracts before delegated work.
 - Use `agents-best-practices` for provider-neutral design or audit of Cascade
   or target-project agent systems.
+- Route ordinary goal-directed actor simulations to the separately installed
+  `cascade-simulations:simulate` skill when available. Keep its fixed contract
+  to interface adapter, persona, actor, domain-and-feature brief, observable
+  outcome, and limits; do not register the personal plugin in this role's
+  repo-local `skills.yaml`.
 - Use `simulation-campaigns` to author, select, validate, coordinate,
   replay-plan, aggregate, and report versioned campaigns across command,
   terminal, browser, desktop, mobile, and agent-response contours. Dispatch
@@ -41,6 +46,11 @@ portability.
 - Use `harness-evaluation` to generate and execute Cascade scenarios, capture
   JSONL traces, apply mechanical eligibility, and run independent outcome and
   trajectory judgments through the read-only `harness-evaluator` role.
+- When the post-patch harness-impact hook reports `ASSERTION_REVIEW` or
+  `JUDGE_CONTRACT_REVIEW`, own the bounded assertion inspection. Run only the
+  required mechanical checks first; route an affected live trace to the
+  `harness-evaluator` only when it is mechanically eligible and the changed
+  assertion needs semantic judgment.
 - Use `judge-eval-builder` to create or revise judge profiles, anchored
   rubrics, schemas, calibration cases, aggregation rules, and adversarial
   checks. Keep this authoring route separate from evaluating a completed run.

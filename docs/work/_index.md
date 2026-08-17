@@ -5,6 +5,11 @@ Use this folder as the active work memory for Orchestrator.
 ## Files
 
 - `active.md`: active work lanes and active work-graph projection only.
+- `bun scripts/cascade.ts work audit --json --check`: read-only active-lane and
+  work-graph queue audit for interactive or scheduled use.
+- `bun scripts/cascade.ts work automation-prompt --mode audit|orchestrate`:
+  print a bounded Codex heartbeat prompt; orchestration mode continues only
+  already-authorized local work and executes at most one slice per run.
 - `lane-template.md`: template for a lane packet when one row is not enough.
 - `work-graph-template.md`: defaults for multi-workline dependency, dispatch,
   evidence, invalidation, and closeout graphs.

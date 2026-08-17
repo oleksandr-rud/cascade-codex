@@ -94,7 +94,7 @@ cross-workline authority remains in those files.
 | `WL-09` | W-003 rev 5 | dispatch, materialization, batch, and repair mechanics | `W003-WL09` | graph-aware skills and workflow pack | `CG-AG-07` | `CG-AG-09`; source `6ff0966...`, repaired dependent transport through `d6763d7` | `/private/tmp/cascade-w003-wl09-r5-cg1` | `ACCEPTED`; producer transport present in WL-10 and active root |
 | `WL-10` | W-003 rev 5 | direct W-003 to CG-001 cutover | `W003-WL10` | W-003, packet, active row, CG-001, reconciliation report/index | `CG-AG-08`, `CG-AG-09` | `CG-AG-10`; transport `1539836613466a366ada2b10fa8a73b116873489` | `/private/tmp/cascade-w003-wl10-r5-cg1` | `ACCEPTED`; materialized without active-branch commit |
 | `WL-11` | W-003 rev 5 | validator and harness coverage for new contracts | `W003-WL11` | validator and harness-owned paths | `CG-AG-08`, `CG-AG-09` | `CG-AG-11`; transport `0772244f206a3c4e0dab2e280dbff536a8c126a5` | `/private/tmp/cascade-w003-wl11-r5-cg1` | `BLOCKED`; current catalog contains `HX-047..051` beyond the accepted 326-scenario transport |
-| `WL-12` | W-003 rev 24 | root current-head integration, combined validation, evidence aggregation, terminal proposal | root `agent-engineer` | active-worktree plan/graph/packet/report state | preserved `CG-AG-13`, `CG-AG-14`, `CG-MQ-13`, `CG-MQ-14` | accepted `CG-AG-17`; `CG-BATCH-05`; `CG-IV-03` | `/Users/royrud1902/Documents/cascade-codex` | `ACCEPTED`; attempt `21/21`; receipt-only transition under fixed-point exception |
+| `WL-12` | W-003 rev 24 | root current-head integration, combined validation, evidence aggregation, terminal proposal | root `agent-engineer` | active-worktree plan/graph/packet/report state | preserved `CG-AG-13`, `CG-AG-14`, `CG-MQ-13`, `CG-MQ-14` | accepted `CG-AG-17`; `CG-BATCH-05`; `CG-IV-03` | `REPOSITORY_ROOT` | `ACCEPTED`; attempt `21/21`; receipt-only transition under fixed-point exception |
 | `WL-13` | W-003 rev 6 | route-boundary repair | `W003-WL13` | `CODEX.md`; orchestrator role; functional/validation skill contracts | preserved `CG-AG-09`; failed target traces A1/A2 | `CG-AG-13`; immutable repair transport | `/private/tmp/cascade-w003-wl09-r5-cg1` | `ACCEPTED`; attempt `1/2`, transport `bd8104ac...` |
 | `WL-14` | W-003 rev 6 | harness output-contract and 331-scenario transport repair | `W003-WL14` | runner; exact active-root skill-case source; interaction source; generated catalog | preserved `CG-AG-08`, `CG-AG-09`; failed trace A2; current skill-case source and HX-047..051 | `CG-AG-14`; immutable repair transport | `/private/tmp/cascade-w003-wl11-r5-cg1` | `ACCEPTED`; attempt `1/2`, transport `36a067c5...` |
 
@@ -241,7 +241,7 @@ cross-workline authority remains in those files.
 ## Materialization Queue
 
 The designated active worktree is
-`/Users/royrud1902/Documents/cascade-codex` on
+`REPOSITORY_ROOT` on
 `agent/w003-integration-r4-g3`. Historical queue/materialization rows below
 remain bound to HEAD `a14a9bc...` plus their recorded dirty states. The current
 plan-24 fixed point starts from clean committed HEAD

@@ -73,10 +73,11 @@ Use before marking a non-atomic plan `DEFINITION_READY`, before marking it
 - [ ] An unchanged-topology retry changes attempt/history only; it increments
       neither plan revision nor graph revision.
 
-## Adaptive Workline Discovery
+## Slice Composition And Delivery Handoff
 
-- [ ] Non-atomic work evaluated the reusable fragment catalog; atomic work
-      records why catalog and graph emission add no useful structure.
+- [ ] A proportional impact scan decided whether reusable fragment definitions
+      were needed; bounded single-surface work records why catalog loading adds
+      no useful structure.
 - [ ] Every materially plausible delivery fragment and assurance overlay is
       `SELECTED`, `MERGED`, `NOT_APPLICABLE`, or `BLOCKED` with activation
       evidence and an omission consequence.
@@ -101,20 +102,21 @@ Use before marking a non-atomic plan `DEFINITION_READY`, before marking it
       required capabilities, contradictory dispositions, unresolved required
       tests, and cycles before readiness.
 
-- [ ] Candidate worklines were derived from outcomes, criteria, boundaries,
+- [ ] Implementation slices were derived from outcomes, criteria, boundaries,
       writes, dependencies, and validation seams rather than a target count.
-- [ ] The planner did not ask for a number of worklines unless the number itself
-      is a user constraint.
-- [ ] Candidates that share unresolved decisions, state machines, public
-      contracts, or conflicting writes were merged or serialized.
-- [ ] Selected worklines have independently meaningful outputs or validation
-      seams and a deterministic integration/materialization owner.
-- [ ] Every request criterion has exactly one primary workline owner; protected
-      consumers and cross-workline dependencies are visible.
-- [ ] Creating several worklines does not imply delegation or parallel
-      execution without authorization and safety.
-- [ ] New discoveries trigger another boundary pass; the original workline
-      count is not treated as fixed.
+- [ ] The planner did not ask for a number of slices or candidate worklines
+      unless the number itself is a user constraint.
+- [ ] Slices that share unresolved decisions, state machines, public contracts,
+      or inseparable validation were merged or ordered.
+- [ ] Every request criterion has exactly one primary slice owner; protected
+      consumers and dependencies are visible.
+- [ ] Multi-horizon scope routes to `plan-iterations`; only its committed
+      first-iteration scope may route to `orchestrate-work` for active
+      worklines.
+- [ ] Creating slices or future candidates does not imply delegation, active
+      lane creation, graph state, or parallel execution.
+- [ ] New discoveries trigger another boundary pass; the original slice or
+      candidate count is not treated as fixed.
 
 ## Implementation Readiness
 
@@ -130,6 +132,8 @@ Use before marking a non-atomic plan `DEFINITION_READY`, before marking it
       definition, boundary contract, implementation slice, or required check.
 - [ ] The highest useful validation seam proves behavior without coupling only
       to private implementation shape.
+- [ ] The plan identifies either one current coherent slice or a required
+      `plan-iterations` handoff; future scope is not treated as active work.
 
 ## Replanning And Handoff
 

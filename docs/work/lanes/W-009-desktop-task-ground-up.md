@@ -1,14 +1,14 @@
 # Work Lane: W-009 Desktop Task Ground-Up Implementation
 
-Status: `OPEN`
+Status: `IN_PROGRESS`
 Owner: `agent-engineer`
 Created: 2026-07-27
 Lane Model: `single-lane`
-Next Gate: `implement-change after W-006`
-Execution Surface: `internal-subagent`
-Dispatch State: `NOT_AUTHORIZED`
-Dispatch Authorization: `none`
-Runtime Handle: `none`
+Next Gate: `restore Docker provider start health; rerun r5; then focused review and W-006/Gate A acceptance`
+Execution Surface: `root`
+Dispatch State: `AUTHORIZED`
+Dispatch Authorization: explicit user authorization for delegated workline implementation, 2026-08-05
+Runtime Handle: `cascade-desktop-linux-fixture:20260808@sha256:0fda65b94650590b429111bef22ef8f6bae6fe9b4e763f849de725393cea6f85`
 
 ## Request
 
@@ -73,7 +73,7 @@ Out:
 
 | Campaign ID | Tier | Required Evidence Boundary | Status |
 |---|---|---|---|
-| `desktop-linux-fixture-smoke` | deterministic isolated | Linux image/display/app-build identity, native automation, public app/file/accessibility oracle, crash logs, policy decisions, and verified reset | `OPEN` |
+| `desktop-linux-smoke` | deterministic isolated | Linux image/display/app-build identity, native automation, public app/file/accessibility oracle, logs, policy decisions, and verified reset | `BLOCKED`; immutable r4 is valid/fresh and records Docker start timeout plus verified cleanup |
 | `desktop-computer-use-canary` | isolated live canary | Exact OS/image/app-build, screenshot/action loop, app/window/action policies, independent oracle, budgets, and reset | `NOT_RUN` |
 
 macOS and Windows campaign manifests remain `DEFERRED` until matching controlled
@@ -174,8 +174,8 @@ Computer Use evidence cannot cover them.
 
 | Check | Command Or Evidence | Status |
 |---|---|---|
-| Environment provider | provision/reset failure-injection suite | `OPEN` |
-| Deterministic desktop | controlled native fixture campaign | `OPEN` |
+| Environment provider | exact Docker image/preflight plus container create/start/export/reset | `PARTIAL`; create, failure recovery, and reset verified; provider start unhealthy |
+| Deterministic desktop | `desktop-linux-smoke` r4 | `BLOCKED`; valid immutable evidence, no pass claim |
 | Safety | forbidden app/action/account tests | `OPEN` |
 | Computer Use desktop | isolated visual canary | `NOT_RUN` |
 | Platform ledger | Linux/macOS/Windows evidence classification | `OPEN` |
@@ -183,15 +183,16 @@ Computer Use evidence cannot cover them.
 
 ## Status Reconciliation
 
-- Last checked: `2026-07-30`
-- Source identity: clean implementation base
-  `master@21ba5288b27700f94ecad92ec0cf3d1e5dca5f29`; accepted WG-001-N03
-  current-source implementation and revision-11 status records applied on top
+- Last checked: `2026-08-08`
+- Source identity: current dirty workspace candidate; schema v7, pinned Linux
+  image `sha256:0fda65b...6f85`, structured platform adapter, and campaign r4
 - Completion disposition: `KEEP_OPEN`
-- Reason: desktop environment provider, adapter, controlled fixture, and reset
-  runtime are absent; required gates remain `OPEN`/`NOT_RUN`.
-- Synchronized surfaces: lane, active registry, report index, and WG-001 plan
-  revision 10.
+- Reason: the adapter, fixture, policy/oracle/claim, image binding, evidence
+  export, unknown-outcome authority, and exact cleanup are implemented. Docker
+  currently accepts container creation but its start endpoint times out even
+  for a trivial container, so r4 is correctly `BLOCKED`; Computer Use,
+  macOS/Windows, W-006 acceptance, and Gate A remain open.
+- Synchronized surfaces: lane, active registry, and WG-001 plan revision 83.
 
 ## Closeout
 

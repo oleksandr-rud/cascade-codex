@@ -9,11 +9,12 @@ Use this skill for existing work records whose identity, currency, ownership,
 or cross-workline relationships must be established before a first-class
 Coordination Graph can become authoritative.
 
-Reconciliation is audit-first. Do not create or update a Coordination Graph
-until the audit produces a valid canonical survivor set. This skill does not
-discover worklines for a new request, schedule or dispatch work, implement
-product changes, mutate worker-owned lane state, delete durable evidence, or
-retire active rows.
+Reconciliation is audit-first. It does not prioritize slices into delivery
+horizons or turn future roadmap candidates into active work. Do not create or
+update a Coordination Graph until the audit produces a valid canonical survivor
+set. This skill does not discover worklines for a new request, schedule or
+dispatch work, implement product changes, mutate worker-owned lane state,
+delete durable evidence, or retire active rows.
 
 ## Source Order
 
@@ -38,7 +39,9 @@ records, and live branch/worktree state take precedence over stale projections.
 
 | Need | Route |
 |---|---|
-| Discover, split, connect, or schedule worklines for a new request | `orchestrate-work` |
+| Define implementation slices for a new request | `plan-change` |
+| Rank slices, assign delivery dispositions, and trace MVP coverage | `plan-iterations` |
+| Instantiate, connect, or schedule committed-horizon worklines | `orchestrate-work` |
 | Audit already materialized lanes/worklines/graphs before graph creation or cutover | `reconcile-work-graph` |
 | Change outcomes, criterion ownership, workline boundaries, topology, gates, or owner contracts | `plan-change` |
 | Dispatch ready work, coordinate worktrees, or run materialization and batch gates | `orchestrate-work` |
@@ -51,6 +54,11 @@ For an ambiguous request to "connect worklines," use this skill only when the
 worklines already exist and need evidence-backed reconciliation. Use
 `orchestrate-work` when the request still needs decomposition or initial
 workline selection.
+
+When iteration planning would change existing active work, use this skill first
+to establish canonical identities, evidence, and consumers. Return the survivor
+set to `plan-iterations`; do not assign horizons as a reconciliation
+disposition.
 
 ## Audit And Canonicalization
 
@@ -155,5 +163,5 @@ authoritative transitions and graph revisions.
 - graph action: `CREATE`, `UPDATE`, `NO_CHANGE`, or `BLOCKED`, with plan/graph
   revision and direct-cutover delta when applicable;
 - topology, authority, binding, and retention validation results; and
-- proposed transitions and next routes to `plan-change`, `orchestrate-work`,
-  `validate-change`, or `closeout`.
+- proposed transitions and next routes to `plan-change`, `plan-iterations`,
+  `orchestrate-work`, `validate-change`, or `closeout`.

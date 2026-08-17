@@ -1,0 +1,8 @@
+{
+  "schema_version": 1,
+  "id": "command-static-world-v1",
+  "fixture_file": "product-evals/simulations/harness/command-static-fixture/worlds/world.fixture.json",
+  "allowed_actions": ["assert"],
+  "negative_behaviors": ["all undeclared in-memory actions are denied"],
+  "cleanup": { "reset_to_fixture": true }
+}

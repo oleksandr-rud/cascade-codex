@@ -22,6 +22,7 @@
         "state-equals",
         "exit-code",
         "file-exists",
+        "task-file-exists",
         "http-status"
       ]
     },

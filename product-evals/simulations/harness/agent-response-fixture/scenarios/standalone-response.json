@@ -1,0 +1,9 @@
+{
+  "schema_version": 1,
+  "id": "standalone-agent-response-v1",
+  "goal": "Normalize one source-blind standalone response and preserve per-claim evidence without accepting its proposed next route.",
+  "actor_ids": ["agent-response-fixture-actor"],
+  "initial_state": {},
+  "stop_conditions": ["agent response contract oracle passes"],
+  "claim_ids": ["agent-response-fixture-execution"]
+}

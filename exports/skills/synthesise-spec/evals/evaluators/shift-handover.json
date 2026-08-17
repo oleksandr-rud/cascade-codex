@@ -1,0 +1,68 @@
+{
+  "schema_version": 1,
+  "mechanical_type": "text_contract",
+  "depth_band": "cross-boundary",
+  "expected_readiness": "READY_FOR_REVIEW",
+  "question_min": 0,
+  "question_max": 3,
+  "diagram_min": 2,
+  "diagram_max": 2,
+  "required_headings": [
+    "Readiness",
+    "At A Glance",
+    "Product And Change",
+    "Expected Outputs",
+    "User Journeys",
+    "Source Ledger",
+    "Artifact Manifest",
+    "Business Process",
+    "Component Responsibilities",
+    "Integrations",
+    "Acceptance And Evidence",
+    "Open Decisions And Risks",
+    "Next Owner Or Action"
+  ],
+  "required_patterns": [
+    "READY_FOR_REVIEW",
+    "API-077",
+    "TARGET",
+    "DECIDED",
+    "Idempotency-Key",
+    "notification_delayed",
+    "HANDOVER_VERSION_CHANGED",
+    "handover.updated.v1",
+    "Question",
+    "Audience",
+    "Scope",
+    "Behavior time",
+    "Render/syntax evidence",
+    "Text Equivalent",
+    "NOT_RUN"
+  ],
+  "forbidden_patterns": [
+    "{{",
+    "provider delivery confirmed by 202",
+    "notification delivery completes the handover",
+    "render/syntax evidence: PASS"
+  ],
+  "max_words": 3600,
+  "semantic_anchors": {
+    "must_preserve": [
+      "handover completion requires persisted creation and incoming-supervisor acknowledgement",
+      "notification delivery aids discovery but is not completion and notification failure never rolls back creation",
+      "approved API-077 is TARGET and DECIDED while implementation evidence remains NOT_RUN",
+      "create, edit, and acknowledgement operations have distinct idempotency and durable receipt behavior",
+      "only the named incoming supervisor acknowledges and a stale version returns HANDOVER_VERSION_CHANGED",
+      "handover.updated.v1 payload, edit idempotency scope and retention, and event ordering replay deduplication are consolidated as implementation blockers with owners",
+      "two justified diagrams carry complete metadata, NOT_RUN render evidence, and agreeing text equivalents",
+      "product value, expected outputs, journeys, acceptance, and next owner are directly discoverable"
+    ],
+    "must_avoid": [
+      "claiming implementation readiness",
+      "calling an approved target contract proposed because it is unimplemented",
+      "making notification success part of handover completion",
+      "claiming diagram render proof without executing a check",
+      "omitting accessible status and focus behavior"
+    ]
+  }
+}

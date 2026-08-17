@@ -1,6 +1,466 @@
 {
-  "digest": "73e0a208c94ab44509d99952816c3132d925a3668ba6ba6408fe82e504ae5d40",
+  "digest": "8e5523f865368019c0b7a0a2cae3bbb682ef12b9afe2523140cd4f80bb5e38b9",
   "entries": [
+    {
+      "adapters": [
+        "agent-runtime:builtin-agent-cascade"
+      ],
+      "calibration_id": null,
+      "claim_ids": [
+        "agent-cascade-harness-coverage"
+      ],
+      "contours": [
+        "agent-response"
+      ],
+      "drivers": [
+        "agent-runtime"
+      ],
+      "evaluation_model": "gpt-5.6-sol",
+      "evaluation_profile_id": "codex-independent-v1",
+      "evaluation_provider": "codex",
+      "id": "agent-cascade-harness-canary",
+      "intake_brief_id": null,
+      "intake_file": null,
+      "intake_id": null,
+      "intake_status": null,
+      "intake_task_envelope_id": null,
+      "manifest": "product-evals/campaigns/agent-cascade-harness-canary.json",
+      "manifest_digest": "5bff99acd40bdd96c14f205bbf753490b5b65d0d6750cde87703a23c7b5d60b0",
+      "metric_ids": [
+        "agent-response-contract-rate-v1"
+      ],
+      "oracle_ids": [
+        "agent-response-contract-valid-v1"
+      ],
+      "owner_lane": "W-007",
+      "policy_ids": [
+        "allow-agent-cascade-harness-v1"
+      ],
+      "rubric_id": "simulation-evaluator-v1",
+      "simulation_id": "agent-cascade-harness",
+      "simulation_scope": "harness",
+      "source_digest": "4d109841e057a144be04f90ef1cd405e1af45472ef5affc667eea565d8019b2e",
+      "task_ids": [
+        "AGENT-CASCADE-HARNESS-CANARY"
+      ],
+      "tier": "platform-canary",
+      "title": "Exact Cascade harness profile canary",
+      "treatment_ids": [
+        "baseline-v1"
+      ]
+    },
+    {
+      "adapters": [
+        "agent-runtime:builtin-agent-fixture"
+      ],
+      "calibration_id": null,
+      "claim_ids": [
+        "agent-response-fixture-execution"
+      ],
+      "contours": [
+        "agent-response"
+      ],
+      "drivers": [
+        "agent-runtime"
+      ],
+      "evaluation_model": null,
+      "evaluation_profile_id": "deterministic-fixture-v1",
+      "evaluation_provider": "fixture",
+      "id": "agent-response-fake-smoke",
+      "intake_brief_id": null,
+      "intake_file": null,
+      "intake_id": null,
+      "intake_status": null,
+      "intake_task_envelope_id": null,
+      "manifest": "product-evals/campaigns/agent-response-fake-smoke.json",
+      "manifest_digest": "e66b14452589e2b166e7aad0b1f1ce775f5ca6b52c09e944fa9ec059484527ef",
+      "metric_ids": [
+        "agent-response-contract-rate-v1"
+      ],
+      "oracle_ids": [
+        "agent-response-contract-valid-v1"
+      ],
+      "owner_lane": "W-007",
+      "policy_ids": [
+        "allow-agent-response-fixture-v1"
+      ],
+      "rubric_id": null,
+      "simulation_id": "agent-response-fixture",
+      "simulation_scope": "harness",
+      "source_digest": "f89ad386abd71417699878bb248c99b6b1cfef34336d2373a2366fb2c47f9e1c",
+      "task_ids": [
+        "AGENT-RESPONSE-FIXTURE-SMOKE"
+      ],
+      "tier": "deterministic-fixture",
+      "title": "Provider-neutral agent response fixture smoke",
+      "treatment_ids": [
+        "baseline-v1"
+      ]
+    },
+    {
+      "adapters": [
+        "agent-runtime:builtin-agent-codex"
+      ],
+      "calibration_id": null,
+      "claim_ids": [
+        "agent-standalone-codex-execution"
+      ],
+      "contours": [
+        "agent-response"
+      ],
+      "drivers": [
+        "agent-runtime"
+      ],
+      "evaluation_model": "gpt-5.6-sol",
+      "evaluation_profile_id": "codex-independent-v1",
+      "evaluation_provider": "codex",
+      "id": "agent-standalone-codex-canary",
+      "intake_brief_id": null,
+      "intake_file": null,
+      "intake_id": null,
+      "intake_status": null,
+      "intake_task_envelope_id": null,
+      "manifest": "product-evals/campaigns/agent-standalone-codex-canary.json",
+      "manifest_digest": "1db6bafb0089d1a5c88b91480125c77d7f489ad976b714cb7cfeba3e6dd49a1d",
+      "metric_ids": [
+        "agent-response-contract-rate-v1"
+      ],
+      "oracle_ids": [
+        "agent-response-contract-valid-v1"
+      ],
+      "owner_lane": "W-007",
+      "policy_ids": [
+        "allow-agent-standalone-codex-v1"
+      ],
+      "rubric_id": "simulation-evaluator-v1",
+      "simulation_id": "agent-standalone-codex",
+      "simulation_scope": "harness",
+      "source_digest": "e368f8b6170bd750cbc65e4e61d0c8882b4638aa13a1ed044d9942a264eed4b7",
+      "task_ids": [
+        "AGENT-STANDALONE-CODEX-CANARY"
+      ],
+      "tier": "platform-canary",
+      "title": "Standalone explicit-instruction Codex agent canary",
+      "treatment_ids": [
+        "baseline-v1"
+      ]
+    },
+    {
+      "adapters": [
+        "playwright:builtin-playwright"
+      ],
+      "calibration_id": null,
+      "claim_ids": [
+        "browser-simulation-execution"
+      ],
+      "contours": [
+        "browser"
+      ],
+      "drivers": [
+        "playwright"
+      ],
+      "evaluation_model": null,
+      "evaluation_profile_id": "deterministic-fixture-v1",
+      "evaluation_provider": "fixture",
+      "id": "browser-simulation-smoke",
+      "intake_brief_id": null,
+      "intake_file": null,
+      "intake_id": null,
+      "intake_status": null,
+      "intake_task_envelope_id": null,
+      "manifest": "product-evals/campaigns/browser-simulation-smoke.json",
+      "manifest_digest": "798709dac61ddcaf32a5fb03b4618fd13f7847c205f2f417c8e87e7d3435b27c",
+      "metric_ids": [
+        "browser-completion-rate-v1"
+      ],
+      "oracle_ids": [
+        "browser-visible-status-v1",
+        "browser-waiting-status-v1",
+        "browser-required-effect-v1"
+      ],
+      "owner_lane": "W-006",
+      "policy_ids": [
+        "allow-browser-simulation-smoke-v1",
+        "allow-browser-external-navigation-probe-v1",
+        "deny-browser-forbidden-domain-v1",
+        "allow-browser-missing-effect-probe-v1"
+      ],
+      "rubric_id": null,
+      "simulation_id": "browser-local-fixture",
+      "simulation_scope": "harness",
+      "source_digest": "b9f288e79c03207fffb3449331850107614f49a2aeee75cdf5189745bbe1a297",
+      "task_ids": [
+        "BROWSER-SIMULATION-SMOKE",
+        "BROWSER-EXTERNAL-NAVIGATION-DENIED",
+        "BROWSER-FORBIDDEN-DOMAIN-DENIED",
+        "BROWSER-MISSING-REQUIRED-EFFECT"
+      ],
+      "tier": "deterministic-fixture",
+      "title": "Browser simulation smoke",
+      "treatment_ids": [
+        "baseline-v1"
+      ]
+    },
+    {
+      "adapters": [
+        "direct-process:builtin-direct-process"
+      ],
+      "calibration_id": null,
+      "claim_ids": [
+        "command-expected-failure-execution"
+      ],
+      "contours": [
+        "command"
+      ],
+      "drivers": [
+        "direct-process"
+      ],
+      "evaluation_model": null,
+      "evaluation_profile_id": "deterministic-fixture-v1",
+      "evaluation_provider": "fixture",
+      "id": "command-failure-recovery",
+      "intake_brief_id": null,
+      "intake_file": null,
+      "intake_id": null,
+      "intake_status": null,
+      "intake_task_envelope_id": null,
+      "manifest": "product-evals/campaigns/command-failure-recovery.json",
+      "manifest_digest": "12fd24a6be5903964e6823a9c31ae01eb4eb3ae76374475e950b2d9ea99a10e8",
+      "metric_ids": [
+        "command-exit-one-observed-v1"
+      ],
+      "oracle_ids": [
+        "command-exit-one-v1",
+        "command-output-required-v1"
+      ],
+      "owner_lane": "W-005",
+      "policy_ids": [
+        "allow-command-expected-failure-v1",
+        "allow-command-missing-output-v1"
+      ],
+      "rubric_id": null,
+      "simulation_id": "command-failure-fixture",
+      "simulation_scope": "harness",
+      "source_digest": "0a4142a77d14a37c3a233744c47928ce09e17517eecca3ac0423f62bf54a01b1",
+      "task_ids": [
+        "COMMAND-EXPECTED-FAILURE",
+        "COMMAND-MISSING-OUTPUT"
+      ],
+      "tier": "deterministic-fixture",
+      "title": "Command failure and required-output cleanup smoke",
+      "treatment_ids": [
+        "baseline-v1"
+      ]
+    },
+    {
+      "adapters": [
+        "fake:builtin-fake"
+      ],
+      "calibration_id": "framework-ranking-v1",
+      "claim_ids": [
+        "fixture-state-transition",
+        "fixture-population-coverage",
+        "fixture-release-eligibility"
+      ],
+      "contours": [
+        "agent-response",
+        "browser",
+        "command",
+        "desktop",
+        "http",
+        "mobile",
+        "terminal"
+      ],
+      "drivers": [
+        "fake"
+      ],
+      "evaluation_model": null,
+      "evaluation_profile_id": "deterministic-fixture-v1",
+      "evaluation_provider": "fixture",
+      "id": "cross-contour-handoff-smoke",
+      "intake_brief_id": null,
+      "intake_file": null,
+      "intake_id": null,
+      "intake_status": null,
+      "intake_task_envelope_id": null,
+      "manifest": "product-evals/campaigns/cross-contour-handoff-smoke.json",
+      "manifest_digest": "b602b06cc01f0cf9ea952d2d0582e3280ada695b1c29de684c5a04adc9910f26",
+      "metric_ids": [
+        "task-success-v1"
+      ],
+      "oracle_ids": [
+        "account-resolved-v1",
+        "account-attempt-recorded-v1"
+      ],
+      "owner_lane": "W-004",
+      "policy_ids": [
+        "allow-fixture-state-actions-v1"
+      ],
+      "rubric_id": null,
+      "simulation_id": "simulation-correctness-fixture",
+      "simulation_scope": "harness",
+      "source_digest": "7d37b32413828cb727f86e2f90cea68297e02e369ffdaaf7063c3e5b8e256b5b",
+      "task_ids": [
+        "FAKE-COMMAND-HANDOFF",
+        "FAKE-HTTP-HANDOFF",
+        "FAKE-TERMINAL-HANDOFF",
+        "FAKE-BROWSER-HANDOFF",
+        "FAKE-DESKTOP-HANDOFF",
+        "FAKE-MOBILE-HANDOFF",
+        "FAKE-AGENT-HANDOFF"
+      ],
+      "tier": "deterministic-fixture",
+      "title": "Cross-contour handoff smoke",
+      "treatment_ids": [
+        "baseline-v1",
+        "candidate-a-v1",
+        "candidate-b-v1"
+      ]
+    },
+    {
+      "adapters": [
+        "platform-automation:builtin-platform-automation"
+      ],
+      "calibration_id": null,
+      "claim_ids": [
+        "desktop-platform-execution"
+      ],
+      "contours": [
+        "desktop"
+      ],
+      "drivers": [
+        "platform-automation"
+      ],
+      "evaluation_model": null,
+      "evaluation_profile_id": "deterministic-fixture-v1",
+      "evaluation_provider": "fixture",
+      "id": "desktop-linux-smoke",
+      "intake_brief_id": null,
+      "intake_file": null,
+      "intake_id": null,
+      "intake_status": null,
+      "intake_task_envelope_id": null,
+      "manifest": "product-evals/campaigns/desktop-linux-smoke.json",
+      "manifest_digest": "d6cdb65a2686f1c09f0000eeb50d50792b2deac8f771123275152ab7b08633fe",
+      "metric_ids": [
+        "desktop-completion-rate-v1"
+      ],
+      "oracle_ids": [
+        "desktop-completed-v1"
+      ],
+      "owner_lane": "W-009",
+      "policy_ids": [
+        "allow-desktop-linux-smoke-v1"
+      ],
+      "rubric_id": null,
+      "simulation_id": "desktop-linux-fixture",
+      "simulation_scope": "harness",
+      "source_digest": "730c1ce274cd56d141c5adf4813855a938bf06081a655fbf94f74d8a868ad8ff",
+      "task_ids": [
+        "DESKTOP-LINUX-SMOKE"
+      ],
+      "tier": "deterministic-fixture",
+      "title": "Linux desktop platform automation smoke",
+      "treatment_ids": [
+        "baseline-v1"
+      ]
+    },
+    {
+      "adapters": [
+        "direct-process:builtin-direct-process"
+      ],
+      "calibration_id": null,
+      "claim_ids": [
+        "harness-static-command-execution"
+      ],
+      "contours": [
+        "command"
+      ],
+      "drivers": [
+        "direct-process"
+      ],
+      "evaluation_model": null,
+      "evaluation_profile_id": "deterministic-fixture-v1",
+      "evaluation_provider": "fixture",
+      "id": "harness-static-smoke",
+      "intake_brief_id": null,
+      "intake_file": null,
+      "intake_id": null,
+      "intake_status": null,
+      "intake_task_envelope_id": null,
+      "manifest": "product-evals/campaigns/harness-static-smoke.json",
+      "manifest_digest": "c6ffab15efe79f4dfae3ed23c8c16f37680210c8ae6ff11f9b215eb549c7ddd1",
+      "metric_ids": [
+        "command-exit-zero-rate-v1"
+      ],
+      "oracle_ids": [
+        "command-exit-zero-v1"
+      ],
+      "owner_lane": "W-005",
+      "policy_ids": [
+        "allow-harness-static-command-v1"
+      ],
+      "rubric_id": null,
+      "simulation_id": "command-static-fixture",
+      "simulation_scope": "harness",
+      "source_digest": "616c8c0e7b9f0992daf689c075e34faaa38f600cf132bdac21e1d30e73b1610b",
+      "task_ids": [
+        "HARNESS-STATIC-SMOKE"
+      ],
+      "tier": "deterministic-fixture",
+      "title": "Harness static command smoke",
+      "treatment_ids": [
+        "baseline-v1"
+      ]
+    },
+    {
+      "adapters": [
+        "platform-automation:builtin-mobile-platform"
+      ],
+      "calibration_id": null,
+      "claim_ids": [
+        "mobile-platform-execution"
+      ],
+      "contours": [
+        "mobile"
+      ],
+      "drivers": [
+        "platform-automation"
+      ],
+      "evaluation_model": null,
+      "evaluation_profile_id": "deterministic-fixture-v1",
+      "evaluation_provider": "fixture",
+      "id": "mobile-provider-preflight",
+      "intake_brief_id": null,
+      "intake_file": null,
+      "intake_id": null,
+      "intake_status": null,
+      "intake_task_envelope_id": null,
+      "manifest": "product-evals/campaigns/mobile-provider-preflight.json",
+      "manifest_digest": "191a2709b30cc61dd98321fa3506079d4d919e8d2f16b035f0466dfc635df288",
+      "metric_ids": [
+        "mobile-completion-rate-v1"
+      ],
+      "oracle_ids": [
+        "mobile-completed-v1"
+      ],
+      "owner_lane": "W-010",
+      "policy_ids": [
+        "allow-mobile-android-preflight-v1"
+      ],
+      "rubric_id": null,
+      "simulation_id": "mobile-provider-fixture",
+      "simulation_scope": "harness",
+      "source_digest": "56553ea27775b838e974423671d362321723e0d82d2242a48de974be806accf4",
+      "task_ids": [
+        "MOBILE-ANDROID-PREFLIGHT"
+      ],
+      "tier": "deterministic-fixture",
+      "title": "Mobile platform provider preflight",
+      "treatment_ids": [
+        "baseline-v1"
+      ]
+    },
     {
       "adapters": [
         "fake:builtin-fake"
@@ -27,7 +487,7 @@
       "intake_status": null,
       "intake_task_envelope_id": null,
       "manifest": "product-evals/campaigns/simulation-calibration-ranking-smoke.json",
-      "manifest_digest": "64250caac3c6eae2aed0de1d21bec28c15bed9531bf58058f8b6fea4b2aeb233",
+      "manifest_digest": "34f55fbb7f45eaacbda389796618dd5475874db965866dd28199e777d9afed2e",
       "metric_ids": [
         "task-success-v1"
       ],
@@ -42,7 +502,7 @@
       "rubric_id": null,
       "simulation_id": "simulation-correctness-fixture",
       "simulation_scope": "harness",
-      "source_digest": "f35762a5be5286dfb908526d799df8f201f7a145fda62a6c2d953e0255a4d88e",
+      "source_digest": "758f6fb4388592860d231277f1d50d92db277cf0b573a20d588b2ca6f7c05d21",
       "task_ids": [
         "SIMULATION-STATE-SMOKE"
       ],
@@ -80,7 +540,7 @@
       "intake_status": null,
       "intake_task_envelope_id": null,
       "manifest": "product-evals/campaigns/simulation-codex-evaluation-smoke.json",
-      "manifest_digest": "7fcd5084e05024ad9e2c97d5d5440fcdc6855b269ba9a9c6764445bf03fe571e",
+      "manifest_digest": "dce1ddd4f93a9294210d648b028635bb2de0216a46bfbabca7f74c02a43fbb7c",
       "metric_ids": [
         "task-success-v1"
       ],
@@ -95,7 +555,7 @@
       "rubric_id": "simulation-evaluator-v1",
       "simulation_id": "simulation-correctness-fixture",
       "simulation_scope": "harness",
-      "source_digest": "e6b0a3acf5ceb76b08d13773fb34d7aaf73c3881c02c8ad0c9e05939905f04ce",
+      "source_digest": "c69f2bb02b30cbfd9354f95bace34b36ade763d976fe15236daaeef0f77d844c",
       "task_ids": [
         "SIMULATION-STATE-SMOKE"
       ],
@@ -133,7 +593,7 @@
       "intake_status": null,
       "intake_task_envelope_id": null,
       "manifest": "product-evals/campaigns/simulation-contract-smoke.json",
-      "manifest_digest": "97f1bb00ebf1dcc3b36aa44508042b2999185a28690a3e9afb0272137ccc47a4",
+      "manifest_digest": "a5cece5f8b37ef4794d6bcc3dcb1c756223dfcd79bb6749422685a55716ee5e8",
       "metric_ids": [
         "task-success-v1"
       ],
@@ -148,7 +608,7 @@
       "rubric_id": null,
       "simulation_id": "simulation-correctness-fixture",
       "simulation_scope": "harness",
-      "source_digest": "b72f3e4f0b7a38edbdc1d2db99d1146f523e2c9ac9ccfa97fcf558397420bd1b",
+      "source_digest": "b59602abf7b57cb40c52b783e948beaf86d7772dd61d9e298c21bf072ba35cde",
       "task_ids": [
         "SIMULATION-STATE-SMOKE"
       ],
@@ -186,7 +646,7 @@
       "intake_status": null,
       "intake_task_envelope_id": null,
       "manifest": "product-evals/campaigns/simulation-metric-reduction-smoke.json",
-      "manifest_digest": "3dce5660d918c1f981140e344287b23a06b3d14b5bd84fc1ae15be5b68db1e6a",
+      "manifest_digest": "720c7fd7d343177204a4900160103edf2c0370afdb570a9baff56826ecae8e86",
       "metric_ids": [
         "task-success-v1"
       ],
@@ -201,7 +661,7 @@
       "rubric_id": null,
       "simulation_id": "simulation-correctness-fixture",
       "simulation_scope": "harness",
-      "source_digest": "e62813c135c085d59a92af4fb35cc971f41e260171fa996cf66108a6da914620",
+      "source_digest": "e19f95c52e7d400dd2ae0eed792fa217d9d8db811d9707f9d1771202e0237847",
       "task_ids": [
         "SIMULATION-STATE-SMOKE"
       ],
@@ -239,7 +699,7 @@
       "intake_status": null,
       "intake_task_envelope_id": null,
       "manifest": "product-evals/campaigns/simulation-partition-leakage-smoke.json",
-      "manifest_digest": "546aca20851eda3cce54604c000fd041ed82c6a4b8b48530d066ed505a3ce53d",
+      "manifest_digest": "ced1bad470b3d497220494f75b85029abebb131cd7dcfa739f7d0d3ec30eb2cf",
       "metric_ids": [
         "task-success-v1"
       ],
@@ -254,7 +714,7 @@
       "rubric_id": null,
       "simulation_id": "simulation-correctness-fixture",
       "simulation_scope": "harness",
-      "source_digest": "925ca46d8e717c202c43f46ba14961a9d9a6640e52c13d184aae9d1d492ee0eb",
+      "source_digest": "880bce1b93c7701588d128ebc53493e2e22d0f4a2cf55d7999c146a95b4348ad",
       "task_ids": [
         "SIMULATION-STATE-SMOKE"
       ],
@@ -292,7 +752,7 @@
       "intake_status": null,
       "intake_task_envelope_id": null,
       "manifest": "product-evals/campaigns/simulation-population-smoke.json",
-      "manifest_digest": "c32284632bee613b8e7941f998c5bbea2a95a2971bb1adaa1621c332e7f8690d",
+      "manifest_digest": "9978fb0b6be893c51dfeb9783cdb35474c8d78a582d1cefbb2dc31c8cfa02014",
       "metric_ids": [
         "task-success-v1"
       ],
@@ -307,7 +767,7 @@
       "rubric_id": null,
       "simulation_id": "simulation-correctness-fixture",
       "simulation_scope": "harness",
-      "source_digest": "946cd29f1c35fc98d591dac62b12488bb3fd6c15a72c361770ad2c269eddf6cb",
+      "source_digest": "7e1e8d19ca5ef398e2db0049463790661234eabf001dc59ad48652051a1af044",
       "task_ids": [
         "SIMULATION-STATE-SMOKE"
       ],
@@ -345,7 +805,7 @@
       "intake_status": null,
       "intake_task_envelope_id": null,
       "manifest": "product-evals/campaigns/simulation-world-state-smoke.json",
-      "manifest_digest": "dd65835d60d68f7a5e0618a5f015a4303b93623bff092c199663f9a11c835406",
+      "manifest_digest": "7fa94b483c893ea4254c86f4f62cc2fc4faf85cbdc11791a6018ae664ab63f2b",
       "metric_ids": [
         "task-success-v1"
       ],
@@ -360,7 +820,7 @@
       "rubric_id": null,
       "simulation_id": "simulation-correctness-fixture",
       "simulation_scope": "harness",
-      "source_digest": "7a0bd945fe42c1cf03e7de64846dfd1612273df7f40cc9b718880aa993734f1f",
+      "source_digest": "451f26260321392bd4379d299f02e067faacfb24e3d048a9c50c3c09815d298f",
       "task_ids": [
         "SIMULATION-STATE-SMOKE"
       ],
@@ -370,6 +830,61 @@
         "baseline-v1",
         "candidate-a-v1",
         "candidate-b-v1"
+      ]
+    },
+    {
+      "adapters": [
+        "pty:builtin-pty"
+      ],
+      "calibration_id": null,
+      "claim_ids": [
+        "terminal-pty-execution"
+      ],
+      "contours": [
+        "terminal"
+      ],
+      "drivers": [
+        "pty"
+      ],
+      "evaluation_model": null,
+      "evaluation_profile_id": "deterministic-fixture-v1",
+      "evaluation_provider": "fixture",
+      "id": "terminal-pty-smoke",
+      "intake_brief_id": null,
+      "intake_file": null,
+      "intake_id": null,
+      "intake_status": null,
+      "intake_task_envelope_id": null,
+      "manifest": "product-evals/campaigns/terminal-pty-smoke.json",
+      "manifest_digest": "1c98f536c207fecbb37d09a427cc83bf056d1edeff7fca4e7c42a9ac6e3b1c95",
+      "metric_ids": [
+        "terminal-completion-rate-v1"
+      ],
+      "oracle_ids": [
+        "terminal-completed-v1"
+      ],
+      "owner_lane": "W-008",
+      "policy_ids": [
+        "allow-terminal-pty-smoke-spawn-v1",
+        "allow-terminal-pty-smoke-steps-v1",
+        "allow-terminal-signal-smoke-spawn-v1",
+        "allow-terminal-signal-smoke-steps-v1",
+        "allow-terminal-timeout-cleanup-spawn-v1",
+        "allow-terminal-timeout-cleanup-steps-v1"
+      ],
+      "rubric_id": null,
+      "simulation_id": "terminal-pty-fixture",
+      "simulation_scope": "harness",
+      "source_digest": "800310b2834a7a320f5c217a190063c645fc406974aa0ff43e1dcc85cd4601ef",
+      "task_ids": [
+        "TERMINAL-PTY-SMOKE",
+        "TERMINAL-SIGNAL-SMOKE",
+        "TERMINAL-TIMEOUT-CLEANUP"
+      ],
+      "tier": "deterministic-fixture",
+      "title": "Terminal PTY deterministic smoke",
+      "treatment_ids": [
+        "baseline-v1"
       ]
     }
   ],

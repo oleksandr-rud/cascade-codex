@@ -1,0 +1,20 @@
+{
+  "name": "cascade-project",
+  "interface": {
+    "displayName": "Cascade Project"
+  },
+  "plugins": [
+    {
+      "name": "cascade-prompt",
+      "source": {
+        "source": "local",
+        "path": "./.codex/plugins/cascade-prompt"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity"
+    }
+  ]
+}

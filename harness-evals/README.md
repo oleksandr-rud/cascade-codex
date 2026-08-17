@@ -21,6 +21,15 @@ expands each entry into seven cases:
 `scenarios.generated.json`; CI or local validation should use `catalog --check`
 to prove it is current.
 
+`agent-outcomes.json` adds one outcome case for every registered agent. Catalog
+generation verifies each case against the agent's TOML model, reasoning effort,
+sandbox declaration, role and skill-map load instructions, and exact ownership
+of its primary skill. It also verifies that every curated skill case is wired to
+its declared owner. Product-sensitive cases bind the current product, design,
+and specification sources by SHA-256 inside the scenario, so a changed product
+instruction makes that recorded scenario stale without treating every product
+document as a global harness input.
+
 ## Commands
 
 ```bash
@@ -29,15 +38,17 @@ bun scripts/cascade.ts eval catalog --check
 bun scripts/cascade.ts eval audit
 bun scripts/cascade.ts eval self-test
 bun scripts/cascade.ts eval run \
-  --case-kind implicit-trigger \
-  --case-kind near-miss
+  --case-kind agent-outcome
 bun scripts/cascade.ts eval judge \
   --run-dir .artifacts/harness-evals/<run-id>
 bun scripts/cascade.ts eval coverage --list-missing
 ```
 
-Live runs are serial by default. Use `--scenario`, `--skill`, `--limit`, and
-`--repetitions` for focused diagnosis. The command prints the run directory and
+Live runs are serial by default. Use `--scenario`, `--skill`, `--agent`,
+`--case-kind`, `--limit`, and `--repetitions` for focused diagnosis. Agent
+outcome cases default to the model and reasoning effort in that agent's current
+manifest; command-line model options remain diagnostic overrides. The command
+prints the run directory and
 writes raw traces, normalized traces, per-case mechanical eligibility, a source
 manifest, and summary reports. The `judge` command selects every eligible case,
 runs required outcome and trajectory profiles independently through the
@@ -50,6 +61,13 @@ blocked or failed traces, missing judges, invalid ratings, and any required
 judge failure before claiming accepted coverage.
 It reports trace-complete execution separately from acceptance so confirmed
 regressions remain counted as executed without being converted into passes.
+
+Agent outcome eligibility additionally requires the responsible role and
+primary skill to be loaded and all declared instruction sources to be cited.
+Skill, role, command, output-detail, and extra-supporting-route bounds remain
+diagnostic so context efficiency is visible without turning reasonable model
+variation into a hard admission gate. These measurements are not release proof
+and are not a reason to create a work graph.
 
 The deterministic `self-test` also copies
 `fixtures/onboarding/basic-project/` into a temporary target and proves project

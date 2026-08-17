@@ -1,0 +1,123 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://cascade.local/schemas/specialized-evaluation-receipt.schema.json",
+  "title": "Cascade specialized harness evaluation receipt",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version", "specialized_evaluation_id", "run_id", "campaign_id",
+    "applicability", "specialized_evaluator_identity", "source_manifest_digest",
+    "execution_receipt_digest", "route_ids", "trace_ids", "claim_ids",
+    "input_manifest_digest", "provider_trace_digest", "provider_output_digest",
+    "evidence_artifacts", "claim_ledger", "status", "root_cause", "earliest_failure",
+    "residual_uncertainty", "created_at"
+  ],
+  "properties": {
+    "schema_version": { "const": 2 },
+    "specialized_evaluation_id": { "type": "string", "minLength": 1 },
+    "run_id": { "type": "string", "minLength": 1 },
+    "campaign_id": { "type": "string", "minLength": 1 },
+    "applicability": { "enum": ["REQUIRED", "NOT_APPLICABLE"] },
+    "specialized_evaluator_identity": { "type": "string", "minLength": 1 },
+    "source_manifest_digest": { "$ref": "#/$defs/digest" },
+    "execution_receipt_digest": { "$ref": "#/$defs/digest" },
+    "route_ids": { "$ref": "#/$defs/uniqueStrings" },
+    "trace_ids": { "$ref": "#/$defs/uniqueStrings" },
+    "claim_ids": { "$ref": "#/$defs/uniqueStrings" },
+    "input_manifest_digest": { "oneOf": [{ "$ref": "#/$defs/digest" }, { "type": "null" }] },
+    "provider_trace_digest": { "oneOf": [{ "$ref": "#/$defs/digest" }, { "type": "null" }] },
+    "provider_output_digest": { "oneOf": [{ "$ref": "#/$defs/digest" }, { "type": "null" }] },
+    "evidence_artifacts": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": { "$ref": "#/$defs/artifact" }
+    },
+    "claim_ledger": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/claim" }
+    },
+    "status": { "enum": ["PASS", "FAIL", "BLOCKED", "NOT_APPLICABLE"] },
+    "root_cause": {
+      "enum": ["none", "execution", "evidence", "policy", "oracle", "evaluator", "environment", "not-applicable"]
+    },
+    "earliest_failure": { "type": ["string", "null"] },
+    "residual_uncertainty": { "type": "array", "items": { "type": "string" } },
+    "created_at": { "type": "string", "format": "date-time" }
+  },
+  "$defs": {
+    "digest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "uniqueStrings": {
+      "type": "array", "uniqueItems": true,
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "artifact": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "sha256"],
+      "properties": {
+        "path": { "type": "string", "minLength": 1, "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.(?:/|$)).+$" },
+        "sha256": { "$ref": "#/$defs/digest" }
+      }
+    },
+    "claim": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["claim_id", "class", "status", "reason", "evidence"],
+      "properties": {
+        "claim_id": { "type": "string", "minLength": 1 },
+        "class": { "enum": ["authorship", "execution", "mechanical-behavior", "semantic-quality", "safety-compliance", "coverage", "release-eligibility"] },
+        "status": { "enum": ["SUPPORTED", "PARTIALLY_SUPPORTED", "UNSUPPORTED", "CONFLICTING", "BLOCKED", "NOT_RUN", "INVALID"] },
+        "reason": { "type": "string", "minLength": 1 },
+        "evidence": { "type": "array", "uniqueItems": true, "items": { "type": "string", "minLength": 1 } }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "applicability": { "const": "NOT_APPLICABLE" } } },
+      "then": {
+        "properties": {
+          "status": { "const": "NOT_APPLICABLE" },
+          "input_manifest_digest": { "type": "null" },
+          "provider_trace_digest": { "type": "null" },
+          "provider_output_digest": { "type": "null" },
+          "evidence_artifacts": { "maxItems": 0 },
+          "claim_ledger": { "maxItems": 0 },
+          "root_cause": { "const": "not-applicable" },
+          "earliest_failure": { "type": "null" }
+        }
+      },
+      "else": {
+        "properties": {
+          "status": { "enum": ["PASS", "FAIL", "BLOCKED"] },
+          "input_manifest_digest": { "$ref": "#/$defs/digest" },
+          "provider_trace_digest": { "$ref": "#/$defs/digest" },
+          "provider_output_digest": { "$ref": "#/$defs/digest" },
+          "evidence_artifacts": {
+            "minItems": 3,
+            "allOf": [
+              { "contains": { "properties": { "path": { "pattern": "^specialized-evaluations/[^/]+/input/input-manifest\\.json$" } }, "required": ["path"] } },
+              { "contains": { "properties": { "path": { "pattern": "^specialized-evaluations/[^/]+/provider/trace\\.json$" } }, "required": ["path"] } },
+              { "contains": { "properties": { "path": { "pattern": "^specialized-evaluations/[^/]+/provider/output\\.json$" } }, "required": ["path"] } }
+            ]
+          },
+          "claim_ledger": {
+            "minItems": 1,
+            "items": {
+              "allOf": [
+                { "$ref": "#/$defs/claim" },
+                {
+                  "properties": {
+                    "evidence": {
+                      "contains": { "pattern": "^specialized-evaluations/[^/]+/provider/output\\.json$" }
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        }
+      }
+    }
+  ]
+}

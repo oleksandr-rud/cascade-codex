@@ -1,0 +1,7 @@
+{
+  "schema_version": 1,
+  "id": "agent-response-contract-valid-v1",
+  "type": "state-equals",
+  "path": "agent.contract_status",
+  "expected": "VALID"
+}

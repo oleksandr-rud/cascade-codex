@@ -57,7 +57,41 @@
           "$ref": "#/$defs/nonEmptyUniqueStrings"
         },
         "action_types": {
-          "$ref": "#/$defs/nonEmptyUniqueStrings"
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "enum": [
+              "assert",
+              "set",
+              "increment",
+              "deny",
+              "fail",
+              "process-exec",
+              "terminal-spawn",
+              "terminal-wait",
+              "terminal-input",
+              "terminal-resize",
+              "terminal-signal",
+              "terminal-capture",
+              "http-request",
+              "browser-fill",
+              "browser-click",
+              "browser-navigate",
+              "desktop-launch",
+              "desktop-type",
+              "desktop-key",
+              "desktop-wait-file",
+              "desktop-capture",
+              "mobile-launch",
+              "mobile-tap",
+              "mobile-type",
+              "mobile-key",
+              "mobile-wait-text",
+              "mobile-capture",
+              "agent-invoke"
+            ]
+          }
         },
         "action_paths": {
           "$ref": "#/$defs/nonEmptyUniqueStrings"
@@ -134,7 +168,7 @@
       "properties": {
         "key_id": {
           "type": "string",
-          "minLength": 1
+          "pattern": "^(?!(?:__proto__|constructor|prototype)$)[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
         },
         "secret_env": {
           "type": "string",

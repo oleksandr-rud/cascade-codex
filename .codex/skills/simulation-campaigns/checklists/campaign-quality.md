@@ -19,6 +19,15 @@
       and release-eligible states are reported separately.
 - [ ] Manifest, task, simulation, claim, policy, oracle, fixture, and catalog
       references resolve in the current checkout.
+- [ ] Every product campaign references one authored seed-binding artifact
+      whose campaign digest and Task Envelope ID/revision/request/source
+      digests are current; harness campaigns and harness intakes reference none.
+- [ ] The seed binding maps every active Task Envelope claim exactly once by
+      `source_claim_id`, includes at least one `SEEDED` row, and uses no claim
+      text matching or second semantic classifier.
+- [ ] Every `SEEDED` row names at least one current campaign claim and one
+      current scenario or task. `CONTEXT_ONLY` and `OUT_OF_SCOPE` name no
+      targets and include a nonempty rationale.
 - [ ] Population actors, weights, source provenance, risk slices, scenarios,
       stateful world, and reset contract are explicit.
 - [ ] Persona-derived populations bind an approved derivation manifest and

@@ -1,0 +1,15 @@
+{
+  "schema_version": 1,
+  "id": "interactive-terminal-v1",
+  "goal": "Complete the exact bounded PTY prompt and preserve terminal-scoped evidence.",
+  "actor_ids": [
+    "terminal-pty-actor"
+  ],
+  "initial_state": {},
+  "stop_conditions": [
+    "the required prompt task and terminal completion oracle pass"
+  ],
+  "claim_ids": [
+    "terminal-pty-execution"
+  ]
+}

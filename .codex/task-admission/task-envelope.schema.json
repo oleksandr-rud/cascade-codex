@@ -1,74 +1,104 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://cascade.local/schemas/task-envelope.schema.json",
+  "$id": "https://cascade.local/schemas/task-envelope.v41.schema.json",
   "title": "Cascade Task Envelope",
   "type": "object",
   "additionalProperties": false,
   "required": [
     "schema_version", "artifact_type", "envelope_id", "revision",
-    "policy_bundle_version", "request_digest", "task_id", "prior_envelope_id",
+    "policy_bundle_version", "policy_bundle_digest", "control_catalog_digest", "request_digest", "source_digest",
+    "derivation_input", "derivation_input_digest", "task_id", "prior_envelope_id",
     "produced_at", "relation", "intent", "claims", "workload", "route",
     "control_packs", "required_skills", "evidence_floor", "persistence",
     "authority", "policy_decisions", "explanation_trace", "reclassification",
     "reclassification_triggers", "conflicts", "gaps", "blockers",
-    "non_goals", "invalidation"
+    "non_goals", "invalidation", "integrity"
   ],
   "properties": {
-    "schema_version": { "const": 1 },
+    "schema_version": { "const": 41 },
     "artifact_type": { "const": "cascade-task-envelope" },
     "envelope_id": { "type": "string", "pattern": "^TE-[a-f0-9]{16}$" },
     "revision": { "type": "integer", "minimum": 1 },
-    "policy_bundle_version": { "type": "string", "pattern": "^[a-z0-9.-]+@[0-9]+$" },
+    "policy_bundle_version": { "const": "cascade-core@42" },
+    "policy_bundle_digest": { "$ref": "#/$defs/digest" },
+    "control_catalog_digest": { "$ref": "#/$defs/digest" },
     "request_digest": { "$ref": "#/$defs/digest" },
+    "source_digest": { "$ref": "#/$defs/nullableDigest" },
+    "derivation_input": { "$ref": "#/$defs/derivationInput" },
+    "derivation_input_digest": { "$ref": "#/$defs/digest" },
     "task_id": { "type": "string", "minLength": 1, "maxLength": 200 },
     "prior_envelope_id": { "type": ["string", "null"], "pattern": "^TE-[a-f0-9]{16}$" },
     "produced_at": { "type": "string", "format": "date-time" },
-    "relation": { "enum": ["NEW", "CONTINUE", "AMEND", "OVERRIDE", "STATUS", "CANCEL", "CONVERSATION_ONLY"] },
-    "intent": { "enum": ["ANSWER", "DISCOVER", "DIAGNOSE", "REVIEW", "VALIDATE", "CHANGE", "OPERATE"] },
-    "claims": { "type": "array", "items": { "$ref": "#/$defs/claim" } },
+    "relation": { "$ref": "#/$defs/relation" },
+    "intent": { "$ref": "#/$defs/intent" },
+    "claims": { "type": "array", "minItems": 1, "maxItems": 64, "items": { "$ref": "#/$defs/claim" } },
     "workload": { "$ref": "#/$defs/workload" },
-    "route": { "enum": ["NO_WORKFLOW", "DIRECT_READ", "DIRECT_CHANGE", "BOUNDED", "CONNECTED", "PROGRAM"] },
+    "route": { "$ref": "#/$defs/route" },
     "control_packs": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "$ref": "#/$defs/controlPack" } },
-    "required_skills": { "type": "array", "uniqueItems": true, "items": { "type": "string", "pattern": "^[a-z0-9-]+$" } },
-    "evidence_floor": { "enum": ["EXPLANATION", "TARGETED", "REGRESSION", "INDEPENDENT", "RELEASE"] },
+    "required_skills": { "type": "array", "uniqueItems": true, "items": { "type": "string", "pattern": "^[a-z0-9-]+(?::[a-z0-9-]+)?$" } },
+    "evidence_floor": { "$ref": "#/$defs/evidence" },
     "persistence": {
       "type": "object", "additionalProperties": false,
       "required": ["recommended", "dispatch_authorized", "reason"],
       "properties": {
         "recommended": { "type": "boolean" },
         "dispatch_authorized": { "type": "boolean" },
-        "reason": { "type": "string", "minLength": 1 }
+        "reason": { "type": "string", "minLength": 1, "maxLength": 300 }
       }
     },
     "authority": {
       "type": "object", "additionalProperties": false,
-      "required": ["granted", "missing"],
+      "required": ["requested", "missing", "activation", "local_write_scope"],
       "properties": {
-        "granted": { "type": "array", "uniqueItems": true, "items": { "type": "string", "minLength": 1 } },
-        "missing": { "type": "array", "uniqueItems": true, "items": { "type": "string", "minLength": 1 } }
+        "requested": { "$ref": "#/$defs/authorityList" },
+        "missing": { "$ref": "#/$defs/authorityList" },
+        "activation": { "const": "HOST_RECEIPT_REQUIRED" },
+        "local_write_scope": {
+          "type": "object", "additionalProperties": false,
+          "required": ["mode", "targets"],
+          "properties": {
+            "mode": { "enum": ["TARGETS", "REPOSITORY"] },
+            "targets": { "type": "array", "uniqueItems": true, "items": { "type": "string", "minLength": 1, "maxLength": 300 } }
+          }
+        }
       }
     },
-    "policy_decisions": { "type": "array", "items": { "$ref": "#/$defs/policyDecision" } },
-    "explanation_trace": { "type": "array", "items": { "$ref": "#/$defs/trace" } },
+    "policy_decisions": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/policyDecision" } },
+    "explanation_trace": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/trace" } },
     "reclassification": {
       "type": "object", "additionalProperties": false,
       "required": ["preserved_claim_ids", "superseded_claim_ids", "reopened_consumers"],
       "properties": {
-        "preserved_claim_ids": { "type": "array", "uniqueItems": true, "items": { "type": "string", "pattern": "^CL-[0-9]{3}$" } },
-        "superseded_claim_ids": { "type": "array", "uniqueItems": true, "items": { "type": "string", "pattern": "^CL-[0-9]{3}$" } },
+        "preserved_claim_ids": { "$ref": "#/$defs/claimIdList" },
+        "superseded_claim_ids": { "$ref": "#/$defs/claimIdList" },
         "reopened_consumers": { "$ref": "#/$defs/stringList" }
       }
     },
-    "reclassification_triggers": { "type": "array", "uniqueItems": true, "items": { "type": "string", "minLength": 1 } },
+    "reclassification_triggers": { "$ref": "#/$defs/stringList" },
     "conflicts": { "$ref": "#/$defs/stringList" },
     "gaps": { "$ref": "#/$defs/stringList" },
     "blockers": { "$ref": "#/$defs/stringList" },
     "non_goals": { "$ref": "#/$defs/stringList" },
-    "invalidation": { "$ref": "#/$defs/stringList" }
+    "invalidation": { "$ref": "#/$defs/stringList" },
+    "integrity": {
+      "type": "object", "additionalProperties": false,
+      "required": ["algorithm", "digest"],
+      "properties": {
+        "algorithm": { "const": "SHA-256" },
+        "digest": { "$ref": "#/$defs/digest" }
+      }
+    }
   },
   "$defs": {
     "digest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
-    "stringList": { "type": "array", "uniqueItems": true, "items": { "type": "string", "minLength": 1 } },
+    "nullableDigest": { "type": ["string", "null"], "pattern": "^[a-f0-9]{64}$" },
+    "stringList": { "type": "array", "uniqueItems": true, "items": { "type": "string", "minLength": 1, "maxLength": 300 } },
+    "authorityList": { "type": "array", "uniqueItems": true, "items": { "type": "string", "pattern": "^[a-z0-9][a-z0-9-]{0,63}$" } },
+    "claimIdList": { "type": "array", "uniqueItems": true, "items": { "type": "string", "pattern": "^CL-[0-9]{3}$" } },
+    "relation": { "enum": ["NEW", "CONTINUE", "AMEND", "OVERRIDE", "STATUS", "CANCEL", "CONVERSATION_ONLY"] },
+    "intent": { "enum": ["ANSWER", "DISCOVER", "DIAGNOSE", "REVIEW", "VALIDATE", "CHANGE", "OPERATE"] },
+    "route": { "enum": ["NO_WORKFLOW", "DIRECT_READ", "DIRECT_CHANGE", "BOUNDED", "CONNECTED", "PROGRAM"] },
+    "evidence": { "enum": ["EXPLANATION", "TARGETED", "REGRESSION", "INDEPENDENT", "RELEASE"] },
     "controlPack": { "enum": ["BASE", "GROUNDED_READ", "ATOMIC_CHANGE", "STANDARD_CHANGE", "CONNECTED_DELIVERY", "PROGRAM_CONTROL", "SIMULATION_GOVERNANCE", "SECURITY_ASSURANCE", "FULL_SCAN", "RELEASE_EVIDENCE"] },
     "claim": {
       "type": "object", "additionalProperties": false,
@@ -76,14 +106,79 @@
       "properties": {
         "claim_id": { "type": "string", "pattern": "^CL-[0-9]{3}$" },
         "kind": { "enum": ["OUTCOME", "CURRENT_STATE", "CRITERION", "CONSTRAINT", "NON_GOAL", "BOUNDARY", "HAZARD", "AUTHORITY", "EVIDENCE", "INFERENCE"] },
-        "statement": { "type": "string", "minLength": 1, "maxLength": 1000 },
+        "statement": { "type": "string", "minLength": 1, "maxLength": 500 },
         "source": { "enum": ["USER", "TRUSTED_INSTRUCTION", "CURRENT_SOURCE", "TOOL_EVIDENCE", "EXTERNAL_SOURCE", "MODEL_INFERENCE"] },
         "status": { "enum": ["PROVIDED", "VERIFIED", "INFERRED", "UNKNOWN", "CONFLICTING", "SUPERSEDED"] },
         "confidence": { "type": ["number", "null"], "minimum": 0, "maximum": 1 },
-        "verification": { "type": "string", "minLength": 1 },
+        "verification": { "type": "string", "minLength": 1, "maxLength": 300 },
         "policy_tags": { "$ref": "#/$defs/stringList" },
         "consumers": { "$ref": "#/$defs/stringList" },
         "invalidation": { "$ref": "#/$defs/stringList" }
+      }
+    },
+    "derivationInput": {
+      "type": "object", "additionalProperties": false,
+      "required": ["schema_version", "classifier_id", "canonical_request", "classification_request", "classification_digest", "provenance_version", "provenance_mode", "source_segments_digest", "direct_user_attestation", "request_spans", "request_digest", "source_digest", "task_id", "produced_at", "relation_override", "intent_override", "authority_candidates", "candidate_tags", "prior", "authenticity"],
+      "properties": {
+        "schema_version": { "const": 41 },
+        "classifier_id": { "const": "cascade-task-admission-v41" },
+        "canonical_request": { "type": "string", "minLength": 1, "maxLength": 4000 },
+        "classification_request": { "type": "string", "minLength": 1, "maxLength": 4000 },
+        "classification_digest": { "$ref": "#/$defs/digest" },
+        "provenance_version": { "const": 2 },
+        "provenance_mode": { "enum": ["TRUSTED_SOURCE_SEGMENTS", "LEXICAL_FALLBACK"] },
+        "source_segments_digest": { "$ref": "#/$defs/digest" },
+        "direct_user_attestation": {
+          "type": ["object", "null"], "additionalProperties": false,
+          "required": ["schema_version", "attestation_id", "issuer", "request_digest", "source_segments_digest"],
+          "properties": {
+            "schema_version": { "const": 1 },
+            "attestation_id": { "type": "string", "minLength": 1, "maxLength": 200 },
+            "issuer": { "type": "string", "minLength": 1, "maxLength": 200 },
+            "request_digest": { "$ref": "#/$defs/digest" },
+            "source_segments_digest": { "$ref": "#/$defs/digest" }
+          }
+        },
+        "request_spans": { "type": "array", "minItems": 1, "maxItems": 64, "items": { "$ref": "#/$defs/requestSpan" } },
+        "request_digest": { "$ref": "#/$defs/digest" },
+        "source_digest": { "$ref": "#/$defs/nullableDigest" },
+        "task_id": { "type": "string", "minLength": 1, "maxLength": 200 },
+        "produced_at": { "type": "string", "format": "date-time" },
+        "relation_override": { "type": ["string", "null"], "enum": ["NEW", "CONTINUE", "AMEND", "OVERRIDE", "STATUS", "CANCEL", "CONVERSATION_ONLY", null] },
+        "intent_override": { "type": ["string", "null"], "enum": ["ANSWER", "DISCOVER", "DIAGNOSE", "REVIEW", "VALIDATE", "CHANGE", "OPERATE", null] },
+        "authority_candidates": { "$ref": "#/$defs/authorityList" },
+        "candidate_tags": { "type": "array", "uniqueItems": true, "items": { "type": "string", "pattern": "^[a-z0-9-]+$" } },
+        "prior": { "type": ["object", "null"], "additionalProperties": false, "required": ["envelope_id", "revision", "task_id", "request_digest", "source_digest", "intent", "provenance_mode", "direct_user_attestation", "claims"], "properties": {
+          "envelope_id": { "type": "string", "pattern": "^TE-[a-f0-9]{16}$" },
+          "revision": { "type": "integer", "minimum": 1 },
+          "task_id": { "type": "string", "minLength": 1, "maxLength": 200 },
+          "request_digest": { "$ref": "#/$defs/digest" },
+          "source_digest": { "$ref": "#/$defs/nullableDigest" },
+          "intent": { "$ref": "#/$defs/intent" },
+          "provenance_mode": { "enum": ["TRUSTED_SOURCE_SEGMENTS", "LEXICAL_FALLBACK"] },
+          "direct_user_attestation": {
+            "type": ["object", "null"], "additionalProperties": false,
+            "required": ["schema_version", "attestation_id", "issuer", "request_digest", "source_segments_digest"],
+            "properties": {
+              "schema_version": { "const": 1 },
+              "attestation_id": { "type": "string", "minLength": 1, "maxLength": 200 },
+              "issuer": { "type": "string", "minLength": 1, "maxLength": 200 },
+              "request_digest": { "$ref": "#/$defs/digest" },
+              "source_segments_digest": { "$ref": "#/$defs/digest" }
+            }
+          },
+          "claims": { "type": "array", "minItems": 1, "maxItems": 64, "items": { "$ref": "#/$defs/claim" } }
+        } },
+        "authenticity": { "enum": ["TRUSTED_DIRECT_USER_ATTESTATION", "UNVERIFIED_LEXICAL_FALLBACK"] }
+      }
+    },
+    "requestSpan": {
+      "type": "object", "additionalProperties": false,
+      "required": ["start", "end", "source"],
+      "properties": {
+        "start": { "type": "integer", "minimum": 0, "maximum": 4000 },
+        "end": { "type": "integer", "minimum": 1, "maximum": 4000 },
+        "source": { "enum": ["USER", "EXTERNAL_SOURCE"] }
       }
     },
     "workload": {
@@ -94,7 +189,7 @@
         "effort": { "enum": ["MICRO", "SMALL", "MEDIUM", "LARGE", "EXTENDED"] },
         "assurance": { "enum": ["BASIC", "STANDARD", "HIGH", "REGULATED"] },
         "authority": { "enum": ["READ_ONLY", "LOCAL_WRITE", "EXTERNAL_WRITE", "PRIVILEGED", "DESTRUCTIVE"] },
-        "evidence": { "enum": ["EXPLANATION", "TARGETED", "REGRESSION", "INDEPENDENT", "RELEASE"] },
+        "evidence": { "$ref": "#/$defs/evidence" },
         "duration": { "enum": ["TURN", "MULTI_TURN", "RESUMABLE", "PROGRAM"] },
         "context": { "enum": ["PROMPT_ONLY", "TARGETED_PROBE", "SCOPED_SCAN", "FULL_SCAN"] }
       }
@@ -106,18 +201,21 @@
         "policy_id": { "type": "string", "pattern": "^TAP-[0-9]{3}$" },
         "version": { "type": "integer", "minimum": 1 },
         "effect": { "enum": ["ALLOW", "REQUIRE", "DENY", "GAP"] },
-        "matched_claim_ids": { "type": "array", "uniqueItems": true, "items": { "type": "string" } },
+        "matched_claim_ids": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "type": "string", "pattern": "^CL-[0-9]{3}$" } },
         "controls": { "type": "array", "uniqueItems": true, "items": { "$ref": "#/$defs/controlPack" } },
-        "reason": { "type": "string", "minLength": 1 }
+        "reason": { "type": "string", "minLength": 1, "maxLength": 500 }
       }
     },
     "trace": {
       "type": "object", "additionalProperties": false,
-      "required": ["claim_id", "signal", "policy_id", "control", "outcome"],
+      "required": ["claim_id", "signal", "policy_id", "policy_version", "control", "outcome"],
       "properties": {
-        "claim_id": { "type": "string" }, "signal": { "type": "string" },
-        "policy_id": { "type": "string" }, "control": { "type": "string" },
-        "outcome": { "type": "string" }
+        "claim_id": { "type": "string", "pattern": "^CL-[0-9]{3}$" },
+        "signal": { "type": "string", "minLength": 1, "maxLength": 200 },
+        "policy_id": { "type": "string", "pattern": "^TAP-[0-9]{3}$" },
+        "policy_version": { "type": "integer", "minimum": 1 },
+        "control": { "$ref": "#/$defs/controlPack" },
+        "outcome": { "type": "string", "pattern": "^(NO_WORKFLOW|DIRECT_READ|DIRECT_CHANGE|BOUNDED|CONNECTED|PROGRAM)/(EXPLANATION|TARGETED|REGRESSION|INDEPENDENT|RELEASE)$" }
       }
     }
   }

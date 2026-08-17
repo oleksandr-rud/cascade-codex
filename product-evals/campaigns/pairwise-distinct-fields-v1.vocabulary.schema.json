@@ -1,0 +1,59 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://cascade.local/vocab/pairwise-distinct-fields/v1",
+  "$dynamicAnchor": "meta",
+  "title": "Cascade pairwise-distinct principal fields vocabulary version 1",
+  "type": ["object", "boolean"],
+  "properties": {
+    "x-cascade-pairwise-distinct-fields": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["version", "properties", "fields", "ignore_null"],
+      "properties": {
+        "version": { "const": 1 },
+        "properties": {
+          "const": [
+            "operator",
+            "specialized_evaluator",
+            "evaluator",
+            "aggregator",
+            "target",
+            "simulator",
+            "recovery"
+          ]
+        },
+        "fields": { "const": ["session_id", "subject"] },
+        "ignore_null": { "const": true }
+      }
+    }
+  },
+  "dependentSchemas": {
+    "x-cascade-pairwise-distinct-fields": {
+      "required": ["type", "properties"],
+      "properties": {
+        "type": { "const": "object" },
+        "properties": {
+          "type": "object",
+          "properties": {
+            "operator": true,
+            "specialized_evaluator": true,
+            "evaluator": true,
+            "aggregator": true,
+            "target": true,
+            "simulator": true,
+            "recovery": true
+          },
+          "required": [
+            "operator",
+            "specialized_evaluator",
+            "evaluator",
+            "aggregator",
+            "target",
+            "simulator",
+            "recovery"
+          ]
+        }
+      }
+    }
+  }
+}

@@ -1,14 +1,14 @@
 # Work Lane: W-010 Mobile Task Ground-Up Implementation
 
-Status: `OPEN`
+Status: `IN_PROGRESS`
 Owner: `agent-engineer`
 Created: 2026-07-27
 Lane Model: `single-lane`
-Next Gate: `implement-change after W-004 Gate A and W-006 visual seam`
-Execution Surface: `internal-subagent`
-Dispatch State: `NOT_AUTHORIZED`
-Dispatch Authorization: `none`
-Runtime Handle: `none`
+Next Gate: `provision exact Android device/app/snapshot runner; rerun provider campaign; then focused review and W-006/Gate A acceptance`
+Execution Surface: `root`
+Dispatch State: `AUTHORIZED`
+Dispatch Authorization: explicit user authorization for delegated workline implementation, 2026-08-05
+Runtime Handle: `w010-mobile-provider-preflight-20260808-r2`
 
 ## Request
 
@@ -80,6 +80,7 @@ Out:
 
 | Campaign ID | Tier | Required Evidence Boundary | Status |
 |---|---|---|---|
+| `mobile-provider-preflight` | deterministic platform | Exact Android device/app/snapshot/action-runner readiness, policy boundary, and no-dispatch cleanup | `BLOCKED`; immutable r2 valid/fresh because adb is unavailable |
 | `mobile-android-emulator-smoke` | deterministic platform | Emulator image/device/app-build identity, install/launch/lifecycle/permission cases, semantic/device oracle, logs, and reset | `NOT_RUN` |
 | `mobile-ios-simulator-canary` | macOS-gated platform | Xcode/iOS runtime, simulator/device profile, app-build, lifecycle/oracle evidence, logs, cleanup, and explicit host blocker | `NOT_RUN` |
 | `mobile-computer-use-canary` | isolated live canary | Exact simulator/app-build, screenshot/action loop, device/app policies, budgets, independent device/app oracle, and reset | `NOT_RUN` |
@@ -187,7 +188,7 @@ iOS, Computer Use, simulator, and real-device claims stay independent.
 
 | Check | Command Or Evidence | Status |
 |---|---|---|
-| Mobile provider contract | fake Android/iOS lifecycle suite | `OPEN` |
+| Mobile provider contract | schema v8, exact adapter selection, Android/iOS preflight, policy/oracle/claim campaign | `PASS` structurally; execution remains blocked |
 | Android emulator | install/launch/lifecycle/permission/reset canary | `NOT_RUN` |
 | iOS Simulator | macOS install/launch/lifecycle/reset canary | `NOT_RUN` |
 | Computer Use mobile | isolated emulator visual canary | `NOT_RUN` |
@@ -196,15 +197,16 @@ iOS, Computer Use, simulator, and real-device claims stay independent.
 
 ## Status Reconciliation
 
-- Last checked: `2026-07-30`
-- Source identity: clean implementation base
-  `master@21ba5288b27700f94ecad92ec0cf3d1e5dca5f29`; accepted WG-001-N03
-  current-source implementation and revision-11 status records applied on top
+- Last checked: `2026-08-08`
+- Source identity: current dirty workspace candidate; schema v8 and immutable
+  `w010-mobile-provider-preflight-20260808-r2`
 - Completion disposition: `KEEP_OPEN`
-- Reason: Android/iOS providers, mobile adapters, fixtures, and coverage runtime
-  are absent; required gates remain `OPEN`/`NOT_RUN`.
-- Synchronized surfaces: lane, active registry, report index, and WG-001 plan
-  revision 10.
+- Reason: platform-neutral actions, exact adapter/provider/app/device bindings,
+  fixture requirements, policy/oracle/claim surfaces, and fail-closed preflight
+  are implemented. The host has no adb/emulator and no available iOS Simulator;
+  snapshot-bound dispatch, app fixture, Computer Use, real-device evidence,
+  W-006 acceptance, and Gate A remain open.
+- Synchronized surfaces: lane, active registry, and WG-001 plan revision 83.
 
 ## Closeout
 

@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "id": "terminal-pty-actors-v1",
+  "source": {
+    "kind": "synthetic",
+    "description": "Deterministic harness-only actor; it does not represent product users.",
+    "minimized": true
+  },
+  "actors": [
+    {
+      "id": "terminal-pty-actor",
+      "weight": 1,
+      "behavior": {
+        "strategy": "follow only the authored prompt, resize, signal, and capture sequence"
+      },
+      "slices": [
+        "terminal-pty"
+      ]
+    }
+  ]
+}

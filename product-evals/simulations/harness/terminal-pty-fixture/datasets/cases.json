@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "id": "terminal-pty-cases-v1",
+  "leakage_policy": "exclusive-case-identity",
+  "cases": [
+    {
+      "id": "terminal-pty-development",
+      "scenario_id": "interactive-terminal-v1",
+      "actor_id": "terminal-pty-actor",
+      "partition": "development",
+      "slices": ["terminal-pty"]
+    },
+    {
+      "id": "terminal-pty-regression",
+      "scenario_id": "interactive-terminal-v1",
+      "actor_id": "terminal-pty-actor",
+      "partition": "regression",
+      "slices": ["terminal-pty"]
+    },
+    {
+      "id": "terminal-pty-holdout",
+      "scenario_id": "interactive-terminal-v1",
+      "actor_id": "terminal-pty-actor",
+      "partition": "holdout",
+      "slices": ["terminal-pty"]
+    },
+    {
+      "id": "terminal-pty-calibration",
+      "scenario_id": "interactive-terminal-v1",
+      "actor_id": "terminal-pty-actor",
+      "partition": "calibration-reference",
+      "slices": ["terminal-pty"]
+    }
+  ]
+}

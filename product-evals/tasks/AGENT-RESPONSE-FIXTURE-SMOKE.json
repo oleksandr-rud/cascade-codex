@@ -1,0 +1,45 @@
+{
+  "schema_version": 5,
+  "id": "AGENT-RESPONSE-FIXTURE-SMOKE",
+  "kind": "agent-response",
+  "driver": {
+    "type": "agent-runtime",
+    "adapter": "builtin-agent-fixture"
+  },
+  "required": true,
+  "timeout_ms": 2000,
+  "agent": {
+    "target": {
+      "mode": "explicit-instructions",
+      "instruction_file": "product-evals/tasks/agent-response/fixture-instructions.md"
+    },
+    "runtime": {
+      "provider": "fixture",
+      "fixture_response_file": "product-evals/tasks/agent-response/fixture-response.json"
+    },
+    "prompt_file": "product-evals/tasks/agent-response/fixture-prompt.md",
+    "input_file": "product-evals/tasks/agent-response/fixture-input.json",
+    "output_schema_file": "product-evals/tasks/agent-response/fixture-output.schema.json",
+    "permissions": {
+      "filesystem": "read-only",
+      "network": "deny",
+      "tools": []
+    },
+    "budgets": {
+      "max_output_bytes": 16384,
+      "max_tool_calls": 0,
+      "max_tokens": 2048
+    },
+    "evaluation_profile": "response-contract-v1",
+    "source_blind": true
+  },
+  "inputs": [
+    "product-evals/tasks/agent-response/fixture-instructions.md",
+    "product-evals/tasks/agent-response/fixture-prompt.md",
+    "product-evals/tasks/agent-response/fixture-input.json",
+    "product-evals/tasks/agent-response/fixture-output.schema.json",
+    "product-evals/tasks/agent-response/fixture-response.json"
+  ],
+  "oracle_ids": ["agent-response-contract-valid-v1"],
+  "policy_ids": ["allow-agent-response-fixture-v1"]
+}

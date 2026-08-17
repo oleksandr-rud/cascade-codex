@@ -1,0 +1,20 @@
+{
+  "schema_version": 2,
+  "id": "allow-browser-simulation-smoke-v1",
+  "version": "1.0.0",
+  "effect": "ALLOW",
+  "scope": {
+    "campaign_ids": ["browser-simulation-smoke"],
+    "task_ids": ["BROWSER-SIMULATION-SMOKE"],
+    "task_kinds": ["browser"],
+    "driver_types": ["playwright"],
+    "action_types": ["browser-fill", "browser-click"]
+  },
+  "budgets": {
+    "required_dimensions": ["action_count", "output_bytes"],
+    "max_actions": 2,
+    "max_output_bytes": 65536
+  },
+  "redaction_profile": "no-secrets-v1",
+  "reason": "Allow only the two structured local-fixture actions in the deterministic W-006 browser smoke."
+}

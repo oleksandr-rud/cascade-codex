@@ -1,0 +1,4 @@
+interface:
+  display_name: "Synthesise Spec"
+  short_description: "Synthesize readable software specification packets"
+  default_prompt: "Use $synthesise-spec to synthesize these sources into a readable software feature, change, or task specification packet."

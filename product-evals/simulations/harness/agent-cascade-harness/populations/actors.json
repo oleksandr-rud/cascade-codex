@@ -1,0 +1,15 @@
+{
+  "schema_version": 1,
+  "id": "agent-cascade-harness-actors-v1",
+  "source": {
+    "kind": "synthetic",
+    "description": "Bounded harness actor for one current Cascade routing scenario; it does not represent product users.",
+    "minimized": true
+  },
+  "actors": [{
+    "id": "agent-cascade-harness-actor",
+    "weight": 1,
+    "behavior": { "strategy": "route the supplied request using only current Cascade contracts" },
+    "slices": ["cascade-harness-profile"]
+  }]
+}

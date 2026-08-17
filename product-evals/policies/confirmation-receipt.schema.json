@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://cascade.local/schemas/policy-confirmation-receipt.schema.json",
+  "$id": "https://cascade.local/schemas/policy-confirmation-receipt.v2.schema.json",
   "title": "Cascade policy confirmation receipt",
   "type": "object",
   "additionalProperties": false,
@@ -14,7 +14,8 @@
     "campaign_id",
     "task_id",
     "action_index",
-    "action_digest",
+    "action_binding_version",
+    "action_binding_digest",
     "decision",
     "issued_at",
     "expires_at",
@@ -24,7 +25,7 @@
   ],
   "properties": {
     "schema_version": {
-      "const": 1
+      "const": 2
     },
     "receipt_id": {
       "type": "string",
@@ -58,7 +59,10 @@
       "type": "integer",
       "minimum": 0
     },
-    "action_digest": {
+    "action_binding_version": {
+      "const": "cascade-action-binding-v2"
+    },
+    "action_binding_digest": {
       "type": "string",
       "pattern": "^[a-f0-9]{64}$"
     },
@@ -79,7 +83,7 @@
     },
     "authority_key_id": {
       "type": "string",
-      "minLength": 1
+      "pattern": "^(?!(?:__proto__|constructor|prototype)$)[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
     },
     "signature": {
       "type": "string",

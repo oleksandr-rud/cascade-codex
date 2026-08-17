@@ -196,7 +196,7 @@ the `architecture-review` skill.
 
 | Phase | Role | Required skill route | Constraint |
 |---|---|---|---|
-| baseline and contract | root `orchestrator` plus W-018 `agent-engineer` | `context -> architecture-review -> orchestrate-work -> plan-change -> implement-change` | reproduce the W-017 receipt before dispatch |
+| baseline and contract | root `orchestrator` plus W-018 `agent-engineer` | historical pre-cutover sequence: `context`; `architecture-review`; coordination; planning; implementation | reproduce the W-017 receipt before dispatch |
 | W-019 frontend profile | `agent-engineer` | `architecture-review -> implement-change` | pair files only; `designer` is conditional on UI/design-system changes, not SSR/BFF infrastructure alone |
 | W-020 backend profile | `agent-engineer` | `architecture-review -> implement-change` | pair files only; use `secure-design` and `security` review if tenant, credential, secret, or trust boundaries change |
 | W-021 native/CLI/experiment profiles | `agent-engineer` | `architecture-review -> implement-change` | six pair files only; no source scaffolds |
@@ -205,10 +205,10 @@ the `architecture-review` skill.
 | W-023 closeout | independent `agent-engineer` instance | `context -> review-change -> validate-change -> closeout` | read-only implementation sources; route failures to their owners |
 | target-project application | `project-onboarder` | `adapt-harness -> pattern-context -> architecture-review` | begins only for a separately authorized target repository |
 
-Subagents are direct children only. The repository limit is six total agent
-execution slots (the `max_threads` configuration key) and depth one, so the
-intended peak is the root coordinator, W-018 merge owner, and four section
-agents. These slots are not user-visible Codex tasks and did not cause
+Subagents are direct children only. The legacy repository setting used at the
+time allowed six total agent execution slots and depth one, so the intended
+peak was the root coordinator, W-018 merge owner, and four section agents.
+These slots were not user-visible Codex tasks and did not cause
 automatic dispatch. If the runtime cannot provide that capacity, keep W-018 at
 root and run W-019-W-022 in bounded waves. No subagent may spawn another agent,
 change a sibling lane, or merge its own receipt.
@@ -362,7 +362,7 @@ not constitute Stage 2 or Stage 3 implementation evidence.
 |---|---|
 | W-018-W-024 status, next-gate, coordinator, owner, and dependency scan | `PASS` |
 | repository agent capacity against the proposed topology | `PASS`; six total agent execution slots and depth one |
-| isolated source validator | `PASS`; 9 agents, 41 skills, zero project-specific leakage, zero standalone-QA references |
+| isolated source validator | `PASS`; 9 agents, 41 skills, zero project-specific leakage, zero retired QA-label references |
 | harness catalog | `PASS`; 41 skills, 319 scenarios, digest `f975c361819767d05319b7f4b636fa8b9e211e3c56b2005de930dd4d665d6552` |
 | harness self-test | `PASS`; 15 cases |
 | `git diff --check` | `PASS` |

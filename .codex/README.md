@@ -9,6 +9,15 @@ simulations. Install it with
 `bun install --cwd .codex/harness-tooling --frozen-lockfile`; do not replace or
 merge a target application's root package manifest or lockfile.
 
+## Repo-Local Plugins
+
+`.codex/plugins/` contains repo-local plugin source packages. Their catalog is
+`.agents/plugins/marketplace.json`; local source paths in that catalog resolve
+from the repository root. The Cascade Prompt source therefore lives at
+`.codex/plugins/cascade-prompt/` and is cataloged as
+`./.codex/plugins/cascade-prompt`. Source presence is distinct from installed,
+active, or published state.
+
 ## Task Admission And Skills
 
 Every request first runs the bounded task-admission microkernel through
@@ -20,7 +29,7 @@ the default for direct answers or atomic edits.
 
 Core non-atomic fallback:
 
-`context -> ingest-spec/discover/market-validation/synthesis-to-spec/compose-spec if needed -> docs-impact-map -> pattern-context when reusable pattern packs are needed -> orchestrate-work -> plan-change -> functional-qa -> implement-change -> review-change -> validate-change -> test-autorepair only if stale tests -> closeout`
+`context -> ingest-spec/discover/market-validation/synthesis-to-spec/compose-spec if needed -> docs-impact-map -> pattern-context when reusable pattern packs are needed -> plan-change -> plan-iterations when delivery spans horizons -> orchestrate-work when feasible committed first-iteration scope needs coordination -> functional-qa -> implement-change -> review-change -> validate-change -> test-autorepair only if stale tests -> closeout`
 
 `compose-spec` may register stable product domains and capabilities in
 `docs/product/catalog.yaml` and author a per-slice `brief.yaml`. The
@@ -57,6 +66,7 @@ Supporting skills:
 - `adapt-harness`
 - `issue-intake`
 - `orchestrate-work`
+- `plan-iterations`
 - `reconcile-work-graph`
 - `archive-work`
 - `review-change`
@@ -67,6 +77,17 @@ Supporting skills:
 - `ux-flow-review`
 - `accessibility-review`
 - `visual-qa`
+
+## Optional Dynamic Simulation Plugin
+
+When installed separately, `cascade-simulations:simulate` is the default route
+for one actor performing meaningful work through a declared interface toward
+an observable outcome. It uses a compact interface-adapter, persona, actor,
+domain-and-feature brief, outcome, and limits contract. Keep
+`simulation-campaigns` for explicit controlled comparisons, calibration,
+release evidence, and other versioned evaluation campaigns. The plugin remains
+a personal/distributed package and is not copied into this repo-local skill
+tree.
 
 ## Agents
 

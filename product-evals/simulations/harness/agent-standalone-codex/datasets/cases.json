@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "id": "agent-standalone-codex-cases-v1",
+  "leakage_policy": "exclusive-case-identity",
+  "cases": [
+    { "id": "standalone-codex-development", "scenario_id": "standalone-codex-response-v1", "actor_id": "agent-standalone-codex-actor", "partition": "development", "slices": ["agent-standalone-codex"] },
+    { "id": "standalone-codex-regression", "scenario_id": "standalone-codex-response-v1", "actor_id": "agent-standalone-codex-actor", "partition": "regression", "slices": ["agent-standalone-codex"] },
+    { "id": "standalone-codex-holdout", "scenario_id": "standalone-codex-response-v1", "actor_id": "agent-standalone-codex-actor", "partition": "holdout", "slices": ["agent-standalone-codex"] },
+    { "id": "standalone-codex-calibration", "scenario_id": "standalone-codex-response-v1", "actor_id": "agent-standalone-codex-actor", "partition": "calibration-reference", "slices": ["agent-standalone-codex"] }
+  ]
+}

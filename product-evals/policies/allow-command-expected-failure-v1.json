@@ -1,0 +1,36 @@
+{
+  "schema_version": 2,
+  "id": "allow-command-expected-failure-v1",
+  "version": "2.0.0",
+  "effect": "ALLOW",
+  "scope": {
+    "campaign_ids": [
+      "command-failure-recovery"
+    ],
+    "task_ids": [
+      "COMMAND-EXPECTED-FAILURE"
+    ],
+    "task_kinds": [
+      "command"
+    ],
+    "driver_types": [
+      "direct-process"
+    ],
+    "action_types": [
+      "process-exec"
+    ],
+    "command_prefix": [
+      "/usr/bin/false"
+    ]
+  },
+  "budgets": {
+    "required_dimensions": [
+      "action_count",
+      "output_bytes"
+    ],
+    "max_actions": 1,
+    "max_output_bytes": 4096
+  },
+  "redaction_profile": "no-secrets-v1",
+  "reason": "Allow only the exact deterministic W-005 expected-nonzero fixture argv."
+}

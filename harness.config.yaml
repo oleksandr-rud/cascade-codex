@@ -40,6 +40,7 @@ models:
 
 paths:
   source_roots:
+    - ".agents"
     - ".github"
     - ".codex"
     - "docs"
@@ -56,11 +57,13 @@ paths:
     - "AGENTS.md"
     - "CODEX.md"
   public_contracts:
+    - ".agents/plugins/marketplace.json"
     - ".github/pull_request_template.md"
     - ".github/copilot-instructions.md"
     - "harness.config.yaml"
     - ".codex/config.toml"
     - ".codex/hooks.json"
+    - ".codex/plugins/cascade-prompt/.codex-plugin/plugin.json"
     - ".codex/task-admission/task-envelope.schema.json"
     - ".codex/task-admission/policy.schema.json"
     - "package.json"
@@ -122,6 +125,7 @@ paths:
   specs_slice_pattern: "docs/specs/{slice-slug}"
   work_index: "docs/work/_index.md"
   active_work: "docs/work/active.md"
+  work_audit_runner: "scripts/cascade/work-audit.ts"
   work_lane_template: "docs/work/lane-template.md"
   work_lane_examples: "docs/work/examples"
   work_lanes: "docs/work/lanes"
@@ -177,7 +181,7 @@ validation_commands:
     - "bun scripts/cascade.ts campaign catalog --check"
     - "bun scripts/cascade.ts campaign self-test"
   unit:
-    - "bun test scripts/cascade"
+    - "bun test --max-concurrency 4 scripts/cascade"
   lint: []
   typecheck: []
   build: []
@@ -195,9 +199,10 @@ routing:
     - "ingest-spec, discover, market-validation, synthesis-to-spec, or compose-spec when source material, missing intent, long business-analysis research, evidence synthesis, or product/spec authoring exists"
     - "docs-impact-map when durable docs may affect sibling rules"
     - "pattern-context when reusable pattern packs or entries are needed"
-    - "orchestrate-work"
     - "plan-change"
-    - "functional-qa"
+    - "plan-iterations when delivery spans horizons"
+    - "orchestrate-work when feasible committed first-iteration scope needs coordination"
+    - "functional-qa when new product-visible proof is needed"
     - "implement-change"
     - "review-change"
     - "validate-change"

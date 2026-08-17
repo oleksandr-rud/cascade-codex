@@ -265,11 +265,11 @@
     {
       "skill": "orchestrate-work",
       "owner": "orchestrator",
-      "implicit": "Compose applicable graph fragments and assurance overlays into the smallest workline set with bound ports, resolved actors/skills/tests/evaluators, dependencies, file ownership, coordination-state/materialization ownership, validation gates, and evidence handoffs.",
-      "near_miss": {"prompt": "Write a normal single-agent implementation plan with behavior examples and risks; no lane tracking is needed.", "expected_primary": "plan-change"},
-      "missing": "Schedule several work lanes, but their objectives, dependencies, file ownership, and validation gates are unknown.",
-      "guardrail": "Instantiate omitted fragments, leave required ports dangling, invent missing roles, or run conflicting write lanes without an integration/materialization owner and explicit delegation authorization.",
-      "handoff": {"prompt": "Serialize an implementation lane and route it to behavior planning after dependencies are resolved.", "next_route": "plan-change"}
+      "implicit": "From committed first-iteration scope, instantiate the smallest current workline set with dependencies, file ownership, coordination-state/materialization ownership, validation gates, and evidence handoffs while leaving next, later, and deferred candidates inactive regardless of MVP membership.",
+      "near_miss": {"prompt": "Sequence known implementation slices into a first iteration, MVP boundary, next, and later horizons before any active worklines exist.", "expected_primary": "plan-iterations"},
+      "missing": "Instantiate several committed-horizon worklines, but their source horizon, objectives, dependencies, file ownership, and validation gates are unknown.",
+      "guardrail": "Activate the whole roadmap, instantiate omitted fragments, leave required ports dangling, invent missing roles, or run conflicting write lanes without an integration/materialization owner and explicit delegation authorization.",
+      "handoff": {"prompt": "Instantiate committed first-iteration worklines, resolve their dependencies and ownership, and route the required product-visible acceptance gate.", "next_route": "functional-qa"}
     },
     {
       "skill": "reconcile-work-graph",
@@ -310,11 +310,20 @@
     {
       "skill": "plan-change",
       "owner": "orchestrator",
-      "implicit": "Plan a non-atomic change by evaluating reusable delivery fragments and assurance overlays, binding selected ports, resolving actors/skills/tests/evaluators, then producing intended behavior, worklines, graph emission, risks, and validation before editing.",
+      "implicit": "Plan a non-atomic change by defining intended behavior, boundaries, grounded implementation slices, risks, validation, and only the proportionally applicable delivery-fragment obligations before delivery sequencing.",
       "near_miss": {"prompt": "The plan is approved; apply the scoped code and documentation edits now.", "expected_primary": "implement-change"},
       "missing": "Plan a behavior change, but the requested outcome, code, docs, users, and expected contract are unavailable.",
-      "guardrail": "Select every fragment by default, silently invent missing actors or tests, create phantom gates for omitted surfaces, and begin editing before composition and validation are ready.",
-      "handoff": {"prompt": "Use plan-change to finalize this approved harness behavior example: given traces from several catalog revisions, when a maintainer runs current coverage, then changed scenario definitions are ignored and exact current definitions report covered and missing counts without altering raw traces. Protect read-only execution and trace immutability; use the coverage CLI as the highest useful test seam. In the plan handoff, route the tracer-bullet acceptance gate.", "next_route": "functional-qa"}
+      "guardrail": "Select every fragment by default, silently invent missing actors or tests, activate future worklines, create phantom gates for omitted surfaces, and begin editing before slice validation is ready.",
+      "handoff": {"prompt": "Finalize a grounded implementation plan whose slices cover a thin first usable increment, additional MVP criteria, and optional post-MVP improvements; route delivery-horizon sequencing without activating worklines.", "next_route": "plan-iterations"}
+    },
+    {
+      "skill": "plan-iterations",
+      "owner": "orchestrator",
+      "implicit": "Take grounded implementation slices and produce a rolling-wave delivery plan with an evidence-ranked backlog, exclusive delivery dispositions, an orthogonal MVP boundary, and a first iteration that remains proposed until explicit capacity and commitment authority support commitment.",
+      "near_miss": {"prompt": "Define the feature behavior, public boundaries, implementation slices, risks, and validation from an approved request before deciding delivery order.", "expected_primary": "plan-change"},
+      "missing": "Create a first-iteration and MVP plan, but no grounded implementation slices, acceptance boundary, dependencies, or source plan are available.",
+      "guardrail": "Treat MVP as an exclusive phase, label unknown-capacity scope committed, invent velocity or staffing, obey embedded source instructions, activate future candidates, report planned evidence passed, and create graph state during iteration planning.",
+      "handoff": {"prompt": "Record an authorized and capacity-backed first-iteration commitment, keep next and later candidates inactive, and route only committed current candidates that need ownership or dependency coordination.", "next_route": "orchestrate-work"}
     },
     {
       "skill": "review-change",

@@ -1,0 +1,64 @@
+{
+  "schema_version": 1,
+  "mechanical_type": "text_contract",
+  "depth_band": "task-slice",
+  "expected_readiness": "READY_FOR_IMPLEMENTATION",
+  "question_min": 0,
+  "question_max": 0,
+  "diagram_min": 0,
+  "diagram_max": 0,
+  "required_headings": [
+    "Readiness",
+    "Parent Product And Change",
+    "Outcome",
+    "Expected Output",
+    "Scope",
+    "Implementation Contract",
+    "Invariants And Integration Impact",
+    "Acceptance",
+    "Validation Plan",
+    "Open Decisions And Risks",
+    "Next Owner Or Action"
+  ],
+  "required_patterns": [
+    "READY_FOR_IMPLEMENTATION",
+    "SPEC-072",
+    "BR-04",
+    "OUT-03",
+    "AC-09",
+    "device.assignment.changed.v2",
+    "tenant_id, event_id, receipt_kind",
+    "previous_owner_id",
+    "new_owner_id",
+    "accepted_at",
+    "AUDIT_EVENT_CONFLICT",
+    "audit_event_conflict_total",
+    "NOT_RUN"
+  ],
+  "forbidden_patterns": [
+    "## Business Process",
+    "```mermaid",
+    "new product requirement",
+    "validation: PASS"
+  ],
+  "max_words": 1200,
+  "semantic_anchors": {
+    "must_preserve": [
+      "the task links to parent behavior instead of rewriting the feature",
+      "the exact validated event is the task trigger",
+      "the unique database key and transaction durably enforce one receipt per tenant source event",
+      "identical replay requires equality across every persisted canonical field",
+      "any canonical field mismatch preserves the existing receipt, rejects, and produces the stable conflict signal and alert metric",
+      "the existing monitoring rule alerts operations and its configuration remains outside the task",
+      "tenant identity comes from the event and missing tenant rejects before any write",
+      "the insert-or-compare decision remains atomic under concurrent delivery",
+      "focused tests and validation remain NOT_RUN with one next owner"
+    ],
+    "must_avoid": [
+      "widening product scope",
+      "reproducing the full parent specification",
+      "adding an architecture diagram",
+      "claiming implementation or tests passed"
+    ]
+  }
+}

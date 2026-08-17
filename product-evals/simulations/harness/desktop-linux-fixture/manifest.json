@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "id": "desktop-linux-fixture",
+  "simulation_scope": "harness",
+  "title": "Deterministic Linux desktop fixture",
+  "purpose": "Exercise only the W-009 structured desktop adapter and exact Docker isolation contract.",
+  "population_files": [
+    "product-evals/simulations/harness/desktop-linux-fixture/populations/actors.json"
+  ],
+  "scenario_files": [
+    "product-evals/simulations/harness/desktop-linux-fixture/scenarios/desktop-form.json"
+  ],
+  "world_file": "product-evals/simulations/harness/desktop-linux-fixture/worlds/world.json",
+  "dataset_file": "product-evals/simulations/harness/desktop-linux-fixture/datasets/cases.json",
+  "metric_files": [
+    "product-evals/metrics/desktop-completion-rate-v1.json"
+  ],
+  "treatment_files": [
+    "product-evals/treatments/baseline-v1.json"
+  ]
+}

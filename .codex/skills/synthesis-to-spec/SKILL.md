@@ -110,8 +110,9 @@ repair.
 9. Use `ingest-spec` when incoming material needs normalization before
    synthesis.
 10. Route product/spec document production to `compose-spec`.
-11. Route implementation-ready behavior to `plan-change` and product-visible
-   acceptance to `functional-qa`.
+11. Route implementation-ready behavior to `plan-change`, then to
+   `plan-iterations` when grounded slices span delivery horizons; route
+   product-visible acceptance to `functional-qa`.
 12. Record Doc Routing Decision Matrix rows for every durable fact, gap,
    deferred item, blocked fact, and explicit `NO_DOC_NEEDED` decision.
 
@@ -129,4 +130,4 @@ repair.
 - assumptions, non-goals, and open questions;
 - scenario IDs, requirement IDs, journey IDs, or backlog entries affected;
 - next route: `compose-spec`, `docs-impact-map`, `ingest-spec`,
-  `plan-change`, `functional-qa`, or `closeout`.
+  `plan-change`, `plan-iterations`, `functional-qa`, or `closeout`.

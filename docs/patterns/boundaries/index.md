@@ -130,30 +130,34 @@ Rules:
 - Do not add an adapter abstraction until there is real variation or the
   provider boundary is costly to test directly.
 
-## Multi-Surface Simulation Sessions
+## Dynamic Actor Simulation Boundary
 
-One simulation purpose may coordinate command, HTTP, terminal, browser,
-desktop, mobile, and agent-response surfaces through a shared session
-controller. The controller owns goal state, budgets, episode rollover,
-surface identity, dispatch ordering, checkpoints, and terminal status. Each
-surface adapter still owns its driver-specific execution, observations,
-permissions, oracle inputs, and cleanup.
+An ordinary simulation has one actor, one fixed run contract, and one or more
+declared interface surfaces. Its minimum inputs are an interface adapter,
+persona source, actor contract, domain-and-feature brief, observable outcome,
+and finite limits. Campaign concepts such as populations, datasets,
+treatments, calibration, and claim ledgers are not required.
 
-- Treat a surface as a stable logical identity with contour, context/window,
-  current screen, lifecycle, and generation; a screenshot is evidence, not
-  the surface identity.
-- Journal dispatch before execution and durably checkpoint the resulting state
-  before acknowledging completion.
-- Resume only a verified completed checkpoint under valid authority. An
-  unmatched dispatched action is `UNKNOWN_OUTCOME` and is never replayed.
-- Permit parallel steps only when both surface IDs and declared conflict keys
-  are disjoint. Otherwise serialize them.
-- Roll long trajectories into bounded episodes and persistence segments,
-  renew the execution lease between bounded steps, and enforce finite total
-  duration, per-step duration, total-step, per-episode, parallelism, surface-
-  cardinality, and checkpoint-size limits.
-- Let required deterministic goal oracles establish `ACHIEVED`. Driver
-  completion and synthetic-actor assertions are observations, not success.
+- Keep adapter permissions, allowed actions, confirmation rules, recovery,
+  cleanup, actor identity, brief, outcome, and limits fixed during the run.
+- Let only observations, beliefs, uncertainty, progress, and strategy change.
+- Select the next action from current interface state; do not encode the
+  desired behavior as a prescribed click or command checklist.
+- Treat every surface as a stable logical identity with contour,
+  context/window, lifecycle, generation, and observation digest. A screenshot
+  is evidence, not the surface identity.
+- Journal dispatch before execution. An unmatched dispatched action is
+  `UNKNOWN_OUTCOME` and is never replayed blindly.
+- Use only declared adapter actions; never bypass the tested interface through
+  direct storage mutation, hidden APIs, or undeclared files.
+- Permit parallel steps only when the adapter allows them and their surface
+  identities and conflict keys are disjoint. Otherwise serialize them.
+- Enforce finite step, tool-call, time, retry, recovery, and cleanup limits.
+- Establish `ACHIEVED` only from observable evidence mapped to every required
+  outcome condition. Driver completion and actor narration are not success.
+- Escalate to campaign infrastructure only for explicit controlled comparison,
+  population or dataset work, treatments, calibration, release evidence, or
+  independent evaluation.
 
 ## Agentic Runtime Invariant
 

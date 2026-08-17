@@ -1,0 +1,58 @@
+{
+  "schema_version": 1,
+  "mechanical_type": "text_contract",
+  "depth_band": "compact",
+  "expected_readiness": "READY_FOR_IMPLEMENTATION",
+  "question_min": 0,
+  "question_max": 0,
+  "diagram_min": 0,
+  "diagram_max": 0,
+  "required_headings": [
+    "Readiness",
+    "At A Glance",
+    "Product And Change",
+    "Sources And References",
+    "Expected Outputs",
+    "User Journeys",
+    "Acceptance And Evidence",
+    "Open Decisions And Risks",
+    "Next Owner Or Action"
+  ],
+  "required_patterns": [
+    "READY_FOR_IMPLEMENTATION",
+    "COPY-014",
+    "AUDIT-044",
+    "technician",
+    "recovery",
+    "Enter a serial number",
+    "whitespace",
+    "aria-describedby",
+    "focus",
+    "no API request",
+    "NOT_RUN"
+  ],
+  "forbidden_patterns": [
+    "## Source Ledger",
+    "## Artifact Manifest",
+    "## Technical Design",
+    "## Integrations",
+    "```mermaid",
+    "API schema change"
+  ],
+  "max_words": 1000,
+  "semantic_anchors": {
+    "must_preserve": [
+      "the product value is that technicians recover without validation terminology",
+      "only the empty and whitespace-only client validation message changes",
+      "COPY-014 and AUDIT-044 are exact compact references rather than a heavyweight ledger",
+      "required-field behavior, focus, aria-invalid, aria-describedby, and no-request behavior remain",
+      "validation evidence is NOT_RUN and the next action is the focused implementation and test",
+      "the artifact set contains no unjustified companion design or diagram"
+    ],
+    "must_avoid": [
+      "changing server validation, API schema, navigation, analytics, or other fields",
+      "adding ledgers, manifests, integrations, lifecycle, diagrams, or rollout machinery",
+      "claiming tests passed"
+    ]
+  }
+}

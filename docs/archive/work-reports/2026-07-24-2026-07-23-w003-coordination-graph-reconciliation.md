@@ -36,7 +36,7 @@ planning history, and historical evidence. The implementation packet and
 | WL-09 producer | source `6ff0966574bcfcd250af0774f08e8ded378473a0`; repaired dependent transport through `d6763d7` | accepted execution/materialization transport and repaired reference identity |
 | WL-10 producer | `1539836613466a366ada2b10fa8a73b116873489` | accepted direct-cutover transport |
 | WL-11 producer | `0772244f206a3c4e0dab2e280dbff536a8c126a5` | accepted validator/authored-harness transport; model evidence remains `NOT_RUN` |
-| designated active worktree | `/Users/royrud1902/Documents/cascade-codex`, branch `agent/w003-integration-r4-g3`, HEAD `a14a9bc...` | all accepted transports appear as uncommitted unstaged/untracked state; pre-state-record combined SHA-256 `e48e6c5162374c3913207ea1166bbbe8580d75332ef9ffc339609c4d8f6f4091` |
+| designated active worktree | `REPOSITORY_ROOT`, branch `agent/w003-integration-r4-g3`, HEAD `a14a9bc...` | all accepted transports appear as uncommitted unstaged/untracked state; pre-state-record combined SHA-256 `e48e6c5162374c3913207ea1166bbbe8580d75332ef9ffc339609c4d8f6f4091` |
 
 ## Canonicalization Result
 

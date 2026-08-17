@@ -65,7 +65,7 @@ apply the same contract in-process through `scripts/cascade.ts admission`.
 For a Task Envelope that selects non-atomic bounded, connected, or program work,
 use only the applicable parts of this route:
 
-`context -> ingest-spec/discover if needed -> docs-impact-map when durable docs may affect sibling rules -> pattern-context when reusable pattern packs are needed -> orchestrate-work -> plan-change -> functional-qa -> implement-change -> review-change -> validate-change -> test-autorepair only if stale tests -> closeout`
+`context -> ingest-spec/discover if needed -> docs-impact-map when durable docs may affect sibling rules -> pattern-context when reusable pattern packs are needed -> plan-change -> plan-iterations when delivery spans horizons -> orchestrate-work when feasible committed first-iteration scope needs coordination -> functional-qa when new product-visible proof is needed -> implement-change -> review-change -> validate-change -> test-autorepair only if stale tests -> closeout`
 
 `issue-intake` is an explicit exception path for issue bodies or tracker
 tickets. Human review is an explicit open-question or exception path, not a
@@ -81,14 +81,22 @@ cleanup, or single-line changes with no behavior or contract impact.
 bun scripts/cascade.ts validate
 bun scripts/cascade.ts admission validate
 bun scripts/cascade.ts admission corpus
-bun scripts/cascade.ts eval catalog --check
-bun scripts/cascade.ts eval self-test
 bun scripts/cascade.ts target self-test
 bun scripts/cascade.ts campaign catalog --check
 bun scripts/cascade.ts campaign self-test
 bun scripts/cascade.ts brief check
-bun test scripts/cascade
+bun test --max-concurrency 4 scripts/cascade
 ```
+
+Harness evaluation is conditional, not a default validation phase. The
+`PostToolUse` harness-impact hook examines completed `apply_patch` edits and
+adds bounded guidance only when actual harness-evaluation implementation,
+assertions, or judge contracts changed. Run `eval catalog --check` and
+`eval self-test` only when that hook reports them. Run a focused live scenario
+and independent judge only after reviewing a changed semantic assertion that
+cannot be decided mechanically; otherwise record the live review as
+`NOT_APPLICABLE`. Hook output is advisory and must not be treated as authority
+or proof.
 
 Install harness tooling with
 `bun install --cwd .codex/harness-tooling --frozen-lockfile`. Playwright

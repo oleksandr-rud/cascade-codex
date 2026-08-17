@@ -50,15 +50,16 @@ AGENTS.md
   -> scripts/validate_cascade_codex.py
 ```
 
-Canonical non-atomic route:
+Current replacement for the report's superseded non-atomic route:
 
 ```text
 context
 -> ingest-spec / discover / market-validation / synthesis-to-spec / compose-spec when needed
 -> docs-impact-map
 -> pattern-context when reusable pattern packs are needed
--> orchestrate-work
 -> plan-change
+-> plan-iterations when delivery spans horizons
+-> orchestrate-work when feasible committed scope needs coordination
 -> functional-qa
 -> implement-change
 -> review-change

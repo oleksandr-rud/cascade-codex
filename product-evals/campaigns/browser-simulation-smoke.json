@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "id": "browser-simulation-smoke",
+  "title": "Browser simulation smoke",
+  "purpose": "Prove W-006 policy-gated Playwright execution, local-fixture isolation, external-navigation denial, visible-state observation, screenshot and trace capture, and cleanup.",
+  "owner_lane": "W-006",
+  "tier": "deterministic-fixture",
+  "session": {
+    "max_duration_ms": 240000,
+    "max_step_duration_ms": 100000,
+    "max_steps": 4,
+    "max_parallel_steps": 1,
+    "max_steps_per_episode": 1,
+    "max_surfaces": 4,
+    "max_checkpoint_bytes": 1048576,
+    "lease_ttl_ms": 240000
+  },
+  "evaluation_profile_file": "product-evals/rubrics/deterministic-fixture-v1.json",
+  "simulation_file": "product-evals/simulations/harness/browser-local-fixture/manifest.json",
+  "task_files": [
+    "product-evals/tasks/BROWSER-SIMULATION-SMOKE.json",
+    "product-evals/tasks/BROWSER-EXTERNAL-NAVIGATION-DENIED.json",
+    "product-evals/tasks/BROWSER-FORBIDDEN-DOMAIN-DENIED.json",
+    "product-evals/tasks/BROWSER-MISSING-REQUIRED-EFFECT.json"
+  ],
+  "claim_files": ["product-evals/claims/browser-simulation-execution.json"],
+  "policy_files": [
+    "product-evals/policies/allow-browser-simulation-smoke-v1.json",
+    "product-evals/policies/allow-browser-external-navigation-probe-v1.json",
+    "product-evals/policies/deny-browser-forbidden-domain-v1.json",
+    "product-evals/policies/allow-browser-missing-effect-probe-v1.json"
+  ],
+  "oracle_files": [
+    "product-evals/oracles/browser-visible-status-v1.json",
+    "product-evals/oracles/browser-waiting-status-v1.json",
+    "product-evals/oracles/browser-required-effect-v1.json"
+  ],
+  "specialized_evaluation": {
+    "applicability": "NOT_APPLICABLE",
+    "route_ids": [],
+    "trace_ids": [],
+    "claim_ids": [],
+    "reason": "This campaign checks the product simulation browser adapter mechanically; it does not evaluate a Cascade skill, route, agent, or harness trace."
+  }
+}

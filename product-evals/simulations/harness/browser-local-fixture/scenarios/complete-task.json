@@ -1,0 +1,9 @@
+{
+  "schema_version": 1,
+  "id": "browser-complete-task-v1",
+  "goal": "Complete the local maintenance fixture through public controls and preserve browser evidence.",
+  "actor_ids": ["browser-local-actor"],
+  "initial_state": {},
+  "stop_conditions": ["declared visible-state oracle passes"],
+  "claim_ids": ["browser-simulation-execution"]
+}

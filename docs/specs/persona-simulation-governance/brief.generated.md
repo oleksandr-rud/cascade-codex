@@ -8,8 +8,8 @@
 - Coverage: `complete`
 - Catalog digest: `0f6b921bf6cefde6ba96d9410b1609fca21ab65c69f70a258e3e05bffac73c5b`
 - Manifest digest: `2128958c6b5f3178bd553ea466e4c7f9fdc9b70264db3324034d7e66d7a5b32f`
-- Selected-source digest: `42098c34413c4aaf0d1fdf9e45a2dd6b25693e70e116c9b813c4dbf4b2238417`
-- Compiler-contract digest: `54110922ae0413c18ebe6ff39f619d0f0c816f1704366164d92777074f1630c6`
+- Selected-source digest: `92a90fe90ad50ee8d510d8d9a4fb96ddaec749cf79270f72939ded844f829ae1`
+- Compiler-contract digest: `cc347c5d400a038345ebf4e0515196693893dd5f7f42017984d9331435efbd3b`
 
 ## Purpose And Audience
 

@@ -1,0 +1,19 @@
+{
+  "answer": "AHU-17 remains operational, but the visibly frayed drive belt should be reviewed promptly and replacement work should be planned.",
+  "material_claims": [
+    {
+      "id": "claim-current-condition",
+      "statement": "The drive belt is visibly frayed.",
+      "evidence_refs": ["input"]
+    },
+    {
+      "id": "claim-operating-state",
+      "statement": "The unit was reported as still operational.",
+      "evidence_refs": ["input"]
+    }
+  ],
+  "next_route": {
+    "route_id": "maintenance-review",
+    "reason": "A reviewer should confirm urgency and authorize replacement planning."
+  }
+}

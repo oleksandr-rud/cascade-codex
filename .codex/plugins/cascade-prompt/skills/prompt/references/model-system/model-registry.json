@@ -1,0 +1,293 @@
+{
+  "schema_version": 1,
+  "checked_at": "2026-08-05",
+  "purpose": "Versioned provider-neutral candidate registry. Provider catalog claims establish eligibility only; representative workload evaluation establishes best-observed status.",
+  "tier_order": [
+    "efficient-structured",
+    "balanced-production",
+    "frontier-generalist",
+    "frontier-autonomous"
+  ],
+  "tiers": [
+    {
+      "id": "efficient-structured",
+      "operating_envelope": "High-volume or latency-sensitive work with bounded reasoning, explicit schemas, narrow tools, and strong examples or validation.",
+      "default_prompt_posture": "Short, explicit, decomposed, schema-first, locally repeated constraints."
+    },
+    {
+      "id": "balanced-production",
+      "operating_envelope": "Everyday production work with moderate reasoning, retrieval, tool use, or ambiguity and bounded autonomy.",
+      "default_prompt_posture": "Clear objective, scoped context, ordered workflow, tool boundaries, and a bounded repair pass."
+    },
+    {
+      "id": "frontier-generalist",
+      "operating_envelope": "Difficult diagnosis, synthesis, coding, research, or multimodal work with high ambiguity or long dependencies.",
+      "default_prompt_posture": "Precise outcomes and invariants, adaptive planning, targeted retrieval, and evidence-bound completion."
+    },
+    {
+      "id": "frontier-autonomous",
+      "operating_envelope": "Long-horizon agent work with broad tools, recovery, durable state, checkpoints, and consequential actions.",
+      "default_prompt_posture": "Explicit authority, state, checkpoints, budgets, recovery, escalation, cleanup, and terminal evidence."
+    }
+  ],
+  "catalog_labels": [
+    "latest-stable",
+    "provider-flagship",
+    "tier-candidate",
+    "best-observed-for-workload",
+    "pinned-baseline"
+  ],
+  "evidence_statuses": [
+    "provider_claim",
+    "inferred_requires_eval",
+    "measured"
+  ],
+  "models": [
+    {
+      "id": "gpt-5.6-sol",
+      "provider": "OpenAI",
+      "status": "current-candidate",
+      "catalog_labels": ["latest-stable", "tier-candidate"],
+      "specialties": ["coding", "agentic-work", "reasoning", "tool-orchestration"],
+      "capabilities": ["text", "vision", "tools", "reasoning-controls", "long-context"],
+      "runtime_controls": ["reasoning effort", "tool availability", "context selection", "structured output"],
+      "tier_candidates": [
+        {
+          "tier": "frontier-generalist",
+          "evidence_status": "provider_claim",
+          "conditions": "Complex coding, research, diagnosis, or tool-using work with bounded autonomy."
+        },
+        {
+          "tier": "frontier-autonomous",
+          "evidence_status": "inferred_requires_eval",
+          "conditions": "Long-horizon configuration with strong reasoning, broad tools, checkpoints, and recovery controls."
+        }
+      ],
+      "sources": [
+        "https://developers.openai.com/api/docs/models",
+        "https://developers.openai.com/api/docs/guides/prompt-guidance-gpt-5p6.md",
+        "https://developers.openai.com/api/docs/guides/upgrading-to-gpt-5p6-sol.md"
+      ]
+    },
+    {
+      "id": "gpt-5.6-terra",
+      "provider": "OpenAI",
+      "status": "current-candidate",
+      "catalog_labels": ["latest-stable", "tier-candidate"],
+      "specialties": ["coding", "production-workflows", "tool-use"],
+      "capabilities": ["text", "vision", "tools", "reasoning-controls", "long-context"],
+      "runtime_controls": ["reasoning effort", "tool availability", "context selection", "structured output"],
+      "tier_candidates": [
+        {
+          "tier": "balanced-production",
+          "evidence_status": "provider_claim",
+          "conditions": "Everyday coding and agent workflows where latency and quality both matter."
+        }
+      ],
+      "sources": [
+        "https://developers.openai.com/api/docs/models",
+        "https://developers.openai.com/api/docs/guides/prompt-guidance-gpt-5p6.md"
+      ]
+    },
+    {
+      "id": "gpt-5.6-luna",
+      "provider": "OpenAI",
+      "status": "current-candidate",
+      "catalog_labels": ["latest-stable", "tier-candidate"],
+      "specialties": ["high-throughput", "structured-tasks", "bounded-coding"],
+      "capabilities": ["text", "tools", "structured-output"],
+      "runtime_controls": ["tool availability", "context selection", "structured output"],
+      "tier_candidates": [
+        {
+          "tier": "efficient-structured",
+          "evidence_status": "provider_claim",
+          "conditions": "Well-scoped, high-volume work with explicit steps, schemas, and validation."
+        }
+      ],
+      "sources": [
+        "https://developers.openai.com/api/docs/models",
+        "https://developers.openai.com/api/docs/guides/prompt-guidance-gpt-5p6.md"
+      ]
+    },
+    {
+      "id": "claude-fable-5",
+      "provider": "Anthropic",
+      "status": "current-candidate",
+      "catalog_labels": ["latest-stable", "provider-flagship", "tier-candidate"],
+      "specialties": ["long-horizon-agents", "coding", "reasoning", "tool-orchestration"],
+      "capabilities": ["text", "vision", "tools", "extended-thinking", "long-context"],
+      "runtime_controls": ["thinking mode", "tool availability", "context selection", "structured output"],
+      "tier_candidates": [
+        {
+          "tier": "frontier-autonomous",
+          "evidence_status": "provider_claim",
+          "conditions": "Long-running agentic work with durable state, tools, recovery, and explicit completion gates."
+        }
+      ],
+      "sources": [
+        "https://platform.claude.com/docs/en/about-claude/models/choosing-a-model",
+        "https://platform.claude.com/docs/en/about-claude/models/overview",
+        "https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/prompting-claude-fable-5"
+      ]
+    },
+    {
+      "id": "claude-opus-5",
+      "provider": "Anthropic",
+      "status": "current-candidate",
+      "catalog_labels": ["latest-stable", "provider-flagship", "tier-candidate"],
+      "specialties": ["reasoning", "coding", "research", "agentic-work"],
+      "capabilities": ["text", "vision", "tools", "extended-thinking", "long-context"],
+      "runtime_controls": ["thinking mode", "tool availability", "context selection", "structured output"],
+      "tier_candidates": [
+        {
+          "tier": "frontier-generalist",
+          "evidence_status": "provider_claim",
+          "conditions": "Complex generalist work with high ambiguity and evidence-bound synthesis."
+        },
+        {
+          "tier": "frontier-autonomous",
+          "evidence_status": "inferred_requires_eval",
+          "conditions": "Autonomous operation only when representative long-horizon cases pass."
+        }
+      ],
+      "sources": [
+        "https://platform.claude.com/docs/en/about-claude/models/choosing-a-model",
+        "https://platform.claude.com/docs/en/about-claude/models/overview",
+        "https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/prompting-claude-opus-5"
+      ]
+    },
+    {
+      "id": "claude-sonnet-5",
+      "provider": "Anthropic",
+      "status": "current-candidate",
+      "catalog_labels": ["latest-stable", "tier-candidate"],
+      "specialties": ["production-workflows", "coding", "tool-use"],
+      "capabilities": ["text", "vision", "tools", "extended-thinking", "long-context"],
+      "runtime_controls": ["thinking mode", "tool availability", "context selection", "structured output"],
+      "tier_candidates": [
+        {
+          "tier": "balanced-production",
+          "evidence_status": "provider_claim",
+          "conditions": "Everyday production tasks balancing capability, speed, and cost."
+        }
+      ],
+      "sources": [
+        "https://platform.claude.com/docs/en/about-claude/models/choosing-a-model",
+        "https://platform.claude.com/docs/en/about-claude/models/overview",
+        "https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/claude-prompting-best-practices"
+      ]
+    },
+    {
+      "id": "claude-haiku-4-5",
+      "provider": "Anthropic",
+      "status": "current-candidate",
+      "catalog_labels": ["latest-stable", "tier-candidate"],
+      "specialties": ["low-latency", "classification", "extraction", "bounded-tool-use"],
+      "capabilities": ["text", "vision", "tools"],
+      "runtime_controls": ["tool availability", "context selection", "structured output"],
+      "tier_candidates": [
+        {
+          "tier": "efficient-structured",
+          "evidence_status": "provider_claim",
+          "conditions": "Fast, bounded work with explicit output contracts and examples."
+        }
+      ],
+      "sources": [
+        "https://platform.claude.com/docs/en/about-claude/models/choosing-a-model",
+        "https://platform.claude.com/docs/en/about-claude/models/overview",
+        "https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/claude-prompting-best-practices"
+      ]
+    },
+    {
+      "id": "gemini-3.5-flash",
+      "provider": "Google",
+      "status": "current-candidate",
+      "catalog_labels": ["latest-stable", "tier-candidate"],
+      "specialties": ["multimodal", "long-context", "reasoning", "high-throughput"],
+      "capabilities": ["text", "vision", "audio", "video", "tools", "long-context"],
+      "runtime_controls": ["thinking control", "tool availability", "context selection", "structured output"],
+      "tier_candidates": [
+        {
+          "tier": "frontier-generalist",
+          "evidence_status": "inferred_requires_eval",
+          "conditions": "Complex multimodal or long-context work after workload-specific evaluation."
+        }
+      ],
+      "sources": [
+        "https://ai.google.dev/gemini-api/docs/models",
+        "https://ai.google.dev/gemini-api/docs/latest-model",
+        "https://ai.google.dev/gemini-api/docs/prompting-strategies"
+      ]
+    },
+    {
+      "id": "gemini-3.6-flash",
+      "provider": "Google",
+      "status": "current-candidate",
+      "catalog_labels": ["latest-stable", "tier-candidate"],
+      "specialties": ["multimodal", "production-workflows", "high-throughput"],
+      "capabilities": ["text", "vision", "audio", "video", "tools", "long-context"],
+      "runtime_controls": ["thinking control", "tool availability", "context selection", "structured output"],
+      "tier_candidates": [
+        {
+          "tier": "balanced-production",
+          "evidence_status": "provider_claim",
+          "conditions": "Moderately complex multimodal and production workflows with latency constraints."
+        }
+      ],
+      "sources": [
+        "https://ai.google.dev/gemini-api/docs/models",
+        "https://ai.google.dev/gemini-api/docs/latest-model",
+        "https://ai.google.dev/gemini-api/docs/prompting-strategies"
+      ]
+    },
+    {
+      "id": "gemini-3.5-flash-lite",
+      "provider": "Google",
+      "status": "current-candidate",
+      "catalog_labels": ["latest-stable", "tier-candidate"],
+      "specialties": ["low-latency", "high-volume", "classification", "extraction"],
+      "capabilities": ["text", "vision", "tools", "structured-output"],
+      "runtime_controls": ["thinking control", "tool availability", "context selection", "structured output"],
+      "tier_candidates": [
+        {
+          "tier": "efficient-structured",
+          "evidence_status": "provider_claim",
+          "conditions": "High-volume bounded tasks with explicit schemas and validation."
+        }
+      ],
+      "sources": [
+        "https://ai.google.dev/gemini-api/docs/models",
+        "https://ai.google.dev/gemini-api/docs/latest-model",
+        "https://ai.google.dev/gemini-api/docs/prompting-strategies"
+      ]
+    },
+    {
+      "id": "grok-4.5",
+      "provider": "xAI",
+      "status": "current-candidate",
+      "catalog_labels": ["latest-stable", "provider-flagship", "tier-candidate"],
+      "specialties": ["reasoning", "tool-use", "realtime", "generalist-work"],
+      "capabilities": ["text", "vision", "tools", "reasoning-controls"],
+      "runtime_controls": ["reasoning mode", "tool availability", "context selection", "structured output"],
+      "tier_candidates": [
+        {
+          "tier": "frontier-generalist",
+          "evidence_status": "provider_claim",
+          "conditions": "Complex generalist and tool-using work subject to surface capability checks."
+        }
+      ],
+      "sources": [
+        "https://docs.x.ai/developers/models",
+        "https://docs.x.ai/developers/grok-4-5"
+      ]
+    }
+  ],
+  "selection_policy": {
+    "provider_claim_is_sufficient_for_eligibility": true,
+    "provider_claim_is_sufficient_for_best_observed": false,
+    "measured_mapping_requires_evaluation_reference": true,
+    "explicit_user_model_is_preserved_when_capable": true,
+    "silent_model_override_is_forbidden": true,
+    "default_without_representative_evidence": "Choose a conservative eligible candidate and label the decision INFERRED."
+  }
+}

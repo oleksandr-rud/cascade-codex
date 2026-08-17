@@ -1,0 +1,51 @@
+{
+  "schema_version": 8,
+  "id": "MOBILE-ANDROID-PREFLIGHT",
+  "kind": "mobile",
+  "driver": {
+    "type": "platform-automation",
+    "adapter": "builtin-mobile-platform"
+  },
+  "required": true,
+  "timeout_ms": 10000,
+  "mobile": {
+    "provider": {
+      "runtime": "android-emulator",
+      "device_id": "emulator-5554",
+      "platform_version": "android-35",
+      "fixture_root": "product-evals/simulations/harness/mobile-provider-fixture/runtime"
+    },
+    "app": {
+      "id": "cascade.mobile.fixture",
+      "build": "20260808.1"
+    },
+    "network": "deny",
+    "reset": "snapshot-restore",
+    "actions": [
+      {
+        "type": "mobile-launch",
+        "app_id": "cascade.mobile.fixture"
+      },
+      {
+        "type": "mobile-wait-text",
+        "text": "Ready",
+        "timeout_ms": 3000
+      },
+      {
+        "type": "mobile-capture",
+        "label": "ready"
+      }
+    ],
+    "evidence": {
+      "screenshots": true,
+      "result": true,
+      "logs": true
+    }
+  },
+  "oracle_ids": [
+    "mobile-completed-v1"
+  ],
+  "policy_ids": [
+    "allow-mobile-android-preflight-v1"
+  ]
+}

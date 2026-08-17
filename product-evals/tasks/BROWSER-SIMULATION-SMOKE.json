@@ -1,0 +1,40 @@
+{
+  "schema_version": 4,
+  "id": "BROWSER-SIMULATION-SMOKE",
+  "kind": "browser",
+  "driver": {
+    "type": "playwright",
+    "adapter": "builtin-playwright"
+  },
+  "required": true,
+  "timeout_ms": 15000,
+  "browser": {
+    "fixture_file": "product-evals/simulations/harness/browser-fixture.html",
+    "profile": "ephemeral",
+    "network": "deny",
+    "downloads": false,
+    "uploads": false,
+    "actions": [
+      {
+        "type": "browser-fill",
+        "locator": { "kind": "label", "value": "Resolution" },
+        "value": "Replaced worn belt"
+      },
+      {
+        "type": "browser-click",
+        "locator": {
+          "kind": "role",
+          "role": "button",
+          "name": "Complete task"
+        }
+      }
+    ],
+    "observation": {
+      "locator": { "kind": "role", "role": "status" },
+      "expected_text": "Completed: Replaced worn belt"
+    },
+    "evidence": { "screenshot": true, "trace": true }
+  },
+  "oracle_ids": ["browser-visible-status-v1"],
+  "policy_ids": ["allow-browser-simulation-smoke-v1"]
+}

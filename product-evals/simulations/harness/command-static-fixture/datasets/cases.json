@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "id": "command-static-cases-v1",
+  "leakage_policy": "exclusive-case-identity",
+  "cases": [
+    {
+      "id": "command-static-development",
+      "scenario_id": "strict-static-command-v1",
+      "actor_id": "command-static-actor",
+      "partition": "development",
+      "slices": ["command-static"]
+    },
+    {
+      "id": "command-static-regression",
+      "scenario_id": "strict-static-command-v1",
+      "actor_id": "command-static-actor",
+      "partition": "regression",
+      "slices": ["command-static"]
+    },
+    {
+      "id": "command-static-holdout",
+      "scenario_id": "strict-static-command-v1",
+      "actor_id": "command-static-actor",
+      "partition": "holdout",
+      "slices": ["command-static"]
+    },
+    {
+      "id": "command-static-calibration",
+      "scenario_id": "strict-static-command-v1",
+      "actor_id": "command-static-actor",
+      "partition": "calibration-reference",
+      "slices": ["command-static"]
+    }
+  ]
+}

@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "id": "browser-local-cases-v1",
+  "leakage_policy": "exclusive-case-identity",
+  "cases": [
+    {
+      "id": "browser-local-development",
+      "scenario_id": "browser-complete-task-v1",
+      "actor_id": "browser-local-actor",
+      "partition": "development",
+      "slices": ["browser-local-fixture"]
+    },
+    {
+      "id": "browser-local-regression",
+      "scenario_id": "browser-complete-task-v1",
+      "actor_id": "browser-local-actor",
+      "partition": "regression",
+      "slices": ["browser-local-fixture"]
+    },
+    {
+      "id": "browser-local-holdout",
+      "scenario_id": "browser-complete-task-v1",
+      "actor_id": "browser-local-actor",
+      "partition": "holdout",
+      "slices": ["browser-local-fixture"]
+    },
+    {
+      "id": "browser-local-calibration",
+      "scenario_id": "browser-complete-task-v1",
+      "actor_id": "browser-local-actor",
+      "partition": "calibration-reference",
+      "slices": ["browser-local-fixture"]
+    }
+  ]
+}

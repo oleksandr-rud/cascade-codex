@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "id": "agent-cascade-harness-cases-v1",
+  "leakage_policy": "exclusive-case-identity",
+  "cases": [
+    { "id": "cascade-harness-development", "scenario_id": "cascade-harness-hx-055-v1", "actor_id": "agent-cascade-harness-actor", "partition": "development", "slices": ["cascade-harness-profile"] },
+    { "id": "cascade-harness-regression", "scenario_id": "cascade-harness-hx-055-v1", "actor_id": "agent-cascade-harness-actor", "partition": "regression", "slices": ["cascade-harness-profile"] },
+    { "id": "cascade-harness-holdout", "scenario_id": "cascade-harness-hx-055-v1", "actor_id": "agent-cascade-harness-actor", "partition": "holdout", "slices": ["cascade-harness-profile"] },
+    { "id": "cascade-harness-calibration", "scenario_id": "cascade-harness-hx-055-v1", "actor_id": "agent-cascade-harness-actor", "partition": "calibration-reference", "slices": ["cascade-harness-profile"] }
+  ]
+}

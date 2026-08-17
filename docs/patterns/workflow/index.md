@@ -14,6 +14,7 @@ implementation, validation, review, delegation, or product-flow steps.
 | Agent/skill workflow packet, workflow checklist, prompt bank, delegation workflow, or multi-agent workflow | `agentic-workflow-builder` |
 | Active work lanes, dependencies, scheduling, serialization, merge owner, or validation gates | `orchestrate-work` |
 | Normal implementation plan, behavior examples, risks, or validation plan | `plan-change` |
+| First iteration, MVP boundary, phased delivery, or next/later roadmap from known slices | `plan-iterations` |
 | Code or doc edits for a clear task | `implement-change` |
 | Product UX flow, wizard, screen, dashboard, or UI state coverage | `ux-flow-review` |
 | Security review of a feature, workflow, architecture, or agent/tool plan | `secure-design` |
@@ -45,6 +46,31 @@ Completed rows leave `docs/work/active.md` after durable evidence is preserved
 under `docs/work/reports/`. Do not create a permanent `CLOSED` active-row
 status; remove terminal projections during closeout and keep the report or lane
 packet as historical evidence.
+
+## Iteration Planning
+
+Use `plan-change` to define behavior and implementation slices. Use
+`plan-iterations` only when those slices need sequencing across delivery
+horizons. It assigns each slice one exclusive delivery disposition while MVP
+membership remains an orthogonal outcome boundary that may span iterations.
+The first iteration is `PROPOSED` until capacity and commitment authority
+support `COMMITTED`; `NEXT` and `LATER` remain candidate scope.
+
+Only feasible committed first-iteration candidate worklines may be instantiated in
+`docs/work/active.md`, lane packets, Task Graphs, or Coordination Graphs through
+`orchestrate-work`. Future-horizon candidates stay in the iteration plan and do
+not acquire active IDs, dispatch state, or readiness. When capacity, cadence,
+dates, or estimates are not supplied, record them as unknown instead of
+inventing velocity, points, staffing, or commitments. Unknown ability to accept
+the proposed scope prevents `ITERATION_READY`; unknown dates or estimates alone
+do not when an explicit capacity/WIP basis exists. Feasibility checks aggregate
+capacity and the dependency critical path separately; team size never shortens
+a serial dependency chain.
+
+If iteration planning changes existing active work, run
+`reconcile-work-graph` first to establish canonical identity and current
+evidence. Preserve accepted work and history; horizon placement is not
+authority to delete, demote, supersede, dispatch, or close a workline.
 
 ## Work Graphs
 
@@ -140,8 +166,8 @@ Use a separate dispatch state from lane status:
 `NOT_AUTHORIZED`, `AUTHORIZED`, `DISPATCHED`, `RUNNING`, `BLOCKED`, or
 `COMPLETE`. Record dependency gate, merge owner, authorization evidence, and
 runtime handle. Never infer user-visible task creation from an implementation
-request, graph readiness, `max_threads`, or a lane's preferred execution
-surface. `max_threads` is an internal agent-execution capacity limit.
+request, graph readiness, runtime concurrency capacity, or a lane's preferred
+execution surface. Agent-execution capacity is a runtime limit.
 
 If a requested surface cannot be used, mark dispatch `BLOCKED`; do not silently
 replace a separate task with an internal subagent or vice versa.

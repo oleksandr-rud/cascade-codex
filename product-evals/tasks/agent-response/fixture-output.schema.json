@@ -1,0 +1,41 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["answer", "material_claims", "next_route"],
+  "properties": {
+    "answer": { "type": "string", "minLength": 1 },
+    "material_claims": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "statement", "evidence_refs"],
+        "properties": {
+          "id": { "type": "string", "pattern": "^claim-[a-z0-9-]+$" },
+          "statement": { "type": "string", "minLength": 1 },
+          "evidence_refs": {
+            "type": "array",
+            "minItems": 1,
+            "items": { "enum": ["instruction", "input"] }
+          }
+        }
+      }
+    },
+    "next_route": {
+      "anyOf": [
+        { "type": "null" },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["route_id", "reason"],
+          "properties": {
+            "route_id": { "type": "string", "minLength": 1 },
+            "reason": { "type": "string", "minLength": 1 }
+          }
+        }
+      ]
+    }
+  }
+}

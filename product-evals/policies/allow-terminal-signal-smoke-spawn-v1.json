@@ -1,0 +1,21 @@
+{
+  "schema_version": 2,
+  "id": "allow-terminal-signal-smoke-spawn-v1",
+  "version": "2.0.0",
+  "effect": "ALLOW",
+  "scope": {
+    "campaign_ids": ["terminal-pty-smoke"],
+    "task_ids": ["TERMINAL-SIGNAL-SMOKE"],
+    "task_kinds": ["terminal"],
+    "driver_types": ["pty"],
+    "action_types": ["terminal-spawn"],
+    "command_prefix": ["/bin/sh"]
+  },
+  "budgets": {
+    "required_dimensions": ["action_count", "output_bytes"],
+    "max_actions": 1,
+    "max_output_bytes": 8192
+  },
+  "redaction_profile": "no-secrets-v1",
+  "reason": "Allow only the exact deterministic terminal signal fixture spawn."
+}

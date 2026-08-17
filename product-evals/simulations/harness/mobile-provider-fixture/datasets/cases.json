@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "id": "mobile-provider-cases-v1",
+  "leakage_policy": "exclusive-case-identity",
+  "cases": [
+    { "id": "mobile-provider-development", "scenario_id": "mobile-ready-v1", "actor_id": "mobile-provider-actor", "partition": "development", "slices": ["mobile-provider"] },
+    { "id": "mobile-provider-regression", "scenario_id": "mobile-ready-v1", "actor_id": "mobile-provider-actor", "partition": "regression", "slices": ["mobile-provider"] },
+    { "id": "mobile-provider-holdout", "scenario_id": "mobile-ready-v1", "actor_id": "mobile-provider-actor", "partition": "holdout", "slices": ["mobile-provider"] },
+    { "id": "mobile-provider-calibration", "scenario_id": "mobile-ready-v1", "actor_id": "mobile-provider-actor", "partition": "calibration-reference", "slices": ["mobile-provider"] }
+  ]
+}

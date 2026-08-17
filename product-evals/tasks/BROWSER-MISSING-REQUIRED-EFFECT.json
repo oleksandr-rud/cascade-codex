@@ -1,0 +1,40 @@
+{
+  "schema_version": 4,
+  "id": "BROWSER-MISSING-REQUIRED-EFFECT",
+  "kind": "browser",
+  "driver": {
+    "type": "playwright",
+    "adapter": "builtin-playwright"
+  },
+  "required": false,
+  "timeout_ms": 15000,
+  "browser": {
+    "fixture_file": "product-evals/simulations/harness/browser-fixture.html",
+    "profile": "ephemeral",
+    "network": "deny",
+    "downloads": false,
+    "uploads": false,
+    "actions": [
+      {
+        "type": "browser-fill",
+        "locator": { "kind": "label", "value": "Resolution" },
+        "value": "Visual-only completion"
+      },
+      {
+        "type": "browser-click",
+        "locator": {
+          "kind": "role",
+          "role": "button",
+          "name": "Complete task"
+        }
+      }
+    ],
+    "observation": {
+      "locator": { "kind": "role", "role": "status" },
+      "expected_text": "Completed: Visual-only completion"
+    },
+    "evidence": { "screenshot": true, "trace": true }
+  },
+  "oracle_ids": ["browser-required-effect-v1"],
+  "policy_ids": ["allow-browser-missing-effect-probe-v1"]
+}

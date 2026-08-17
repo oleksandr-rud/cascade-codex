@@ -5,6 +5,7 @@
   "effect": "ALLOW",
   "scope": {
     "campaign_ids": [
+      "cross-contour-handoff-smoke",
       "simulation-calibration-ranking-smoke",
       "simulation-codex-evaluation-smoke",
       "simulation-contract-smoke",
@@ -14,10 +15,23 @@
       "simulation-world-state-smoke"
     ],
     "task_ids": [
+      "FAKE-AGENT-HANDOFF",
+      "FAKE-BROWSER-HANDOFF",
+      "FAKE-COMMAND-HANDOFF",
+      "FAKE-DESKTOP-HANDOFF",
+      "FAKE-HTTP-HANDOFF",
+      "FAKE-MOBILE-HANDOFF",
+      "FAKE-TERMINAL-HANDOFF",
       "SIMULATION-STATE-SMOKE"
     ],
     "task_kinds": [
-      "agent-response"
+      "agent-response",
+      "browser",
+      "command",
+      "desktop",
+      "http",
+      "mobile",
+      "terminal"
     ],
     "driver_types": [
       "fake"
@@ -37,7 +51,7 @@
       "action_count",
       "output_bytes"
     ],
-    "max_actions": 8,
+    "max_actions": 64,
     "max_output_bytes": 65536
   },
   "redaction_profile": "no-secrets-v1",

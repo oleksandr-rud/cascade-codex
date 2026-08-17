@@ -1,0 +1,26 @@
+{
+  "schema_version": 2,
+  "id": "allow-desktop-linux-smoke-v1",
+  "version": "2.0.0",
+  "effect": "ALLOW",
+  "scope": {
+    "campaign_ids": ["desktop-linux-smoke"],
+    "task_ids": ["DESKTOP-LINUX-SMOKE"],
+    "task_kinds": ["desktop"],
+    "driver_types": ["platform-automation"],
+    "action_types": [
+      "desktop-launch",
+      "desktop-type",
+      "desktop-key",
+      "desktop-wait-file",
+      "desktop-capture"
+    ]
+  },
+  "budgets": {
+    "required_dimensions": ["action_count", "output_bytes"],
+    "max_actions": 6,
+    "max_output_bytes": 65536
+  },
+  "redaction_profile": "no-secrets-v1",
+  "reason": "Allow only the six structured actions of the pinned Linux desktop fixture."
+}

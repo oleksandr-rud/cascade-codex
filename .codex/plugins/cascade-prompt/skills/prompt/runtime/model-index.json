@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "checked_at": "2026-08-05",
+  "source": "../references/model-system/model-registry.json",
+  "purpose": "Compact candidate lookup for runtime routing. Detailed evidence and source URLs remain in the source registry.",
+  "models": [
+    {"id": "gpt-5.6-sol", "status": "current-candidate", "tiers": ["frontier-generalist", "frontier-autonomous"], "capabilities": ["text", "vision", "tools", "reasoning-controls", "long-context"]},
+    {"id": "gpt-5.6-terra", "status": "current-candidate", "tiers": ["balanced-production"], "capabilities": ["text", "vision", "tools", "reasoning-controls", "long-context"]},
+    {"id": "gpt-5.6-luna", "status": "current-candidate", "tiers": ["efficient-structured"], "capabilities": ["text", "tools", "structured-output"]},
+    {"id": "claude-fable-5", "status": "current-candidate", "tiers": ["frontier-autonomous"], "capabilities": ["text", "vision", "tools", "extended-thinking", "long-context"]},
+    {"id": "claude-opus-5", "status": "current-candidate", "tiers": ["frontier-generalist", "frontier-autonomous"], "capabilities": ["text", "vision", "tools", "extended-thinking", "long-context"]},
+    {"id": "claude-sonnet-5", "status": "current-candidate", "tiers": ["balanced-production"], "capabilities": ["text", "vision", "tools", "extended-thinking", "long-context"]},
+    {"id": "claude-haiku-4-5", "status": "current-candidate", "tiers": ["efficient-structured"], "capabilities": ["text", "vision", "tools"]},
+    {"id": "gemini-3.5-flash", "status": "current-candidate", "tiers": ["frontier-generalist"], "capabilities": ["text", "vision", "audio", "video", "tools", "long-context"]},
+    {"id": "gemini-3.6-flash", "status": "current-candidate", "tiers": ["balanced-production"], "capabilities": ["text", "vision", "audio", "video", "tools", "long-context"]},
+    {"id": "gemini-3.5-flash-lite", "status": "current-candidate", "tiers": ["efficient-structured"], "capabilities": ["text", "vision", "tools", "structured-output"]},
+    {"id": "grok-4.5", "status": "current-candidate", "tiers": ["frontier-generalist"], "capabilities": ["text", "vision", "tools", "reasoning-controls"]}
+  ]
+}

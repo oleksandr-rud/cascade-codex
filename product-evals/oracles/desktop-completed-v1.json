@@ -1,0 +1,7 @@
+{
+  "schema_version": 1,
+  "id": "desktop-completed-v1",
+  "type": "state-equals",
+  "path": "desktop.completed",
+  "expected": true
+}

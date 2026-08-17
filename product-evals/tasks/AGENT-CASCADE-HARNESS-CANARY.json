@@ -1,0 +1,45 @@
+{
+  "schema_version": 5,
+  "id": "AGENT-CASCADE-HARNESS-CANARY",
+  "kind": "agent-response",
+  "driver": {
+    "type": "agent-runtime",
+    "adapter": "builtin-agent-cascade"
+  },
+  "required": true,
+  "timeout_ms": 180000,
+  "agent": {
+    "target": {
+      "mode": "cascade-profile",
+      "profile_file": "product-evals/tasks/agent-response/cascade-harness-profile-v1.json"
+    },
+    "runtime": {
+      "provider": "codex",
+      "model": "gpt-5.6-terra",
+      "reasoning_effort": "medium"
+    },
+    "prompt_file": "product-evals/tasks/agent-response/cascade-harness-prompt.md",
+    "input_file": "product-evals/tasks/agent-response/cascade-harness-scenario.json",
+    "output_schema_file": "harness-evals/response.schema.json",
+    "permissions": {
+      "filesystem": "read-only",
+      "network": "deny",
+      "tools": []
+    },
+    "budgets": {
+      "max_output_bytes": 16384,
+      "max_tool_calls": 12,
+      "max_tokens": 4096
+    },
+    "evaluation_profile": "cascade-route-and-trace-v1",
+    "source_blind": true
+  },
+  "inputs": [
+    "product-evals/tasks/agent-response/cascade-harness-profile-v1.json",
+    "product-evals/tasks/agent-response/cascade-harness-prompt.md",
+    "product-evals/tasks/agent-response/cascade-harness-scenario.json",
+    "harness-evals/response.schema.json"
+  ],
+  "oracle_ids": ["agent-response-contract-valid-v1"],
+  "policy_ids": ["allow-agent-cascade-harness-v1"]
+}

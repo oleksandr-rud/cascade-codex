@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "id": "browser-completion-rate-v1",
+  "kind": "deterministic",
+  "direction": "higher-is-better",
+  "unit": "ratio",
+  "aggregation": "mean",
+  "hard_gate": true,
+  "required_slices": ["browser-local-fixture"],
+  "uncertainty": "none",
+  "source": { "oracle_id": "browser-visible-status-v1" }
+}

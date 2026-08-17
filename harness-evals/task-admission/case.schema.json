@@ -1,25 +1,50 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://cascade.local/schemas/task-admission-cases.v41.schema.json",
   "type": "object",
   "additionalProperties": false,
-  "required": ["schema_version", "cases"],
+  "required": ["schema_version", "policy_bundle_version", "case_set_version", "cases"],
   "properties": {
-    "schema_version": { "const": 1 },
+    "schema_version": { "const": 41 },
+    "policy_bundle_version": { "const": "cascade-core@42" },
+    "case_set_version": { "const": 41 },
     "cases": {
-      "type": "array", "minItems": 12,
+      "type": "array", "minItems": 981, "maxItems": 981,
       "items": {
         "type": "object", "additionalProperties": false,
-        "required": ["id", "request", "authority", "expected_route", "required_controls", "forbidden_controls", "expected_blocked", "criterion"],
+        "required": ["id", "request", "authority", "expected_relation", "expected_intent", "expected_workload", "expected_route", "required_controls", "forbidden_controls", "expected_skills", "expected_blocked", "criterion"],
         "properties": {
           "id": { "type": "string", "pattern": "^TA-C[0-9]{3}$" },
-          "request": { "type": "string", "minLength": 1 },
-          "authority": { "type": "array", "items": { "type": "string" } },
-          "expected_route": { "type": "string" },
-          "required_controls": { "type": "array", "items": { "type": "string" } },
-          "forbidden_controls": { "type": "array", "items": { "type": "string" } },
+          "request": { "type": "string", "minLength": 1, "maxLength": 1000 },
+          "authority": { "type": "array", "uniqueItems": true, "items": { "type": "string", "pattern": "^[a-z0-9-]+$" } },
+          "expected_relation": { "enum": ["NEW", "CONTINUE", "AMEND", "OVERRIDE", "STATUS", "CANCEL", "CONVERSATION_ONLY"] },
+          "expected_intent": { "enum": ["ANSWER", "DISCOVER", "DIAGNOSE", "REVIEW", "VALIDATE", "CHANGE", "OPERATE"] },
+          "expected_workload": { "$ref": "#/$defs/workload" },
+          "expected_route": { "enum": ["NO_WORKFLOW", "DIRECT_READ", "DIRECT_CHANGE", "BOUNDED", "CONNECTED", "PROGRAM"] },
+          "required_controls": { "$ref": "#/$defs/controls" },
+          "forbidden_controls": { "$ref": "#/$defs/controls" },
+          "expected_skills": { "type": "array", "uniqueItems": true, "items": { "type": "string", "pattern": "^[a-z0-9-]+(?::[a-z0-9-]+)?$" } },
           "expected_blocked": { "type": "boolean" },
-          "criterion": { "type": "string", "pattern": "^TR-[0-9]{2}$" }
+          "expected_persistence": { "type": "boolean" },
+          "expected_claim_kinds": { "type": "array", "uniqueItems": true, "items": { "enum": ["OUTCOME", "CURRENT_STATE", "CRITERION", "CONSTRAINT", "NON_GOAL", "BOUNDARY", "HAZARD", "AUTHORITY", "EVIDENCE", "INFERENCE"] } },
+          "criterion": { "type": "string", "pattern": "^TR-[0-9]{2,3}$" }
         }
+      }
+    }
+  },
+  "$defs": {
+    "controls": { "type": "array", "uniqueItems": true, "items": { "enum": ["BASE", "GROUNDED_READ", "ATOMIC_CHANGE", "STANDARD_CHANGE", "CONNECTED_DELIVERY", "PROGRAM_CONTROL", "SIMULATION_GOVERNANCE", "SECURITY_ASSURANCE", "FULL_SCAN", "RELEASE_EVIDENCE"] } },
+    "workload": {
+      "type": "object", "additionalProperties": false,
+      "required": ["topology", "effort", "assurance", "authority", "evidence", "duration", "context"],
+      "properties": {
+        "topology": { "enum": ["ATOMIC", "BOUNDED", "CONNECTED", "PROGRAM"] },
+        "effort": { "enum": ["MICRO", "SMALL", "MEDIUM", "LARGE", "EXTENDED"] },
+        "assurance": { "enum": ["BASIC", "STANDARD", "HIGH", "REGULATED"] },
+        "authority": { "enum": ["READ_ONLY", "LOCAL_WRITE", "EXTERNAL_WRITE", "PRIVILEGED", "DESTRUCTIVE"] },
+        "evidence": { "enum": ["EXPLANATION", "TARGETED", "REGRESSION", "INDEPENDENT", "RELEASE"] },
+        "duration": { "enum": ["TURN", "MULTI_TURN", "RESUMABLE", "PROGRAM"] },
+        "context": { "enum": ["PROMPT_ONLY", "TARGETED_PROBE", "SCOPED_SCAN", "FULL_SCAN"] }
       }
     }
   }

@@ -1,0 +1,37 @@
+{
+  "schema_version": 2,
+  "id": "allow-harness-static-command-v1",
+  "version": "2.0.0",
+  "effect": "ALLOW",
+  "scope": {
+    "campaign_ids": [
+      "harness-static-smoke"
+    ],
+    "task_ids": [
+      "HARNESS-STATIC-SMOKE"
+    ],
+    "task_kinds": [
+      "command"
+    ],
+    "driver_types": [
+      "direct-process"
+    ],
+    "action_types": [
+      "process-exec"
+    ],
+    "command_prefix": [
+      "/usr/bin/printf",
+      "cascade-static-ok"
+    ]
+  },
+  "budgets": {
+    "required_dimensions": [
+      "action_count",
+      "output_bytes"
+    ],
+    "max_actions": 1,
+    "max_output_bytes": 4096
+  },
+  "redaction_profile": "no-secrets-v1",
+  "reason": "Allow only the exact deterministic W-005 static smoke argv under the strict process isolation contract."
+}

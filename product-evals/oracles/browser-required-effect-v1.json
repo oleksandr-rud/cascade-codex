@@ -1,0 +1,6 @@
+{
+  "schema_version": 1,
+  "id": "browser-required-effect-v1",
+  "type": "task-file-exists",
+  "file": "outputs/backend-effect.json"
+}

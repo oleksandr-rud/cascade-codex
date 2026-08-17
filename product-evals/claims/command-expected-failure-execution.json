@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "id": "command-expected-failure-execution",
+  "class": "execution",
+  "assertion": "The strict direct-process adapter preserves an expected nonzero exit result and evaluates it only through the declared oracle.",
+  "scope": {
+    "task_id": "COMMAND-EXPECTED-FAILURE",
+    "driver": "direct-process",
+    "platform": "darwin"
+  },
+  "population_authority": "none",
+  "required_policy_ids": [
+    "allow-command-expected-failure-v1"
+  ],
+  "required_oracle_ids": [
+    "command-exit-one-v1"
+  ],
+  "required_metric_ids": [],
+  "requires_calibration": false,
+  "evidence_requirements": [
+    "source-manifest",
+    "execution-receipt",
+    "task-result",
+    "policy-decisions",
+    "oracle",
+    "cleanup"
+  ]
+}

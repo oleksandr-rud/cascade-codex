@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "id": "command-static-fixture",
+  "simulation_scope": "harness",
+  "title": "Strict direct-process static fixture",
+  "purpose": "Exercise only the deterministic W-005 static command contract.",
+  "population_files": ["product-evals/simulations/harness/command-static-fixture/populations/actors.json"],
+  "scenario_files": ["product-evals/simulations/harness/command-static-fixture/scenarios/static-command.json"],
+  "world_file": "product-evals/simulations/harness/command-static-fixture/worlds/world.json",
+  "dataset_file": "product-evals/simulations/harness/command-static-fixture/datasets/cases.json",
+  "metric_files": ["product-evals/metrics/command-exit-zero-rate-v1.json"],
+  "treatment_files": ["product-evals/treatments/baseline-v1.json"]
+}

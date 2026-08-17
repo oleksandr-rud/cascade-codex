@@ -518,9 +518,27 @@
       }
     },
     {
-      "path": "product-evals/intakes/product/{{SIMULATION_ID}}-smoke.json",
+      "path": "product-evals/intakes/product/seed-bindings/{{SIMULATION_ID}}-smoke.json",
       "content": {
         "schema_version": 1,
+        "artifact_type": "cascade-simulation-seed-binding",
+        "id": "{{SIMULATION_ID}}-seed-binding-v1",
+        "status": "DRAFT",
+        "campaign_id": "{{SIMULATION_ID}}-smoke",
+        "campaign_sha256": "{{CAMPAIGN_SHA256}}",
+        "source": {
+          "task_envelope_id": null,
+          "task_envelope_revision": null,
+          "request_digest": null,
+          "source_digest": null
+        },
+        "mappings": []
+      }
+    },
+    {
+      "path": "product-evals/intakes/product/{{SIMULATION_ID}}-smoke.json",
+      "content": {
+        "schema_version": 6,
         "artifact_type": "cascade-simulation-intake",
         "id": "SI-{{INTAKE_ID}}",
         "status": "DRAFT",
@@ -529,6 +547,7 @@
         "produced_at": "{{REFERENCE_WINDOW_END}}",
         "task_envelope": null,
         "product_context": null,
+        "seed_binding": null,
         "claims": [],
         "tasks": [],
         "blockers": [
@@ -564,9 +583,11 @@
           "lease_ttl_ms": 60000
         },
         "evaluation_profile_file": "product-evals/rubrics/deterministic-fixture-v1.json",
-        "simulation_file": "product-evals/simulations/product/{{SIMULATION_ID}}/manifest.json",
-        "intake_file": "product-evals/intakes/product/{{SIMULATION_ID}}-smoke.json",
-        "task_files": [
+      "simulation_file": "product-evals/simulations/product/{{SIMULATION_ID}}/manifest.json",
+      "intake_file": "product-evals/intakes/product/{{SIMULATION_ID}}-smoke.json",
+      "seed_binding_file": "product-evals/intakes/product/seed-bindings/{{SIMULATION_ID}}-smoke.json",
+      "specialized_evaluation": null,
+      "task_files": [
           "product-evals/tasks/{{TASK_ID}}-STATE-SMOKE.json"
         ],
         "claim_files": [

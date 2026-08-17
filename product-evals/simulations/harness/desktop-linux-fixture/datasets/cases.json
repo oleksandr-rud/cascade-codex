@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "id": "desktop-linux-cases-v1",
+  "leakage_policy": "exclusive-case-identity",
+  "cases": [
+    {
+      "id": "desktop-linux-development",
+      "scenario_id": "desktop-form-v1",
+      "actor_id": "desktop-linux-actor",
+      "partition": "development",
+      "slices": ["desktop-linux"]
+    },
+    {
+      "id": "desktop-linux-regression",
+      "scenario_id": "desktop-form-v1",
+      "actor_id": "desktop-linux-actor",
+      "partition": "regression",
+      "slices": ["desktop-linux"]
+    },
+    {
+      "id": "desktop-linux-holdout",
+      "scenario_id": "desktop-form-v1",
+      "actor_id": "desktop-linux-actor",
+      "partition": "holdout",
+      "slices": ["desktop-linux"]
+    },
+    {
+      "id": "desktop-linux-calibration",
+      "scenario_id": "desktop-form-v1",
+      "actor_id": "desktop-linux-actor",
+      "partition": "calibration-reference",
+      "slices": ["desktop-linux"]
+    }
+  ]
+}
