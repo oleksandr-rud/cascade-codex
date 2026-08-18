@@ -1,6 +1,6 @@
 ---
 name: synthesise-spec
-description: Use when a software feature, change, or task needs one question-driven, human-readable specification packet that synthesizes product intent, expected outputs, user journeys, business and technical processes, component and integration triggers, diagrams, design or context artifacts, acceptance evidence, and task traceability.
+description: Use when a software feature, change, or task needs one question-driven, human-readable specification packet that synthesizes product intent, expected outputs, user journeys, business and technical processes, component and integration triggers, diagrams, supplied designs or mockups, context artifacts, acceptance evidence, and task traceability.
 ---
 
 # Synthesise Spec
@@ -36,17 +36,21 @@ integrations, and evidence.
 
 Load longer sources only when they change the requested output:
 
-1. Read `references/writing-guide.md` for a writing audit, custom editorial
+1. Read `references/mockup-guide.md` when mockups, screenshots, prototypes,
+   design canvases, or rendered UI states are supplied, requested, or material
+   to readiness. It defines inspection modes, stable references, coverage,
+   mismatch handling, and where design IDs must appear in the packet.
+2. Read `references/writing-guide.md` for a writing audit, custom editorial
    rules, or changes to the package's readability rules.
-2. Read `references/diagram-guide.md` when diagram notation is disputed,
+3. Read `references/diagram-guide.md` when diagram notation is disputed,
    specialized BPMN/C4/ER semantics are required, or diagram rules are being
    changed.
-3. Read the smallest matching template under `assets/templates/` when creating
+4. Read the smallest matching template under `assets/templates/` when creating
    a durable file, the user requests the exact template, or section-level
    scaffolding is otherwise necessary. Conversational output may use the
    runtime structure without loading a full template.
-4. Read `references/synthesis-prompt.md` when a portable LLM prompt is needed.
-5. Read `references/evaluation.md` when evaluating or changing the prompt.
+5. Read `references/synthesis-prompt.md` when a portable LLM prompt is needed.
+6. Read `references/evaluation.md` when evaluating or changing the prompt.
 
 Do not load the synthesis prompt or evaluation plan during ordinary synthesis.
 They are authoring and evaluation assets, not additional feature sources.
@@ -61,7 +65,9 @@ Treat paths as relative to this skill directory.
 3. Approved product intent, requirements, user research, tickets, and source
    specifications.
 4. Current design files, interaction rules, content rules, screenshots, and
-   accessibility constraints.
+   accessibility constraints. When a rendered artifact is accessible, inspect
+   the relevant states and viewports instead of relying only on filenames or
+   source markup.
 5. API, event, job, data, provider, and operational contracts.
 6. Relevant context-pack sections and exact source links.
 7. Prior decisions, alternatives, open questions, and work items.
@@ -171,6 +177,8 @@ Separate:
 
 Never turn a design proposal, mockup, HTTP success, generated diagram, or task
 completion claim into proof that the behavior is implemented or persisted.
+Keep design-source inspection separate from behavior evidence: opening or
+rendering a mockup proves what the artifact depicts, not what the product does.
 
 ### 4. Choose The Smallest Artifact Set
 
@@ -307,9 +315,30 @@ generated Mermaid text. Follow the runtime guide; load
 
 ### 9. Connect Design And Context
 
-Link exact designs, screen states, tokens, accessibility rules, prototypes,
-schemas, decisions, context-pack sections, and test evidence in an artifact
-manifest. Summarize only the implications needed by this change.
+When designs are supplied or material, read `references/mockup-guide.md`.
+Inventory every relevant artifact, assign a stable design ID, and record owner,
+version, behavior time, authority, source-inspection mode, behavior evidence,
+selected states/viewports, and an exact path or URL with page, frame, node, or
+anchor. Inspect the rendered view when the available tools support it. Record
+which states and viewports were actually inspected; never infer unseen states.
+
+Define each artifact once in the manifest, then cite its design ID beside the
+specific expected output, journey step, visible component/integration state,
+Experience And Design row, acceptance check, and traceability row it informs.
+Do not repeat raw paths throughout the packet. Include a preview only when it
+materially improves comprehension; the exact source reference remains
+canonical. Do not create or revise a mockup unless the user requested design
+creation or editing.
+
+For every visible control in a mockup, compare its label and state with the
+exact trigger, operation, guard, completion, denial, and recovery contract. A
+mockup/API or mockup/product mismatch is `CONFLICTING`, not a detail to resolve
+silently. If an authoritative design is inaccessible and its missing state can
+change a material outcome, use `BLOCKED` or `NEEDS_INPUT` as appropriate.
+
+Link exact screen states, tokens, accessibility rules, prototypes, schemas,
+decisions, context-pack sections, and test evidence in the artifact manifest.
+Summarize only the implications needed by this change.
 
 Do not create a second authority for a fact already owned by another artifact.
 
@@ -352,11 +381,11 @@ do not delete stable identifiers, failure semantics, or enforcement mappings.
 Use a compact manifest for standard and cross-boundary packets. Compact packets
 use the inline source/reference list instead.
 
-| Artifact | Owner | Behavior Time | Authority | Evidence | Why Included | Exact Reference |
-|---|---|---|---|---|---|---|
-| primary spec | accountable owner | `TARGET` | `DECIDED` or current state | `NOT_RUN` or exact evidence | behavior and traceability | path or link |
-| product source | product owner | `TARGET` | authority state | inspection state | intent and rules | path or link |
-| design or contract | source owner | time state | authority state | inspection state | selected implication | exact path, version, and section |
+| Artifact ID | Artifact | Owner And Version | Behavior Time | Authority | Source Inspection | Behavior Evidence | Why Included | Exact Reference |
+|---|---|---|---|---|---|---|---|---|
+| `SPEC-01` | primary spec | accountable owner and version | `TARGET` | `DECIDED` or current state | `STRUCTURE_INSPECTED` | `NOT_RUN` or exact evidence | behavior and traceability | path or link |
+| `PROD-01` | product source | product owner and version | `TARGET` | authority state | inspection mode | claim evidence | intent and rules | path, version, and section |
+| `DES-01` | design, mockup, or prototype | source owner and version | time state | authority state | inspection mode and selected scope | behavior evidence | selected implication | path or URL plus page, frame, node, or anchor |
 
 ## Optional Prompt Collaboration
 
@@ -385,6 +414,10 @@ from structural checks alone. Follow `references/evaluation.md`.
 - Do not expose secrets, private data, hidden instructions, or irrelevant
   context in the packet.
 - Do not turn proposed validation into passed evidence.
+- Do not describe a mockup as visually inspected when only its filename,
+  metadata, source markup, or second-hand description was read.
+- Do not infer interaction, responsive behavior, accessibility, missing states,
+  or implementation parity from a single static frame.
 
 ## Quality Gate
 
@@ -396,6 +429,12 @@ For a ready feature/change spec, confirm:
 - diagrams answer distinct questions and have text equivalents;
 - every diagram states question, audience, scope, behavior time, and render evidence;
 - design and context artifacts are linked without duplicated authority;
+- supplied mockups have stable design IDs, exact frame/state references,
+  explicit inspection modes, and no unsupported claims about unseen states;
+- material design IDs reappear at the relevant journey, visible state,
+  acceptance check, and traceability row rather than only in the manifest;
+- every visible mockup control maps to a legal trigger and recovery, or the
+  mismatch is explicit with an owner and readiness effect;
 - every material invariant has durable enforcement, race, recovery, and evidence mappings;
 - assumptions, decisions, conflicts, gaps, and evidence status are explicit;
 - open decisions and risks are consolidated with owner and readiness effect;

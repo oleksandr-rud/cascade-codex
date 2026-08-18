@@ -121,12 +121,16 @@ action. Do not pretend the packet is ready.
    than stopping after the first; ask no more than three material questions.
 11. Choose each diagram for one reader question and provide metadata, render
    evidence, and a complete text equivalent.
-12. Link exact source artifacts and selected context sections. Do not copy full
+12. When mockups, screenshots, prototypes, or rendered UI states are supplied,
+   inventory and inspect the relevant views when accessible. Keep source
+   inspection separate from behavior evidence, assign stable design IDs, and
+   trace those IDs to the exact behavior and acceptance they constrain.
+13. Link exact source artifacts and selected context sections. Do not copy full
    context packs or create duplicate authority.
-13. Trace expected outputs and journeys to observable acceptance checks.
-14. Consolidate every material open decision and risk with owner, next action,
+14. Trace expected outputs and journeys to observable acceptance checks.
+15. Consolidate every material open decision and risk with owner, next action,
     impact, and readiness effect.
-15. Edit for audience, specificity, truth, compression, accessibility, and
+16. Edit for audience, specificity, truth, compression, accessibility, and
     scanability.
 </working_method>
 
@@ -200,7 +204,10 @@ journeys, as material:
     mechanism, race or exception, recovery or repair, and acceptance evidence.
 16. Experience And Design: exact design references plus loading, empty,
     partial, permission, degraded, failure, recovery, and success states;
-    responsive, content, and accessibility behavior.
+    responsive, content, and accessibility behavior. When visual artifacts are
+    supplied, use stable design IDs, name inspected states/viewports, keep
+    source inspection separate from behavior evidence, record unseen states as
+    NOT_SHOWN, and bind material IDs to journeys and acceptance.
 17. Rollout And Operations: compatibility, migration, release control,
     monitoring, rollback/compensation, support, and runbook impact as needed.
 18. Traceability from product rule or output to journey,
@@ -260,6 +267,34 @@ enforcement as separate columns; every table row must match its header width.
   technical sequence or state view when both questions are material.
 </diagram_contract>
 
+<mockup_contract>
+- Consume supplied mockups and design artifacts; do not search for, generate,
+  revise, or approve them unless the user asks for that separate action.
+- Define each material artifact once in the Artifact Manifest with a stable ID
+  such as DES-01 and each selected view/state as DES-01:V01.
+- Record owner/version, CURRENT or TARGET, authority, source-inspection mode,
+  behavior evidence, selected state/viewport scope, and an exact path or URL
+  with page, frame, node, anchor, and version when available.
+- Use one honest source-inspection mode: INTERACTION_INSPECTED,
+  VISUALLY_INSPECTED, STRUCTURE_INSPECTED, REFERENCE_ONLY, or NOT_INSPECTED.
+  These are not behavior-evidence values.
+- Inspect the rendered view when available. Reading a filename, metadata,
+  source markup, or second-hand description is not visual inspection.
+- A mockup shows what its artifact depicts. It does not prove implementation,
+  interaction, responsive behavior outside inspected views, persistence, or
+  provider effects. Record unshown states as NOT_SHOWN rather than inferring
+  them.
+- Map every visible control through trigger, operation, guard, acknowledgement,
+  completion, denial/failure, and recovery. Mark product/design/API mismatches
+  CONFLICTING and give them an owner and readiness effect.
+- Reuse the design ID beside the expected output, key journey step, visible
+  component/integration state, Experience And Design row, acceptance check,
+  and traceability row it constrains. Do not repeat raw paths everywhere or
+  write only “see Figma” or “matches mockup.”
+- An embedded preview is optional. When used, include useful alt text and a
+  caption; keep the exact editable/versioned source reference canonical.
+</mockup_contract>
+
 <artifact_ownership>
 - The primary spec owns the cross-artifact behavior narrative and traceability.
 - Approved PRDs, product rules, design files, schemas, API/event contracts,
@@ -268,12 +303,17 @@ enforcement as separate columns; every table row must match its header width.
   messages. Summarize only the implication needed by this change.
 - A technical design owns engineering decisions that would overload the
   primary spec. A task slice owns only its implementation scope and evidence.
+- A design artifact owns its frames and visual decisions. The spec owns the
+  cross-artifact behavior mapping and references selected views by stable ID.
 - Do not paste delivery workflow, agent routing, internal harness controls, or
   full source artifacts into the feature specification.
 </artifact_ownership>
 
 <evidence_rules>
 - A proposed design is not implementation proof.
+- Visual or interaction inspection of a mockup is source inspection, not proof
+  of implemented behavior. A runtime screenshot supports only the identified
+  environment, build, data, state, viewport, and capture time.
 - A screen transition or HTTP success is not proof of durable state or an
   external side effect.
 - A mock or local substitute is not live-provider proof.
@@ -334,7 +374,8 @@ conflicts, and concise rationale that readers need to review the result.
 
 - `{{REQUEST}}` should contain the latest user outcome and constraints.
 - `{{SOURCE_PACKET}}` can contain tickets, notes, product/design sources,
-  contracts, diagrams, and evidence excerpts with identities.
+  mockup paths or URLs, frame/node identities, contracts, diagrams, and
+  evidence excerpts with identities.
 - `{{REPOSITORY_CONTEXT}}` should contain only relevant code paths, schemas,
   tests, and current behavior findings.
 - `{{OUTPUT_TARGET}}` should name the intended paths or state that the output is

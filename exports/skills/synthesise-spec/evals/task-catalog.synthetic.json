@@ -1,7 +1,7 @@
 {
   "schema_version": 2,
-  "catalog_id": "synthesise-spec-synthetic-features-v10",
-  "description": "Seven fictional feature, change, blocker, adversarial, invariant, and task packets for standalone specification evaluation.",
+  "catalog_id": "synthesise-spec-synthetic-features-v11",
+  "description": "Eight fictional feature, change, blocker, adversarial, invariant, design-mockup, and task packets for standalone specification evaluation.",
   "tasks": [
     {
       "id": "synth-shift-handover-v1",
@@ -114,6 +114,22 @@
       "evaluator_path": "tasks/synth-audit-receipt-task-v1/evaluator.json",
       "input_placeholder": "{{FEATURE_PACKET}}",
       "prompt_build_request": "Create a reusable prompt that invokes the standalone synthesise-spec skill to create a parent-linked implementation task slice without solving this fixture. The only input placeholder must be exactly {{FEATURE_PACKET}}; do not rename it."
+    },
+    {
+      "id": "synth-mockup-traceability-v1",
+      "version": 1,
+      "builder_mode": "ONE_SHOT",
+      "tier": "frontier-generalist",
+      "task_family": "design-artifact-feature-specification",
+      "domain": "software-product",
+      "context_profile": "provided-mockup-with-control-conflict",
+      "outcome_evaluation": "semantic",
+      "trajectory_evaluation": "once-per-prompt",
+      "target_task_contract": "Apply the standalone synthesise-spec skill to the field-maintenance job-start packet and its supplied DES-410 SVG. Return READY_FOR_REVIEW in at most 2,600 words with the ready feature core plus Source Ledger, Artifact Manifest, Component Responsibilities, Integrations, Experience And Design, Traceability, and no diagrams. Define DES-410 and exact DES-410:V01/V02 references once, separate source inspection from NOT_RUN behavior evidence, and reuse the stable design IDs in the relevant journey, design coverage, acceptance, and traceability mappings. Preserve PROD-062's prohibition on offline start and API-210's idempotent durable receipt, stable errors, and unknown-outcome reconciliation. Mark DES-410:V02 CONFLICTING because Start offline has no legal API operation; assign the Design owner to replace it with Reconnect to start and define reconnect/failure states. Mark unprovided states NOT_SHOWN. Do not claim visual inspection unless the SVG was opened, infer responsive or interaction behavior, treat the mockup as implementation proof, or return READY_FOR_IMPLEMENTATION.",
+      "input_path": "tasks/synth-mockup-traceability-v1/input.txt",
+      "evaluator_path": "tasks/synth-mockup-traceability-v1/evaluator.json",
+      "input_placeholder": "{{FEATURE_PACKET}}",
+      "prompt_build_request": "Create a reusable prompt that invokes the standalone synthesise-spec skill on a supplied design artifact with a visible control conflict, without solving the fixture. The only input placeholder must be exactly {{FEATURE_PACKET}}; do not rename it."
     }
   ]
 }

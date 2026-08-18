@@ -1,0 +1,68 @@
+{
+  "schema_version": 1,
+  "mechanical_type": "text_contract",
+  "depth_band": "standard",
+  "expected_readiness": "READY_FOR_REVIEW",
+  "question_min": 0,
+  "question_max": 1,
+  "diagram_min": 0,
+  "diagram_max": 0,
+  "required_headings": [
+    "Readiness",
+    "At A Glance",
+    "Product And Change",
+    "Expected Outputs",
+    "User Journeys",
+    "Source Ledger",
+    "Artifact Manifest",
+    "Component Responsibilities",
+    "Integrations",
+    "Experience And Design",
+    "Acceptance And Evidence",
+    "Open Decisions And Risks",
+    "Traceability",
+    "Next Owner Or Action"
+  ],
+  "required_patterns": [
+    "READY_FOR_REVIEW",
+    "DES-410",
+    "DES-410:V01",
+    "DES-410:V02",
+    "mockup-job-start.svg",
+    "Source Inspection",
+    "Behavior Evidence",
+    "NOT_SHOWN",
+    "CONFLICTING",
+    "Reconnect to start",
+    "API-210",
+    "JOB_VERSION_CHANGED",
+    "NOT_RUN"
+  ],
+  "forbidden_patterns": [
+    "{{",
+    "READY_FOR_IMPLEMENTATION",
+    "offline start is supported",
+    "the mockup proves implementation",
+    "all responsive states are covered"
+  ],
+  "max_words": 2600,
+  "semantic_anchors": {
+    "must_preserve": [
+      "the approved target allows review offline but prohibits starting until the technician reconnects",
+      "DES-410 is defined once with exact versioned file and view references, then its stable view IDs appear at the relevant journey, Experience And Design row, acceptance check, and traceability row",
+      "source inspection mode and scope are distinct from target behavior evidence, which remains NOT_RUN",
+      "DES-410:V01 is approved target design while DES-410:V02 is proposed and CONFLICTING with PROD-062 and API-210",
+      "loading, permission, stale, saving, failure, success, reconnecting, and unprovided responsive variants are NOT_SHOWN rather than inferred",
+      "Start offline maps to no legal API operation and the Design owner must replace it with Reconnect to start and define recovery states",
+      "API-210 idempotency, durable receipt, stable errors, and unknown-outcome reconciliation are preserved",
+      "the static mockup is not implementation, interaction, responsive, persistence, or server-completion proof"
+    ],
+    "must_avoid": [
+      "implementation readiness while the offline-control conflict remains",
+      "claiming visual inspection without opening the artifact",
+      "leaving mockup references only in the Artifact Manifest",
+      "silently resolving the design conflict",
+      "inventing unshown states or validation evidence"
+    ]
+  }
+}

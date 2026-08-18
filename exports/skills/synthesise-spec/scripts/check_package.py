@@ -17,6 +17,7 @@ REQUIRED_FILES = [
     "agents/openai.yaml",
     "references/writing-guide.md",
     "references/diagram-guide.md",
+    "references/mockup-guide.md",
     "references/runtime-guide.md",
     "references/synthesis-prompt.md",
     "references/evaluation.md",
@@ -34,6 +35,8 @@ REQUIRED_FILES = [
     "evals/fixtures/unavailable-provider-contract.md",
     "evals/fixtures/adversarial-source-instruction.md",
     "evals/fixtures/audit-receipt-task.md",
+    "evals/fixtures/mockup-traceability.md",
+    "evals/fixtures/mockup-job-start.svg",
     "evals/evaluators/shift-handover.json",
     "evals/evaluators/retry-permission-conflict.json",
     "evals/evaluators/async-compliance-export.json",
@@ -41,6 +44,7 @@ REQUIRED_FILES = [
     "evals/evaluators/unavailable-provider-contract.json",
     "evals/evaluators/adversarial-source-instruction.json",
     "evals/evaluators/audit-receipt-task.json",
+    "evals/evaluators/mockup-traceability.json",
     "scripts/check_package.py",
     "scripts/grade_output.py",
 ]
@@ -74,6 +78,10 @@ SYNTHETIC_TASK_FILES = {
         "evals/fixtures/audit-receipt-task.md",
         "evals/evaluators/audit-receipt-task.json",
     ),
+    "synth-mockup-traceability-v1": (
+        "evals/fixtures/mockup-traceability.md",
+        "evals/evaluators/mockup-traceability.json",
+    ),
 }
 
 TASK_CONTRACTS = {
@@ -84,6 +92,7 @@ TASK_CONTRACTS = {
     "synth-unavailable-provider-contract-v1": ("BLOCKED", "gated"),
     "synth-adversarial-source-v1": ("READY_FOR_IMPLEMENTATION", "compact"),
     "synth-audit-receipt-task-v1": ("READY_FOR_IMPLEMENTATION", "task-slice"),
+    "synth-mockup-traceability-v1": ("READY_FOR_REVIEW", "standard"),
 }
 
 PROMPT_MARKERS = [
@@ -98,6 +107,7 @@ PROMPT_MARKERS = [
     "<trust_boundary>",
     "<writing_contract>",
     "<diagram_contract>",
+    "<mockup_contract>",
     "<evidence_rules>",
     "Expected Outputs",
     "User Journeys",
@@ -278,6 +288,32 @@ def main() -> int:
         for heading in headings:
             check(heading in content, f"{relative} missing heading: {heading}", errors)
 
+    mockup_guide = read("references/mockup-guide.md")
+    for marker in (
+        "INTERACTION_INSPECTED",
+        "VISUALLY_INSPECTED",
+        "STRUCTURE_INSPECTED",
+        "REFERENCE_ONLY",
+        "NOT_INSPECTED",
+        "DES-01:V01",
+        "NOT_SHOWN",
+        "Design Coverage Matrix",
+        "Map Controls To Real Operations",
+    ):
+        check(marker in mockup_guide,
+              f"mockup guide missing marker: {marker}", errors)
+
+    feature_template = read("assets/templates/feature-change-spec.md")
+    for marker in (
+        "Source Inspection",
+        "Behavior Evidence",
+        "Design Ref",
+        "DES-01:V01",
+        "Gaps Or Conflicts",
+    ):
+        check(marker in feature_template,
+              f"feature template missing mockup marker: {marker}", errors)
+
     cases = json.loads(read("evals/cases.json"))
     check(cases.get("schema_version") == 2, "eval cases schema_version must be 2", errors)
     case_items = cases.get("cases")
@@ -438,6 +474,7 @@ def main() -> int:
         "references/runtime-guide.md",
         "references/writing-guide.md",
         "references/diagram-guide.md",
+        "references/mockup-guide.md",
         "references/synthesis-prompt.md",
         "references/evaluation.md",
     ]

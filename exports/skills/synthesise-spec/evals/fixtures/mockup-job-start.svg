@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="720" viewBox="0 0 1200 720" role="img" aria-labelledby="title desc">
+  <title id="title">Synthetic maintenance job start mockups</title>
+  <desc id="desc">A desktop ready state and a mobile offline state for a fictional field-maintenance application.</desc>
+  <rect width="1200" height="720" fill="#eef2f6"/>
+
+  <g id="ready-desktop" transform="translate(40 40)">
+    <rect width="720" height="640" rx="16" fill="#ffffff" stroke="#94a3b8" stroke-width="2"/>
+    <rect width="720" height="64" rx="16" fill="#17324d"/>
+    <text x="28" y="40" font-family="Arial, sans-serif" font-size="22" fill="#ffffff">Northstar Field Service</text>
+    <text x="28" y="104" font-family="Arial, sans-serif" font-size="14" fill="#475569">DES-410:V01 · READY · desktop 1440×900</text>
+    <text x="28" y="148" font-family="Arial, sans-serif" font-size="30" font-weight="700" fill="#0f172a">Replace conveyor photoeye</text>
+    <text x="28" y="180" font-family="Arial, sans-serif" font-size="17" fill="#334155">WO-4812 · Line 3 · Assigned to Casey Morgan</text>
+    <rect x="28" y="214" width="664" height="142" rx="10" fill="#f8fafc" stroke="#cbd5e1"/>
+    <text x="48" y="250" font-family="Arial, sans-serif" font-size="18" font-weight="700" fill="#0f172a">Before you start</text>
+    <text x="48" y="284" font-family="Arial, sans-serif" font-size="16" fill="#334155">Review the isolation procedure and confirm the asset ID.</text>
+    <text x="48" y="318" font-family="Arial, sans-serif" font-size="16" fill="#334155">Latest job revision: 7 · Connection: Online</text>
+    <rect x="468" y="560" width="224" height="52" rx="8" fill="#176b4d"/>
+    <text x="525" y="593" font-family="Arial, sans-serif" font-size="18" font-weight="700" fill="#ffffff">Start job</text>
+  </g>
+
+  <g id="offline-mobile" transform="translate(800 40)">
+    <rect width="360" height="640" rx="28" fill="#ffffff" stroke="#94a3b8" stroke-width="2"/>
+    <rect width="360" height="72" rx="28" fill="#17324d"/>
+    <text x="24" y="43" font-family="Arial, sans-serif" font-size="19" fill="#ffffff">Job WO-4812</text>
+    <text x="22" y="106" font-family="Arial, sans-serif" font-size="13" fill="#475569">DES-410:V02 · OFFLINE · mobile 390×844</text>
+    <rect x="20" y="132" width="320" height="104" rx="10" fill="#fff7ed" stroke="#fb923c"/>
+    <text x="40" y="168" font-family="Arial, sans-serif" font-size="19" font-weight="700" fill="#9a3412">You are offline</text>
+    <text x="40" y="199" font-family="Arial, sans-serif" font-size="15" fill="#7c2d12">Changes will sync when connected.</text>
+    <text x="22" y="282" font-family="Arial, sans-serif" font-size="24" font-weight="700" fill="#0f172a">Replace conveyor</text>
+    <text x="22" y="314" font-family="Arial, sans-serif" font-size="24" font-weight="700" fill="#0f172a">photoeye</text>
+    <text x="22" y="354" font-family="Arial, sans-serif" font-size="16" fill="#334155">Assigned to Casey Morgan</text>
+    <rect x="20" y="554" width="320" height="56" rx="8" fill="#176b4d"/>
+    <text x="123" y="589" font-family="Arial, sans-serif" font-size="18" font-weight="700" fill="#ffffff">Start offline</text>
+  </g>
+</svg>

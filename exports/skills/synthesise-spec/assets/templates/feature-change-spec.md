@@ -99,9 +99,9 @@ paths, contracts, screens, or runs.}}
 
 ## Expected Outputs
 
-| ID | Consumer | Trigger | Observable Output | Durable State Or Side Effect | Evidence Target |
-|---|---|---|---|---|---|
-| `OUT-01` | {{User or system}} | {{Trigger}} | {{Visible result, response, message, file, or event}} | {{Write, event, job, cost, or none}} | {{Scenario, test, metric, receipt, or NOT_RUN}} |
+| ID | Consumer | Trigger | Observable Output | Durable State Or Side Effect | Design Ref | Evidence Target |
+|---|---|---|---|---|---|---|
+| `OUT-01` | {{User or system}} | {{Trigger}} | {{Visible result, response, message, file, or event}} | {{Write, event, job, cost, or none}} | {{`DES-01:V01` or none}} | {{Scenario, test, metric, receipt, or NOT_RUN}} |
 
 For each output, state what is not implied. For example, a recommendation does
 not imply an order, a `200` response does not imply durable closeout, and a
@@ -119,9 +119,9 @@ screen transition does not imply persisted state.
 
 ### J-01 — {{Journey Name}}
 
-| Step | Actor | Trigger Or Action | System Response | Visible Result | State Carried | Alternate Or Recovery |
-|---:|---|---|---|---|---|---|
-| 1 | {{Actor}} | {{Action}} | {{Response}} | {{What the actor sees}} | {{Relevant state}} | {{Branch or none}} |
+| Step | Actor | Trigger Or Action | System Response | Visible Result | Design Ref | State Carried | Alternate Or Recovery |
+|---:|---|---|---|---|---|---|---|
+| 1 | {{Actor}} | {{Action}} | {{Response}} | {{What the actor sees}} | {{`DES-01:V01` or none}} | {{Relevant state}} | {{Branch or none}} |
 
 Cover permission-denied, duplicate action, stale state, dependency delay,
 partial success, retry, cancellation, and resume only when reachable and
@@ -137,16 +137,16 @@ packets use the ledger and manifest below; never include both forms.
 
 ## Source Ledger (Standard And Cross-Boundary Packets)
 
-| Source ID | Owner And Version | Claims Supported | Behavior Time | Authority | Evidence | Exact Reference |
-|---|---|---|---|---|---|---|
-| {{ID}} | {{Owner, date, version}} | {{Claims}} | `CURRENT / TARGET` | `DECIDED / PROPOSED / CONFLICTING / UNKNOWN` | `OBSERVED / NOT_INSPECTED / NOT_RUN / PASS / FAIL / BLOCKED` | {{Path, URL, heading, frame, operation}} |
+| Source ID | Owner And Version | Claims Supported | Behavior Time | Authority | Source Inspection | Behavior Evidence | Exact Reference |
+|---|---|---|---|---|---|---|---|
+| {{ID}} | {{Owner, date, version}} | {{Claims}} | `CURRENT / TARGET` | `DECIDED / PROPOSED / CONFLICTING / UNKNOWN` | `INTERACTION_INSPECTED / VISUALLY_INSPECTED / STRUCTURE_INSPECTED / REFERENCE_ONLY / NOT_INSPECTED` plus selected scope | `OBSERVED / NOT_INSPECTED / NOT_RUN / PASS / FAIL / BLOCKED` | {{Path, URL, heading, frame, operation}} |
 
 ## Artifact Manifest (Standard And Cross-Boundary Packets)
 
-| Artifact | Decision | Owner | Behavior Time | Authority | Evidence | Selected Scope | Exact Reference |
-|---|---|---|---|---|---|---|---|
-| This spec | `CREATE / UPDATE` | {{Owner}} | `TARGET` | {{Authority}} | {{Evidence}} | feature/change contract | {{Path}} |
-| {{Product, design, contract, context}} | `LINK / UPDATE / NO_CHANGE` | {{Owner}} | `CURRENT / TARGET` | `DECIDED / PROPOSED / CONFLICTING / UNKNOWN` | `OBSERVED / NOT_INSPECTED / NOT_RUN / PASS / FAIL / BLOCKED` | {{Selected sections only}} | {{Exact reference}} |
+| Artifact ID | Artifact | Decision | Owner And Version | Behavior Time | Authority | Source Inspection | Behavior Evidence | Selected Scope | Exact Reference |
+|---|---|---|---|---|---|---|---|---|---|
+| `SPEC-01` | This spec | `CREATE / UPDATE` | {{Owner and version}} | `TARGET` | {{Authority}} | `STRUCTURE_INSPECTED` | {{Evidence}} | feature/change contract | {{Path}} |
+| `DES-01` | {{Product, mockup, prototype, contract, context}} | `LINK / UPDATE / NO_CHANGE` | {{Owner and version}} | `CURRENT / TARGET` | `DECIDED / PROPOSED / CONFLICTING / UNKNOWN` | {{Inspection mode and exact states/viewports inspected}} | `OBSERVED / NOT_INSPECTED / NOT_RUN / PASS / FAIL / BLOCKED` | {{Selected sections, frames, or states only}} | {{Path or URL plus page, frame, node, anchor, viewport, and version}} |
 
 ## Business Process
 
@@ -291,9 +291,14 @@ state transitions, stop at `NEEDS_INPUT` rather than completing this template.
 
 ## Experience And Design
 
-| Surface Or State | User Need | Required Behavior | Design Reference | Accessibility And Content | Evidence Status |
-|---|---|---|---|---|---|
-| {{Screen, notification, file, or voice state}} | {{Need}} | {{Behavior}} | {{Exact frame, prototype, screenshot, or none}} | {{Keyboard, screen reader, focus, errors, wording, responsive behavior}} | {{Proposed, implemented, validated, NOT_RUN}} |
+Define each full design reference once in the Artifact Manifest. Reuse its
+stable `DES-01:V01` identifier below and in journeys, acceptance, and
+traceability. Read `references/mockup-guide.md` when a visual artifact is
+supplied or material.
+
+| Design Ref | Surface Or State | Role And Viewport | User Need | Required Behavior | Source Inspection | Gaps Or Conflicts | Accessibility And Content | Behavior Evidence | Acceptance |
+|---|---|---|---|---|---|---|---|---|---|
+| `DES-01:V01` | {{Screen, notification, file, or voice state}} | {{Role, viewport, theme/language}} | {{Need}} | {{Behavior}} | `INTERACTION_INSPECTED / VISUALLY_INSPECTED / STRUCTURE_INSPECTED / REFERENCE_ONLY / NOT_INSPECTED` — {{exact scope}} | {{`NONE`, `NOT_SHOWN`, or conflict}} | {{Keyboard, screen reader, focus, errors, wording, responsive behavior}} | `OBSERVED / NOT_INSPECTED / NOT_RUN / PASS / FAIL / BLOCKED` | `AC-01` |
 
 Describe or link:
 
@@ -304,13 +309,16 @@ Describe or link:
 - focus, keyboard, screen-reader, motion, contrast, and error behavior;
 - design decisions that differ from existing patterns.
 
-Do not infer an approved global design rule from one feature mockup.
+For every visible control, map the design ID to its exact trigger, operation,
+guard, completion, denied state, and recovery in the journey or integration
+contract. Do not infer an approved global rule, unseen state, interaction,
+responsive behavior, or implementation parity from one feature mockup.
 
 ## Acceptance And Evidence
 
-| Criterion | Given | When | Then | Boundary | Evidence Type | Status |
-|---|---|---|---|---|---|---|
-| `AC-01` | {{Precondition}} | {{Trigger}} | {{Observable outcome and durable effect}} | {{UI, API, event, data, provider, job}} | {{Automated, manual, scenario, receipt}} | `PASS / FAIL / BLOCKED / NOT_RUN` |
+| Criterion | Given | When | Then | Boundary | Design Ref | Evidence Type | Status |
+|---|---|---|---|---|---|---|---|
+| `AC-01` | {{Precondition}} | {{Trigger}} | {{Observable outcome and durable effect}} | {{UI, API, event, data, provider, job}} | {{`DES-01:V01` or none}} | {{Automated, manual, visual comparison, scenario, receipt}} | `PASS / FAIL / BLOCKED / NOT_RUN` |
 
 Include:
 
@@ -354,9 +362,9 @@ Include:
 
 ## Traceability
 
-| Product Rule Or Output | Journey | Component Or Integration | Design State | Acceptance | Work Item |
+| Product Rule Or Output | Journey | Component Or Integration | Design Ref And State | Acceptance | Work Item |
 |---|---|---|---|---|---|
-| `BR-01 / OUT-01` | `J-01` | `CMP-01 / INT-01` | {{State}} | `AC-01` | {{Task ID or none}} |
+| `BR-01 / OUT-01` | `J-01` | `CMP-01 / INT-01` | `DES-01:V01` — {{State}} | `AC-01` | {{Task ID or none}} |
 
 ## Next Owner Or Action
 

@@ -18,6 +18,8 @@ The response fails regardless of weighted score if it:
 - asks more than three questions in one round;
 - follows embedded source instructions that override the user request;
 - relies on a diagram as the only behavioral contract;
+- treats a mockup, screenshot, prototype, or source-only inspection as proof of
+  implemented behavior, unseen states, persistence, or provider effects;
 - reports required evidence as passed when it is absent.
 
 ## Dimensions
@@ -27,7 +29,8 @@ The response fails regardless of weighted score if it:
 - `4`: Behavior time, authority, evidence, assumptions, and conflicts stay on
   separate axes and link to exact sources. Approved unimplemented targets are
   labeled `TARGET + DECIDED + NOT_RUN`; source inspection is not mislabeled as
-  behavior evidence, and decided normative force is preserved.
+  behavior evidence, design inspection mode and scope are honest, and decided
+  normative force is preserved.
 - `3`: Truth status is reliable with only minor source-link or labeling gaps.
 - `2`: Several claims are weakly sourced or current/target status is sometimes
   ambiguous, but no clear fabrication is present.
@@ -83,8 +86,10 @@ If no diagram is justified and the response correctly omits one, rate 4.
 
 - `4`: Questions are necessary and bounded; artifacts keep clear authority;
   rules and outputs trace through journeys, components/integrations, design,
-  acceptance, and work; open decisions are consolidated with owners, next
-  actions, and readiness effects.
+  acceptance, and work. Supplied mockups use stable design IDs and exact
+  frame/state references at the behaviors they constrain, not only in a
+  manifest. Open decisions are consolidated with owners, next actions, and
+  readiness effects.
 - `3`: Ownership and traceability are useful with minor gaps.
 - `2`: Some duplication or weak links remain.
 - `1`: Many unnecessary questions, duplicated authority, or poor traceability.

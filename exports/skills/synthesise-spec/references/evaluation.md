@@ -105,6 +105,11 @@ Apply only checks that do not require semantic judgment:
 - standard and cross-boundary ready output contains Source Ledger, Artifact
   Manifest, Component Responsibilities, and Integrations when material;
 - every source row keeps behavior time, authority, and evidence separate;
+- when a case supplies a material mockup, the output defines a stable design
+  ID and exact view reference, records source inspection separately from
+  behavior evidence, and reuses the ID in the relevant journey, design,
+  acceptance, and traceability mappings;
+- no case infers unshown mockup states or calls source markup visual inspection;
 - `READY_FOR_IMPLEMENTATION` contains no material open decision marked as
   blocking implementation;
 - no unresolved `{{PLACEHOLDER}}`, template guidance, or private chain-of-thought;
@@ -146,6 +151,7 @@ score compensate for fabricated facts or missing failure semantics.
 | proportionality | avoid over-documenting small work | small task and no-integration | artifact decisions and output length |
 | invariant | reject durable promises without enforcement | integration timeout and permanent uniqueness | invariant map and readiness judgment |
 | integration | cover triggers, state, failure, and recovery | complete integration | contract table and semantic judgment |
+| mockup traceability | inspect supplied visual scope without treating it as implementation proof | design-heavy feature with missing and conflicting states | manifest, design coverage, journey/acceptance references, mismatch ownership |
 | readability | serve product and technical readers | representative ready cases | outcome judge and human review |
 
 Run more than one repetition for stochastic models before making a stability

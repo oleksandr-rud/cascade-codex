@@ -231,6 +231,32 @@ question.
 Do not claim a Mermaid block renders merely because it was generated. If no
 renderer or syntax check ran, label render evidence `NOT_RUN`.
 
+## Connect Mockups Without Overclaiming
+
+When mockups, screenshots, prototypes, or rendered UI states are supplied or
+material, read `mockup-guide.md`.
+
+- Register each material artifact once with a stable design ID, owner/version,
+  behavior time, authority, source-inspection mode, behavior evidence, selected
+  scope, and exact reference.
+- Inspect the relevant rendered frames, states, and viewports when accessible.
+  Source markup, filenames, or a second-hand description are not visual
+  inspection.
+- Keep source inspection separate from behavior evidence. A viewed target
+  mockup shows what the artifact depicts; it does not prove implementation,
+  interaction, persistence, or provider behavior.
+- Reuse the design ID beside the expected output, journey step, visible
+  component/integration state, Experience And Design row, acceptance check,
+  and traceability row it constrains. Do not repeat raw paths everywhere.
+- Map every visible action to its exact trigger, operation, guard, completion,
+  denial, and recovery. Mark product/design/API mismatches `CONFLICTING` and
+  give them an owner and readiness effect.
+- Record unshown states as `NOT_SHOWN`; do not infer responsive, accessibility,
+  loading, empty, degraded, error, recovery, or success behavior from a single
+  frame.
+- Do not generate or modify mockups unless the user requested design creation
+  or editing. A preview is optional; the exact source reference is required.
+
 ## Make Acceptance Observable
 
 Trace each product rule or expected output to a journey, component/integration,

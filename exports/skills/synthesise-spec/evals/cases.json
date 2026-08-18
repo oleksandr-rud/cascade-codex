@@ -166,6 +166,32 @@
           "claim that validation passed"
         ]
       }
+    },
+    {
+      "id": "mockup-reference-and-control-conflict",
+      "purpose": "Prove supplied mockups are inspected and traced as source artifacts without becoming implementation proof or silently overriding product and API authority.",
+      "fixture": "evals/fixtures/mockup-traceability.md",
+      "expected": {
+        "readiness": "READY_FOR_REVIEW",
+        "question_min": 0,
+        "question_max": 1,
+        "required": [
+          "stable DES-410 artifact and DES-410:V01/V02 view references with exact file, version, frames, and viewports",
+          "source inspection mode and scope separated from NOT_RUN behavior evidence",
+          "design IDs reused in the relevant journey, Experience And Design, acceptance, and traceability mappings",
+          "approved ready view separated from the proposed conflicting offline view",
+          "Start offline mapped to no legal operation and replaced through an owned design decision with Reconnect to start",
+          "unprovided states and viewports labeled NOT_SHOWN rather than inferred",
+          "API-210 start receipt, stable errors, idempotency, and unknown-outcome reconciliation preserved"
+        ],
+        "forbidden": [
+          "READY_FOR_IMPLEMENTATION",
+          "mockup treated as implementation or persistence proof",
+          "visual inspection claimed without opening the SVG",
+          "design references present only in the artifact manifest",
+          "invented loading, failure, success, or responsive states"
+        ]
+      }
     }
   ]
 }
