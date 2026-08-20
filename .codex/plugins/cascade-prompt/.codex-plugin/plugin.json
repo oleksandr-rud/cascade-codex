@@ -1,6 +1,6 @@
 {
   "name": "cascade-prompt",
-  "version": "0.6.0+codex.20260817150609",
+  "version": "0.6.0+codex.20260820015508",
   "description": "Create reliable, source-aware prompts with focused clarification, model-tier guidance, and bounded validation design.",
   "author": {
     "name": "Cascade"
@@ -19,7 +19,7 @@
   "interface": {
     "displayName": "Cascade Prompt",
     "shortDescription": "Build reliable AI prompts",
-    "longDescription": "Cascade Prompt turns rough tasks into reliable, copy-ready prompts. It clarifies only material decisions, plans source-aware context, selects a provider-neutral capability tier, and produces bounded validation cases. Controlled execution is never implied; when Cascade Simulations is separately installed, users may hand off an evaluation plan for measured runs.",
+    "longDescription": "Cascade Prompt turns rough tasks into reliable, copy-ready prompts. It clarifies only material decisions, plans source-aware context, selects a provider-neutral capability tier, and produces bounded validation cases. Controlled execution is never implied; when Cascade Evals is separately installed, users may hand off an evaluation plan for measured prompt runs.",
     "developerName": "Cascade",
     "category": "Productivity",
     "capabilities": [

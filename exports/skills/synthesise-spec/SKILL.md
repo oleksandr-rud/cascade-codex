@@ -393,7 +393,7 @@ The package is self-contained. If available:
 
 - use `cascade-prompt:prompt` to refine `references/synthesis-prompt.md` while
   preserving this skill's readiness, ownership, and output contracts;
-- use `cascade-simulations:prompt-evaluation` to run the cases in `evals/`
+- use `cascade-evals:prompt-evaluation` to run the cases in `evals/`
   through its own controlled execution and judging boundary.
 
 Do not copy those skills into this package. Do not claim prompt effectiveness

@@ -34,7 +34,7 @@ project:
 models:
   default: "gpt-5.6-sol"
   planning: "gpt-5.6-sol"
-  judged_evaluation: "gpt-5.6-sol"
+  judged_evaluation: "gpt-5.6-terra"
   subagent_execution: "gpt-5.6-terra"
   read_heavy: "gpt-5.6-terra"
 
@@ -192,7 +192,7 @@ validation_commands:
     - "bun run test:browser"
 
 routing:
-  model_policy: "Use gpt-5.6-sol for planning, synthesis, security reasoning, and independent judged evaluation; use gpt-5.6-terra for read-heavy scans and target execution probes."
+  model_policy: "Use gpt-5.6-sol for planning, synthesis, and security reasoning; use gpt-5.6-terra for read-heavy scans, target execution probes, prompt evaluation, and independent judged evaluation."
   admission: "Compile every request through the task-admission microkernel; the Task Envelope selects proportional controls without granting authority or dispatching work."
   non_atomic_fallback_path:
     - "context"

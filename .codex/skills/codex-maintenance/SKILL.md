@@ -17,6 +17,11 @@ preserving Cascade's local role contracts, templates, rules, invariants,
 checklists, and validation gates. It does not patch product/runtime code unless
 the user explicitly redirects the work through `implement-change`.
 
+This repo-local skill is the self-maintenance authority for Cascade source.
+Use the separately installed `cascade-harness-maintainer:maintain-harness`
+skill as the reusable public entry for another target repository. Keep target
+adaptation in that plugin and Cascade-specific source ownership here.
+
 Use the separately installed `cascade-simulations:simulate` plugin skill for
 one bounded actor working through an interface toward an observable outcome.
 Use `simulation-campaigns` only for authoring, selecting, coordinating,

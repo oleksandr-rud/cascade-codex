@@ -8,6 +8,12 @@ description: Use for provider-neutral Cascade or target-project agent/LLM system
 Use when designing, auditing, adapting, or explaining Cascade itself or
 target-project agent/LLM systems.
 
+This repo-local skill owns Cascade's internal best-practice audit and source
+mapping. Use the separately installed
+`cascade-agent-architect:architect-ai-system` skill when the requested output
+is a distributable, versioned agent architecture packet. Do not duplicate its
+capability, topology, role, skill, workflow, or prompt-brief contracts here.
+
 ## Source Order
 
 1. Latest user objective, constraints, autonomy expectations, and risk.

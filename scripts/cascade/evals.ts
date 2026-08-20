@@ -38,6 +38,7 @@ const JUDGE_PROFILES = resolve(EVAL_ROOT, "judge-profiles.json");
 const ARTIFACT_ROOT = rootPath(".artifacts/harness-evals");
 const PLANNING_MODEL = "gpt-5.6-sol";
 const EXECUTION_MODEL = "gpt-5.6-terra";
+const JUDGE_MODEL = "gpt-5.6-terra";
 const STATUS_VALUES = new Set(["PASS", "FAIL", "BLOCKED", "GAP", "NOT_RUN"]);
 const KIND_SUFFIX: Record<string, string> = {
   "implicit-trigger": "implicit",
@@ -1017,9 +1018,11 @@ async function runtimeAudit(findings: JsonObject[]): Promise<JsonObject> {
   const models = await runCommand(["codex", "debug", "models"], { timeoutMs: 45_000 });
   try {
     const slugs = new Set(JSON.parse(models.stdout).models.map((item: JsonObject) => item.slug));
-    const missing = [PLANNING_MODEL, EXECUTION_MODEL].filter((item) => !slugs.has(item));
+    const missing = [...new Set([PLANNING_MODEL, EXECUTION_MODEL, JUDGE_MODEL])].filter(
+      (item) => !slugs.has(item),
+    );
     runtime.available_model_count = slugs.size;
-    runtime.required_models = [PLANNING_MODEL, EXECUTION_MODEL].sort();
+    runtime.required_models = [...new Set([PLANNING_MODEL, EXECUTION_MODEL, JUDGE_MODEL])].sort();
     runtime.missing_required_models = missing;
     if (missing.length) {
       findings.push({
@@ -1345,7 +1348,7 @@ async function commandJudge(args: ReturnType<typeof parseArgs>): Promise<number>
       await mkdir(outputRoot, { recursive: true });
       const prompt = judgePrompt(runRoot, caseName, scenario, profile, definition);
       await writeFile(resolve(outputRoot, "prompt.txt"), prompt, "utf8");
-      const model = flag(args, "model") ?? (profile.model_profile === "planning" ? PLANNING_MODEL : EXECUTION_MODEL);
+      const model = flag(args, "model") ?? JUDGE_MODEL;
       const effort = flag(args, "reasoning-effort") ?? profile.reasoning_effort;
       const command = codexCommand(model, effort, prompt, JUDGE_SCHEMA);
       await writeJson(resolve(outputRoot, "command.json"), {

@@ -7,8 +7,12 @@ description: Use when Cascade skills, routes, agents, outputs, or execution trac
 
 Use this skill to evaluate Cascade itself. It creates scenario coverage,
 executes target agents in read-only mode, normalizes their JSONL traces, checks
-mechanical eligibility, and runs independent judged evaluations through the
-`harness-evaluator` role.
+Cascade-specific mechanical eligibility, and runs independent judged
+evaluations through the `harness-evaluator` role. The installed
+`cascade-evals:harness-evaluation` skill owns the generic evaluation lifecycle,
+judge-response validation, score recomputation, conservative aggregation, and
+receipt semantics; this repository owns its scenarios, assertions, runner,
+roles, and release policy.
 
 It does not repair a failing skill, edit runtime/product code, or treat a model
 judge as proof of a mechanical invariant.
@@ -98,25 +102,30 @@ not grant authority, execute an evaluator, or prove a pass.
    custom agents, unwired skills, stale catalogs, or invalid schemas are
    harness findings even when a model answer looks correct.
 5. Execute target cases read-only and serially by default. Use
-   `gpt-5.6-terra` for read-heavy target probes and `gpt-5.6-sol` for planning,
-   synthesis, and semantic judgment. Keep timeout bounded and capture
-   structured output plus the JSONL trace.
+   `gpt-5.6-terra` for read-heavy target probes and semantic judgment and
+   `gpt-5.6-sol` only for planning or synthesis probes. Keep target and judge
+   contexts independent, keep timeout bounded, and capture structured output
+   plus the JSONL trace.
 6. Keep expected answers out of target prompts. Target agents may not read
    eval source files or prior run artifacts.
 7. Normalize tool calls, skill and role loads, final output, usage, errors,
    mutation attempts, and completion state.
 8. Apply binary mechanical eligibility before semantic evaluation. Eligibility
    has no quality score and cannot establish effectiveness.
-9. For every eligible case, run the required outcome and trajectory profiles
+9. For every eligible case, bind the repository-specific profiles to
+   `cascade-evals:harness-evaluation`, then run the required outcome and
+   trajectory profiles
    independently. Neither judge may read eligibility, legacy grades, run
    summaries, or the other judge's result.
 10. Let the runner validate judge identity and ratings, recompute weighted
     scores, and require every configured judge for accepted coverage.
 11. Re-run suspected flaky cases before classifying a regression.
-12. Route judge-contract creation or calibration to `judge-eval-builder` and
+12. Route Cascade-specific rubric and calibration content to
+    `judge-eval-builder`; generic judge contracts remain with
+    `cascade-evals:build-judge`. Route
     confirmed harness fixes through `codex-maintenance`,
     `develop-skill`, `plan-change`, and `implement-change` as appropriate.
-12. When a campaign supplied the scenario, return the exact campaign ID, run
+13. When a campaign supplied the scenario, return the exact campaign ID, run
     ID, scenario identity, trace digest, verdict, and evidence location without
     reducing unrelated campaign claims.
 

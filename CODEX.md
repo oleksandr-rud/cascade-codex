@@ -18,9 +18,10 @@ If docs and code disagree, follow current code and report the drift.
 ## Model Routing
 
 - Pin `gpt-5.6-sol` for the default runtime, orchestration, planning,
-  synthesis, security reasoning, and independent harness judgment.
+  synthesis, and security reasoning.
 - Pin `gpt-5.6-terra` for bounded read-heavy scans, onboarding inventory,
-  design evidence review, and target-agent execution probes.
+  design evidence review, target-agent execution probes, prompt evaluation,
+  and independent semantic judgment.
 - Keep model choices in `.codex/config.toml`, custom-agent TOML files, and the
   adapter config. Do not inherit an unrecorded user-level model for replayable
   harness experiments.

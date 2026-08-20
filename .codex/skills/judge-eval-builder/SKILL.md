@@ -1,13 +1,17 @@
 ---
 name: judge-eval-builder
-description: Use when creating, revising, versioning, or calibrating semantic judge profiles, anchored rubrics, judge response schemas, labeled calibration cases, aggregation rules, or adversarial judge tests for agent and harness evaluations.
+description: Use when creating or revising Cascade-specific semantic dimensions, anchored rubrics, labeled calibration cases, or adversarial judge tests and binding them to the installed Cascade Evals judge contract. Keep generic judge schemas, response validation, calibration receipts, and aggregation with Cascade Evals.
 ---
 
 # Judge Eval Builder
 
-Build the measurement contract used by judged evaluations. This skill owns
-judge definitions; it does not run target scenarios, judge completed traces,
-repair a failing skill, or claim calibration without human-labeled evidence.
+Build Cascade's subject-specific measurement pack. This skill owns the
+repository's decision, represented population, semantic dimensions, anchored
+rubric content, and labeled/adversarial cases. The installed
+`cascade-evals:build-judge` skill owns the generic judge profile and response
+contracts, validation, calibration receipt, and aggregation rules. This skill
+does not run target scenarios, judge completed traces, repair a failing skill,
+or claim calibration without human-labeled evidence.
 
 ## Source Order
 
@@ -17,8 +21,10 @@ repair a failing skill, or claim calibration without human-labeled evidence.
 3. Representative target prompts, traces, outputs, failure reports, and
    protected mechanical contracts.
 4. Owning skills, agents, `AGENTS.md`, `CODEX.md`, and model policy.
-5. `references/judged-eval-contract.md` and `checklists/judge-quality.md`.
-6. Runner aggregation and validator code.
+5. Installed `cascade-evals:build-judge`, resolved by exact namespaced skill
+   identity without cache fallback.
+6. `references/judged-eval-contract.md` and `checklists/judge-quality.md`.
+7. Runner integration and validator code.
 
 ## Workflow
 
@@ -29,22 +35,27 @@ repair a failing skill, or claim calibration without human-labeled evidence.
    gates, not quality points.
 3. Split judges when one view could hide another. Cascade requires independent
    outcome and trajectory judges for accepted harness coverage.
-4. Define a narrow profile with one versioned rubric. Give every dimension a
+4. Resolve `cascade-evals:build-judge`. Return `BLOCKED` when that required
+   plugin or skill is absent, disabled, malformed, or unreadable; do not copy
+   its contracts locally.
+5. Define a narrow subject pack with one versioned rubric. Give every dimension a
    unique ID, observable description, integer 0–4 scale, weight, and shared
    anchor meanings.
-5. Specify thresholds and minimum-dimension floors before observing candidate
+6. Specify thresholds and minimum-dimension floors before observing candidate
    results. The harness, not the model, computes the weighted score.
-6. Design blind prompts. A judge must not see eligibility verdicts, legacy
+7. Bind the subject pack to Cascade Evals' generic profile and response schema;
+   do not create a competing generic schema or reducer.
+8. Design blind prompts. A judge must not see eligibility verdicts, legacy
    scores, another judge's response, or acceptance outcome.
-7. Create positive, borderline, negative, contradictory, missing-evidence,
+9. Create positive, borderline, negative, contradictory, missing-evidence,
    and prompt-injection calibration cases. Keep human labels and model results
    separate.
-8. Measure validity by agreement, false-pass rate, false-fail rate,
+10. Measure validity by agreement, false-pass rate, false-fail rate,
    discrimination, stability across repeated judgments, and cost/latency—not
    by agreement with an old grader.
-9. Version any material rubric, profile, threshold, prompt, or schema change.
+11. Version any material rubric, profile, threshold, prompt, or schema change.
    Never silently reinterpret old evidence under a new contract.
-10. Run the structural validator and judged-eval self-tests, then route live
+12. Run the structural validator and judged-eval self-tests, then route live
     execution to `harness-evaluation`.
 
 ## Guardrails
@@ -63,7 +74,8 @@ repair a failing skill, or claim calibration without human-labeled evidence.
 - evaluation decision and represented population;
 - versioned judge profile and rubric;
 - anchored dimensions, weights, threshold, and minimum floor;
-- response schema and harness-owned aggregation rule;
+- Cascade Evals dependency identity plus the bound generic response and
+  aggregation contract;
 - blind evidence packet and leakage exclusions;
 - calibration and adversarial case matrix;
 - measured agreement/error/stability/cost metrics or explicit `NOT_RUN`;

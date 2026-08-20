@@ -10,6 +10,12 @@ execution receipt. It independently validates evidence and recommends claim
 support without executing the target, changing artifacts, repairing defects,
 or deciding a broader release from incomplete scope.
 
+This repository owns its campaign claims, policy/oracle gates, specialized
+harness receipt, refinement candidates, and release aggregation. The installed
+`cascade-evals:simulation-evaluation` skill owns generic evaluation states,
+judge contracts, response validation, deterministic recomputation, and
+evaluation receipts.
+
 ## Source Order
 
 1. Exact campaign ID, run ID, requested claim scope, frozen READY simulation
@@ -24,6 +30,8 @@ or deciding a broader release from incomplete scope.
    `harness-evaluation`/`harness-evaluator` receipt and trace packet.
 6. Prior independent evaluations only for comparison, never as replacement
    evidence for the selected run.
+7. Installed `cascade-evals:simulation-evaluation`, resolved by exact
+   namespaced identity without cache fallback.
 
 If the run package, required evidence body, source identity, cleanup result, or
 applicable definition is absent or mutable, return `BLOCKED` or `INVALID`.
@@ -58,6 +66,8 @@ implementation defects after evaluation to `codex-maintenance` or
      identity.
    - Bind the tracked evaluation profile, provider, model, reasoning effort,
      timeout, and output/receipt schema versions.
+   - Resolve and bind `cascade-evals:simulation-evaluation`; return `BLOCKED`
+     rather than recreating its generic contracts when unavailable.
 2. Validate the packet.
    - Verify required files, digests, source lineage, platform and environment
      identity, execution receipt, cleanup result, and immutability.
@@ -74,7 +84,7 @@ implementation defects after evaluation to `codex-maintenance` or
      agent-response trace claims.
    - Use a declared semantic rubric only for claims that require human-like
      interpretation.
-5. Judge independently.
+5. Judge independently through the bound Cascade Evals contract.
    - Keep golden expectations and evaluator rationale out of target prompts.
    - Use separate judge contexts or profiles when independence is required.
    - Preserve each raw judgment and use the configured conservative reduction.

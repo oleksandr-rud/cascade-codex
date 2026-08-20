@@ -5,7 +5,7 @@
       "id": "outcome-v1",
       "judge_type": "outcome",
       "rubric": "harness-evals/rubrics/outcome-v1.json",
-      "model_profile": "planning",
+      "model_profile": "judge",
       "reasoning_effort": "high",
       "required_for_acceptance": true
     },
@@ -13,7 +13,7 @@
       "id": "trajectory-v1",
       "judge_type": "trajectory",
       "rubric": "harness-evals/rubrics/trajectory-v1.json",
-      "model_profile": "planning",
+      "model_profile": "judge",
       "reasoning_effort": "high",
       "required_for_acceptance": true
     }

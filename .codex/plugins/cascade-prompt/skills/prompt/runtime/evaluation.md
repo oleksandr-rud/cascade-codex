@@ -37,10 +37,12 @@ Unavailable models and unrun phases remain `NOT_RUN`. Human calibration is
 distinct from synthetic judge-contract fixtures.
 
 This pack defines how Cascade Prompt should design an evaluation, not how it
-executes one. If `cascade-simulations:prompt-evaluation` is separately
-installed, offer the resolved prompt/task contract and subject identity as an
-optional handoff for controlled runs, adapters, timeout enforcement, repeated
-comparison, independent judges, calibration, and frozen receipts. If it is not
-installed, return the evaluation design and cases with execution marked
-`NOT_RUN`; do not recreate campaign assets or execution state inside Cascade
-Prompt. Do not score an unexpected interview response as a one-shot prompt.
+executes one. If `cascade-evals:prompt-evaluation` is separately installed,
+offer the resolved prompt/task contract and subject identity as an optional
+handoff for controlled runs, adapters, timeout enforcement, repeated
+comparison, independent judges, calibration, and frozen receipts. Cascade
+Evals may use Cascade Simulations for bounded dynamic execution. If Cascade
+Evals is not installed, return the evaluation design and cases with execution
+marked `NOT_RUN`; do not recreate campaign assets or execution state inside
+Cascade Prompt. Do not score an unexpected interview response as a one-shot
+prompt.

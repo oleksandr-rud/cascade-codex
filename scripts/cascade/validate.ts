@@ -839,7 +839,7 @@ async function validateConfigToml(
   const evals = config.harness_evals ?? {};
   if (evals.planning_model !== "gpt-5.6-sol") errors.push("planning model mismatch");
   if (evals.execution_model !== "gpt-5.6-terra") errors.push("execution model mismatch");
-  if (evals.judge_model !== "gpt-5.6-sol") errors.push("judge model mismatch");
+  if (evals.judge_model !== "gpt-5.6-terra") errors.push("judge model mismatch");
   if (evals.runner !== "scripts/cascade/evals.ts") {
     errors.push("harness eval runner must point to scripts/cascade/evals.ts");
   }

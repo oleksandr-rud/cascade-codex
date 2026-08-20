@@ -29,7 +29,7 @@ project:
 models:
   default: "gpt-5.6-sol"
   planning: "gpt-5.6-sol"
-  judged_evaluation: "gpt-5.6-sol"
+  judged_evaluation: "gpt-5.6-terra"
   subagent_execution: "gpt-5.6-terra"
   read_heavy: "gpt-5.6-terra"
 

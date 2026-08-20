@@ -35,8 +35,8 @@ Load only the smallest conditional material:
   current research, provenance, or multi-candidate comparison.
 - `runtime/evaluation.md` for audit, comparison, or effectiveness claims.
   This skill designs evaluation cases but owns no campaign runtime or state.
-  When `cascade-simulations:prompt-evaluation` is separately installed, offer
-  it as an optional execution handoff; otherwise label execution `NOT_RUN`.
+  When `cascade-evals:prompt-evaluation` is separately installed, offer it as
+  an optional evaluation handoff; otherwise label execution `NOT_RUN`.
 
 Do not load every runtime pack. A normal request should need zero to two
 conditional files.

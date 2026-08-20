@@ -77,8 +77,8 @@ running a live model or configured target commands.
 
 The default `execution` profile pins read-heavy target probes to
 `gpt-5.6-terra`. Use `--model-profile planning` to pin planning or synthesis
-target probes to `gpt-5.6-sol`; judge profiles separately pin their model and
-reasoning effort. `--model` remains an explicit
+target probes to `gpt-5.6-sol`; judge profiles independently pin
+`gpt-5.6-terra` and high reasoning effort. `--model` remains an explicit
 diagnostic override and is recorded as the `custom` profile.
 
 The environment variable `CASCADE_EVAL_CODEX_MODEL` can provide an explicit

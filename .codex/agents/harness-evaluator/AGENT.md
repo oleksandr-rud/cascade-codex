@@ -11,9 +11,10 @@ Use this role after a target-agent scenario has run. It judges the harness; it
 does not execute the target task, repair the harness, or invent missing trace
 evidence.
 
-The custom-agent manifest pins this role to `gpt-5.6-sol` at high reasoning
-effort. Read-heavy target probes run separately on `gpt-5.6-terra`; the judge
-never inherits the target's model profile implicitly.
+The custom-agent manifest pins this role to `gpt-5.6-terra` at high reasoning
+effort. Target probes and judges keep separate identities and contexts even
+when both use Terra; the judge never inherits the target's context or profile
+implicitly.
 
 ## Responsibilities
 

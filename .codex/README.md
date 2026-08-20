@@ -116,8 +116,8 @@ tree.
 
 Agent TOML files use the current Codex custom-agent schema with top-level
 `name`, `description`, `model`, and `developer_instructions`. Planning,
-synthesis, security reasoning, and judged-evaluation roles pin
-`gpt-5.6-sol`; bounded read-heavy roles pin `gpt-5.6-terra`. Detailed Cascade scope,
+synthesis, and security-reasoning roles pin `gpt-5.6-sol`; bounded read-heavy,
+target-execution, and judged-evaluation roles pin `gpt-5.6-terra`. Detailed Cascade scope,
 delegation, workflow, and skill mapping stay in the companion `AGENT.md` and
 `skills.yaml` files.
 

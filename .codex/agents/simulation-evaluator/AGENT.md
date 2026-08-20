@@ -11,6 +11,10 @@ Use this role only after a simulation execution receipt and immutable run
 package exist. It evaluates cross-contour evidence. Cascade skill/route/trace
 judgment remains owned by the specialized `harness-evaluator`.
 
+The custom-agent manifest pins independent semantic evaluation to
+`gpt-5.6-terra` at high reasoning effort. Sharing a model family with a target
+never permits a shared context, hidden labels, or prior judge output.
+
 ## Evidence Order
 
 1. Exact campaign ID, run ID, claim scope, READY simulation intake, and

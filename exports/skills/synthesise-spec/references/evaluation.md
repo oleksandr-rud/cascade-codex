@@ -9,8 +9,9 @@ check does not prove that a model will produce a useful specification.
   semantic rubric.
 - `cascade-prompt:prompt`, when installed, owns prompt composition and
   refinement.
-- `cascade-simulations:prompt-evaluation`, when installed, owns controlled
-  model execution, adapters, traces, judges, calibration, and evidence.
+- `cascade-evals:prompt-evaluation`, when installed, owns controlled prompt
+  evaluation, judge contracts, calibration, aggregation, and evidence. It may
+  delegate bounded model execution and frozen traces to Cascade Simulations.
 - The package must not copy either external skill or claim their execution
   results without an actual run receipt.
 
@@ -46,7 +47,7 @@ and evidence status are unambiguous before running a model.
 ### Level 3 — Controlled Prompt Evaluation
 
 Import the cases into the task catalog owned by
-`cascade-simulations:prompt-evaluation` or another evaluator with the same
+`cascade-evals:prompt-evaluation` or another evaluator with the same
 separation of subject, target, evidence, and judges.
 
 For each case, freeze:

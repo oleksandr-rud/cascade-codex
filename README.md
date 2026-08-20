@@ -25,10 +25,10 @@ runs remain the dominant latency in live evaluations.
 - Runtime bridge: `CODEX.md`
 - Adapter template: `harness.config.example.yaml`
 - Local role contracts: 9
-- Registered skills: 44
+- Registered skills: 45
 - Canonical skill and role source: `.codex/skills/` and `.codex/agents/`
-- Planning and judge model: `gpt-5.6-sol`
-- Read-heavy execution model: `gpt-5.6-terra`
+- Planning model: `gpt-5.6-sol`
+- Read-heavy execution and judge model: `gpt-5.6-terra`
 - Tooling runtime: Bun `1.3.3`
 - Validator: `bun scripts/cascade.ts validate`
 
@@ -150,9 +150,9 @@ clear boundary:
 | `business-analyst` | `gpt-5.6-sol` | Long market validation, competitor/pain/economics lanes, evidence grading, and synthesis into specs. |
 | `security` | `gpt-5.6-sol` | Security-sensitive review, auth/session/RBAC and tenant-boundary analysis, secure-design review, audit evidence, and security validation planning. |
 | `designer` | `gpt-5.6-terra` | Read-heavy UX flow review, accessibility review, visual validation, design-system routing, and design handoff planning. |
-| `harness-evaluator` | `gpt-5.6-sol` | Read-only outcome or trajectory judgment of eligible Cascade scenario outputs and traces after deterministic hard gates. |
+| `harness-evaluator` | `gpt-5.6-terra` | Read-only outcome or trajectory judgment of eligible Cascade scenario outputs and traces after deterministic hard gates. |
 | `simulation-operator` | `gpt-5.6-terra` | Bounded mutable execution of one approved command, terminal, browser, desktop, mobile, or agent-response campaign with evidence freezing and cleanup. |
-| `simulation-evaluator` | `gpt-5.6-sol` | Independent read-only evaluation of frozen cross-contour evidence, policies, oracles, semantic claims, and claim support. |
+| `simulation-evaluator` | `gpt-5.6-terra` | Independent read-only evaluation of frozen cross-contour evidence, policies, oracles, semantic claims, and claim support. |
 
 Agent Engineer is not limited to Cascade internals. Use it for target-project
 agent and LLM systems too: framework-backed agent runtimes, project-owned

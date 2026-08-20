@@ -53,7 +53,7 @@ backlog = "docs/backlog"
 [harness_evals]
 planning_model = "gpt-5.6-sol"
 execution_model = "gpt-5.6-terra"
-judge_model = "gpt-5.6-sol"
+judge_model = "gpt-5.6-terra"
 default_model_profile = "execution"
 cases = "harness-evals/skill-cases.json"
 interactions = "harness-evals/interactions.json"

@@ -1,7 +1,7 @@
 {
   "agent_count": 9,
   "agent_scenario_count": 9,
-  "catalog_digest": "61efa70833a482aef32fee07964f88ad86df94a1620967f605f3fb8556450e91",
+  "catalog_digest": "106d6ec3c3762621d37c5f343fec61c5f08d3d569a4ec432386d0413880a8e6f",
   "generated_by": "scripts/cascade/evals.ts",
   "scenario_count": 386,
   "scenarios": [
@@ -10694,7 +10694,7 @@
         },
         {
           "path": "CODEX.md",
-          "sha256": "d2acef28258e18ba2ab696c51ca1f5fdfe298b7c08f49753c3e3af4c2ea371d3"
+          "sha256": "31a14ceb7e5f0928590a5f588808a64e7cb123385d6166d8a05c71dc02a8cf32"
         }
       ],
       "execution": {
@@ -10863,15 +10863,15 @@
       "context_bindings": [
         {
           "path": ".codex/agents/harness-evaluator/AGENT.md",
-          "sha256": "fe883b61b91787f541e2be59348bf558a915e267df6b7d96f837d8e5b6a0144c"
+          "sha256": "809493a96798e602fd5d894f1ab282bc61c012921df2fa3c8317f9732366b506"
         },
         {
           "path": ".codex/skills/harness-evaluation/SKILL.md",
-          "sha256": "84c56fd884c033ea3a28ec24adf579d4864b1f217d5aff8ab40511b388ac9972"
+          "sha256": "3789d0b8e05d52a1a04aad6787a936be7324960a0ca3e502e709a211c2330b46"
         }
       ],
       "execution": {
-        "model": "gpt-5.6-sol",
+        "model": "gpt-5.6-terra",
         "reasoning_effort": "high",
         "sandbox_mode": "read-only"
       },
@@ -10978,7 +10978,7 @@
         },
         {
           "path": "CODEX.md",
-          "sha256": "d2acef28258e18ba2ab696c51ca1f5fdfe298b7c08f49753c3e3af4c2ea371d3"
+          "sha256": "31a14ceb7e5f0928590a5f588808a64e7cb123385d6166d8a05c71dc02a8cf32"
         },
         {
           "path": "docs/product/requirements.md",
@@ -10986,7 +10986,7 @@
         },
         {
           "path": "harness.config.yaml",
-          "sha256": "3c2236497eeafdc8e9f4d4506d2fbb5f36ba7473cfff200869efad7060915408"
+          "sha256": "7d73817664bc771099a69d1060eabda6b84de7231b613e4fdc6fee3b31ce7177"
         }
       ],
       "execution": {
@@ -11098,11 +11098,11 @@
       "context_bindings": [
         {
           "path": ".codex/agents/simulation-evaluator/AGENT.md",
-          "sha256": "ae6396cca0b24f53b7c8344aeb5659df74399619520f086748131170ec88b1ba"
+          "sha256": "1de728ff9f5ae5e0f426d95fc3026171f2a27dee5a0265ce395492024fb20b29"
         },
         {
           "path": ".codex/skills/simulation-evaluation/SKILL.md",
-          "sha256": "7335a4ac7f2af876eaf87fc4d5d3933ff61796e7e71d5360b40efd9b86c340b4"
+          "sha256": "6de17a37f43fa23832b58de9a7b8b303420207b4b6a67d868351414c82489ac6"
         },
         {
           "path": "product-evals/campaigns/simulation-contract-smoke.json",
@@ -11110,7 +11110,7 @@
         }
       ],
       "execution": {
-        "model": "gpt-5.6-sol",
+        "model": "gpt-5.6-terra",
         "reasoning_effort": "high",
         "sandbox_mode": "read-only"
       },
