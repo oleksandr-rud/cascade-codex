@@ -1,0 +1,38 @@
+agent:
+  budgets:
+    max_output_bytes: 16384
+    max_tokens: 2048
+    max_tool_calls: 0
+  evaluation_profile: response-contract-v1
+  input_file: product-evals/tasks/agent-response/fixture-input.yaml
+  output_schema_file: product-evals/tasks/agent-response/fixture-output.schema.json
+  permissions:
+    filesystem: read-only
+    network: deny
+    tools: []
+  prompt_file: product-evals/tasks/agent-response/fixture-prompt.md
+  runtime:
+    model: gpt-5.6-terra
+    provider: codex
+    reasoning_effort: medium
+  source_blind: true
+  target:
+    instruction_file: product-evals/tasks/agent-response/fixture-instructions.md
+    mode: explicit-instructions
+driver:
+  adapter: builtin-agent-codex
+  type: agent-runtime
+id: AGENT-STANDALONE-CODEX-CANARY
+inputs:
+  - product-evals/tasks/agent-response/fixture-instructions.md
+  - product-evals/tasks/agent-response/fixture-prompt.md
+  - product-evals/tasks/agent-response/fixture-input.yaml
+  - product-evals/tasks/agent-response/fixture-output.schema.json
+kind: agent-response
+oracle_ids:
+  - agent-response-contract-valid-v1
+policy_ids:
+  - allow-agent-standalone-codex-v1
+required: true
+schema_version: 5
+timeout_ms: 60000

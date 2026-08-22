@@ -1,0 +1,15 @@
+allowed_actions:
+  - assert
+  - set
+  - increment
+  - deny
+  - fail
+cleanup:
+  reset_to_fixture: true
+fixture_file: product-evals/simulations/harness/simulation-correctness-fixture/worlds/support-world.fixture.yaml
+id: support-world-v1
+negative_behaviors:
+  - unknown actions are denied by default
+  - state assertions fail on mismatched values
+  - non-numeric increments fail without mutation
+schema_version: 1

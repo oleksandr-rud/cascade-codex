@@ -28,7 +28,7 @@ without re-judging the Cascade trace.
 ## Source Order
 
 1. Latest evaluation request and selected run or scenario IDs.
-2. `harness-evals/skill-cases.json`, `harness-evals/interactions.json`,
+2. `harness-evals/skill-cases.yaml`, `harness-evals/interactions.yaml`,
    `harness-evals/scenarios.generated.json`, and
    `harness-evals/response.schema.json`, judge profiles, and rubrics.
 3. Raw run evidence under `.artifacts/harness-evals/<run-id>/`.

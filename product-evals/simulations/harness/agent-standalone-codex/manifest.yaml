@@ -1,0 +1,15 @@
+dataset_file: product-evals/simulations/harness/agent-standalone-codex/datasets/cases.yaml
+id: agent-standalone-codex
+metric_files:
+  - product-evals/metrics/agent-response-contract-rate-v1.yaml
+population_files:
+  - product-evals/simulations/harness/agent-standalone-codex/populations/actors.yaml
+purpose: Exercise one explicit-instruction Codex target through the W-007 provider-neutral agent contract.
+scenario_files:
+  - product-evals/simulations/harness/agent-standalone-codex/scenarios/standalone-response.yaml
+schema_version: 1
+simulation_scope: harness
+title: Standalone Codex agent canary
+treatment_files:
+  - product-evals/treatments/baseline-v1.yaml
+world_file: product-evals/simulations/harness/agent-standalone-codex/worlds/world.yaml

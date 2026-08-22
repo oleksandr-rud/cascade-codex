@@ -118,7 +118,7 @@ describe("product context catalog and briefs", () => {
     );
     const crossedRoot = structuredClone(source);
     (crossedRoot.simulation_context as Array<Record<string, unknown>>)[0]!.path =
-      "product-evals/simulations/product/example/manifest.json";
+      "product-evals/simulations/product/example/manifest.yaml";
     expect(() => validateBriefManifestShape(crossedRoot)).toThrow(
       "path must be under product-evals/simulations/harness/",
     );

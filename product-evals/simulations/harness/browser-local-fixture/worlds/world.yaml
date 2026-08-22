@@ -1,0 +1,11 @@
+allowed_actions:
+  - assert
+cleanup:
+  reset_to_fixture: true
+fixture_file: product-evals/simulations/harness/browser-local-fixture/worlds/world.fixture.yaml
+id: browser-local-world-v1
+negative_behaviors:
+  - external network is denied
+  - downloads and uploads are denied
+  - undeclared locators and actions are denied
+schema_version: 1

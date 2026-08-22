@@ -1,0 +1,13 @@
+actors:
+  - behavior:
+      strategy: observe only the authored expected-nonzero command
+    id: command-failure-actor
+    slices:
+      - command-failure
+    weight: 1
+id: command-failure-actors-v1
+schema_version: 1
+source:
+  description: Deterministic harness-only actor; it does not represent product users.
+  kind: synthetic
+  minimized: true

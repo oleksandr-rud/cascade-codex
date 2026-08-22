@@ -36,7 +36,7 @@ simulation_context:
     authority: implementation
     status: authored
     purpose: Exercises the intake schema, draft starter, and normalized action boundary without claiming product behavior.
-  - path: product-evals/simulations/harness/simulation-correctness-fixture/manifest.json
+  - path: product-evals/simulations/harness/simulation-correctness-fixture/manifest.yaml
     scope: harness-simulation
     authority: mechanics-only
     status: authored

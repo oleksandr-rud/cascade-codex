@@ -1,0 +1,25 @@
+assertion: One explicit-instruction Codex target runs ephemerally in an isolated read-only workspace and emits a schema-valid source-bound response with individually evidenced material claims.
+class: execution
+evidence_requirements:
+  - source-manifest
+  - execution-receipt
+  - task-result
+  - trajectory
+  - policy-decisions
+  - oracle
+  - cleanup
+id: agent-standalone-codex-execution
+population_authority: none
+required_metric_ids: []
+required_oracle_ids:
+  - agent-response-contract-valid-v1
+required_policy_ids:
+  - allow-agent-standalone-codex-v1
+requires_calibration: false
+schema_version: 1
+scope:
+  driver: agent-runtime
+  model: gpt-5.6-terra
+  runtime_provider: codex
+  target_mode: explicit-instructions
+  task_id: AGENT-STANDALONE-CODEX-CANARY

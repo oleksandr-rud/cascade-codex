@@ -1,0 +1,10 @@
+actor_ids:
+  - mobile-provider-actor
+claim_ids:
+  - mobile-platform-execution
+goal: Verify an exact snapshot-bound mobile provider before any action dispatch.
+id: mobile-ready-v1
+initial_state: {}
+schema_version: 1
+stop_conditions:
+  - provider preflight blocks or the required mobile completion oracle passes

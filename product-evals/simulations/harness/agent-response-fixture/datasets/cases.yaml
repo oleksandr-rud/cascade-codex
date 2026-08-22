@@ -1,0 +1,28 @@
+cases:
+  - actor_id: agent-response-fixture-actor
+    id: agent-response-fixture-development
+    partition: development
+    scenario_id: standalone-agent-response-v1
+    slices:
+      - agent-response-fixture
+  - actor_id: agent-response-fixture-actor
+    id: agent-response-fixture-regression
+    partition: regression
+    scenario_id: standalone-agent-response-v1
+    slices:
+      - agent-response-fixture
+  - actor_id: agent-response-fixture-actor
+    id: agent-response-fixture-holdout
+    partition: holdout
+    scenario_id: standalone-agent-response-v1
+    slices:
+      - agent-response-fixture
+  - actor_id: agent-response-fixture-actor
+    id: agent-response-fixture-calibration
+    partition: calibration-reference
+    scenario_id: standalone-agent-response-v1
+    slices:
+      - agent-response-fixture
+id: agent-response-fixture-cases-v1
+leakage_policy: exclusive-case-identity
+schema_version: 1

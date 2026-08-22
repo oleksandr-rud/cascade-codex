@@ -1,0 +1,12 @@
+aggregation: mean
+direction: higher-is-better
+hard_gate: true
+id: browser-completion-rate-v1
+kind: deterministic
+required_slices:
+  - browser-local-fixture
+schema_version: 1
+source:
+  oracle_id: browser-visible-status-v1
+uncertainty: none
+unit: ratio

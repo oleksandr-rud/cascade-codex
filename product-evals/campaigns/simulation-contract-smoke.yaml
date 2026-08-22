@@ -1,0 +1,34 @@
+claim_files:
+  - product-evals/claims/fixture-state-transition.yaml
+  - product-evals/claims/fixture-population-coverage.yaml
+  - product-evals/claims/fixture-release-eligibility.yaml
+evaluation_profile_file: product-evals/rubrics/deterministic-fixture-v1.yaml
+id: simulation-contract-smoke
+oracle_files:
+  - product-evals/oracles/account-resolved-v1.yaml
+  - product-evals/oracles/account-attempt-recorded-v1.yaml
+owner_lane: W-004
+policy_files:
+  - product-evals/policies/allow-fixture-state-actions-v1.yaml
+purpose: Prove that the complete framework definition graph resolves before provisioning.
+schema_version: 1
+session:
+  lease_ttl_ms: 60000
+  max_checkpoint_bytes: 1048576
+  max_duration_ms: 300000
+  max_parallel_steps: 2
+  max_step_duration_ms: 15000
+  max_steps: 10
+  max_steps_per_episode: 2
+  max_surfaces: 4
+simulation_file: product-evals/simulations/harness/simulation-correctness-fixture/manifest.yaml
+specialized_evaluation:
+  applicability: NOT_APPLICABLE
+  claim_ids: []
+  reason: mechanical simulation-correctness fixture has no Cascade route or trace claims
+  route_ids: []
+  trace_ids: []
+task_files:
+  - product-evals/tasks/SIMULATION-STATE-SMOKE.yaml
+tier: deterministic-fixture
+title: Simulation contract smoke

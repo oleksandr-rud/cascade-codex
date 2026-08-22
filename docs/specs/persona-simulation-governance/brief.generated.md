@@ -6,10 +6,10 @@
 - Brief: `PB-001` revision `1`
 - Status: `reviewed`
 - Coverage: `complete`
-- Catalog digest: `0f6b921bf6cefde6ba96d9410b1609fca21ab65c69f70a258e3e05bffac73c5b`
-- Manifest digest: `2128958c6b5f3178bd553ea466e4c7f9fdc9b70264db3324034d7e66d7a5b32f`
-- Selected-source digest: `92a90fe90ad50ee8d510d8d9a4fb96ddaec749cf79270f72939ded844f829ae1`
-- Compiler-contract digest: `cc347c5d400a038345ebf4e0515196693893dd5f7f42017984d9331435efbd3b`
+- Catalog digest: `2d24c923fe55562ab079de54e428788f4429c2051442bbceac75852340af1160`
+- Manifest digest: `ca2a2840fd9cf0a4c720d9836623d479f35e27bbd665b98bb5b2e424368a4174`
+- Selected-source digest: `7602c328cb90956d5cec238074ffb2a12998bd77a8a0130eecab7019c6408fc2`
+- Compiler-contract digest: `4cfeada5833d864235315bb41aa63acf157b08f15c247f2914c23fc84fd9acd1`
 
 ## Purpose And Audience
 
@@ -75,13 +75,13 @@ _No reviewed non-fixture product persona is selected._
 
 | Path | Scope / authority | Status | Purpose | SHA-256 |
 |---|---|---|---|---|
-| `product-evals/simulations/harness/simulation-correctness-fixture/manifest.json` | `harness-simulation` / `mechanics-only` | `authored` | Proves deterministic schema and runtime mechanics only; it is not product or persona evidence. | `97f576d76d315a0dfbe4879606ea0e5002192a077178fbbe667ab627dcd87f75` |
+| `product-evals/simulations/harness/simulation-correctness-fixture/manifest.yaml` | `harness-simulation` / `mechanics-only` | `authored` | Proves deterministic schema and runtime mechanics only; it is not product or persona evidence. | `23776ad788f0b35381eea1727573ac5bb5d1d7e8a74eceda6198fd461254a9bb` |
 
 ## Capability Evaluation References
 
 | Path | Kind / authority | Status | SHA-256 |
 |---|---|---|---|
-| `product-evals/simulations/harness/simulation-correctness-fixture/manifest.json` | `harness-simulation` / `mechanics-only` | `authored` | `97f576d76d315a0dfbe4879606ea0e5002192a077178fbbe667ab627dcd87f75` |
+| `product-evals/simulations/harness/simulation-correctness-fixture/manifest.yaml` | `harness-simulation` / `mechanics-only` | `authored` | `23776ad788f0b35381eea1727573ac5bb5d1d7e8a74eceda6198fd461254a9bb` |
 
 ## Gaps
 

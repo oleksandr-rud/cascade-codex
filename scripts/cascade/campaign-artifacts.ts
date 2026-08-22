@@ -28,6 +28,7 @@ import {
   writeJsonExclusive,
   writeTextExclusive,
 } from "./common";
+import { parseStrictYaml } from "./structured-data";
 import {
   simulationCheckpointDigest,
   simulationEventDigest,
@@ -5529,19 +5530,16 @@ export class CampaignArtifactStore {
           `campaign claim authority lacks its exact frozen source: ${claim.claim_id}`,
         );
       }
-      const frozenRecord = await fileRecord(
-        this.runRoot,
-        this.path(frozen.path),
-      );
+      const label = `authored claim ${claim.claim_id}`;
       const authored = requireRecord(
-        await readBoundedStructuredJson<unknown>(
-          this.path(frozen.path),
-          `authored claim ${claim.claim_id}`,
+        await this.readCurrentFrozenValue(
+          sourceManifest,
+          claim.source_path,
+          label,
         ),
-        `authored claim ${claim.claim_id}`,
+        label,
       );
       if (
-        frozenRecord.sha256 !== claim.source_sha256 ||
         authored.id !== claim.claim_id ||
         authored.class !== claim.class
       ) {
@@ -5598,10 +5596,14 @@ export class CampaignArtifactStore {
     if (record.sha256 !== definition[0]!.sha256) {
       throw new CascadeError(`${label} differs from its frozen source digest`);
     }
-    return readBoundedStructuredJson<unknown>(
-      this.path(frozen[0]!.path as string),
-      label,
-    );
+    const frozenPath = this.path(frozen[0]!.path as string);
+    if (sourcePath.endsWith(".yaml") || sourcePath.endsWith(".yml")) {
+      return parseStrictYaml(
+        await readBoundedStructuredText(frozenPath, label),
+        label,
+      );
+    }
+    return readBoundedStructuredJson<unknown>(frozenPath, label);
   }
 
   private async readCurrentFrozenJson(

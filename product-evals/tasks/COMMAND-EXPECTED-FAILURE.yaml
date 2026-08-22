@@ -1,0 +1,22 @@
+command:
+  - /usr/bin/false
+driver:
+  adapter: builtin-direct-process
+  type: direct-process
+id: COMMAND-EXPECTED-FAILURE
+kind: command
+oracle_ids:
+  - command-exit-one-v1
+policy_ids:
+  - allow-command-expected-failure-v1
+process:
+  environment: {}
+  filesystem:
+    read: host
+    write: task-root
+  interactive: false
+  network: deny
+  working_directory: task-root
+required: true
+schema_version: 3
+timeout_ms: 1000

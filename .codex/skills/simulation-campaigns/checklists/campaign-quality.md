@@ -115,7 +115,7 @@
 - [ ] Every refinement disposition is a separate append-only receipt bound to
       the proposal digest and reviewed evidence-manifest digests; acceptance
       routes only to `synthesis-to-spec` and never mutates the persona.
-- [ ] Evidence follows `product-evals/artifact-policy.json`: no raw sensitive
+- [ ] Evidence follows `product-evals/artifact-policy.yaml`: no raw sensitive
       source material, explicit retention/access/encryption posture, and no
       remote export by default.
 

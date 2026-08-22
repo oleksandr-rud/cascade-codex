@@ -1,0 +1,28 @@
+cases:
+  - actor_id: desktop-linux-actor
+    id: desktop-linux-development
+    partition: development
+    scenario_id: desktop-form-v1
+    slices:
+      - desktop-linux
+  - actor_id: desktop-linux-actor
+    id: desktop-linux-regression
+    partition: regression
+    scenario_id: desktop-form-v1
+    slices:
+      - desktop-linux
+  - actor_id: desktop-linux-actor
+    id: desktop-linux-holdout
+    partition: holdout
+    scenario_id: desktop-form-v1
+    slices:
+      - desktop-linux
+  - actor_id: desktop-linux-actor
+    id: desktop-linux-calibration
+    partition: calibration-reference
+    scenario_id: desktop-form-v1
+    slices:
+      - desktop-linux
+id: desktop-linux-cases-v1
+leakage_policy: exclusive-case-identity
+schema_version: 1

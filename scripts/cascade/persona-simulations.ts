@@ -853,7 +853,7 @@ export function validatePersonaDerivedPopulation(
   assertId(requiredString(derivation, "id", `${label}.source.derivation`), `${label}.source.derivation.id`);
   const derivationPath = requiredString(derivation, "path", `${label}.source.derivation`);
   if (
-    !/^product-evals\/simulations\/(harness|product)\/.+\/derivations\/.+\.json$/.test(
+    !/^product-evals\/simulations\/(harness|product)\/.+\/derivations\/.+\.yaml$/.test(
       derivationPath,
     )
   ) {
@@ -1000,7 +1000,7 @@ export function validatePersonaRefinementProposal(
   assertId(derivationId, `${label}.derivation.id`);
   const derivationPath = requiredString(derivation, "path", `${label}.derivation`);
   if (
-    !/^product-evals\/simulations\/(harness|product)\/.+\/derivations\/.+\.json$/.test(
+    !/^product-evals\/simulations\/(harness|product)\/.+\/derivations\/.+\.yaml$/.test(
       derivationPath,
     )
   ) {
@@ -1154,7 +1154,7 @@ export function buildPersonaRefinementDisposition(binding: {
     assertSafeRelativePath(
       item.path,
       `external_evidence[${index}].manifest_path`,
-      /^(docs\/product\/evidence|\.artifacts\/product-evals\/evidence-manifests)\/.+\.json$/,
+      /^(?:docs\/product\/evidence\/.+\.yaml|\.artifacts\/product-evals\/evidence-manifests\/.+\.json)$/,
     );
     assertDigest(item.digest, `external_evidence[${index}].manifest_sha256`);
     return {
@@ -1223,7 +1223,7 @@ export function validatePersonaRefinementDisposition(
   const derivation = objectValue(value.derivation, `${label}.derivation`);
   exactKeys(derivation, ["id", "path", "sha256"], `${label}.derivation`);
   assertId(requiredString(derivation, "id", `${label}.derivation`), `${label}.derivation.id`);
-  if (!/^product-evals\/simulations\/(harness|product)\/.+\/derivations\/.+\.json$/.test(requiredString(derivation, "path", `${label}.derivation`))) {
+  if (!/^product-evals\/simulations\/(harness|product)\/.+\/derivations\/.+\.yaml$/.test(requiredString(derivation, "path", `${label}.derivation`))) {
     throw new CascadeError(`${label}.derivation.path is invalid`);
   }
   assertDigest(requiredString(derivation, "sha256", `${label}.derivation`), `${label}.derivation.sha256`);
@@ -1240,7 +1240,7 @@ export function validatePersonaRefinementDisposition(
     assertSafeRelativePath(
       requiredString(item, "manifest_path", itemLabel),
       `${itemLabel}.manifest_path`,
-      /^(docs\/product\/evidence|\.artifacts\/product-evals\/evidence-manifests)\/.+\.json$/,
+      /^(?:docs\/product\/evidence\/.+\.yaml|\.artifacts\/product-evals\/evidence-manifests\/.+\.json)$/,
     );
     assertDigest(requiredString(item, "manifest_sha256", itemLabel), `${itemLabel}.manifest_sha256`);
     assertDigest(requiredString(item, "evidence_sha256", itemLabel), `${itemLabel}.evidence_sha256`);

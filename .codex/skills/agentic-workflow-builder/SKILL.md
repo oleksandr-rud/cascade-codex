@@ -32,7 +32,7 @@ tools, create user-visible Codex tasks, or approve delegation by itself.
 6. Agent checklists under `.codex/agents/{agent}/checklists/` when present.
 7. `docs/patterns/workflow/index.md`,
    `docs/patterns/workflow/fragments/_index.md`, applicable
-   `GF-*.fragment.json` definitions, `docs/patterns/boundaries/index.md`, and
+   `GF-*.fragment.yaml` definitions, `docs/patterns/boundaries/index.md`, and
    `docs/patterns/testing/index.md`.
 8. Relevant `docs/product/`, `docs/design/`, `docs/brand/`, `docs/specs/`,
    `docs/work/`, `docs/backlog/`, and `docs/glossary.md` sources.

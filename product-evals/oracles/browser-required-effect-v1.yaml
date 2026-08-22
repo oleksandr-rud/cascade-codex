@@ -1,0 +1,4 @@
+file: outputs/backend-effect.json
+id: browser-required-effect-v1
+schema_version: 1
+type: task-file-exists

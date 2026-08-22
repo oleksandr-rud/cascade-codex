@@ -46,7 +46,7 @@ is graph-shaped.
 6. `docs/patterns/testing/index.md` for functional, E2E, scenario, and evidence
    rules.
 7. The current plan's selected graph-fragment test strategies and applicable
-   `docs/patterns/workflow/fragments/GF-*.fragment.json` definitions.
+   `docs/patterns/workflow/fragments/GF-*.fragment.yaml` definitions.
 8. `docs/patterns/workflow/graph-shaped-work.md` plus the applicable lane-local
    Task Graph and/or authoritative `docs/work/graphs/CG-XXX-*.md` Coordination
    Graph when functional evidence feeds graph state.

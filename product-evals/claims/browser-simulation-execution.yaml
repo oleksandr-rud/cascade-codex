@@ -1,0 +1,23 @@
+assertion: The deterministic Playwright adapter completes the exact local browser fixture actions and preserves isolated screenshot and trace evidence.
+class: execution
+evidence_requirements:
+  - source-manifest
+  - execution-receipt
+  - task-result
+  - trajectory
+  - policy-decisions
+  - oracle
+  - cleanup
+id: browser-simulation-execution
+population_authority: none
+required_metric_ids: []
+required_oracle_ids:
+  - browser-visible-status-v1
+required_policy_ids:
+  - allow-browser-simulation-smoke-v1
+requires_calibration: false
+schema_version: 1
+scope:
+  driver: playwright
+  fixture: browser-fixture.html
+  task_id: BROWSER-SIMULATION-SMOKE

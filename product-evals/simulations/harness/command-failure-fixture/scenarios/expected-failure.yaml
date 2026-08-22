@@ -1,0 +1,10 @@
+actor_ids:
+  - command-failure-actor
+claim_ids:
+  - command-expected-failure-execution
+goal: Preserve an expected nonzero exit and evaluate it through the declared oracle.
+id: expected-command-failure-v1
+initial_state: {}
+schema_version: 1
+stop_conditions:
+  - declared expected-nonzero oracle passes

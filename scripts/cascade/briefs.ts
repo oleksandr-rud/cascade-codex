@@ -17,6 +17,7 @@ import {
   valueDigest,
   walkFiles,
 } from "./common";
+import { parseStrictYaml, readStructured } from "./structured-data";
 import {
   type CompiledPatternSection,
   type PatternSectionSelection,
@@ -281,7 +282,7 @@ function selectRows(table: MarkdownTable, ids: string[], label: string): Markdow
 
 async function loadYaml<T>(path: string, label: string): Promise<T> {
   try {
-    return Bun.YAML.parse(await readText(path)) as T;
+    return await readStructured<T>(path, `${label} ${rel(path)}`);
   } catch (error) {
     throw new CascadeError(
       `invalid ${label} ${rel(path)}: ${error instanceof Error ? error.message : String(error)}`,
@@ -318,7 +319,7 @@ async function loadBoundedYaml<T>(
   let source: { text: string; sha256: string };
   try {
     source = await readBoundedUtf8(path, label, MAX_BRIEF_MANIFEST_BYTES);
-    return { value: Bun.YAML.parse(source.text) as T, sha256: source.sha256 };
+    return { value: parseStrictYaml<T>(source.text, `${label} ${rel(path)}`), sha256: source.sha256 };
   } catch (error) {
     throw new CascadeError(
       `invalid ${label} ${rel(path)}: ${error instanceof Error ? error.message : String(error)}`,

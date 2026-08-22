@@ -1,0 +1,111 @@
+cases:
+  - expected_actions:
+      - use-extraction-overlay
+      - use-schema
+      - include-missing-value-policy
+      - include-boundary-examples
+    expected_selected_tier: efficient-structured
+    id: invoice-field-extraction
+    request_summary: Extract fixed invoice fields from high-volume OCR text into a strict schema.
+    task_profile:
+      latency_volume: HIGH
+      output_rigidity: HIGH
+      reasoning: LOW
+      risk: MEDIUM
+  - expected_actions:
+      - use-tool-overlay
+      - define-permissions
+      - define-done-condition
+      - include-bounded-repair
+    expected_selected_tier: balanced-production
+    id: everyday-tool-workflow
+    request_summary: Read approved project sources, update one document, and run bounded checks.
+    task_profile:
+      autonomy: MEDIUM
+      reasoning: MEDIUM
+      risk: MEDIUM
+      tool_breadth: MEDIUM
+  - expected_actions:
+      - use-research-overlay
+      - separate-evidence-from-inference
+      - allow-targeted-retrieval
+      - define-validation
+    expected_selected_tier: frontier-generalist
+    id: hard-root-cause-diagnosis
+    request_summary: Diagnose an intermittent cross-service failure from code, logs, traces, and conflicting hypotheses.
+    task_profile:
+      ambiguity: HIGH
+      context_dispersion: HIGH
+      reasoning: HIGH
+      risk: MEDIUM
+  - expected_actions:
+      - define-durable-state
+      - define-checkpoints
+      - define-recovery
+      - define-approval-boundaries
+      - define-terminal-evidence
+    expected_selected_tier: frontier-autonomous
+    id: long-running-multi-repo-agent
+    request_summary: Coordinate a long-running change across repositories with tools, checkpoints, recovery, and external approvals.
+    task_profile:
+      autonomy: HIGH
+      reasoning: HIGH
+      risk: HIGH
+      tool_breadth: HIGH
+  - expected_actions:
+      - preserve-explicit-model
+      - warn-capability-mismatch
+      - decompose-task
+      - recommend-fallback
+      - do-not-silently-override
+    expected_recommended_tier: frontier-autonomous
+    expected_selected_tier: efficient-structured
+    explicit_model: gpt-5.6-luna
+    id: explicit-efficient-model-complex-task
+    request_summary: Use a named efficient model for a complex autonomous migration.
+    task_profile:
+      autonomy: HIGH
+      cost_sensitivity: HIGH
+      reasoning: HIGH
+      tool_breadth: HIGH
+  - expected_actions:
+      - repair-context-before-tier
+      - retrieve-authoritative-sources
+      - require-freshness
+      - separate-claims-and-inference
+    expected_selected_tier: balanced-production
+    id: current-research-missing-sources
+    request_summary: Summarize the latest regulatory position without any current sources.
+    task_profile:
+      context_availability: LOW
+      freshness: HIGH
+      reasoning: MEDIUM
+      risk: HIGH
+  - expected_actions:
+      - use-classification-overlay
+      - add-abstention
+      - add-independent-review
+      - do-not-auto-escalate-for-risk
+    expected_selected_tier: efficient-structured
+    id: high-stakes-simple-classification
+    request_summary: Classify a bounded high-stakes form into an explicit taxonomy with mandatory abstention and human review.
+    task_profile:
+      evaluation_availability: HIGH
+      output_rigidity: HIGH
+      reasoning: LOW
+      risk: HIGH
+  - expected_actions:
+      - require-multimodal-capability
+      - use-creative-overlay
+      - use-multimodal-overlay
+      - preserve-novelty-budget
+    expected_selected_tier: balanced-production
+    id: multimodal-creative-brief
+    request_summary: Create a campaign brief from images, audience research, and brand constraints, with three bounded concepts.
+    task_profile:
+      creativity: HIGH
+      multimodal: HIGH
+      reasoning: MEDIUM
+      risk: LOW
+purpose: Structural routing fixtures. They test policy decisions, not provider model quality.
+schema_version: 1

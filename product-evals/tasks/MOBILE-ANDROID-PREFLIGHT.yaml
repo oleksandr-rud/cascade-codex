@@ -1,0 +1,35 @@
+driver:
+  adapter: builtin-mobile-platform
+  type: platform-automation
+id: MOBILE-ANDROID-PREFLIGHT
+kind: mobile
+mobile:
+  actions:
+    - app_id: cascade.mobile.fixture
+      type: mobile-launch
+    - text: Ready
+      timeout_ms: 3000
+      type: mobile-wait-text
+    - label: ready
+      type: mobile-capture
+  app:
+    build: "20260808.1"
+    id: cascade.mobile.fixture
+  evidence:
+    logs: true
+    result: true
+    screenshots: true
+  network: deny
+  provider:
+    device_id: emulator-5554
+    fixture_root: product-evals/simulations/harness/mobile-provider-fixture/runtime
+    platform_version: android-35
+    runtime: android-emulator
+  reset: snapshot-restore
+oracle_ids:
+  - mobile-completed-v1
+policy_ids:
+  - allow-mobile-android-preflight-v1
+required: true
+schema_version: 8
+timeout_ms: 10000

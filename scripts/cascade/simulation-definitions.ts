@@ -16,6 +16,7 @@ import {
   sha256Text,
   stableJson,
 } from "./common";
+import { readStructured } from "./structured-data";
 import { type TaskEnvelope, validateTaskEnvelope } from "./admission";
 import { resolveCurrentBriefProjection } from "./briefs";
 import {
@@ -61,12 +62,13 @@ export function assertCampaignConfirmationKeyId(value: unknown, label: string): 
 
 export const CAMPAIGN_FIXED_SOURCE_FILES = [
   "package.json",
-  ".codex/task-admission/policies/core.json",
-  ".codex/task-admission/control-catalog.json",
+  ".codex/task-admission/policies/core.yaml",
+  ".codex/task-admission/control-catalog.yaml",
   ".codex/task-admission/control-catalog.schema.json",
   ".codex/task-admission/task-envelope.schema.json",
   ".codex/task-admission/policy.schema.json",
-  "harness-evals/task-admission/cases.json",
+  ".codex/task-admission/policy-source.schema.json",
+  "harness-evals/task-admission/cases.yaml",
   "harness-evals/task-admission/case.schema.json",
   "harness-evals/task-admission/assessment.schema.json",
   "docs/product/catalog.yaml",
@@ -80,6 +82,7 @@ export const CAMPAIGN_FIXED_SOURCE_FILES = [
   "scripts/cascade/admission-clauses.ts",
   "scripts/cascade/briefs.ts",
   "scripts/cascade/common.ts",
+  "scripts/cascade/structured-data.ts",
   "scripts/cascade/campaign-artifacts.ts",
   "scripts/cascade/campaign-policies.ts",
   "scripts/cascade/campaigns.ts",
@@ -91,6 +94,7 @@ export const CAMPAIGN_FIXED_SOURCE_FILES = [
   "scripts/cascade/retry-lineage.ts",
   "scripts/cascade/runtime-handoffs.ts",
   "scripts/cascade/patterns.ts",
+  "scripts/cascade/policies.ts",
   "scripts/cascade/simulations.ts",
   "scripts/cascade/simulation-intake.ts",
   "scripts/cascade/simulation-definitions.ts",
@@ -104,7 +108,7 @@ export const CAMPAIGN_FIXED_SOURCE_FILES = [
   ".codex/harness-tooling/browser-adapter-runner.ts",
   ".codex/harness-tooling/package.json",
   ".codex/harness-tooling/bun.lock",
-  ".codex/skills/simulation-campaigns/templates/starter/package.template.json",
+  ".codex/skills/simulation-campaigns/templates/starter/package.template.yaml",
   ".codex/skills/simulation-campaigns/templates/campaign-design.md",
   ".codex/agents/simulation-evaluator.toml",
   ".codex/agents/simulation-evaluator/AGENT.md",
@@ -129,7 +133,7 @@ export const CAMPAIGN_FIXED_SOURCE_FILES = [
   "product-evals/simulations/refinement-disposition.schema.json",
   "product-evals/simulations/external-persona-evidence.schema.json",
   "product-evals/artifact-policy.schema.json",
-  "product-evals/artifact-policy.json",
+  "product-evals/artifact-policy.yaml",
   "product-evals/simulations/scenario.schema.json",
   "product-evals/simulations/world.schema.json",
   "product-evals/simulations/dataset.schema.json",
@@ -285,7 +289,7 @@ function simulationScopeFromManifestPath(
     return null;
   }
   if (canonical !== simulationFile) return null;
-  const scope = /^product-evals\/simulations\/(harness|product)\/.+\/manifest\.json$/
+  const scope = /^product-evals\/simulations\/(harness|product)\/.+\/manifest\.yaml$/
     .exec(canonical)?.[1];
   return scope === "harness" || scope === "product" ? scope : null;
 }
@@ -1611,9 +1615,13 @@ async function loadFile<T>(
   prefix: string,
   validate: (value: Record<string, unknown>, label: string) => void,
 ): Promise<T> {
+  if (prefix !== "product-evals/intakes/" && !/\.ya?ml$/.test(file)) {
+    throw new CascadeError(`authored definition must use YAML: ${file}`);
+  }
   const path = boundedPath(file, prefix);
   if (!(await isFile(path))) throw new CascadeError(`definition missing: ${file}`);
-  const raw = objectValue(await readJson(path), file);
+  const parsed = await readStructured(path, file);
+  const raw = objectValue(parsed, file);
   validate(raw, file);
   return raw as T;
 }
@@ -2287,9 +2295,9 @@ export function validateSimulation(
     throw new CascadeError(`${label}.simulation_scope is invalid`);
   }
   const simulationRoot = `product-evals/simulations/${simulationScope}/${id}`;
-  if (label !== `${simulationRoot}/manifest.json`) {
+  if (label !== `${simulationRoot}/manifest.yaml`) {
     throw new CascadeError(
-      `${label}.simulation_scope path mismatch: expected ${simulationRoot}/manifest.json`,
+      `${label}.simulation_scope path mismatch: expected ${simulationRoot}/manifest.yaml`,
     );
   }
   requireString(value, "title", label);
@@ -3958,7 +3966,7 @@ export async function resolveCampaign(
   if (intake && (intake.scope !== simulation.simulation_scope || intake.campaign_id !== campaign.id)) {
     throw new CascadeError(`${campaign.id} simulation intake scope or campaign binding is mismatched`);
   }
-  const simulationRoot = campaign.simulation_file.slice(0, -"/manifest.json".length);
+  const simulationRoot = campaign.simulation_file.slice(0, -"/manifest.yaml".length);
   const populations = await Promise.all(
     simulation.population_files.map((file) =>
       loadFile<PopulationDefinition>(
@@ -4029,7 +4037,7 @@ export async function resolveCampaign(
     throw new CascadeError(`world fixture missing: ${world.fixture_file}`);
   }
   const fixture = objectValue(
-    await readJson(fixturePath),
+    await readStructured(fixturePath, world.fixture_file),
     world.fixture_file,
   );
   const dataset = await loadFile<DatasetDefinition>(
@@ -4061,22 +4069,24 @@ export async function resolveCampaign(
   validateSimulationCalibrationAuthority(simulation, calibration);
   const simulatedScores = calibration
     ? validateScoreRows(
-        await readJson(
+        await readStructured(
           boundedPath(
             calibration.simulated_scores_file,
             "product-evals/calibrations/fixtures/",
           ),
+          calibration.simulated_scores_file,
         ),
         calibration.simulated_scores_file,
       )
     : [];
   const referenceScores = calibration
     ? validateScoreRows(
-        await readJson(
+        await readStructured(
           boundedPath(
             calibration.reference_scores_file,
             "product-evals/calibrations/fixtures/",
           ),
+          calibration.reference_scores_file,
         ),
         calibration.reference_scores_file,
       )
@@ -4122,7 +4132,7 @@ export async function resolveCampaign(
     ),
   );
   const artifactPolicy = await loadFile<SimulationArtifactPolicy>(
-    "product-evals/artifact-policy.json",
+    "product-evals/artifact-policy.yaml",
     "product-evals/",
     validateSimulationArtifactPolicy,
   );
@@ -4440,7 +4450,7 @@ export async function resolveCampaign(
 export async function findCampaignPath(value: string): Promise<string> {
   const direct = resolve(rootPath(), value);
   if (await isFile(direct)) return direct;
-  const byId = rootPath("product-evals/campaigns", `${value}.json`);
+  const byId = rootPath("product-evals/campaigns", `${value}.yaml`);
   if (await isFile(byId)) return byId;
   throw new CascadeError(`campaign not found: ${value}`);
 }

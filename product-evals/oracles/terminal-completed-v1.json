@@ -1,7 +1,0 @@
-{
-  "schema_version": 1,
-  "id": "terminal-completed-v1",
-  "type": "state-equals",
-  "path": "terminal.completed",
-  "expected": true
-}

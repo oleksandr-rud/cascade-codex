@@ -46,4 +46,4 @@ when they need independent ownership, writes, handoff, or evidence acceptance.
 
 The machine-readable shape is defined by
 [`graph-fragment.schema.json`](graph-fragment.schema.json). Files matching
-`GF-*.fragment.json` are the canonical reusable fragments.
+`GF-*.fragment.yaml` are the canonical reusable fragments.

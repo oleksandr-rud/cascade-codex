@@ -1,0 +1,25 @@
+assertion: A snapshot-bound mobile provider can execute structured launch, wait, and capture actions on the exact configured device and app build.
+class: execution
+evidence_requirements:
+  - source-manifest
+  - execution-receipt
+  - task-result
+  - trajectory
+  - policy-decisions
+  - oracle
+  - cleanup
+id: mobile-platform-execution
+population_authority: none
+required_metric_ids: []
+required_oracle_ids:
+  - mobile-completed-v1
+required_policy_ids:
+  - allow-mobile-android-preflight-v1
+requires_calibration: false
+schema_version: 1
+scope:
+  device_id: emulator-5554
+  driver: platform-automation
+  platform_version: android-35
+  provider: android-emulator
+  task_id: MOBILE-ANDROID-PREFLIGHT

@@ -1,0 +1,22 @@
+command:
+  - /usr/bin/true
+driver:
+  adapter: builtin-direct-process
+  type: direct-process
+id: COMMAND-MISSING-OUTPUT
+kind: command
+oracle_ids:
+  - command-output-required-v1
+policy_ids:
+  - allow-command-missing-output-v1
+process:
+  environment: {}
+  filesystem:
+    read: host
+    write: task-root
+  interactive: false
+  network: deny
+  working_directory: task-root
+required: false
+schema_version: 3
+timeout_ms: 1000

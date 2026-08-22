@@ -1,0 +1,28 @@
+cases:
+  - actor_id: agent-cascade-harness-actor
+    id: cascade-harness-development
+    partition: development
+    scenario_id: cascade-harness-hx-055-v1
+    slices:
+      - cascade-harness-profile
+  - actor_id: agent-cascade-harness-actor
+    id: cascade-harness-regression
+    partition: regression
+    scenario_id: cascade-harness-hx-055-v1
+    slices:
+      - cascade-harness-profile
+  - actor_id: agent-cascade-harness-actor
+    id: cascade-harness-holdout
+    partition: holdout
+    scenario_id: cascade-harness-hx-055-v1
+    slices:
+      - cascade-harness-profile
+  - actor_id: agent-cascade-harness-actor
+    id: cascade-harness-calibration
+    partition: calibration-reference
+    scenario_id: cascade-harness-hx-055-v1
+    slices:
+      - cascade-harness-profile
+id: agent-cascade-harness-cases-v1
+leakage_policy: exclusive-case-identity
+schema_version: 1

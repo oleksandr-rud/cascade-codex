@@ -43,7 +43,7 @@
     },
     "rubric_file": {
       "type": "string",
-      "pattern": "^product-evals/rubrics/.+\\.json$"
+      "pattern": "^product-evals/rubrics/.+\\.yaml$"
     }
   },
   "allOf": [

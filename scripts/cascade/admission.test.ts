@@ -24,6 +24,7 @@ import {
   type TrustedHardActionReceipt,
 } from "./admission";
 import { readJson, rootPath, sha256Text, stableJson } from "./common";
+import { readStructured } from "./structured-data";
 import { handleHook, runHookEntrypoint } from "./task-admission-hook";
 
 const fixed = "2026-08-04T12:00:00Z";
@@ -2731,7 +2732,10 @@ describe("task admission compiler contract", () => {
   }, 15_000);
 
   test("rejects missing, duplicate, mis-mapped, and shape-mutated corpus rows", async () => {
-    const source = await readJson<Record<string, any>>(rootPath("harness-evals/task-admission/cases.json"));
+    const source = await readStructured<Record<string, any>>(
+      rootPath("harness-evals/task-admission/cases.yaml"),
+      "harness-evals/task-admission/cases.yaml",
+    );
     const missing = structuredClone(source);
     missing.cases.pop();
     expect(() => validateAdmissionCaseBundle(missing)).toThrow("minItems");

@@ -1,0 +1,11 @@
+allowed_actions:
+  - assert
+cleanup:
+  reset_to_fixture: true
+fixture_file: product-evals/simulations/harness/agent-response-fixture/worlds/world.fixture.yaml
+id: agent-response-fixture-world-v1
+negative_behaviors:
+  - prompt sources cannot include evaluation leakage markers
+  - tools and network access are denied
+  - a proposed next route is not an accepted handoff
+schema_version: 1

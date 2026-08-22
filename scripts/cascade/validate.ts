@@ -3,6 +3,7 @@ import { basename, dirname, resolve } from "node:path";
 
 import {
   ROOT,
+  assertJsonSchema,
   boolFlag,
   exists,
   flag,
@@ -21,6 +22,8 @@ import { resolveCampaign, validateSimulation } from "./simulation-definitions";
 import { validateConfig } from "./target";
 import { validateBriefRepository } from "./briefs";
 import { validateAdmissionRepository } from "./admission";
+import { loadProductArtifactPolicy, loadProductPolicyRegistry } from "./policies";
+import { parseStrictYaml, readStructured } from "./structured-data";
 
 const REQUIRED_FILES = [
   "README.md",
@@ -32,13 +35,14 @@ const REQUIRED_FILES = [
   ".codex/hooks.json",
   ".agents/plugins/marketplace.json",
   ".codex/plugins/cascade-prompt/.codex-plugin/plugin.json",
-  ".codex/plugins/cascade-prompt/skills/prompt/references/model-system/model-registry.json",
-  ".codex/plugins/cascade-prompt/skills/prompt/runtime/model-index.json",
+  ".codex/plugins/cascade-prompt/skills/prompt/references/model-system/model-registry.yaml",
+  ".codex/plugins/cascade-prompt/skills/prompt/runtime/model-index.yaml",
   ".codex/task-admission/task-envelope.schema.json",
   ".codex/task-admission/policy.schema.json",
+  ".codex/task-admission/policy-source.schema.json",
   ".codex/task-admission/control-catalog.schema.json",
-  ".codex/task-admission/control-catalog.json",
-  ".codex/task-admission/policies/core.json",
+  ".codex/task-admission/control-catalog.yaml",
+  ".codex/task-admission/policies/core.yaml",
   ".codex/harness-tooling/package.json",
   ".codex/harness-tooling/bun.lock",
   ".codex/harness-tooling/playwright.config.ts",
@@ -96,32 +100,36 @@ const REQUIRED_FILES = [
   "scripts/cascade/simulation-intake.ts",
   "scripts/cascade/simulation-intake.test.ts",
   "scripts/cascade/common.ts",
+  "scripts/cascade/structured-data.ts",
+  "scripts/cascade/structured-data.test.ts",
+  "scripts/cascade/policies.ts",
+  "scripts/cascade/policies.test.ts",
   "scripts/cascade/validate.ts",
   "scripts/cascade/evals.ts",
   "scripts/cascade/patterns.ts",
   "scripts/cascade/target.ts",
   "scripts/cascade/campaigns.ts",
   "harness-evals/README.md",
-  "harness-evals/skill-cases.json",
-  "harness-evals/interactions.json",
-  "harness-evals/agent-outcomes.json",
+  "harness-evals/skill-cases.yaml",
+  "harness-evals/interactions.yaml",
+  "harness-evals/agent-outcomes.yaml",
   "harness-evals/scenarios.generated.json",
   "harness-evals/response.schema.json",
   "harness-evals/judge-response.schema.json",
-  "harness-evals/judge-profiles.json",
-  "harness-evals/rubrics/outcome-v1.json",
-  "harness-evals/rubrics/trajectory-v1.json",
+  "harness-evals/judge-profiles.yaml",
+  "harness-evals/rubrics/outcome-v1.yaml",
+  "harness-evals/rubrics/trajectory-v1.yaml",
   "harness-evals/task-admission/case.schema.json",
   "harness-evals/task-admission/assessment.schema.json",
-  "harness-evals/task-admission/cases.json",
+  "harness-evals/task-admission/cases.yaml",
   "product-evals/campaigns/schema.json",
   "product-evals/campaigns/README.md",
   "product-evals/campaigns/catalog.generated.json",
-  "product-evals/campaigns/simulation-contract-smoke.json",
+  "product-evals/campaigns/simulation-contract-smoke.yaml",
   "product-evals/intakes/schema.json",
   "product-evals/intakes/seed-binding.schema.json",
   "product-evals/tasks/schema.json",
-  "product-evals/tasks/SIMULATION-STATE-SMOKE.json",
+  "product-evals/tasks/SIMULATION-STATE-SMOKE.yaml",
   "product-evals/simulations/schema.json",
   "product-evals/simulations/population.schema.json",
   "product-evals/simulations/persona-derivation.schema.json",
@@ -140,7 +148,7 @@ const REQUIRED_FILES = [
   "product-evals/rubrics/evaluation-profile.schema.json",
   "product-evals/rubrics/evaluation-receipt.schema.json",
   "product-evals/artifact-policy.schema.json",
-  "product-evals/artifact-policy.json",
+  "product-evals/artifact-policy.yaml",
   "product-evals/simulations/harness/browser-fixture.html",
   "product-evals/simulations/README.md",
   "product-evals/simulations/harness/README.md",
@@ -273,7 +281,7 @@ function parseYamlFrontmatterRecord(text: string): Record<string, any> {
   if (!text.startsWith("---\n")) throw new Error("missing opening delimiter");
   const end = text.indexOf("\n---\n", 4);
   if (end < 0) throw new Error("missing closing delimiter");
-  const parsed = Bun.YAML.parse(text.slice(4, end));
+  const parsed = parseStrictYaml(text.slice(4, end), "YAML frontmatter");
   if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) {
     throw new Error("frontmatter must be a YAML object");
   }
@@ -652,7 +660,7 @@ async function validateRoutingContracts(
 
   let harnessConfig: Record<string, any>;
   try {
-    harnessConfig = Bun.YAML.parse(await readText(rootPath("harness.config.yaml"))) as Record<string, any>;
+    harnessConfig = await readStructured<Record<string, any>>(rootPath("harness.config.yaml"), "harness.config.yaml");
   } catch (error) {
     errors.push(`invalid harness.config.yaml routing contract: ${errorMessage(error)}`);
     return;
@@ -725,11 +733,18 @@ async function validateRepoPlugin(errors: string[]): Promise<void> {
   }
 
   try {
-    const registry = await readJson<Record<string, any>>(
-      rootPath(REPO_PLUGIN_ROOT, "skills/prompt/references/model-system/model-registry.json"),
+    const registryPath = rootPath(
+      REPO_PLUGIN_ROOT,
+      "skills/prompt/references/model-system/model-registry.yaml",
     );
-    const index = await readJson<Record<string, any>>(
-      rootPath(REPO_PLUGIN_ROOT, "skills/prompt/runtime/model-index.json"),
+    const indexPath = rootPath(REPO_PLUGIN_ROOT, "skills/prompt/runtime/model-index.yaml");
+    const registry = await readStructured<Record<string, any>>(
+      registryPath,
+      rel(registryPath),
+    );
+    const index = await readStructured<Record<string, any>>(
+      indexPath,
+      rel(indexPath),
     );
     errors.push(...modelRegistryFreshnessErrors(registry.checked_at));
     errors.push(...modelRegistryFreshnessErrors(index.checked_at));
@@ -849,7 +864,7 @@ async function validateConfigToml(
   if (config.cascade?.admission_command !== "scripts/cascade.ts admission assess") {
     errors.push("Cascade admission command must use the task admission compiler");
   }
-  if (config.cascade?.admission_policy_bundle !== ".codex/task-admission/policies/core.json") {
+  if (config.cascade?.admission_policy_bundle !== ".codex/task-admission/policies/core.yaml") {
     errors.push("Cascade admission policy bundle path is invalid");
   }
   const hooks = await readJson<Record<string, any>>(rootPath(TASK_ADMISSION_HOOK_PATH));
@@ -902,7 +917,7 @@ async function validateSkills(
       errors.push(`agent skill map missing: ${rel(mapPath)}`);
       continue;
     }
-    const skillMap = Bun.YAML.parse(await readText(mapPath));
+    const skillMap = await readStructured(mapPath, rel(mapPath));
     for (const source of collectSources(skillMap)) {
       const match = /^\.codex\/skills\/([a-z0-9-]+)\/SKILL\.md$/.exec(source);
       if (!match) {
@@ -961,7 +976,7 @@ async function validatePatterns(errors: string[]): Promise<void> {
     include: (item) => item.endsWith(".pack.yaml"),
   })) {
     try {
-      const pack = Bun.YAML.parse(await readText(path)) as Record<string, any>;
+      const pack = await readStructured<Record<string, any>>(path, rel(path));
       if (!pack.pack_id) errors.push(`pattern pack missing id: ${rel(path)}`);
       else if (ids.has(pack.pack_id)) errors.push(`duplicate pattern pack id: ${pack.pack_id}`);
       else ids.add(pack.pack_id);
@@ -974,12 +989,21 @@ async function validatePatterns(errors: string[]): Promise<void> {
       errors.push(`invalid pattern pack ${rel(path)}: ${error}`);
     }
   }
+  const fragmentSchema = await readJson<Record<string, unknown>>(
+    rootPath("docs/patterns/workflow/fragments/graph-fragment.schema.json"),
+  );
   const fragmentIds = new Set<string>();
-  for (const path of await walkFiles(rootPath("docs/patterns/workflow/fragments"), {
-    include: (item) => /GF-[^/]+\.fragment\.json$/.test(item),
-  })) {
+  const fragmentPaths = await walkFiles(rootPath("docs/patterns/workflow/fragments"), {
+    include: (item) => /GF-[^/]+\.fragment\.(?:json|yaml)$/.test(item),
+  });
+  for (const path of fragmentPaths) {
+    if (path.endsWith(".json")) {
+      errors.push(`graph fragment must use strict YAML: ${rel(path)}`);
+      continue;
+    }
     try {
-      const fragment = await readJson<Record<string, any>>(path);
+      const fragment = await readStructured<Record<string, any>>(path, rel(path));
+      assertJsonSchema(fragment, fragmentSchema, "$fragment");
       if (!fragment.fragment_id) errors.push(`graph fragment missing id: ${rel(path)}`);
       else if (fragmentIds.has(fragment.fragment_id)) errors.push(`duplicate graph fragment id: ${fragment.fragment_id}`);
       else fragmentIds.add(fragment.fragment_id);
@@ -989,6 +1013,9 @@ async function validatePatterns(errors: string[]): Promise<void> {
     } catch (error) {
       errors.push(`invalid graph fragment ${rel(path)}: ${error}`);
     }
+  }
+  if (fragmentIds.size !== 12) {
+    errors.push(`workflow graph fragment catalog must contain 12 unique YAML fragments, found ${fragmentIds.size}`);
   }
 }
 
@@ -1015,9 +1042,7 @@ async function validateCampaigns(errors: string[]): Promise<void> {
   const ids = new Set<string>();
   for (const path of await walkFiles(rootPath("product-evals/campaigns"), {
     include: (item) =>
-      item.endsWith(".json") &&
-      !item.endsWith("schema.json") &&
-      !item.endsWith("catalog.generated.json"),
+      item.endsWith(".yaml"),
   })) {
     try {
       const resolved = await resolveCampaign(path);
@@ -1049,11 +1074,11 @@ async function validateSimulationLayout(errors: string[]): Promise<void> {
   }
   for (const scope of [...allowedDirectories].sort()) {
     for (const path of await walkFiles(rootPath("product-evals/simulations", scope), {
-      include: (item) => item.endsWith("/manifest.json"),
+      include: (item) => item.endsWith("/manifest.yaml"),
     })) {
       try {
         const manifestPath = rel(path);
-        const manifest = await readJson<Record<string, unknown>>(path);
+        const manifest = await readStructured<Record<string, unknown>>(path, manifestPath);
         validateSimulation(manifest, manifestPath);
         const id = String(manifest.id);
         const existing = simulationIds.get(id);
@@ -1124,6 +1149,54 @@ async function validateLeakage(errors: string[]): Promise<number> {
   return count;
 }
 
+const STRUCTURED_SOURCE_ROOTS = [
+  ".agents",
+  ".codex",
+  "docs",
+  "exports",
+  "harness-evals",
+  "product-evals",
+] as const;
+
+export function isAllowedRepositoryJsonSource(path: string): boolean {
+  const name = basename(path);
+  return name === "schema.json"
+    || name.endsWith(".schema.json")
+    || name.endsWith(".meta-schema.json")
+    || name.endsWith(".generated.json")
+    || /^product-evals\/intakes\/(?:harness|product)\/.+\.json$/.test(path)
+    || name === "package.json"
+    || name === "plugin.json"
+    || path === ".codex/hooks.json"
+    || path === ".agents/plugins/marketplace.json";
+}
+
+async function validateStructuredSourceFormats(errors: string[]): Promise<void> {
+  const yamlFiles = [rootPath("harness.config.yaml"), rootPath("harness.config.example.yaml")];
+  for (const root of STRUCTURED_SOURCE_ROOTS.map((path) => rootPath(path))) {
+    if (!(await exists(root))) continue;
+    for (const path of await walkFiles(root)) {
+      const relativePath = rel(path);
+      if (relativePath.includes("/node_modules/")) continue;
+      if (path.endsWith(".json") && !isAllowedRepositoryJsonSource(relativePath)) {
+        errors.push(
+          `human-authored structured source must use YAML; JSON is reserved for schemas and explicit machine-owned protocol, host, or generated artifacts: ${relativePath}`,
+        );
+      }
+      if (path.endsWith(".yaml") || path.endsWith(".yml")) yamlFiles.push(path);
+    }
+  }
+  for (const path of [...new Set(yamlFiles)].sort()) {
+    try {
+      await readStructured(path, rel(path));
+    } catch (error) {
+      errors.push(
+        `invalid strict YAML source ${rel(path)}: ${error instanceof Error ? error.message : String(error)}`,
+      );
+    }
+  }
+}
+
 async function validateHarness(errors: string[]): Promise<{
   agents: number;
   skills: number;
@@ -1145,6 +1218,7 @@ async function validateHarness(errors: string[]): Promise<{
     if (!ALLOWED_DOC_ROOTS.has(entry)) errors.push(`unexpected docs root: docs/${entry}`);
   }
   await validateRuntimePackage(errors);
+  await validateStructuredSourceFormats(errors);
   await validateRepoPlugin(errors);
   const skills = await discoverSkills();
   const agents = await discoverAgents();
@@ -1154,6 +1228,11 @@ async function validateHarness(errors: string[]): Promise<{
     await validateAdmissionRepository();
   } catch (error) {
     errors.push(`invalid task admission bundle: ${error instanceof Error ? error.message : String(error)}`);
+  }
+  try {
+    await Promise.all([loadProductArtifactPolicy(), loadProductPolicyRegistry()]);
+  } catch (error) {
+    errors.push(`invalid product policy registry: ${error instanceof Error ? error.message : String(error)}`);
   }
   await validateReferences(errors);
   await validatePatterns(errors);

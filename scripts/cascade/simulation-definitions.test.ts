@@ -13,6 +13,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 
 import { assertJsonSchema, readJson, rootPath, sha256File, stableJson } from "./common";
+import { readStructured, stringifyYaml } from "./structured-data";
 
 import {
   CAMPAIGN_FIXED_SOURCE_FILES,
@@ -93,8 +94,8 @@ describe("simulation definition contracts", () => {
       "scripts/cascade/admission.ts",
       "scripts/cascade/briefs.ts",
       "scripts/cascade/simulation-sessions.ts",
-      ".codex/task-admission/policies/core.json",
-      ".codex/task-admission/control-catalog.json",
+      ".codex/task-admission/policies/core.yaml",
+      ".codex/task-admission/control-catalog.yaml",
       ".codex/task-admission/task-envelope.schema.json",
       "harness-evals/task-admission/case.schema.json",
       "harness-evals/task-admission/assessment.schema.json",
@@ -318,7 +319,7 @@ describe("simulation definition contracts", () => {
 
   test("resolves the complete correctness fixture graph", async () => {
     const resolved = await resolveCampaign(
-      "product-evals/campaigns/simulation-contract-smoke.json",
+      "product-evals/campaigns/simulation-contract-smoke.yaml",
     );
     expect(resolved.populations).toHaveLength(1);
     expect(resolved.simulation.simulation_scope).toBe("harness");
@@ -346,7 +347,7 @@ describe("simulation definition contracts", () => {
 
   test("rejects simulation scope and physical-root mismatches", async () => {
     const resolved = await resolveCampaign(
-      "product-evals/campaigns/simulation-contract-smoke.json",
+      "product-evals/campaigns/simulation-contract-smoke.yaml",
     );
     const simulation = structuredClone(resolved.simulation) as unknown as Record<
       string,
@@ -355,7 +356,7 @@ describe("simulation definition contracts", () => {
     expect(() =>
       validateSimulation(
         simulation,
-        "product-evals/simulations/product/simulation-correctness-fixture/manifest.json",
+        "product-evals/simulations/product/simulation-correctness-fixture/manifest.yaml",
       ),
     ).toThrow("simulation_scope path mismatch");
 
@@ -363,7 +364,7 @@ describe("simulation definition contracts", () => {
     expect(() =>
       validateSimulation(
         simulation,
-        "product-evals/simulations/harness/simulation-correctness-fixture/manifest.json",
+        "product-evals/simulations/harness/simulation-correctness-fixture/manifest.yaml",
       ),
     ).toThrow("simulation_scope is invalid");
   });
@@ -375,12 +376,12 @@ describe("simulation definition contracts", () => {
     expect(schema.$defs.seedBindingPath.pattern).toBe(
       SIMULATION_SEED_BINDING_PATH_PATTERN,
     );
-    const harnessCampaign = await readJson<Record<string, unknown>>(
-      rootPath("product-evals/campaigns/simulation-contract-smoke.json"),
+    const harnessCampaign = await readStructured<Record<string, unknown>>(
+      rootPath("product-evals/campaigns/simulation-contract-smoke.yaml"),
     );
     const productCampaign = {
       ...harnessCampaign,
-      simulation_file: "product-evals/simulations/product/example/manifest.json",
+      simulation_file: "product-evals/simulations/product/example/manifest.yaml",
       intake_file: "product-evals/intakes/product/example.json",
       seed_binding_file:
         "product-evals/intakes/product/seed-bindings/example.json",
@@ -451,12 +452,12 @@ describe("simulation definition contracts", () => {
 
     for (const [simulationFile, intakeFile, scope] of [
       [
-        "product-evals/simulations/product/example/manifest.json",
+        "product-evals/simulations/product/example/manifest.yaml",
         "product-evals/intakes/harness/example.json",
         "product",
       ],
       [
-        "product-evals/simulations/harness/example/manifest.json",
+        "product-evals/simulations/harness/example/manifest.yaml",
         "product-evals/intakes/product/example.json",
         "harness",
       ],
@@ -483,7 +484,7 @@ describe("simulation definition contracts", () => {
     const traversalCampaign = {
       ...harnessCampaign,
       simulation_file:
-        "product-evals/simulations/product/../harness/example/manifest.json",
+        "product-evals/simulations/product/../harness/example/manifest.yaml",
       intake_file: "product-evals/intakes/product/example.json",
     };
     expect(() => assertJsonSchema(traversalCampaign, schema, "traversal campaign"))
@@ -569,23 +570,23 @@ describe("simulation definition contracts", () => {
 
   test("rejects every unsafe seed spelling before loading any referenced campaign file", async () => {
     const token = `seed-scope-order-${crypto.randomUUID()}`;
-    const relativePath = `product-evals/campaigns/${token}.json`;
+    const relativePath = `product-evals/campaigns/${token}.yaml`;
     const path = rootPath(relativePath);
-    const harnessCampaign = await readJson<Record<string, unknown>>(
-      rootPath("product-evals/campaigns/simulation-contract-smoke.json"),
+    const harnessCampaign = await readStructured<Record<string, unknown>>(
+      rootPath("product-evals/campaigns/simulation-contract-smoke.yaml"),
     );
-    const referencedLoadSentinel = `product-evals/rubrics/${token}-must-not-load.json`;
+    const referencedLoadSentinel = `product-evals/rubrics/${token}-must-not-load.yaml`;
     try {
       for (const [name, seedBindingFile] of seedBindingPathCases) {
-        await writeFile(path, `${stableJson({
+        await writeFile(path, stringifyYaml({
           ...harnessCampaign,
           id: token,
           evaluation_profile_file: referencedLoadSentinel,
-          simulation_file: `product-evals/simulations/product/${token}/manifest.json`,
+          simulation_file: `product-evals/simulations/product/${token}/manifest.yaml`,
           intake_file: `product-evals/intakes/product/${token}.json`,
           seed_binding_file: seedBindingFile,
           specialized_evaluation: null,
-        }, true)}\n`);
+        }));
 
         await expect(resolveCampaign(relativePath)).rejects.toThrow(
           "seed_binding_file must be an ASCII-only canonical slash-separated JSON path under product-evals/intakes/product/seed-bindings/",
@@ -605,7 +606,7 @@ describe("simulation definition contracts", () => {
 
   test("prevents harness simulations from binding product calibration authority", async () => {
     const resolved = await resolveCampaign(
-      "product-evals/campaigns/simulation-contract-smoke.json",
+      "product-evals/campaigns/simulation-contract-smoke.yaml",
     );
     const calibration = structuredClone(resolved.calibration!);
     calibration.framework_fixture = false;
@@ -643,7 +644,7 @@ describe("simulation definition contracts", () => {
 
   test("keeps coverage weights distinct from prevalence", async () => {
     const resolved = await resolveCampaign(
-      "product-evals/campaigns/simulation-contract-smoke.json",
+      "product-evals/campaigns/simulation-contract-smoke.yaml",
     );
     const population = structuredClone(resolved.populations[0]!) as unknown as Record<
       string,
@@ -703,7 +704,7 @@ describe("simulation definition contracts", () => {
 
   test("rejects implicit prevalence and stale persona generator inputs", async () => {
     const resolved = await resolveCampaign(
-      "product-evals/campaigns/simulation-contract-smoke.json",
+      "product-evals/campaigns/simulation-contract-smoke.yaml",
     );
     const manifest = structuredClone(resolved.personaDerivations[0]!.manifest);
     const prevalence = structuredClone(manifest) as unknown as Record<string, unknown>;
@@ -1092,8 +1093,8 @@ describe("simulation definition contracts", () => {
   });
 
   test("requires the pinned isolated desktop platform contract", async () => {
-    const task = await readJson<Record<string, unknown>>(
-      rootPath("product-evals/tasks/DESKTOP-LINUX-SMOKE.json"),
+    const task = await readStructured<Record<string, unknown>>(
+      rootPath("product-evals/tasks/DESKTOP-LINUX-SMOKE.yaml"),
     );
     const schema = await readJson<Record<string, unknown>>(
       rootPath("product-evals/tasks/schema.json"),
@@ -1115,8 +1116,8 @@ describe("simulation definition contracts", () => {
   });
 
   test("requires the exact fail-closed mobile provider contract", async () => {
-    const task = await readJson<Record<string, unknown>>(
-      rootPath("product-evals/tasks/MOBILE-ANDROID-PREFLIGHT.json"),
+    const task = await readStructured<Record<string, unknown>>(
+      rootPath("product-evals/tasks/MOBILE-ANDROID-PREFLIGHT.yaml"),
     );
     const schema = await readJson<Record<string, unknown>>(
       rootPath("product-evals/tasks/schema.json"),
@@ -1162,8 +1163,8 @@ describe("simulation definition contracts", () => {
   });
 
   test("requires agent-runtime tasks to bind exact source-blind inputs", async () => {
-    const task = await readJson<Record<string, unknown>>(
-      rootPath("product-evals/tasks/AGENT-RESPONSE-FIXTURE-SMOKE.json"),
+    const task = await readStructured<Record<string, unknown>>(
+      rootPath("product-evals/tasks/AGENT-RESPONSE-FIXTURE-SMOKE.yaml"),
     );
     expect(() => validateTask(task, "agent-task")).not.toThrow();
     const schema = await readJson<Record<string, unknown>>(
@@ -1181,7 +1182,7 @@ describe("simulation definition contracts", () => {
       ...task,
       inputs: [
         ...((task.inputs as string[]).slice(0, -1)),
-        "product-evals/tasks/agent-response/golden-result.json",
+        "product-evals/tasks/agent-response/golden-result.yaml",
       ],
     }, "agent-task")).toThrow("exact source-blind task files");
   });
@@ -1248,7 +1249,7 @@ describe("simulation definition contracts", () => {
 
   test("rejects referenced policies whose scope cannot apply before execution", async () => {
     const resolved = await resolveCampaign(
-      "product-evals/campaigns/simulation-contract-smoke.json",
+      "product-evals/campaigns/simulation-contract-smoke.yaml",
     );
     const policy = structuredClone(resolved.policies[0]!);
     policy.scope.campaign_ids = ["different-campaign"];
@@ -1264,7 +1265,7 @@ describe("simulation definition contracts", () => {
 
   test("keeps executable policy validation aligned with the public schema", async () => {
     const resolved = await resolveCampaign(
-      "product-evals/campaigns/simulation-contract-smoke.json",
+      "product-evals/campaigns/simulation-contract-smoke.yaml",
     );
     const policy = structuredClone(resolved.policies[0]!) as Record<
       string,
@@ -1332,7 +1333,7 @@ describe("simulation definition contracts", () => {
 
   test("requires external evidence and preserves proposal-only persona refinement", async () => {
     const resolved = await resolveCampaign(
-      "product-evals/campaigns/simulation-contract-smoke.json",
+      "product-evals/campaigns/simulation-contract-smoke.yaml",
     );
     const derivation = resolved.personaDerivations[0]!;
     const persona = derivation.manifest.product_personas[0]!;
@@ -1381,7 +1382,7 @@ describe("simulation definition contracts", () => {
       ...base,
       evidence: [
         {
-          path: "docs/product/evidence/interview-batch-v1.json",
+          path: "docs/product/evidence/interview-batch-v1.yaml",
           digest: "b".repeat(64),
           manifest: {
             schema_version: 1,

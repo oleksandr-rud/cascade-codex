@@ -1,6 +1,6 @@
 import { mkdir, mkdtemp, readdir, realpath, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
-import { dirname, relative, resolve, sep } from "node:path";
+import { basename, dirname, relative, resolve, sep } from "node:path";
 
 import {
   CascadeError,
@@ -28,6 +28,7 @@ import {
   writeJsonExclusive,
   writeTextExclusive,
 } from "./common";
+import { parseStrictYaml } from "./structured-data";
 import {
   cascadeHarnessCodexCommand,
   gradeCascadeHarnessTrace,
@@ -3411,7 +3412,10 @@ const agentFixtureTaskAdapter: TaskAdapter = {
     );
     let response: unknown;
     try {
-      response = JSON.parse(responseBytes.toString("utf8"));
+      response = parseStrictYaml(
+        responseBytes.toString("utf8"),
+        `agent fixture response ${responseFile}`,
+      );
       const outputSchema = await readJson<Record<string, unknown>>(
         boundedPath(
           agent.output_schema_file,
@@ -5727,10 +5731,7 @@ async function specializedEvidenceArtifacts(
 async function campaignPaths(): Promise<string[]> {
   return (
     await walkFiles(CAMPAIGN_ROOT, {
-      include: (path) =>
-        path.endsWith(".json") &&
-        !path.endsWith("schema.json") &&
-        !path.endsWith("catalog.generated.json"),
+      include: (path) => path.endsWith(".yaml") && !basename(path).startsWith("."),
     })
   ).sort();
 }
@@ -5786,7 +5787,7 @@ export async function buildCampaignCatalog(): Promise<Record<string, unknown>> {
   }
   return {
     schema_version: 1,
-    generated_from: "product-evals/campaigns/*.json",
+    generated_from: "product-evals/campaigns/*.yaml",
     entries,
     digest: valueDigest(entries),
   };

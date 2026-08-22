@@ -6,6 +6,7 @@ import { main as briefMain } from "./cascade/briefs";
 import { printError } from "./cascade/common";
 import { main as evalMain } from "./cascade/evals";
 import { main as patternsMain } from "./cascade/patterns";
+import { main as policyMain } from "./cascade/policies";
 import { main as simulationMain } from "./cascade/simulations";
 import { main as targetMain } from "./cascade/target";
 import { main as validateMain } from "./cascade/validate";
@@ -21,6 +22,8 @@ async function main(): Promise<number> {
       return evalMain(args);
     case "patterns":
       return patternsMain(args);
+    case "policy":
+      return policyMain(args);
     case "target":
       return targetMain(args);
     case "campaign":
@@ -42,6 +45,10 @@ Usage:
   bun scripts/cascade.ts validate
   bun scripts/cascade.ts eval <catalog|audit|run|evaluate|judge|coverage|self-test>
   bun scripts/cascade.ts patterns <options>
+  bun scripts/cascade.ts policy validate [--scope admission|product|all]
+  bun scripts/cascade.ts policy list [--scope admission|product|all] [--format json|yaml]
+  bun scripts/cascade.ts policy extract --id POLICY_ID [--scope admission|product|all]
+  bun scripts/cascade.ts policy compile [--scope admission|product|all] [--format json|yaml] [--check]
   bun scripts/cascade.ts target <inventory|init-manifest|validate|drift|self-test>
   bun scripts/cascade.ts campaign catalog [--check|--write]
   bun scripts/cascade.ts campaign validate <campaign-id-or-path>

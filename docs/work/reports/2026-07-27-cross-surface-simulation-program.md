@@ -111,7 +111,7 @@ Proposed shape:
     "mode": "standalone-agent",
     "agent": "agent-engineer",
     "prompt_file": "product-evals/tasks/prompts/agent-smoke.md",
-    "output_schema": "product-evals/tasks/schemas/agent-smoke-output.json"
+    "output_schema": "product-evals/tasks/schemas/agent-smoke-output.yaml"
   },
   "evaluation": {
     "profile": "response-contract"

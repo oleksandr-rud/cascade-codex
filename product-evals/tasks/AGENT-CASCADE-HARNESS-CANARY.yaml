@@ -1,0 +1,38 @@
+agent:
+  budgets:
+    max_output_bytes: 16384
+    max_tokens: 4096
+    max_tool_calls: 12
+  evaluation_profile: cascade-route-and-trace-v1
+  input_file: product-evals/tasks/agent-response/cascade-harness-scenario.yaml
+  output_schema_file: harness-evals/response.schema.json
+  permissions:
+    filesystem: read-only
+    network: deny
+    tools: []
+  prompt_file: product-evals/tasks/agent-response/cascade-harness-prompt.md
+  runtime:
+    model: gpt-5.6-terra
+    provider: codex
+    reasoning_effort: medium
+  source_blind: true
+  target:
+    mode: cascade-profile
+    profile_file: product-evals/tasks/agent-response/cascade-harness-profile-v1.yaml
+driver:
+  adapter: builtin-agent-cascade
+  type: agent-runtime
+id: AGENT-CASCADE-HARNESS-CANARY
+inputs:
+  - product-evals/tasks/agent-response/cascade-harness-profile-v1.yaml
+  - product-evals/tasks/agent-response/cascade-harness-prompt.md
+  - product-evals/tasks/agent-response/cascade-harness-scenario.yaml
+  - harness-evals/response.schema.json
+kind: agent-response
+oracle_ids:
+  - agent-response-contract-valid-v1
+policy_ids:
+  - allow-agent-cascade-harness-v1
+required: true
+schema_version: 5
+timeout_ms: 180000

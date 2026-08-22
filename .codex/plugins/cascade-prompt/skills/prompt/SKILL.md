@@ -30,7 +30,7 @@ Load only the smallest conditional material:
 - Exactly one material tier pack: `runtime/tier-efficient-structured.md`,
   `runtime/tier-balanced-production.md`, `runtime/tier-frontier-generalist.md`,
   or `runtime/tier-frontier-autonomous.md`.
-- `runtime/model-index.json` when a named model's tier/capability is unresolved.
+- `runtime/model-index.yaml` when a named model's tier/capability is unresolved.
   Preserve an explicit capable model/tier. Use the detailed registry only for
   current research, provenance, or multi-candidate comparison.
 - `runtime/evaluation.md` for audit, comparison, or effectiveness claims.

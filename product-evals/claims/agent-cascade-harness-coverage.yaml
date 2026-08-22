@@ -1,0 +1,25 @@
+assertion: The exact current HX-055 scenario runs through the Cascade profile adapter, passes deterministic route, skill-load, trace, and read-only gates, and receives independent harness evaluation before coverage is accepted.
+class: coverage
+evidence_requirements:
+  - source-manifest
+  - execution-receipt
+  - task-result
+  - trajectory
+  - policy-decisions
+  - oracle
+  - cleanup
+id: agent-cascade-harness-coverage
+population_authority: none
+required_metric_ids: []
+required_oracle_ids:
+  - agent-response-contract-valid-v1
+required_policy_ids:
+  - allow-agent-cascade-harness-v1
+requires_calibration: false
+schema_version: 1
+scope:
+  driver: agent-runtime
+  runtime_provider: codex
+  scenario_id: HX-055
+  target_mode: cascade-profile
+  task_id: AGENT-CASCADE-HARNESS-CANARY

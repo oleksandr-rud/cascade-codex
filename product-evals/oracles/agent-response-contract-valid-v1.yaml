@@ -1,0 +1,5 @@
+expected: VALID
+id: agent-response-contract-valid-v1
+path: agent.contract_status
+schema_version: 1
+type: state-equals

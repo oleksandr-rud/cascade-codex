@@ -1,0 +1,10 @@
+actor_ids:
+  - terminal-pty-actor
+claim_ids:
+  - terminal-pty-execution
+goal: Complete the exact bounded PTY prompt and preserve terminal-scoped evidence.
+id: interactive-terminal-v1
+initial_state: {}
+schema_version: 1
+stop_conditions:
+  - the required prompt task and terminal completion oracle pass

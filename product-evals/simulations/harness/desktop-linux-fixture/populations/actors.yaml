@@ -1,0 +1,13 @@
+actors:
+  - behavior:
+      strategy: follow only the authored launch, type, key, wait, and capture sequence
+    id: desktop-linux-actor
+    slices:
+      - desktop-linux
+    weight: 1
+id: desktop-linux-actors-v1
+schema_version: 1
+source:
+  description: Deterministic harness-only actor; it does not represent product users.
+  kind: synthetic
+  minimized: true

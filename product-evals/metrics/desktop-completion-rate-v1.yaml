@@ -1,0 +1,12 @@
+aggregation: mean
+direction: higher-is-better
+hard_gate: true
+id: desktop-completion-rate-v1
+kind: deterministic
+required_slices:
+  - desktop-linux
+schema_version: 1
+source:
+  oracle_id: desktop-completed-v1
+uncertainty: none
+unit: ratio

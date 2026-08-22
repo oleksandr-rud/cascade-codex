@@ -43,15 +43,15 @@ export function changedPathsFromPatch(patch: string, cwd = process.cwd()): strin
 
 function decisionForPath(path: string, patch = ""): HarnessImpactDecision {
   if (
-    path === "harness-evals/judge-profiles.json"
+    path === "harness-evals/judge-profiles.yaml"
     || path === "harness-evals/judge-response.schema.json"
     || path.startsWith("harness-evals/rubrics/")
     || path.startsWith(".codex/skills/judge-eval-builder/")
   ) return "JUDGE_CONTRACT_REVIEW";
   if (
-    path === "harness-evals/skill-cases.json"
-    || path === "harness-evals/interactions.json"
-    || path === "harness-evals/agent-outcomes.json"
+    path === "harness-evals/skill-cases.yaml"
+    || path === "harness-evals/interactions.yaml"
+    || path === "harness-evals/agent-outcomes.yaml"
     || path.startsWith(".codex/skills/harness-evaluation/")
     || path === ".codex/agents/harness-evaluator.toml"
     || path.startsWith(".codex/agents/harness-evaluator/")

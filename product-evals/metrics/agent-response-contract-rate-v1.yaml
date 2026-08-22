@@ -1,0 +1,12 @@
+aggregation: rate
+direction: higher-is-better
+hard_gate: true
+id: agent-response-contract-rate-v1
+kind: deterministic
+required_slices:
+  - agent-response-fixture
+schema_version: 1
+source:
+  oracle_id: agent-response-contract-valid-v1
+uncertainty: none
+unit: rate

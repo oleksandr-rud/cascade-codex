@@ -1,9 +1,9 @@
 import { describe, expect, test } from "bun:test";
-import { mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
-import { tmpdir } from "node:os";
+import { mkdtemp, rm, writeFile } from "node:fs/promises";
 import { resolve } from "node:path";
 
 import { rootPath } from "./common";
+import { readStructured, stringifyYaml } from "./structured-data";
 import {
   gradeCascadeHarnessTrace,
   resolveCascadeHarnessProfile,
@@ -11,13 +11,13 @@ import {
 
 const profileFiles = {
   profile_file: rootPath(
-    "product-evals/tasks/agent-response/cascade-harness-profile-v1.json",
+    "product-evals/tasks/agent-response/cascade-harness-profile-v1.yaml",
   ),
   prompt_file: rootPath(
     "product-evals/tasks/agent-response/cascade-harness-prompt.md",
   ),
   input_file: rootPath(
-    "product-evals/tasks/agent-response/cascade-harness-scenario.json",
+    "product-evals/tasks/agent-response/cascade-harness-scenario.yaml",
   ),
   output_schema_file: rootPath("harness-evals/response.schema.json"),
 };
@@ -34,12 +34,17 @@ describe("Cascade harness profile seam", () => {
   });
 
   test("rejects a stale profile before target execution", async () => {
-    const directory = await mkdtemp(resolve(tmpdir(), "cascade-profile-"));
+    const directory = await mkdtemp(
+      resolve(rootPath(".artifacts"), "cascade-profile-"),
+    );
     try {
-      const profile = JSON.parse(await readFile(profileFiles.profile_file, "utf8"));
+      const profile = await readStructured<Record<string, any>>(
+        profileFiles.profile_file,
+        "cascade harness profile fixture",
+      );
       profile.scenario_digest = "0".repeat(64);
-      const stalePath = resolve(directory, "profile.json");
-      await writeFile(stalePath, JSON.stringify(profile));
+      const stalePath = resolve(directory, "profile.yaml");
+      await writeFile(stalePath, stringifyYaml(profile));
       await expect(resolveCascadeHarnessProfile({
         ...profileFiles,
         profile_file: stalePath,

@@ -15,12 +15,13 @@ import {
   stableJson,
   walkFiles,
 } from "./common";
+import { readStructured } from "./structured-data";
 
 const ACTIVE_WORK_PATH = rootPath("docs/work/active.md");
 const LANE_ROOT = rootPath("docs/work/lanes");
 const REPORT_ROOT = rootPath("docs/work/reports");
-const ADMISSION_POLICY_PATH = rootPath(".codex/task-admission/policies/core.json");
-const ADMISSION_CASES_PATH = rootPath("harness-evals/task-admission/cases.json");
+const ADMISSION_POLICY_PATH = rootPath(".codex/task-admission/policies/core.yaml");
+const ADMISSION_CASES_PATH = rootPath("harness-evals/task-admission/cases.yaml");
 
 export interface AdmissionSourceIdentity {
   schema_version: number;
@@ -179,16 +180,16 @@ function normalize(value: string): string {
 }
 
 async function currentAdmissionIdentity(): Promise<AdmissionSourceIdentity> {
-  const policy = JSON.parse(await readText(ADMISSION_POLICY_PATH)) as {
+  const policy = await readStructured<{
     schema_version?: unknown;
     bundle_id?: unknown;
     bundle_version?: unknown;
-  };
-  const cases = JSON.parse(await readText(ADMISSION_CASES_PATH)) as {
+  }>(ADMISSION_POLICY_PATH, ".codex/task-admission/policies/core.yaml");
+  const cases = await readStructured<{
     schema_version?: unknown;
     policy_bundle_version?: unknown;
     cases?: unknown;
-  };
+  }>(ADMISSION_CASES_PATH, "harness-evals/task-admission/cases.yaml");
   if (
     !Number.isInteger(policy.schema_version)
     || typeof policy.bundle_id !== "string"

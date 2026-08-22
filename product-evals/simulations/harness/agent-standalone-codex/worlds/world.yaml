@@ -1,0 +1,11 @@
+allowed_actions:
+  - assert
+cleanup:
+  reset_to_fixture: true
+fixture_file: product-evals/simulations/harness/agent-standalone-codex/worlds/world.fixture.yaml
+id: agent-standalone-codex-world-v1
+negative_behaviors:
+  - user or project configuration is ignored
+  - plugins, apps, browser, computer use, image generation, and code host access are disabled
+  - filesystem is read-only and composed tools are absent
+schema_version: 1

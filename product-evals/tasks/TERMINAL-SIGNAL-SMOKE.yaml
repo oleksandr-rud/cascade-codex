@@ -1,0 +1,42 @@
+command:
+  - /bin/sh
+  - -c
+  - trap 'printf "INTERRUPTED\n"; exit 0' INT; printf 'READY\n'; while :; do sleep 1; done
+driver:
+  adapter: builtin-pty
+  type: pty
+id: TERMINAL-SIGNAL-SMOKE
+kind: terminal
+oracle_ids:
+  - terminal-completed-v1
+policy_ids:
+  - allow-terminal-signal-smoke-spawn-v1
+  - allow-terminal-signal-smoke-steps-v1
+required: true
+schema_version: 6
+terminal:
+  cols: 80
+  environment: {}
+  evidence:
+    final_screen: true
+    raw_stream: true
+    transcript: true
+  expected_exit_code: 0
+  filesystem:
+    read: host
+    write: task-root
+  network: deny
+  rows: 24
+  steps:
+    - text: READY
+      timeout_ms: 1000
+      type: terminal-wait
+    - signal: SIGINT
+      type: terminal-signal
+    - text: INTERRUPTED
+      timeout_ms: 2000
+      type: terminal-wait
+    - label: interrupted
+      type: terminal-capture
+  working_directory: task-root
+timeout_ms: 5000

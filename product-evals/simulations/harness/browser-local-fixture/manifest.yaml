@@ -1,0 +1,15 @@
+dataset_file: product-evals/simulations/harness/browser-local-fixture/datasets/cases.yaml
+id: browser-local-fixture
+metric_files:
+  - product-evals/metrics/browser-completion-rate-v1.yaml
+population_files:
+  - product-evals/simulations/harness/browser-local-fixture/populations/actors.yaml
+purpose: Exercise only the W-006 structured Playwright adapter contract.
+scenario_files:
+  - product-evals/simulations/harness/browser-local-fixture/scenarios/complete-task.yaml
+schema_version: 1
+simulation_scope: harness
+title: Deterministic local browser fixture
+treatment_files:
+  - product-evals/treatments/baseline-v1.yaml
+world_file: product-evals/simulations/harness/browser-local-fixture/worlds/world.yaml

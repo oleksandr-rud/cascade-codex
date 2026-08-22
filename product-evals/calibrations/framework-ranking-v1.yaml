@@ -1,0 +1,27 @@
+dataset_id: support-cases-v1
+framework_fixture: true
+id: framework-ranking-v1
+metric_ids:
+  - task-success-v1
+reference:
+  kind: framework-fixture
+  label_digest: eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
+  reference_window_end: 2026-07-30T00:00:00Z
+  reviewer_identity: framework-fixture-reviewer
+reference_scores_file: product-evals/calibrations/fixtures/framework-ranking.reference.yaml
+required_slices:
+  - standard
+  - risk
+schema_version: 1
+simulated_scores_file: product-evals/calibrations/fixtures/framework-ranking.simulated.yaml
+simulation_id: simulation-correctness-fixture
+staleness_days: 365
+thresholds:
+  minimum_human_agreement: 0.8
+  minimum_linear_correlation: 0.9
+  minimum_rank_correlation: 0.9
+  minimum_samples: 3
+treatment_ids:
+  - baseline-v1
+  - candidate-a-v1
+  - candidate-b-v1

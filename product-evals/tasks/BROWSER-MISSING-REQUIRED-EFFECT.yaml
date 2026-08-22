@@ -1,0 +1,37 @@
+browser:
+  actions:
+    - locator:
+        kind: label
+        value: Resolution
+      type: browser-fill
+      value: Visual-only completion
+    - locator:
+        kind: role
+        name: Complete task
+        role: button
+      type: browser-click
+  downloads: false
+  evidence:
+    screenshot: true
+    trace: true
+  fixture_file: product-evals/simulations/harness/browser-fixture.html
+  network: deny
+  observation:
+    expected_text: "Completed: Visual-only completion"
+    locator:
+      kind: role
+      role: status
+  profile: ephemeral
+  uploads: false
+driver:
+  adapter: builtin-playwright
+  type: playwright
+id: BROWSER-MISSING-REQUIRED-EFFECT
+kind: browser
+oracle_ids:
+  - browser-required-effect-v1
+policy_ids:
+  - allow-browser-missing-effect-probe-v1
+required: false
+schema_version: 4
+timeout_ms: 15000

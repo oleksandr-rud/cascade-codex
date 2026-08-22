@@ -40,7 +40,7 @@ semantic or human-usability verdict.
 
 ### Level 2 — Case Contract Review
 
-Review every case in `evals/cases.json` against `evals/rubric.md`. Confirm that
+Review every case in `evals/cases.yaml` against `evals/rubric.md`. Confirm that
 the expected readiness, required content, forbidden behavior, question limit,
 and evidence status are unambiguous before running a model.
 

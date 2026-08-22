@@ -1,0 +1,12 @@
+aggregation: mean
+direction: higher-is-better
+hard_gate: true
+id: command-exit-one-observed-v1
+kind: deterministic
+required_slices:
+  - command-failure
+schema_version: 1
+source:
+  oracle_id: command-exit-one-v1
+uncertainty: none
+unit: ratio

@@ -1,0 +1,5 @@
+expected: Waiting
+id: browser-waiting-status-v1
+path: browser.visible_status
+schema_version: 1
+type: state-equals

@@ -18,6 +18,7 @@ import {
 } from "./common";
 import { refinementProposalCandidateDigest } from "./persona-simulations";
 import { disposeRefinement, previewDerivedPopulation, renderStarterPackage, simulationIntakeCliOptions } from "./simulations";
+import { stringifyYaml } from "./structured-data";
 
 function refinementIdentities(): CampaignIdentityEnvelope {
   return {
@@ -71,7 +72,7 @@ function refinementProposal(runId: string) {
     },
     derivation: {
       id: "p-999-coverage-v1",
-      path: "product-evals/simulations/harness/simulation-correctness-fixture/derivations/P-999-coverage-v1.json",
+      path: "product-evals/simulations/harness/simulation-correctness-fixture/derivations/P-999-coverage-v1.yaml",
       sha256: "87370d2a8a6f877b9baf446ac3ff672c5837bf4c5c70ed9ce718e8c8a0faac79",
     },
     proposal_type: "missing-dimension" as const,
@@ -178,7 +179,7 @@ async function seedFinalizedRefinementRun(runId: string) {
       model: "gpt-5.6-terra",
       reasoning_effort: "high",
       timeout_ms: 300000,
-      rubric_file: "product-evals/rubrics/simulation-evaluator-v1.json",
+      rubric_file: "product-evals/rubrics/simulation-evaluator-v1.yaml",
     }),
     rubric_id: "simulation-evaluator-v1",
     rubric_digest: "2".repeat(64),
@@ -447,7 +448,7 @@ describe("simulation starter bootstrap", () => {
       files.some(
         (file) =>
           file.path ===
-          "product-evals/simulations/product/generated-example/manifest.json",
+          "product-evals/simulations/product/generated-example/manifest.yaml",
       ),
     ).toBe(true);
     const seedBinding = files.find(
@@ -470,30 +471,30 @@ describe("simulation starter bootstrap", () => {
     expect(
       files.some(
         (file) =>
-          file.path === "product-evals/campaigns/generated-example-smoke.json",
+          file.path === "product-evals/campaigns/generated-example-smoke.yaml",
       ),
     ).toBe(true);
     const campaign = files.find(
-      (file) => file.path === "product-evals/campaigns/generated-example-smoke.json",
+      (file) => file.path === "product-evals/campaigns/generated-example-smoke.yaml",
     )!.content as { id: string };
     expect(seedBinding.campaign_sha256).toBe(
-      sha256Text(`${stableJson(campaign, true)}\n`),
+      sha256Text(stringifyYaml(campaign)),
     );
     const manifest = files.find(
       (file) =>
         file.path ===
-        "product-evals/simulations/product/generated-example/manifest.json",
+        "product-evals/simulations/product/generated-example/manifest.yaml",
     )!.content as { simulation_scope: string };
     expect(manifest.simulation_scope).toBe("product");
     const policy = files.find(
       (file) =>
         file.path ===
-        "product-evals/policies/generated-example-allow-state-actions-v1.json",
+        "product-evals/policies/generated-example-allow-state-actions-v1.yaml",
     )!.content as { scope: { campaign_ids: string[] } };
     expect(policy.scope.campaign_ids).toEqual([campaign.id]);
     const task = files.find(
       (file) =>
-        file.path === "product-evals/tasks/GENERATED-EXAMPLE-STATE-SMOKE.json",
+        file.path === "product-evals/tasks/GENERATED-EXAMPLE-STATE-SMOKE.yaml",
     )!.content as { driver: { type: string; adapter: string } };
     expect(task.driver).toEqual({
       type: "fake",
@@ -509,7 +510,7 @@ describe("simulation starter bootstrap", () => {
     );
     expect(design).toContain("product-scoped framework scaffold");
     expect(design).toContain(
-      "product-evals/simulations/product/generated-example/worlds/default.fixture.json",
+      "product-evals/simulations/product/generated-example/worlds/default.fixture.yaml",
     );
     expect(design).not.toContain("product-evals/fixtures/");
     expect(design).toContain("no-secrets-v1 or source-code-v1");

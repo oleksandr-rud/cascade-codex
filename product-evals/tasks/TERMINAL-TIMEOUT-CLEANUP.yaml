@@ -1,0 +1,38 @@
+command:
+  - /bin/sh
+  - -c
+  - printf 'WAITING\n'; read answer
+driver:
+  adapter: builtin-pty
+  type: pty
+id: TERMINAL-TIMEOUT-CLEANUP
+kind: terminal
+oracle_ids:
+  - terminal-completed-v1
+policy_ids:
+  - allow-terminal-timeout-cleanup-spawn-v1
+  - allow-terminal-timeout-cleanup-steps-v1
+required: false
+schema_version: 6
+terminal:
+  cols: 80
+  environment: {}
+  evidence:
+    final_screen: true
+    raw_stream: true
+    transcript: true
+  expected_exit_code: 0
+  filesystem:
+    read: host
+    write: task-root
+  network: deny
+  rows: 24
+  steps:
+    - text: WAITING
+      timeout_ms: 500
+      type: terminal-wait
+    - text: NEVER-EMITTED
+      timeout_ms: 100
+      type: terminal-wait
+  working_directory: task-root
+timeout_ms: 2000

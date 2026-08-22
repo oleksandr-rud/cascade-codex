@@ -1,0 +1,10 @@
+actor_ids:
+  - command-static-actor
+claim_ids:
+  - harness-static-command-execution
+goal: Execute the exact isolated static command and preserve its evidence.
+id: strict-static-command-v1
+initial_state: {}
+schema_version: 1
+stop_conditions:
+  - declared exit-code oracle passes

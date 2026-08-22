@@ -148,7 +148,7 @@ Extend the planned W-004 layout:
 
 ```text
 product-evals/simulations/<harness|product>/<simulation-id>/
-  manifest.json
+  manifest.yaml
   populations/
   scenarios/
   worlds/

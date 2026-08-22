@@ -1,0 +1,15 @@
+dataset_file: product-evals/simulations/harness/command-static-fixture/datasets/cases.yaml
+id: command-static-fixture
+metric_files:
+  - product-evals/metrics/command-exit-zero-rate-v1.yaml
+population_files:
+  - product-evals/simulations/harness/command-static-fixture/populations/actors.yaml
+purpose: Exercise only the deterministic W-005 static command contract.
+scenario_files:
+  - product-evals/simulations/harness/command-static-fixture/scenarios/static-command.yaml
+schema_version: 1
+simulation_scope: harness
+title: Strict direct-process static fixture
+treatment_files:
+  - product-evals/treatments/baseline-v1.yaml
+world_file: product-evals/simulations/harness/command-static-fixture/worlds/world.yaml

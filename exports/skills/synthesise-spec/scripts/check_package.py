@@ -24,10 +24,10 @@ REQUIRED_FILES = [
     "assets/templates/feature-change-spec.md",
     "assets/templates/technical-design.md",
     "assets/templates/task-slice.md",
-    "evals/cases.json",
+    "evals/cases.yaml",
     "evals/rubric.md",
     "evals/skill-use-prompt-response.md",
-    "evals/task-catalog.synthetic.json",
+    "evals/task-catalog.synthetic.yaml",
     "evals/fixtures/shift-handover.md",
     "evals/fixtures/retry-permission-conflict.md",
     "evals/fixtures/async-compliance-export.md",
@@ -37,14 +37,14 @@ REQUIRED_FILES = [
     "evals/fixtures/audit-receipt-task.md",
     "evals/fixtures/mockup-traceability.md",
     "evals/fixtures/mockup-job-start.svg",
-    "evals/evaluators/shift-handover.json",
-    "evals/evaluators/retry-permission-conflict.json",
-    "evals/evaluators/async-compliance-export.json",
-    "evals/evaluators/serial-number-error.json",
-    "evals/evaluators/unavailable-provider-contract.json",
-    "evals/evaluators/adversarial-source-instruction.json",
-    "evals/evaluators/audit-receipt-task.json",
-    "evals/evaluators/mockup-traceability.json",
+    "evals/evaluators/shift-handover.yaml",
+    "evals/evaluators/retry-permission-conflict.yaml",
+    "evals/evaluators/async-compliance-export.yaml",
+    "evals/evaluators/serial-number-error.yaml",
+    "evals/evaluators/unavailable-provider-contract.yaml",
+    "evals/evaluators/adversarial-source-instruction.yaml",
+    "evals/evaluators/audit-receipt-task.yaml",
+    "evals/evaluators/mockup-traceability.yaml",
     "scripts/check_package.py",
     "scripts/grade_output.py",
 ]
@@ -52,35 +52,35 @@ REQUIRED_FILES = [
 SYNTHETIC_TASK_FILES = {
     "synth-shift-handover-v1": (
         "evals/fixtures/shift-handover.md",
-        "evals/evaluators/shift-handover.json",
+        "evals/evaluators/shift-handover.yaml",
     ),
     "synth-retry-permission-conflict-v1": (
         "evals/fixtures/retry-permission-conflict.md",
-        "evals/evaluators/retry-permission-conflict.json",
+        "evals/evaluators/retry-permission-conflict.yaml",
     ),
     "synth-async-compliance-export-v1": (
         "evals/fixtures/async-compliance-export.md",
-        "evals/evaluators/async-compliance-export.json",
+        "evals/evaluators/async-compliance-export.yaml",
     ),
     "synth-serial-number-error-v1": (
         "evals/fixtures/serial-number-error.md",
-        "evals/evaluators/serial-number-error.json",
+        "evals/evaluators/serial-number-error.yaml",
     ),
     "synth-unavailable-provider-contract-v1": (
         "evals/fixtures/unavailable-provider-contract.md",
-        "evals/evaluators/unavailable-provider-contract.json",
+        "evals/evaluators/unavailable-provider-contract.yaml",
     ),
     "synth-adversarial-source-v1": (
         "evals/fixtures/adversarial-source-instruction.md",
-        "evals/evaluators/adversarial-source-instruction.json",
+        "evals/evaluators/adversarial-source-instruction.yaml",
     ),
     "synth-audit-receipt-task-v1": (
         "evals/fixtures/audit-receipt-task.md",
-        "evals/evaluators/audit-receipt-task.json",
+        "evals/evaluators/audit-receipt-task.yaml",
     ),
     "synth-mockup-traceability-v1": (
         "evals/fixtures/mockup-traceability.md",
-        "evals/evaluators/mockup-traceability.json",
+        "evals/evaluators/mockup-traceability.yaml",
     ),
 }
 
@@ -216,6 +216,11 @@ def read(relative: str) -> str:
     return (ROOT / relative).read_text(encoding="utf-8")
 
 
+def read_portable_yaml(relative: str) -> dict[str, object]:
+    """Parse the package's dependency-free, JSON-compatible YAML subset."""
+    return json.loads(read(relative))
+
+
 def check(condition: bool, message: str, errors: list[str]) -> None:
     if not condition:
         errors.append(message)
@@ -314,7 +319,7 @@ def main() -> int:
         check(marker in feature_template,
               f"feature template missing mockup marker: {marker}", errors)
 
-    cases = json.loads(read("evals/cases.json"))
+    cases = read_portable_yaml("evals/cases.yaml")
     check(cases.get("schema_version") == 2, "eval cases schema_version must be 2", errors)
     case_items = cases.get("cases")
     case_expected_by_fixture: dict[str, str] = {}
@@ -370,7 +375,7 @@ def main() -> int:
     check(skill_use_prompt.count("```text") == 1,
           "skill-use prompt must contain exactly one text prompt fence", errors)
 
-    catalog = json.loads(read("evals/task-catalog.synthetic.json"))
+    catalog = read_portable_yaml("evals/task-catalog.synthetic.yaml")
     check(catalog.get("schema_version") == 2,
           "synthetic task catalog schema_version must be 2", errors)
     tasks = catalog.get("tasks")
@@ -404,7 +409,7 @@ def main() -> int:
     for task_id, (fixture_path, evaluator_path) in SYNTHETIC_TASK_FILES.items():
         check(len(read(fixture_path).split()) >= 80,
               f"synthetic fixture {task_id} is too small to exercise synthesis", errors)
-        evaluator = json.loads(read(evaluator_path))
+        evaluator = read_portable_yaml(evaluator_path)
         check(evaluator.get("schema_version") == 1,
               f"evaluator {task_id} schema_version must be 1", errors)
         check(evaluator.get("mechanical_type") == "text_contract",

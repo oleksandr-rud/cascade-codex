@@ -1,0 +1,40 @@
+cases:
+  - actor_id: standard-actor
+    id: support-dev-standard
+    partition: development
+    scenario_id: resolve-account-v1
+    slices:
+      - standard
+  - actor_id: risk-actor
+    id: support-regression-risk
+    partition: regression
+    scenario_id: resolve-account-v1
+    slices:
+      - risk
+  - actor_id: standard-actor
+    id: support-holdout-standard
+    partition: holdout
+    scenario_id: resolve-account-v1
+    slices:
+      - standard
+  - actor_id: standard-actor
+    id: support-calibration-standard-a
+    partition: calibration-reference
+    scenario_id: resolve-account-v1
+    slices:
+      - standard
+  - actor_id: risk-actor
+    id: support-calibration-risk-a
+    partition: calibration-reference
+    scenario_id: resolve-account-v1
+    slices:
+      - risk
+  - actor_id: standard-actor
+    id: support-calibration-standard-b
+    partition: calibration-reference
+    scenario_id: resolve-account-v1
+    slices:
+      - standard
+id: support-cases-v1
+leakage_policy: exclusive-case-identity
+schema_version: 1

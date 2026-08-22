@@ -1,0 +1,10 @@
+actor_ids:
+  - desktop-linux-actor
+claim_ids:
+  - desktop-platform-execution
+goal: Complete the exact isolated desktop form and preserve screen-scoped evidence.
+id: desktop-form-v1
+initial_state: {}
+schema_version: 1
+stop_conditions:
+  - the required desktop task and completion oracle pass

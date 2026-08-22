@@ -17,6 +17,7 @@ import {
   utcNow,
   writeJsonAtomic,
 } from "./common";
+import { readStructured } from "./structured-data";
 import { lstatSync, realpathSync } from "node:fs";
 import { relative, resolve } from "node:path";
 import {
@@ -32,12 +33,15 @@ export const ADMISSION_POLICY_BUNDLE = "cascade-core@42";
 export const MAX_ADMISSION_REQUEST_CHARACTERS = 4_000;
 const MAX_REDACTED_REQUEST_CHARACTERS = MAX_ADMISSION_REQUEST_CHARACTERS;
 const MAX_ADMISSION_REQUEST_FILE_BYTES = MAX_ADMISSION_REQUEST_CHARACTERS * 4;
-const POLICY_PATH = rootPath(".codex/task-admission/policies/core.json");
-const CONTROL_PATH = rootPath(".codex/task-admission/control-catalog.json");
+export const ADMISSION_POLICY_SOURCE_FILE = ".codex/task-admission/policies/core.yaml";
+export const ADMISSION_CONTROL_SOURCE_FILE = ".codex/task-admission/control-catalog.yaml";
+const POLICY_PATH = rootPath(ADMISSION_POLICY_SOURCE_FILE);
+const CONTROL_PATH = rootPath(ADMISSION_CONTROL_SOURCE_FILE);
 const CONTROL_SCHEMA_PATH = rootPath(".codex/task-admission/control-catalog.schema.json");
 const ENVELOPE_SCHEMA_PATH = rootPath(".codex/task-admission/task-envelope.schema.json");
 const POLICY_SCHEMA_PATH = rootPath(".codex/task-admission/policy.schema.json");
-const CORPUS_PATH = rootPath("harness-evals/task-admission/cases.json");
+const POLICY_SOURCE_SCHEMA_PATH = rootPath(".codex/task-admission/policy-source.schema.json");
+const CORPUS_PATH = rootPath("harness-evals/task-admission/cases.yaml");
 const CASE_SCHEMA_PATH = rootPath("harness-evals/task-admission/case.schema.json");
 const ASSESSMENT_SCHEMA_PATH = rootPath("harness-evals/task-admission/assessment.schema.json");
 
@@ -266,7 +270,7 @@ interface RequestSpan {
   source: "USER" | "EXTERNAL_SOURCE";
 }
 
-interface AdmissionPolicy extends JsonObject {
+export interface AdmissionPolicy extends JsonObject {
   id: string;
   version: number;
   priority: typeof POLICY_PRIORITIES[number];
@@ -290,6 +294,57 @@ interface ControlDefinition extends JsonObject {
   purpose: string;
 }
 
+const POLICY_AUTHORING_DEFAULTS = {
+  match_all: [],
+  match_any: [],
+  required_controls: [],
+  forbidden_controls: [],
+  minimum_route: null,
+  minimum_assurance: null,
+  minimum_evidence: null,
+  approval: null,
+  conflict_set: null,
+} as const;
+
+export function normalizeAdmissionPolicyBundle(source: unknown): JsonObject {
+  if (!isObject(source) || !Array.isArray(source.policies)) {
+    throw new CascadeError("task admission policy source must contain a policies array");
+  }
+  return {
+    ...source,
+    policies: source.policies.map((policy: unknown, index: number) => {
+      if (!isObject(policy)) {
+        throw new CascadeError(`task admission policy source policies[${index}] must be an object`);
+      }
+      return {
+        ...POLICY_AUTHORING_DEFAULTS,
+        ...policy,
+      };
+    }),
+  };
+}
+
+export async function loadAdmissionPolicyBundle(): Promise<JsonObject> {
+  const [source, sourceSchema, policySchema] = await Promise.all([
+    readStructured<JsonObject>(POLICY_PATH, ADMISSION_POLICY_SOURCE_FILE),
+    readJson<JsonObject>(POLICY_SOURCE_SCHEMA_PATH),
+    readJson<JsonObject>(POLICY_SCHEMA_PATH),
+  ]);
+  assertJsonSchema(source, sourceSchema, "$");
+  const bundle = normalizeAdmissionPolicyBundle(source);
+  assertJsonSchema(bundle, policySchema, "$");
+  return bundle;
+}
+
+export async function loadAdmissionControlCatalog(): Promise<JsonObject> {
+  const [catalog, schema] = await Promise.all([
+    readStructured<JsonObject>(CONTROL_PATH, ADMISSION_CONTROL_SOURCE_FILE),
+    readJson<JsonObject>(CONTROL_SCHEMA_PATH),
+  ]);
+  assertJsonSchema(catalog, schema, "$");
+  return catalog;
+}
+
 export interface ToolAdmissionDecision {
   behavior: "allow" | "deny" | "defer";
   action_class: ToolActionClass;
@@ -298,8 +353,8 @@ export interface ToolAdmissionDecision {
 
 const [ENVELOPE_SCHEMA, POLICY_BUNDLE, CONTROL_CATALOG, CASE_SCHEMA, ASSESSMENT_SCHEMA] = await Promise.all([
   readJson<JsonObject>(ENVELOPE_SCHEMA_PATH),
-  readJson<JsonObject>(POLICY_PATH),
-  readJson<JsonObject>(CONTROL_PATH),
+  loadAdmissionPolicyBundle(),
+  loadAdmissionControlCatalog(),
   readJson<JsonObject>(CASE_SCHEMA_PATH),
   readJson<JsonObject>(ASSESSMENT_SCHEMA_PATH),
 ]);
@@ -1644,14 +1699,16 @@ export function validateAdmissionCaseBundle(source: unknown): asserts source is 
 }
 
 export async function validateAdmissionRepository(): Promise<{ policy_count: number; control_count: number; case_count: number }> {
-  const [bundle, catalog, envelopeSchema, policySchema, controlSchema, cases, caseSchema, assessmentSchema] = await Promise.all([
-    readJson<JsonObject>(POLICY_PATH), readJson<JsonObject>(CONTROL_PATH), readJson<JsonObject>(ENVELOPE_SCHEMA_PATH),
-    readJson<JsonObject>(POLICY_SCHEMA_PATH), readJson<JsonObject>(CONTROL_SCHEMA_PATH), readJson<JsonObject>(CORPUS_PATH), readJson<JsonObject>(CASE_SCHEMA_PATH),
+  const [source, catalog, envelopeSchema, policySchema, policySourceSchema, controlSchema, cases, caseSchema, assessmentSchema] = await Promise.all([
+    readStructured<JsonObject>(POLICY_PATH, ADMISSION_POLICY_SOURCE_FILE), loadAdmissionControlCatalog(), readJson<JsonObject>(ENVELOPE_SCHEMA_PATH),
+    readJson<JsonObject>(POLICY_SCHEMA_PATH), readJson<JsonObject>(POLICY_SOURCE_SCHEMA_PATH), readJson<JsonObject>(CONTROL_SCHEMA_PATH), readStructured<JsonObject>(CORPUS_PATH, "harness-evals/task-admission/cases.yaml"), readJson<JsonObject>(CASE_SCHEMA_PATH),
     readJson<JsonObject>(ASSESSMENT_SCHEMA_PATH),
   ]);
-  if (envelopeSchema.$id !== "https://cascade.local/schemas/task-envelope.v41.schema.json" || policySchema.$id !== "https://cascade.local/schemas/task-admission-policy.v41.schema.json" || controlSchema.$id !== "https://cascade.local/schemas/task-admission-controls.v41.schema.json" || caseSchema.$id !== "https://cascade.local/schemas/task-admission-cases.v41.schema.json" || assessmentSchema.$id !== "https://cascade.local/schemas/task-admission-assessment.v41.schema.json") throw new CascadeError("task admission public schema identity is invalid");
+  if (envelopeSchema.$id !== "https://cascade.local/schemas/task-envelope.v41.schema.json" || policySchema.$id !== "https://cascade.local/schemas/task-admission-policy.v41.schema.json" || policySourceSchema.$id !== "https://cascade.local/schemas/task-admission-policy-source.v41.schema.json" || controlSchema.$id !== "https://cascade.local/schemas/task-admission-controls.v41.schema.json" || caseSchema.$id !== "https://cascade.local/schemas/task-admission-cases.v41.schema.json" || assessmentSchema.$id !== "https://cascade.local/schemas/task-admission-assessment.v41.schema.json") throw new CascadeError("task admission public schema identity is invalid");
   const publicSchemaVersions = [envelopeSchema, policySchema, controlSchema, caseSchema, assessmentSchema].map((schema) => schema.properties?.schema_version?.const);
   if (publicSchemaVersions.some((version) => version !== ADMISSION_SCHEMA_VERSION)) throw new CascadeError("task admission public schema versions must advance together");
+  assertJsonSchema(source, policySourceSchema, "$");
+  const bundle = normalizeAdmissionPolicyBundle(source);
   assertJsonSchema(bundle, policySchema, "$");
   assertJsonSchema(catalog, controlSchema, "$");
   validateAdmissionCaseBundle(cases);
@@ -1689,6 +1746,26 @@ export async function validateAdmissionRepository(): Promise<{ policy_count: num
   if (`${bundle.bundle_id}@${bundle.bundle_version}` !== ADMISSION_POLICY_BUNDLE || bundle.schema_version !== ADMISSION_SCHEMA_VERSION || catalog.catalog_version !== ADMISSION_SCHEMA_VERSION || cases.schema_version !== ADMISSION_SCHEMA_VERSION || cases.policy_bundle_version !== ADMISSION_POLICY_BUNDLE || cases.case_set_version !== ADMISSION_SCHEMA_VERSION) throw new CascadeError("task admission bundle, corpus, and public version update must advance together");
   if (assessmentSchema.properties?.schema_version?.const !== ADMISSION_SCHEMA_VERSION || assessmentSchema.additionalProperties !== false) throw new CascadeError("task admission assessment schema is incomplete");
   return { policy_count: policyIds.length, control_count: controlIds.length, case_count: caseIds.length };
+}
+
+let admissionRepositoryValidation: Promise<{
+  policy_count: number;
+  control_count: number;
+  case_count: number;
+}> | undefined;
+
+function validateAdmissionRepositoryOnce(): Promise<{
+  policy_count: number;
+  control_count: number;
+  case_count: number;
+}> {
+  if (!admissionRepositoryValidation) {
+    admissionRepositoryValidation = validateAdmissionRepository().catch((error) => {
+      admissionRepositoryValidation = undefined;
+      throw error;
+    });
+  }
+  return admissionRepositoryValidation;
 }
 
 function requestedHardActionClasses(tags: Set<string>): HardActionClass[] {
@@ -2125,7 +2202,10 @@ function buildTaskDerivationInput(input: AdmissionRequest): TaskDerivationInput 
 
 export async function compileTaskEnvelope(input: AdmissionRequest): Promise<TaskEnvelope> {
   assertAdmissionRequestBound(input.request);
-  await validateAdmissionRepository();
+  // The compiler policy/control objects are immutable module snapshots. Validate
+  // their repository bundle once instead of reparsing the full YAML corpus for
+  // every envelope compiled in the same process.
+  await validateAdmissionRepositoryOnce();
   if (input.prior_envelope) validateTaskEnvelope(input.prior_envelope);
   const derivationInput = buildTaskDerivationInput(input);
   const envelope = sealEnvelope(deriveTaskEnvelopePayload(derivationInput));
@@ -3223,8 +3303,11 @@ export async function reclassifyTaskEnvelope(prior: TaskEnvelope, request: Omit<
 }
 
 export async function runAdmissionCorpus(): Promise<JsonObject> {
-  await validateAdmissionRepository();
-  const source = await readJson<JsonObject>(CORPUS_PATH);
+  await validateAdmissionRepositoryOnce();
+  const source = await readStructured<JsonObject>(
+    CORPUS_PATH,
+    "harness-evals/task-admission/cases.yaml",
+  );
   validateAdmissionCaseBundle(source);
   const results: JsonObject[] = [];
   for (const item of source.cases as JsonObject[]) {

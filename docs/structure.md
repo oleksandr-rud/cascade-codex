@@ -46,7 +46,7 @@ infrastructure.
 ## Active Work Paths
 
 - Active registry: `docs/work/active.md`
-- Deep-onboarding evidence: `docs/work/onboarding-manifest.json` in target
+- Deep-onboarding evidence: `docs/work/onboarding-manifest.yaml` in target
   repositories only; it binds phase dispositions, project-part/doc-routing
   decisions, preserved collision backups, config/source digests, validation,
   and drift.
@@ -113,8 +113,9 @@ not rewritten.
 - Cross-workline coordination state: `docs/work/graphs/CG-XXX-slug.md`; never
   embed Coordination Graph boilerplate in product/source/generated specs
 - Reusable planning-time graph fragments:
-  `docs/patterns/workflow/fragments/GF-*.fragment.json`; these are pattern
-  definitions, not active work or generated product/spec documents
+  `docs/patterns/workflow/fragments/GF-*.fragment.yaml`; these are pattern
+  definitions validated through the shared strict-YAML loader and their JSON
+  Schema, not active work or generated product/spec documents
 - Codebase vocabulary: `docs/glossary.md`
 
 ## Business Analysis Paths
@@ -179,7 +180,7 @@ decision-heavy; otherwise update the smallest existing owner docs.
 - Stack selection evidence validation:
   `scripts/validate_stack_selection_evidence.py`
 - Safe source profile manifest and preview/write tool:
-  `docs/patterns/architecture-defaults/architecture-scaffold-profiles.json`
+  `docs/patterns/architecture-defaults/architecture-scaffold-profiles.yaml`
   and `scripts/scaffold_architecture_default.py`
 - Reusable architecture lessons: `docs/patterns/boundaries/index.md` or another
   bounded `docs/patterns/{entry}/` folder with metadata and pack YAML
@@ -235,7 +236,7 @@ Required files per entry:
 
 The workflow entry may additionally contain
 `fragments/graph-fragment.schema.json`, `fragments/_index.md`, and versioned
-`fragments/GF-*.fragment.json` definitions. Planning and orchestration assemble
+`fragments/GF-*.fragment.yaml` definitions. Planning and orchestration assemble
 only applicable fragments; active instances remain in the owning plan, lane
 Task Graph, or Coordination Graph.
 
@@ -249,12 +250,12 @@ overwrite target files.
 
 ## Harness Evaluation Paths
 
-- Source cases: `harness-evals/skill-cases.json`
-- Cross-skill collisions: `harness-evals/interactions.json`
+- Source cases: `harness-evals/skill-cases.yaml`
+- Cross-skill collisions: `harness-evals/interactions.yaml`
 - Generated catalog: `harness-evals/scenarios.generated.json`
 - Target response schema: `harness-evals/response.schema.json`
 - Judgment schema: `harness-evals/judge-response.schema.json`
-- Judge profiles and rubrics: `harness-evals/judge-profiles.json`, `harness-evals/rubrics/`
+- Judge profiles and rubrics: `harness-evals/judge-profiles.yaml`, `harness-evals/rubrics/`
 - Runner, eligibility checks, scoring, and aggregation: `scripts/cascade/evals.ts`
 - Ignored live run evidence: `.artifacts/harness-evals/<run-id>/`
 - Durable scenario and trace rules: `docs/patterns/agent-evaluation/index.md`
@@ -295,13 +296,19 @@ Canonical deterministic runtime authority owned by W-004:
 - Typed reusable tasks: `product-evals/tasks/`
 - Shared simulation schemas: `product-evals/simulations/`
 - Product-evaluation artifact and privacy default:
-  `product-evals/artifact-policy.json`
+  `product-evals/artifact-policy.yaml`
+- Markdown carries prose, while human-authored structured definitions use
+  strict YAML across policies, rules, cases, campaigns, tasks, claims, rubrics,
+  fixtures, and registries. JSON remains for schemas and explicit host,
+  generated, or runtime protocol artifacts. Use `bun scripts/cascade.ts policy`
+  to validate, list, extract, or deterministically compose policy registries.
 - Harness-only simulation fixtures: `product-evals/simulations/harness/`
 - Target-product simulations: `product-evals/simulations/product/`
 - Harness and product simulation intakes: `product-evals/intakes/harness/` and
   `product-evals/intakes/product/`; Task Envelope snapshots remain beneath the
   same selected scope root.
-- Versioned claims and policies: `product-evals/claims/` and `product-evals/policies/`
+- Versioned claims and strict-YAML policies: `product-evals/claims/` and
+  `product-evals/policies/`
 - Deterministic oracle definitions: `product-evals/oracles/`
 - Versioned metrics and exact treatment identities: `product-evals/metrics/` and
   `product-evals/treatments/`
@@ -313,7 +320,7 @@ Canonical deterministic runtime authority owned by W-004:
   `scripts/cascade/`
 - Isolated Playwright package and configuration: `.codex/harness-tooling/`
 - Machine-readable target starter:
-  `.codex/skills/simulation-campaigns/templates/starter/package.template.json`
+  `.codex/skills/simulation-campaigns/templates/starter/package.template.yaml`
 - Human design template:
   `.codex/skills/simulation-campaigns/templates/campaign-design.md`
 - Ignored append-only run container:
@@ -373,7 +380,7 @@ the completed run manifest and exact proposal/run binding. `ACCEPTED` requires a
 one reviewed external-evidence manifest and authorizes only the
 `synthesis-to-spec` route. Remote storage and export are disabled by default,
 raw sensitive material is excluded, and restricted evidence requires operator
-attestation under `product-evals/artifact-policy.json`.
+attestation under `product-evals/artifact-policy.yaml`.
 
 W-012 will own only the agent-to-command/HTTP/browser/terminal/desktop/mobile
 composition profiles, manifests, fake matrix, tool-event linkage, and joined

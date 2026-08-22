@@ -324,7 +324,7 @@ architecture.”
 
 After a profile is explicitly adopted or adapted, five initial source
 structures can be rendered from
-`architecture-scaffold-profiles.json`:
+`architecture-scaffold-profiles.yaml`:
 
 | Profile | Selected technology | Preserved source boundary |
 |---|---|---|

@@ -1,0 +1,122 @@
+actors:
+  - abstention:
+      when_conflicted: true
+      when_unsupported: true
+    actor_class: representative
+    communication_policy:
+      clarification: ask
+      style: direct
+    decision_policy:
+      retry_limit: 2
+      stop_on_blocked: true
+      strategy: rule-based
+    friction_behaviors: []
+    goals:
+      - complete the deterministic support task
+    id: standard-actor
+    invariants:
+      - do not infer real-user behavior
+    knowledge:
+      known:
+        - fixture account identifier
+      unknown:
+        - all production customer context
+    persona_ids:
+      - P-999
+    slices:
+      - standard
+    state_memory:
+      max_facts: 8
+      scope: scenario
+    uncertainty:
+      - real-user behavior is not represented
+    weight: 0.7
+  - abstention:
+      when_conflicted: true
+      when_unsupported: true
+    actor_class: edge
+    communication_policy:
+      clarification: ask
+      style: ambiguous
+    decision_policy:
+      retry_limit: 1
+      stop_on_blocked: true
+      strategy: scripted
+    friction_behaviors:
+      - provide ambiguous input once
+    goals:
+      - complete the deterministic support task
+    id: risk-actor
+    invariants:
+      - do not infer real-user behavior
+    knowledge:
+      known:
+        - fixture account identifier
+      unknown:
+        - all production customer context
+    persona_ids:
+      - P-999
+    slices:
+      - risk
+    state_memory:
+      max_facts: 8
+      scope: scenario
+    uncertainty:
+      - real-user behavior is not represented
+    weight: 0.3
+dimensions:
+  - confidence: low
+    description: Vary deterministic communication clarity without inferring real-user prevalence.
+    id: communication-directness
+    permitted_variation: true
+    source_persona_ids:
+      - P-999
+    uncertainty: The fixture provides no evidence about real support users.
+evidence_sources:
+  - id: framework-fixture-source
+    kind: framework-fixture
+    minimized: true
+    operator_attestation: null
+    permitted_purpose: deterministic framework contract testing
+    prohibited_uses:
+      - product behavior claims
+      - population prevalence claims
+      - release eligibility claims
+    reference: P-999 exists only to exercise contract mechanics.
+    reference_window: not applicable
+    retention_policy:
+      deletion_owner: Cascade harness maintainer
+      expires_at: null
+      mode: source-controlled
+    sensitivity: none
+    source_authority: Cascade harness maintainer
+    usage_rights: fixture
+generator:
+  input_digest: 2499e79f69b762828ef7c2cd470d851e54af7245542c9f2735baf8b1c02b641f
+  kind: deterministic-manifest
+  name: cascade-persona-derivation
+  version: 1.0.0
+id: p-999-coverage-v1
+invariants:
+  - Exercise only deterministic framework contract behavior.
+  - Never support product, population, calibration, or release claims.
+mode: coverage
+mutation_axes:
+  - id: communication-clarity
+    rationale: Cover deterministic standard and risk slices.
+    values:
+      - direct
+      - ambiguous
+population_id: support-actors-v2
+product_personas:
+  - path: docs/product/personas/fixtures/P-999-framework-support-role.md
+    persona_id: P-999
+    revision: 1
+    sha256: ec4a9d65defa3f02d6e03565d4be64b3062eb317f279cdb0dc15f483956a4bbf
+review:
+  reviewed_at: 2026-08-03T00:00:00Z
+  reviewer_identity: cascade-harness-maintainer
+  status: approved
+schema_version: 1
+simulation_id: simulation-correctness-fixture
+weight_semantics: test-allocation

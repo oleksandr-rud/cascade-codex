@@ -1,0 +1,10 @@
+actor_ids:
+  - agent-response-fixture-actor
+claim_ids:
+  - agent-response-fixture-execution
+goal: Normalize one source-blind standalone response and preserve per-claim evidence without accepting its proposed next route.
+id: standalone-agent-response-v1
+initial_state: {}
+schema_version: 1
+stop_conditions:
+  - agent response contract oracle passes

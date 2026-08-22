@@ -1,0 +1,16 @@
+actor_ids:
+  - standard-actor
+  - risk-actor
+claim_ids:
+  - fixture-state-transition
+  - fixture-population-coverage
+  - fixture-release-eligibility
+goal: Move the synthetic account from pending to resolved while recording one attempt.
+id: resolve-account-v1
+initial_state:
+  account.attempts: 0
+  account.status: pending
+schema_version: 1
+stop_conditions:
+  - account.status equals resolved
+  - account.attempts equals 1

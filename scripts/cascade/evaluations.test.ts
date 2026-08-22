@@ -97,7 +97,7 @@ function request(): EvaluationRequest {
       model: "gpt-5.6-terra",
       reasoning_effort: "high",
       timeout_ms: 300000,
-      rubric_file: "product-evals/rubrics/simulation-evaluator-v1.json",
+      rubric_file: "product-evals/rubrics/simulation-evaluator-v1.yaml",
     },
     rubric: {
       schema_version: 1,
@@ -328,7 +328,7 @@ describe("Codex simulation evaluation", () => {
 
   test("recomputes the general mechanical status after specialized claims are removed", async () => {
     const resolved = await resolveCampaign(
-      "product-evals/campaigns/simulation-contract-smoke.json",
+      "product-evals/campaigns/simulation-contract-smoke.yaml",
     );
     const failedMechanical = mechanical();
     failedMechanical.status = "BLOCKED";
@@ -361,7 +361,7 @@ describe("Codex simulation evaluation", () => {
 
   test("conservatively merges Codex judgments", async () => {
     const resolved = await resolveCampaign(
-      "product-evals/campaigns/simulation-codex-evaluation-smoke.json",
+      "product-evals/campaigns/simulation-codex-evaluation-smoke.yaml",
     );
     const value = validateCodexEvaluationOutput(
       output(),
@@ -386,7 +386,7 @@ describe("Codex simulation evaluation", () => {
 
   test("binds refinement proposals to current persona derivations", async () => {
     const resolved = await resolveCampaign(
-      "product-evals/campaigns/simulation-codex-evaluation-smoke.json",
+      "product-evals/campaigns/simulation-codex-evaluation-smoke.yaml",
     );
     const value = output();
     value.refinement_proposals = [
@@ -437,7 +437,7 @@ describe("Codex simulation evaluation", () => {
 
   test("rejects stale receipts before aggregation", async () => {
     const resolved = await resolveCampaign(
-      "product-evals/campaigns/simulation-contract-smoke.json",
+      "product-evals/campaigns/simulation-contract-smoke.yaml",
     );
     const fixtureIdentity = {
       ...identity(),

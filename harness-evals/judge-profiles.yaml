@@ -1,0 +1,14 @@
+profiles:
+  - id: outcome-v1
+    judge_type: outcome
+    model_profile: judge
+    reasoning_effort: high
+    required_for_acceptance: true
+    rubric: harness-evals/rubrics/outcome-v1.yaml
+  - id: trajectory-v1
+    judge_type: trajectory
+    model_profile: judge
+    reasoning_effort: high
+    required_for_acceptance: true
+    rubric: harness-evals/rubrics/trajectory-v1.yaml
+schema_version: 1

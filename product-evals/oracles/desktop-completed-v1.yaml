@@ -1,0 +1,5 @@
+expected: true
+id: desktop-completed-v1
+path: desktop.completed
+schema_version: 1
+type: state-equals

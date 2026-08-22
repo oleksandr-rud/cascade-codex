@@ -1,0 +1,5 @@
+expected: true
+id: mobile-completed-v1
+path: mobile.completed
+schema_version: 1
+type: state-equals

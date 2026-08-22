@@ -44,7 +44,7 @@
       "uniqueItems": true,
       "items": {
         "type": "string",
-        "pattern": "^product-evals/simulations/(harness|product)/.+/populations/.+\\.json$"
+        "pattern": "^product-evals/simulations/(harness|product)/.+/populations/.+\\.yaml$"
       }
     },
     "scenario_files": {
@@ -53,16 +53,16 @@
       "uniqueItems": true,
       "items": {
         "type": "string",
-        "pattern": "^product-evals/simulations/(harness|product)/.+/scenarios/.+\\.json$"
+        "pattern": "^product-evals/simulations/(harness|product)/.+/scenarios/.+\\.yaml$"
       }
     },
     "world_file": {
       "type": "string",
-      "pattern": "^product-evals/simulations/(harness|product)/.+/worlds/.+\\.json$"
+      "pattern": "^product-evals/simulations/(harness|product)/.+/worlds/.+\\.yaml$"
     },
     "dataset_file": {
       "type": "string",
-      "pattern": "^product-evals/simulations/(harness|product)/.+/datasets/.+\\.json$"
+      "pattern": "^product-evals/simulations/(harness|product)/.+/datasets/.+\\.yaml$"
     },
     "metric_files": {
       "type": "array",
@@ -70,7 +70,7 @@
       "uniqueItems": true,
       "items": {
         "type": "string",
-        "pattern": "^product-evals/metrics/.+\\.json$"
+        "pattern": "^product-evals/metrics/.+\\.yaml$"
       }
     },
     "treatment_files": {
@@ -79,12 +79,12 @@
       "uniqueItems": true,
       "items": {
         "type": "string",
-        "pattern": "^product-evals/treatments/.+\\.json$"
+        "pattern": "^product-evals/treatments/.+\\.yaml$"
       }
     },
     "calibration_file": {
       "type": "string",
-      "pattern": "^product-evals/calibrations/.+\\.json$"
+      "pattern": "^product-evals/calibrations/.+\\.yaml$"
     }
   }
 }

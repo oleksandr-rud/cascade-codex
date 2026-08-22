@@ -1,0 +1,23 @@
+assertion: The deterministic world applies the declared state transition and preserves the resulting state for oracle evaluation.
+class: mechanical-behavior
+evidence_requirements:
+  - source-manifest
+  - execution-receipt
+  - task-result
+  - trajectory
+  - policy-decisions
+  - oracle
+  - cleanup
+id: fixture-state-transition
+population_authority: none
+required_metric_ids: []
+required_oracle_ids:
+  - account-resolved-v1
+  - account-attempt-recorded-v1
+required_policy_ids:
+  - allow-fixture-state-actions-v1
+requires_calibration: false
+schema_version: 1
+scope:
+  simulation_id: simulation-correctness-fixture
+  world_id: support-world-v1

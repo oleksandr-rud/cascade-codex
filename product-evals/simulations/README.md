@@ -11,7 +11,7 @@ Simulation definitions use two explicit authority roots:
   campaign's ordinary policy, oracle, evaluation, and cleanup gates.
 
 Every manifest must declare `simulation_scope` and live at
-`product-evals/simulations/<simulation_scope>/<simulation-id>/manifest.json`. Runtime
+`product-evals/simulations/<simulation_scope>/<simulation-id>/manifest.yaml`. Runtime
 resolution rejects scope/path mismatches. Shared schemas stay at this root.
 
 The separate `harness-evals/` tree is the Cascade skill/agent harness-evaluation

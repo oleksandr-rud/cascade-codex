@@ -28,7 +28,7 @@
       ],
       "properties": {
         "simulation_file": {
-          "pattern": "^product-evals/simulations/product/(?:(?!\\.{1,2}(?:/|$))[^/]+/)+manifest\\.json$"
+          "pattern": "^product-evals/simulations/product/(?:(?!\\.{1,2}(?:/|$))[^/]+/)+manifest\\.yaml$"
         },
         "intake_file": {
           "pattern": "^product-evals/intakes/product/(?:(?!\\.{1,2}(?:/|$))[^/]+/)*(?!\\.{1,2}(?:/|$))[^/]+\\.json$"
@@ -47,7 +47,7 @@
       ],
       "properties": {
         "simulation_file": {
-          "pattern": "^product-evals/simulations/harness/(?:(?!\\.{1,2}(?:/|$))[^/]+/)+manifest\\.json$"
+          "pattern": "^product-evals/simulations/harness/(?:(?!\\.{1,2}(?:/|$))[^/]+/)+manifest\\.yaml$"
         },
         "intake_file": {
           "pattern": "^product-evals/intakes/harness/(?:(?!\\.{1,2}(?:/|$))[^/]+/)*(?!\\.{1,2}(?:/|$))[^/]+\\.json$"
@@ -147,11 +147,11 @@
     },
     "evaluation_profile_file": {
       "type": "string",
-      "pattern": "^product-evals/rubrics/.+\\.json$"
+      "pattern": "^product-evals/rubrics/.+\\.yaml$"
     },
     "simulation_file": {
       "type": "string",
-      "pattern": "^product-evals/simulations/(harness|product)/.+/manifest\\.json$"
+      "pattern": "^product-evals/simulations/(harness|product)/.+/manifest\\.yaml$"
     },
     "task_files": {
       "type": "array",
@@ -159,7 +159,7 @@
       "uniqueItems": true,
       "items": {
         "type": "string",
-        "pattern": "^product-evals/tasks/.+\\.json$"
+        "pattern": "^product-evals/tasks/.+\\.yaml$"
       }
     },
     "claim_files": {
@@ -168,7 +168,7 @@
       "uniqueItems": true,
       "items": {
         "type": "string",
-        "pattern": "^product-evals/claims/.+\\.json$"
+        "pattern": "^product-evals/claims/.+\\.yaml$"
       }
     },
     "policy_files": {
@@ -176,7 +176,7 @@
       "uniqueItems": true,
       "items": {
         "type": "string",
-        "pattern": "^product-evals/policies/.+\\.json$"
+        "pattern": "^product-evals/policies/.+\\.yaml$"
       }
     },
     "oracle_files": {
@@ -185,7 +185,7 @@
       "uniqueItems": true,
       "items": {
         "type": "string",
-        "pattern": "^product-evals/oracles/.+\\.json$"
+        "pattern": "^product-evals/oracles/.+\\.yaml$"
       }
     },
     "intake_file": {

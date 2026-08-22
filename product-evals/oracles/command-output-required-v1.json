@@ -1,6 +1,0 @@
-{
-  "schema_version": 1,
-  "id": "command-output-required-v1",
-  "type": "task-file-exists",
-  "file": "outputs/result.json"
-}

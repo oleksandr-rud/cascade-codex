@@ -1,0 +1,13 @@
+actors:
+  - behavior:
+      strategy: follow only the authored launch, wait, and capture sequence
+    id: mobile-provider-actor
+    slices:
+      - mobile-provider
+    weight: 1
+id: mobile-provider-actors-v1
+schema_version: 1
+source:
+  description: Deterministic harness-only actor; it does not represent product users.
+  kind: synthetic
+  minimized: true

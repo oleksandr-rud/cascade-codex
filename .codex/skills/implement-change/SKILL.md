@@ -17,7 +17,7 @@ enough context is gathered. Do not use for open-ended planning.
 5. Relevant architecture, product, design, and testing patterns.
 6. Validation output from failed checks or repros.
 7. The current plan's graph-fragment composition ledger and applicable
-   `docs/patterns/workflow/fragments/GF-*.fragment.json` definitions when the
+   `docs/patterns/workflow/fragments/GF-*.fragment.yaml` definitions when the
    implementation slice was composed from reusable fragments.
 8. For graph-shaped work, `docs/patterns/workflow/graph-shaped-work.md`, the
    applicable lane-local Task Graph, and any authoritative

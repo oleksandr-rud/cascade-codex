@@ -1,0 +1,13 @@
+actors:
+  - behavior:
+      strategy: follow only the authored prompt, resize, signal, and capture sequence
+    id: terminal-pty-actor
+    slices:
+      - terminal-pty
+    weight: 1
+id: terminal-pty-actors-v1
+schema_version: 1
+source:
+  description: Deterministic harness-only actor; it does not represent product users.
+  kind: synthetic
+  minimized: true

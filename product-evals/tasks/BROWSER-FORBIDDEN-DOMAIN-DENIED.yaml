@@ -1,0 +1,29 @@
+browser:
+  actions:
+    - type: browser-navigate
+      url: https://forbidden.invalid/admin
+  downloads: false
+  evidence:
+    screenshot: true
+    trace: true
+  fixture_file: product-evals/simulations/harness/browser-fixture.html
+  network: deny
+  observation:
+    expected_text: Waiting
+    locator:
+      kind: role
+      role: status
+  profile: ephemeral
+  uploads: false
+driver:
+  adapter: builtin-playwright
+  type: playwright
+id: BROWSER-FORBIDDEN-DOMAIN-DENIED
+kind: browser
+oracle_ids:
+  - browser-waiting-status-v1
+policy_ids:
+  - deny-browser-forbidden-domain-v1
+required: false
+schema_version: 4
+timeout_ms: 15000

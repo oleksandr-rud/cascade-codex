@@ -1,0 +1,28 @@
+cases:
+  - actor_id: browser-local-actor
+    id: browser-local-development
+    partition: development
+    scenario_id: browser-complete-task-v1
+    slices:
+      - browser-local-fixture
+  - actor_id: browser-local-actor
+    id: browser-local-regression
+    partition: regression
+    scenario_id: browser-complete-task-v1
+    slices:
+      - browser-local-fixture
+  - actor_id: browser-local-actor
+    id: browser-local-holdout
+    partition: holdout
+    scenario_id: browser-complete-task-v1
+    slices:
+      - browser-local-fixture
+  - actor_id: browser-local-actor
+    id: browser-local-calibration
+    partition: calibration-reference
+    scenario_id: browser-complete-task-v1
+    slices:
+      - browser-local-fixture
+id: browser-local-cases-v1
+leakage_policy: exclusive-case-identity
+schema_version: 1

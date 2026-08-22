@@ -411,7 +411,7 @@ function refinementProposal(runId: string) {
     },
     derivation: {
       id: "p-999-coverage-v1",
-      path: "product-evals/simulations/harness/fixture/derivations/P-999.json",
+      path: "product-evals/simulations/harness/fixture/derivations/P-999.yaml",
       sha256: "b".repeat(64),
     },
     proposal_type: "research-question",
@@ -810,15 +810,15 @@ function strictCampaignDefinition(provider: "codex" | "fixture") {
       max_checkpoint_bytes: 128 * 1024,
       lease_ttl_ms: 186_000,
     },
-    evaluation_profile_file: `product-evals/rubrics/strict-${provider}-profile.json`,
-    simulation_file: "product-evals/simulations/strict-terminal.json",
-    task_files: ["product-evals/tasks/strict-task.json"],
+    evaluation_profile_file: `product-evals/rubrics/strict-${provider}-profile.yaml`,
+    simulation_file: "product-evals/simulations/strict-terminal.yaml",
+    task_files: ["product-evals/tasks/strict-task.yaml"],
     claim_files: [
-      "product-evals/claims/claim-1.json",
-      "product-evals/claims/release-claim.json",
+      "product-evals/claims/claim-1.yaml",
+      "product-evals/claims/release-claim.yaml",
     ],
-    policy_files: ["product-evals/policies/strict-policy.json"],
-    oracle_files: ["product-evals/oracles/strict-oracle.json"],
+    policy_files: ["product-evals/policies/strict-policy.yaml"],
+    oracle_files: ["product-evals/oracles/strict-oracle.yaml"],
     specialized_evaluation: null,
   };
 }
@@ -872,7 +872,7 @@ async function seedStrictProductRun(
         model: "strict-model",
         reasoning_effort: "high",
         timeout_ms: 30_000,
-        rubric_file: "product-evals/rubrics/strict-rubric.json",
+        rubric_file: "product-evals/rubrics/strict-rubric.yaml",
       }
     : {
         schema_version: 1,
@@ -973,8 +973,8 @@ async function seedStrictProductRun(
     dataset_id: "strict-dataset",
     treatment_ids: treatments.map((item) => item.id),
     metric_ids: [metric.id],
-    simulated_scores_file: "product-evals/calibrations/strict.simulated.json",
-    reference_scores_file: "product-evals/calibrations/strict.reference.json",
+    simulated_scores_file: "product-evals/calibrations/strict.simulated.yaml",
+    reference_scores_file: "product-evals/calibrations/strict.reference.yaml",
     reference: {
       kind: backdatedCalibration
         ? ("expert-labelled" as const)
@@ -1004,18 +1004,18 @@ async function seedStrictProductRun(
   };
   if (calibrationEnabled) {
     Object.assign(simulation, {
-      metric_files: ["product-evals/metrics/strict-metric.json"],
+      metric_files: ["product-evals/metrics/strict-metric.yaml"],
       treatment_files: treatments.map(
-        (item) => `product-evals/treatments/${item.id}.json`,
+        (item) => `product-evals/treatments/${item.id}.yaml`,
       ),
-      calibration_file: "product-evals/calibrations/strict-calibration.json",
+      calibration_file: "product-evals/calibrations/strict-calibration.yaml",
     });
   }
   const frozenSources = [];
   const authorityClaims = [];
   const definitions = [];
   const sources: Array<{ path: string; value: unknown }> = [
-    { path: "product-evals/campaigns/campaign-1.json", value: campaign },
+    { path: "product-evals/campaigns/campaign-1.yaml", value: campaign },
     { path: campaign.evaluation_profile_file, value: profile },
     { path: campaign.simulation_file, value: simulation },
     { path: campaign.task_files[0]!, value: task },
@@ -1024,13 +1024,13 @@ async function seedStrictProductRun(
     ...(rubric ? [{ path: profile.rubric_file!, value: rubric }] : []),
     ...(calibrationEnabled
       ? [
-          { path: "product-evals/metrics/strict-metric.json", value: metric },
+          { path: "product-evals/metrics/strict-metric.yaml", value: metric },
           ...treatments.map((item) => ({
-            path: `product-evals/treatments/${item.id}.json`,
+            path: `product-evals/treatments/${item.id}.yaml`,
             value: item,
           })),
           {
-            path: "product-evals/calibrations/strict-calibration.json",
+            path: "product-evals/calibrations/strict-calibration.yaml",
             value: calibrationDefinition,
           },
           {
@@ -1044,7 +1044,7 @@ async function seedStrictProductRun(
         ]
       : []),
     ...claimDefinitions.map((claim) => ({
-      path: `product-evals/claims/${claim.id}.json`,
+      path: `product-evals/claims/${claim.id}.yaml`,
       value: claim,
     })),
   ];
@@ -1054,7 +1054,7 @@ async function seedStrictProductRun(
     const record = await store.artifactFileRecord(frozenPath);
     definitions.push({ path: source.path, sha256: record.sha256 });
     const claim = claimDefinitions.find(
-      (candidate) => source.path === `product-evals/claims/${candidate.id}.json`,
+      (candidate) => source.path === `product-evals/claims/${candidate.id}.yaml`,
     );
     if (claim) {
       authorityClaims.push({
@@ -7571,7 +7571,7 @@ describe("CampaignArtifactStore", () => {
       resolve(extraDefinition.store.runRoot, staleSourcePath),
       "utf8",
     ));
-    const extraSourcePath = "product-evals/tasks/unreferenced-extra.json";
+    const extraSourcePath = "product-evals/tasks/unreferenced-extra.yaml";
     const extraFrozenPath = `execution/source/${valueDigest(extraSourcePath)}.json`;
     await extraDefinition.store.writeStageJson(extraFrozenPath, {
       schema_version: 1,

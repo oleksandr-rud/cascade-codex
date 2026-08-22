@@ -411,7 +411,7 @@ function supportedMechanical(resolved: ResolvedCampaign): MechanicalEvaluation {
 
 test("runtime general evaluation recomputes status after specialized claim removal", async () => {
   const resolved = await resolveCampaign(
-    "product-evals/campaigns/simulation-contract-smoke.json",
+    "product-evals/campaigns/simulation-contract-smoke.yaml",
   );
   const identity = receiptProjectionIdentity(resolved.campaign.id);
   const mechanical = supportedMechanical(resolved);
@@ -436,7 +436,7 @@ test("runtime general evaluation recomputes status after specialized claim remov
 
 test("runtime freshness rejects fixture receipt judgment substitution", async () => {
   const resolved = await resolveCampaign(
-    "product-evals/campaigns/simulation-contract-smoke.json",
+    "product-evals/campaigns/simulation-contract-smoke.yaml",
   );
   const identity = receiptProjectionIdentity(resolved.campaign.id);
   const mechanical = supportedMechanical(resolved);
@@ -461,7 +461,7 @@ test("runtime freshness rejects fixture receipt judgment substitution", async ()
 
 test("runtime freshness binds Codex receipt judgment to authenticated output", async () => {
   const resolved = await resolveCampaign(
-    "product-evals/campaigns/simulation-codex-evaluation-smoke.json",
+    "product-evals/campaigns/simulation-codex-evaluation-smoke.yaml",
   );
   const identity = receiptProjectionIdentity(resolved.campaign.id);
   const mechanical = supportedMechanical(resolved);
@@ -766,7 +766,7 @@ test("external confirmation receipts use bounded private nofollow input handling
 
 test("source revision Git children omit campaign confirmation secrets and preserve ordinary environment", async () => {
   const resolved = await resolveCampaign(
-    "product-evals/campaigns/simulation-contract-smoke.json",
+    "product-evals/campaigns/simulation-contract-smoke.yaml",
   );
   const policy = resolved.policies[0]!;
   policy.effect = "REQUIRE_CONFIRMATION";
@@ -855,7 +855,7 @@ test("source revision Git children omit campaign confirmation secrets and preser
 
 test("campaign confirmation authority scrubs every resolved name when secret validation fails", async () => {
   const resolved = await resolveCampaign(
-    "product-evals/campaigns/simulation-contract-smoke.json",
+    "product-evals/campaigns/simulation-contract-smoke.yaml",
   );
   resolved.policies[0]!.effect = "REQUIRE_CONFIRMATION";
   resolved.policies[0]!.confirmation_authority = {
@@ -1033,7 +1033,7 @@ test("public campaign resume continues a source-bound checkpoint without replay"
   const base = new CampaignArtifactStore(artifactRoot, runId);
   const resolved = await fixture();
   const campaignPath = rootPath(
-    "product-evals/campaigns/simulation-contract-smoke.json",
+    "product-evals/campaigns/simulation-contract-smoke.yaml",
   );
   const identities: CampaignIdentityEnvelope = {
     schema_version: 2,
@@ -1405,7 +1405,7 @@ test("public campaign resume keeps a lease active until its exact nanosecond exp
 });
 
 async function fixture(): Promise<ResolvedCampaign> {
-  return resolveCampaign("product-evals/campaigns/simulation-contract-smoke.json");
+  return resolveCampaign("product-evals/campaigns/simulation-contract-smoke.yaml");
 }
 
 test("claim population authority keeps fixture prevalence claims NOT_RUN", async () => {
@@ -2039,7 +2039,7 @@ describe("campaign task lifecycle contract", () => {
     const store = base.withAuthority(identities.operator, "file-oracle-lease");
     try {
       const resolved = await fixture();
-      const sourceFile = "product-evals/campaigns/simulation-contract-smoke.json";
+      const sourceFile = "product-evals/campaigns/simulation-contract-smoke.yaml";
       const oracle: OracleDefinition = {
         schema_version: 1,
         id: "runtime-file-authority",
@@ -2679,7 +2679,7 @@ describe("campaign task lifecycle contract", () => {
 
   test("agent fixture blocks unsupported providers and prompt leakage before dispatch", async () => {
     const resolved = await resolveCampaign(
-      "product-evals/campaigns/agent-response-fake-smoke.json",
+      "product-evals/campaigns/agent-response-fake-smoke.yaml",
     );
     const baseTask = resolved.tasks[0]!;
     for (const task of [
@@ -2732,7 +2732,7 @@ describe("campaign task lifecycle contract", () => {
 
   test("agent fixture makes malformed output a deterministic hard failure", async () => {
     const resolved = await resolveCampaign(
-      "product-evals/campaigns/agent-response-fake-smoke.json",
+      "product-evals/campaigns/agent-response-fake-smoke.yaml",
     );
     const baseTask = resolved.tasks[0]!;
     const task: TaskDefinition = {
@@ -2771,7 +2771,7 @@ describe("campaign task lifecycle contract", () => {
 
   test("Codex agent confirmation stops before dispatch without becoming an execution failure", async () => {
     const resolved = await resolveCampaign(
-      "product-evals/campaigns/agent-standalone-codex-canary.json",
+      "product-evals/campaigns/agent-standalone-codex-canary.yaml",
     );
     const confirmationPolicy = {
       ...resolved.policies[0]!,

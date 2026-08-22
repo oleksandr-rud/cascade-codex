@@ -30,6 +30,7 @@ import {
   writeJsonExclusive,
   writeTextExclusive,
 } from "./common";
+import { parseStructuredText, readStructured, stringifyYaml } from "./structured-data";
 import { buildCampaignCatalog } from "./campaigns";
 import {
   CampaignArtifactStore,
@@ -60,7 +61,7 @@ import {
 } from "./simulation-intake";
 
 const TEMPLATE_PATH =
-  ".codex/skills/simulation-campaigns/templates/starter/package.template.json";
+  ".codex/skills/simulation-campaigns/templates/starter/package.template.yaml";
 const DESIGN_TEMPLATE_PATH =
   ".codex/skills/simulation-campaigns/templates/campaign-design.md";
 const CATALOG_PATH = rootPath("product-evals/campaigns/catalog.generated.json");
@@ -83,7 +84,7 @@ interface StarterTemplate {
 export interface RenderedStarterFile {
   path: string;
   content: unknown;
-  format: "json" | "text";
+  format: "json" | "yaml" | "text";
 }
 
 export interface StarterOptions {
@@ -153,10 +154,11 @@ async function findSimulationRoot(simulationId: string): Promise<string> {
   const matches: string[] = [];
   for (const scope of SIMULATION_SCOPES) {
     const root = `product-evals/simulations/${scope}/${simulationId}`;
-    const manifestPath = `${root}/manifest.json`;
+    const manifestPath = `${root}/manifest.yaml`;
     if (!(await isFile(boundedPath(manifestPath, "product-evals/simulations/")))) continue;
-    const manifest = await readJson<SimulationDefinition>(
+    const manifest = await readStructured<SimulationDefinition>(
       boundedPath(manifestPath, "product-evals/simulations/"),
+      manifestPath,
     );
     validateSimulation(
       manifest as unknown as Record<string, unknown>,
@@ -280,7 +282,7 @@ async function renderDesignReport(
     )
     .replace(
       "- Fixture or seed identity:",
-      `- Fixture or seed identity: product-evals/simulations/product/${options.simulationId}/worlds/default.fixture.json`,
+      `- Fixture or seed identity: product-evals/simulations/product/${options.simulationId}/worlds/default.fixture.yaml`,
     )
     .replace(
       "- Evidence root:",
@@ -313,7 +315,7 @@ export async function renderStarterPackage(
   options: StarterOptions,
 ): Promise<RenderedStarterFile[]> {
   validateOptions(options);
-  const template = await readJson<StarterTemplate>(rootPath(TEMPLATE_PATH));
+  const template = await readStructured<StarterTemplate>(rootPath(TEMPLATE_PATH), TEMPLATE_PATH);
   if (
     template.schema_version !== 1 ||
     template.template_id !== "cascade-simulation-starter-v1" ||
@@ -352,17 +354,17 @@ export async function renderStarterPackage(
   const rendered: RenderedStarterFile[] = template.files.map((file) => ({
     path: replaceTokens(file.path, tokens) as string,
     content: replaceTokens(file.content, tokens),
-    format: "json" as const,
+    format: file.path.endsWith(".yaml") ? "yaml" as const : "json" as const,
   }));
-  const campaignPath = `product-evals/campaigns/${options.simulationId}-smoke.json`;
+  const campaignPath = `product-evals/campaigns/${options.simulationId}-smoke.yaml`;
   const seedBindingPath = `product-evals/intakes/product/seed-bindings/${options.simulationId}-smoke.json`;
   const campaignFile = rendered.find((file) => file.path === campaignPath);
   const seedBindingFile = rendered.find((file) => file.path === seedBindingPath);
-  if (!campaignFile || !seedBindingFile || campaignFile.format !== "json" || seedBindingFile.format !== "json") {
+  if (!campaignFile || !seedBindingFile || campaignFile.format !== "yaml" || seedBindingFile.format !== "json") {
     throw new CascadeError("simulation starter template is missing its product seed-binding pair");
   }
   (seedBindingFile.content as Record<string, unknown>).campaign_sha256 = sha256Text(
-    `${stableJson(campaignFile.content, true)}\n`,
+    stringifyYaml(campaignFile.content),
   );
   rendered.push(await renderDesignReport(options, title));
   const paths = rendered.map((file) => file.path);
@@ -372,6 +374,7 @@ export async function renderStarterPackage(
   for (const file of rendered) {
     boundedPath(file.path);
     if (file.format === "json") JSON.parse(stableJson(file.content));
+    else if (file.format === "yaml") stringifyYaml(file.content);
     else if (typeof file.content !== "string" || !file.content.trim()) {
       throw new CascadeError("simulation design template rendered empty content");
     }
@@ -433,13 +436,15 @@ export async function initializeSimulation(
       const path = boundedPath(file.path);
       if (file.format === "json") {
         await writeJsonExclusive(path, file.content);
+      } else if (file.format === "yaml") {
+        await writeTextExclusive(path, stringifyYaml(file.content));
       } else {
         await writeTextExclusive(path, String(file.content));
       }
       created.push(path);
     }
     await resolveCampaign(
-      rootPath("product-evals/campaigns", `${campaignId}.json`),
+      rootPath("product-evals/campaigns", `${campaignId}.yaml`),
     );
     const catalog = await buildCampaignCatalog();
     await writeJsonAtomic(CATALOG_PATH, catalog);
@@ -473,7 +478,7 @@ export async function previewDerivedPopulation(
   );
   let names: string[];
   try {
-    names = (await readdir(directory)).filter((name) => name.endsWith(".json")).sort();
+    names = (await readdir(directory)).filter((name) => name.endsWith(".yaml")).sort();
   } catch {
     throw new CascadeError(`persona derivation directory missing for simulation: ${options.simulationId}`);
   }
@@ -484,7 +489,7 @@ export async function previewDerivedPopulation(
   }> = [];
   for (const name of names) {
     const path = `${simulationRoot}/derivations/${name}`;
-    const manifest = await readJson<PersonaDerivationManifest>(boundedPath(path));
+    const manifest = await readStructured<PersonaDerivationManifest>(boundedPath(path), path);
     validatePersonaDerivation(manifest as unknown as Record<string, unknown>, path);
     if (
       manifest.mode === options.mode &&
@@ -510,9 +515,9 @@ export async function previewDerivedPopulation(
     "product-evals/simulations/",
   );
   const existingMatches: string[] = [];
-  for (const name of (await readdir(populationDirectory)).filter((item) => item.endsWith(".json")).sort()) {
+  for (const name of (await readdir(populationDirectory)).filter((item) => item.endsWith(".yaml")).sort()) {
     const candidatePath = `${simulationRoot}/populations/${name}`;
-    const candidate = await readJson<Record<string, unknown>>(boundedPath(candidatePath));
+    const candidate = await readStructured<Record<string, unknown>>(boundedPath(candidatePath), candidatePath);
     const source = candidate.source as Record<string, unknown> | undefined;
     const derivation = source?.derivation as Record<string, unknown> | undefined;
     if (candidate.schema_version === 2 && derivation?.path === selected.path) {
@@ -522,17 +527,20 @@ export async function previewDerivedPopulation(
   if (existingMatches.length > 1) {
     throw new CascadeError(`persona derivation maps to multiple population files: ${existingMatches.join(", ")}`);
   }
-  const defaultOutput = `${simulationRoot}/populations/${population.id}.json`;
+  const defaultOutput = `${simulationRoot}/populations/${population.id}.yaml`;
   const outputPath = existingMatches[0] ?? defaultOutput;
   const outputExists = await isFile(boundedPath(outputPath));
   if (outputExists) {
-    const existing = await readJson<unknown>(boundedPath(outputPath));
+    const existing = await readStructured<unknown>(boundedPath(outputPath), outputPath);
     if (stableJson(existing) !== stableJson(population)) {
       throw new CascadeError(`persona population preview refuses existing collision: ${outputPath}`);
     }
   }
   if (!options.dryRun && !outputExists) {
-    await writeJsonExclusive(boundedPath(outputPath, "product-evals/simulations/"), population);
+    await writeTextExclusive(
+      boundedPath(outputPath, "product-evals/simulations/"),
+      stringifyYaml(population),
+    );
     try {
       await writeJsonAtomic(CATALOG_PATH, await buildCampaignCatalog());
     } catch (error) {
@@ -722,12 +730,11 @@ async function readExternalEvidenceManifestSnapshot(
   } catch {
     throw new CascadeError(`external evidence manifest is not valid UTF-8: ${path}`);
   }
-  let value: unknown;
-  try {
-    value = JSON.parse(text);
-  } catch {
-    throw new CascadeError(`external evidence manifest is invalid JSON: ${path}`);
-  }
+  const value = parseStructuredText(
+    text,
+    path.endsWith(".yaml") ? ".yaml" : ".json",
+    path,
+  );
   const manifest = validateExternalPersonaEvidenceManifest(
     value as Record<string, unknown>,
     path,
@@ -776,7 +783,7 @@ export async function disposeRefinement(
   }
   const evidence = await Promise.all(
     options.evidenceManifestPaths.map(async (path) => {
-      if (!/^(docs\/product\/evidence|\.artifacts\/product-evals\/evidence-manifests)\/.+\.json$/.test(path)) {
+      if (!/^(?:docs\/product\/evidence\/.+\.yaml|\.artifacts\/product-evals\/evidence-manifests\/.+\.json)$/.test(path)) {
         throw new CascadeError(
           `external evidence manifest must stay under docs/product/evidence/ or .artifacts/product-evals/evidence-manifests/: ${path}`,
         );

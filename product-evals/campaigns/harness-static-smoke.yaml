@@ -1,0 +1,31 @@
+claim_files:
+  - product-evals/claims/harness-static-command-execution.yaml
+evaluation_profile_file: product-evals/rubrics/deterministic-fixture-v1.yaml
+id: harness-static-smoke
+oracle_files:
+  - product-evals/oracles/command-exit-zero-v1.yaml
+owner_lane: W-005
+policy_files:
+  - product-evals/policies/allow-harness-static-command-v1.yaml
+purpose: Prove exact argv execution, isolation controls, bounded output, oracle evaluation, and cleanup for the strict W-005 direct-process seam.
+schema_version: 1
+session:
+  lease_ttl_ms: 30000
+  max_checkpoint_bytes: 1048576
+  max_duration_ms: 30000
+  max_parallel_steps: 1
+  max_step_duration_ms: 11000
+  max_steps: 2
+  max_steps_per_episode: 1
+  max_surfaces: 1
+simulation_file: product-evals/simulations/harness/command-static-fixture/manifest.yaml
+specialized_evaluation:
+  applicability: NOT_APPLICABLE
+  claim_ids: []
+  reason: W-005 static command execution is a mechanical product-runtime fixture, not a Cascade harness route or trace claim.
+  route_ids: []
+  trace_ids: []
+task_files:
+  - product-evals/tasks/HARNESS-STATIC-SMOKE.yaml
+tier: deterministic-fixture
+title: Harness static command smoke

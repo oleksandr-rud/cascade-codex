@@ -1,0 +1,365 @@
+catalog_labels:
+  - latest-stable
+  - provider-flagship
+  - tier-candidate
+  - best-observed-for-workload
+  - pinned-baseline
+checked_at: 2026-08-05
+evidence_statuses:
+  - provider_claim
+  - inferred_requires_eval
+  - measured
+models:
+  - capabilities:
+      - text
+      - vision
+      - tools
+      - reasoning-controls
+      - long-context
+    catalog_labels:
+      - latest-stable
+      - tier-candidate
+    id: gpt-5.6-sol
+    provider: OpenAI
+    runtime_controls:
+      - reasoning effort
+      - tool availability
+      - context selection
+      - structured output
+    sources:
+      - https://developers.openai.com/api/docs/models
+      - https://developers.openai.com/api/docs/guides/prompt-guidance-gpt-5p6.md
+      - https://developers.openai.com/api/docs/guides/upgrading-to-gpt-5p6-sol.md
+    specialties:
+      - coding
+      - agentic-work
+      - reasoning
+      - tool-orchestration
+    status: current-candidate
+    tier_candidates:
+      - conditions: Complex coding, research, diagnosis, or tool-using work with bounded autonomy.
+        evidence_status: provider_claim
+        tier: frontier-generalist
+      - conditions: Long-horizon configuration with strong reasoning, broad tools, checkpoints, and recovery controls.
+        evidence_status: inferred_requires_eval
+        tier: frontier-autonomous
+  - capabilities:
+      - text
+      - vision
+      - tools
+      - reasoning-controls
+      - long-context
+    catalog_labels:
+      - latest-stable
+      - tier-candidate
+    id: gpt-5.6-terra
+    provider: OpenAI
+    runtime_controls:
+      - reasoning effort
+      - tool availability
+      - context selection
+      - structured output
+    sources:
+      - https://developers.openai.com/api/docs/models
+      - https://developers.openai.com/api/docs/guides/prompt-guidance-gpt-5p6.md
+    specialties:
+      - coding
+      - production-workflows
+      - tool-use
+    status: current-candidate
+    tier_candidates:
+      - conditions: Everyday coding and agent workflows where latency and quality both matter.
+        evidence_status: provider_claim
+        tier: balanced-production
+  - capabilities:
+      - text
+      - tools
+      - structured-output
+    catalog_labels:
+      - latest-stable
+      - tier-candidate
+    id: gpt-5.6-luna
+    provider: OpenAI
+    runtime_controls:
+      - tool availability
+      - context selection
+      - structured output
+    sources:
+      - https://developers.openai.com/api/docs/models
+      - https://developers.openai.com/api/docs/guides/prompt-guidance-gpt-5p6.md
+    specialties:
+      - high-throughput
+      - structured-tasks
+      - bounded-coding
+    status: current-candidate
+    tier_candidates:
+      - conditions: Well-scoped, high-volume work with explicit steps, schemas, and validation.
+        evidence_status: provider_claim
+        tier: efficient-structured
+  - capabilities:
+      - text
+      - vision
+      - tools
+      - extended-thinking
+      - long-context
+    catalog_labels:
+      - latest-stable
+      - provider-flagship
+      - tier-candidate
+    id: claude-fable-5
+    provider: Anthropic
+    runtime_controls:
+      - thinking mode
+      - tool availability
+      - context selection
+      - structured output
+    sources:
+      - https://platform.claude.com/docs/en/about-claude/models/choosing-a-model
+      - https://platform.claude.com/docs/en/about-claude/models/overview
+      - https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/prompting-claude-fable-5
+    specialties:
+      - long-horizon-agents
+      - coding
+      - reasoning
+      - tool-orchestration
+    status: current-candidate
+    tier_candidates:
+      - conditions: Long-running agentic work with durable state, tools, recovery, and explicit completion gates.
+        evidence_status: provider_claim
+        tier: frontier-autonomous
+  - capabilities:
+      - text
+      - vision
+      - tools
+      - extended-thinking
+      - long-context
+    catalog_labels:
+      - latest-stable
+      - provider-flagship
+      - tier-candidate
+    id: claude-opus-5
+    provider: Anthropic
+    runtime_controls:
+      - thinking mode
+      - tool availability
+      - context selection
+      - structured output
+    sources:
+      - https://platform.claude.com/docs/en/about-claude/models/choosing-a-model
+      - https://platform.claude.com/docs/en/about-claude/models/overview
+      - https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/prompting-claude-opus-5
+    specialties:
+      - reasoning
+      - coding
+      - research
+      - agentic-work
+    status: current-candidate
+    tier_candidates:
+      - conditions: Complex generalist work with high ambiguity and evidence-bound synthesis.
+        evidence_status: provider_claim
+        tier: frontier-generalist
+      - conditions: Autonomous operation only when representative long-horizon cases pass.
+        evidence_status: inferred_requires_eval
+        tier: frontier-autonomous
+  - capabilities:
+      - text
+      - vision
+      - tools
+      - extended-thinking
+      - long-context
+    catalog_labels:
+      - latest-stable
+      - tier-candidate
+    id: claude-sonnet-5
+    provider: Anthropic
+    runtime_controls:
+      - thinking mode
+      - tool availability
+      - context selection
+      - structured output
+    sources:
+      - https://platform.claude.com/docs/en/about-claude/models/choosing-a-model
+      - https://platform.claude.com/docs/en/about-claude/models/overview
+      - https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/claude-prompting-best-practices
+    specialties:
+      - production-workflows
+      - coding
+      - tool-use
+    status: current-candidate
+    tier_candidates:
+      - conditions: Everyday production tasks balancing capability, speed, and cost.
+        evidence_status: provider_claim
+        tier: balanced-production
+  - capabilities:
+      - text
+      - vision
+      - tools
+    catalog_labels:
+      - latest-stable
+      - tier-candidate
+    id: claude-haiku-4-5
+    provider: Anthropic
+    runtime_controls:
+      - tool availability
+      - context selection
+      - structured output
+    sources:
+      - https://platform.claude.com/docs/en/about-claude/models/choosing-a-model
+      - https://platform.claude.com/docs/en/about-claude/models/overview
+      - https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/claude-prompting-best-practices
+    specialties:
+      - low-latency
+      - classification
+      - extraction
+      - bounded-tool-use
+    status: current-candidate
+    tier_candidates:
+      - conditions: Fast, bounded work with explicit output contracts and examples.
+        evidence_status: provider_claim
+        tier: efficient-structured
+  - capabilities:
+      - text
+      - vision
+      - audio
+      - video
+      - tools
+      - long-context
+    catalog_labels:
+      - latest-stable
+      - tier-candidate
+    id: gemini-3.5-flash
+    provider: Google
+    runtime_controls:
+      - thinking control
+      - tool availability
+      - context selection
+      - structured output
+    sources:
+      - https://ai.google.dev/gemini-api/docs/models
+      - https://ai.google.dev/gemini-api/docs/latest-model
+      - https://ai.google.dev/gemini-api/docs/prompting-strategies
+    specialties:
+      - multimodal
+      - long-context
+      - reasoning
+      - high-throughput
+    status: current-candidate
+    tier_candidates:
+      - conditions: Complex multimodal or long-context work after workload-specific evaluation.
+        evidence_status: inferred_requires_eval
+        tier: frontier-generalist
+  - capabilities:
+      - text
+      - vision
+      - audio
+      - video
+      - tools
+      - long-context
+    catalog_labels:
+      - latest-stable
+      - tier-candidate
+    id: gemini-3.6-flash
+    provider: Google
+    runtime_controls:
+      - thinking control
+      - tool availability
+      - context selection
+      - structured output
+    sources:
+      - https://ai.google.dev/gemini-api/docs/models
+      - https://ai.google.dev/gemini-api/docs/latest-model
+      - https://ai.google.dev/gemini-api/docs/prompting-strategies
+    specialties:
+      - multimodal
+      - production-workflows
+      - high-throughput
+    status: current-candidate
+    tier_candidates:
+      - conditions: Moderately complex multimodal and production workflows with latency constraints.
+        evidence_status: provider_claim
+        tier: balanced-production
+  - capabilities:
+      - text
+      - vision
+      - tools
+      - structured-output
+    catalog_labels:
+      - latest-stable
+      - tier-candidate
+    id: gemini-3.5-flash-lite
+    provider: Google
+    runtime_controls:
+      - thinking control
+      - tool availability
+      - context selection
+      - structured output
+    sources:
+      - https://ai.google.dev/gemini-api/docs/models
+      - https://ai.google.dev/gemini-api/docs/latest-model
+      - https://ai.google.dev/gemini-api/docs/prompting-strategies
+    specialties:
+      - low-latency
+      - high-volume
+      - classification
+      - extraction
+    status: current-candidate
+    tier_candidates:
+      - conditions: High-volume bounded tasks with explicit schemas and validation.
+        evidence_status: provider_claim
+        tier: efficient-structured
+  - capabilities:
+      - text
+      - vision
+      - tools
+      - reasoning-controls
+    catalog_labels:
+      - latest-stable
+      - provider-flagship
+      - tier-candidate
+    id: grok-4.5
+    provider: xAI
+    runtime_controls:
+      - reasoning mode
+      - tool availability
+      - context selection
+      - structured output
+    sources:
+      - https://docs.x.ai/developers/models
+      - https://docs.x.ai/developers/grok-4-5
+    specialties:
+      - reasoning
+      - tool-use
+      - realtime
+      - generalist-work
+    status: current-candidate
+    tier_candidates:
+      - conditions: Complex generalist and tool-using work subject to surface capability checks.
+        evidence_status: provider_claim
+        tier: frontier-generalist
+purpose: Versioned provider-neutral candidate registry. Provider catalog claims establish eligibility only; representative workload evaluation establishes best-observed status.
+schema_version: 1
+selection_policy:
+  default_without_representative_evidence: Choose a conservative eligible candidate and label the decision INFERRED.
+  explicit_user_model_is_preserved_when_capable: true
+  measured_mapping_requires_evaluation_reference: true
+  provider_claim_is_sufficient_for_best_observed: false
+  provider_claim_is_sufficient_for_eligibility: true
+  silent_model_override_is_forbidden: true
+tier_order:
+  - efficient-structured
+  - balanced-production
+  - frontier-generalist
+  - frontier-autonomous
+tiers:
+  - default_prompt_posture: Short, explicit, decomposed, schema-first, locally repeated constraints.
+    id: efficient-structured
+    operating_envelope: High-volume or latency-sensitive work with bounded reasoning, explicit schemas, narrow tools, and strong examples or validation.
+  - default_prompt_posture: Clear objective, scoped context, ordered workflow, tool boundaries, and a bounded repair pass.
+    id: balanced-production
+    operating_envelope: Everyday production work with moderate reasoning, retrieval, tool use, or ambiguity and bounded autonomy.
+  - default_prompt_posture: Precise outcomes and invariants, adaptive planning, targeted retrieval, and evidence-bound completion.
+    id: frontier-generalist
+    operating_envelope: Difficult diagnosis, synthesis, coding, research, or multimodal work with high ambiguity or long dependencies.
+  - default_prompt_posture: Explicit authority, state, checkpoints, budgets, recovery, escalation, cleanup, and terminal evidence.
+    id: frontier-autonomous
+    operating_envelope: Long-horizon agent work with broad tools, recovery, durable state, checkpoints, and consequential actions.

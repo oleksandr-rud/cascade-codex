@@ -1,0 +1,10 @@
+actor_ids:
+  - browser-local-actor
+claim_ids:
+  - browser-simulation-execution
+goal: Complete the local maintenance fixture through public controls and preserve browser evidence.
+id: browser-complete-task-v1
+initial_state: {}
+schema_version: 1
+stop_conditions:
+  - declared visible-state oracle passes

@@ -1,0 +1,9 @@
+baseline: false
+id: candidate-b-v1
+schema_version: 1
+target:
+  harness_digest: dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd
+  model: deterministic-fixture
+  prompt_digest: "3333333333333333333333333333333333333333333333333333333333333333"
+  source_revision: framework-candidate-b
+  tool_digest: cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc

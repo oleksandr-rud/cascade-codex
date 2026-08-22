@@ -1,0 +1,28 @@
+cases:
+  - actor_id: command-static-actor
+    id: command-static-development
+    partition: development
+    scenario_id: strict-static-command-v1
+    slices:
+      - command-static
+  - actor_id: command-static-actor
+    id: command-static-regression
+    partition: regression
+    scenario_id: strict-static-command-v1
+    slices:
+      - command-static
+  - actor_id: command-static-actor
+    id: command-static-holdout
+    partition: holdout
+    scenario_id: strict-static-command-v1
+    slices:
+      - command-static
+  - actor_id: command-static-actor
+    id: command-static-calibration
+    partition: calibration-reference
+    scenario_id: strict-static-command-v1
+    slices:
+      - command-static
+id: command-static-cases-v1
+leakage_policy: exclusive-case-identity
+schema_version: 1

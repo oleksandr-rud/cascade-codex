@@ -4,12 +4,25 @@ import {
   admissionHookWiringErrors,
   agentConcurrencyErrors,
   agentContractFrontmatterErrors,
+  isAllowedRepositoryJsonSource,
   modelRegistryFreshnessErrors,
   repoPluginMetadataErrors,
   routeOrderErrors,
   type WorkGraphDocument,
   validateWorkGraphDocuments,
 } from "./validate";
+
+describe("structured source format policy", () => {
+  test("reserves authored JSON for schemas and explicit machine-owned exceptions", () => {
+    expect(isAllowedRepositoryJsonSource("docs/policies/policy.schema.json")).toBe(true);
+    expect(isAllowedRepositoryJsonSource("product-evals/campaigns/catalog.generated.json")).toBe(true);
+    expect(isAllowedRepositoryJsonSource("product-evals/intakes/product/example.json")).toBe(true);
+    expect(isAllowedRepositoryJsonSource("product-evals/intakes/harness/task-envelopes/TE-example.json")).toBe(true);
+    expect(isAllowedRepositoryJsonSource(".codex/plugins/example/.codex-plugin/plugin.json")).toBe(true);
+    expect(isAllowedRepositoryJsonSource("docs/policies/access-policy.json")).toBe(false);
+    expect(isAllowedRepositoryJsonSource("product-evals/tasks/example.json")).toBe(false);
+  });
+});
 
 const admissionHookCommand = "npx --offline --yes bun@1.3.3 \"$(git rev-parse --show-toplevel)/scripts/cascade/task-admission-hook.ts\"";
 const harnessImpactHookCommand = "npx --offline --yes bun@1.3.3 \"$(git rev-parse --show-toplevel)/scripts/cascade/harness-impact-hook.ts\"";

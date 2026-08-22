@@ -1,0 +1,51 @@
+command:
+  - /bin/sh
+  - -c
+  - trap 'printf "\033[2JRESIZED:"; stty size' WINCH; printf '\033[?1049hContinue? '; read answer; printf '\033[?1049laccepted:%s\n' "$answer"
+driver:
+  adapter: builtin-pty
+  type: pty
+id: TERMINAL-PTY-SMOKE
+kind: terminal
+oracle_ids:
+  - terminal-completed-v1
+policy_ids:
+  - allow-terminal-pty-smoke-spawn-v1
+  - allow-terminal-pty-smoke-steps-v1
+required: true
+schema_version: 6
+terminal:
+  cols: 80
+  environment: {}
+  evidence:
+    final_screen: true
+    raw_stream: true
+    transcript: true
+  expected_exit_code: 0
+  filesystem:
+    read: host
+    write: task-root
+  network: deny
+  rows: 24
+  steps:
+    - text: "Continue? "
+      timeout_ms: 1000
+      type: terminal-wait
+    - cols: 100
+      rows: 30
+      type: terminal-resize
+    - text: RESIZED:30 100
+      timeout_ms: 1000
+      type: terminal-wait
+    - append_enter: true
+      type: terminal-input
+      value:
+        kind: public-literal
+        value: yes
+    - text: accepted:yes
+      timeout_ms: 1000
+      type: terminal-wait
+    - label: completed
+      type: terminal-capture
+  working_directory: task-root
+timeout_ms: 5000

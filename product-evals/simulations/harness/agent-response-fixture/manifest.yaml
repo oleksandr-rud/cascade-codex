@@ -1,0 +1,15 @@
+dataset_file: product-evals/simulations/harness/agent-response-fixture/datasets/cases.yaml
+id: agent-response-fixture
+metric_files:
+  - product-evals/metrics/agent-response-contract-rate-v1.yaml
+population_files:
+  - product-evals/simulations/harness/agent-response-fixture/populations/actors.yaml
+purpose: Exercise only the deterministic W-007 source-blind agent response contract.
+scenario_files:
+  - product-evals/simulations/harness/agent-response-fixture/scenarios/standalone-response.yaml
+schema_version: 1
+simulation_scope: harness
+title: Provider-neutral agent response fixture
+treatment_files:
+  - product-evals/treatments/baseline-v1.yaml
+world_file: product-evals/simulations/harness/agent-response-fixture/worlds/world.yaml

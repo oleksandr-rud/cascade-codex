@@ -1,0 +1,31 @@
+claim_files:
+  - product-evals/claims/mobile-platform-execution.yaml
+evaluation_profile_file: product-evals/rubrics/deterministic-fixture-v1.yaml
+id: mobile-provider-preflight
+oracle_files:
+  - product-evals/oracles/mobile-completed-v1.yaml
+owner_lane: W-010
+policy_files:
+  - product-evals/policies/allow-mobile-android-preflight-v1.yaml
+purpose: Prove W-010 fails closed unless an exact snapshot-bound Android device, fixture app build, and action runner are available.
+schema_version: 1
+session:
+  lease_ttl_ms: 70000
+  max_checkpoint_bytes: 1048576
+  max_duration_ms: 180000
+  max_parallel_steps: 1
+  max_step_duration_ms: 65000
+  max_steps: 1
+  max_steps_per_episode: 1
+  max_surfaces: 1
+simulation_file: product-evals/simulations/harness/mobile-provider-fixture/manifest.yaml
+specialized_evaluation:
+  applicability: NOT_APPLICABLE
+  claim_ids: []
+  reason: This campaign records product simulation provider readiness; it does not evaluate a Cascade skill, route, agent, or harness trace.
+  route_ids: []
+  trace_ids: []
+task_files:
+  - product-evals/tasks/MOBILE-ANDROID-PREFLIGHT.yaml
+tier: deterministic-fixture
+title: Mobile platform provider preflight

@@ -1,0 +1,32 @@
+browser:
+  actions:
+    - locator:
+        kind: role
+        name: Open external admin
+        role: link
+      type: browser-click
+  downloads: false
+  evidence:
+    screenshot: true
+    trace: true
+  fixture_file: product-evals/simulations/harness/browser-fixture.html
+  network: deny
+  observation:
+    expected_text: Waiting
+    locator:
+      kind: role
+      role: status
+  profile: ephemeral
+  uploads: false
+driver:
+  adapter: builtin-playwright
+  type: playwright
+id: BROWSER-EXTERNAL-NAVIGATION-DENIED
+kind: browser
+oracle_ids:
+  - browser-waiting-status-v1
+policy_ids:
+  - allow-browser-external-navigation-probe-v1
+required: false
+schema_version: 4
+timeout_ms: 15000

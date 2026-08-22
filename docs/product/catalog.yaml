@@ -39,7 +39,7 @@ capabilities:
       - PS-005
     persona_ids: []
     evaluation_refs:
-      - path: product-evals/simulations/harness/simulation-correctness-fixture/manifest.json
+      - path: product-evals/simulations/harness/simulation-correctness-fixture/manifest.yaml
         kind: harness-simulation
         authority: mechanics-only
         status: authored

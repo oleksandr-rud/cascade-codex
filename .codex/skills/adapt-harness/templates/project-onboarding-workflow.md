@@ -6,7 +6,7 @@ Workflow: `<target-project-onboarding>`
 Workflow model: `sequential-pipeline`
 Merge owner: `project-onboarder`
 Inventory digest: `<sha256>`
-Onboarding manifest: `docs/work/onboarding-manifest.json`
+Onboarding manifest: `docs/work/onboarding-manifest.yaml`
 
 ## Objective
 
@@ -104,7 +104,7 @@ Allowed:
 - `docs/patterns/{entry}/index.md`
 - `docs/patterns/{entry}/*.pack.yaml`
 - `docs/work/active.md`
-- `docs/work/onboarding-manifest.json`
+- `docs/work/onboarding-manifest.yaml`
 - `docs/work/lanes/`
 - `docs/work/reports/`
 
@@ -123,7 +123,7 @@ Forbidden:
 ```text
 Use project-onboarder with adapt-harness as the merge owner. Inspect the target
 repository before writing. Run the deterministic project inventory first and
-bind deep-onboarding evidence to docs/work/onboarding-manifest.json. Fill
+bind deep-onboarding evidence to docs/work/onboarding-manifest.yaml. Fill
 configuration and docs only from observed sources. Produce project-part specs
 with templates/project-part-spec.md when a
 project area has independent behavior or validation risk. Route durable facts

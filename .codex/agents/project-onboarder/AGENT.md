@@ -75,7 +75,7 @@ features.
   agent wiring, validators, source context, connectors, or memory routing.
 - Run `bun scripts/cascade.ts validate --target` and target-repo
   syntax/path checks when available.
-- For deep onboarding, own `docs/work/onboarding-manifest.json`; preserve
+- For deep onboarding, own `docs/work/onboarding-manifest.yaml`; preserve
   `.pre-cascade` hashes, record all phase/project-part/doc/check dispositions,
   refresh intentional onboarding changes without changing preservation hashes,
   and require a current drift result before completion.

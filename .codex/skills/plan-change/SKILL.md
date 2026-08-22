@@ -30,7 +30,7 @@ committed first-iteration scope as active worklines when coordination is needed.
 8. `docs/structure.md` and `docs/patterns/workflow/index.md` when the plan changes
    active work lanes or write targets.
 9. `docs/patterns/workflow/fragments/_index.md` and the applicable
-   `GF-*.fragment.json` definitions when non-atomic work may need product,
+   `GF-*.fragment.yaml` definitions when non-atomic work may need product,
    design, implementation, integration, test, or assurance composition.
 10. `docs/patterns/context-memory/index.md` when the plan must survive compaction,
    handoff, or material replanning.

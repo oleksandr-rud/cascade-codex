@@ -1,0 +1,22 @@
+assertion: The strict direct-process adapter executes the exact static-smoke argv and preserves its isolated result evidence.
+class: execution
+evidence_requirements:
+  - source-manifest
+  - execution-receipt
+  - task-result
+  - policy-decisions
+  - oracle
+  - cleanup
+id: harness-static-command-execution
+population_authority: none
+required_metric_ids: []
+required_oracle_ids:
+  - command-exit-zero-v1
+required_policy_ids:
+  - allow-harness-static-command-v1
+requires_calibration: false
+schema_version: 1
+scope:
+  driver: direct-process
+  platform: darwin
+  task_id: HARNESS-STATIC-SMOKE

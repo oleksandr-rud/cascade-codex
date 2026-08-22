@@ -1,0 +1,28 @@
+cases:
+  - actor_id: command-failure-actor
+    id: command-failure-development
+    partition: development
+    scenario_id: expected-command-failure-v1
+    slices:
+      - command-failure
+  - actor_id: command-failure-actor
+    id: command-failure-regression
+    partition: regression
+    scenario_id: expected-command-failure-v1
+    slices:
+      - command-failure
+  - actor_id: command-failure-actor
+    id: command-failure-holdout
+    partition: holdout
+    scenario_id: expected-command-failure-v1
+    slices:
+      - command-failure
+  - actor_id: command-failure-actor
+    id: command-failure-calibration
+    partition: calibration-reference
+    scenario_id: expected-command-failure-v1
+    slices:
+      - command-failure
+id: command-failure-cases-v1
+leakage_policy: exclusive-case-identity
+schema_version: 1

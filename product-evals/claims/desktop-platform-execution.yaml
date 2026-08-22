@@ -1,0 +1,26 @@
+assertion: The structured desktop adapter completes the pinned Linux arm64 Docker, Xvfb, Tk, xdotool, screenshot, oracle, and cleanup fixture.
+class: execution
+evidence_requirements:
+  - source-manifest
+  - execution-receipt
+  - task-result
+  - trajectory
+  - policy-decisions
+  - oracle
+  - cleanup
+id: desktop-platform-execution
+population_authority: none
+required_metric_ids: []
+required_oracle_ids:
+  - desktop-completed-v1
+required_policy_ids:
+  - allow-desktop-linux-smoke-v1
+requires_calibration: false
+schema_version: 1
+scope:
+  driver: platform-automation
+  image_id: sha256:0fda65b94650590b429111bef22ef8f6bae6fe9b4e763f849de725393cea6f85
+  platform: linux/arm64
+  provider: docker-xvfb-xdotool
+  resolution: 800x600@1
+  task_id: DESKTOP-LINUX-SMOKE

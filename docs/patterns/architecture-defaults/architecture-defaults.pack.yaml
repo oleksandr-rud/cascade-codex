@@ -750,7 +750,7 @@ documents:
           - infrastructure
           - delivery
           - operations
-  - path: docs/patterns/architecture-defaults/architecture-scaffold-profiles.json
+  - path: docs/patterns/architecture-defaults/architecture-scaffold-profiles.yaml
     kind: architecture-scaffold-profiles
     description: "Five bounded backend and frontend source profiles consumed by the safe scaffold generator."
     trigger_when:

@@ -51,11 +51,11 @@
     },
     "simulated_scores_file": {
       "type": "string",
-      "pattern": "^product-evals/calibrations/fixtures/.+\\.json$"
+      "pattern": "^product-evals/calibrations/fixtures/.+\\.yaml$"
     },
     "reference_scores_file": {
       "type": "string",
-      "pattern": "^product-evals/calibrations/fixtures/.+\\.json$"
+      "pattern": "^product-evals/calibrations/fixtures/.+\\.yaml$"
     },
     "reference": {
       "type": "object",

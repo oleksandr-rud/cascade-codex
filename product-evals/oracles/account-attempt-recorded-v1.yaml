@@ -1,0 +1,5 @@
+expected: 1
+id: account-attempt-recorded-v1
+path: account.attempts
+schema_version: 1
+type: state-equals

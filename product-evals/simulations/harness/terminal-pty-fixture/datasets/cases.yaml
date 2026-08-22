@@ -1,0 +1,28 @@
+cases:
+  - actor_id: terminal-pty-actor
+    id: terminal-pty-development
+    partition: development
+    scenario_id: interactive-terminal-v1
+    slices:
+      - terminal-pty
+  - actor_id: terminal-pty-actor
+    id: terminal-pty-regression
+    partition: regression
+    scenario_id: interactive-terminal-v1
+    slices:
+      - terminal-pty
+  - actor_id: terminal-pty-actor
+    id: terminal-pty-holdout
+    partition: holdout
+    scenario_id: interactive-terminal-v1
+    slices:
+      - terminal-pty
+  - actor_id: terminal-pty-actor
+    id: terminal-pty-calibration
+    partition: calibration-reference
+    scenario_id: interactive-terminal-v1
+    slices:
+      - terminal-pty
+id: terminal-pty-cases-v1
+leakage_policy: exclusive-case-identity
+schema_version: 1

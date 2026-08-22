@@ -1,0 +1,12 @@
+aggregation: mean
+direction: higher-is-better
+hard_gate: true
+id: mobile-completion-rate-v1
+kind: deterministic
+required_slices:
+  - mobile-provider
+schema_version: 1
+source:
+  oracle_id: mobile-completed-v1
+uncertainty: none
+unit: ratio

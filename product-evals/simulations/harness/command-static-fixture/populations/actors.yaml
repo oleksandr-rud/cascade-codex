@@ -1,0 +1,13 @@
+actors:
+  - behavior:
+      strategy: execute only the authored argv
+    id: command-static-actor
+    slices:
+      - command-static
+    weight: 1
+id: command-static-actors-v1
+schema_version: 1
+source:
+  description: Deterministic harness-only actor; it does not represent product users.
+  kind: synthetic
+  minimized: true

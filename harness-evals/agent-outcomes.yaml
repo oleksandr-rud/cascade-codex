@@ -1,0 +1,226 @@
+agents:
+  - agent: orchestrator
+    allowed_supporting:
+      - context
+      - docs-impact-map
+    context_sources:
+      - docs/product/requirements.md
+      - docs/product/scenarios.md
+      - docs/specs/persona-simulation-governance/contract.md
+    max_commands: 10
+    max_loaded_roles: 1
+    max_loaded_skills: 3
+    max_output_chars: 7000
+    model: gpt-5.6-sol
+    next_route: ""
+    primary_skill: plan-change
+    product_context_required: true
+    prompt: Prepare the smallest implementation-ready plan for a product-visible change to the current Cascade persona-simulation workflow. Use docs/product/requirements.md, docs/product/scenarios.md, and docs/specs/persona-simulation-governance/contract.md as the routed product sources. Keep specifications proportional, avoid creating a work graph unless the request truly needs one, and identify the appropriate implementation handoff.
+    reasoning_effort: high
+    required_evidence_paths:
+      - docs/product/requirements.md
+      - docs/product/scenarios.md
+    sandbox_mode: default
+    status_any:
+      - PASS
+      - GAP
+  - agent: agent-engineer
+    allowed_supporting:
+      - agents-best-practices
+    context_sources:
+      - AGENTS.md
+      - CODEX.md
+      - .codex/agents/agent-engineer/AGENT.md
+      - .codex/agents/agent-engineer/skills.yaml
+    max_commands: 10
+    max_loaded_roles: 1
+    max_loaded_skills: 2
+    max_output_chars: 7000
+    model: gpt-5.6-sol
+    next_route: ""
+    primary_skill: codex-maintenance
+    product_context_required: false
+    prompt: Audit whether the current Cascade agent manifests, role contracts, and skill maps are ported consistently. Use AGENTS.md, CODEX.md, .codex/agents/agent-engineer/AGENT.md, .codex/agents/agent-engineer/skills.yaml, and the existing validator as the bounded source set. Separate mechanical wiring checks from semantic model behavior, identify only concrete gaps, and propose the smallest correction without editing files.
+    reasoning_effort: high
+    required_evidence_paths:
+      - .codex/agents/agent-engineer/AGENT.md
+    sandbox_mode: default
+    status_any:
+      - PASS
+      - GAP
+  - agent: business-analyst
+    allowed_supporting:
+      - context
+      - docs-impact-map
+    context_sources:
+      - docs/product/requirements.md
+      - docs/product/journeys.md
+      - docs/specs/persona-simulation-governance/contract.md
+    max_commands: 10
+    max_loaded_roles: 1
+    max_loaded_skills: 3
+    max_output_chars: 7000
+    model: gpt-5.6-sol
+    next_route: ""
+    primary_skill: synthesis-to-spec
+    product_context_required: true
+    prompt: Using docs/product/requirements.md, docs/product/journeys.md, and docs/specs/persona-simulation-governance/contract.md, separate validated product facts from assumptions and missing evidence, then prepare a concise plan-ready synthesis. Do not invent research or silently promote simulation findings into product truth.
+    reasoning_effort: high
+    required_evidence_paths:
+      - docs/product/requirements.md
+      - docs/product/journeys.md
+      - docs/specs/persona-simulation-governance/contract.md
+    sandbox_mode: default
+    status_any:
+      - PASS
+      - GAP
+  - agent: designer
+    allowed_supporting:
+      - accessibility-review
+      - design-system
+    context_sources:
+      - docs/product/journeys.md
+      - docs/product/scenarios.md
+      - docs/design/interaction-model.md
+    max_commands: 10
+    max_loaded_roles: 1
+    max_loaded_skills: 3
+    max_output_chars: 5500
+    model: gpt-5.6-terra
+    next_route: ""
+    primary_skill: ux-flow-review
+    product_context_required: true
+    prompt: Review the current multi-screen persona-simulation journey for continuity, recovery, responsive state coverage, and clear completion. Ground the review in docs/product/journeys.md, docs/product/scenarios.md, and docs/design/interaction-model.md; remain read-only and identify the appropriate next route.
+    reasoning_effort: medium
+    required_evidence_paths:
+      - docs/product/journeys.md
+      - docs/product/scenarios.md
+      - docs/design/interaction-model.md
+    sandbox_mode: read-only
+    status_any:
+      - PASS
+      - GAP
+  - agent: project-onboarder
+    allowed_supporting:
+      - context
+      - docs-impact-map
+    context_sources:
+      - AGENTS.md
+      - CODEX.md
+      - harness.config.yaml
+      - docs/product/requirements.md
+    max_commands: 10
+    max_loaded_roles: 1
+    max_loaded_skills: 3
+    max_output_chars: 5500
+    model: gpt-5.6-terra
+    next_route: ""
+    primary_skill: adapt-harness
+    product_context_required: true
+    prompt: Assess the current repository onboarding and Cascade adaptation contract using AGENTS.md, CODEX.md, harness.config.yaml, and docs/product/requirements.md, including whether product instructions remain discoverable after porting. Produce a read-only gap assessment and preserve Project Onboarder ownership; do not implement normal product features.
+    reasoning_effort: medium
+    required_evidence_paths:
+      - AGENTS.md
+      - CODEX.md
+      - harness.config.yaml
+      - docs/product/requirements.md
+    sandbox_mode: default
+    status_any:
+      - PASS
+      - GAP
+  - agent: security
+    allowed_supporting:
+      - architecture-review
+    context_sources:
+      - docs/product/requirements.md
+      - docs/specs/persona-simulation-governance/contract.md
+      - docs/patterns/boundaries/index.md
+    max_commands: 10
+    max_loaded_roles: 1
+    max_loaded_skills: 2
+    max_output_chars: 7000
+    model: gpt-5.6-sol
+    next_route: ""
+    primary_skill: secure-design
+    product_context_required: true
+    prompt: Perform a read-only security design review of the product simulation adapter and its cross-interface permissions. Use docs/product/requirements.md, docs/specs/persona-simulation-governance/contract.md, and docs/patterns/boundaries/index.md; distinguish evidence from assumptions and identify the appropriate next route.
+    reasoning_effort: high
+    required_evidence_paths:
+      - docs/product/requirements.md
+      - docs/specs/persona-simulation-governance/contract.md
+      - docs/patterns/boundaries/index.md
+    sandbox_mode: read-only
+    status_any:
+      - PASS
+      - GAP
+  - agent: harness-evaluator
+    allowed_supporting: []
+    context_sources:
+      - .codex/agents/harness-evaluator/AGENT.md
+      - .codex/skills/harness-evaluation/SKILL.md
+    max_commands: 8
+    max_loaded_roles: 1
+    max_loaded_skills: 1
+    max_output_chars: 5000
+    model: gpt-5.6-terra
+    next_route: ""
+    primary_skill: harness-evaluation
+    product_context_required: false
+    prompt: Determine whether a claimed successful agent outcome is eligible for independent harness judgment when only the scenario description is available and the raw output, normalized trace, and immutable run packet are missing. Remain read-only and do not execute or repair the target.
+    reasoning_effort: high
+    required_evidence_paths:
+      - .codex/agents/harness-evaluator/AGENT.md
+      - .codex/skills/harness-evaluation/SKILL.md
+    sandbox_mode: read-only
+    status_any:
+      - BLOCKED
+      - GAP
+  - agent: simulation-operator
+    allowed_supporting: []
+    context_sources:
+      - .codex/agents/simulation-operator/AGENT.md
+      - .codex/skills/simulation-execution/SKILL.md
+      - product-evals/campaigns/simulation-contract-smoke.yaml
+    max_commands: 8
+    max_loaded_roles: 1
+    max_loaded_skills: 1
+    max_output_chars: 5000
+    model: gpt-5.6-terra
+    next_route: ""
+    primary_skill: simulation-execution
+    product_context_required: false
+    prompt: Preflight the simulation-contract-smoke campaign for execution, but treat approval and resolved runtime intake as unavailable. Do not execute, widen permissions, judge results, or edit artifacts; report the precise blocking inputs.
+    reasoning_effort: medium
+    required_evidence_paths:
+      - .codex/agents/simulation-operator/AGENT.md
+      - .codex/skills/simulation-execution/SKILL.md
+      - product-evals/campaigns/simulation-contract-smoke.yaml
+    sandbox_mode: workspace-write
+    status_any:
+      - BLOCKED
+      - GAP
+  - agent: simulation-evaluator
+    allowed_supporting: []
+    context_sources:
+      - .codex/agents/simulation-evaluator/AGENT.md
+      - .codex/skills/simulation-evaluation/SKILL.md
+      - product-evals/campaigns/simulation-contract-smoke.yaml
+    max_commands: 8
+    max_loaded_roles: 1
+    max_loaded_skills: 1
+    max_output_chars: 5000
+    model: gpt-5.6-terra
+    next_route: ""
+    primary_skill: simulation-evaluation
+    product_context_required: false
+    prompt: Evaluate whether the simulation-contract-smoke campaign supports a product claim when the campaign definition exists but no frozen run package, oracle results, or independent judgments are supplied. Apply mechanical gates first, remain read-only, and do not infer release eligibility.
+    reasoning_effort: high
+    required_evidence_paths:
+      - .codex/agents/simulation-evaluator/AGENT.md
+      - .codex/skills/simulation-evaluation/SKILL.md
+      - product-evals/campaigns/simulation-contract-smoke.yaml
+    sandbox_mode: read-only
+    status_any:
+      - BLOCKED
+      - GAP
+schema_version: 1

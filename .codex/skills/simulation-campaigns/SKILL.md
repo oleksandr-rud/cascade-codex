@@ -38,7 +38,7 @@ role and does not treat an authored campaign as an executed result.
    - `docs/product/personas/` only through explicit persona derivation
      manifests; never through inferred Markdown parsing;
    - the generated campaign catalog.
-   - `templates/starter/package.template.json` when bootstrapping a new target
+   - `templates/starter/package.template.yaml` when bootstrapping a new target
      simulation.
 3. Current program and lane state under `docs/work/`.
 4. `harness.config.yaml`, `docs/structure.md`, and `docs/glossary.md`.
@@ -285,7 +285,7 @@ materially.
   accountable human review, a separate append-only disposition receipt, and a
   new persona revision. An accepted disposition authorizes only
   `synthesis-to-spec`.
-- Apply `product-evals/artifact-policy.json`: keep raw sensitive material out of
+- Apply `product-evals/artifact-policy.yaml`: keep raw sensitive material out of
   run artifacts, store minimized metadata and digests, require restricted-data
   attestation, and keep remote storage and export disabled unless the target
   deliberately adapts the public policy contract.

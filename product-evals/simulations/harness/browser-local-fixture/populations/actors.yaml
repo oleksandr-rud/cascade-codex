@@ -1,0 +1,13 @@
+actors:
+  - behavior:
+      strategy: execute only the authored structured browser actions
+    id: browser-local-actor
+    slices:
+      - browser-local-fixture
+    weight: 1
+id: browser-local-actors-v1
+schema_version: 1
+source:
+  description: Deterministic harness-only browser actor; it does not represent product users.
+  kind: synthetic
+  minimized: true

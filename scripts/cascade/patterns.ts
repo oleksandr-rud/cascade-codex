@@ -12,6 +12,7 @@ import {
   rootPath,
   walkFiles,
 } from "./common";
+import { readStructured } from "./structured-data";
 
 export interface PackSection {
   id: string;
@@ -51,7 +52,7 @@ export async function discoverPacks(): Promise<string[]> {
 }
 
 export async function loadPack(path: string): Promise<Pack> {
-  const value = Bun.YAML.parse(await readText(path)) as Pack;
+  const value = await readStructured<Pack>(path, rel(path));
   if (!value || typeof value !== "object" || !value.pack_id) {
     throw new CascadeError(`invalid pattern pack: ${rel(path)}`);
   }

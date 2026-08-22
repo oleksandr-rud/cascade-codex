@@ -75,6 +75,26 @@ bun scripts/cascade.ts admission assess --request "Implement a bounded CLI chang
 bun scripts/cascade.ts admission corpus
 ```
 
+Markdown remains the format for prose. Human-authored structured sources such
+as policies, rules, registries, evaluation cases, campaigns, tasks, claims,
+rubrics, and fixtures use strict YAML. JSON is reserved for schemas and
+machine-owned compatibility surfaces: package/plugin/hook manifests, generated
+catalogs, runtime envelopes, receipts, evidence, and JSONL streams. The shared
+loader rejects duplicate keys, aliases, anchors, merge keys, explicit tags,
+non-string mapping keys, and non-JSON values. Admission policy sources may omit
+empty arrays and nullable fields; compilation restores those defaults before
+applying the unchanged public schema.
+
+```bash
+bun scripts/cascade.ts policy validate
+bun scripts/cascade.ts policy list --scope product --format yaml
+bun scripts/cascade.ts policy extract --id TAP-007 --format yaml
+bun scripts/cascade.ts policy compile --scope all --check
+```
+
+`policy compile` emits a deterministic composition to stdout unless `--check`
+is used. It does not mutate authored sources or generated evidence.
+
 For non-atomic engineering work, the compiled controls select applicable
 stages from this path:
 
@@ -355,7 +375,7 @@ Catalog product features from routes, UI surfaces, APIs, tests, specs, docs,
 and user-facing copy. Use visual-qa when the UI can run or screenshots/design
 evidence exists. Route product, design, brand, spec, security, architecture,
 testing, glossary, and context-memory facts to the narrowest existing owner
-docs. Create docs/work/onboarding-manifest.json after target configuration is
+docs. Create docs/work/onboarding-manifest.yaml after target configuration is
 valid, preserve .pre-cascade hashes, record every ON-00 through ON-09,
 project-part, doc-routing, and validation disposition, then refresh the
 intentional source snapshot without changing preservation hashes. Do not create
@@ -375,7 +395,7 @@ Manual setup still works when an agent is unavailable:
    target runtime should load reusable Cascade skills or role contracts.
 4. Run `bun scripts/cascade.ts validate --target` from the repository
    root after configuration is adapted. For deep onboarding, initialize and
-   complete `docs/work/onboarding-manifest.json`, then add
+   complete `docs/work/onboarding-manifest.yaml`, then add
    `--require-onboarding-complete`.
 
 ## Validation

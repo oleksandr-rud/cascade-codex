@@ -1,0 +1,13 @@
+actors:
+  - behavior:
+      strategy: return only the source-bound structured fixture response
+    id: agent-response-fixture-actor
+    slices:
+      - agent-response-fixture
+    weight: 1
+id: agent-response-fixture-actors-v1
+schema_version: 1
+source:
+  description: Deterministic harness-only actor for the provider-neutral agent contract; it does not represent product users.
+  kind: synthetic
+  minimized: true

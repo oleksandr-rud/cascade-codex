@@ -24,17 +24,18 @@ import {
   walkFiles,
   writeJson,
 } from "./common";
+import { readStructured } from "./structured-data";
 import { runFixtureSelfTest } from "./target";
 import { runAdmissionCorpus } from "./admission";
 
 const EVAL_ROOT = rootPath("harness-evals");
-const CASE_SOURCE = resolve(EVAL_ROOT, "skill-cases.json");
-const INTERACTION_SOURCE = resolve(EVAL_ROOT, "interactions.json");
-const AGENT_CASE_SOURCE = resolve(EVAL_ROOT, "agent-outcomes.json");
+const CASE_SOURCE = resolve(EVAL_ROOT, "skill-cases.yaml");
+const INTERACTION_SOURCE = resolve(EVAL_ROOT, "interactions.yaml");
+const AGENT_CASE_SOURCE = resolve(EVAL_ROOT, "agent-outcomes.yaml");
 const CATALOG_PATH = resolve(EVAL_ROOT, "scenarios.generated.json");
 const OUTPUT_SCHEMA = resolve(EVAL_ROOT, "response.schema.json");
 const JUDGE_SCHEMA = resolve(EVAL_ROOT, "judge-response.schema.json");
-const JUDGE_PROFILES = resolve(EVAL_ROOT, "judge-profiles.json");
+const JUDGE_PROFILES = resolve(EVAL_ROOT, "judge-profiles.yaml");
 const ARTIFACT_ROOT = rootPath(".artifacts/harness-evals");
 const PLANNING_MODEL = "gpt-5.6-sol";
 const EXECUTION_MODEL = "gpt-5.6-terra";
@@ -115,7 +116,7 @@ async function agentContracts(): Promise<Map<string, JsonObject>> {
     const manifest = Bun.TOML.parse(await readText(manifestPath)) as JsonObject;
     const contractPath = rootPath(".codex/agents", agent, "AGENT.md");
     const skillMapPath = rootPath(".codex/agents", agent, "skills.yaml");
-    const skillMap = Bun.YAML.parse(await readText(skillMapPath)) as JsonObject;
+    const skillMap = await readStructured<JsonObject>(skillMapPath, rel(skillMapPath));
     const skillNames = new Set<string>();
     for (const entry of skillMap.skills ?? []) {
       const expectedSource = `.codex/skills/${entry.name}/SKILL.md`;
@@ -191,10 +192,10 @@ function expectation(
 }
 
 export async function generateCatalog(): Promise<JsonObject> {
-  const cases = (await readJson<JsonObject>(CASE_SOURCE)).skills ?? [];
+  const cases = (await readStructured<JsonObject>(CASE_SOURCE, rel(CASE_SOURCE))).skills ?? [];
   const interactions =
-    (await readJson<JsonObject>(INTERACTION_SOURCE)).interactions ?? [];
-  const agentCases = (await readJson<JsonObject>(AGENT_CASE_SOURCE)).agents ?? [];
+    (await readStructured<JsonObject>(INTERACTION_SOURCE, rel(INTERACTION_SOURCE))).interactions ?? [];
+  const agentCases = (await readStructured<JsonObject>(AGENT_CASE_SOURCE, rel(AGENT_CASE_SOURCE))).agents ?? [];
   const discovered = await skillPaths();
   const contracts = await agentContracts();
   const bySkill = new Map<string, JsonObject>();
@@ -241,7 +242,7 @@ export async function generateCatalog(): Promise<JsonObject> {
         owner: item.owner,
         prompt,
         expectation: expected,
-        source: "harness-evals/skill-cases.json",
+        source: "harness-evals/skill-cases.yaml",
       });
     };
     add("implicit-trigger", item.implicit, expectation(skill, skill));
@@ -285,7 +286,7 @@ export async function generateCatalog(): Promise<JsonObject> {
         forbiddenPrimary: item.forbidden_primary ?? [],
         allowedSupporting: item.allowed_supporting ?? [],
       }),
-      source: "harness-evals/interactions.json",
+      source: "harness-evals/interactions.yaml",
     });
   }
   for (const agent of [...byAgent.keys()].sort()) {
@@ -354,7 +355,7 @@ export async function generateCatalog(): Promise<JsonObject> {
         maxCommands: item.max_commands,
         maxOutputChars: item.max_output_chars,
       }),
-      source: "harness-evals/agent-outcomes.json",
+      source: "harness-evals/agent-outcomes.yaml",
     });
   }
   if (new Set(scenarios.map((item) => item.id)).size !== scenarios.length) {
@@ -381,20 +382,21 @@ export async function harnessSourceManifest(): Promise<JsonObject> {
     ".codex/hooks.json",
     ".codex/task-admission/task-envelope.schema.json",
     ".codex/task-admission/policy.schema.json",
-    ".codex/task-admission/control-catalog.json",
-    ".codex/task-admission/policies/core.json",
+    ".codex/task-admission/policy-source.schema.json",
+    ".codex/task-admission/control-catalog.yaml",
+    ".codex/task-admission/policies/core.yaml",
     ".codex/harness-tooling/package.json",
     ".codex/harness-tooling/bun.lock",
     "scripts/cascade.ts",
-    "harness-evals/skill-cases.json",
-    "harness-evals/interactions.json",
-    "harness-evals/agent-outcomes.json",
+    "harness-evals/skill-cases.yaml",
+    "harness-evals/interactions.yaml",
+    "harness-evals/agent-outcomes.yaml",
     "harness-evals/response.schema.json",
     "harness-evals/judge-response.schema.json",
-    "harness-evals/judge-profiles.json",
+    "harness-evals/judge-profiles.yaml",
     "harness-evals/task-admission/case.schema.json",
     "harness-evals/task-admission/assessment.schema.json",
-    "harness-evals/task-admission/cases.json",
+    "harness-evals/task-admission/cases.yaml",
   ].map((path) => rootPath(path));
   const dynamic = [
     ...(await walkFiles(rootPath("scripts/cascade"))),
@@ -415,7 +417,7 @@ export async function resolveCascadeHarnessProfile(input: {
   input_file: string;
   output_schema_file: string;
 }): Promise<ResolvedCascadeHarnessProfile> {
-  const profile = await readJson<CascadeHarnessProfile>(input.profile_file);
+  const profile = await readStructured<CascadeHarnessProfile>(input.profile_file, rel(input.profile_file));
   const keys = Object.keys(profile).sort();
   const expectedKeys = [
     "catalog_digest",
@@ -457,7 +459,7 @@ export async function resolveCascadeHarnessProfile(input: {
   ) {
     throw new CascadeError("Cascade harness profile is stale or does not match the current scenario authority");
   }
-  const frozenScenario = await readJson<JsonObject>(input.input_file);
+  const frozenScenario = await readStructured<JsonObject>(input.input_file, rel(input.input_file));
   if (stableJson(frozenScenario) !== stableJson(scenario)) {
     throw new CascadeError("Cascade harness profile input is not the exact current scenario object");
   }
@@ -516,14 +518,14 @@ export async function gradeCascadeHarnessTrace(
 }
 
 async function profiles(): Promise<Map<string, JsonObject>> {
-  const values = (await readJson<JsonObject>(JUDGE_PROFILES)).profiles;
+  const values = (await readStructured<JsonObject>(JUDGE_PROFILES, rel(JUDGE_PROFILES))).profiles;
   if (!Array.isArray(values)) throw new CascadeError("judge profiles missing");
   return new Map(values.map((item: JsonObject) => [item.id, item]));
 }
 
 async function rubric(profile: JsonObject): Promise<JsonObject> {
   const path = rootPath(profile.rubric ?? "");
-  const value = await readJson<JsonObject>(path);
+  const value = await readStructured<JsonObject>(path, rel(path));
   if (value.rubric_id !== profile.id) {
     throw new CascadeError(`judge profile ${profile.id} does not match rubric`);
   }

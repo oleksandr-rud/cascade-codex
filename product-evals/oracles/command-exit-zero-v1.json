@@ -1,6 +1,0 @@
-{
-  "schema_version": 1,
-  "id": "command-exit-zero-v1",
-  "type": "exit-code",
-  "expected_exit_code": 0
-}

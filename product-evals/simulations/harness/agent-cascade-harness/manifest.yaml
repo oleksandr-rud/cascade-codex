@@ -1,0 +1,15 @@
+dataset_file: product-evals/simulations/harness/agent-cascade-harness/datasets/cases.yaml
+id: agent-cascade-harness
+metric_files:
+  - product-evals/metrics/agent-response-contract-rate-v1.yaml
+population_files:
+  - product-evals/simulations/harness/agent-cascade-harness/populations/actors.yaml
+purpose: Exercise one current source-bound Cascade harness scenario through the W-007 agent adapter.
+scenario_files:
+  - product-evals/simulations/harness/agent-cascade-harness/scenarios/hx-055.yaml
+schema_version: 1
+simulation_scope: harness
+title: Exact Cascade harness profile canary
+treatment_files:
+  - product-evals/treatments/baseline-v1.yaml
+world_file: product-evals/simulations/harness/agent-cascade-harness/worlds/world.yaml

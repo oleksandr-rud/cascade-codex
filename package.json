@@ -21,7 +21,8 @@
     "test": "bun test scripts/cascade"
   },
   "dependencies": {
-    "node-pty": "1.1.0"
+    "node-pty": "1.1.0",
+    "yaml": "2.9.0"
   },
   "trustedDependencies": [
     "node-pty"

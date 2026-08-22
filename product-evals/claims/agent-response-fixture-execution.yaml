@@ -1,0 +1,24 @@
+assertion: The provider-neutral agent fixture emits one schema-valid source-bound response with individually evidenced material claims and a proposal-only next route.
+class: execution
+evidence_requirements:
+  - source-manifest
+  - execution-receipt
+  - task-result
+  - trajectory
+  - policy-decisions
+  - oracle
+  - cleanup
+id: agent-response-fixture-execution
+population_authority: none
+required_metric_ids: []
+required_oracle_ids:
+  - agent-response-contract-valid-v1
+required_policy_ids:
+  - allow-agent-response-fixture-v1
+requires_calibration: false
+schema_version: 1
+scope:
+  driver: agent-runtime
+  runtime_provider: fixture
+  target_mode: explicit-instructions
+  task_id: AGENT-RESPONSE-FIXTURE-SMOKE

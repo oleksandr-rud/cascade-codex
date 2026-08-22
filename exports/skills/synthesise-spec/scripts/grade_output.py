@@ -203,10 +203,12 @@ def grade(evaluator: dict[str, object], text: str) -> dict[str, object]:
 
 def main() -> int:
     if len(sys.argv) != 3:
-        print("usage: grade_output.py EVALUATOR.json OUTPUT.md", file=sys.stderr)
+        print("usage: grade_output.py EVALUATOR.yaml OUTPUT.md", file=sys.stderr)
         return 2
     evaluator_path = Path(sys.argv[1])
     output_path = Path(sys.argv[2])
+    # Exported evaluator YAML intentionally stays in the dependency-free,
+    # JSON-compatible YAML subset used by the standalone package.
     evaluator = json.loads(evaluator_path.read_text(encoding="utf-8"))
     result = grade(evaluator, output_path.read_text(encoding="utf-8"))
     print(json.dumps(result, indent=2, sort_keys=True))

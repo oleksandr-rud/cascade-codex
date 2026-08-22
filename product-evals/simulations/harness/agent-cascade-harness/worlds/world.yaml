@@ -1,0 +1,11 @@
+allowed_actions:
+  - assert
+cleanup:
+  reset_to_fixture: true
+fixture_file: product-evals/simulations/harness/agent-cascade-harness/worlds/world.fixture.yaml
+id: agent-cascade-harness-world-v1
+negative_behaviors:
+  - stale scenario or harness source identity reaches target dispatch
+  - target reads harness-evals, prior runs, golden expectations, or evaluator rubrics
+  - mutation, network access, or delegation is treated as semantically compensable
+schema_version: 1

@@ -1,5 +1,5 @@
 {
-  "digest": "9f9fce2418f10546400e88d67d98e7e149a00e97df55a93d4f4ccd82748414e4",
+  "digest": "fbe1e909813fa00da066d3f18322323d65fe65df86d02e32a732ad251c4b5779",
   "entries": [
     {
       "adapters": [
@@ -24,8 +24,8 @@
       "intake_id": null,
       "intake_status": null,
       "intake_task_envelope_id": null,
-      "manifest": "product-evals/campaigns/agent-cascade-harness-canary.json",
-      "manifest_digest": "5bff99acd40bdd96c14f205bbf753490b5b65d0d6750cde87703a23c7b5d60b0",
+      "manifest": "product-evals/campaigns/agent-cascade-harness-canary.yaml",
+      "manifest_digest": "fb22617e56a661b44a2499e5543282ff29611cbf695c5fbd0a60623c649ee330",
       "metric_ids": [
         "agent-response-contract-rate-v1"
       ],
@@ -39,7 +39,7 @@
       "rubric_id": "simulation-evaluator-v1",
       "simulation_id": "agent-cascade-harness",
       "simulation_scope": "harness",
-      "source_digest": "381af2c2f5eb4fbbf936e8f3ac20c95df90febf029a2c17ac13bb66b8958c632",
+      "source_digest": "6b260f754e088549c96a9378d8ab16ab5fe94d90b933770072bc5566daac75e3",
       "task_ids": [
         "AGENT-CASCADE-HARNESS-CANARY"
       ],
@@ -72,8 +72,8 @@
       "intake_id": null,
       "intake_status": null,
       "intake_task_envelope_id": null,
-      "manifest": "product-evals/campaigns/agent-response-fake-smoke.json",
-      "manifest_digest": "e66b14452589e2b166e7aad0b1f1ce775f5ca6b52c09e944fa9ec059484527ef",
+      "manifest": "product-evals/campaigns/agent-response-fake-smoke.yaml",
+      "manifest_digest": "1999ba986a43f310d400c7464cc33379af9055069481515b470c9881f11aac8a",
       "metric_ids": [
         "agent-response-contract-rate-v1"
       ],
@@ -87,7 +87,7 @@
       "rubric_id": null,
       "simulation_id": "agent-response-fixture",
       "simulation_scope": "harness",
-      "source_digest": "78329c76e5bf29f539a1e4fc93be7c9b5e8e51ee8d7a42d2b5f3c4bffaedf48b",
+      "source_digest": "0f4ad554dbc6b792b6482eedb4929c44b866a36853daf8228c6bf0d0f5cd31d6",
       "task_ids": [
         "AGENT-RESPONSE-FIXTURE-SMOKE"
       ],
@@ -120,8 +120,8 @@
       "intake_id": null,
       "intake_status": null,
       "intake_task_envelope_id": null,
-      "manifest": "product-evals/campaigns/agent-standalone-codex-canary.json",
-      "manifest_digest": "1db6bafb0089d1a5c88b91480125c77d7f489ad976b714cb7cfeba3e6dd49a1d",
+      "manifest": "product-evals/campaigns/agent-standalone-codex-canary.yaml",
+      "manifest_digest": "1d655675aef60bd8890f3bf123b9d10e8150d1a100e1a26e6fb3ef28a897f2f2",
       "metric_ids": [
         "agent-response-contract-rate-v1"
       ],
@@ -135,7 +135,7 @@
       "rubric_id": "simulation-evaluator-v1",
       "simulation_id": "agent-standalone-codex",
       "simulation_scope": "harness",
-      "source_digest": "61206da1c28d41f4e3991c274e66f6b74fb88e72e50439fa0b5dcf123d85bb1a",
+      "source_digest": "8bfaaa89a4816f34dc2b45a19ddaf8908b1b5bcceceec2cc1a063646b4c503f6",
       "task_ids": [
         "AGENT-STANDALONE-CODEX-CANARY"
       ],
@@ -168,8 +168,8 @@
       "intake_id": null,
       "intake_status": null,
       "intake_task_envelope_id": null,
-      "manifest": "product-evals/campaigns/browser-simulation-smoke.json",
-      "manifest_digest": "798709dac61ddcaf32a5fb03b4618fd13f7847c205f2f417c8e87e7d3435b27c",
+      "manifest": "product-evals/campaigns/browser-simulation-smoke.yaml",
+      "manifest_digest": "7d3fb5f278f983f03586c7ef2631b3e861b61510a354c8c05731fbaf775f3e4f",
       "metric_ids": [
         "browser-completion-rate-v1"
       ],
@@ -188,7 +188,7 @@
       "rubric_id": null,
       "simulation_id": "browser-local-fixture",
       "simulation_scope": "harness",
-      "source_digest": "1e3ff675a137eeb43ec0906d859d648ddad8e7b4b7108a077c10c50fbc79a537",
+      "source_digest": "5ff93923b2f0c2cc808fe98eb1bd806fb977ac796ad8869e167c1e3810e1be1d",
       "task_ids": [
         "BROWSER-SIMULATION-SMOKE",
         "BROWSER-EXTERNAL-NAVIGATION-DENIED",
@@ -224,8 +224,8 @@
       "intake_id": null,
       "intake_status": null,
       "intake_task_envelope_id": null,
-      "manifest": "product-evals/campaigns/command-failure-recovery.json",
-      "manifest_digest": "12fd24a6be5903964e6823a9c31ae01eb4eb3ae76374475e950b2d9ea99a10e8",
+      "manifest": "product-evals/campaigns/command-failure-recovery.yaml",
+      "manifest_digest": "311422fb9619e9a5e0f0a9fe3871fcb8d4abe5c661f70eedef238ed5f36db26b",
       "metric_ids": [
         "command-exit-one-observed-v1"
       ],
@@ -241,7 +241,7 @@
       "rubric_id": null,
       "simulation_id": "command-failure-fixture",
       "simulation_scope": "harness",
-      "source_digest": "b800e4f17604dcd24ce31ddc191ffc9e2823925124f2557378d8fddedf11e923",
+      "source_digest": "b94bf7da57c1f64f3f033fa7788f3382b7a5966f0648e97b1fbf33103cf871ae",
       "task_ids": [
         "COMMAND-EXPECTED-FAILURE",
         "COMMAND-MISSING-OUTPUT"
@@ -283,8 +283,8 @@
       "intake_id": null,
       "intake_status": null,
       "intake_task_envelope_id": null,
-      "manifest": "product-evals/campaigns/cross-contour-handoff-smoke.json",
-      "manifest_digest": "b602b06cc01f0cf9ea952d2d0582e3280ada695b1c29de684c5a04adc9910f26",
+      "manifest": "product-evals/campaigns/cross-contour-handoff-smoke.yaml",
+      "manifest_digest": "bd20a54ddde2734701892392757f7a31fd546a46275a9c9886b3cd3bad9b89d0",
       "metric_ids": [
         "task-success-v1"
       ],
@@ -299,7 +299,7 @@
       "rubric_id": null,
       "simulation_id": "simulation-correctness-fixture",
       "simulation_scope": "harness",
-      "source_digest": "f7fda684f48aade5b90ca22c5711647f1c8bc2a6781cd4384ab97e5ea8cdac42",
+      "source_digest": "d4a1637ebf19f86d245813a7fa3e55a87c123dc112cf59a9cfa4779822491fe2",
       "task_ids": [
         "FAKE-COMMAND-HANDOFF",
         "FAKE-HTTP-HANDOFF",
@@ -340,8 +340,8 @@
       "intake_id": null,
       "intake_status": null,
       "intake_task_envelope_id": null,
-      "manifest": "product-evals/campaigns/desktop-linux-smoke.json",
-      "manifest_digest": "d6cdb65a2686f1c09f0000eeb50d50792b2deac8f771123275152ab7b08633fe",
+      "manifest": "product-evals/campaigns/desktop-linux-smoke.yaml",
+      "manifest_digest": "a3fa3ba25448562257010c25ff9da4fc11cf9ab98fa372613b7fed3bb2b9ec80",
       "metric_ids": [
         "desktop-completion-rate-v1"
       ],
@@ -355,7 +355,7 @@
       "rubric_id": null,
       "simulation_id": "desktop-linux-fixture",
       "simulation_scope": "harness",
-      "source_digest": "73a9183deb9c180d50f270a4887972991bc048436c089985b72daa354c7f9ec2",
+      "source_digest": "15e74cd04f65452fe93743b3aa980ecf7fb59b91afaffa41c0173779d5538a43",
       "task_ids": [
         "DESKTOP-LINUX-SMOKE"
       ],
@@ -388,8 +388,8 @@
       "intake_id": null,
       "intake_status": null,
       "intake_task_envelope_id": null,
-      "manifest": "product-evals/campaigns/harness-static-smoke.json",
-      "manifest_digest": "c6ffab15efe79f4dfae3ed23c8c16f37680210c8ae6ff11f9b215eb549c7ddd1",
+      "manifest": "product-evals/campaigns/harness-static-smoke.yaml",
+      "manifest_digest": "688ac752ab5918be3478fdcfc296b590bb9dab8bf81022f51b68a29210c712a4",
       "metric_ids": [
         "command-exit-zero-rate-v1"
       ],
@@ -403,7 +403,7 @@
       "rubric_id": null,
       "simulation_id": "command-static-fixture",
       "simulation_scope": "harness",
-      "source_digest": "5eedb87242b4c50d7719a3475213be4bd6d48624c427190d666d2784f66975d8",
+      "source_digest": "02cb75ac94cdbd8c7ab3e9b39adc7b997af5177e0bd78830764c6b03d98264a9",
       "task_ids": [
         "HARNESS-STATIC-SMOKE"
       ],
@@ -436,8 +436,8 @@
       "intake_id": null,
       "intake_status": null,
       "intake_task_envelope_id": null,
-      "manifest": "product-evals/campaigns/mobile-provider-preflight.json",
-      "manifest_digest": "191a2709b30cc61dd98321fa3506079d4d919e8d2f16b035f0466dfc635df288",
+      "manifest": "product-evals/campaigns/mobile-provider-preflight.yaml",
+      "manifest_digest": "8ff34b89417e78e1746449a82169f8ac254e7645b5c45ea2a6699d5fb3497b9c",
       "metric_ids": [
         "mobile-completion-rate-v1"
       ],
@@ -451,7 +451,7 @@
       "rubric_id": null,
       "simulation_id": "mobile-provider-fixture",
       "simulation_scope": "harness",
-      "source_digest": "7e50fea39e4858e5b84fd3b76a7e18df35dbad4580f827cfc3f9d5bf662dc77c",
+      "source_digest": "312ce9bd95e713049ffeb32ef1d6bfb74ec17cfec636338da74d21ccc52d2da6",
       "task_ids": [
         "MOBILE-ANDROID-PREFLIGHT"
       ],
@@ -486,8 +486,8 @@
       "intake_id": null,
       "intake_status": null,
       "intake_task_envelope_id": null,
-      "manifest": "product-evals/campaigns/simulation-calibration-ranking-smoke.json",
-      "manifest_digest": "34f55fbb7f45eaacbda389796618dd5475874db965866dd28199e777d9afed2e",
+      "manifest": "product-evals/campaigns/simulation-calibration-ranking-smoke.yaml",
+      "manifest_digest": "5f9f0196f33b44f46acdb60cb2630cebdde19e92bc64ac2d77634676dc76ec08",
       "metric_ids": [
         "task-success-v1"
       ],
@@ -502,7 +502,7 @@
       "rubric_id": null,
       "simulation_id": "simulation-correctness-fixture",
       "simulation_scope": "harness",
-      "source_digest": "e4a5c4823264baac6a0e15fe07e9f8c103b04e68e4dc640750b4515aab9d276d",
+      "source_digest": "90a5f76b365e941118112b65cc914d6b0e1106b485cb9d9eba49c5494d09131f",
       "task_ids": [
         "SIMULATION-STATE-SMOKE"
       ],
@@ -539,8 +539,8 @@
       "intake_id": null,
       "intake_status": null,
       "intake_task_envelope_id": null,
-      "manifest": "product-evals/campaigns/simulation-codex-evaluation-smoke.json",
-      "manifest_digest": "dce1ddd4f93a9294210d648b028635bb2de0216a46bfbabca7f74c02a43fbb7c",
+      "manifest": "product-evals/campaigns/simulation-codex-evaluation-smoke.yaml",
+      "manifest_digest": "6fb3f6dfa2b647404acc6469ad6abaa56f4d974b26887b8e95406261635135e0",
       "metric_ids": [
         "task-success-v1"
       ],
@@ -555,7 +555,7 @@
       "rubric_id": "simulation-evaluator-v1",
       "simulation_id": "simulation-correctness-fixture",
       "simulation_scope": "harness",
-      "source_digest": "0ee23fa85fae660420fb3243e358c874c62bfeebadd6e4ae43ea4a341e2f0854",
+      "source_digest": "03172e672aee83de70bbafccbbabf8a18a8bb9c23ef88030693a3f28c712a7b4",
       "task_ids": [
         "SIMULATION-STATE-SMOKE"
       ],
@@ -592,8 +592,8 @@
       "intake_id": null,
       "intake_status": null,
       "intake_task_envelope_id": null,
-      "manifest": "product-evals/campaigns/simulation-contract-smoke.json",
-      "manifest_digest": "a5cece5f8b37ef4794d6bcc3dcb1c756223dfcd79bb6749422685a55716ee5e8",
+      "manifest": "product-evals/campaigns/simulation-contract-smoke.yaml",
+      "manifest_digest": "e4477a78d255385953c01ea7cf4aeef7658ce1ea89c64964840e25ba6ea9dba1",
       "metric_ids": [
         "task-success-v1"
       ],
@@ -608,7 +608,7 @@
       "rubric_id": null,
       "simulation_id": "simulation-correctness-fixture",
       "simulation_scope": "harness",
-      "source_digest": "39e226f65ca9b1b97426c08672e3e426fb693259d1a7b8cbbd48738ec964d588",
+      "source_digest": "ee205f4358d6f5aa7f11f6234080f3d809ce3baacd32b485a71c7d92428b9005",
       "task_ids": [
         "SIMULATION-STATE-SMOKE"
       ],
@@ -645,8 +645,8 @@
       "intake_id": null,
       "intake_status": null,
       "intake_task_envelope_id": null,
-      "manifest": "product-evals/campaigns/simulation-metric-reduction-smoke.json",
-      "manifest_digest": "720c7fd7d343177204a4900160103edf2c0370afdb570a9baff56826ecae8e86",
+      "manifest": "product-evals/campaigns/simulation-metric-reduction-smoke.yaml",
+      "manifest_digest": "cb68195c1b88c36cc2ee71e71d200b6db5df4e9eb57914d181ceeac65824d76d",
       "metric_ids": [
         "task-success-v1"
       ],
@@ -661,7 +661,7 @@
       "rubric_id": null,
       "simulation_id": "simulation-correctness-fixture",
       "simulation_scope": "harness",
-      "source_digest": "b1c4512c4474181daa049dd56c82a7cbd0f0cfc9b96a7c577add399694d59f57",
+      "source_digest": "c44ea7ef81a077539a1b556b2934a3e3b717b718b1fc717f69af254e86ebd0f6",
       "task_ids": [
         "SIMULATION-STATE-SMOKE"
       ],
@@ -698,8 +698,8 @@
       "intake_id": null,
       "intake_status": null,
       "intake_task_envelope_id": null,
-      "manifest": "product-evals/campaigns/simulation-partition-leakage-smoke.json",
-      "manifest_digest": "ced1bad470b3d497220494f75b85029abebb131cd7dcfa739f7d0d3ec30eb2cf",
+      "manifest": "product-evals/campaigns/simulation-partition-leakage-smoke.yaml",
+      "manifest_digest": "f06d6c2bd0fd970156d6b7da167a3e651a93412948f6694c6272e78611f565e9",
       "metric_ids": [
         "task-success-v1"
       ],
@@ -714,7 +714,7 @@
       "rubric_id": null,
       "simulation_id": "simulation-correctness-fixture",
       "simulation_scope": "harness",
-      "source_digest": "722f98e80886ed3a210cb78a4fc5725b788977553cb4295d673eb3646e5b6c94",
+      "source_digest": "43e1a1c2bede48ce079b5591d7ee0847403fc44dde55a635a55eea3e35a074c8",
       "task_ids": [
         "SIMULATION-STATE-SMOKE"
       ],
@@ -751,8 +751,8 @@
       "intake_id": null,
       "intake_status": null,
       "intake_task_envelope_id": null,
-      "manifest": "product-evals/campaigns/simulation-population-smoke.json",
-      "manifest_digest": "9978fb0b6be893c51dfeb9783cdb35474c8d78a582d1cefbb2dc31c8cfa02014",
+      "manifest": "product-evals/campaigns/simulation-population-smoke.yaml",
+      "manifest_digest": "e2a1b4890c84d7c853bbe2275dc3da96ecec04d50b56b3274616bd965c6bfdd2",
       "metric_ids": [
         "task-success-v1"
       ],
@@ -767,7 +767,7 @@
       "rubric_id": null,
       "simulation_id": "simulation-correctness-fixture",
       "simulation_scope": "harness",
-      "source_digest": "630829def1087c820a6cbd3876222c75eaa16b9a2cbcb2863edbd0bb67f6ab0b",
+      "source_digest": "64c98ccd648f665159890cb8f44304adc81c1986ae2082c1884b21abbbce673a",
       "task_ids": [
         "SIMULATION-STATE-SMOKE"
       ],
@@ -804,8 +804,8 @@
       "intake_id": null,
       "intake_status": null,
       "intake_task_envelope_id": null,
-      "manifest": "product-evals/campaigns/simulation-world-state-smoke.json",
-      "manifest_digest": "7fa94b483c893ea4254c86f4f62cc2fc4faf85cbdc11791a6018ae664ab63f2b",
+      "manifest": "product-evals/campaigns/simulation-world-state-smoke.yaml",
+      "manifest_digest": "ff8818b249ba5aad17a1fd138b1a2416e2e471344181e22000fa6c799fdb9c1e",
       "metric_ids": [
         "task-success-v1"
       ],
@@ -820,7 +820,7 @@
       "rubric_id": null,
       "simulation_id": "simulation-correctness-fixture",
       "simulation_scope": "harness",
-      "source_digest": "1be7969b90c30c0f7e3ba29e94880079f1d32c01f521ef63ff4a545a88579d31",
+      "source_digest": "0a49b69e15a4a4e3d7ed9a762cb67cf3feba53cb82999cbbbfde0e702c7396f0",
       "task_ids": [
         "SIMULATION-STATE-SMOKE"
       ],
@@ -855,8 +855,8 @@
       "intake_id": null,
       "intake_status": null,
       "intake_task_envelope_id": null,
-      "manifest": "product-evals/campaigns/terminal-pty-smoke.json",
-      "manifest_digest": "1c98f536c207fecbb37d09a427cc83bf056d1edeff7fca4e7c42a9ac6e3b1c95",
+      "manifest": "product-evals/campaigns/terminal-pty-smoke.yaml",
+      "manifest_digest": "6055e13dfb96ac14ff5b2ed8ba7914118ae7622ba7ec352d6244ace424d3b7df",
       "metric_ids": [
         "terminal-completion-rate-v1"
       ],
@@ -875,7 +875,7 @@
       "rubric_id": null,
       "simulation_id": "terminal-pty-fixture",
       "simulation_scope": "harness",
-      "source_digest": "fba2bb9c28e2952c0ef839c332a58f8d83c0ea82584f965a9b03c2a62232f464",
+      "source_digest": "b00056996b30ffb7bdbf3c8d44fe66d5657b775f0df1b4019115fa7e7360f2a8",
       "task_ids": [
         "TERMINAL-PTY-SMOKE",
         "TERMINAL-SIGNAL-SMOKE",
@@ -888,6 +888,6 @@
       ]
     }
   ],
-  "generated_from": "product-evals/campaigns/*.json",
+  "generated_from": "product-evals/campaigns/*.yaml",
   "schema_version": 1
 }

@@ -1,0 +1,37 @@
+browser:
+  actions:
+    - locator:
+        kind: label
+        value: Resolution
+      type: browser-fill
+      value: Replaced worn belt
+    - locator:
+        kind: role
+        name: Complete task
+        role: button
+      type: browser-click
+  downloads: false
+  evidence:
+    screenshot: true
+    trace: true
+  fixture_file: product-evals/simulations/harness/browser-fixture.html
+  network: deny
+  observation:
+    expected_text: "Completed: Replaced worn belt"
+    locator:
+      kind: role
+      role: status
+  profile: ephemeral
+  uploads: false
+driver:
+  adapter: builtin-playwright
+  type: playwright
+id: BROWSER-SIMULATION-SMOKE
+kind: browser
+oracle_ids:
+  - browser-visible-status-v1
+policy_ids:
+  - allow-browser-simulation-smoke-v1
+required: true
+schema_version: 4
+timeout_ms: 15000

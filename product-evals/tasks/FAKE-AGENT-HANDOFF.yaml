@@ -1,0 +1,26 @@
+actions:
+  - path: account.status
+    type: assert
+    value: pending
+  - path: account.status
+    type: set
+    value: resolved
+  - amount: 1
+    path: account.attempts
+    type: increment
+  - path: account.attempts
+    type: assert
+    value: 1
+driver:
+  adapter: builtin-fake
+  type: fake
+id: FAKE-AGENT-HANDOFF
+kind: agent-response
+oracle_ids:
+  - account-resolved-v1
+  - account-attempt-recorded-v1
+policy_ids:
+  - allow-fixture-state-actions-v1
+required: true
+schema_version: 1
+timeout_ms: 1000

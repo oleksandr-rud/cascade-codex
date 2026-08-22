@@ -1,0 +1,13 @@
+actors:
+  - behavior:
+      strategy: route the supplied request using only current Cascade contracts
+    id: agent-cascade-harness-actor
+    slices:
+      - cascade-harness-profile
+    weight: 1
+id: agent-cascade-harness-actors-v1
+schema_version: 1
+source:
+  description: Bounded harness actor for one current Cascade routing scenario; it does not represent product users.
+  kind: synthetic
+  minimized: true

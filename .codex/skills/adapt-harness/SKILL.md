@@ -134,7 +134,7 @@ their owning skills are needed and delegation is authorized.
     placeholders, stale config keys, invalid config shapes, and missing
     configured paths fail setup.
 14. For deep onboarding, create
-    `docs/work/onboarding-manifest.json` with
+    `docs/work/onboarding-manifest.yaml` with
     `bun scripts/cascade.ts target init-manifest`, preserve every
     `.pre-cascade` backup hash, record every `ON-00` through `ON-09`
     disposition, project-part decision, doc-routing decision, and validation
@@ -147,7 +147,7 @@ their owning skills are needed and delegation is authorized.
     `NOT_RUN`, or `GAP` in the manifest.
 16. When the user explicitly requests a new source structure and the target
     has no conflicting architecture, preview a selected
-    `architecture-scaffold-profiles.json` profile with
+    `architecture-scaffold-profiles.yaml` profile with
     `scripts/scaffold_architecture_default.py preview`. Use `write` only after
     the path set is reviewed. Never add an overwrite mode or install packages
     from this generator.

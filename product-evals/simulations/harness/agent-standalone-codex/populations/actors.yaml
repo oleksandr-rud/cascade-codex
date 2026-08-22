@@ -1,0 +1,13 @@
+actors:
+  - behavior:
+      strategy: respond only from the supplied maintenance input
+    id: agent-standalone-codex-actor
+    slices:
+      - agent-standalone-codex
+    weight: 1
+id: agent-standalone-codex-actors-v1
+schema_version: 1
+source:
+  description: Bounded harness canary actor for one explicit-instruction Codex runtime; it does not represent product users.
+  kind: synthetic
+  minimized: true

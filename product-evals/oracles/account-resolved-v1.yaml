@@ -1,0 +1,5 @@
+expected: resolved
+id: account-resolved-v1
+path: account.status
+schema_version: 1
+type: state-equals

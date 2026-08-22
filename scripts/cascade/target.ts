@@ -23,9 +23,10 @@ import {
   walkFiles,
   writeJson,
 } from "./common";
+import { parseStrictYaml, stringifyYaml } from "./structured-data";
 
 const DEFAULT_CONFIG = "harness.config.yaml";
-const DEFAULT_MANIFEST = "docs/work/onboarding-manifest.json";
+const DEFAULT_MANIFEST = "docs/work/onboarding-manifest.yaml";
 const FIXTURE_ROOT = rootPath("harness-evals/fixtures/onboarding/basic-project");
 const PHASE_IDS = Array.from({ length: 10 }, (_, index) =>
   `ON-${String(index).padStart(2, "0")}`,
@@ -42,6 +43,20 @@ const DOC_ACTIONS = new Set([
   "NO_DOC_NEEDED",
 ]);
 const CHECK_STATUSES = new Set(["PASS", "FAIL", "BLOCKED", "NOT_RUN", "GAP"]);
+
+async function readOnboardingManifest(path: string): Promise<Record<string, any>> {
+  return parseStrictYaml<Record<string, any>>(
+    await readText(path),
+    rel(path),
+  );
+}
+
+async function writeOnboardingManifest(
+  path: string,
+  manifest: Record<string, any>,
+): Promise<void> {
+  await writeFile(path, stringifyYaml(manifest));
+}
 const IGNORED = new Set([
   ".git",
   ".artifacts",
@@ -140,7 +155,7 @@ function containsPlaceholder(value: unknown): boolean {
 }
 
 async function loadConfig(path: string): Promise<Record<string, any>> {
-  const value = Bun.YAML.parse(await readText(path));
+  const value = parseStrictYaml(await readText(path), path);
   if (!value || typeof value !== "object" || Array.isArray(value)) {
     throw new CascadeError(`configuration must be a mapping: ${path}`);
   }
@@ -601,7 +616,7 @@ async function initManifest(
     source_snapshot: await snapshot(root, config, [output]),
     validation: [],
   };
-  await writeJson(output, manifest);
+  await writeOnboardingManifest(output, manifest);
   return manifest;
 }
 
@@ -611,7 +626,7 @@ async function refreshManifest(
   manifestPath: string,
 ): Promise<Record<string, any>> {
   const path = resolve(root, manifestPath);
-  const manifest = await readJson<Record<string, any>>(path);
+  const manifest = await readOnboardingManifest(path);
   if (manifest.schema_version !== 1) {
     throw new CascadeError("manifest.schema_version must be 1 before refresh");
   }
@@ -647,7 +662,7 @@ async function refreshManifest(
     source_revision: inventory.vcs.head,
   };
   manifest.source_snapshot = await snapshot(root, config, [path]);
-  await writeJson(path, manifest);
+  await writeOnboardingManifest(path, manifest);
   return manifest;
 }
 
@@ -781,7 +796,7 @@ async function validateManifest(
   errors.push(...configErrors);
   const path = resolve(root, manifestPath);
   if (!(await isFile(path))) return { errors: [...errors, `missing manifest: ${manifestPath}`], drift: { status: "UNKNOWN" } };
-  const manifest = await readJson<Record<string, any>>(path);
+  const manifest = await readOnboardingManifest(path);
   if (manifest.schema_version !== 1) errors.push("manifest.schema_version must be 1");
   if (!["draft", "current", "blocked", "superseded"].includes(manifest.status)) {
     errors.push(`manifest.status is invalid: ${manifest.status}`);
@@ -987,7 +1002,7 @@ export async function runFixtureSelfTest(): Promise<string[]> {
     }
     await initManifest(target, configPath, manifestPath, ["AGENTS.md.pre-cascade"]);
     const manifestFile = resolve(target, manifestPath);
-    const initialManifest = await readJson<Record<string, any>>(manifestFile);
+    const initialManifest = await readOnboardingManifest(manifestFile);
     const initialPreserved = initialManifest.preserved_files;
     const refreshed = await refreshManifest(target, configPath, manifestPath);
     if (JSON.stringify(refreshed.preserved_files) !== JSON.stringify(initialPreserved)) {
@@ -997,7 +1012,7 @@ export async function runFixtureSelfTest(): Promise<string[]> {
     if (!draft.errors.some((item) => item.includes("not complete"))) {
       failures.push("draft onboarding manifest accepted as complete");
     }
-    const manifest = await readJson<Record<string, any>>(manifestFile);
+    const manifest = await readOnboardingManifest(manifestFile);
     manifest.status = "current";
     for (const phase of manifest.phases) {
       phase.status = "PASS";
@@ -1049,17 +1064,17 @@ export async function runFixtureSelfTest(): Promise<string[]> {
         evidence: "fixture has no visual runtime",
       },
     ];
-    await writeJson(manifestFile, manifest);
+    await writeOnboardingManifest(manifestFile, manifest);
     let result = await validateManifest(target, configPath, manifestPath, true);
     if (result.errors.length) failures.push(`complete fixture failed: ${result.errors.join("; ")}`);
     manifest.documentation[1].action = "INVALID";
-    await writeJson(manifestFile, manifest);
+    await writeOnboardingManifest(manifestFile, manifest);
     result = await validateManifest(target, configPath, manifestPath, true);
     if (!result.errors.some((item) => item.includes(".action is invalid"))) {
       failures.push("invalid documentation action not rejected");
     }
     manifest.documentation[1].action = "NO_DOC_NEEDED";
-    await writeJson(manifestFile, manifest);
+    await writeOnboardingManifest(manifestFile, manifest);
     const preserved = resolve(target, "AGENTS.md.pre-cascade");
     const original = await readFile(preserved);
     await writeFile(preserved, "overwritten\n");

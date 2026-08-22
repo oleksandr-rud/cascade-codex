@@ -1,0 +1,22 @@
+assertion: The strict direct-process adapter preserves an expected nonzero exit result and evaluates it only through the declared oracle.
+class: execution
+evidence_requirements:
+  - source-manifest
+  - execution-receipt
+  - task-result
+  - policy-decisions
+  - oracle
+  - cleanup
+id: command-expected-failure-execution
+population_authority: none
+required_metric_ids: []
+required_oracle_ids:
+  - command-exit-one-v1
+required_policy_ids:
+  - allow-command-expected-failure-v1
+requires_calibration: false
+schema_version: 1
+scope:
+  driver: direct-process
+  platform: darwin
+  task_id: COMMAND-EXPECTED-FAILURE

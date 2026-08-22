@@ -1,0 +1,26 @@
+assertion: The deterministic PTY adapter completes the exact darwin prompt, resize, input, alternate-screen, transcript, oracle, and cleanup fixture.
+class: execution
+evidence_requirements:
+  - source-manifest
+  - execution-receipt
+  - task-result
+  - trajectory
+  - policy-decisions
+  - oracle
+  - cleanup
+id: terminal-pty-execution
+population_authority: none
+required_metric_ids: []
+required_oracle_ids:
+  - terminal-completed-v1
+required_policy_ids:
+  - allow-terminal-pty-smoke-spawn-v1
+  - allow-terminal-pty-smoke-steps-v1
+requires_calibration: false
+schema_version: 1
+scope:
+  dimensions: 80x24-to-100x30
+  driver: pty
+  platform: darwin
+  provider: node-pty@1.1.0
+  task_id: TERMINAL-PTY-SMOKE

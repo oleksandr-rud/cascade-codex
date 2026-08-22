@@ -1,0 +1,9 @@
+baseline: true
+id: baseline-v1
+schema_version: 1
+target:
+  harness_digest: dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd
+  model: deterministic-fixture
+  prompt_digest: "1111111111111111111111111111111111111111111111111111111111111111"
+  source_revision: framework-baseline
+  tool_digest: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa

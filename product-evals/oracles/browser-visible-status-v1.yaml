@@ -1,0 +1,5 @@
+expected: "Completed: Replaced worn belt"
+id: browser-visible-status-v1
+path: browser.visible_status
+schema_version: 1
+type: state-equals

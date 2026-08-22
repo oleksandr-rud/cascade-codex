@@ -1,0 +1,28 @@
+cases:
+  - actor_id: mobile-provider-actor
+    id: mobile-provider-development
+    partition: development
+    scenario_id: mobile-ready-v1
+    slices:
+      - mobile-provider
+  - actor_id: mobile-provider-actor
+    id: mobile-provider-regression
+    partition: regression
+    scenario_id: mobile-ready-v1
+    slices:
+      - mobile-provider
+  - actor_id: mobile-provider-actor
+    id: mobile-provider-holdout
+    partition: holdout
+    scenario_id: mobile-ready-v1
+    slices:
+      - mobile-provider
+  - actor_id: mobile-provider-actor
+    id: mobile-provider-calibration
+    partition: calibration-reference
+    scenario_id: mobile-ready-v1
+    slices:
+      - mobile-provider
+id: mobile-provider-cases-v1
+leakage_policy: exclusive-case-identity
+schema_version: 1

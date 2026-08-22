@@ -22,7 +22,7 @@ describe("harness impact classifier", () => {
   });
 
   test("routes changed scenarios to assertion review without auto-running live evals", () => {
-    const impact = classifyHarnessImpact(["harness-evals/interactions.json"]);
+    const impact = classifyHarnessImpact(["harness-evals/interactions.yaml"]);
     expect(impact.decision).toBe("ASSERTION_REVIEW");
     expect(impact.instruction).toContain("only the affected live scenario");
     expect(impact.instruction).toContain("NOT_APPLICABLE");
@@ -39,7 +39,7 @@ describe("harness impact classifier", () => {
   test("keeps judge-contract review bounded to calibration cases", () => {
     const impact = classifyHarnessImpact([
       "scripts/cascade/evals.ts",
-      "harness-evals/rubrics/outcome-v1.json",
+      "harness-evals/rubrics/outcome-v1.yaml",
     ]);
     expect(impact.decision).toBe("JUDGE_CONTRACT_REVIEW");
     expect(impact.instruction).toContain("bounded calibration/adversarial cases");
@@ -47,7 +47,7 @@ describe("harness impact classifier", () => {
 
   test("extracts only changed files from an apply_patch payload", () => {
     const patch = `*** Begin Patch
-*** Update File: /workspace/harness-evals/skill-cases.json
+*** Update File: /workspace/harness-evals/skill-cases.yaml
 @@
 -old
 +new
@@ -56,7 +56,7 @@ describe("harness impact classifier", () => {
 *** End Patch`;
     expect(changedPathsFromPatch(patch, "/workspace")).toEqual([
       "docs/note.md",
-      "harness-evals/skill-cases.json",
+      "harness-evals/skill-cases.yaml",
     ]);
   });
 });
@@ -76,7 +76,7 @@ describe("harness impact PostToolUse hook", () => {
       hook_event_name: "PostToolUse",
       tool_name: "apply_patch",
       cwd: "/workspace",
-      tool_input: { command: "*** Begin Patch\n*** Update File: /workspace/harness-evals/agent-outcomes.json\n*** End Patch" },
+      tool_input: { command: "*** Begin Patch\n*** Update File: /workspace/harness-evals/agent-outcomes.yaml\n*** End Patch" },
     });
     const context = output.hookSpecificOutput.additionalContext;
     expect(context).toContain("Harness impact hook: ASSERTION_REVIEW");

@@ -1,11 +1,13 @@
 import { describe, expect, test } from "bun:test";
 import { mkdir, rm, symlink, writeFile } from "node:fs/promises";
+import { dirname } from "node:path";
 
 import { compileTaskEnvelope, type TaskEnvelope } from "./admission";
 import { generateBrief, resolveCurrentBriefProjection } from "./briefs";
 import { buildCampaignCatalog, main as campaignMain } from "./campaigns";
 import { assertJsonSchema, readJson, rootPath, sha256File, sha256Text, stableJson, writeJson } from "./common";
 import { renderStarterPackage } from "./simulations";
+import { readStructured, stringifyYaml } from "./structured-data";
 import { buildSimulationIntakeTaskBindings, compileSimulationIntake, simulationIntakeAdmissionBindingBlockers } from "./simulation-intake";
 import {
   type PolicyDefinition,
@@ -261,7 +263,7 @@ describe("simulation intake contract", () => {
 
   test("copies the exact current provenance projection from trusted and lexical producers", async () => {
     const token = crypto.randomUUID();
-    const campaignPath = `product-evals/campaigns/.tmp-intake-v4-${token}.json`;
+    const campaignPath = `product-evals/campaigns/.tmp-intake-v4-${token}.yaml`;
     const intakePath = `product-evals/intakes/harness/.tmp-intake-v4-${token}.json`;
     const trustedEnvelopePath = `.artifacts/.tmp-intake-v4-${token}-trusted.json`;
     const lexicalEnvelopePath = `.artifacts/.tmp-intake-v4-${token}-lexical.json`;
@@ -276,8 +278,8 @@ describe("simulation intake contract", () => {
       source_segments_digest: sha256Text(stableJson(requestSpans)),
     };
     try {
-      const campaign = await readJson<Record<string, unknown>>(
-        rootPath("product-evals/campaigns/simulation-contract-smoke.json"),
+      const campaign = await readStructured<Record<string, unknown>>(
+        rootPath("product-evals/campaigns/simulation-contract-smoke.yaml"),
       );
       await writeJson(rootPath(intakePath), {
         schema_version: 6,
@@ -296,7 +298,10 @@ describe("simulation intake contract", () => {
         gaps: [],
         invalidation: ["producer change"],
       });
-      await writeJson(rootPath(campaignPath), { ...campaign, intake_file: intakePath });
+      await writeFile(
+        rootPath(campaignPath),
+        stringifyYaml({ ...campaign, intake_file: intakePath }),
+      );
       const trustedEnvelope = await compileTaskEnvelope({
         request,
         source_digest: sourceDigest,
@@ -359,7 +364,7 @@ describe("simulation intake contract", () => {
       ownerLane: "W-032",
       referenceDate: "2026-08-05",
     });
-    const campaignPath = `product-evals/campaigns/${token}-smoke.json`;
+    const campaignPath = `product-evals/campaigns/${token}-smoke.yaml`;
     const intakePath = `product-evals/intakes/product/${token}-smoke.json`;
     const seedPath = `product-evals/intakes/product/seed-bindings/${token}-smoke.json`;
     const envelopePath = `.artifacts/.tmp-${token}-envelope.json`;
@@ -378,7 +383,9 @@ describe("simulation intake contract", () => {
     const snapshotPath = `product-evals/intakes/product/task-envelopes/${envelope.envelope_id}.json`;
     try {
       for (const file of rendered) {
+        await mkdir(dirname(rootPath(file.path)), { recursive: true });
         if (file.format === "json") await writeJson(rootPath(file.path), file.content);
+        else if (file.format === "yaml") await writeFile(rootPath(file.path), stringifyYaml(file.content));
         else await writeFile(rootPath(file.path), String(file.content));
       }
       await writeJson(rootPath(envelopePath), envelope);
@@ -390,7 +397,7 @@ describe("simulation intake contract", () => {
       );
       await writeFile(rootPath(briefOutputPath), await generateBrief(briefPath));
 
-      const campaign = await readJson<Record<string, any>>(rootPath(campaignPath));
+      const campaign = await readStructured<Record<string, any>>(rootPath(campaignPath));
       const seed = await readJson<Record<string, any>>(rootPath(seedPath));
       const draftCandidate = await compileSimulationIntake({
         campaign: campaignPath,
@@ -420,7 +427,7 @@ describe("simulation intake contract", () => {
       seed.mappings = activeClaims.map((claim, index) => index === 0 ? {
         source_claim_id: claim.claim_id,
         disposition: "SEEDED",
-        campaign_claim_ids: [campaign.claim_files[0]!.split("/").at(-1)!.replace(/\.json$/, "")],
+        campaign_claim_ids: [campaign.claim_files[0]!.split("/").at(-1)!.replace(/\.ya?ml$/, "")],
         scenario_ids: [`${token}-happy-path-v1`],
         task_ids: [],
         rationale: null,
@@ -470,9 +477,9 @@ describe("simulation intake contract", () => {
 
       const missingSeedReference = structuredClone(campaign);
       delete missingSeedReference.seed_binding_file;
-      await writeJson(rootPath(campaignPath), missingSeedReference);
+      await writeFile(rootPath(campaignPath), stringifyYaml(missingSeedReference));
       await expect(resolveCampaign(campaignPath)).rejects.toThrow("product campaign requires seed_binding_file");
-      await writeJson(rootPath(campaignPath), campaign);
+      await writeFile(rootPath(campaignPath), stringifyYaml(campaign));
 
       const missing = structuredClone(seed);
       missing.mappings = missing.mappings.slice(0, -1);
@@ -509,7 +516,7 @@ describe("simulation intake contract", () => {
 
   test("keeps default, check, and run preflight strict while public --write replaces legacy intakes", async () => {
     const token = crypto.randomUUID();
-    const campaignPath = `product-evals/campaigns/.tmp-intake-replacement-${token}.fixture`;
+    const campaignPath = `product-evals/campaigns/.tmp-intake-replacement-${token}.yaml`;
     const intakePath = `product-evals/intakes/harness/.tmp-intake-replacement-${token}.json`;
     const envelopePath = `.artifacts/.tmp-intake-replacement-${token}.json`;
     const request = `Build a connected harness simulation campaign and validate it across multiple steps for fixture ${token}.`;
@@ -556,10 +563,13 @@ describe("simulation intake contract", () => {
       campaign_id: "simulation-contract-smoke",
     });
     try {
-      const campaign = await readJson<Record<string, unknown>>(
-        rootPath("product-evals/campaigns/simulation-contract-smoke.json"),
+      const campaign = await readStructured<Record<string, unknown>>(
+        rootPath("product-evals/campaigns/simulation-contract-smoke.yaml"),
       );
-      await writeJson(rootPath(campaignPath), { ...campaign, intake_file: intakePath });
+      await writeFile(
+        rootPath(campaignPath),
+        stringifyYaml({ ...campaign, intake_file: intakePath }),
+      );
       await writeJson(rootPath(envelopePath), envelope);
 
       await writeJson(rootPath(intakePath), legacy(3));
@@ -632,11 +642,11 @@ describe("simulation intake contract", () => {
       referenceDate: "2026-08-05",
     });
     const productAuthoredCampaignPath =
-      `product-evals/campaigns/${token}-product-smoke.json`;
+      `product-evals/campaigns/${token}-product-smoke.yaml`;
     const productCampaignPath =
-      `product-evals/campaigns/.tmp-${token}-product-under-harness.fixture`;
+      `product-evals/campaigns/.tmp-${token}-product-under-harness.yaml`;
     const harnessCampaignPath =
-      `product-evals/campaigns/.tmp-${token}-harness-under-product.fixture`;
+      `product-evals/campaigns/.tmp-${token}-harness-under-product.yaml`;
     const productUnderHarnessIntakePath =
       `product-evals/intakes/harness/.tmp-${token}-product.json`;
     const harnessUnderProductIntakePath =
@@ -688,20 +698,23 @@ describe("simulation intake contract", () => {
     try {
       for (const file of productRendered) {
         if (file.path === productAuthoredCampaignPath) continue;
+        await mkdir(dirname(rootPath(file.path)), { recursive: true });
         if (file.format === "json") await writeJson(rootPath(file.path), file.content);
-        else await writeFile(rootPath(file.path), String(file.content));
+        else if (file.format === "yaml") {
+          await writeFile(rootPath(file.path), stringifyYaml(file.content));
+        } else await writeFile(rootPath(file.path), String(file.content));
         pathsToRemove.push(file.path);
       }
       const productCampaign = structuredClone(
         productRendered.find((file) => file.path === productAuthoredCampaignPath)!.content,
       ) as Record<string, unknown>;
       productCampaign.intake_file = productUnderHarnessIntakePath;
-      const harnessCampaign = await readJson<Record<string, unknown>>(
-        rootPath("product-evals/campaigns/simulation-contract-smoke.json"),
+      const harnessCampaign = await readStructured<Record<string, unknown>>(
+        rootPath("product-evals/campaigns/simulation-contract-smoke.yaml"),
       );
       harnessCampaign.intake_file = harnessUnderProductIntakePath;
-      await writeJson(rootPath(productCampaignPath), productCampaign);
-      await writeJson(rootPath(harnessCampaignPath), harnessCampaign);
+      await writeFile(rootPath(productCampaignPath), stringifyYaml(productCampaign));
+      await writeFile(rootPath(harnessCampaignPath), stringifyYaml(harnessCampaign));
       await writeJson(rootPath(envelopePath), envelope);
       await writeJson(rootPath(productUnderHarnessIntakePath), {
         marker: "must-not-replace",
@@ -1288,15 +1301,15 @@ describe("simulation intake contract", () => {
 
   test("prevents harness campaign manifests from referencing product seed artifacts", async () => {
     const token = crypto.randomUUID();
-    const campaignPath = `product-evals/campaigns/.tmp-harness-seed-${token}.json`;
+    const campaignPath = `product-evals/campaigns/.tmp-harness-seed-${token}.yaml`;
     try {
-      const campaign = await readJson<Record<string, unknown>>(
-        rootPath("product-evals/campaigns/simulation-contract-smoke.json"),
+      const campaign = await readStructured<Record<string, unknown>>(
+        rootPath("product-evals/campaigns/simulation-contract-smoke.yaml"),
       );
-      await writeJson(rootPath(campaignPath), {
+      await writeFile(rootPath(campaignPath), stringifyYaml({
         ...campaign,
         seed_binding_file: `product-evals/intakes/product/seed-bindings/.tmp-${token}.json`,
-      });
+      }));
       await expect(resolveCampaign(campaignPath)).rejects.toThrow(
         "harness campaign cannot bind a product seed artifact",
       );

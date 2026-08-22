@@ -34,7 +34,7 @@ permissions, review, validation, or closeout.
    skills.
 6. `docs/patterns/workflow/index.md` and
    `docs/patterns/workflow/fragments/_index.md`; load only materially plausible
-   `GF-*.fragment.json` definitions after the impact scan.
+   `GF-*.fragment.yaml` definitions after the impact scan.
 7. `docs/structure.md` for lane/example/report write targets.
 8. `docs/patterns/context-memory/index.md` when workline planning must survive
    compaction, handoff, or replanning.

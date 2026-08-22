@@ -54,7 +54,7 @@
               "required": ["id", "path", "sha256"],
               "properties": {
                 "id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9.-]+$" },
-                "path": { "type": "string", "pattern": "^product-evals/simulations/(harness|product)/.+/derivations/.+\\.json$" },
+                "path": { "type": "string", "pattern": "^product-evals/simulations/(harness|product)/.+/derivations/.+\\.yaml$" },
                 "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
               }
             },

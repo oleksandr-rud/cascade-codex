@@ -22,7 +22,7 @@
     },
     "fixture_file": {
       "type": "string",
-      "pattern": "^product-evals/simulations/(harness|product)/.+/worlds/.+\\.json$"
+      "pattern": "^product-evals/simulations/(harness|product)/.+/worlds/.+\\.yaml$"
     },
     "allowed_actions": {
       "type": "array",

@@ -1,0 +1,13 @@
+aggregation: mean
+direction: higher-is-better
+hard_gate: true
+id: task-success-v1
+kind: deterministic
+required_slices:
+  - standard
+  - risk
+schema_version: 1
+source:
+  oracle_id: account-resolved-v1
+uncertainty: none
+unit: ratio

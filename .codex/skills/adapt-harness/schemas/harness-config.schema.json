@@ -99,7 +99,7 @@
           "const": ".codex/task-admission/task-envelope.schema.json"
         },
         "task_admission_policy": {
-          "const": ".codex/task-admission/policies/core.json"
+          "const": ".codex/task-admission/policies/core.yaml"
         },
         "task_admission_hook": {
           "const": ".codex/hooks.json"
@@ -108,7 +108,7 @@
           "const": "scripts/cascade/admission.ts"
         },
         "task_admission_cases": {
-          "const": "harness-evals/task-admission/cases.json"
+          "const": "harness-evals/task-admission/cases.yaml"
         },
         "harness_evals": {
           "const": "harness-evals"
@@ -123,7 +123,7 @@
           "const": ".artifacts/product-evals"
         },
         "simulation_artifact_policy": {
-          "const": "product-evals/artifact-policy.json"
+          "const": "product-evals/artifact-policy.yaml"
         },
         "harness_simulations": {
           "const": "product-evals/simulations/harness"

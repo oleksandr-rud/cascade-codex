@@ -1,0 +1,10 @@
+actor_ids:
+  - agent-standalone-codex-actor
+claim_ids:
+  - agent-standalone-codex-execution
+goal: Produce one schema-valid source-blind response without tools or network access and retain any next route as a proposal.
+id: standalone-codex-response-v1
+initial_state: {}
+schema_version: 1
+stop_conditions:
+  - agent response contract oracle passes

@@ -6,10 +6,10 @@
 - Brief: `PB-002` revision `1`
 - Status: `reviewed`
 - Coverage: `complete`
-- Catalog digest: `0f6b921bf6cefde6ba96d9410b1609fca21ab65c69f70a258e3e05bffac73c5b`
-- Manifest digest: `6ba4bea74254b1a26d54736d55ba3332f6d9565ded75f2e2ec840af39516bed8`
-- Selected-source digest: `89245079d261017fc6b6b555260dad2c2db726727b3116a4544cdf64db929d6e`
-- Compiler-contract digest: `cc347c5d400a038345ebf4e0515196693893dd5f7f42017984d9331435efbd3b`
+- Catalog digest: `2d24c923fe55562ab079de54e428788f4429c2051442bbceac75852340af1160`
+- Manifest digest: `1a69b88467c4f3dae37439902a2ce6f62b47e5c0b3b111f874af0264ca808e44`
+- Selected-source digest: `c8660aa609456bb70da06f129c3f5c5a29ac152d4d14c69d4cd377600bc0f1c7`
+- Compiler-contract digest: `4cfeada5833d864235315bb41aa63acf157b08f15c247f2914c23fc84fd9acd1`
 
 ## Purpose And Audience
 
@@ -72,14 +72,14 @@ _No reviewed non-fixture product persona is selected._
 
 | Path | Scope / authority | Status | Purpose | SHA-256 |
 |---|---|---|---|---|
-| `scripts/cascade/simulation-intake.test.ts` | `contract-test` / `implementation` | `authored` | Exercises the intake schema, draft starter, and normalized action boundary without claiming product behavior. | `9051f2ab83e799f38081293d23815bf0a29fc49f527fab88797057c663f2df26` |
-| `product-evals/simulations/harness/simulation-correctness-fixture/manifest.json` | `harness-simulation` / `mechanics-only` | `authored` | Exercises framework mechanics only and cannot establish target-product behavior or persona truth. | `97f576d76d315a0dfbe4879606ea0e5002192a077178fbbe667ab627dcd87f75` |
+| `scripts/cascade/simulation-intake.test.ts` | `contract-test` / `implementation` | `authored` | Exercises the intake schema, draft starter, and normalized action boundary without claiming product behavior. | `a1a0036c2f6417f886f5cf2b51e39a0537ef6351dbdd43640e2723253c30fadb` |
+| `product-evals/simulations/harness/simulation-correctness-fixture/manifest.yaml` | `harness-simulation` / `mechanics-only` | `authored` | Exercises framework mechanics only and cannot establish target-product behavior or persona truth. | `23776ad788f0b35381eea1727573ac5bb5d1d7e8a74eceda6198fd461254a9bb` |
 
 ## Capability Evaluation References
 
 | Path | Kind / authority | Status | SHA-256 |
 |---|---|---|---|
-| `scripts/cascade/simulation-intake.test.ts` | `contract-test` / `implementation` | `authored` | `9051f2ab83e799f38081293d23815bf0a29fc49f527fab88797057c663f2df26` |
+| `scripts/cascade/simulation-intake.test.ts` | `contract-test` / `implementation` | `authored` | `a1a0036c2f6417f886f5cf2b51e39a0537ef6351dbdd43640e2723253c30fadb` |
 
 ## Gaps
 

@@ -6,7 +6,7 @@ not source files.
 
 ## Coverage Model
 
-`skill-cases.json` contains one curated source entry per skill. The runner
+`skill-cases.yaml` contains one curated source entry per skill. The runner
 expands each entry into seven cases:
 
 1. implicit trigger;
@@ -17,11 +17,11 @@ expands each entry into seven cases:
 6. output contract;
 7. handoff.
 
-`interactions.json` adds cross-skill collision cases. The generated catalog is
+`interactions.yaml` adds cross-skill collision cases. The generated catalog is
 `scenarios.generated.json`; CI or local validation should use `catalog --check`
 to prove it is current.
 
-`agent-outcomes.json` adds one outcome case for every registered agent. Catalog
+`agent-outcomes.yaml` adds one outcome case for every registered agent. Catalog
 generation verifies each case against the agent's TOML model, reasoning effort,
 sandbox declaration, role and skill-map load instructions, and exact ownership
 of its primary skill. It also verifies that every curated skill case is wired to
@@ -86,7 +86,7 @@ diagnostic override. A command-line `--model` value takes precedence. Do not
 put user credentials, provider configuration, or telemetry settings in this
 directory.
 
-`judge-profiles.json` and `rubrics/` are versioned measurement contracts.
+`judge-profiles.yaml` and `rubrics/` are versioned measurement contracts.
 Judges emit only 0–4 dimension ratings, rationale, evidence, and a semantic
 verdict. The runner recomputes weighted scores and requires threshold,
 minimum-dimension, and verdict agreement. Use `judge-eval-builder` to change or

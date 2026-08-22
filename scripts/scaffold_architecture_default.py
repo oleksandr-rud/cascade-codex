@@ -18,7 +18,7 @@ MANIFEST_PATH = (
     / "docs"
     / "patterns"
     / "architecture-defaults"
-    / "architecture-scaffold-profiles.json"
+    / "architecture-scaffold-profiles.yaml"
 )
 PORTABLE_IDENTIFIER = re.compile(r"^[a-z][a-z0-9_]*$")
 EXPECTED_PROFILES = {
@@ -66,7 +66,9 @@ def load_manifest(path: Path = MANIFEST_PATH) -> dict[str, Any]:
     except FileNotFoundError as exc:
         raise ScaffoldError(f"profile manifest not found: {path}") from exc
     except json.JSONDecodeError as exc:
-        raise ScaffoldError(f"profile manifest is invalid JSON: {exc}") from exc
+        raise ScaffoldError(
+            f"profile manifest is invalid JSON-compatible YAML: {exc}"
+        ) from exc
     validate_manifest(data)
     return data
 
@@ -79,7 +81,7 @@ def require_string(value: Any, field: str) -> str:
 
 def validate_manifest(data: Any) -> None:
     if not isinstance(data, dict):
-        raise ScaffoldError("profile manifest must be a JSON object")
+        raise ScaffoldError("profile manifest must be a YAML mapping")
     if data.get("schema_id") != "architecture-scaffold-profiles-v1":
         raise ScaffoldError("profile manifest has an unsupported schema_id")
 

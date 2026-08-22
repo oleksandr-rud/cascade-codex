@@ -1,0 +1,12 @@
+aggregation: mean
+direction: higher-is-better
+hard_gate: true
+id: command-exit-zero-rate-v1
+kind: deterministic
+required_slices:
+  - command-static
+schema_version: 1
+source:
+  oracle_id: command-exit-zero-v1
+uncertainty: none
+unit: ratio

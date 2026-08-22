@@ -1,0 +1,25 @@
+claim_files:
+  - product-evals/claims/fixture-state-transition.yaml
+  - product-evals/claims/fixture-population-coverage.yaml
+  - product-evals/claims/fixture-release-eligibility.yaml
+evaluation_profile_file: product-evals/rubrics/codex-independent-v1.yaml
+id: simulation-codex-evaluation-smoke
+oracle_files:
+  - product-evals/oracles/account-resolved-v1.yaml
+  - product-evals/oracles/account-attempt-recorded-v1.yaml
+owner_lane: W-004
+policy_files:
+  - product-evals/policies/allow-fixture-state-actions-v1.yaml
+purpose: Prove independent read-only Codex evaluation of one frozen deterministic simulation run without broadening its release scope.
+schema_version: 1
+simulation_file: product-evals/simulations/harness/simulation-correctness-fixture/manifest.yaml
+specialized_evaluation:
+  applicability: NOT_APPLICABLE
+  claim_ids: []
+  reason: semantic fixture evaluates product-neutral evidence, not Cascade route or trace claims
+  route_ids: []
+  trace_ids: []
+task_files:
+  - product-evals/tasks/SIMULATION-STATE-SMOKE.yaml
+tier: semantic-evaluation
+title: Simulation Codex evaluation smoke
