@@ -1,0 +1,4 @@
+interface:
+  display_name: "Build Agent Roles"
+  short_description: "Generate reviewable agent role contracts"
+  default_prompt: "Use $build-agent-roles to generate bounded role contracts and an ownership index for this agent architecture."

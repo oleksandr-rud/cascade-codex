@@ -1,0 +1,6 @@
+interface:
+  display_name: "Validate Product"
+  short_description: "Match product questions to decision-grade evidence."
+  default_prompt: "Use $validate-product to design or assess a product validation with predeclared criteria and separate real, simulated, functional, and semantic evidence."
+policy:
+  allow_implicit_invocation: true

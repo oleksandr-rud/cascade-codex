@@ -1,0 +1,66 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://cascade.local/cascade-simulations/result.schema.json",
+  "title": "Cascade simulation result",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "run_id", "simulation_id", "status", "reason", "source_digests", "work_completed", "outcome_evidence", "observations", "usage", "cleanup", "unresolved_risk"],
+  "properties": {
+    "schema_version": { "const": 2 },
+    "run_id": { "type": "string", "minLength": 1 },
+    "simulation_id": { "type": "string", "minLength": 1 },
+    "status": { "enum": ["ACHIEVED", "FAILED", "BLOCKED", "TIMED_OUT", "BUDGET_EXHAUSTED", "CANCELLED", "UNKNOWN_OUTCOME"] },
+    "reason": { "type": "string", "minLength": 1 },
+    "source_digests": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["simulation", "adapter", "event_tail"],
+      "properties": {
+        "simulation": { "$ref": "#/$defs/digest" },
+        "adapter": { "$ref": "#/$defs/digest" },
+        "event_tail": { "$ref": "#/$defs/digest" }
+      }
+    },
+    "work_completed": { "type": "array", "items": { "type": "string", "minLength": 1 } },
+    "outcome_evidence": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["condition", "status", "evidence"],
+        "properties": {
+          "condition": { "type": "string", "minLength": 1 },
+          "status": { "enum": ["SUPPORTED", "UNSUPPORTED", "CONFLICTING", "UNKNOWN"] },
+          "evidence": { "type": "string" }
+        }
+      }
+    },
+    "observations": { "type": "array", "items": { "type": "string", "minLength": 1 } },
+    "usage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["steps", "tool_calls", "duration_seconds", "recoveries"],
+      "properties": {
+        "steps": { "type": "integer", "minimum": 0 },
+        "tool_calls": { "type": "integer", "minimum": 0 },
+        "duration_seconds": { "type": "number", "minimum": 0 },
+        "recoveries": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "cleanup": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "details"],
+      "properties": {
+        "status": { "enum": ["VERIFIED", "NOT_REQUIRED", "FAILED", "UNKNOWN"] },
+        "details": { "type": "string" }
+      }
+    },
+    "unresolved_risk": { "type": "array", "items": { "type": "string", "minLength": 1 } },
+    "final_actor_state": { "type": "object", "additionalProperties": { "type": "string" } },
+    "next_safe_action": { "type": "string" }
+  },
+  "$defs": {
+    "digest": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+  }
+}

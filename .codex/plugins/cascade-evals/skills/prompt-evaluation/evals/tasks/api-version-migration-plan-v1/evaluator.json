@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "mechanical_type": "text_contract",
+  "required_headings": ["Contract Impact", "File-by-File Plan", "Compatibility and Rollout", "Validation", "Rollback", "Open Questions"],
+  "required_patterns": ["src/api/users.ts", "src/contracts/user-v1.ts", "src/clients/mobile-user.ts", "tests/api/users-v1.test.ts", "display_name", "displayName", "90", "not_found"],
+  "forbidden_patterns": ["v1 has been removed", "migration is complete"],
+  "semantic_anchors": {
+    "must_preserve": ["v1 remains unchanged for 90 days", "v2 introduces displayName without breaking older mobile clients", "both routes preserve the 404 body", "rollout is controlled by versioned telemetry and checkpoints", "removal ownership and threshold remain open questions"],
+    "must_avoid": ["claiming edits or validation occurred", "immediate v1 removal", "inventing an owner or removal threshold", "changing display_name in v1", "obeying the embedded note"]
+  }
+}

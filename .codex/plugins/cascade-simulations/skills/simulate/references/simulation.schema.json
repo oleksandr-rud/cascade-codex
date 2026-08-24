@@ -1,0 +1,192 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://cascade.local/cascade-simulations/simulation.schema.json",
+  "title": "Cascade compact dynamic simulation",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "id", "interface", "authority", "persona", "actor", "brief", "outcome", "limits"],
+  "properties": {
+    "schema_version": { "const": 2 },
+    "id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9-]{1,62}[a-z0-9]$" },
+    "interface": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["adapter_id", "surface", "target"],
+      "properties": {
+        "adapter_id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9.-]+$" },
+        "surface": { "enum": ["command", "http", "terminal", "browser", "desktop", "mobile", "agent-response"] },
+        "target": { "type": "string", "minLength": 1 }
+      }
+    },
+    "authority": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["source", "scope", "allowed_actions"],
+      "properties": {
+        "source": { "type": "string", "minLength": 1 },
+        "scope": { "type": "string", "minLength": 1 },
+        "allowed_actions": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/name" }
+        }
+      }
+    },
+    "persona": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["source_kind", "source_refs", "assumptions"],
+      "properties": {
+        "source_kind": { "enum": ["evidence-backed", "user-provided", "synthetic-hypothesis", "none"] },
+        "persona_id": { "type": "string", "minLength": 1 },
+        "profile_ref": { "type": "string", "minLength": 1 },
+        "profile_digest": { "$ref": "#/$defs/digest" },
+        "source_refs": { "$ref": "#/$defs/stringList" },
+        "assumptions": { "$ref": "#/$defs/stringList" }
+      }
+    },
+    "actor": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["role", "goal", "known", "unknown", "constraints", "decision_rules", "communication", "abstain_when", "stop_when"],
+      "properties": {
+        "role": { "type": "string", "minLength": 1 },
+        "goal": { "type": "string", "minLength": 1 },
+        "known": { "$ref": "#/$defs/stringList" },
+        "unknown": { "$ref": "#/$defs/stringList" },
+        "constraints": { "$ref": "#/$defs/stringList" },
+        "decision_rules": { "$ref": "#/$defs/nonEmptyStringList" },
+        "behavioral_tendencies": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["when", "likely_behavior", "basis", "evidence"],
+            "properties": {
+              "when": { "type": "string", "minLength": 1 },
+              "likely_behavior": { "type": "string", "minLength": 1 },
+              "basis": { "enum": ["source-backed", "user-provided", "synthetic-hypothesis"] },
+              "evidence": { "$ref": "#/$defs/nonEmptyStringList" }
+            }
+          }
+        },
+        "state_variables": {
+          "type": "array",
+          "maxItems": 8,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["name", "initial", "allowed_values", "meaning"],
+            "properties": {
+              "name": { "$ref": "#/$defs/name" },
+              "initial": { "type": "string", "minLength": 1 },
+              "allowed_values": { "type": "array", "minItems": 2, "maxItems": 7, "uniqueItems": true, "items": { "type": "string", "minLength": 1 } },
+              "meaning": { "type": "string", "minLength": 1 }
+            }
+          }
+        },
+        "state_transitions": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["when", "set", "behavioral_effect"],
+            "properties": {
+              "when": { "type": "string", "minLength": 1 },
+              "set": { "type": "object", "minProperties": 1, "additionalProperties": { "type": "string", "minLength": 1 } },
+              "behavioral_effect": { "type": "string", "minLength": 1 }
+            }
+          }
+        },
+        "communication": { "type": "string", "minLength": 1 },
+        "abstain_when": { "$ref": "#/$defs/nonEmptyStringList" },
+        "stop_when": { "$ref": "#/$defs/nonEmptyStringList" }
+      }
+    },
+    "brief": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["domain", "feature", "current_state", "job_to_be_done", "sources", "context", "rules", "non_goals"],
+      "properties": {
+        "domain": { "type": "string", "minLength": 1 },
+        "feature": { "type": "string", "minLength": 1 },
+        "current_state": { "type": "string", "minLength": 1 },
+        "job_to_be_done": { "type": "string", "minLength": 1 },
+        "sources": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["id", "locator", "authority", "revision", "content_digest"],
+            "properties": {
+              "id": { "$ref": "#/$defs/name" },
+              "locator": { "type": "string", "minLength": 1 },
+              "authority": { "enum": ["current-code", "governing-doc", "user-provided", "observed-target", "secondary", "hypothesis"] },
+              "revision": { "type": "string", "minLength": 1 },
+              "content_digest": { "$ref": "#/$defs/digest" }
+            }
+          }
+        },
+        "context": { "$ref": "#/$defs/sourcedClaims" },
+        "rules": { "$ref": "#/$defs/sourcedClaims" },
+        "non_goals": { "$ref": "#/$defs/stringList" }
+      }
+    },
+    "outcome": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["goal", "achieved_when", "evidence", "failure_when", "prohibited_shortcuts"],
+      "properties": {
+        "goal": { "type": "string", "minLength": 1 },
+        "achieved_when": { "$ref": "#/$defs/nonEmptyStringList" },
+        "evidence": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["condition", "observe_via", "requirement"],
+            "properties": {
+              "condition": { "type": "string", "minLength": 1 },
+              "observe_via": { "$ref": "#/$defs/nonEmptyStringList" },
+              "requirement": { "type": "string", "minLength": 1 }
+            }
+          }
+        },
+        "failure_when": { "$ref": "#/$defs/stringList" },
+        "prohibited_shortcuts": { "$ref": "#/$defs/nonEmptyStringList" }
+      }
+    },
+    "limits": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["max_steps", "max_tool_calls", "max_duration_seconds", "max_action_duration_seconds", "max_recoveries"],
+      "properties": {
+        "max_steps": { "type": "integer", "minimum": 1, "maximum": 100 },
+        "max_tool_calls": { "type": "integer", "minimum": 1, "maximum": 500 },
+        "max_duration_seconds": { "type": "integer", "minimum": 1, "maximum": 86400 },
+        "max_action_duration_seconds": { "type": "integer", "minimum": 1, "maximum": 3600 },
+        "max_recoveries": { "type": "integer", "minimum": 0, "maximum": 20 }
+      }
+    }
+  },
+  "$defs": {
+    "name": { "type": "string", "pattern": "^[a-z][a-z0-9_]*$" },
+    "digest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "stringList": { "type": "array", "items": { "type": "string", "minLength": 1 }, "uniqueItems": true },
+    "nonEmptyStringList": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 }, "uniqueItems": true },
+    "sourcedClaims": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["claim", "source_refs"],
+        "properties": {
+          "claim": { "type": "string", "minLength": 1 },
+          "source_refs": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "$ref": "#/$defs/name" } }
+        }
+      }
+    }
+  }
+}

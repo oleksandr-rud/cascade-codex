@@ -1,0 +1,51 @@
+{
+  "schema_version": 1,
+  "manifest_id": "cascade-product-capability-extraction-v1",
+  "source_repository": "cascade-codex",
+  "source_revision": "38e665db22a11e839bbea6ab5fec0f9b268f2f67",
+  "source_branch": "master",
+  "source_state": "LISTED_PATHS_MATCH_REVISION",
+  "captured_at": "2026-08-22T01:05:00Z",
+  "artifacts": [
+    {
+      "path": ".codex/agents/orchestrator/AGENT.md",
+      "sha256": "e1fd7ed72e0850192187c49cf8900868643d315be4cf4b668b375dbee6e32f3b",
+      "capabilities": ["sense", "gather", "route", "plan", "validate", "learn"]
+    },
+    {
+      "path": ".codex/skills/discover/SKILL.md",
+      "sha256": "94f5e3642092cecaeeb3cd2e501237ee8067ed2673cce74d1990afb26862e767",
+      "capabilities": ["durable-discovery"]
+    },
+    {
+      "path": ".codex/skills/ingest-spec/SKILL.md",
+      "sha256": "439c6baeda8d72ce918c715c92a731ad48008777ea035f981f4e78e918553a28",
+      "capabilities": ["source-normalization"]
+    },
+    {
+      "path": ".codex/skills/synthesis-to-spec/SKILL.md",
+      "sha256": "ff7ceed348f98e0b34f724722de4571e3399e6cd645d19f5eb950411838fd96b",
+      "capabilities": ["evidence-synthesis"]
+    },
+    {
+      "path": ".codex/skills/compose-spec/SKILL.md",
+      "sha256": "d28114a54dbf9cf9fce69aa2724ee19a6f9702acaa4e9babc695b85dad4baad1",
+      "capabilities": ["product-definition", "requirements", "journeys", "scenarios"]
+    },
+    {
+      "path": ".codex/skills/plan-iterations/SKILL.md",
+      "sha256": "5b85cbcd15d51cd3e753ee0a3139a9080c21aa9c2dc8a609404944d92c33d579",
+      "capabilities": ["mvp-boundary", "iteration-slicing"]
+    },
+    {
+      "path": ".codex/skills/validation-experiments/SKILL.md",
+      "sha256": "034c9d34c3d2d1b4c150ed1c9719cfb42a922d5002af9b423190c2a5de3509f2",
+      "capabilities": ["validation-experiment-routing"]
+    },
+    {
+      "path": ".codex/skills/functional-qa/SKILL.md",
+      "sha256": "5a20c3f0e98ef37eb4943937f81b43d5bfbc01de28b3c4c0b4145b2fb74707fd",
+      "capabilities": ["functional-acceptance-routing"]
+    }
+  ]
+}

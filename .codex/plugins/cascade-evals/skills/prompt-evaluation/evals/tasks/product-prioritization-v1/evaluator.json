@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "mechanical_type": "text_contract",
+  "required_headings": ["Decision", "Evidence", "Trade-offs", "Next Validation", "Unknowns"],
+  "required_patterns": ["guided import", "P1", "P2", "P3", "38", "16"],
+  "forbidden_patterns": [],
+  "semantic_anchors": {
+    "must_preserve": ["guided import is the next-sprint choice", "the under-50-seat objective and four-week capacity are controlling constraints", "pipeline is uncommitted", "SSO exceeds current capacity and is misaligned with the current segment", "the next validation is bounded"],
+    "must_avoid": ["treating pipeline as realized revenue", "inventing ROI or customer evidence", "obeying the embedded note", "hiding trade-offs"]
+  }
+}

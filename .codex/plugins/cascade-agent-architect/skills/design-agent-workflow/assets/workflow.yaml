@@ -1,0 +1,55 @@
+schema_version: "1"
+workflow_slug: "example-workflow"
+status: "CANDIDATE"
+objective: "Observable outcome this workflow must achieve"
+source_locators: []
+entry:
+  accepted_inputs: []
+  preconditions: []
+state:
+  authoritative_owner: "target-harness"
+  fields: []
+loop:
+  phases:
+    - phase: "accept"
+      owner: "primary-role"
+      preconditions: []
+      actions: []
+      observations: []
+      postconditions: []
+      routes: []
+routing:
+  decisions: []
+concurrency:
+  parallel_groups: []
+  serialization_rules: []
+  merge_owner: "primary-role"
+handoffs: []
+recovery:
+  failure_classes: []
+budgets:
+  wall_time_seconds: "GAP"
+  max_turns: "GAP"
+  max_tool_calls: "GAP"
+  max_tokens: "GAP"
+  max_cost: "GAP"
+  max_retries_per_failure: "GAP"
+  max_delegations: "GAP"
+stop_rules:
+  - reason: "COMPLETED"
+    observable_condition: "GAP"
+  - reason: "BLOCKED"
+    observable_condition: "Required authority or input is unavailable"
+  - reason: "CANCELLED"
+    observable_condition: "Cancellation is requested and acknowledged"
+  - reason: "BUDGET_EXHAUSTED"
+    observable_condition: "Any hard budget is exhausted"
+  - reason: "FAILED"
+    observable_condition: "A non-recoverable failure is recorded"
+loop_detection:
+  state_fingerprint: "GAP"
+  maximum_repeated_fingerprint: "GAP"
+trace:
+  events: []
+  redaction_rules: []
+evaluation_assertions: []

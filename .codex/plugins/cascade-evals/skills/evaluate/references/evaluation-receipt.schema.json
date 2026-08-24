@@ -1,0 +1,90 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://cascade.local/cascade-evals/evaluation-receipt.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "evaluation_id",
+    "bundle_sha256",
+    "subject",
+    "models",
+    "mechanical_status",
+    "judgments",
+    "conservative_score",
+    "overall_status",
+    "evidence"
+  ],
+  "properties": {
+    "schema_version": {"const": 1},
+    "evaluation_id": {"type": "string", "minLength": 1},
+    "bundle_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "subject": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "id", "version", "digest"],
+      "properties": {
+        "kind": {"enum": ["prompt", "agent", "simulation", "harness", "other"]},
+        "id": {"type": "string", "minLength": 1},
+        "version": {"type": "string", "minLength": 1},
+        "digest": {"type": "string", "pattern": "^[a-f0-9]{64}$"}
+      }
+    },
+    "models": {"$ref": "#/$defs/models"},
+    "mechanical_status": {"enum": ["PASS", "NOT_RUN", "BLOCKED", "INVALID"]},
+    "judgments": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["profile_id", "profile_version", "judge_identity", "judge_context_id", "score", "verdict"],
+        "properties": {
+          "profile_id": {"type": "string", "minLength": 1},
+          "profile_version": {"type": "integer", "minimum": 1},
+          "judge_identity": {"type": "string", "minLength": 1},
+          "judge_context_id": {"type": "string", "minLength": 1},
+          "score": {"type": "number", "minimum": 0, "maximum": 1},
+          "verdict": {"enum": ["PASS", "FAIL"]}
+        }
+      }
+    },
+    "conservative_score": {"type": ["number", "null"], "minimum": 0, "maximum": 1},
+    "overall_status": {"enum": ["PASS", "FAIL", "NOT_RUN", "BLOCKED", "INVALID"]},
+    "evidence": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["path", "sha256"],
+        "properties": {
+          "path": {"type": "string", "minLength": 1},
+          "sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"}
+        }
+      }
+    }
+  },
+  "$defs": {
+    "models": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "builder_model",
+        "builder_reasoning_effort",
+        "target_model",
+        "target_reasoning_effort",
+        "judge_model",
+        "judge_reasoning_effort"
+      ],
+      "properties": {
+        "builder_model": {"type": "string", "minLength": 1},
+        "builder_reasoning_effort": {"$ref": "#/$defs/reasoning_effort"},
+        "target_model": {"type": "string", "minLength": 1},
+        "target_reasoning_effort": {"$ref": "#/$defs/reasoning_effort"},
+        "judge_model": {"type": "string", "minLength": 1},
+        "judge_reasoning_effort": {"$ref": "#/$defs/reasoning_effort"},
+        "explicit_comparison": {"type": "boolean"}
+      }
+    },
+    "reasoning_effort": {"enum": ["low", "medium", "high", "xhigh", "max", "ultra"]}
+  }
+}

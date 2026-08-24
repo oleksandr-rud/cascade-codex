@@ -1,0 +1,4 @@
+interface:
+  display_name: "Build Agent Skills"
+  short_description: "Design focused skills for agent capabilities"
+  default_prompt: "Use $build-agent-skills to map these capabilities into focused, testable Codex skill candidates."

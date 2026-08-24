@@ -1,0 +1,56 @@
+schema_version: 2
+id: codex-desktop
+surface: desktop
+driver:
+  type: codex-host
+  required_capabilities: [desktop.observe, desktop.interact]
+  bindings:
+    desktop.observe: codex-host/desktop.observe
+    desktop.interact: codex-host/desktop.interact
+  selection: Bind only when Codex exposes compatible desktop accessibility or computer-control tools for the platform.
+target: replace-with-desktop-application
+observations:
+  - name: desktop_state
+    description: Active application, window identity, accessible controls, and visible state
+    produced_by: [inspect, reconcile, interact, cleanup]
+actions:
+  - name: inspect
+    purpose: normal
+    description: Observe the declared application and window without mutation
+    capability: desktop.observe
+    risk: read
+    confirmation: never
+    idempotency: safe-retry
+  - name: reconcile
+    purpose: recovery
+    description: Re-observe the same application and window after a recoverable failure
+    capability: desktop.observe
+    risk: read
+    confirmation: never
+    idempotency: safe-retry
+  - name: interact
+    purpose: normal
+    description: Operate a visible control in the declared application and window
+    capability: desktop.interact
+    risk: write
+    confirmation: when-not-authorized
+    idempotency: key-required
+  - name: cleanup
+    purpose: cleanup
+    description: Close temporary application windows or resources owned by the run
+    capability: desktop.interact
+    risk: write
+    confirmation: when-not-authorized
+    idempotency: key-required
+errors:
+  before_dispatch: Return BLOCKED when compatible platform control, window identity, permission, or target state is unavailable.
+  after_dispatch: Return UNKNOWN_OUTCOME when input may have reached the application but the resulting state is not observable.
+recovery:
+  description: Re-observe the same application and window identity before another interaction.
+  action: reconcile
+cleanup:
+  required: false
+  description: Close temporary application windows or resources owned by the run before finish when any were created.
+  action: cleanup
+  verification_observation: desktop_state
+  verification: Observe the original application identity and absence of owned temporary resources.

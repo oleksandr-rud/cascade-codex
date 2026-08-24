@@ -1,7 +1,7 @@
 {
   "agent_count": 9,
   "agent_scenario_count": 9,
-  "catalog_digest": "3c1b53f76482592ae37add42627ceb5c2cdec2994aea5b287fed4b1aa073eeb0",
+  "catalog_digest": "497fc1a074c0df7464b17218e2ed8fcc9bfe76556bd80095a04e6f6575c017da",
   "generated_by": "scripts/cascade/evals.ts",
   "scenario_count": 386,
   "scenarios": [
@@ -10986,7 +10986,7 @@
         },
         {
           "path": "harness.config.yaml",
-          "sha256": "f014f57ce01216c347b2409a405d090fa098a3d2bd32fd51c2d1910b3a763d63"
+          "sha256": "cff052415744b4b83551a203994b3165b5c926ebc29634efd1f0ae274a113af9"
         }
       ],
       "execution": {

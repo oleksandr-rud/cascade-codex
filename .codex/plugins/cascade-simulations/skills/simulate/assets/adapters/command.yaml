@@ -1,0 +1,55 @@
+schema_version: 2
+id: codex-command
+surface: command
+driver:
+  type: codex-host
+  required_capabilities: [command.execute]
+  bindings:
+    command.execute: codex-host/exec_command
+  selection: Bind to a Codex command tool that accepts explicit arguments, working directory, timeout, and output bounds.
+target: replace-with-command-target
+observations:
+  - name: command_result
+    description: Exit status and bounded stdout and stderr from the declared command
+    produced_by: [execute, cleanup]
+actions:
+  - name: execute
+    purpose: normal
+    description: Execute one explicit argument vector inside the declared working directory
+    capability: command.execute
+    risk: write
+    confirmation: when-not-authorized
+    idempotency: key-required
+    input:
+      type: object
+      additionalProperties: false
+      required: [argv]
+      properties:
+        argv: {type: array, minItems: 1, items: {type: string}}
+        cwd: {type: string, minLength: 1}
+  - name: cleanup
+    purpose: cleanup
+    description: Terminate only child processes started and owned by the run
+    capability: command.execute
+    risk: write
+    confirmation: when-not-authorized
+    idempotency: key-required
+    input:
+      type: object
+      additionalProperties: false
+      required: [argv]
+      properties:
+        argv: {type: array, minItems: 1, items: {type: string}}
+        cwd: {type: string, minLength: 1}
+errors:
+  before_dispatch: Return BLOCKED when the executable, working directory, permission, or required bound is unavailable.
+  after_dispatch: Return UNKNOWN_OUTCOME when completion or side effects cannot be established after process start.
+recovery:
+  description: No generic safe reconciliation action exists; use target-specific evidence or stop UNKNOWN_OUTCOME without rerunning an uncertain write.
+  action: null
+cleanup:
+  required: false
+  description: Terminate owned child processes before finish when the command left any running.
+  action: cleanup
+  verification_observation: command_result
+  verification: The cleanup command returns grounded process-state evidence and does not delete unrelated data.

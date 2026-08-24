@@ -1,0 +1,4 @@
+interface:
+  display_name: "Simulation Review"
+  short_description: "Review a completed simulation run"
+  default_prompt: "Use $simulation-review to judge a frozen simulation run against its outcome contract and report grounded findings."

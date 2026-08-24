@@ -1,0 +1,33 @@
+{
+  "name": "cascade-simulations",
+  "version": "0.2.4+codex.20260822021000",
+  "description": "Consume validated Cascade Persona projections, compile actors, run bounded goal-directed simulations through Codex-host tools, and review frozen runs against fixed contracts.",
+  "author": {
+    "name": "Cascade"
+  },
+  "keywords": [
+    "simulation",
+    "personas",
+    "actors",
+    "functional-testing",
+    "agent-workflows",
+    "simulation-review"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Cascade Simulations",
+    "shortDescription": "Goal-directed actor simulations",
+    "longDescription": "Consume source-bound or explicitly synthetic projections from Cascade Personas; compile actors, domain briefs, observable outcomes, and reusable Codex-host adapters; run bounded journaled actor loops with declared dynamic state; and review frozen runs against their fixed actor, interface, authority, outcome, evidence, and limit contracts.",
+    "developerName": "Cascade",
+    "category": "Productivity",
+    "capabilities": [
+      "Interactive",
+      "Write"
+    ],
+    "defaultPrompt": [
+      "Simulate a real user completing this workflow.",
+      "Compile an actor, brief, outcome, or adapter from a validated persona projection.",
+      "Review this simulation run against its goal."
+    ]
+  }
+}

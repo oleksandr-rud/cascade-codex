@@ -13,10 +13,10 @@ merge a target application's root package manifest or lockfile.
 
 `.codex/plugins/` contains repo-local plugin source packages. Their catalog is
 `.agents/plugins/marketplace.json`; local source paths in that catalog resolve
-from the repository root. The Cascade Prompt source therefore lives at
-`.codex/plugins/cascade-prompt/` and is cataloged as
-`./.codex/plugins/cascade-prompt`. Source presence is distinct from installed,
-active, or published state.
+from the repository root. The catalog owns Cascade Prompt, Simulations, Evals,
+Agent Architect, Harness Maintainer, Personas, Product, and Market Intelligence
+sources under `.codex/plugins/<plugin-name>/`. Source presence is distinct from
+installed, active, or published state.
 
 ## Task Admission And Skills
 
@@ -78,15 +78,16 @@ Supporting skills:
 - `accessibility-review`
 - `visual-qa`
 
-## Optional Dynamic Simulation Plugin
+## Dynamic Simulation Plugin
 
-When installed separately, `cascade-simulations:simulate` is the default route
-for one actor performing meaningful work through a declared interface toward
-an observable outcome. It uses a compact interface-adapter, persona, actor,
-domain-and-feature brief, outcome, and limits contract. Keep
+When installed from the repository marketplace, `cascade-simulations:simulate`
+is the default route for one actor performing meaningful work through a
+declared interface toward an observable outcome. It uses a compact
+interface-adapter, persona, actor, domain-and-feature brief, outcome, and limits
+contract. Keep
 `simulation-campaigns` for explicit controlled comparisons, calibration,
-release evidence, and other versioned evaluation campaigns. The plugin remains
-a personal/distributed package and is not copied into this repo-local skill
+an independently packaged source under `.codex/plugins/cascade-simulations/`;
+its runtime skills are not duplicated into the repo-local `.codex/skills/`
 tree.
 
 ## Agents

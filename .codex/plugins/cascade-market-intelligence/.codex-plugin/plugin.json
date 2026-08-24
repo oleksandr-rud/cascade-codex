@@ -1,0 +1,33 @@
+{
+  "name": "cascade-market-intelligence",
+  "version": "0.1.23+codex.20260824010051",
+  "description": "Research markets, evaluate opportunities, and design decision-grade market experiments with source provenance, uncertainty, adversarial analysis, economics, and strict separation between real evidence and synthetic actors.",
+  "author": {
+    "name": "Cascade"
+  },
+  "keywords": [
+    "market-research",
+    "market-validation",
+    "competitive-intelligence",
+    "customer-pain",
+    "market-economics",
+    "product-market-fit"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Cascade Market Intelligence",
+    "shortDescription": "Research and test market opportunities.",
+    "longDescription": "Build current source ledgers for pains, segments, competitors, alternatives, economics, and constraints; score and challenge opportunity hypotheses; and design experiments with success and kill criteria while keeping synthetic personas and simulations out of real-market proof.",
+    "developerName": "Cascade",
+    "category": "Productivity",
+    "capabilities": [
+      "Interactive",
+      "Write"
+    ],
+    "defaultPrompt": [
+      "Research this market with a current evidence ledger.",
+      "Evaluate and challenge this market opportunity.",
+      "Design a market experiment with success and kill criteria."
+    ]
+  }
+}

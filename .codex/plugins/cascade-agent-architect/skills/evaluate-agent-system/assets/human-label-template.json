@@ -1,0 +1,18 @@
+{
+  "template_version": "1.0.0",
+  "status": "NOT_RUN",
+  "case_id": "",
+  "run_id": "",
+  "profile_id": "",
+  "profile_version": "1.0.0",
+  "labeler_id": "",
+  "labeler_independent_of_target": null,
+  "ratings": [
+    {"dimension_id": "", "rating": null, "evidence": [], "rationale": ""}
+  ],
+  "verdict": "",
+  "uncertainty": "",
+  "adversarial_tags": [],
+  "completed_at": "",
+  "notes": ""
+}

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Audit Harness"
+  short_description: "Find harness defects and authority drift"
+  default_prompt: "Use $audit-harness to inspect this coding-agent harness and report evidence-backed defects without editing it."

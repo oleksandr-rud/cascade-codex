@@ -19,6 +19,7 @@ describe("structured source format policy", () => {
     expect(isAllowedRepositoryJsonSource("product-evals/intakes/product/example.json")).toBe(true);
     expect(isAllowedRepositoryJsonSource("product-evals/intakes/harness/task-envelopes/TE-example.json")).toBe(true);
     expect(isAllowedRepositoryJsonSource(".codex/plugins/example/.codex-plugin/plugin.json")).toBe(true);
+    expect(isAllowedRepositoryJsonSource(".codex/plugins/example/evals/cases.json")).toBe(true);
     expect(isAllowedRepositoryJsonSource("docs/policies/access-policy.json")).toBe(false);
     expect(isAllowedRepositoryJsonSource("product-evals/tasks/example.json")).toBe(false);
   });
@@ -269,12 +270,15 @@ describe("active harness metadata validation", () => {
 });
 
 describe("repo plugin validation", () => {
-  function marketplace(path = "./.codex/plugins/cascade-prompt"): Record<string, any> {
+  function marketplace(
+    path = "./.codex/plugins/cascade-prompt",
+    name = "cascade-prompt",
+  ): Record<string, any> {
     return {
       name: "cascade-project",
       interface: { displayName: "Cascade Project" },
       plugins: [{
-        name: "cascade-prompt",
+        name,
         source: { source: "local", path },
         policy: { installation: "AVAILABLE", authentication: "ON_INSTALL" },
         category: "Productivity",
@@ -299,6 +303,15 @@ describe("repo plugin validation", () => {
 
   test("accepts the repository-root plugin source and strict manifest", () => {
     expect(repoPluginMetadataErrors(marketplace(), manifest)).toEqual([]);
+  });
+
+  test("validates any declared repository plugin against its own identity and path", () => {
+    const name = "cascade-evals";
+    expect(repoPluginMetadataErrors(
+      marketplace(`./.codex/plugins/${name}`, name),
+      { ...manifest, name },
+      name,
+    )).toEqual([]);
   });
 
   test("rejects plugin source drift", () => {

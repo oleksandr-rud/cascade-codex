@@ -1,0 +1,37 @@
+schema_version: "1"
+skill_name: "example-skill"
+status: "CANDIDATE"
+purpose: "Reusable user-triggered outcome"
+trigger:
+  description: "What the skill does and when it must be used"
+  positive_examples: []
+  negative_examples: []
+owned_capabilities: []
+non_goals: []
+inputs:
+  required: []
+  source_authority: []
+output:
+  contract: "GAP"
+  completion_oracle: "GAP"
+workflow: []
+tools: []
+permissions:
+  allowed: []
+  confirmation_required: []
+recovery: []
+budgets: {}
+resources:
+  scripts: []
+  references: []
+  assets: []
+dependencies: []
+model_capability_requirements: []
+validation:
+  deterministic: []
+  forward_cases: []
+package:
+  target_path: "GAP"
+  version: "GAP"
+  provenance: []
+  activation_authorized: false

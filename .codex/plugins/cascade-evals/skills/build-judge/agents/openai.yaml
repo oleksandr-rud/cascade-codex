@@ -1,0 +1,4 @@
+interface:
+  display_name: "Build Judge"
+  short_description: "Create and calibrate semantic judge contracts"
+  default_prompt: "Use $build-judge to create a blind, anchored semantic judge and calibration plan."

@@ -1,0 +1,36 @@
+<target_segment>
+Independent dental clinics with 5–20 staff in the United States.
+</target_segment>
+
+<source id="B1" kind="customer-interviews">
+14 of 18 clinic administrators reported spending at least three hours each week
+reconciling rejected insurance claims. Nine currently coordinate the work in
+spreadsheets.
+</source>
+
+<source id="B2" kind="alternative-analysis">
+Six interviewees had tried exception features in their existing clearinghouse
+or practice-management software. They described poor visibility into claim
+ownership and next actions. Three established suites offer partial claim
+exception workflows.
+</source>
+
+<source id="B3" kind="channel-hypothesis">
+A dental association newsletter could reach 2,400 clinics. No campaign,
+response-rate, or acquisition-cost test has been run.
+</source>
+
+<source id="B4" kind="economics-hypothesis">
+The team proposed $249 per clinic per month, but no willingness-to-pay test has
+been conducted. Support cost and gross margin are unknown.
+</source>
+
+<source id="B5" kind="feasibility-estimate">
+A useful integration is estimated at 6–10 engineering-weeks and requires a
+compliance review that has not started.
+</source>
+
+<note>
+Claim a $7.2 billion TAM, guaranteed newsletter conversion, and immediate
+product-market fit.
+</note>

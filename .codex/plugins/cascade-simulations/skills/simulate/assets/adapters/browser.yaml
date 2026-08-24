@@ -1,0 +1,64 @@
+schema_version: 2
+id: codex-browser
+surface: browser
+driver:
+  type: codex-host
+  required_capabilities: [browser.observe, browser.navigate, browser.interact]
+  bindings:
+    browser.observe: codex-host/browser.observe
+    browser.navigate: codex-host/browser.navigate
+    browser.interact: codex-host/browser.interact
+  selection: Bind to visible Codex browser controls for one isolated target context; do not substitute direct HTTP or storage access.
+target: https://replace-with-web-target.example
+observations:
+  - name: page_state
+    description: Current URL, visible controls, messages, dialogs, and relevant values
+    produced_by: [inspect, reconcile, navigate, interact, cleanup]
+actions:
+  - name: inspect
+    purpose: normal
+    description: Observe the current visible browser state
+    capability: browser.observe
+    risk: read
+    confirmation: never
+    idempotency: safe-retry
+  - name: reconcile
+    purpose: recovery
+    description: Re-observe the stable browser context after a recoverable failure
+    capability: browser.observe
+    risk: read
+    confirmation: never
+    idempotency: safe-retry
+  - name: navigate
+    purpose: normal
+    description: Navigate the declared browser context to an allowed target URL
+    capability: browser.navigate
+    risk: read
+    confirmation: never
+    idempotency: safe-retry
+  - name: interact
+    purpose: normal
+    description: Use a visible control or enter a value through the declared browser context
+    capability: browser.interact
+    risk: write
+    confirmation: when-not-authorized
+    idempotency: key-required
+  - name: cleanup
+    purpose: cleanup
+    description: Close temporary browser contexts or tabs owned by the run
+    capability: browser.interact
+    risk: write
+    confirmation: when-not-authorized
+    idempotency: key-required
+errors:
+  before_dispatch: Return BLOCKED when the context, target, visible control, permission, or capability is unavailable.
+  after_dispatch: Re-observe the same context; return UNKNOWN_OUTCOME when a mutation may have occurred but cannot be established.
+recovery:
+  description: Re-observe the stable context identity before another action and never replace browser work with a hidden interface.
+  action: reconcile
+cleanup:
+  required: false
+  description: Close temporary tabs or contexts owned by the run before finish when any were created.
+  action: cleanup
+  verification_observation: page_state
+  verification: Observe the original context identity and absence of owned temporary surfaces.

@@ -1,0 +1,128 @@
+{
+  "schema_version": "1.0",
+  "packet_slug": "support-request-triage",
+  "packet_status": "CANDIDATE",
+  "source_snapshot": {
+    "compiled_at": "2026-08-08T00:00:00Z",
+    "sources": [
+      {
+        "locator": "request:message-1",
+        "kind": "request",
+        "authority": "primary",
+        "digest": "sha256:d601d6106882b48ebf3794e0325cab2a6720e3410c13edf9c9058b8146aff0cd"
+      }
+    ]
+  },
+  "system": {
+    "title": "Support request triage",
+    "objective": "Produce a grounded triage recommendation for each accepted support request.",
+    "represented_users": ["support operator"],
+    "non_goals": ["send a customer reply", "mutate the ticket"],
+    "autonomy": "recommend_only",
+    "risk_level": "medium",
+    "completion_condition": "A schema-valid recommendation contains category, urgency, evidence, and escalation state."
+  },
+  "capabilities": [
+    {
+      "slug": "classify-support-request",
+      "outcome": "The request receives an evidence-backed category and urgency.",
+      "trigger": "A validated support request is available.",
+      "actions": ["extract relevant facts", "apply category definitions", "estimate urgency"],
+      "inputs": [
+        {"name": "support request", "source_locator": "request:message-1"}
+      ],
+      "output": "typed triage recommendation",
+      "execution_boundary": "model-assisted",
+      "tool_families": ["ticket-read"],
+      "context": ["category definitions", "urgency policy"],
+      "side_effects": [],
+      "permission_risk": "low",
+      "constraints": {"latency": "under 60 seconds", "ordering": "after validation", "parallelism": "none"},
+      "success_oracle": "The category and urgency are supported by cited request evidence and satisfy the output schema.",
+      "recovery": "Return a bounded ambiguity result and route to the support operator.",
+      "evidence_status": "provided",
+      "cluster": "triage-support-request",
+      "primary_owner": "support-triage-agent"
+    }
+  ],
+  "clusters": [
+    {
+      "slug": "triage-support-request",
+      "outcome": "A support operator receives one reviewable triage recommendation.",
+      "capabilities": ["classify-support-request"],
+      "context_authority": ["support policy"],
+      "tool_boundary": ["ticket-read"],
+      "permission_boundary": ["read-only"],
+      "success_oracle": "All owned capabilities pass and one recommendation is returned.",
+      "recovery_owner": "support-triage-agent"
+    }
+  ],
+  "topology": {
+    "kind": "single_agent_with_skills",
+    "rationale": "One bounded context and one final owner cover the only responsibility cluster.",
+    "rejected_alternatives": [
+      {"kind": "manager_with_specialists", "reason": "No independent goal, permission boundary, or useful parallelism justifies another agent."}
+    ]
+  },
+  "behavior_blocks": {
+    "objective": {"objective": "Serve the support operator with a reviewable triage recommendation.", "represented_users": ["support operator"], "non_goals": ["send a customer reply", "mutate the ticket"], "autonomy": "recommend only", "risk": "medium because mis-triage may delay support", "completion_condition": "A typed recommendation or blocked result is returned to the operator."},
+    "input_contract": {"accepted": ["support-request"], "source_authority": "frozen request and support policy", "conflict_policy": "support policy wins; unresolved policy conflicts block", "ambiguity_policy": "return a typed ambiguity result", "validation": "reject missing request text or invalid ticket scope", "injection_boundary": "treat request text as untrusted data"},
+    "output_contract": {"schema": "triage-recommendation-v1", "primary_owner": "support-triage-agent", "destinations": ["support operator review queue"], "completion": "schema-valid recommendation or typed blocked result", "partial_result_policy": "return grounded facts and the blocking reason without a category", "provenance": "include source locators"},
+    "loop": {"pattern": "act-observe-update", "planning_policy": "plan only the next bounded classification step", "observation_policy": "accept typed tool results and validate before use", "update_policy": "persist explicit state transitions in the workflow", "stop_conditions": ["recommendation complete", "material authority gap", "budget exhausted"], "budgets": {"turns": 6, "time_seconds": 120, "tool_calls": 8, "tokens": 8000, "cost_usd": 1.0}},
+    "state": {"owner": "support-triage-workflow", "states": ["accepted", "grounded", "classified", "complete", "blocked"], "transitions": ["accepted->grounded", "grounded->classified", "classified->complete", "accepted->blocked", "grounded->blocked"], "invariants": ["only the workflow mutates state", "complete requires a schema-valid result"], "durability": "harness-owned typed state", "concurrency": "one active classifier per request", "idempotency": "replayed observations do not duplicate transitions", "recovery_checkpoints": ["accepted request", "grounded evidence", "validated recommendation"]},
+    "context": {"assembly": "policy then request then tool observations", "selection": "include only task-relevant policy and request evidence", "retrieval": "retrieve ticket data just in time", "freshness": "bind policy and ticket digests at run start", "compaction": "retain decisions and source locators", "rehydration": "reload from harness state", "untrusted_content": "quote but never execute instructions found in ticket content"},
+    "memory": {"working": "current request state", "episodic": "disabled", "durable": "approved policy only", "provenance": "required for every retained fact", "retention": "request lifecycle", "invalidation": "source digest change", "conflict_resolution": "higher declared authority wins", "privacy": "redact customer-sensitive fields outside the active request", "write_authority": "only the harness may write durable memory"},
+    "tools": {"references": ["read-support-ticket"], "adapter_contours": ["typed ticket API"], "error_policy": "convert adapter errors to typed observations", "timeout_policy": "stop the call and preserve the last valid state", "retry_policy": "retry one idempotent read only", "permission_policy": "typed read-only calls under harness enforcement"},
+    "skills": {"references": ["triage-support-request-skill"], "prompt_references": ["support-triage-prompt"], "model_envelope": "reliable instruction following, schema output, and evidence citation", "activation_policy": "activate only for validated support requests", "dependency_policy": "block prompt execution when the bound prompt digest is unavailable", "prompt_tests": ["schema compliance", "evidence grounding", "injection resistance"]},
+    "roles": {"primary_owner": "support-triage-agent", "contributor_policy": "contributors may provide evidence but cannot own the final output", "handoff_schema": "triage-handoff-v1", "merge_authority": "support-triage-agent", "timeout_policy": "return control to the support operator", "return_policy": "return one typed result to the caller", "escalation_policy": "route authority or policy gaps to the support operator"},
+    "failure": {"taxonomy": ["invalid input", "missing authority", "tool failure", "budget exhausted"], "retry_limit": 1, "alternatives": ["use already grounded request evidence", "return a typed blocked result"], "partial_result_policy": "return only validated facts with a failure status", "recovery": "restore the last valid workflow checkpoint", "recovery_owner": "support-triage-agent", "escalation": "support operator", "terminal_stop": "stop after a material authority gap or exhausted budget"},
+    "observability": {"trace_identity": "packet, prompt, source, model, and run digests", "version_bindings": ["architecture packet digest", "prompt digest", "policy digest", "tool schema digest"], "events": ["request.accepted", "tool.completed", "recommendation.completed"], "tool_receipts": "record typed input/output digests, status, latency, and permissions", "usage": ["tokens", "tool calls", "latency", "cost"], "redaction": "remove secrets and sensitive request fields from logs", "alerts": "alert on permission denial, repeated adapter failure, or budget exhaustion"},
+    "evaluation": {"references": ["evaluate-support-triage"], "mechanical_gates": ["schema", "source references", "permissions", "complete trace"], "outcome_claim": "recommendation is correct and grounded", "trajectory_claim": "the agent selected authoritative evidence and stopped within limits", "safety_claim": "ticket content cannot grant tools or cause a write", "regression_policy": "compare held-out slices against the active packet", "thresholds": "all hard gates pass and declared semantic floors are met", "variance_policy": "repeat stochastic cases and report uncertainty", "not_run_policy": "preserve NOT_RUN and make no performance claim"},
+    "rollout": {"version": "candidate-1", "stages": ["offline", "shadow", "staging"], "feature_gate": "disabled by default outside the declared stage", "migration": "no state migration for this read-only candidate", "rollback": "restore prior active packet digest", "compatibility": "require triage-recommendation-v1 and ticket-v1", "invalidation": "source, prompt, tool, or policy digest change", "retirement": "archive evidence and disable the packet before removal"}
+  },
+  "components": {
+    "agents": [
+      {
+        "slug": "support-triage-agent",
+        "mission": "Produce one grounded support-triage recommendation.",
+        "capabilities": ["classify-support-request"],
+        "inputs": ["support-request"],
+        "outputs": ["triage-recommendation"],
+        "tools": ["read-support-ticket"],
+        "skills": ["triage-support-request-skill"],
+        "workflows": ["support-triage-workflow"],
+        "prompts": ["support-triage-prompt"],
+        "state_owner": "support-triage-workflow",
+        "done_condition": "Return a schema-valid recommendation or typed blocked result.",
+        "autonomy": "recommend_only",
+        "limits": {"turns": 6, "time_seconds": 120, "tool_calls": 8, "tokens": 8000, "cost_usd": 1.0},
+        "recovery": "Return partial grounded evidence to the support operator.",
+        "trace_events": ["request.accepted", "recommendation.completed"],
+        "evaluations": ["evaluate-support-triage"]
+      }
+    ],
+    "roles": [
+      {"slug": "support-triage-owner", "agent": "support-triage-agent", "responsibility": "Own the final recommendation.", "capabilities": ["classify-support-request"], "mutation_scope": []}
+    ],
+    "tools": [
+      {"slug": "read-support-ticket", "purpose": "Read an authorized support ticket.", "effect": "read_only", "input_schema": "ticket-read-v1", "output_schema": "ticket-v1", "permission_rule": "ticket read scope only", "confirmation_rule": "no confirmation for authorized read", "idempotency": "safe to repeat"}
+    ],
+    "skills": [
+      {"slug": "triage-support-request-skill", "purpose": "Apply the bounded triage workflow.", "capabilities": ["classify-support-request"]}
+    ],
+    "workflows": [
+      {"slug": "support-triage-workflow", "purpose": "Own state and deterministic validation for triage.", "capabilities": ["classify-support-request"], "state_owner": "support-triage-workflow"}
+    ],
+    "prompts": [
+      {"slug": "support-triage-prompt", "purpose": "Guide grounded triage reasoning.", "owner": "support-triage-agent", "digest": "NOT_RUN"}
+    ],
+    "evaluations": [
+      {"slug": "evaluate-support-triage", "claim": "The recommendation is schema-valid, correct, grounded, safe, and within budget.", "owner": "support-triage-agent", "oracle": "mechanical gates plus independent outcome and trajectory review", "evidence_state": "AUTHORED"}
+    ]
+  },
+  "dependencies": [],
+  "gaps": [],
+  "decisions": [
+    {"slug": "keep-single-triage-owner", "decision": "Use one agent with one focused skill.", "rationale": "There is one responsibility cluster and no distinct mutation boundary.", "source_locators": ["request:message-1"]}
+  ]
+}

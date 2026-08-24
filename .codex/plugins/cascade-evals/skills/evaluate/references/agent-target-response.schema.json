@@ -1,0 +1,42 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://cascade.local/cascade-evals/agent-target-response.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "evaluation_id", "subject_digest", "cases"],
+  "properties": {
+    "schema_version": {"type": "integer", "const": 2},
+    "evaluation_id": {"type": "string", "minLength": 1},
+    "subject_digest": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "cases": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["case_id", "selected_skill", "status", "response", "signals", "evidence"],
+        "properties": {
+          "case_id": {"type": "string", "minLength": 1},
+          "selected_skill": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$"
+          },
+          "status": {"type": "string", "enum": ["READY", "GAP", "BLOCKED", "INVALID", "NOT_RUN", "ABSTAIN", "PROPOSED", "PENDING_APPROVAL", "APPROVED"]},
+          "response": {"type": "string", "minLength": 1},
+          "signals": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["contract_compliance"],
+            "properties": {
+              "contract_compliance": {"$ref": "#/$defs/signal"}
+            }
+          },
+          "evidence": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}}
+        }
+      }
+    }
+  },
+  "$defs": {
+    "signal": {"type": "string", "enum": ["PASS", "FAIL", "NOT_APPLICABLE"]}
+  }
+}

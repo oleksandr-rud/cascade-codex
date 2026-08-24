@@ -1,0 +1,212 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://cascade.local/cascade-personas/projection-v5.schema.json",
+  "title": "Cascade persona projection manifest v5",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "projection_id",
+    "version",
+    "source_persona_id",
+    "source_persona_version",
+    "source_persona_sha256",
+    "source_persona_status",
+    "target_consumer",
+    "target_contract",
+    "target_schema",
+    "mapping_version",
+    "field_mappings",
+    "omitted_fields",
+    "payload",
+    "synthetic_disclosure",
+    "source_privacy",
+    "immutable",
+    "mutable_state_owner",
+    "validation",
+    "invalidation_conditions"
+  ],
+  "properties": {
+    "schema_version": {"const": 5},
+    "projection_id": {"type": "string", "minLength": 1},
+    "version": {"type": "string", "minLength": 1},
+    "source_persona_id": {"type": "string", "minLength": 1},
+    "source_persona_version": {"type": "string", "minLength": 1},
+    "source_persona_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "source_persona_status": {"enum": ["GROUNDED", "MIXED", "SYNTHETIC_HYPOTHESIS"]},
+    "target_consumer": {"enum": ["product", "market", "agent-architecture", "simulation", "evaluation"]},
+    "target_contract": {"type": "string", "minLength": 1},
+    "target_schema": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "version", "sha256"],
+      "properties": {
+        "id": {"type": "string", "minLength": 1},
+        "version": {"type": "string", "minLength": 1},
+        "sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"}
+      }
+    },
+    "mapping_version": {"type": "string", "minLength": 1},
+    "field_mappings": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["source_path", "target_path", "evidence_basis", "claim_ids", "claim_types", "transformation"],
+        "properties": {
+          "source_path": {"type": "string", "minLength": 1},
+          "target_path": {"type": "string", "minLength": 1},
+          "evidence_basis": {"enum": ["CLAIMS", "STRUCTURAL", "POLICY"]},
+          "claim_ids": {
+            "type": "array",
+            "uniqueItems": true,
+            "items": {"type": "string", "minLength": 1}
+          },
+          "claim_types": {
+            "type": "array",
+            "uniqueItems": true,
+            "items": {"enum": ["OBSERVED", "USER_PROVIDED", "INFERRED", "HYPOTHESIS", "SYNTHETIC"]}
+          },
+          "transformation": {"type": "string", "minLength": 1}
+        },
+        "allOf": [
+          {
+            "if": {"properties": {"evidence_basis": {"const": "CLAIMS"}}},
+            "then": {
+              "properties": {
+                "claim_ids": {"minItems": 1},
+                "claim_types": {"minItems": 1}
+              }
+            },
+            "else": {
+              "properties": {
+                "claim_ids": {"maxItems": 0},
+                "claim_types": {"maxItems": 0}
+              }
+            }
+          }
+        ]
+      }
+    },
+    "omitted_fields": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["field", "reason", "privacy_rule"],
+        "properties": {
+          "field": {"type": "string", "minLength": 1},
+          "reason": {"type": "string", "minLength": 1},
+          "privacy_rule": {"type": ["string", "null"]}
+        }
+      }
+    },
+    "payload": {"type": "object", "not": {"required": ["mutable_run_state"]}},
+    "synthetic_disclosure": {"type": "boolean"},
+    "source_privacy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["classification", "permitted_consumer", "destination", "transfer_authorized", "omitted_sensitive_fields"],
+      "properties": {
+        "classification": {"enum": ["PUBLIC", "INTERNAL", "CONFIDENTIAL", "RESTRICTED"]},
+        "permitted_consumer": {"type": "boolean"},
+        "destination": {"type": ["string", "null"]},
+        "transfer_authorized": {"type": "boolean"},
+        "omitted_sensitive_fields": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}}
+      }
+    },
+    "immutable": {"const": true},
+    "mutable_state_owner": {"const": "simulation-run"},
+    "validation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema_status",
+        "lineage_status",
+        "semantic_status",
+        "validation_kind",
+        "validator",
+        "validator_sha256",
+        "target_semantic_validator",
+        "target_semantic_validator_sha256",
+        "source_persona_sha256",
+        "target_schema_sha256",
+        "payload_sha256",
+        "field_mappings_sha256",
+        "receipt_sha256"
+      ],
+      "properties": {
+        "schema_status": {"const": "PASS"},
+        "lineage_status": {"const": "PASS"},
+        "semantic_status": {"enum": ["PASS", "NOT_RUN"]},
+        "validation_kind": {"enum": ["DECLARATIVE_MAPPING", "DETERMINISTIC_SIMULATION_COMPILER"]},
+        "validator": {"type": "string", "minLength": 1},
+        "validator_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+        "target_semantic_validator": {"type": ["string", "null"]},
+        "target_semantic_validator_sha256": {
+          "anyOf": [
+            {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+            {"type": "null"}
+          ]
+        },
+        "source_persona_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+        "target_schema_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+        "payload_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+        "field_mappings_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+        "receipt_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"}
+      },
+      "allOf": [
+        {
+          "if": {"properties": {"validation_kind": {"const": "DECLARATIVE_MAPPING"}}},
+          "then": {
+            "properties": {
+              "semantic_status": {"const": "NOT_RUN"},
+              "target_semantic_validator": {"type": "null"},
+              "target_semantic_validator_sha256": {"type": "null"}
+            }
+          }
+        },
+        {
+          "if": {"properties": {"validation_kind": {"const": "DETERMINISTIC_SIMULATION_COMPILER"}}},
+          "then": {
+            "properties": {
+              "semantic_status": {"const": "PASS"},
+              "target_semantic_validator": {
+                "const": "cascade-simulations:simulation-persona/scripts/validate_persona.py"
+              },
+              "target_semantic_validator_sha256": {
+                "type": "string",
+                "pattern": "^[a-f0-9]{64}$"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "invalidation_conditions": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"type": "string", "minLength": 1}
+    }
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"source_persona_status": {"enum": ["MIXED", "SYNTHETIC_HYPOTHESIS"]}}},
+      "then": {"properties": {"synthetic_disclosure": {"const": true}}}
+    },
+    {
+      "if": {"properties": {"target_consumer": {"const": "simulation"}}},
+      "then": {
+        "properties": {
+          "target_schema": {
+            "properties": {
+              "id": {"const": "https://cascade.local/cascade-simulations/persona.schema.json"},
+              "version": {"const": "1"}
+            }
+          }
+        }
+      }
+    }
+  ]
+}

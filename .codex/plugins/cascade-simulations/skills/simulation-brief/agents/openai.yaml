@@ -1,0 +1,4 @@
+interface:
+  display_name: "Simulation Brief"
+  short_description: "Build domain and feature run context"
+  default_prompt: "Use $simulation-brief to compile the domain, feature, current state, and real-work objective for a simulation."

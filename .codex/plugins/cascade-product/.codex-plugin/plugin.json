@@ -1,0 +1,33 @@
+{
+  "name": "cascade-product",
+  "version": "0.1.24+codex.20260823213500",
+  "description": "Manage evidence-bound product discovery, definition, validation, delivery handoff, and learning while delegating persona, market, prompt, simulation, and evaluation mechanics to their owning Cascade plugins.",
+  "author": {
+    "name": "Cascade"
+  },
+  "keywords": [
+    "product-management",
+    "product-discovery",
+    "prd",
+    "product-strategy",
+    "product-validation",
+    "product-lifecycle"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Cascade Product",
+    "shortDescription": "Manage an evidence-bound product lifecycle.",
+    "longDescription": "Turn product opportunities into traceable decisions, product definitions, journeys, requirements, priorities, experiments, delivery handoffs, and learning loops while preserving market evidence, persona provenance, simulation limits, and independent evaluation.",
+    "developerName": "Cascade",
+    "category": "Productivity",
+    "capabilities": [
+      "Interactive",
+      "Write"
+    ],
+    "defaultPrompt": [
+      "Find this product initiative's current state and next gate.",
+      "Turn this evidence into a traceable product definition.",
+      "Validate this product hypothesis with the right evidence."
+    ]
+  }
+}

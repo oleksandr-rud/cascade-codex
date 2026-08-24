@@ -1,0 +1,6 @@
+interface:
+  display_name: "Evaluate Market Opportunity"
+  short_description: "Score and challenge a market opportunity."
+  default_prompt: "Use $evaluate-market-opportunity to score and adversarially test this opportunity against a frozen evidence ledger and explicit decision rule."
+policy:
+  allow_implicit_invocation: true

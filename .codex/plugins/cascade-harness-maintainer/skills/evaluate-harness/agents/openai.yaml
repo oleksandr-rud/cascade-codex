@@ -1,0 +1,4 @@
+interface:
+  display_name: "Evaluate Harness"
+  short_description: "Evaluate coding-agent harness behavior"
+  default_prompt: "Use $evaluate-harness to evaluate this target harness through Cascade Evals while preserving target-owned scenarios and evidence boundaries."

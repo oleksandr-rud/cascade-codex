@@ -1,0 +1,6 @@
+interface:
+  display_name: "Research Market"
+  short_description: "Build a current, attributable market evidence ledger."
+  default_prompt: "Use $research-market to research this market, segment, pain, competitor set, or economics question with current sources, contradictions, and confidence."
+policy:
+  allow_implicit_invocation: true

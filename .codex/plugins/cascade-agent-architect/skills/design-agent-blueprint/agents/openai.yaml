@@ -1,0 +1,4 @@
+interface:
+  display_name: "Design Agent Blueprint"
+  short_description: "Specify complete agent behavior and topology"
+  default_prompt: "Use $design-agent-blueprint to turn this capability map into a complete, simple-first agent-system blueprint."

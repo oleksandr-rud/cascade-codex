@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://cascade.local/schemas/prompt-quality-judge-response-v1.json",
+  "title": "Prompt quality judge response",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["profile_id", "rubric_version", "task_id", "run_id", "ratings", "verdict", "missing_evidence"],
+  "properties": {
+    "profile_id": {"type": "string", "minLength": 1},
+    "rubric_version": {"const": 1},
+    "task_id": {"type": "string", "minLength": 1},
+    "run_id": {"type": "string", "minLength": 1},
+    "ratings": {
+      "type": "array",
+      "minItems": 5,
+      "maxItems": 5,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["dimension_id", "rating", "rationale", "evidence"],
+        "properties": {
+          "dimension_id": {"type": "string", "minLength": 1},
+          "rating": {"type": "integer", "minimum": 0, "maximum": 4},
+          "rationale": {"type": "string", "minLength": 1},
+          "evidence": {"type": "array", "items": {"type": "string", "minLength": 1}}
+        }
+      }
+    },
+    "verdict": {"enum": ["PASS", "FAIL", "BLOCKED"]},
+    "missing_evidence": {"type": "array", "items": {"type": "string"}}
+  }
+}

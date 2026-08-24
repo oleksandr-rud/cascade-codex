@@ -1,0 +1,4 @@
+interface:
+  display_name: "Agent Evaluation"
+  short_description: "Evaluate agents, skills, workflows, and architectures"
+  default_prompt: "Use $agent-evaluation to evaluate this agent system against a digest-bound subject pack."

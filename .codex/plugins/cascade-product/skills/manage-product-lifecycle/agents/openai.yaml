@@ -1,0 +1,6 @@
+interface:
+  display_name: "Manage Product Lifecycle"
+  short_description: "Route product decisions from opportunity to learning."
+  default_prompt: "Use $manage-product-lifecycle to identify the current product state and return only the smallest evidence-bound next gate, including stop, defer, narrow, or research."
+policy:
+  allow_implicit_invocation: true

@@ -1,0 +1,352 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://cascade.local/cascade-market-intelligence/opportunity-assessment-v4.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "assessment_id",
+    "version",
+    "ledger_id",
+    "ledger_version",
+    "ledger_sha256",
+    "criteria",
+    "score",
+    "score_formula",
+    "coverage",
+    "minimum_coverage",
+    "decision_rule",
+    "rating_anchors",
+    "decision_status",
+    "disqualifiers",
+    "pmf_state",
+    "pmf_evidence_claim_ids",
+    "pmf_scope",
+    "pmf_cohort",
+    "pmf_observation_window",
+    "expires_at",
+    "recommendation",
+    "gaps",
+    "invalidation_conditions"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": 4
+    },
+    "assessment_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "version": {
+      "type": "string",
+      "minLength": 1
+    },
+    "ledger_sha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "criteria": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "criterion_id",
+          "weight",
+          "rating",
+          "floor",
+          "evidence_claim_ids"
+        ],
+        "properties": {
+          "criterion_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "weight": {
+            "type": "number",
+            "exclusiveMinimum": 0,
+            "maximum": 1
+          },
+          "rating": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 0,
+            "maximum": 4
+          },
+          "floor": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 0,
+            "maximum": 4
+          },
+          "evidence_claim_ids": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            },
+            "uniqueItems": true
+          }
+        }
+      },
+      "uniqueItems": true
+    },
+    "score": {
+      "type": [
+        "number",
+        "null"
+      ],
+      "minimum": 0,
+      "maximum": 1
+    },
+    "coverage": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "minimum_coverage": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "decision_rule": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "minimum_score",
+        "require_all_floors",
+        "require_no_triggered_disqualifiers"
+      ],
+      "properties": {
+        "minimum_score": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "require_all_floors": {
+          "const": true
+        },
+        "require_no_triggered_disqualifiers": {
+          "const": true
+        }
+      }
+    },
+    "rating_anchors": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["0", "1", "2", "3", "4"],
+      "properties": {
+        "0": {"type": "string", "minLength": 1},
+        "1": {"type": "string", "minLength": 1},
+        "2": {"type": "string", "minLength": 1},
+        "3": {"type": "string", "minLength": 1},
+        "4": {"type": "string", "minLength": 1}
+      }
+    },
+    "decision_status": {
+      "enum": [
+        "READY",
+        "ABSTAIN",
+        "BLOCKED",
+        "INVALID"
+      ]
+    },
+    "disqualifiers": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "rule_id",
+          "rule",
+          "triggered",
+          "evidence_claim_ids"
+        ],
+        "properties": {
+          "rule_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "rule": {
+            "type": "string",
+            "minLength": 1
+          },
+          "triggered": {
+            "type": "boolean"
+          },
+          "evidence_claim_ids": {
+            "type": "array",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": {"type": "string", "minLength": 1}
+          }
+        }
+      },
+      "uniqueItems": true
+    },
+    "pmf_state": {
+      "enum": [
+        "UNTESTED",
+        "EARLY_SIGNAL",
+        "REPEATED_BEHAVIOR",
+        "VALIDATED_FOR_SCOPE"
+      ]
+    },
+    "pmf_scope": {
+      "type": "string",
+      "minLength": 1
+    },
+    "pmf_cohort": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["segment", "geography", "minimum_distinct_entities", "minimum_events_per_entity"],
+      "properties": {
+        "segment": {"type": "string", "minLength": 1},
+        "geography": {"type": "string", "minLength": 1},
+        "minimum_distinct_entities": {"type": "integer", "minimum": 1},
+        "minimum_events_per_entity": {"type": "integer", "minimum": 1}
+      }
+    },
+    "pmf_observation_window": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["start", "end"],
+      "properties": {
+        "start": {"type": "string", "format": "date-time"},
+        "end": {"type": "string", "format": "date-time"}
+      }
+    },
+    "expires_at": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date-time"
+    },
+    "recommendation": {
+      "type": "string",
+      "minLength": 1
+    },
+    "gaps": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "uniqueItems": true
+    },
+    "invalidation_conditions": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "uniqueItems": true
+    },
+    "ledger_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "ledger_version": {
+      "type": "string",
+      "minLength": 1
+    },
+    "score_formula": {
+      "const": "sum(weight * rating / 4)"
+    },
+    "pmf_evidence_claim_ids": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "decision_status": {
+            "const": "READY"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "score": {
+            "type": "number"
+          },
+          "expires_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "gaps": {
+            "maxItems": 0
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "decision_status": {
+            "enum": [
+              "ABSTAIN",
+              "BLOCKED"
+            ]
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "score": {
+            "type": "null"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "pmf_state": {
+            "const": "UNTESTED"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "pmf_evidence_claim_ids": {
+            "maxItems": 0
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "pmf_state": {
+            "enum": [
+              "EARLY_SIGNAL",
+              "REPEATED_BEHAVIOR",
+              "VALIDATED_FOR_SCOPE"
+            ]
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "pmf_evidence_claim_ids": {
+            "minItems": 1
+          }
+        }
+      }
+    }
+  ]
+}

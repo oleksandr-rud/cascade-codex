@@ -1,0 +1,4 @@
+interface:
+  display_name: "Simulation Actor"
+  short_description: "Create an executable actor contract"
+  default_prompt: "Use $simulation-actor to derive a bounded simulation actor from a persona or an explicit synthetic hypothesis."

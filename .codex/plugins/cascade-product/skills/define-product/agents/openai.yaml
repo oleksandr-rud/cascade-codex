@@ -1,0 +1,6 @@
+interface:
+  display_name: "Define Product"
+  short_description: "Create a traceable product contract."
+  default_prompt: "Use $define-product to turn accepted evidence into a versioned opportunity brief, PRD, journey, requirements set, MVP boundary, or delivery handoff."
+policy:
+  allow_implicit_invocation: true

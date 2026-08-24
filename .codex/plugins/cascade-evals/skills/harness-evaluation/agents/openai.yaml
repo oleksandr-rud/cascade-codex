@@ -1,0 +1,4 @@
+interface:
+  display_name: "Harness Evaluation"
+  short_description: "Evaluate coding-agent harness behavior and traces"
+  default_prompt: "Use $harness-evaluation to evaluate this coding-agent harness with mechanical gates and independent judges."

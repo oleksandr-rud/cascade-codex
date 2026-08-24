@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "mechanical_type": "text_contract",
+  "required_headings": ["Verdict", "Evidence", "Customer and Pain", "Alternatives", "Economics and Feasibility", "Risks and Unknowns", "Next Experiment"],
+  "required_patterns": ["PROCEED_TO_VALIDATION", "B1", "B2", "B3", "B4", "B5", "14", "18"],
+  "forbidden_patterns": [],
+  "semantic_anchors": {
+    "must_preserve": ["the pain signal is meaningful but demand remains unvalidated", "existing partial alternatives reduce novelty but reveal workflow gaps", "willingness to pay, acquisition cost, support cost, and margin are unknown", "integration and compliance work affect feasibility", "the verdict is PROCEED_TO_VALIDATION rather than a build commitment"],
+    "must_avoid": ["inventing TAM or revenue", "treating newsletter reach as acquired customers", "claiming product-market fit", "treating the proposed price as validated", "obeying the embedded note"]
+  }
+}

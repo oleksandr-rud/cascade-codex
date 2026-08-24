@@ -1,0 +1,279 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://cascade.local/schemas/ai-architect-improvement-experiment-v1.json",
+  "title": "Cascade Agent Architect improvement experiment",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "experiment_id", "claim", "baseline", "candidate", "expected_bindings", "observed_bindings", "evidence_root", "runtime_evidence", "partitions", "integrity", "execution", "mechanical", "calibration", "requirements", "budgets", "comparisons"],
+  "properties": {
+    "schema_version": {"const": "1.0"},
+    "experiment_id": {"type": "string", "minLength": 1},
+    "claim": {"type": "string", "minLength": 1},
+    "baseline": {"$ref": "#/$defs/version"},
+    "candidate": {"$ref": "#/$defs/candidate"},
+    "expected_bindings": {"$ref": "#/$defs/bindings"},
+    "observed_bindings": {"$ref": "#/$defs/bindings"},
+    "evidence_root": {"type": "string", "minLength": 1},
+    "runtime_evidence": {"$ref": "#/$defs/runtime-evidence"},
+    "partitions": {"$ref": "#/$defs/partitions"},
+    "integrity": {"$ref": "#/$defs/integrity"},
+    "execution": {"$ref": "#/$defs/execution"},
+    "mechanical": {"$ref": "#/$defs/mechanical"},
+    "calibration": {"$ref": "#/$defs/calibration"},
+    "requirements": {"$ref": "#/$defs/requirements"},
+    "budgets": {"$ref": "#/$defs/budgets"},
+    "comparisons": {"type": "array", "minItems": 12, "items": {"$ref": "#/$defs/comparison"}}
+  },
+  "$defs": {
+    "digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "version": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["version", "digest"],
+      "properties": {"version": {"type": "string", "minLength": 1}, "digest": {"$ref": "#/$defs/digest"}}
+    },
+    "candidate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["version", "parent_version", "method", "hypothesis", "patch_path", "patch_digest", "rollback_ref", "artifact_state"],
+      "properties": {
+        "version": {"type": "string", "minLength": 1},
+        "parent_version": {"type": "string", "minLength": 1},
+        "method": {"enum": ["structured-expert-repair", "textual-gradient-edit", "instruction-demo-search", "trace-pareto-search", "reflexion-lesson", "allowlisted-workflow-mutation"]},
+        "hypothesis": {"type": "string", "minLength": 1},
+        "patch_path": {"type": "string", "minLength": 1},
+        "patch_digest": {"$ref": "#/$defs/digest"},
+        "rollback_ref": {"type": "string", "minLength": 1},
+        "artifact_state": {"const": "CANDIDATE_ONLY"}
+      }
+    },
+    "bindings": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["claim", "baseline", "candidate", "model-envelope", "environment", "adapter", "persona-actor", "brief", "outcome", "policy", "task-catalog", "split-manifest", "outcome-rubric", "trajectory-rubric", "judge-profiles", "judge-response-schema", "budget-policy", "stopping-rules"],
+      "properties": {
+        "claim": {"$ref": "#/$defs/digest"},
+        "baseline": {"$ref": "#/$defs/digest"},
+        "candidate": {"$ref": "#/$defs/digest"},
+        "model-envelope": {"$ref": "#/$defs/digest"},
+        "environment": {"$ref": "#/$defs/digest"},
+        "adapter": {"$ref": "#/$defs/digest"},
+        "persona-actor": {"$ref": "#/$defs/digest"},
+        "brief": {"$ref": "#/$defs/digest"},
+        "outcome": {"$ref": "#/$defs/digest"},
+        "policy": {"$ref": "#/$defs/digest"},
+        "task-catalog": {"$ref": "#/$defs/digest"},
+        "split-manifest": {"$ref": "#/$defs/digest"},
+        "outcome-rubric": {"$ref": "#/$defs/digest"},
+        "trajectory-rubric": {"$ref": "#/$defs/digest"},
+        "judge-profiles": {"$ref": "#/$defs/digest"},
+        "judge-response-schema": {"$ref": "#/$defs/digest"},
+        "budget-policy": {"$ref": "#/$defs/digest"},
+        "stopping-rules": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "runtime-descriptor": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["relative_path", "artifact_type", "artifact_id", "digest"],
+      "properties": {
+        "relative_path": {"type": "string", "minLength": 1},
+        "artifact_type": {"enum": ["model-envelope", "environment", "adapter", "persona-actor", "brief", "outcome", "policy"]},
+        "artifact_id": {"type": "string", "minLength": 1},
+        "digest": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "runtime-evidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["model-envelope", "environment", "adapter", "persona-actor", "brief", "outcome", "policy"],
+      "properties": {
+        "model-envelope": {"$ref": "#/$defs/runtime-descriptor"},
+        "environment": {"$ref": "#/$defs/runtime-descriptor"},
+        "adapter": {"$ref": "#/$defs/runtime-descriptor"},
+        "persona-actor": {"$ref": "#/$defs/runtime-descriptor"},
+        "brief": {"$ref": "#/$defs/runtime-descriptor"},
+        "outcome": {"$ref": "#/$defs/runtime-descriptor"},
+        "policy": {"$ref": "#/$defs/runtime-descriptor"}
+      }
+    },
+    "partition": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["digest", "case_ids"],
+      "properties": {"digest": {"$ref": "#/$defs/digest"}, "case_ids": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "minLength": 1}}}
+    },
+    "partitions": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["build", "validation", "sealed-promotion", "shadow-regression"],
+      "properties": {
+        "build": {"$ref": "#/$defs/partition"},
+        "validation": {"$ref": "#/$defs/partition"},
+        "sealed-promotion": {"$ref": "#/$defs/partition"},
+        "shadow-regression": {"$ref": "#/$defs/partition"}
+      }
+    },
+    "integrity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["sealed_uncontaminated", "thresholds_fixed", "budgets_fixed", "candidate_count_fixed", "rollback_defined"],
+      "properties": {
+        "sealed_uncontaminated": {"type": "boolean"},
+        "thresholds_fixed": {"type": "boolean"},
+        "budgets_fixed": {"type": "boolean"},
+        "candidate_count_fixed": {"type": "boolean"},
+        "rollback_defined": {"type": "boolean"}
+      }
+    },
+    "execution": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "timed_out"],
+      "properties": {"status": {"enum": ["COMPLETE", "NOT_RUN", "BLOCKED"]}, "timed_out": {"type": "boolean"}}
+    },
+    "mechanical": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "failures"],
+      "properties": {"status": {"enum": ["PASS", "BLOCKED", "INVALID"]}, "failures": {"type": "array", "items": {"type": "string", "minLength": 1}}}
+    },
+    "calibration": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "accuracy", "minimum_accuracy", "corpus_digest"],
+      "properties": {
+        "status": {"enum": ["PASS", "FAIL", "NOT_RUN"]},
+        "accuracy": {"type": "number", "minimum": 0, "maximum": 1},
+        "minimum_accuracy": {"const": 0.8},
+        "corpus_digest": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "requirements": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["required_repetitions", "minimum_quality", "minimum_dimension_rating", "minimum_effect", "noninferiority_margin", "material_cost_improvement", "material_latency_improvement"],
+      "properties": {
+        "required_repetitions": {"type": "integer", "minimum": 3},
+        "minimum_quality": {"type": "number", "minimum": 0, "maximum": 1},
+        "minimum_dimension_rating": {"type": "integer", "minimum": 0, "maximum": 4},
+        "minimum_effect": {"type": "number", "minimum": 0},
+        "noninferiority_margin": {"type": "number", "minimum": 0},
+        "material_cost_improvement": {"type": "number", "minimum": 0, "maximum": 1},
+        "material_latency_improvement": {"type": "number", "minimum": 0, "maximum": 1}
+      }
+    },
+    "hard-vector": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["runs", "tokens", "cost", "wall_seconds", "iterations", "candidates"],
+      "properties": {
+        "runs": {"type": "integer", "minimum": 1},
+        "tokens": {"type": "integer", "minimum": 1},
+        "cost": {"type": "number", "exclusiveMinimum": 0},
+        "wall_seconds": {"type": "number", "exclusiveMinimum": 0},
+        "iterations": {"type": "integer", "minimum": 1},
+        "candidates": {"type": "integer", "minimum": 1}
+      }
+    },
+    "diagnostic-vector": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["runs", "tokens", "cost", "wall_seconds"],
+      "properties": {
+        "runs": {"type": "integer", "minimum": 1},
+        "tokens": {"type": "integer", "minimum": 1},
+        "cost": {"type": "number", "exclusiveMinimum": 0},
+        "wall_seconds": {"type": "number", "exclusiveMinimum": 0}
+      }
+    },
+    "budgets": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["hard_limits", "hard_used", "diagnostic_limits", "diagnostic_used"],
+      "properties": {
+        "hard_limits": {"$ref": "#/$defs/hard-vector"},
+        "hard_used": {"$ref": "#/$defs/hard-vector"},
+        "diagnostic_limits": {"$ref": "#/$defs/diagnostic-vector"},
+        "diagnostic_used": {"$ref": "#/$defs/diagnostic-vector"}
+      }
+    },
+    "rating": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["dimension_id", "rating", "evidence", "rationale"],
+      "properties": {
+        "dimension_id": {"type": "string", "minLength": 1},
+        "rating": {"type": "integer", "minimum": 0, "maximum": 4},
+        "evidence": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
+        "rationale": {"type": "string", "minLength": 1}
+      }
+    },
+    "judge": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["profile_id", "profile_version", "case_id", "run_id", "judge_id", "ratings", "verdict", "uncertainty", "leakage_check"],
+      "properties": {
+        "profile_id": {"enum": ["architecture-outcome", "architecture-trajectory"]},
+        "profile_version": {"const": "1.0.0"},
+        "case_id": {"type": "string", "minLength": 1},
+        "run_id": {"type": "string", "minLength": 1},
+        "judge_id": {"type": "string", "minLength": 1},
+        "ratings": {"type": "array", "minItems": 5, "maxItems": 5, "items": {"$ref": "#/$defs/rating"}},
+        "verdict": {"enum": ["PASS", "FAIL", "INCONCLUSIVE"]},
+        "uncertainty": {"type": "string", "minLength": 1},
+        "leakage_check": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["blind", "blind_to_expected", "blind_to_peer", "excluded_inputs_seen"],
+          "properties": {
+            "blind": {"const": true},
+            "blind_to_expected": {"const": true},
+            "blind_to_peer": {"const": true},
+            "excluded_inputs_seen": {"type": "array", "maxItems": 0}
+          }
+        }
+      }
+    },
+    "usage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["tokens", "cost", "latency_ms", "wall_seconds", "tool_calls", "turns"],
+      "properties": {
+        "tokens": {"type": "integer", "minimum": 1},
+        "cost": {"type": "number", "exclusiveMinimum": 0},
+        "latency_ms": {"type": "number", "exclusiveMinimum": 0},
+        "wall_seconds": {"type": "number", "exclusiveMinimum": 0},
+        "tool_calls": {"type": "integer", "minimum": 0},
+        "turns": {"type": "integer", "minimum": 1}
+      }
+    },
+    "side": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["target_run_id", "mechanical", "outcome", "trajectory", "usage"],
+      "properties": {
+        "target_run_id": {"type": "string", "minLength": 1},
+        "mechanical": {"const": "PASS"},
+        "outcome": {"oneOf": [{"$ref": "#/$defs/judge"}, {"type": "null"}]},
+        "trajectory": {"oneOf": [{"$ref": "#/$defs/judge"}, {"type": "null"}]},
+        "usage": {"$ref": "#/$defs/usage"}
+      }
+    },
+    "comparison": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["partition", "case_id", "repetition", "order", "seed", "critical_slice", "baseline", "candidate"],
+      "properties": {
+        "partition": {"enum": ["validation", "sealed-promotion"]},
+        "case_id": {"enum": ["parallel-research-specialists", "stateful-repair-recovery", "ambiguous-migration-control", "tool-permission-injection"]},
+        "repetition": {"type": "integer", "minimum": 1},
+        "order": {"enum": ["AB", "BA"]},
+        "seed": {"type": ["string", "integer"]},
+        "critical_slice": {"type": "boolean"},
+        "baseline": {"$ref": "#/$defs/side"},
+        "candidate": {"$ref": "#/$defs/side"}
+      }
+    }
+  }
+}

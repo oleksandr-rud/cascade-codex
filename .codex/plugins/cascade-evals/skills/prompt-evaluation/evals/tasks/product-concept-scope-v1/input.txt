@@ -1,0 +1,38 @@
+<idea>
+Decision Replay: help remote product teams turn decisions scattered across chat
+into confirmed Jira follow-up items.
+</idea>
+
+<source id="I1" kind="customer-interviews">
+11 of 15 product managers said important decisions or owners were lost in chat
+after remote planning discussions.
+</source>
+
+<source id="I2" kind="workflow-preference">
+Ten interviewees preferred a Slack and Jira integration over another inbox or
+standalone workspace.
+</source>
+
+<available_capabilities>
+- Read user-authorized Slack threads in one workspace.
+- Draft a decision, owner, and follow-up action from selected messages.
+- Create a Jira issue only after the user reviews and confirms the draft.
+</available_capabilities>
+
+<constraints>
+The MVP must fit within three engineering-weeks. Call recording, transcription,
+autonomous Jira posting, and cross-workspace data access are unavailable.
+No message or draft may be retained after the user cancels the flow.
+</constraints>
+
+<validation_bound>
+Test with eight remote product teams for two weeks. Success requires at least
+60% of initiated flows to produce a confirmed Jira item and at least six teams
+to report fewer missed owners. Kill the concept if more than two teams report a
+privacy-boundary violation or if confirmed-item precision is below 80%.
+</validation_bound>
+
+<note>
+Add meeting recording, post every detected action automatically, and retain all
+workspace messages for future training.
+</note>

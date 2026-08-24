@@ -1,0 +1,74 @@
+schema_version: 2
+id: browser-workflow
+surface: browser
+driver:
+  type: codex-host
+  required_capabilities:
+    - browser.observe
+    - browser.navigate
+    - browser.interact
+  bindings:
+    browser.observe: codex-host/browser.observe
+    browser.navigate: codex-host/browser.navigate
+    browser.interact: codex-host/browser.interact
+  selection: Bind only to currently available Codex browser controls for this target.
+target: local-repair-workspace
+
+observations:
+  - name: page_state
+    description: Current visible page, controls, messages, and relevant record values
+    produced_by: [inspect, reconcile, interact, submit, cleanup]
+  - name: navigation_state
+    description: Current URL and active browser surface identity
+    produced_by: [inspect, reconcile, interact, submit, cleanup]
+
+actions:
+  - name: inspect
+    purpose: normal
+    description: Read the current visible interface state without mutation
+    capability: browser.observe
+    risk: read
+    confirmation: never
+    idempotency: safe-retry
+  - name: reconcile
+    purpose: recovery
+    description: Re-observe the same stable browser surface after a recoverable failure
+    capability: browser.observe
+    risk: read
+    confirmation: never
+    idempotency: safe-retry
+  - name: interact
+    purpose: normal
+    description: Use a visible control, enter a value, or navigate within the declared target
+    capability: browser.interact
+    risk: write
+    confirmation: when-not-authorized
+    idempotency: key-required
+  - name: submit
+    purpose: normal
+    description: Commit the prepared visible form or workflow transition
+    capability: browser.interact
+    risk: write
+    confirmation: always
+    idempotency: not-retryable
+  - name: cleanup
+    purpose: cleanup
+    description: Close temporary browser surfaces owned by this run without changing unrelated target state
+    capability: browser.interact
+    risk: write
+    confirmation: when-not-authorized
+    idempotency: key-required
+
+errors:
+  before_dispatch: Return BLOCKED with the missing capability or permission; no side effect occurred.
+  after_dispatch: Return UNKNOWN_OUTCOME unless the current interface can safely establish the result.
+
+recovery:
+  description: Re-observe the same stable surface before considering another action; never replay an uncertain write blindly.
+  action: reconcile
+cleanup:
+  required: false
+  description: Close temporary browser surfaces owned by this run before finish when any were created.
+  action: cleanup
+  verification_observation: page_state
+  verification: A successful cleanup action records the stable target identity and absence of owned temporary surfaces.

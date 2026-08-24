@@ -1,0 +1,33 @@
+{
+  "name": "cascade-agent-architect",
+  "version": "0.2.1+codex.20260822021000",
+  "description": "Designs source-grounded AI agent and agentic-system architectures, roles, skills, workflows, prompts, tools, memory, safety, and architecture-specific evaluation packs without owning generic evaluation or simulation runtimes.",
+  "author": {
+    "name": "Cascade"
+  },
+  "keywords": [
+    "agent-architecture",
+    "agent-roles",
+    "agent-skills",
+    "agent-workflows",
+    "prompt-briefs",
+    "agent-evaluation"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Cascade Agent Architect",
+    "shortDescription": "Design and improve complete AI agent systems.",
+    "longDescription": "Extract and cluster capabilities, select the smallest sufficient topology, and generate reviewable agent, role, skill, workflow, prompt, context, memory, tool, permission, observability, and architecture-evaluation contracts while delegating prompt authoring to Cascade Prompt, generic evaluation to Cascade Evals, and bounded execution to Cascade Simulations.",
+    "developerName": "Cascade",
+    "category": "Productivity",
+    "capabilities": [
+      "Interactive",
+      "Write"
+    ],
+    "defaultPrompt": [
+      "Design a complete AI agent architecture for this request.",
+      "Turn these capabilities into bounded roles, skills, workflows, and prompts.",
+      "Evaluate and improve this agent system through Cascade Evals."
+    ]
+  }
+}

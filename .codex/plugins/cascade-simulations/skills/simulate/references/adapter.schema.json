@@ -1,0 +1,107 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://cascade.local/cascade-simulations/adapter.schema.json",
+  "title": "Cascade Codex-host simulation adapter",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "id", "surface", "driver", "target", "observations", "actions", "errors", "recovery", "cleanup"],
+  "properties": {
+    "schema_version": { "const": 2 },
+    "id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9.-]+$" },
+    "surface": { "enum": ["command", "http", "terminal", "browser", "desktop", "mobile", "agent-response"] },
+    "driver": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type", "required_capabilities", "bindings", "selection"],
+      "properties": {
+        "type": { "const": "codex-host" },
+        "required_capabilities": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/capability" }
+        },
+        "bindings": {
+          "type": "object",
+          "minProperties": 1,
+          "propertyNames": { "$ref": "#/$defs/capability" },
+          "additionalProperties": { "type": "string", "minLength": 1 }
+        },
+        "selection": { "type": "string", "minLength": 1 }
+      }
+    },
+    "target": { "type": "string", "minLength": 1 },
+    "observations": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["name", "description", "produced_by"],
+        "properties": {
+          "name": { "$ref": "#/$defs/name" },
+          "description": { "type": "string", "minLength": 1 },
+          "produced_by": {
+            "type": "array",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": { "$ref": "#/$defs/name" }
+          }
+        }
+      }
+    },
+    "actions": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["name", "purpose", "description", "capability", "risk", "confirmation", "idempotency"],
+        "properties": {
+          "name": { "$ref": "#/$defs/name" },
+          "purpose": { "enum": ["normal", "recovery", "cleanup"] },
+          "description": { "type": "string", "minLength": 1 },
+          "capability": { "$ref": "#/$defs/capability" },
+          "risk": { "enum": ["read", "write", "external", "privileged", "destructive"] },
+          "confirmation": { "enum": ["never", "when-not-authorized", "always"] },
+          "idempotency": { "enum": ["safe-retry", "key-required", "not-retryable"] },
+          "input": { "type": "object" }
+        }
+      }
+    },
+    "errors": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["before_dispatch", "after_dispatch"],
+      "properties": {
+        "before_dispatch": { "type": "string", "minLength": 1 },
+        "after_dispatch": { "type": "string", "minLength": 1 }
+      }
+    },
+    "recovery": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["description", "action"],
+      "properties": {
+        "description": { "type": "string", "minLength": 1 },
+        "action": { "oneOf": [{ "$ref": "#/$defs/name" }, { "type": "null" }] }
+      }
+    },
+    "cleanup": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["required", "description", "action", "verification_observation", "verification"],
+      "properties": {
+        "required": { "type": "boolean" },
+        "description": { "type": "string", "minLength": 1 },
+        "action": { "oneOf": [{ "$ref": "#/$defs/name" }, { "type": "null" }] },
+        "verification_observation": { "oneOf": [{ "$ref": "#/$defs/name" }, { "type": "null" }] },
+        "verification": { "type": "string", "minLength": 1 }
+      }
+    }
+  },
+  "$defs": {
+    "name": { "type": "string", "pattern": "^[a-z][a-z0-9_]*$" },
+    "capability": { "type": "string", "pattern": "^[a-z][a-z0-9_.-]+$" }
+  }
+}

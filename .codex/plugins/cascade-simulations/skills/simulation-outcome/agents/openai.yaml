@@ -1,0 +1,4 @@
+interface:
+  display_name: "Simulation Outcome"
+  short_description: "Define observable simulation success"
+  default_prompt: "Use $simulation-outcome to define outcome conditions, evidence, failures, and prohibited shortcuts without scripting the path."

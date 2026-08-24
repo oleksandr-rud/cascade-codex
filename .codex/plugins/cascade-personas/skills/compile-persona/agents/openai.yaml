@@ -1,0 +1,6 @@
+interface:
+  display_name: "Compile Persona"
+  short_description: "Create a traceable consumer-specific persona view."
+  default_prompt: "Use $compile-persona to compile this frozen persona into a digest-bound product, market, architecture, simulation, or evaluation projection."
+policy:
+  allow_implicit_invocation: true

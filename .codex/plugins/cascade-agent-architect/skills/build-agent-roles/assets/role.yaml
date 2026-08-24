@@ -1,0 +1,47 @@
+schema_version: "1"
+role_slug: "example-role"
+status: "CANDIDATE"
+mission: "Exclusive outcome owned by this role"
+activation:
+  conditions: []
+  caller: "GAP"
+owned_capabilities: []
+contributed_capabilities: []
+non_goals: []
+inputs:
+  accepted: []
+  source_authority: []
+decisions:
+  model_controlled: []
+  deterministic: []
+tools: []
+permissions:
+  allowed: []
+  forbidden: []
+  confirmation_required: []
+state:
+  read: []
+  mutate: []
+  durable_owner: "target-harness"
+workflow:
+  reference: "GAP"
+  owned_phases: []
+skills: []
+prompt_reference: "GAP"
+model_capability_envelope:
+  required: []
+  unsupported_behavior: []
+outputs:
+  contract: "GAP"
+  observable_done_condition: "GAP"
+handoffs: []
+recovery:
+  local: []
+  return: []
+  escalate: []
+budgets: {}
+trace_events: []
+evaluation_assertions: []
+evidence:
+  source_locators: []
+  assumptions: []

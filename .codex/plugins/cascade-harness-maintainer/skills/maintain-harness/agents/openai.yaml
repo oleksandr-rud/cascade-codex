@@ -1,0 +1,4 @@
+interface:
+  display_name: "Maintain Harness"
+  short_description: "Implement safe, validated harness changes"
+  default_prompt: "Use $maintain-harness to implement this scoped coding-agent harness change and validate the resulting source and discovery behavior."

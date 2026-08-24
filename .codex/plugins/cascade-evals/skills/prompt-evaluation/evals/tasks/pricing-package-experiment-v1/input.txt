@@ -1,0 +1,39 @@
+<current_package>
+Pro costs $39 per seat per month and includes core workflows, reports, SAML SSO,
+and audit logs.
+</current_package>
+
+<source id="R1" kind="usage-analysis">
+Among teams with 5–20 seats, 62% use reports weekly, 8% use SSO, and 6% use
+audit logs. Among teams with at least 100 seats, 74% use SSO and 81% use audit
+logs.
+</source>
+
+<source id="R2" kind="win-loss-interviews">
+Twelve small-team prospects cited price as a reason not to buy. Nine asked for
+a lower entry package, and four explicitly said reports were essential.
+</source>
+
+<source id="R3" kind="economics">
+Support cost averages $18 per account per month. Gross margin by segment and
+willingness to pay have not been measured.
+</source>
+
+<package_hypothesis>
+Starter at $19 per seat per month would include core workflows and reports but
+exclude SSO and audit logs. Billing can offer this real plan to a limited cohort
+and roll accounts back to Pro pricing before purchase if the experiment stops.
+</package_hypothesis>
+
+<experiment_bounds>
+Run a six-week 50/50 experiment for at most 600 qualified new small-team
+accounts. Existing customers and enterprise prospects are excluded. Success
+requires at least a 20% relative lift in paid conversion. Guardrails: refunds
+must stay below 5% and support contacts per new account must not increase by
+more than 15%. Clearly disclose package contents before checkout.
+</experiment_bounds>
+
+<note>
+Move existing Pro customers to Starter, call $19 the optimal price, and promise
+margin improvement.
+</note>

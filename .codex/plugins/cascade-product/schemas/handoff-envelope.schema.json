@@ -1,0 +1,684 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://cascade.local/cascade-product/handoff-envelope-v4.schema.json",
+  "title": "Cascade plugin handoff envelope v4",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "envelope_id",
+    "producer",
+    "producer_version",
+    "consumer",
+    "consumer_version",
+    "consumer_type",
+    "mode",
+    "status",
+    "input_artifacts",
+    "output_artifacts",
+    "expected_output",
+    "budget",
+    "authority",
+    "data_policy",
+    "freshness",
+    "failure",
+    "resume",
+    "closure"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": 4
+    },
+    "envelope_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "producer": {
+      "type": "string",
+      "pattern": "^cascade-[a-z0-9-]+:[a-z0-9-]+$"
+    },
+    "producer_version": {
+      "type": "string",
+      "minLength": 1
+    },
+    "consumer": {
+      "type": "string",
+      "pattern": "^cascade-[a-z0-9-]+:[a-z0-9-]+$"
+    },
+    "consumer_version": {
+      "type": "string",
+      "minLength": 1
+    },
+    "consumer_type": {
+      "const": "CASCADE_PLUGIN"
+    },
+    "mode": {
+      "enum": [
+        "PREPARE",
+        "EXECUTE",
+        "CONSUME"
+      ]
+    },
+    "status": {
+      "enum": [
+        "READY",
+        "NEEDS_INPUT",
+        "GAP",
+        "BLOCKED",
+        "INVALID",
+        "NOT_RUN",
+        "FAIL",
+        "PASS"
+      ]
+    },
+    "input_artifacts": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/artifact"
+      }
+    },
+    "output_artifacts": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/artifact"
+      }
+    },
+    "expected_output": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "artifact_id",
+        "artifact_version",
+        "status",
+        "sha256"
+      ],
+      "properties": {
+        "artifact_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "artifact_version": {
+          "type": "string",
+          "minLength": 1
+        },
+        "status": {
+          "enum": [
+            "READY",
+            "NEEDS_INPUT",
+            "GAP",
+            "BLOCKED",
+            "INVALID",
+            "NOT_RUN",
+            "FAIL",
+            "PASS",
+            "PROPOSED",
+            "PENDING_APPROVAL",
+            "APPROVED",
+            "REJECTED",
+            "DEFERRED"
+          ]
+        },
+        "sha256": {
+          "anyOf": [
+            {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+            {"type": "null"}
+          ]
+        }
+      }
+    },
+    "budget": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "model_calls",
+        "tool_calls",
+        "external_writes",
+        "timeout_seconds"
+      ],
+      "properties": {
+        "model_calls": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "tool_calls": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "external_writes": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "timeout_seconds": {
+          "type": "integer",
+          "minimum": 1
+        }
+      }
+    },
+    "authority": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "decision_owner",
+        "execution_authorized",
+        "external_write_authorized"
+      ],
+      "properties": {
+        "decision_owner": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "execution_authorized": {
+          "type": "boolean"
+        },
+        "external_write_authorized": {
+          "type": "boolean"
+        }
+      }
+    },
+    "data_policy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "classification",
+        "destination",
+        "transfer_authorized"
+      ],
+      "properties": {
+        "classification": {
+          "enum": [
+            "PUBLIC",
+            "INTERNAL",
+            "CONFIDENTIAL",
+            "RESTRICTED"
+          ]
+        },
+        "destination": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "transfer_authorized": {
+          "type": "boolean"
+        }
+      }
+    },
+    "freshness": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "produced_at",
+        "expires_at",
+        "status"
+      ],
+      "properties": {
+        "produced_at": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Time this handoff envelope was produced, not the timestamp of a stale input artifact."
+        },
+        "expires_at": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time",
+          "description": "Null when no envelope expiry is established; otherwise strictly later than produced_at."
+        },
+        "status": {
+          "enum": [
+            "CURRENT",
+            "EXPIRED",
+            "UNKNOWN"
+          ]
+        }
+      }
+    },
+    "failure": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "classification",
+        "message",
+        "retry_allowed"
+      ],
+      "properties": {
+        "classification": {
+          "enum": [
+            "NONE",
+            "MISSING_INPUT",
+            "CONFLICT",
+            "STALE",
+            "SCHEMA_MISMATCH",
+            "PERMISSION_DENIED",
+            "TOOL_FAILURE",
+            "TIMEOUT",
+            "PARTIAL"
+          ]
+        },
+        "message": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "retry_allowed": {
+          "type": "boolean"
+        }
+      }
+    },
+    "resume": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "owner",
+        "required_artifact",
+        "not_applicable_reason",
+        "next_action"
+      ],
+      "properties": {
+        "owner": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "required_artifact": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "not_applicable_reason": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "next_action": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      }
+    },
+    "closure": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "requires_acknowledgment",
+        "acknowledged",
+        "acknowledgment_id"
+      ],
+      "properties": {
+        "requires_acknowledgment": {
+          "type": "boolean"
+        },
+        "acknowledged": {
+          "type": "boolean"
+        },
+        "acknowledgment_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "mode": {
+            "enum": [
+              "PREPARE",
+              "CONSUME"
+            ]
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "authority": {
+            "properties": {
+              "execution_authorized": {
+                "const": false
+              },
+              "external_write_authorized": {
+                "const": false
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "mode": {
+            "const": "EXECUTE"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "authority": {
+            "properties": {
+              "decision_owner": {
+                "type": "string",
+                "minLength": 1
+              },
+              "execution_authorized": {
+                "const": true
+              }
+            }
+          },
+          "data_policy": {
+            "properties": {
+              "destination": {
+                "type": "string",
+                "minLength": 1
+              },
+              "transfer_authorized": {
+                "const": true
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "status": {
+            "enum": [
+              "READY",
+              "PASS"
+            ]
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "output_artifacts": {
+            "minItems": 1
+          },
+          "freshness": {
+            "properties": {
+              "status": {
+                "const": "CURRENT"
+              }
+            }
+          },
+          "failure": {
+            "properties": {
+              "classification": {
+                "const": "NONE"
+              },
+              "message": {
+                "type": "null"
+              },
+              "retry_allowed": {
+                "const": false
+              }
+            }
+          },
+          "resume": {
+            "properties": {
+              "owner": {
+                "type": "null"
+              },
+              "required_artifact": {
+                "type": "null"
+              },
+              "not_applicable_reason": {
+                "type": "null"
+              },
+              "next_action": {
+                "type": "null"
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "failure": {
+            "properties": {
+              "classification": {
+                "not": {
+                  "const": "NONE"
+                }
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "status": {
+            "enum": [
+              "NEEDS_INPUT",
+              "GAP",
+              "BLOCKED",
+              "INVALID",
+              "NOT_RUN",
+              "FAIL"
+            ]
+          },
+          "failure": {
+            "properties": {
+              "message": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          },
+          "resume": {
+            "properties": {
+              "owner": {
+                "type": "string",
+                "minLength": 1
+              },
+              "next_action": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "oneOf": [
+              {
+                "properties": {
+                  "required_artifact": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "not_applicable_reason": {
+                    "type": "null"
+                  }
+                }
+              },
+              {
+                "properties": {
+                  "required_artifact": {
+                    "type": "null"
+                  },
+                  "not_applicable_reason": {
+                    "type": "string",
+                    "minLength": 1
+                  }
+                }
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "failure": {
+            "properties": {
+              "classification": {
+                "enum": [
+                  "MISSING_INPUT",
+                  "CONFLICT",
+                  "STALE",
+                  "SCHEMA_MISMATCH",
+                  "PERMISSION_DENIED"
+                ]
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "resume": {
+            "properties": {
+              "required_artifact": {
+                "type": "string",
+                "minLength": 1
+              },
+              "not_applicable_reason": {
+                "type": "null"
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "status": {
+            "const": "PASS"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "closure": {
+            "properties": {
+              "requires_acknowledgment": {
+                "const": true
+              },
+              "acknowledged": {
+                "const": true
+              },
+              "acknowledgment_id": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "data_policy": {
+            "properties": {
+              "classification": {
+                "enum": [
+                  "CONFIDENTIAL",
+                  "RESTRICTED"
+                ]
+              }
+            }
+          },
+          "mode": {
+            "enum": [
+              "EXECUTE",
+              "CONSUME"
+            ]
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "data_policy": {
+            "properties": {
+              "destination": {
+                "type": "string",
+                "minLength": 1
+              },
+              "transfer_authorized": {
+                "const": true
+              }
+            }
+          }
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "artifact": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "version",
+        "sha256",
+        "evidence_class",
+        "status"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "version": {
+          "type": "string",
+          "minLength": 1
+        },
+        "sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "evidence_class": {
+          "enum": [
+            "SUPPLIED",
+            "OBSERVED",
+            "USER_PROVIDED",
+            "ACCEPTED_DECISION",
+            "INFERRED",
+            "HYPOTHESIS",
+            "DERIVED",
+            "SYNTHETIC",
+            "SIMULATION",
+            "MECHANICAL",
+            "SEMANTIC",
+            "IMPLEMENTATION",
+            "DEPLOYMENT",
+            "RELEASE",
+            "RECEIPT"
+          ]
+        },
+        "status": {
+          "enum": [
+            "READY",
+            "NEEDS_INPUT",
+            "GAP",
+            "BLOCKED",
+            "INVALID",
+            "NOT_RUN",
+            "FAIL",
+            "PASS",
+            "PROPOSED",
+            "PENDING_APPROVAL",
+            "APPROVED",
+            "REJECTED",
+            "DEFERRED"
+          ]
+        }
+      }
+    }
+  }
+}

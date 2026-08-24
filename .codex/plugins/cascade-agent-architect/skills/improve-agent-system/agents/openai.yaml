@@ -1,0 +1,4 @@
+interface:
+  display_name: "Improve Agent System"
+  short_description: "Stage evidence-backed agent improvements safely"
+  default_prompt: "Use $improve-agent-system to run a bounded offline experiment and emit only a versioned candidate patch and fail-closed staging receipt."

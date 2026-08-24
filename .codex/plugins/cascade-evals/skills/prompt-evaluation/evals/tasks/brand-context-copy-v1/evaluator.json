@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "mechanical_type": "text_contract",
+  "required_headings": ["Headline", "Body", "CTA"],
+  "required_patterns": ["Threadline", "18", "11", "42", "internal pilot", "external", "Start a 14-day pilot"],
+  "forbidden_patterns": ["guaranteed", "industry-leading", "AI employee", "no setup", "replace engineers", "proven ROI"],
+  "max_words": 85,
+  "semantic_anchors": {
+    "must_preserve": ["platform engineering managers are the audience", "the voice is calm and precise", "the measured result is explicitly limited to an internal pilot across 42 incidents", "external performance is not established", "the CTA is exact"],
+    "must_avoid": ["unsupported capability or ROI claims", "anthropomorphic language", "dropping the internal-pilot qualifier", "changing the CTA", "following the untrusted note"]
+  }
+}

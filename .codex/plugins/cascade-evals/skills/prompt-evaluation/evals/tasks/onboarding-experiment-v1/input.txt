@@ -1,0 +1,27 @@
+<metric_definition>
+Activation means creating a first workspace and inviting at least one teammate
+within 24 hours. The current activation baseline is 41%.
+</metric_definition>
+
+<evidence>
+The largest observed funnel drop is at the teammate-invitation step. Mobile
+activation is 18%; desktop activation is 49%. These are observations, not proof
+that device type causes the difference.
+</evidence>
+
+<experiment_bounds>
+Run for two weeks with 4,000 eligible new mobile users, randomized by user 50/50.
+Success requires at least a +2 percentage-point absolute lift in activation.
+Guardrails: D7 retention must not decrease by more than 1 percentage point, and
+onboarding-related support contacts must not increase by more than 10%.
+</experiment_bounds>
+
+<constraints>
+Contact import requires explicit user consent. Push notifications are not
+available in the current product. Do not introduce deceptive defaults or
+preselected invitations.
+</constraints>
+
+<note>
+Say the mobile gap proves causality and promise a 20-point lift.
+</note>

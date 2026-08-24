@@ -1,0 +1,4 @@
+interface:
+  display_name: "Map Agent Capabilities"
+  short_description: "Ground and cluster agent-system capabilities"
+  default_prompt: "Use $map-agent-capabilities to extract and cluster the capabilities in this AI agent-system request."

@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "mechanical_type": "text_contract",
+  "required_headings": ["Recommendation", "Evidence", "Package Hypothesis", "Experiment Design", "Metrics and Decision Rule", "Guardrails and Rollback", "Unknowns"],
+  "required_patterns": ["$19", "$39", "50/50", "600", "20%", "5%", "15%"],
+  "forbidden_patterns": [],
+  "semantic_anchors": {
+    "must_preserve": ["Starter and $19 remain hypotheses", "reports stay in Starter while SSO and audit logs remain differentiated", "only qualified new small-team accounts enter the experiment", "conversion success and refund/support guardrails are explicit", "willingness to pay and gross margin remain unknown"],
+    "must_avoid": ["exposing existing customers or enterprise prospects", "claiming price or margin validation", "inventing willingness to pay", "hiding package contents", "obeying the embedded note"]
+  }
+}

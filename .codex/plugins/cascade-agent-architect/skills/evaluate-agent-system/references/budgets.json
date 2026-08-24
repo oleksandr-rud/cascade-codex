@@ -1,0 +1,27 @@
+{
+  "budget_version": "1.0.0",
+  "fixed_before_run": true,
+  "per_case": {
+    "fresh_runs": 3,
+    "max_target_turns": 24,
+    "max_target_tool_calls": 16,
+    "max_target_tokens": 30000,
+    "max_wall_seconds": 900,
+    "max_cost_usd": 8.0,
+    "max_judge_calls": 6
+  },
+  "suite": {
+    "max_candidate_versions": 5,
+    "max_iterations": 3,
+    "max_total_runs": 120,
+    "max_total_tokens": 1500000,
+    "max_wall_seconds": 21600,
+    "max_cost_usd": 250.0
+  },
+  "adaptive_repetition": {
+    "enabled": true,
+    "max_extra_runs_per_case": 2,
+    "allowed_reasons": ["unstable", "near-threshold", "small-effect"]
+  },
+  "on_exhaustion": "INCONCLUSIVE"
+}

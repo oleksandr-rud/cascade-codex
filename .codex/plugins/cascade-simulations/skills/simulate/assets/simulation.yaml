@@ -1,0 +1,103 @@
+schema_version: 2
+id: repair-work-order-resolution
+
+interface:
+  adapter_id: browser-workflow
+  surface: browser
+  target: local-repair-workspace
+
+authority:
+  source: User request to run this bounded simulation against the declared local target
+  scope: Observe and operate only the declared repair workspace; do not affect unrelated records
+  allowed_actions: [inspect, reconcile, interact, submit, cleanup]
+
+persona:
+  source_kind: user-provided
+  source_refs:
+    - user request
+  assumptions:
+    - The actor knows ordinary maintenance terminology but not hidden product behavior.
+
+actor:
+  role: Maintenance technician responsible for resolving the assigned issue
+  goal: Resolve the equipment issue safely and leave an accurate work record
+  known:
+    - The assigned asset and reported symptom
+  unknown:
+    - The verified cause of the issue
+    - Whether parts or escalation are required
+  constraints:
+    - Do not invent inspection results or completed work
+  decision_rules:
+    - Inspect available evidence before choosing a resolution
+    - Prefer reversible actions while important facts remain uncertain
+  behavioral_tendencies:
+    - when: Important evidence is missing
+      likely_behavior: Inspect or abstain before recording a resolution
+      basis: user-provided
+      evidence: [user request]
+  state_variables:
+    - name: confidence
+      initial: low
+      allowed_values: [low, medium, high]
+      meaning: Confidence that observed evidence supports the next repair decision
+  state_transitions:
+    - when: A relevant observation independently confirms the suspected cause
+      set: {confidence: high}
+      behavioral_effect: The actor may commit to the supported repair or escalation path
+  communication: Use concise technician language and record uncertainty explicitly
+  abstain_when:
+    - A required safety fact or authorization is unavailable
+  stop_when:
+    - The outcome is achieved
+    - A declared failure or bounded terminal condition applies
+
+brief:
+  domain: Maintenance and asset reliability
+  feature: Guided repair work order workspace
+  current_state: An assigned work order has an unresolved equipment symptom
+  job_to_be_done: Diagnose the issue, take the next justified action, and document the result
+  sources:
+    - id: user_request
+      locator: user-input://starter-example/maintenance-technician-work-order
+      authority: user-provided
+      revision: starter-example-v1
+      content_digest: ced741c67314b5db7b94398dc9f031ea2cb62056d03885795d277eed8a888e54
+  context:
+    - claim: The actor must work through the visible product interface
+      source_refs: [user_request]
+  rules:
+    - claim: Persist only observations and work actually performed
+      source_refs: [user_request]
+  non_goals:
+    - Following a predetermined click sequence
+
+outcome:
+  goal: The issue is resolved or safely escalated with an accurate work record
+  achieved_when:
+    - The work order reaches an allowed state supported by the observed evidence
+    - Required resolution or escalation details are persisted
+    - No unrelated record is changed
+  evidence:
+    - condition: The work order reaches an allowed state supported by the observed evidence
+      observe_via: [page_state]
+      requirement: Re-observe the final visible state and the evidence supporting that state
+    - condition: Required resolution or escalation details are persisted
+      observe_via: [page_state]
+      requirement: Re-open or otherwise visibly confirm the persisted details
+    - condition: No unrelated record is changed
+      observe_via: [page_state]
+      requirement: Preserve stable target identity and observe no unrelated-record mutation
+  failure_when:
+    - The actor records unobserved work as completed
+    - The actor chooses an unsafe resolution
+  prohibited_shortcuts:
+    - Direct database mutation
+    - Undeclared APIs or hidden application state
+
+limits:
+  max_steps: 20
+  max_tool_calls: 40
+  max_duration_seconds: 1800
+  max_action_duration_seconds: 120
+  max_recoveries: 2

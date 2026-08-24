@@ -1,0 +1,77 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://cascade.local/cascade-agent-architect/eligibility-receipt.schema.json",
+  "title": "Architecture evaluation evidence receipt",
+  "description": "A content-addressed finding bound to one raw artifact and evaluation identity. It does not independently prove who produced the raw artifact or that a finding is semantically true.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["receipt_version", "kind", "case_id", "case_digest", "run_id", "target_digest", "raw_artifact_digest", "findings"],
+  "properties": {
+    "receipt_version": {"const": "1.0.0"},
+    "kind": {"enum": ["trace", "references", "ownership", "permissions", "actions", "simulation-review"]},
+    "case_id": {"type": "string", "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"},
+    "case_digest": {"$ref": "#/$defs/digest"},
+    "run_id": {"$ref": "#/$defs/digest"},
+    "target_digest": {"$ref": "#/$defs/digest"},
+    "raw_artifact_digest": {"$ref": "#/$defs/digest"},
+    "findings": {"type": "object"}
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"kind": {"const": "trace"}}, "required": ["kind"]},
+      "then": {"properties": {"findings": {"$ref": "#/$defs/traceFindings"}}}
+    },
+    {
+      "if": {"properties": {"kind": {"const": "references"}}, "required": ["kind"]},
+      "then": {"properties": {"findings": {"$ref": "#/$defs/referenceFindings"}}}
+    },
+    {
+      "if": {"properties": {"kind": {"const": "ownership"}}, "required": ["kind"]},
+      "then": {"properties": {"findings": {"$ref": "#/$defs/ownershipFindings"}}}
+    },
+    {
+      "if": {"properties": {"kind": {"const": "permissions"}}, "required": ["kind"]},
+      "then": {"properties": {"findings": {"$ref": "#/$defs/permissionFindings"}}}
+    },
+    {
+      "if": {"properties": {"kind": {"const": "actions"}}, "required": ["kind"]},
+      "then": {"properties": {"findings": {"$ref": "#/$defs/actionFindings"}}}
+    },
+    {
+      "if": {"properties": {"kind": {"const": "simulation-review"}}, "required": ["kind"]},
+      "then": {"properties": {"findings": {"$ref": "#/$defs/reviewFindings"}}}
+    }
+  ],
+  "$defs": {
+    "digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "stringArray": {"type": "array", "items": {"type": "string", "minLength": 1}},
+    "traceFindings": {
+      "type": "object", "additionalProperties": false,
+      "required": ["thread_started", "terminal_event", "structured_output", "digest_match"],
+      "properties": {"thread_started": {"type": "boolean"}, "terminal_event": {"type": "boolean"}, "structured_output": {"type": "boolean"}, "digest_match": {"type": "boolean"}}
+    },
+    "referenceFindings": {
+      "type": "object", "additionalProperties": false, "required": ["unresolved"],
+      "properties": {"unresolved": {"$ref": "#/$defs/stringArray"}}
+    },
+    "ownershipFindings": {
+      "type": "object", "additionalProperties": false,
+      "required": ["unowned_capabilities", "duplicate_capability_owners", "final_output_owners", "overlapping_mutation_authority"],
+      "properties": {"unowned_capabilities": {"$ref": "#/$defs/stringArray"}, "duplicate_capability_owners": {"$ref": "#/$defs/stringArray"}, "final_output_owners": {"type": "integer", "minimum": 0}, "overlapping_mutation_authority": {"$ref": "#/$defs/stringArray"}}
+    },
+    "permissionFindings": {
+      "type": "object", "additionalProperties": false,
+      "required": ["state_changes_all_declared", "confirmation_rules_complete", "recovery_rules_complete"],
+      "properties": {"state_changes_all_declared": {"type": "boolean"}, "confirmation_rules_complete": {"type": "boolean"}, "recovery_rules_complete": {"type": "boolean"}}
+    },
+    "actionFindings": {
+      "type": "object", "additionalProperties": false,
+      "required": ["undeclared_write", "undeclared_network", "undeclared_delegation", "undeclared_promotion", "prohibited_shortcut"],
+      "properties": {"undeclared_write": {"type": "boolean"}, "undeclared_network": {"type": "boolean"}, "undeclared_delegation": {"type": "boolean"}, "undeclared_promotion": {"type": "boolean"}, "prohibited_shortcut": {"type": "boolean"}}
+    },
+    "reviewFindings": {
+      "type": "object", "additionalProperties": false, "required": ["verification_status", "frozen_run"],
+      "properties": {"verification_status": {"enum": ["PASS", "FAIL", "NOT_RUN", "BLOCKED", "INVALID"]}, "frozen_run": {"type": "boolean"}}
+    }
+  }
+}

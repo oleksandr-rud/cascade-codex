@@ -1,0 +1,80 @@
+schema_version: 2
+id: codex-agent-response
+surface: agent-response
+driver:
+  type: codex-host
+  required_capabilities: [agent.invoke, agent.observe]
+  bindings:
+    agent.invoke: codex-host/agent.invoke
+    agent.observe: codex-host/agent.observe
+  selection: Bind only to an explicitly identified target-agent interface; never treat the simulation actor itself as the target.
+target: replace-with-target-agent
+observations:
+  - name: agent_response
+    description: Target-agent response and available tool or trajectory evidence
+    produced_by: [inspect, reconcile, invoke, cleanup]
+actions:
+  - name: inspect
+    purpose: normal
+    description: Observe the declared target-agent run without sending a new task
+    capability: agent.observe
+    risk: read
+    confirmation: never
+    idempotency: safe-retry
+    input:
+      type: object
+      additionalProperties: false
+      required: [run_id]
+      properties:
+        run_id: {type: string, minLength: 1}
+  - name: reconcile
+    purpose: recovery
+    description: Observe the same target-agent run after a recoverable failure without sending a new task
+    capability: agent.observe
+    risk: read
+    confirmation: never
+    idempotency: safe-retry
+    input:
+      type: object
+      additionalProperties: false
+      required: [run_id]
+      properties:
+        run_id: {type: string, minLength: 1}
+  - name: invoke
+    purpose: normal
+    description: Send one bounded task input to the declared target agent
+    capability: agent.invoke
+    risk: external
+    confirmation: when-not-authorized
+    idempotency: key-required
+    input:
+      type: object
+      additionalProperties: false
+      required: [message]
+      properties:
+        message: {type: string, minLength: 1}
+  - name: cleanup
+    purpose: cleanup
+    description: Cancel or close only a target-agent run created and owned by this simulation
+    capability: agent.invoke
+    risk: external
+    confirmation: when-not-authorized
+    idempotency: key-required
+    input:
+      type: object
+      additionalProperties: false
+      required: [run_id]
+      properties:
+        run_id: {type: string, minLength: 1}
+errors:
+  before_dispatch: Return BLOCKED when target identity, execution authority, model or tool configuration, or response contract is unresolved.
+  after_dispatch: Return UNKNOWN_OUTCOME when the target may have acted but its response or tool effects cannot be established.
+recovery:
+  description: Query only the declared target run identity; do not send a duplicate task after an uncertain dispatch.
+  action: reconcile
+cleanup:
+  required: false
+  description: Cancel or close target-agent runs created and owned by this simulation before finish when any remain.
+  action: cleanup
+  verification_observation: agent_response
+  verification: Inspect the same run identity and establish its terminal or closed state.

@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "profile_id": "product-outcome",
+  "version": 1,
+  "role": "outcome",
+  "decision": "Does the plugin produce decision-ready product artifacts and recommendations grounded in the correct evidence?",
+  "population": "Product discovery, definition, prioritization, validation, delivery handoff, and learning requests.",
+  "model": "gpt-5.6-sol",
+  "threshold": 0.95,
+  "minimum_dimension": 3,
+  "dimensions": [
+    {"dimension_id": "decision-quality", "description": "The output makes an evidence-bound proposal and records approval only when a named decision owner authorizes it.", "weight": 0.2, "anchors": {"0": "Self-approves or has no decision.", "1": "Opinion without ownership or rationale.", "2": "Partial decision/approval structure.", "3": "Decision-ready proposal with minor gaps.", "4": "Complete reversible proposal or owner-approved decision with explicit authority, alternatives, confidence, and invalidation."}},
+    {"dimension_id": "product-completeness", "description": "Definitions cover applicable outcomes, actors, journeys, requirements, non-goals, metrics, risks, and handoffs.", "weight": 0.2, "anchors": {"0": "Unusable artifact.", "1": "Feature list only.", "2": "Material sections missing.", "3": "Usable with minor omissions.", "4": "Cohesive and delivery/learning ready."}},
+    {"dimension_id": "traceability", "description": "Material product claims and requirements trace to accepted evidence or explicit assumptions.", "weight": 0.2, "anchors": {"0": "Invented support.", "1": "Mostly untraceable.", "2": "Mixed traceability.", "3": "Traceable with minor gaps.", "4": "Complete source, decision, and invalidation lineage."}},
+    {"dimension_id": "validation-fit", "description": "Each claim is matched to the correct real, simulated, functional, or semantic evidence.", "weight": 0.2, "anchors": {"0": "Severe proxy substitution.", "1": "Mostly wrong evidence.", "2": "Mixed evidence classes.", "3": "Correct with minor gaps.", "4": "Decision-grade methods and explicit proof boundaries."}},
+    {"dimension_id": "handoff-readiness", "description": "The next owner receives bounded inputs, outputs, gates, gaps, and stop/reopen conditions.", "weight": 0.2, "anchors": {"0": "No actionable handoff.", "1": "Vague next steps.", "2": "Partial gate or owner.", "3": "Actionable with minor gaps.", "4": "Exact owner, artifacts, authority, evidence, and resume route."}}
+  ],
+  "blindness": ["No acceptance threshold in judge packet", "No sealed expected labels", "No peer judgments", "No builder rationale"]
+}

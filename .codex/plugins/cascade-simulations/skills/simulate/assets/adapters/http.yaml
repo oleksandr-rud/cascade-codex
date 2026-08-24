@@ -1,0 +1,69 @@
+schema_version: 2
+id: codex-http
+surface: http
+driver:
+  type: codex-host
+  required_capabilities: [http.request]
+  bindings:
+    http.request: codex-host/http.request
+  selection: Bind to a Codex capability that can enforce method, origin, redirect, timeout, secret, and response-size controls.
+target: https://replace-with-api-origin.example
+observations:
+  - name: http_response
+    description: Response status, selected headers, and bounded response body for the declared request
+    produced_by: [inspect, reconcile, request]
+actions:
+  - name: inspect
+    purpose: normal
+    description: Send one authorized read-only request to the allowed origin
+    capability: http.request
+    risk: read
+    confirmation: never
+    idempotency: safe-retry
+    input:
+      type: object
+      additionalProperties: false
+      required: [method, url]
+      properties:
+        method: {enum: [GET, HEAD, OPTIONS]}
+        url: {type: string, pattern: '^https?://'}
+  - name: reconcile
+    purpose: recovery
+    description: Send one read-only reconciliation request to the same allowed origin
+    capability: http.request
+    risk: read
+    confirmation: never
+    idempotency: safe-retry
+    input:
+      type: object
+      additionalProperties: false
+      required: [method, url]
+      properties:
+        method: {enum: [GET, HEAD, OPTIONS]}
+        url: {type: string, pattern: '^https?://'}
+  - name: request
+    purpose: normal
+    description: Send one request to an allowed method and origin
+    capability: http.request
+    risk: external
+    confirmation: when-not-authorized
+    idempotency: key-required
+    input:
+      type: object
+      additionalProperties: false
+      required: [method, url]
+      properties:
+        method: {enum: [GET, POST, PUT, PATCH, DELETE, HEAD, OPTIONS]}
+        url: {type: string, pattern: '^https?://'}
+errors:
+  before_dispatch: Return BLOCKED when method, origin, authorization, secret reference, or request bounds are unresolved.
+  after_dispatch: Return UNKNOWN_OUTCOME when the request may have reached the target but no reliable response is available.
+recovery:
+  description: Use the declared inspect action to reconcile state; never replay an uncertain mutation blindly.
+  action: reconcile
+cleanup:
+  required: false
+  description: Local request resources require no target action; remote effects must be handled by an explicitly added target-specific action.
+  action: null
+  verification_observation: null
+  verification: Report NOT_REQUIRED only when no temporary target resource was created.

@@ -1,0 +1,6 @@
+interface:
+  display_name: "Evaluate Persona"
+  short_description: "Evaluate persona quality with independent evidence."
+  default_prompt: "Use $evaluate-persona to design an independent persona evaluation; run it only with explicit execution, data-destination, and budget authority."
+policy:
+  allow_implicit_invocation: true

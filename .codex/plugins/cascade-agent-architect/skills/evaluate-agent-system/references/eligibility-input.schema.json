@@ -1,0 +1,95 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://cascade.local/cascade-agent-architect/eligibility-input.schema.json",
+  "title": "Architecture evaluation mechanical evidence index",
+  "description": "An evidence index, not an attestation. The checker must read every relative locator under an explicit evidence root and recompute each digest.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["phase_status", "case_id"],
+  "properties": {
+    "phase_status": {"enum": ["EXECUTED", "NOT_RUN", "BLOCKED"]},
+    "case_id": {"type": "string", "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"},
+    "case_digest": {"$ref": "#/$defs/digest"},
+    "run_id": {"$ref": "#/$defs/digest"},
+    "target_digest": {"$ref": "#/$defs/digest"},
+    "target_artifact": {"$ref": "#/$defs/artifact"},
+    "blocked_reasons": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
+    "dependencies": {"$ref": "#/$defs/missingSet"},
+    "inputs": {"$ref": "#/$defs/missingSet"},
+    "authority": {"$ref": "#/$defs/missingSet"},
+    "bindings": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["catalog_digest", "split_digest", "budgets_digest", "outcome_rubric_digest", "trajectory_rubric_digest", "simulation_plugin_version", "simulate_skill", "review_skill"],
+      "properties": {
+        "catalog_digest": {"$ref": "#/$defs/digest"},
+        "split_digest": {"$ref": "#/$defs/digest"},
+        "budgets_digest": {"$ref": "#/$defs/digest"},
+        "outcome_rubric_digest": {"$ref": "#/$defs/digest"},
+        "trajectory_rubric_digest": {"$ref": "#/$defs/digest"},
+        "simulation_plugin_version": {"type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+(?:[-+][0-9A-Za-z.-]+)?$"},
+        "simulate_skill": {"$ref": "#/$defs/externalSkill"},
+        "review_skill": {"$ref": "#/$defs/externalSkill"}
+      }
+    },
+    "trace": {"$ref": "#/$defs/evidencePair"},
+    "references": {"$ref": "#/$defs/evidencePair"},
+    "ownership": {"$ref": "#/$defs/evidencePair"},
+    "permissions": {"$ref": "#/$defs/evidencePair"},
+    "actions": {"$ref": "#/$defs/evidencePair"},
+    "simulation_review": {"$ref": "#/$defs/evidencePair"}
+  },
+  "$defs": {
+    "digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "relativePath": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.(?:/|$))(?!.*\\\\).+$"
+    },
+    "missingSet": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["missing"],
+      "properties": {"missing": {"type": "array", "items": {"type": "string", "minLength": 1}}}
+    },
+    "artifact": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "digest"],
+      "properties": {
+        "path": {"$ref": "#/$defs/relativePath"},
+        "digest": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "externalSkill": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["identity", "artifact"],
+      "properties": {
+        "identity": {"enum": ["cascade-simulations:simulate", "cascade-simulations:simulation-review"]},
+        "artifact": {"$ref": "#/$defs/artifact"}
+      }
+    },
+    "evidencePair": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["receipt", "raw_artifact"],
+      "properties": {
+        "receipt": {"$ref": "#/$defs/artifact"},
+        "raw_artifact": {"$ref": "#/$defs/artifact"}
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"phase_status": {"const": "EXECUTED"}}, "required": ["phase_status"]},
+      "then": {
+        "required": ["case_digest", "run_id", "target_digest", "target_artifact", "dependencies", "inputs", "authority", "bindings", "trace", "references", "ownership", "permissions", "actions", "simulation_review"]
+      }
+    },
+    {
+      "if": {"properties": {"phase_status": {"const": "BLOCKED"}}, "required": ["phase_status"]},
+      "then": {"required": ["blocked_reasons"]}
+    }
+  ]
+}

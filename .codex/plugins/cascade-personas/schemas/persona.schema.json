@@ -1,0 +1,430 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://cascade.local/cascade-personas/persona-v2.schema.json",
+  "title": "Cascade canonical persona v2",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "persona_id",
+    "version",
+    "status",
+    "purpose",
+    "population_scope",
+    "permitted_uses",
+    "prohibited_uses",
+    "sources",
+    "claims",
+    "contradictions",
+    "stable_profile",
+    "dynamic_model",
+    "uncertainty",
+    "privacy",
+    "invalidation_rules"
+  ],
+  "properties": {
+    "schema_version": {"const": 2},
+    "persona_id": {"$ref": "#/$defs/id"},
+    "version": {"type": "string", "minLength": 1},
+    "status": {"enum": ["GROUNDED", "MIXED", "SYNTHETIC_HYPOTHESIS"]},
+    "purpose": {"type": "string", "minLength": 1},
+    "population_scope": {"type": "string", "minLength": 1},
+    "permitted_uses": {"$ref": "#/$defs/unique_strings"},
+    "prohibited_uses": {"$ref": "#/$defs/non_empty_unique_strings"},
+    "sources": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/source"}},
+    "claims": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/claim"}},
+    "contradictions": {"type": "array", "items": {"$ref": "#/$defs/contradiction"}},
+    "stable_profile": {"$ref": "#/$defs/stable_profile"},
+    "dynamic_model": {"$ref": "#/$defs/dynamic_model"},
+    "uncertainty": {"$ref": "#/$defs/unique_strings"},
+    "privacy": {"$ref": "#/$defs/privacy"},
+    "invalidation_rules": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["rule_id", "condition", "affected_paths", "next_status"],
+        "properties": {
+          "rule_id": {"$ref": "#/$defs/id"},
+          "condition": {"type": "string", "minLength": 1},
+          "affected_paths": {"$ref": "#/$defs/non_empty_unique_strings"},
+          "next_status": {"enum": ["GAP", "BLOCKED", "INVALID"]}
+        }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"status": {"const": "GROUNDED"}}},
+      "then": {
+        "properties": {
+          "claims": {
+            "items": {
+              "properties": {
+                "claim_type": {"enum": ["OBSERVED", "USER_PROVIDED", "INFERRED"]}
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {"properties": {"status": {"const": "MIXED"}}},
+      "then": {
+        "properties": {
+          "claims": {
+            "allOf": [
+              {"contains": {"properties": {"claim_type": {"enum": ["OBSERVED", "USER_PROVIDED", "INFERRED"]}}}},
+              {"contains": {"properties": {"claim_type": {"enum": ["HYPOTHESIS", "SYNTHETIC"]}}}}
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {"properties": {"status": {"const": "SYNTHETIC_HYPOTHESIS"}}},
+      "then": {
+        "properties": {
+          "claims": {
+            "contains": {"properties": {"claim_type": {"enum": ["HYPOTHESIS", "SYNTHETIC"]}}}
+          }
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "id": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$"},
+    "digest": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "unique_strings": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {"type": "string", "minLength": 1}
+    },
+    "non_empty_unique_strings": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {"type": "string", "minLength": 1}
+    },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["source_id", "locator", "authority", "observed_at", "freshness", "scope", "content_sha256"],
+      "properties": {
+        "source_id": {"$ref": "#/$defs/id"},
+        "locator": {"type": "string", "minLength": 1},
+        "authority": {
+          "enum": [
+            "INTERVIEW",
+            "SELF_REPORT",
+            "OBSERVED_BEHAVIOR",
+            "RESEARCH_RECORD",
+            "USER_PROVIDED",
+            "HYPOTHESIS"
+          ]
+        },
+        "observed_at": {"type": ["string", "null"], "format": "date-time"},
+        "freshness": {"enum": ["CURRENT", "STALE", "UNKNOWN"]},
+        "scope": {"type": "string", "minLength": 1},
+        "content_sha256": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "claim": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "claim_id",
+        "claim_type",
+        "statement",
+        "source_ids",
+        "confidence",
+        "synthetic_basis",
+        "conflicts_with"
+      ],
+      "properties": {
+        "claim_id": {"$ref": "#/$defs/id"},
+        "claim_type": {"enum": ["OBSERVED", "USER_PROVIDED", "INFERRED", "HYPOTHESIS", "SYNTHETIC"]},
+        "statement": {"type": "string", "minLength": 1},
+        "source_ids": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {"$ref": "#/$defs/id"}
+        },
+        "confidence": {"type": "number", "minimum": 0, "maximum": 1},
+        "synthetic_basis": {"type": ["string", "null"]},
+        "conflicts_with": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {"$ref": "#/$defs/id"}
+        }
+      },
+      "allOf": [
+        {
+          "if": {"properties": {"claim_type": {"enum": ["HYPOTHESIS", "SYNTHETIC"]}}},
+          "then": {"properties": {"synthetic_basis": {"type": "string", "minLength": 1}}},
+          "else": {"properties": {"synthetic_basis": {"type": "null"}}}
+        }
+      ]
+    },
+    "contradiction": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["contradiction_id", "claim_ids", "comparison", "resolution", "governing_rule"],
+      "properties": {
+        "contradiction_id": {"$ref": "#/$defs/id"},
+        "claim_ids": {
+          "type": "array",
+          "minItems": 2,
+          "uniqueItems": true,
+          "items": {"$ref": "#/$defs/id"}
+        },
+        "comparison": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["authority", "scope", "freshness", "directness", "independence"],
+          "properties": {
+            "authority": {"type": "string", "minLength": 1},
+            "scope": {"type": "string", "minLength": 1},
+            "freshness": {"type": "string", "minLength": 1},
+            "directness": {"type": "string", "minLength": 1},
+            "independence": {"type": "string", "minLength": 1}
+          }
+        },
+        "resolution": {"enum": ["RESOLVED", "UNRESOLVED"]},
+        "governing_rule": {"type": ["string", "null"]}
+      }
+    },
+    "grounded_value": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["value", "claim_ids"],
+      "properties": {
+        "value": {"type": "string", "minLength": 1},
+        "claim_ids": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {"$ref": "#/$defs/id"}
+        }
+      }
+    },
+    "grounded_values": {"type": "array", "items": {"$ref": "#/$defs/grounded_value"}},
+    "stable_profile": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "goals",
+        "jobs",
+        "behaviors",
+        "constraints",
+        "context",
+        "capabilities",
+        "accessibility_needs",
+        "decision_drivers",
+        "communication"
+      ],
+      "properties": {
+        "goals": {"$ref": "#/$defs/grounded_values"},
+        "jobs": {"$ref": "#/$defs/grounded_values"},
+        "behaviors": {"$ref": "#/$defs/grounded_values"},
+        "constraints": {"$ref": "#/$defs/grounded_values"},
+        "context": {"$ref": "#/$defs/grounded_values"},
+        "capabilities": {"$ref": "#/$defs/grounded_values"},
+        "accessibility_needs": {"$ref": "#/$defs/grounded_values"},
+        "decision_drivers": {"$ref": "#/$defs/grounded_values"},
+        "communication": {"$ref": "#/$defs/grounded_value"}
+      }
+    },
+    "variable": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "variable_id",
+        "value_type",
+        "allowed_values",
+        "minimum",
+        "maximum",
+        "baseline",
+        "meaning",
+        "update_authority",
+        "uncertainty"
+      ],
+      "properties": {
+        "variable_id": {"$ref": "#/$defs/id"},
+        "value_type": {"enum": ["NUMBER", "INTEGER", "BOOLEAN", "CATEGORY", "TEXT"]},
+        "allowed_values": {"type": ["array", "null"], "uniqueItems": true},
+        "minimum": {"type": ["number", "null"]},
+        "maximum": {"type": ["number", "null"]},
+        "baseline": {"type": ["number", "integer", "boolean", "string"]},
+        "meaning": {"type": "string", "minLength": 1},
+        "update_authority": {"enum": ["SIMULATION_EVENT", "ACTOR_OBSERVATION", "AUTHORIZED_OPERATOR", "IMMUTABLE"]},
+        "uncertainty": {"type": "number", "minimum": 0, "maximum": 1}
+      },
+      "allOf": [
+        {
+          "if": {"properties": {"value_type": {"const": "NUMBER"}}},
+          "then": {
+            "properties": {
+              "allowed_values": {"type": "null"},
+              "minimum": {"type": "number"},
+              "maximum": {"type": "number"},
+              "baseline": {"type": "number"}
+            }
+          }
+        },
+        {
+          "if": {"properties": {"value_type": {"const": "INTEGER"}}},
+          "then": {
+            "properties": {
+              "allowed_values": {"type": "null"},
+              "minimum": {"type": "integer"},
+              "maximum": {"type": "integer"},
+              "baseline": {"type": "integer"}
+            }
+          }
+        },
+        {
+          "if": {"properties": {"value_type": {"const": "BOOLEAN"}}},
+          "then": {
+            "properties": {
+              "allowed_values": {"type": "null"},
+              "minimum": {"type": "null"},
+              "maximum": {"type": "null"},
+              "baseline": {"type": "boolean"}
+            }
+          }
+        },
+        {
+          "if": {"properties": {"value_type": {"const": "CATEGORY"}}},
+          "then": {
+            "properties": {
+              "allowed_values": {
+                "type": "array",
+                "minItems": 2,
+                "items": {"type": "string", "minLength": 1}
+              },
+              "minimum": {"type": "null"},
+              "maximum": {"type": "null"},
+              "baseline": {"type": "string", "minLength": 1}
+            }
+          }
+        },
+        {
+          "if": {"properties": {"value_type": {"const": "TEXT"}}},
+          "then": {
+            "properties": {
+              "allowed_values": {"type": "null"},
+              "minimum": {"type": "null"},
+              "maximum": {"type": "null"},
+              "baseline": {"type": "string", "minLength": 1}
+            }
+          }
+        }
+      ]
+    },
+    "precondition": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["variable_id", "operator", "value"],
+      "properties": {
+        "variable_id": {"$ref": "#/$defs/id"},
+        "operator": {"enum": ["EQ", "NE", "LT", "LTE", "GT", "GTE", "IN"]},
+        "value": {}
+      }
+    },
+    "update": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["variable_id", "operation", "value"],
+      "properties": {
+        "variable_id": {"$ref": "#/$defs/id"},
+        "operation": {"enum": ["SET", "INCREMENT", "DECREMENT"]},
+        "value": {}
+      }
+    },
+    "transition": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "transition_id",
+        "event",
+        "preconditions",
+        "updates",
+        "behavioral_effect",
+        "evidence_claim_ids",
+        "synthetic_basis",
+        "impossible_state_guard"
+      ],
+      "properties": {
+        "transition_id": {"$ref": "#/$defs/id"},
+        "event": {"type": "string", "minLength": 1},
+        "preconditions": {"type": "array", "items": {"$ref": "#/$defs/precondition"}},
+        "updates": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/update"}},
+        "behavioral_effect": {"type": "string", "minLength": 1},
+        "evidence_claim_ids": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {"$ref": "#/$defs/id"}
+        },
+        "synthetic_basis": {"type": ["string", "null"]},
+        "impossible_state_guard": {"type": "string", "minLength": 1}
+      },
+      "oneOf": [
+        {
+          "properties": {
+            "evidence_claim_ids": {"minItems": 1},
+            "synthetic_basis": {"type": "null"}
+          }
+        },
+        {
+          "properties": {
+            "evidence_claim_ids": {"maxItems": 0},
+            "synthetic_basis": {"type": "string", "minLength": 1}
+          }
+        }
+      ]
+    },
+    "dynamic_model": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["variables", "transitions"],
+      "properties": {
+        "variables": {"type": "array", "maxItems": 8, "items": {"$ref": "#/$defs/variable"}},
+        "transitions": {"type": "array", "items": {"$ref": "#/$defs/transition"}}
+      }
+    },
+    "privacy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "classification",
+        "retention",
+        "allowed_consumers",
+        "allowed_destinations",
+        "prohibited_fields",
+        "identifiable_person"
+      ],
+      "properties": {
+        "classification": {"enum": ["PUBLIC", "INTERNAL", "CONFIDENTIAL", "RESTRICTED"]},
+        "retention": {"type": "string", "minLength": 1},
+        "allowed_consumers": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {"enum": ["product", "market", "agent-architecture", "simulation", "evaluation"]}
+        },
+        "allowed_destinations": {"$ref": "#/$defs/unique_strings"},
+        "prohibited_fields": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^/(?:[^~/]|~[01])*(?:/(?:[^~/]|~[01])*)*$"
+          }
+        },
+        "identifiable_person": {"type": "boolean"}
+      }
+    }
+  }
+}

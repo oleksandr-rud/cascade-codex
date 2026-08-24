@@ -1,0 +1,4 @@
+interface:
+  display_name: "Evaluate Agent System"
+  short_description: "Evaluate agent architectures with simulation evidence."
+  default_prompt: "Use $evaluate-agent-system to define or run a compact, fail-closed evaluation of this agent architecture."

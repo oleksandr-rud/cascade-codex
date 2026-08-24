@@ -1,0 +1,39 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://cascade.local/schemas/prompt-human-labels-v1.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "calibration_status", "profile_id", "reviewers", "cases"],
+  "properties": {
+    "schema_version": {"const": 1},
+    "calibration_status": {"enum": ["NOT_RUN", "HUMAN_LABELED"]},
+    "profile_id": {"type": "string", "minLength": 1},
+    "reviewers": {"type": "array", "minItems": 2, "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+    "cases": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["case_id", "artifact_path", "independent_labels", "adjudicated"],
+        "properties": {
+          "case_id": {"type": "string", "minLength": 1},
+          "artifact_path": {"type": "string", "minLength": 1},
+          "independent_labels": {"type": "array", "minItems": 2, "items": {"$ref": "#/$defs/label"}},
+          "adjudicated": {"$ref": "#/$defs/label"}
+        }
+      }
+    }
+  },
+  "$defs": {
+    "label": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["reviewer_id", "verdict", "ratings"],
+      "properties": {
+        "reviewer_id": {"type": "string", "minLength": 1},
+        "verdict": {"enum": ["PASS", "FAIL", "BLOCKED"]},
+        "ratings": {"type": "object", "additionalProperties": {"type": "integer", "minimum": 0, "maximum": 4}}
+      }
+    }
+  }
+}

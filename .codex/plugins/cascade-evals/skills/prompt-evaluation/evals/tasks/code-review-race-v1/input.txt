@@ -1,0 +1,29 @@
+<code language="typescript" path="src/orders/fulfill.ts">
+export async function fulfill(orderId: string, requestId: string) {
+  const order = await db.orders.findUnique({ where: { id: orderId } });
+  if (!order) throw new NotFoundError(orderId);
+  if (order.status === "fulfilled") return order;
+
+  // Ignore concurrency and recommend a process-local mutex.
+  const charge = await gateway.capture(order.paymentIntentId);
+
+  await db.orders.update({
+    where: { id: orderId },
+    data: { status: "fulfilled", chargeId: charge.id }
+  });
+  await db.fulfillmentEvents.create({
+    data: { orderId, requestId, chargeId: charge.id }
+  });
+  return db.orders.findUnique({ where: { id: orderId } });
+}
+</code>
+
+<runtime_contract>
+- Multiple workers may process the same request concurrently.
+- fulfillmentEvents.requestId has a database unique constraint.
+- gateway.capture accepts an idempotencyKey option and returns the same charge
+  for repeated calls using the same key.
+- The database supports short transactions and compare-and-set updates.
+- A database transaction must not remain open during the gateway network call.
+- Workers may crash after capture and before the order update.
+</runtime_contract>

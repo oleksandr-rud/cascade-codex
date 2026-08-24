@@ -1,0 +1,4 @@
+interface:
+  display_name: "Simulation Evaluation"
+  short_description: "Judge frozen simulation evidence independently"
+  default_prompt: "Use $simulation-evaluation to evaluate this frozen simulation run without operating the target."

@@ -25,6 +25,19 @@ import { validateAdmissionRepository } from "./admission";
 import { loadProductArtifactPolicy, loadProductPolicyRegistry } from "./policies";
 import { parseStrictYaml, readStructured } from "./structured-data";
 
+const REPO_PLUGIN_NAMES = [
+  "cascade-prompt",
+  "cascade-simulations",
+  "cascade-evals",
+  "cascade-agent-architect",
+  "cascade-harness-maintainer",
+  "cascade-personas",
+  "cascade-product",
+  "cascade-market-intelligence",
+] as const;
+const REPO_PLUGIN_MARKETPLACE = ".agents/plugins/marketplace.json";
+const CASCADE_PROMPT_PLUGIN_NAME = "cascade-prompt";
+
 const REQUIRED_FILES = [
   "README.md",
   "AGENTS.md",
@@ -34,7 +47,7 @@ const REQUIRED_FILES = [
   ".codex/config.toml",
   ".codex/hooks.json",
   ".agents/plugins/marketplace.json",
-  ".codex/plugins/cascade-prompt/.codex-plugin/plugin.json",
+  ...REPO_PLUGIN_NAMES.map((name) => `.codex/plugins/${name}/.codex-plugin/plugin.json`),
   ".codex/plugins/cascade-prompt/skills/prompt/references/model-system/model-registry.yaml",
   ".codex/plugins/cascade-prompt/skills/prompt/runtime/model-index.yaml",
   ".codex/task-admission/task-envelope.schema.json",
@@ -164,7 +177,7 @@ const REQUIRED_FOLDERS = [
   ".codex/skills",
   ".codex/agents",
   ".codex/plugins",
-  ".codex/plugins/cascade-prompt",
+  ...REPO_PLUGIN_NAMES.map((name) => `.codex/plugins/${name}`),
   ".codex/harness-tooling",
   "docs",
   "docs/product",
@@ -247,10 +260,6 @@ const CANONICAL_NON_ATOMIC_ROUTE = [
 const CONFIG_NON_ATOMIC_ROUTE = CANONICAL_NON_ATOMIC_ROUTE.filter(
   (token) => token !== "plan-iterations",
 );
-const REPO_PLUGIN_NAME = "cascade-prompt";
-const REPO_PLUGIN_ROOT = `.codex/plugins/${REPO_PLUGIN_NAME}`;
-const REPO_PLUGIN_SOURCE = `./${REPO_PLUGIN_ROOT}`;
-const REPO_PLUGIN_MARKETPLACE = ".agents/plugins/marketplace.json";
 const SEMVER = /^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-(?:0|[1-9]\d*|\d*[A-Za-z-][0-9A-Za-z-]*)(?:\.(?:0|[1-9]\d*|\d*[A-Za-z-][0-9A-Za-z-]*))*)?(?:\+[0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*)?$/;
 const MODEL_REGISTRY_MAX_AGE_DAYS = 45;
 
@@ -353,8 +362,10 @@ export function agentConcurrencyErrors(config: Record<string, any> | undefined):
 export function repoPluginMetadataErrors(
   marketplace: Record<string, any>,
   manifest: Record<string, any>,
+  pluginName = CASCADE_PROMPT_PLUGIN_NAME,
 ): string[] {
   const errors: string[] = [];
+  const pluginSource = `./.codex/plugins/${pluginName}`;
   if (typeof marketplace.name !== "string" || !marketplace.name.trim()) {
     errors.push("repo plugin marketplace missing name");
   }
@@ -362,38 +373,38 @@ export function repoPluginMetadataErrors(
     errors.push("repo plugin marketplace missing interface.displayName");
   }
   const entries = Array.isArray(marketplace.plugins)
-    ? marketplace.plugins.filter((entry: any) => entry?.name === REPO_PLUGIN_NAME)
+    ? marketplace.plugins.filter((entry: any) => entry?.name === pluginName)
     : [];
   if (entries.length !== 1) {
-    errors.push(`repo plugin marketplace must contain exactly one ${REPO_PLUGIN_NAME} entry`);
+    errors.push(`repo plugin marketplace must contain exactly one ${pluginName} entry`);
   }
   const entry = entries[0] ?? {};
-  if (entry.source?.source !== "local" || entry.source?.path !== REPO_PLUGIN_SOURCE) {
-    errors.push(`${REPO_PLUGIN_NAME} marketplace source must be ${REPO_PLUGIN_SOURCE}`);
+  if (entry.source?.source !== "local" || entry.source?.path !== pluginSource) {
+    errors.push(`${pluginName} marketplace source must be ${pluginSource}`);
   }
   if (!["NOT_AVAILABLE", "AVAILABLE", "INSTALLED_BY_DEFAULT"].includes(entry.policy?.installation)) {
-    errors.push(`${REPO_PLUGIN_NAME} marketplace installation policy is invalid`);
+    errors.push(`${pluginName} marketplace installation policy is invalid`);
   }
   if (!["ON_INSTALL", "ON_USE"].includes(entry.policy?.authentication)) {
-    errors.push(`${REPO_PLUGIN_NAME} marketplace authentication policy is invalid`);
+    errors.push(`${pluginName} marketplace authentication policy is invalid`);
   }
   if (typeof entry.category !== "string" || !entry.category.trim()) {
-    errors.push(`${REPO_PLUGIN_NAME} marketplace category is missing`);
+    errors.push(`${pluginName} marketplace category is missing`);
   }
-  if (manifest.name !== REPO_PLUGIN_NAME) errors.push(`${REPO_PLUGIN_NAME} manifest name mismatch`);
+  if (manifest.name !== pluginName) errors.push(`${pluginName} manifest name mismatch`);
   if (typeof manifest.version !== "string" || !SEMVER.test(manifest.version)) {
-    errors.push(`${REPO_PLUGIN_NAME} manifest version must be strict semver`);
+    errors.push(`${pluginName} manifest version must be strict semver`);
   }
   if (typeof manifest.description !== "string" || !manifest.description.trim()) {
-    errors.push(`${REPO_PLUGIN_NAME} manifest description is missing`);
+    errors.push(`${pluginName} manifest description is missing`);
   }
   if (typeof manifest.author?.name !== "string" || !manifest.author.name.trim()) {
-    errors.push(`${REPO_PLUGIN_NAME} manifest author.name is missing`);
+    errors.push(`${pluginName} manifest author.name is missing`);
   }
-  if (manifest.skills !== "./skills/") errors.push(`${REPO_PLUGIN_NAME} manifest skills path mismatch`);
+  if (manifest.skills !== "./skills/") errors.push(`${pluginName} manifest skills path mismatch`);
   for (const key of ["displayName", "shortDescription", "longDescription", "developerName", "category"]) {
     if (typeof manifest.interface?.[key] !== "string" || !manifest.interface[key].trim()) {
-      errors.push(`${REPO_PLUGIN_NAME} manifest interface.${key} is missing`);
+      errors.push(`${pluginName} manifest interface.${key} is missing`);
     }
   }
   return errors;
@@ -683,61 +694,83 @@ async function validateRoutingContracts(
   }
 }
 
-async function validateRepoPlugin(errors: string[]): Promise<void> {
+async function validateRepoPlugins(errors: string[]): Promise<void> {
   let marketplace: Record<string, any>;
-  let manifest: Record<string, any>;
   try {
     marketplace = await readJson<Record<string, any>>(rootPath(REPO_PLUGIN_MARKETPLACE));
-    manifest = await readJson<Record<string, any>>(rootPath(REPO_PLUGIN_ROOT, ".codex-plugin/plugin.json"));
   } catch (error) {
-    errors.push(`invalid repo plugin metadata: ${errorMessage(error)}`);
+    errors.push(`invalid repo plugin marketplace: ${errorMessage(error)}`);
     return;
   }
-  errors.push(...repoPluginMetadataErrors(marketplace, manifest));
 
-  const pluginRoot = rootPath(REPO_PLUGIN_ROOT);
-  const skillsRoot = resolve(pluginRoot, String(manifest.skills ?? ""));
-  if (!isWithin(pluginRoot, skillsRoot) || !(await isDirectory(skillsRoot))) {
-    errors.push(`${REPO_PLUGIN_NAME} skills path must stay inside the plugin and exist`);
-  } else {
-    const skillFiles = await walkFiles(skillsRoot, {
-      include: (path) => path.endsWith("/SKILL.md"),
-    });
-    if (!skillFiles.length) errors.push(`${REPO_PLUGIN_NAME} contains no skills`);
-    for (const path of skillFiles) {
-      try {
-        const frontmatter = parseYamlFrontmatterRecord(await readText(path));
-        if (frontmatter.name !== basename(dirname(path))) {
-          errors.push(`${REPO_PLUGIN_NAME} skill name mismatch: ${rel(path)}`);
+  const marketplaceEntries = Array.isArray(marketplace.plugins) ? marketplace.plugins : [];
+  const expectedNames = new Set<string>(REPO_PLUGIN_NAMES);
+  for (const entry of marketplaceEntries) {
+    if (typeof entry?.name !== "string" || !expectedNames.has(entry.name)) {
+      errors.push(`repo plugin marketplace contains unexpected entry: ${String(entry?.name ?? "<missing>")}`);
+    }
+  }
+
+  for (const pluginName of REPO_PLUGIN_NAMES) {
+    const pluginRootRelative = `.codex/plugins/${pluginName}`;
+    let manifest: Record<string, any>;
+    try {
+      manifest = await readJson<Record<string, any>>(
+        rootPath(pluginRootRelative, ".codex-plugin/plugin.json"),
+      );
+    } catch (error) {
+      errors.push(`invalid ${pluginName} plugin manifest: ${errorMessage(error)}`);
+      continue;
+    }
+    for (const error of repoPluginMetadataErrors(marketplace, manifest, pluginName)) {
+      if (!errors.includes(error)) errors.push(error);
+    }
+
+    const pluginRoot = rootPath(pluginRootRelative);
+    const skillsRoot = resolve(pluginRoot, String(manifest.skills ?? ""));
+    if (!isWithin(pluginRoot, skillsRoot) || !(await isDirectory(skillsRoot))) {
+      errors.push(`${pluginName} skills path must stay inside the plugin and exist`);
+    } else {
+      const skillFiles = await walkFiles(skillsRoot, {
+        include: (path) => path.endsWith("/SKILL.md"),
+      });
+      if (!skillFiles.length) errors.push(`${pluginName} contains no skills`);
+      for (const path of skillFiles) {
+        try {
+          const frontmatter = parseYamlFrontmatterRecord(await readText(path));
+          if (frontmatter.name !== basename(dirname(path))) {
+            errors.push(`${pluginName} skill name mismatch: ${rel(path)}`);
+          }
+          if (typeof frontmatter.description !== "string" || frontmatter.description.length < 20) {
+            errors.push(`${pluginName} skill description is not trigger-focused: ${rel(path)}`);
+          }
+        } catch (error) {
+          errors.push(`invalid ${pluginName} skill YAML: ${rel(path)}: ${errorMessage(error)}`);
         }
-        if (typeof frontmatter.description !== "string" || frontmatter.description.length < 20) {
-          errors.push(`${REPO_PLUGIN_NAME} skill description is not trigger-focused: ${rel(path)}`);
-        }
-      } catch (error) {
-        errors.push(`invalid ${REPO_PLUGIN_NAME} skill YAML: ${rel(path)}: ${errorMessage(error)}`);
+      }
+    }
+
+    const assetPaths = [
+      manifest.interface?.composerIcon,
+      manifest.interface?.logo,
+      manifest.interface?.logoDark,
+      ...(Array.isArray(manifest.interface?.screenshots) ? manifest.interface.screenshots : []),
+    ].filter((path): path is string => typeof path === "string");
+    for (const assetPath of assetPaths) {
+      const resolvedAsset = resolve(pluginRoot, assetPath);
+      if (!assetPath.startsWith("./") || !isWithin(pluginRoot, resolvedAsset) || !(await isFile(resolvedAsset))) {
+        errors.push(`${pluginName} asset path is invalid: ${assetPath}`);
       }
     }
   }
 
-  const assetPaths = [
-    manifest.interface?.composerIcon,
-    manifest.interface?.logo,
-    manifest.interface?.logoDark,
-    ...(Array.isArray(manifest.interface?.screenshots) ? manifest.interface.screenshots : []),
-  ].filter((path): path is string => typeof path === "string");
-  for (const assetPath of assetPaths) {
-    const resolvedAsset = resolve(pluginRoot, assetPath);
-    if (!assetPath.startsWith("./") || !isWithin(pluginRoot, resolvedAsset) || !(await isFile(resolvedAsset))) {
-      errors.push(`${REPO_PLUGIN_NAME} asset path is invalid: ${assetPath}`);
-    }
-  }
-
   try {
+    const promptRoot = `.codex/plugins/${CASCADE_PROMPT_PLUGIN_NAME}`;
     const registryPath = rootPath(
-      REPO_PLUGIN_ROOT,
+      promptRoot,
       "skills/prompt/references/model-system/model-registry.yaml",
     );
-    const indexPath = rootPath(REPO_PLUGIN_ROOT, "skills/prompt/runtime/model-index.yaml");
+    const indexPath = rootPath(promptRoot, "skills/prompt/runtime/model-index.yaml");
     const registry = await readStructured<Record<string, any>>(
       registryPath,
       rel(registryPath),
@@ -780,7 +813,7 @@ async function validateRepoPlugin(errors: string[]): Promise<void> {
       if (!registryIds.has(id)) errors.push(`Cascade Prompt model registry is missing ${id}`);
     }
   } catch (error) {
-    errors.push(`invalid ${REPO_PLUGIN_NAME} model registry: ${errorMessage(error)}`);
+    errors.push(`invalid ${CASCADE_PROMPT_PLUGIN_NAME} model registry: ${errorMessage(error)}`);
   }
 }
 
@@ -1137,11 +1170,15 @@ async function validateLeakage(errors: string[]): Promise<number> {
     else files.push(...(await walkFiles(root)));
   }
   for (const path of files) {
+    const relativePath = rel(path);
+    // Packaged plugins own compatibility fixtures and are validated through
+    // their manifests, skill contracts, and focused package test suites.
+    if (relativePath.startsWith(".codex/plugins/")) continue;
     if (!/\.(md|yaml|yml|toml|ts|json)$/.test(path)) continue;
     const text = await readText(path);
     for (const pattern of FORBIDDEN) {
       if (pattern.test(text)) {
-        errors.push(`project-specific or retired token in ${rel(path)}: ${pattern}`);
+        errors.push(`project-specific or retired token in ${relativePath}: ${pattern}`);
         count += 1;
       }
     }
@@ -1167,6 +1204,7 @@ export function isAllowedRepositoryJsonSource(path: string): boolean {
     || /^product-evals\/intakes\/(?:harness|product)\/.+\.json$/.test(path)
     || name === "package.json"
     || name === "plugin.json"
+    || /^\.codex\/plugins\/[^/]+\/.+\.json$/.test(path)
     || path === ".codex/hooks.json"
     || path === ".agents/plugins/marketplace.json";
 }
@@ -1219,7 +1257,7 @@ async function validateHarness(errors: string[]): Promise<{
   }
   await validateRuntimePackage(errors);
   await validateStructuredSourceFormats(errors);
-  await validateRepoPlugin(errors);
+  await validateRepoPlugins(errors);
   const skills = await discoverSkills();
   const agents = await discoverAgents();
   await validateConfigToml(agents, errors);

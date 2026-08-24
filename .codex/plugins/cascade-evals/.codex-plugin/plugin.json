@@ -1,0 +1,33 @@
+{
+  "name": "cascade-evals",
+  "version": "0.1.26+codex.20260823183000",
+  "description": "Designs and runs versioned evaluations for prompts, agents, simulations, and coding-agent harnesses with deterministic eligibility, calibrated independent judges, conservative reduction, and immutable evidence receipts.",
+  "author": {
+    "name": "Cascade"
+  },
+  "keywords": [
+    "evaluation",
+    "judges",
+    "prompt-testing",
+    "agent-evaluation",
+    "simulation-evaluation",
+    "harness-evaluation"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Cascade Evals",
+    "shortDescription": "Evaluate prompts, agents, simulations, and harnesses.",
+    "longDescription": "Define versioned evaluation plans and judge contracts, validate mechanical eligibility, execute or consume bounded evidence, calibrate independent semantic judges, recompute scores, and emit conservative evidence receipts for prompts, agents, simulations, and coding-agent harnesses.",
+    "developerName": "Cascade",
+    "category": "Productivity",
+    "capabilities": [
+      "Interactive",
+      "Write"
+    ],
+    "defaultPrompt": [
+      "Design a versioned evaluation for this prompt or agent.",
+      "Build and calibrate an independent semantic judge.",
+      "Evaluate this frozen simulation or harness trace."
+    ]
+  }
+}

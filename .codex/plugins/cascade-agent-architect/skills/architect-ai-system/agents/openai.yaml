@@ -1,0 +1,4 @@
+interface:
+  display_name: "AI System Architect"
+  short_description: "Compile complete, grounded agent architectures"
+  default_prompt: "Use $architect-ai-system to turn this request into a validated AI agent-system architecture packet."

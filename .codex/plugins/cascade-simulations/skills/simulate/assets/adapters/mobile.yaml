@@ -1,0 +1,56 @@
+schema_version: 2
+id: codex-mobile
+surface: mobile
+driver:
+  type: codex-host
+  required_capabilities: [mobile.observe, mobile.interact]
+  bindings:
+    mobile.observe: codex-host/mobile.observe
+    mobile.interact: codex-host/mobile.interact
+  selection: Bind only when Codex exposes compatible device or emulator controls for the declared platform and device.
+target: replace-with-mobile-application-and-device
+observations:
+  - name: mobile_state
+    description: Device, application, screen identity, accessible controls, and visible state
+    produced_by: [inspect, reconcile, interact, cleanup]
+actions:
+  - name: inspect
+    purpose: normal
+    description: Observe the declared mobile screen without mutation
+    capability: mobile.observe
+    risk: read
+    confirmation: never
+    idempotency: safe-retry
+  - name: reconcile
+    purpose: recovery
+    description: Re-observe the same device and application after a recoverable failure
+    capability: mobile.observe
+    risk: read
+    confirmation: never
+    idempotency: safe-retry
+  - name: interact
+    purpose: normal
+    description: Operate a visible control on the declared device and application
+    capability: mobile.interact
+    risk: write
+    confirmation: when-not-authorized
+    idempotency: key-required
+  - name: cleanup
+    purpose: cleanup
+    description: Close temporary application or emulator resources owned by the run
+    capability: mobile.interact
+    risk: write
+    confirmation: when-not-authorized
+    idempotency: key-required
+errors:
+  before_dispatch: Return BLOCKED when device identity, application state, permission, or compatible control is unavailable.
+  after_dispatch: Return UNKNOWN_OUTCOME when input may have reached the device but the resulting state is not observable.
+recovery:
+  description: Re-observe the same device, application, and screen identity before another interaction.
+  action: reconcile
+cleanup:
+  required: false
+  description: Close temporary application or emulator resources owned by the run before finish when any were created.
+  action: cleanup
+  verification_observation: mobile_state
+  verification: Observe the same device and application with no owned temporary resource remaining.

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Cascade Simulate"
+  short_description: "Run goal-directed dynamic simulations"
+  default_prompt: "Use $simulate to run a bounded actor simulation that performs real work toward an observable outcome."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Simulation Persona"
+  short_description: "Build grounded or synthetic simulation personas"
+  default_prompt: "Use $simulation-persona to build a source-grounded persona for this simulation."

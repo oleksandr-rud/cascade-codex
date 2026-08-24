@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "calibration_status": "NOT_RUN",
+  "human_labeled": false,
+  "purpose": "Synthetic response-contract fixtures only. These do not establish judge calibration.",
+  "cases": [
+    {
+      "id": "synthetic-complete-json",
+      "profile_id": "cascade-prompt-outcome-v1",
+      "expected_contract": "Five unique known dimension IDs, integer ratings 0-4, evidence for each rating, and no extra fields."
+    },
+    {
+      "id": "synthetic-blocked-missing-output",
+      "profile_id": "cascade-prompt-outcome-v1",
+      "expected_contract": "BLOCKED with target output named in missing_evidence; no inferred quality score."
+    },
+    {
+      "id": "synthetic-trajectory-no-leakage",
+      "profile_id": "cascade-prompt-trajectory-v1",
+      "expected_contract": "Rates only the generated prompt and does not infer target correctness or ranking."
+    }
+  ]
+}

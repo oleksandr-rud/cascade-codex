@@ -1,0 +1,211 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://cascade.local/cascade-product/product-work-product-v1.schema.json",
+  "title": "Cascade Product typed work product v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "artifact_id",
+    "version",
+    "kind",
+    "status",
+    "decision_id",
+    "summary",
+    "source_artifacts",
+    "sections",
+    "journeys",
+    "requirements",
+    "validation_claims",
+    "traceability",
+    "invalidation_conditions"
+  ],
+  "properties": {
+    "schema_version": {"const": 1},
+    "artifact_id": {"$ref": "#/$defs/id"},
+    "version": {"type": "string", "minLength": 1},
+    "kind": {"enum": ["PRODUCT_DEFINITION", "LIFECYCLE_RECORD", "VALIDATION_REPORT"]},
+    "status": {
+      "enum": [
+        "READY",
+        "GAP",
+        "BLOCKED",
+        "INVALID",
+        "NOT_RUN",
+        "ABSTAIN",
+        "PROPOSED",
+        "PENDING_APPROVAL",
+        "APPROVED",
+        "REJECTED",
+        "DEFERRED"
+      ]
+    },
+    "decision_id": {"$ref": "#/$defs/id"},
+    "summary": {"type": "string", "minLength": 1},
+    "source_artifacts": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {"$ref": "#/$defs/source_artifact"}
+    },
+    "sections": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/section"}
+    },
+    "journeys": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/journey"}
+    },
+    "requirements": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/requirement"}
+    },
+    "validation_claims": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/validation_claim"}
+    },
+    "traceability": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/trace"}
+    },
+    "invalidation_conditions": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {"type": "string", "minLength": 1}
+    }
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"kind": {"const": "PRODUCT_DEFINITION"}}},
+      "then": {
+        "properties": {
+          "journeys": {"minItems": 1},
+          "requirements": {"minItems": 1},
+          "traceability": {"minItems": 1}
+        }
+      }
+    },
+    {
+      "if": {"properties": {"kind": {"const": "LIFECYCLE_RECORD"}}},
+      "then": {"properties": {"sections": {"minItems": 1}}}
+    },
+    {
+      "if": {"properties": {"kind": {"const": "VALIDATION_REPORT"}}},
+      "then": {"properties": {"validation_claims": {"minItems": 1}}}
+    }
+  ],
+  "$defs": {
+    "id": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$"},
+    "digest": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "evidence_ids": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {"$ref": "#/$defs/id"}
+    },
+    "source_artifact": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "version", "sha256", "evidence_class", "status", "scope"],
+      "properties": {
+        "id": {"$ref": "#/$defs/id"},
+        "version": {"type": "string", "minLength": 1},
+        "sha256": {"$ref": "#/$defs/digest"},
+        "evidence_class": {
+          "enum": [
+            "OBSERVED",
+            "USER_PROVIDED",
+            "ACCEPTED_DECISION",
+            "INFERRED",
+            "HYPOTHESIS",
+            "SYNTHETIC",
+            "SIMULATION",
+            "MECHANICAL",
+            "SEMANTIC",
+            "IMPLEMENTATION",
+            "DEPLOYMENT",
+            "RELEASE",
+            "RECEIPT"
+          ]
+        },
+        "status": {"enum": ["READY", "PASS", "APPROVED", "GAP", "BLOCKED", "INVALID", "NOT_RUN", "FAIL"]},
+        "scope": {"type": "string", "minLength": 1}
+      }
+    },
+    "section": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["section_id", "title", "content", "evidence_ids"],
+      "properties": {
+        "section_id": {"$ref": "#/$defs/id"},
+        "title": {"type": "string", "minLength": 1},
+        "content": {"type": "string", "minLength": 1},
+        "evidence_ids": {"$ref": "#/$defs/evidence_ids"}
+      }
+    },
+    "journey": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["journey_id", "actor", "steps", "evidence_ids"],
+      "properties": {
+        "journey_id": {"$ref": "#/$defs/id"},
+        "actor": {"type": "string", "minLength": 1},
+        "steps": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["step_id", "action", "expected_behavior", "failure_behavior"],
+            "properties": {
+              "step_id": {"$ref": "#/$defs/id"},
+              "action": {"type": "string", "minLength": 1},
+              "expected_behavior": {"type": "string", "minLength": 1},
+              "failure_behavior": {"type": "string", "minLength": 1}
+            }
+          }
+        },
+        "evidence_ids": {"$ref": "#/$defs/evidence_ids"}
+      }
+    },
+    "requirement": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["requirement_id", "statement", "acceptance_behavior", "evidence_ids"],
+      "properties": {
+        "requirement_id": {"$ref": "#/$defs/id"},
+        "statement": {"type": "string", "minLength": 1},
+        "acceptance_behavior": {"type": "string", "minLength": 1},
+        "evidence_ids": {"$ref": "#/$defs/evidence_ids"}
+      }
+    },
+    "validation_claim": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["claim_id", "claim", "status", "evidence_ids"],
+      "properties": {
+        "claim_id": {"$ref": "#/$defs/id"},
+        "claim": {"type": "string", "minLength": 1},
+        "status": {"enum": ["PASS", "FAIL", "GAP", "BLOCKED", "NOT_RUN"]},
+        "evidence_ids": {"$ref": "#/$defs/evidence_ids"}
+      }
+    },
+    "trace": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["from_id", "to_ids"],
+      "properties": {
+        "from_id": {
+          "$ref": "#/$defs/id",
+          "description": "An ID declared by a section, journey, requirement, or validation claim in this same work product; never a source-artifact ID or journey-step ID."
+        },
+        "to_ids": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "description": "IDs declared by sections, journeys, requirements, or validation claims in this same work product; source lineage belongs in evidence_ids.",
+          "items": {"$ref": "#/$defs/id"}
+        }
+      }
+    }
+  }
+}

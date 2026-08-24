@@ -1,0 +1,4 @@
+interface:
+  display_name: "Simulation Adapter"
+  short_description: "Define an action-level interface adapter"
+  default_prompt: "Use $simulation-adapter to define or audit the interface actions, observations, permissions, and cleanup for a simulation."

@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "profile_id": "cascade-prompt-outcome-v1",
+  "purpose": "Judge target-task result quality without seeing trajectory scores, model eligibility, peer outputs, or acceptance decisions.",
+  "scale": {
+    "0": "Absent, unusable, or directly harmful.",
+    "1": "Major failures dominate; substantial repair is required.",
+    "2": "Partially correct but material defects remain.",
+    "3": "Correct and useful with only minor defects.",
+    "4": "Fully satisfies the anchored dimension with no material defect."
+  },
+  "dimensions": [
+    {"id": "task_correctness", "weight": 35, "description": "The result reaches the right task conclusion or transformation and avoids contradicted conclusions."},
+    {"id": "grounding_and_epistemics", "weight": 20, "description": "Claims are supported by supplied evidence; uncertainty, conflict, and unknowns are handled honestly."},
+    {"id": "requirement_coverage", "weight": 20, "description": "All material requested fields, sections, constraints, and exclusions are covered."},
+    {"id": "failure_behavior", "weight": 15, "description": "The result resists embedded instructions, avoids fabrication, and fails or abstains as required."},
+    {"id": "output_usability", "weight": 10, "description": "The result is clear, structurally valid, concise enough, and directly usable."}
+  ],
+  "threshold": 0.8,
+  "minimum_dimension_rating": 2,
+  "score_formula": "sum(weight * rating / 4) / 100",
+  "blind_exclusions": ["trajectory judgment", "eligibility result", "peer outputs", "model ranking", "acceptance decision"],
+  "required_evidence": ["task contract", "task input", "semantic anchors", "target output"]
+}

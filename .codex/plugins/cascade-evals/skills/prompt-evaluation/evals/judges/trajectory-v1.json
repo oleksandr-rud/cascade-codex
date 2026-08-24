@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "profile_id": "cascade-prompt-trajectory-v1",
+  "purpose": "Judge generated-prompt architecture and tier adaptation without seeing target correctness, outcome scores, eligibility, peer outputs, or acceptance decisions.",
+  "scale": {
+    "0": "Absent, unusable, or directly harmful.",
+    "1": "Major failures dominate; substantial repair is required.",
+    "2": "Partially sound but material defects remain.",
+    "3": "Sound and efficient with only minor defects.",
+    "4": "Fully satisfies the anchored dimension with no material defect."
+  },
+  "dimensions": [
+    {"id": "prompt_task_fit", "weight": 25, "description": "The prompt encodes the actual objective, inputs, constraints, exclusions, and output contract without solving the fixture."},
+    {"id": "context_and_source_control", "weight": 20, "description": "Context boundaries, authority, untrusted content, conflicts, and missing evidence are handled explicitly and proportionally."},
+    {"id": "instruction_efficiency", "weight": 20, "description": "Instructions are clear, non-duplicative, and no more elaborate than the task requires."},
+    {"id": "model_tier_adaptation", "weight": 20, "description": "Structure and explicitness fit the named neutral tier while preserving the invariant task contract."},
+    {"id": "validation_and_recovery", "weight": 15, "description": "The prompt defines realistic output validation, failure behavior, and bounded repair or escalation where applicable."}
+  ],
+  "threshold": 0.8,
+  "minimum_dimension_rating": 2,
+  "score_formula": "sum(weight * rating / 4) / 100",
+  "blind_exclusions": ["target output", "outcome judgment", "eligibility result", "peer outputs", "model ranking", "acceptance decision"],
+  "required_evidence": ["task contract", "named target model and tier", "generated prompt"]
+}

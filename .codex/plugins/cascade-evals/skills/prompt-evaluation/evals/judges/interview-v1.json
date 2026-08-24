@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "profile_id": "cascade-prompt-interview-v1",
+  "purpose": "Judge adaptive interview behavior without replacing deterministic state, question-count, intent, and final-prompt checks.",
+  "scale": {
+    "0": "Absent, unusable, or directly harmful.",
+    "1": "Major failures dominate; substantial repair is required.",
+    "2": "Partially correct but material defects remain.",
+    "3": "Correct and useful with only minor defects.",
+    "4": "Fully satisfies the anchored dimension with no material defect."
+  },
+  "dimensions": [
+    {"id": "trigger_precision", "weight": 25, "description": "The interaction asks only for genuine material gaps and does not interview complete or safely defaultable requests."},
+    {"id": "material_gap_coverage", "weight": 25, "description": "Every blocking request gap or source conflict needed for a reliable prompt is resolved, defaulted safely, or explicitly blocked."},
+    {"id": "question_utility", "weight": 20, "description": "Questions are concise, grounded, answerable, appropriately grouped, and cheaper than proceeding incorrectly."},
+    {"id": "answer_merge", "weight": 15, "description": "Accepted answers update the intended fields, preserve unrelated decisions, avoid repeats, and handle refusal or invalidation correctly."},
+    {"id": "final_contract_coverage", "weight": 15, "description": "The ready prompt contains the resolved contract, and known builder omissions are repaired without blaming or re-questioning the user."}
+  ],
+  "threshold": 0.8,
+  "minimum_dimension_rating": 2,
+  "score_formula": "sum(weight * rating / 4) / 100",
+  "blind_exclusions": ["model ranking", "peer outputs", "acceptance decision"],
+  "required_evidence": ["fixture contract", "ordered interaction transcript", "deterministic checks"]
+}

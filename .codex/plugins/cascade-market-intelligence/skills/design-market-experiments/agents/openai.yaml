@@ -1,0 +1,6 @@
+interface:
+  display_name: "Design Market Experiments"
+  short_description: "Design falsifiable, decision-grade market tests."
+  default_prompt: "Use $design-market-experiments to design or assess a market test with real participants, predeclared success and kill criteria, and bias controls."
+policy:
+  allow_implicit_invocation: true

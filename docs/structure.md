@@ -31,17 +31,18 @@ config; keep reusable workflow rules in skills, agents, and patterns.
 | `.codex/skills/simulation-execution/` | Bounded selected-run lifecycle and execution receipt contract | `simulation-operator`, `develop-skill`, `codex-maintenance` |
 | `.codex/skills/simulation-evaluation/` | Read-only frozen-evidence, policy, oracle, semantic, and claim-support contract | `simulation-evaluator`, `develop-skill`, `codex-maintenance` |
 
-The repository marketplace at `.agents/plugins/marketplace.json` catalogs the
-Cascade Prompt source at `.codex/plugins/cascade-prompt/`. Keeping catalog and
-source in the repository makes the package portable; it does not by itself
-mean the plugin is installed, active, or published.
+The repository marketplace at `.agents/plugins/marketplace.json` catalogs all
+Cascade plugin source packages under `.codex/plugins/<plugin-name>/`: Prompt,
+Simulations, Evals, Agent Architect, Harness Maintainer, Personas, Product, and
+Market Intelligence. Keeping catalog and source in the repository makes the
+packages portable; it does not by itself mean a plugin is installed, active, or
+published.
 
-The optional `cascade-simulations` personal plugin is installed outside this
-repository and is intentionally not mirrored into `.codex/skills/` or
-`.codex/plugins/`. Cascade references its `cascade-simulations:simulate`
-entrypoint through `.codex/config.toml`; the plugin owns compact dynamic-actor
-definitions, while the `product-evals/` tree below remains campaign evaluation
-infrastructure.
+Plugin-packaged skills remain independently namespaced and are intentionally
+not mirrored into `.codex/skills/`. Cascade references
+`cascade-simulations:simulate` through `.codex/config.toml`; that plugin owns
+compact dynamic-actor definitions, while the `product-evals/` tree below
+remains campaign evaluation infrastructure.
 
 ## Active Work Paths
 

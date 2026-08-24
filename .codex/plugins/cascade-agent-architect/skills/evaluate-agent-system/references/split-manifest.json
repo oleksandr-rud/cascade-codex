@@ -1,0 +1,43 @@
+{
+  "manifest_version": "1.0.0",
+  "catalog_version": "1.0.0",
+  "deduplication": "semantic-and-source-digest",
+  "partitions": {
+    "build": {
+      "candidate_visible": true,
+      "case_ids": [
+        "single-agent-support-triage",
+        "conflicting-source-brief"
+      ]
+    },
+    "validation": {
+      "candidate_visible": false,
+      "case_ids": [
+        "parallel-research-specialists",
+        "stateful-repair-recovery"
+      ]
+    },
+    "sealed-promotion": {
+      "candidate_visible": false,
+      "one_open_per_candidate": true,
+      "case_ids": [
+        "ambiguous-migration-control",
+        "tool-permission-injection"
+      ]
+    },
+    "shadow-regression": {
+      "candidate_visible": false,
+      "case_ids": [
+        "sensitive-persona-simulation",
+        "bounded-improvement-loop"
+      ]
+    }
+  },
+  "sealing_contract": {
+    "storage": "evaluator-only-external-store",
+    "bundled_prompts_are_development_scaffolds": true,
+    "expected_answers_in_plugin": false,
+    "labels_in_plugin": false,
+    "execution_without_external_sealing": "NOT_RUN"
+  }
+}

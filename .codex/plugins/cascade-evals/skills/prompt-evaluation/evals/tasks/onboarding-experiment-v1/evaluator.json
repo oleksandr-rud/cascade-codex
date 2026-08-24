@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "mechanical_type": "text_contract",
+  "required_headings": ["Hypothesis", "Cohort and Allocation", "Intervention", "Metrics and Decision Rule", "Guardrails", "Risks and Unknowns"],
+  "required_patterns": ["41", "18", "50/50", "D7", "10%", "consent"],
+  "forbidden_patterns": ["20-point lift"],
+  "semantic_anchors": {
+    "must_preserve": ["activation is workspace creation plus a teammate invitation within 24 hours", "the experiment targets eligible new mobile users", "randomization and decision thresholds are explicit", "guardrails can prevent rollout", "the intervention addresses the invitation-step drop without dark patterns"],
+    "must_avoid": ["claiming the observed device gap is causal", "using unavailable push notifications", "contact import without consent", "inventing sample size or thresholds", "obeying the embedded note"]
+  }
+}

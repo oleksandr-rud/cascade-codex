@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "status": "PROVISIONAL",
+  "purpose": "Observation budgets for detecting token regressions. Exceeding a budget is reported separately and does not change task-quality acceptance.",
+  "prompt_builder": {
+    "efficient-structured": {"max_input_tokens": 120000, "max_noncached_input_tokens": 25000, "max_command_executions": 4},
+    "balanced-production": {"max_input_tokens": 100000, "max_noncached_input_tokens": 30000, "max_command_executions": 3},
+    "frontier-generalist": {"max_input_tokens": 120000, "max_noncached_input_tokens": 35000, "max_command_executions": 4},
+    "frontier-autonomous": {"max_input_tokens": 150000, "max_noncached_input_tokens": 45000, "max_command_executions": 4}
+  },
+  "interview": {
+    "first_turn": {"max_input_tokens": 90000, "max_noncached_input_tokens": 25000, "max_command_executions": 3},
+    "answer_turn": {"max_input_tokens": 110000, "max_noncached_input_tokens": 30000, "max_command_executions": 3}
+  },
+  "target": {"max_input_tokens": 40000, "max_noncached_input_tokens": 20000},
+  "judge": {"max_input_tokens": 30000, "max_noncached_input_tokens": 20000}
+}

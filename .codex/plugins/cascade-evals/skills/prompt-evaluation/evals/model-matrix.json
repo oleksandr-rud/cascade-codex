@@ -1,0 +1,83 @@
+{
+  "schema_version": 1,
+  "matrix_id": "cascade-prompt-model-matrix-v1",
+  "comparison_unit": "prompt_builder_model + generated_prompt + target_model + context_plan + output_controls",
+  "defaults": {
+    "prompt_model": "gpt-5.6-terra",
+    "target_model": "gpt-5.6-terra",
+    "judge_model": "gpt-5.6-terra"
+  },
+  "same_version_requirements": [
+    "task_catalog",
+    "task_fixture",
+    "evaluator",
+    "runner",
+    "judge_profiles",
+    "execution_surface"
+  ],
+  "configurations": [
+    {
+      "id": "openai-luna-efficient",
+      "prompt_model": "gpt-5.6-luna",
+      "target_model": "gpt-5.6-luna",
+      "tier": "efficient-structured",
+      "execution_adapter": "codex-cli",
+      "availability": "AVAILABLE_IN_CURRENT_RUNTIME",
+      "tasks": ["structured-invoice-v1", "support-triage-v1", "brand-context-copy-v1"]
+    },
+    {
+      "id": "openai-terra-balanced",
+      "prompt_model": "gpt-5.6-terra",
+      "target_model": "gpt-5.6-terra",
+      "tier": "balanced-production",
+      "execution_adapter": "codex-cli",
+      "availability": "AVAILABLE_IN_CURRENT_RUNTIME",
+      "tasks": ["support-triage-v1", "source-conflict-brief-v1", "incident-root-cause-v1", "product-prioritization-v1", "onboarding-experiment-v1", "code-review-race-v1", "brand-context-copy-v1", "business-opportunity-screen-v1", "product-concept-scope-v1", "pricing-package-experiment-v1"]
+    },
+    {
+      "id": "openai-sol-generalist",
+      "prompt_model": "gpt-5.6-sol",
+      "target_model": "gpt-5.6-sol",
+      "tier": "frontier-generalist",
+      "execution_adapter": "codex-cli",
+      "availability": "AVAILABLE_IN_CURRENT_RUNTIME",
+      "tasks": ["source-conflict-brief-v1", "incident-root-cause-v1", "product-prioritization-v1", "onboarding-experiment-v1", "code-review-race-v1", "business-opportunity-screen-v1", "product-concept-scope-v1", "pricing-package-experiment-v1"]
+    },
+    {
+      "id": "openai-sol-autonomous",
+      "prompt_model": "gpt-5.6-sol",
+      "target_model": "gpt-5.6-sol",
+      "tier": "frontier-autonomous",
+      "execution_adapter": "codex-cli",
+      "availability": "AVAILABLE_IN_CURRENT_RUNTIME",
+      "tasks": ["migration-control-plan-v1", "api-version-migration-plan-v1"]
+    },
+    {
+      "id": "anthropic-haiku-efficient",
+      "prompt_model": "claude-haiku-4-5",
+      "target_model": "claude-haiku-4-5",
+      "tier": "efficient-structured",
+      "execution_adapter": "command-json-v1",
+      "availability": "ADAPTER_CONFIG_REQUIRED",
+      "tasks": ["structured-invoice-v1", "support-triage-v1", "brand-context-copy-v1"]
+    },
+    {
+      "id": "anthropic-opus-generalist",
+      "prompt_model": "claude-opus-5",
+      "target_model": "claude-opus-5",
+      "tier": "frontier-generalist",
+      "execution_adapter": "command-json-v1",
+      "availability": "ADAPTER_CONFIG_REQUIRED",
+      "tasks": ["source-conflict-brief-v1", "incident-root-cause-v1", "product-prioritization-v1", "onboarding-experiment-v1", "code-review-race-v1", "business-opportunity-screen-v1", "product-concept-scope-v1", "pricing-package-experiment-v1"]
+    },
+    {
+      "id": "anthropic-fable-autonomous",
+      "prompt_model": "claude-fable-5",
+      "target_model": "claude-fable-5",
+      "tier": "frontier-autonomous",
+      "execution_adapter": "command-json-v1",
+      "availability": "ADAPTER_CONFIG_REQUIRED",
+      "tasks": ["migration-control-plan-v1", "api-version-migration-plan-v1"]
+    }
+  ]
+}

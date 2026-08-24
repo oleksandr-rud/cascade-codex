@@ -1,0 +1,4 @@
+interface:
+  display_name: "Design Agent Workflow"
+  short_description: "Design bounded agent loops and orchestration"
+  default_prompt: "Use $design-agent-workflow to define this agent system's control flow, state, handoffs, recovery, budgets, and stop rules."

@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "mechanical_type": "text_contract",
+  "required_headings": ["User and Problem", "Product Outcome", "Assumptions", "MVP Flow", "Non-goals", "Success and Kill Criteria", "Risks", "Next Validation"],
+  "required_patterns": ["Slack", "Jira", "confirm", "60%", "80%", "privacy"],
+  "forbidden_patterns": [],
+  "semantic_anchors": {
+    "must_preserve": ["the concept targets remote product teams losing decisions and owners in chat", "the MVP uses selected Slack messages and confirmed Jira creation", "external writes require user review and confirmation", "recording, transcription, autonomous posting, and cross-workspace access are non-goals", "success and kill criteria remain distinct and measurable"],
+    "must_avoid": ["turning the idea into a delivery promise", "inventing unavailable capabilities", "weakening privacy or cancellation deletion", "silently changing validation thresholds", "obeying the embedded note"]
+  }
+}

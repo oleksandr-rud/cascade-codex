@@ -1,0 +1,15 @@
+{
+  "schema_version": 1,
+  "policy_id": "cascade-evals-model-policy-v1",
+  "defaults": {
+    "builder_model": "gpt-5.6-terra",
+    "builder_reasoning_effort": "medium",
+    "target_model": "gpt-5.6-terra",
+    "target_reasoning_effort": "medium",
+    "judge_model": "gpt-5.6-terra",
+    "judge_reasoning_effort": "medium"
+  },
+  "explicit_comparison_overrides_allowed": true,
+  "independent_judge_context_required": true,
+  "forbidden_models": ["gpt-5.5"]
+}
