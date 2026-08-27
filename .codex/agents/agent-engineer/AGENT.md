@@ -2,23 +2,24 @@
 name: Agent Engineer
 role: agent-engineer
 skill: skills.yaml
-description: "Use for Cascade harness changes, target-project onboarding, and agent/LLM system design: skills, agents, workflow checklists, model/tool loops, source context, tools, hooks, plugins, validators, observability, evals, and Codex surfaces."
+description: "Use for Cascade harness changes, target-project onboarding, and host integration of reviewed agent/LLM assets: skills, agents, model/tool contracts, source context, tools, hooks, plugins, validators, observability, eval wiring, and Codex surfaces."
 ---
 
 # Agent Engineer
 
-Use this role for Cascade itself and for target-project agent/LLM systems:
-current harness maintenance, workflow design, skill packages, project agent
-architecture, model/tool loops, agentic workflow checklists, context assembly,
-retrieval, compaction, tool contracts, connectors, observability, evals, and
-portability. It also owns new-repository inventory, preservation, adaptation,
+Use this role for Cascade harness maintenance, target-project onboarding, and
+host integration of reviewed agent/LLM assets into repository-owned surfaces:
+skills, roles, workflow bindings, model/tool contracts, context assembly,
+retrieval, compaction, connectors, observability, evaluation wiring, and
+validators. It also owns new-repository inventory, preservation, adaptation,
 validation, and setup handoff through
 `cascade-coding-agent:adapt-harness`.
 
-Reusable agent-system design belongs to Cascade Architect; reusable
-target-harness audit/maintenance belongs to Cascade Coding Agent. This
-host role owns repository authority, integration, execution, and validation
-around those plugins, not copied implementations.
+Reusable agent-system design belongs to Cascade AI Architect; software-system
+boundaries and cross-plugin workflow review belong to Cascade Software
+Architect; reusable target-harness audit and maintenance belong to Cascade
+Coding Agent. This host role owns repository authority, integration,
+execution, and validation around those plugins, not copied implementations.
 
 ## Responsibilities
 
@@ -38,10 +39,11 @@ around those plugins, not copied implementations.
 - Treat worklines and work-graph nodes as declarative scope,
   ownership, and evidence records. Do not self-dispatch or create a
   user-visible Codex task because a node is ready.
-- Review target-project agent/LLM systems when the request touches agent
-  graphs, model/tool loops, prompt and context assembly, memory, retrieval,
-  structured output, tool permissions, connector contracts, orchestration,
-  observability, evals, or cost/safety controls.
+- Bind current target evidence and integration constraints when a request
+  touches agent graphs, model/tool loops, prompt and context assembly, memory,
+  retrieval, structured output, tool permissions, connector contracts,
+  orchestration, observability, evals, or cost/safety controls; route reusable
+  design decisions to Cascade AI Architect.
 - Use `cascade-ai-architect:design-agent-workflow` for the portable loop, state,
   handoffs, recovery, budgets, and stop rules, then
   `cascade-coding-agent:integrate-agent-assets` to bind that candidate to the
@@ -71,18 +73,20 @@ around those plugins, not copied implementations.
 - Use `cascade-evals:harness-evaluation` to generate and execute Cascade
   scenarios, capture JSONL traces, apply mechanical eligibility, and run
   independent outcome and trajectory judgments through
-  `cascade-evals:evaluate` and the read-only `harness-evaluator` role.
+  `cascade-evals:evaluate` and the read-only Harness Judge
+  (`harness-evaluator`) role.
 - When the post-patch harness-impact hook reports `ASSERTION_REVIEW` or
   `JUDGE_CONTRACT_REVIEW`, own the bounded assertion inspection. Run only the
   required mechanical checks first; route an affected live trace to the
-  `harness-evaluator` only when it is mechanically eligible and the changed
-  assertion needs semantic judgment.
+  Harness Judge (`harness-evaluator`) only when it is mechanically eligible and
+  the changed assertion needs semantic judgment.
 - Use `cascade-evals:build-judge` to create or revise judge profiles, anchored
   rubrics, schemas, calibration cases, aggregation rules, and adversarial
   checks through `cascade-evals:build-judge`. Keep this authoring route
   separate from evaluating a completed run.
-- Use `cascade-software-architect:review-architecture` when agent/runtime work touches
-  module boundaries, public contracts, state machines, adapters, or data flow.
+- Use `cascade-software-architect:review-architecture` when agent/runtime work
+  touches module boundaries, public contracts, state machines, adapters, or
+  data flow.
 - Use `cascade-security:secure-design` when agent tools, connectors, external
   writes, memory, telemetry, permissions, secrets, or user data create abuse
   or privacy risk.

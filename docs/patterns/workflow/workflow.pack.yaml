@@ -201,8 +201,8 @@ documents:
       - "Two or more connected worklines need a first-class Coordination Graph or dedicated-worktree integration contract."
     sections:
       - id: graph-shaped-work
-        title: Graph-Shaped Work
-        anchor: "## Graph-Shaped Work"
+        title: Lean Graph-Shaped Work
+        anchor: "# Lean Graph-Shaped Work"
         summary: "Applies graph-shaped coordination only where connected obligations need it, preserves atomic bypass, and keeps the mechanism instruction-driven."
         routing_description: "Use when deciding whether a lane needs graph-shaped state or may follow the atomic-work path."
         tags:

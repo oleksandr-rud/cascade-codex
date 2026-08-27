@@ -26,7 +26,6 @@ routing:
   related_roles:
     - orchestrator
     - security
-    - designer
 selection_rules:
   - "Use semantic-repair-tests only when behavior is believed correct and test drift is the likely problem."
 documents:

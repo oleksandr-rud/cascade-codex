@@ -7,9 +7,10 @@ Cascade Design packages four reusable design workflows:
 - `cascade-design:visual-qa`
 - `cascade-design:design-system`
 
-The package is review-first and evidence-bound. It does not ship a custom
-Designer agent, browser/Figma runtime, product authority, implementation loop,
-or evaluation runtime. Those remain host or peer-plugin responsibilities.
+The package is review-first and evidence-bound. It does not require a dedicated
+host role or ship browser/Figma runtime, product authority, implementation,
+functional acceptance, release approval, or evaluation runtime. Those remain
+requesting-host or peer-plugin responsibilities.
 
 Validate the package with:
 

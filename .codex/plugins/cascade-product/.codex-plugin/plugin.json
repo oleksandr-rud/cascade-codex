@@ -1,6 +1,6 @@
 {
   "name": "cascade-product",
-  "version": "0.1.24+codex.20260826233510",
+  "version": "0.1.24+codex.20260827162112",
   "description": "Manage evidence-bound product discovery, definition, validation, delivery handoff, and learning while delegating persona, market, prompt, simulation, and evaluation mechanics to their owning Cascade plugins.",
   "author": {
     "name": "Cascade"

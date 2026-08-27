@@ -8,7 +8,7 @@ host projections. No plugin is a universal hub.
 flowchart TB
     TE[Validated Task Envelope<br/>claims, policies, authority]
     CAT[Digest-bound capability catalog]
-    PW[Cascade Architect<br/>Plan Workflow]
+    PW[Cascade Software Architect<br/>Plan Workflow]
     DAG[Validated plugin DAG<br/>dispatch_authorized: false]
 
     TE --> PW
@@ -22,7 +22,8 @@ flowchart TB
         D[Cascade Design]
         S[Cascade Security]
         AP[Cascade Prompt]
-        ARCH[Cascade Architect<br/>architecture and review]
+        SA[Cascade Software Architect<br/>software architecture and review]
+        AIA[Cascade AI Architect<br/>agent behavior and assets]
         HE[Cascade Coding Agent]
         SIM[Cascade Simulations]
     end
@@ -33,7 +34,8 @@ flowchart TB
 
     DAG -. selects exact routes .-> M
     DAG -. selects exact routes .-> P
-    DAG -. selects exact routes .-> ARCH
+    DAG -. selects exact routes .-> SA
+    DAG -. selects exact routes .-> AIA
     DAG -. selects exact routes .-> AP
     DAG -. selects exact routes .-> HE
 
@@ -42,7 +44,7 @@ flowchart TB
     P --> M
     PE --> M
     M --> AP
-    ARCH --> AP
+    AIA --> AP
     P --> PM
     M --> PM
     D --> PM
@@ -76,10 +78,11 @@ flowchart TB
 - Product defines accepted product behavior; Market owns research, opportunity
   assessment, experiments, positioning, and message language; Personas owns
   canonical human models; Design and Security own their specialist methods;
-  Architect owns software/agent architecture, pattern selection, architecture
-  and change review, and multi-plugin Plan Workflow; Prompt owns prompt
-  construction; Coding Agent owns harness engineering; Simulations owns
-  bounded actor execution contracts.
+  Software Architect owns software architecture, pattern selection,
+  architecture/change review, and multi-plugin Plan Workflow; AI Architect
+  owns agent behavior and design assets; Prompt owns prompt construction;
+  Coding Agent owns harness engineering; Simulations owns bounded actor
+  execution contracts.
 - Plan Workflow selects the smallest sufficient set from typed capability
   descriptors, expands required dependencies, orders artifact edges, and names
   safe parallel groups and merge owners. It never dispatches or grants
@@ -102,7 +105,8 @@ flowchart TB
 |---|---|---|
 | Market-to-product learning | Market + Product + Project Management | Persist an accepted initiative or experiment lane only if needed |
 | Positioning-to-qualified prompt | Market + Prompt + Evals | Preserve accepted brand projection and frozen prompt-evaluation receipts |
-| Architecture and fixed-point review | Architect patterns/design + Architect review | Implement only after host authority; validate the resulting diff separately |
+| Software architecture and fixed-point review | Software Architect patterns/design + Software Architect review | Implement only after host authority; validate the resulting diff separately |
+| AI-agent design and qualification | AI Architect + Prompt + Evals; Software Architect for affected software boundaries | Integrate reviewed assets through Coding Agent, then validate the target separately |
 | Persona-based discovery | Personas + Product or Market | Preserve accepted source references |
 | Actor simulation | Personas + Prompt + Simulations + Evals | `cascade-simulations:execute-simulation-campaign`, freeze evidence, validate |
 | Agile MVP delivery | Product + Project Management; Design/Security as applicable | Execute only the accepted first iteration, then review and validate |

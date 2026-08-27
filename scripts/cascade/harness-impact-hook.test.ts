@@ -81,7 +81,7 @@ describe("harness impact PostToolUse hook", () => {
     const context = output.hookSpecificOutput.additionalContext;
     expect(context).toContain("Harness impact hook: ASSERTION_REVIEW");
     expect(context).toContain("Use the Agent Engineer contract");
-    expect(context).toContain("Harness Evaluator only after");
+    expect(context).toContain("Harness Judge (`harness-evaluator`) only after");
     expect(context).toContain("focused live review as PASS, FAIL, BLOCKED, NOT_RUN, or NOT_APPLICABLE");
     expect(context).toContain("does not grant authority or prove review");
   });

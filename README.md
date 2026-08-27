@@ -182,20 +182,18 @@ clear boundary:
 | Role | Model | Owns |
 |---|---|---|
 | `orchestrator` | `gpt-5.6-sol` | Proportional normal-task routing, plugin-backed market/product work, implementation, and evidence. |
-| `agent-engineer` | `gpt-5.6-sol` | Cascade maintenance, target onboarding/adaptation, and agent/LLM system design, including tools, memory, simulations, observability, evals, and Codex surfaces. |
+| `agent-engineer` | `gpt-5.6-sol` | Cascade maintenance, target onboarding/adaptation, and host integration of reviewed agent/LLM assets, including tools, memory, observability, eval wiring, and Codex surfaces. |
 | `security` | `gpt-5.6-sol` | Read-only host selection of Cascade Security methods, redacted target evidence, and repository-specific validation or implementation handoff. |
-| `designer` | `gpt-5.6-sol` | Read-only host selection of Cascade Design methods, current target evidence, and design handoff. |
-| `harness-evaluator` | `gpt-5.6-sol` | Read-only outcome or trajectory judgment of eligible Cascade scenario outputs and traces after deterministic hard gates. |
+| `harness-evaluator` | `gpt-5.6-sol` | Human-facing Harness Judge for read-only outcome or trajectory judgment of eligible Cascade scenario outputs and traces after deterministic hard gates. |
 | `simulation-operator` | `gpt-5.6-sol` | Bounded mutable execution of one approved command, terminal, browser, desktop, mobile, or agent-response campaign with evidence freezing and cleanup. |
 | `simulation-evaluator` | `gpt-5.6-sol` | Independent read-only evaluation of frozen cross-contour evidence, policies, oracles, semantic claims, and claim support. |
 
-Agent Engineer is not limited to Cascade internals. Use it for target-project
-agent and LLM systems too: framework-backed agent runtimes, project-owned
-agents, model routing, prompt/context assembly, retrieval and memory, tool
-permission boundaries, structured outputs, traces, evals, and safety controls.
-When those decisions require product/runtime code changes, the implementation
-still routes through planning, architecture or secure-design review when
-needed, `implement-change`, and validation.
+Agent Engineer is not limited to Cascade internals, but it integrates rather
+than owns reusable architecture. Cascade AI Architect designs agent behavior;
+Cascade Software Architect owns software boundaries and review; Cascade Coding
+Agent owns portable harness methods. Agent Engineer binds their reviewed
+artifacts to current target roles, prompts, tools, memory, permissions,
+observability, eval wiring, and validators under repository authority.
 
 The 9 registered host skills are repository context, persistence, mutation,
 validation, target execution/repair, and closeout boundaries;
@@ -203,17 +201,18 @@ portable specialist methods are namespaced plugin skills. They cluster into:
 
 - Core host execution: `context`, `plan-change`, `implement-change`,
   `run-qa-plan`, `validate-change`, `repair-tests`, and `closeout`, plus the
-  namespaced Cascade Architect, Project Management, and QA skills.
+  namespaced Cascade Software Architect, Project Management, and QA skills.
 - Spec and product routing: `context` in Discovery mode and `create-spec`,
   backed directly by Cascade Product, Personas, Market, and Design.
 - Market and business analysis: direct `cascade-market:research-market`,
   `evaluate-market-opportunity`, `design-market-experiments`, and
   `brand-positioning` routes.
-- Specialist review: namespaced Cascade Architect, Cascade Security, and
+- Specialist review: namespaced Cascade Software Architect, Cascade Security, and
   Cascade Design skills selected by the applicable host role.
-- Harness and agent-system design/maintenance: Cascade Architect and Cascade
-  Coding Agent plugin skills, plus host `pattern-context` where repository
-  persistence adds value.
+- Agent-system design and harness integration: Cascade AI Architect designs,
+  Cascade Software Architect reviews affected software boundaries, Cascade
+  Coding Agent integrates or maintains, and host `pattern-context` persists
+  reusable repository context only when needed.
 
 `cascade-simulations:manage-simulation-campaign` owns versioned campaign definition, selection,
 coordination, replay planning, receipt aggregation, and reporting across all
@@ -223,8 +222,8 @@ run, evidence freeze, cleanup, and execution receipt.
 `cascade-evals:simulation-evaluation` and `simulation-evaluator` independently judge frozen
 cross-contour evidence. Product-visible quality oracles and assessment remain
 with Cascade QA, their target execution remains with `run-qa-plan`, Cascade
-trace grading routes through `cascade-evals:harness-evaluation` and the
-`harness-evaluator`; runner or schema changes use
+trace grading routes through `cascade-evals:harness-evaluation` and the Harness
+Judge (`harness-evaluator`); runner or schema changes use
 `cascade-coding-agent:maintain-harness` with host-authorized implementation.
 
 ## Documentation And Memory

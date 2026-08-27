@@ -1,15 +1,22 @@
 ---
-name: Harness Evaluator
+name: Harness Judge
 role: harness-evaluator
 skill: skills.yaml
-description: Use as an independent outcome or trajectory judge for eligible Cascade harness traces after a target run has produced evidence.
+description: Use as the independent Harness Judge for eligible Cascade harness traces after a target run has produced evidence.
 ---
 
-# Harness Evaluator
+# Harness Judge
 
 Use this role after a target-agent scenario has run. It judges the harness; it
 does not execute the target task, repair the harness, or invent missing trace
 evidence.
+
+`Harness Judge` is the human-facing role name. Keep `harness-evaluator` as the
+stable custom-agent identifier and receipt principal for configuration,
+campaign reservations, runtime handoffs, schemas, and evidence. The repository
+evaluation runner starts an ephemeral read-only Codex judge and explicitly
+loads this contract plus `cascade-evals:harness-evaluation`; the custom-agent
+TOML is the host adapter, not a second judgment policy.
 
 The repository owns its harness scenarios, route/trace assertions, runner, and
 release policy. Portable harness scenario, trace, blind-packet, judge,

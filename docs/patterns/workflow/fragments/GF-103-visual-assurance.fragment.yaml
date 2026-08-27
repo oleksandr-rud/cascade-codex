@@ -29,7 +29,7 @@ actor:
     - visual-qa
     - responsive-validation
   preferred_existing_roles:
-    - designer
+    - orchestrator
 skill_calls:
   - skill: cascade-design:visual-qa
     when: rendered or prototype visual evidence is available

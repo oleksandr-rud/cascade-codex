@@ -7,7 +7,7 @@ compactly in the target config or existing owner documentation.
 Status: `<draft | current | blocked | superseded>`
 Source project: `<PROJECT_NAME>`
 Area: `<AREA>`
-Owner route: `<agent-engineer | designer | security | orchestrator | other>`
+Owner route: `<agent-engineer | security | orchestrator | namespaced-plugin | other>`
 Source snapshot: `<revision-or-digest>`
 
 ## Current contract

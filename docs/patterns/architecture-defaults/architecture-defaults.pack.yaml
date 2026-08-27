@@ -37,7 +37,6 @@ routing:
   related_roles:
     - agent-engineer
     - orchestrator
-    - designer
 selection_rules:
   - "Select one or more pair IDs from target evidence; never load the full catalog by default."
   - "Use frontend-architecture-defaults for web frontend base and policy selection."

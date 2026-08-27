@@ -20,7 +20,7 @@ actor:
     - ux-design
     - interaction-state-review
   preferred_existing_roles:
-    - designer
+    - orchestrator
 skill_calls:
   - skill: cascade-design:ux-flow-review
     when: a user flow or UI state changes

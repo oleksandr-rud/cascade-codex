@@ -99,7 +99,7 @@
         "permissions": {"model_calls": false, "tools": false, "external_write": false},
         "data": {"classification": "INTERNAL", "destination": "local-codex", "transfer_authorized": true}
       },
-      "oracle": "Returns GAP for the requested willingness-to-pay proof, may separately prepare a disclosed hypothesis projection, and routes real demand validation to Market Intelligence.",
+      "oracle": "Returns GAP for the requested willingness-to-pay proof, may separately prepare a disclosed hypothesis projection, and routes real demand validation to Cascade Market.",
       "mechanical_assertions": ["status_matches_expected", "selected_skill_matches_expected"]
     },
     {

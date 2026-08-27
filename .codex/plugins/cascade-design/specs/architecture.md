@@ -8,10 +8,11 @@ the target design system, implement code, certify compliance, approve releases,
 or self-accept evaluation results. A target repository's named product, design,
 implementation, validation, and release owners retain those decisions.
 
-The host Designer custom agent is an optional execution role. It provides
-read-only isolation, current target context, and multi-skill ordering. It is
-not packaged here because custom-agent configuration and repository paths are
-host concerns.
+No dedicated host Designer role is required. The requesting role or an
+Orchestrator invokes the smallest namespaced skill directly, supplies current
+target context, and preserves each artifact's read-only authority and handoff
+flags. A host may add its own sandbox for stronger isolation, but that sandbox
+must not become a second copy of the design method.
 
 ## Skill boundary
 

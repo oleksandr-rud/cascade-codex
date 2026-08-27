@@ -1,6 +1,6 @@
 {
   "name": "cascade-market",
-  "version": "0.2.0+codex.20260827155001",
+  "version": "0.2.0+codex.20260827163437",
   "description": "Research markets, evaluate opportunities, design decision-grade experiments, and create evidence-backed positioning and messaging without converting synthetic actors into market proof.",
   "author": {
     "name": "Cascade"
@@ -28,8 +28,7 @@
     ],
     "defaultPrompt": [
       "Research this market with a current evidence ledger.",
-      "Evaluate and challenge this market opportunity.",
-      "Design a market experiment with success and kill criteria.",
+      "Evaluate this market opportunity or design a bounded validation experiment.",
       "Create evidence-backed positioning and messaging for this product."
     ]
   }

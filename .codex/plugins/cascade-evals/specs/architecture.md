@@ -19,8 +19,9 @@ plugins retain their domain artifacts and adapt them to this contract.
 
 Cascade Prompt owns prompt authoring. Cascade Simulations owns actors,
 interfaces, bounded execution, evidence freezing, and run-integrity review.
-Cascade Architect owns architecture-specific cases and rubrics. Cascade Harness
-Engineering owns target-repository harness integration and repair.
+Cascade AI Architect owns agent-architecture-specific cases and rubrics;
+Cascade Software Architect owns software-architecture review subjects. Cascade
+Coding Agent owns target-repository harness integration and repair.
 
 `scripts/run_agent_evaluation.py` is the executable agent-evaluation adapter.
 It recomputes the subject allowlist digest; binds the contract, suite, profiles,

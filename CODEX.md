@@ -27,20 +27,22 @@ durable paths, target commands, campaign state, and acceptance.
 |---|---|---|
 | Prompt creation and prompt diagnosis | `cascade-prompt:prompt` | Requesting role |
 | Cross-plugin claim, policy, dependency, and artifact ordering | `cascade-software-architect:plan-workflow` | Orchestrator |
-| Software, plugin, and workflow architecture, patterns, and independent review | `cascade-software-architect:<skill>` | Agent Engineer or requesting role |
-| AI-agent topology, behavior, roles, skills, prompt briefs, persona requirements, and evaluation briefs | `cascade-ai-architect:<skill>` | Agent Engineer or requesting role |
+| Software, plugin, and workflow architecture, patterns, and independent review | `cascade-software-architect:<skill>` | Requesting role; Agent Engineer for host integration |
+| AI-agent topology, behavior, roles, skills, prompt briefs, persona requirements, and evaluation briefs | `cascade-ai-architect:<skill>` | Requesting role; Agent Engineer for host integration |
 | Harness audit, maintenance, and asset integration | `cascade-coding-agent:<skill>` | Agent Engineer |
 | Market research, opportunity scoring, experiments | `cascade-market:<skill>` | Orchestrator |
 | Positioning, messaging, naming, tone, proof, and trust language | `cascade-market:brand-positioning` | Orchestrator |
 | Product definition, lifecycle, and validation | `cascade-product:<skill>` | Orchestrator |
 | Canonical personas and compiled projections | `cascade-personas:<skill>` | Orchestrator |
-| UX, accessibility, visual, and design-system review | `cascade-design:<skill>` | Designer or Orchestrator |
+| UX, accessibility, visual, and design-system review | `cascade-design:<skill>` | Requesting role or Orchestrator |
 | Codebase, auth, and secure-design review | `cascade-security:<skill>` | Security or Agent Engineer |
 | Bounded actor simulation and run review | `cascade-simulations:<skill>` | Requesting role |
 | Approved simulation-campaign execution and evidence freeze | `cascade-simulations:execute-simulation-campaign` | Simulation Operator |
 | Frozen simulation outcome or policy judgment | `cascade-evals:simulation-evaluation` | Simulation Evaluator |
-| Cascade route, skill, agent, output, or JSONL-trace evaluation | `cascade-evals:harness-evaluation` | Harness Evaluator |
-| Prompt, agent, harness, simulation, and judge evaluation | `cascade-evals:<skill>` | Harness or Simulation Evaluator as applicable |
+| Cascade route, skill, agent, output, or JSONL-trace evaluation | `cascade-evals:harness-evaluation` | Harness Judge (`harness-evaluator`) |
+| Prompt or adaptive-interview evaluation | `cascade-evals:prompt-evaluation` | Requesting role; independent judge identity declared by the frozen evaluation |
+| AI-agent, role, skill, workflow, tool-loop, or architecture evaluation | `cascade-evals:agent-evaluation` | Requesting role; independent judge identity declared by the frozen evaluation |
+| Generic evaluation design or judge-contract construction | `cascade-evals:evaluate` or `cascade-evals:build-judge` | Requesting role; Agent Engineer only for harness-owned judge contracts |
 | Project planning, coordination, reconciliation, and closeout assessment | `cascade-project-management:<skill>` | Orchestrator |
 | Quality planning, test design, assessment, and defect triage | `cascade-qa:<skill>` | Requesting role |
 
@@ -113,16 +115,21 @@ do not duplicate plugin methods.
 - `orchestrator`: proportional normal routing, host market/product adapters,
   implementation, and evidence.
 - `agent-engineer`: Cascade maintenance, target onboarding through
-  `cascade-coding-agent:adapt-harness`, agent-system architecture, tooling, observability, and
-  eval integration.
-- `designer`: read-only Design plugin selection and current target evidence.
+  `cascade-coding-agent:adapt-harness`, reviewed agent-asset integration,
+  tooling, observability, and eval wiring.
 - `security`: read-only Security plugin selection with minimized sensitive
   evidence.
-- `harness-evaluator`: independent outcome and trajectory judgment after
-  deterministic harness gates.
+- `harness-evaluator`: human-facing Harness Judge for independent outcome and
+  trajectory judgment after deterministic harness gates.
 - `simulation-operator`: bounded mutable execution of one approved campaign
   run, evidence freezing, and cleanup.
 - `simulation-evaluator`: independent read-only judgment of a frozen run.
+
+The harness-evaluation CLI launches an ephemeral read-only Codex judge and
+explicitly loads `.codex/agents/harness-evaluator/AGENT.md` plus
+`cascade-evals:harness-evaluation`. The custom-agent TOML remains its host
+adapter, while `harness-evaluator` remains the machine principal recorded in
+handoffs, schemas, reservations, and receipts.
 
 Use role contracts locally. Spawn or delegate only when the user explicitly
 authorizes parallel agents. A separate user-visible task requires an explicit
@@ -189,7 +196,7 @@ Generated briefs are projections and never product authority.
 Cascade Personas owns the canonical human model and compiled consumer-specific
 projections. Cascade Simulations consumes a frozen simulation projection and
 derives a bounded actor; it does not rewrite persona truth. Product, Market,
-Cascade Architect, and Evals consume their own compiled projections.
+Cascade AI Architect, and Evals consume their own compiled projections.
 
 Use `cascade-simulations:simulate` for one actor, interface, brief, outcome,
 and bounded loop. Use `cascade-simulations:manage-simulation-campaign` only for

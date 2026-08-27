@@ -20,7 +20,7 @@ actor:
     - prototype-authoring
     - mockup-review
   preferred_existing_roles:
-    - designer
+    - orchestrator
 skill_calls:
   - skill: cascade-design:design-system
     when: prototype introduces reusable rules

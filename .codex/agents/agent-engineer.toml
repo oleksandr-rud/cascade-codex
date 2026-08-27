@@ -1,5 +1,5 @@
 name = "agent-engineer"
-description = "Cascade harness maintenance and target-project agent or LLM system design, including skills, tools, context, observability, and evals."
+description = "Cascade harness maintenance, target onboarding, and host integration of reviewed agent or LLM assets, including skills, tools, context, observability, and eval wiring."
 model = "gpt-5.6-sol"
 model_reasoning_effort = "high"
 developer_instructions = """

@@ -68,17 +68,21 @@ non-atomic.
 - Route quality planning, test design, frozen-evidence assessment, and defect
   triage through Cascade QA. QA is conditional and never the universal hub.
 - Route canonical human models through Cascade Personas and compile only the
-  projection needed by Product, Market, Cascade Architect, Evals, or Simulations.
-- Route design and security methods through their plugins and the read-only
-  specialist roles when independent review is useful.
-- Route harness or agent-system design and maintenance to Agent Engineer, which
-  binds target onboarding to `cascade-coding-agent:adapt-harness`.
+  projection needed by Product, Market, Cascade AI Architect, Evals, or
+  Simulations.
+- Route Design methods directly through the smallest `cascade-design:<skill>`.
+  Route Security methods through its plugin and the read-only Security role
+  when independent review or sensitive-evidence isolation is useful.
+- Route reusable agent-system design to Cascade AI Architect and host harness
+  integration or maintenance to Agent Engineer through Cascade Coding Agent.
 - Route one bounded actor loop to `cascade-simulations:simulate`. Use
   `cascade-simulations:manage-simulation-campaign` only for an explicitly
   versioned multi-case or multi-contour campaign.
 - Keep mutable campaign execution with Simulation Operator and independent
-  frozen-run judgment with Simulation Evaluator. Use Harness Evaluator for
-  coding-agent route or trace judgment.
+  frozen-run judgment with Simulation Evaluator. Use Harness Judge
+  (`harness-evaluator`) for coding-agent route or trace judgment. Prompt and
+  agent evaluations use the runner and independent judge identity declared by
+  their frozen Cascade Evals contracts, not the Harness Judge.
 - Route prompt creation or prompt-specific diagnosis through Cascade Prompt;
   route generic judge and subject evaluation lifecycles through Cascade Evals.
 

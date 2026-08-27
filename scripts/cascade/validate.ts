@@ -481,6 +481,14 @@ export function repoPluginMetadataErrors(
       errors.push(`${pluginName} manifest interface.${key} is missing`);
     }
   }
+  const defaultPrompts = manifest.interface?.defaultPrompt;
+  if (!Array.isArray(defaultPrompts) || defaultPrompts.length < 1 || defaultPrompts.length > 3) {
+    errors.push(`${pluginName} manifest interface.defaultPrompt must contain one to three prompts`);
+  } else if (defaultPrompts.some(
+    (prompt: unknown) => typeof prompt !== "string" || !prompt.trim() || prompt.length > 128,
+  )) {
+    errors.push(`${pluginName} manifest interface.defaultPrompt entries must be non-empty strings of at most 128 characters`);
+  }
   return errors;
 }
 

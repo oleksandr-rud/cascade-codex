@@ -10,5 +10,6 @@
 
 `plan-change`, `context`, `implement-change`, `validate-change`, and target
 closeout remain host capabilities because they bind current source, mutations,
-commands, evidence, and durable paths. Architecture and change review route
-directly to Cascade Architect.
+commands, evidence, and durable paths. Software architecture, cross-plugin
+workflow planning, and change review route directly to Cascade Software
+Architect.

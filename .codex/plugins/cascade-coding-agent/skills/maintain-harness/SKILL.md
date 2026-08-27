@@ -6,9 +6,10 @@ description: Implement a scoped change to an existing Codex or coding-agent harn
 # Maintain Harness
 
 Make the smallest structurally complete target-repository harness change. This
-skill maintains an existing harness; use Cascade Architect when the work
+skill maintains an existing harness; use Cascade AI Architect when the work
 first requires designing a new agent system or materially changing its
-topology.
+topology, and Cascade Software Architect when software boundaries or an
+independent change review are unresolved.
 
 ## Preconditions
 

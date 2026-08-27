@@ -39,7 +39,6 @@ routing:
   related_roles:
     - agent-engineer
     - orchestrator
-    - designer
 selection_rules:
   - "Load web-frontend as the base; do not load every frontend extension by default."
   - "Resolve architecture-selection first when topology is open, then tenancy and interfaces, the frontend stack profile, applicable policy extensions, frontend-stack, and independent infrastructure extensions."

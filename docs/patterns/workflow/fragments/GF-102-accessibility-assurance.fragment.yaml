@@ -28,7 +28,7 @@ actor:
     - accessibility-review
     - keyboard-and-semantics-validation
   preferred_existing_roles:
-    - designer
+    - orchestrator
 skill_calls:
   - skill: cascade-design:accessibility-review
     when: visible interaction or semantics change

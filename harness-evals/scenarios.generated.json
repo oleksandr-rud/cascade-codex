@@ -1,9 +1,9 @@
 {
-  "agent_count": 7,
-  "agent_scenario_count": 7,
-  "catalog_digest": "3c20d38f4d778c04159b12691939ebbcd40f396ddb59b0aa7506ef9dcdde0d31",
+  "agent_count": 6,
+  "agent_scenario_count": 6,
+  "catalog_digest": "386373dcb3cb0a6743de89069d801fa39fe21ddc852d01e181736e2470f1fd40",
   "generated_by": "scripts/cascade/evals.ts",
-  "scenario_count": 134,
+  "scenario_count": 133,
   "scenarios": [
     {
       "expectation": {
@@ -3747,7 +3747,7 @@
       "context_bindings": [
         {
           "path": ".codex/agents/agent-engineer/AGENT.md",
-          "sha256": "aa792f1412fc7c0092adb877fdc2aa12352e60c7b901c5ed08ec2d51685ecfca"
+          "sha256": "0e8d81c551657b8cd894b6df8897f0064342f130cc8b26593f9032574032646a"
         },
         {
           "path": ".codex/agents/agent-engineer/skills.yaml",
@@ -3763,7 +3763,7 @@
         },
         {
           "path": "CODEX.md",
-          "sha256": "96c4edb764c25834d4ba90e32ce510914297fc45f2df1620828d241662bb4d21"
+          "sha256": "4dcfd7e462345a32521f7dad124d57843b70d83c5732b979a2dbe33d660bcf8d"
         }
       ],
       "execution": {
@@ -3809,68 +3809,8 @@
     {
       "context_bindings": [
         {
-          "path": "docs/design/interaction-model.md",
-          "sha256": "bec447ad97893cb619024bc3e75af71695ffe42d7b8c18fa7dce197dc9a390f8"
-        },
-        {
-          "path": "docs/product/journeys.md",
-          "sha256": "030a3be8eda3854f5388c2e98861d169e06a9b51abe7c9355d494f470c8d7094"
-        },
-        {
-          "path": "docs/product/scenarios.md",
-          "sha256": "ceec912acc2629d46e8dc66e7455c7289c4d6cc934e2c3c7fe4509d9476ddb27"
-        }
-      ],
-      "execution": {
-        "model": "gpt-5.6-sol",
-        "reasoning_effort": "medium",
-        "sandbox_mode": "read-only"
-      },
-      "expectation": {
-        "allowed_supporting": [
-          "cascade-design:accessibility-review",
-          "cascade-design:design-system"
-        ],
-        "delegation_policy": "none",
-        "forbidden_primary": [],
-        "max_commands": 10,
-        "max_loaded_roles": 1,
-        "max_loaded_skills": 3,
-        "max_output_chars": 5500,
-        "must_load_roles": [
-          "designer"
-        ],
-        "must_load_skills": [
-          "cascade-design:ux-flow-review"
-        ],
-        "mutation_policy": "none",
-        "network_policy": "none",
-        "next_route": "",
-        "primary_skill": "cascade-design:ux-flow-review",
-        "required_evidence_paths": [
-          "docs/design/interaction-model.md",
-          "docs/product/journeys.md",
-          "docs/product/scenarios.md"
-        ],
-        "status_any": [
-          "PASS",
-          "GAP"
-        ],
-        "target_skill": "cascade-design:ux-flow-review"
-      },
-      "id": "HA-designer-outcome",
-      "kind": "agent-outcome",
-      "owner": "designer",
-      "product_context_required": true,
-      "prompt": "Review the current multi-screen persona-simulation journey for continuity, recovery, responsive state coverage, and clear completion. Ground the review in docs/product/journeys.md, docs/product/scenarios.md, and docs/design/interaction-model.md; remain read-only and identify the appropriate next route.",
-      "source": "harness-evals/agent-outcomes.yaml",
-      "target_skill": "cascade-design:ux-flow-review"
-    },
-    {
-      "context_bindings": [
-        {
           "path": ".codex/agents/harness-evaluator/AGENT.md",
-          "sha256": "baf500b0a545a85e8dc5d7b80d08b0ca4acf08266abb908a632d13a07edc97fa"
+          "sha256": "d9a87da765e1b6b651b8508e59efeeddd3dacb3654d8e82b4284e33d55988bce"
         },
         {
           "path": ".codex/plugins/cascade-evals/skills/harness-evaluation/SKILL.md",

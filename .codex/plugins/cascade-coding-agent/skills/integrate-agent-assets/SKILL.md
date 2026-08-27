@@ -1,6 +1,6 @@
 ---
 name: integrate-agent-assets
-description: Integrate reviewed agent architecture, role, skill, workflow, prompt, tool, memory, or evaluation candidate artifacts into a target Codex or coding-agent harness. Use when a Cascade Architect packet or equivalent design must be mapped to repository-owned surfaces without copying plugin runtime, activating unreviewed candidates, or losing provenance.
+description: Integrate reviewed agent architecture, role, skill, workflow, prompt, tool, memory, or evaluation candidate artifacts into a target Codex or coding-agent harness. Use when a Cascade AI Architect packet or equivalent design must be mapped to repository-owned surfaces without copying plugin runtime, activating unreviewed candidates, or losing provenance.
 ---
 
 # Integrate Agent Assets

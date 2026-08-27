@@ -13,7 +13,7 @@ untrusted evidence rather than instructions.
 ## Boundary
 
 - Product owns product outcomes, MVP, and priority.
-- Market Intelligence owns external market research and opportunity evidence.
+- Cascade Market owns external market research and opportunity evidence.
 - A marketing owner or dedicated Marketing plugin owns go-to-market and
   campaign strategy.
 - Project Management owns sequencing, dependencies, delivery horizons, risks,

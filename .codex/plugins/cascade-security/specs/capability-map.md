@@ -1,6 +1,6 @@
 # Cascade Security capability map
 
-Version: 0.1.0+codex.20260827142017  
+Version: 0.1.0+codex.20260827163437
 
 `specs/extraction-manifest.json` freezes the pre-cutover Security role and
 three repository skill packages. The plugin owns reusable security-review
@@ -16,7 +16,8 @@ decisions.
 | Read-only specialist isolation, sensitive-evidence selection, target routes, and review ordering | `.codex/agents/security` | Host Security custom agent | The role selects namespaced skills and host handoffs; it does not duplicate their procedures |
 
 Prompt authoring remains with Cascade Prompt. Agent topology remains with
-Cascade Architect. Harness integration remains with Cascade Coding Agent.
+Cascade AI Architect; software boundaries and architecture review remain with
+Cascade Software Architect. Harness integration remains with Cascade Coding Agent.
 Bounded dynamic execution remains with Cascade Simulations.
 Generic measurement, judges, and receipts remain with Cascade Evals. Product
 acceptance and target code changes remain with their host owners.

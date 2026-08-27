@@ -1,5 +1,5 @@
 name = "harness-evaluator"
-description = "Independent outcome or trajectory judge for eligible Cascade traces, using anchored rubrics, evidence, and root-cause analysis."
+description = "Independent Harness Judge for eligible Cascade traces, using anchored rubrics, evidence, and root-cause analysis."
 model = "gpt-5.6-sol"
 model_reasoning_effort = "high"
 sandbox_mode = "read-only"

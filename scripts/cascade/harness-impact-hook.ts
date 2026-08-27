@@ -123,7 +123,7 @@ function hookContext(impact: HarnessImpact): string {
     `Changed paths in this patch: ${impact.changed_paths.join(", ")}.`,
     `Required checks: ${impact.required_checks.join("; ")}.`,
     impact.instruction,
-    "Use the Agent Engineer contract to inspect the changed assertion. Route to Harness Evaluator only after an affected live trace is mechanically eligible and truly needs semantic judgment.",
+    "Use the Agent Engineer contract to inspect the changed assertion. Route to Harness Judge (`harness-evaluator`) only after an affected live trace is mechanically eligible and truly needs semantic judgment.",
     "In the final validation output record: hook decision, checks run, changed assertion disposition, and focused live review as PASS, FAIL, BLOCKED, NOT_RUN, or NOT_APPLICABLE. This advisory does not grant authority or prove review.",
   ].join(" ");
 }

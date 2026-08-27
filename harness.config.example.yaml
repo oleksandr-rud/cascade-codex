@@ -193,7 +193,7 @@ routing:
   stale_test_policy: "repair-tests preserves semantic coverage after QA proves TEST_DRIFT; product bugs route to implement-change"
   business_analysis: "orchestrator binds repository evidence to Cascade Market and hands frozen findings to Cascade Product"
   security_review: "security selects cascade-security:codebase-audit, cascade-security:auth-analysis, or cascade-security:secure-design directly before target-host implementation"
-  design_review: "designer uses the namespaced Cascade Design UX, accessibility, visual, and design-system skills for design-sensitive review before implementation"
+  design_review: "the requesting role or orchestrator uses namespaced Cascade Design UX, accessibility, visual, and design-system skills directly before any authorized implementation"
 
 vocabulary:
   prefer_codebase_terms: true

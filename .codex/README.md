@@ -13,9 +13,9 @@ merge a target application's root package manifest or lockfile.
 
 `.codex/plugins/` contains repo-local plugin source packages. Their catalog is
 `.agents/plugins/marketplace.json`; local source paths in that catalog resolve
-from the repository root. The catalog owns 12 sources: Cascade Prompt,
-Simulations, Evals, Architect, Coding Agent, Personas, Product, Market,
-Design, Security, Project Management, and QA under
+from the repository root. The catalog owns 13 sources: Cascade Prompt,
+Simulations, Evals, AI Architect, Software Architect, Coding Agent, Personas,
+Product, Market, Design, Security, Project Management, and QA under
 `.codex/plugins/<plugin-name>/`. Source presence is distinct from installed,
 active, or published state.
 
@@ -29,7 +29,8 @@ exact namespaced plugin skill and fail closed; it cannot embed a fallback copy.
 | Plugin | Reusable owner |
 |---|---|
 | Cascade Prompt | Prompt and context-plan construction or audit |
-| Cascade Architect | Cross-plugin Plan Workflow; software and agent architecture; pattern selection; architecture and change review; roles, skills, prompts, evaluation packs, and bounded improvement |
+| Cascade AI Architect | AI-agent capability maps, behavior blueprints, workflows, roles, skills, prompt briefs, persona requirements, evaluation requests, and bounded improvement |
+| Cascade Software Architect | Cross-plugin Plan Workflow, software boundaries, pattern selection, and independent architecture/change review |
 | Cascade Coding Agent | Coding-agent harness audit, target adaptation, maintenance, asset integration, and evaluation coordination |
 | Cascade Personas | Canonical human models, purpose-limited projections, and persona evaluation |
 | Cascade Simulations | Runtime actors, persona consumption, briefs, outcomes, adapters, campaign governance/execution, bounded actor loops, and frozen-run review |
@@ -118,16 +119,14 @@ the host skill tree.
 
 - `orchestrator`: orchestrates the cascade.
 - `agent-engineer`: owns Cascade maintenance, target-project onboarding and
-  adaptation, agent/LLM system design, Codex surfaces, source context, skills,
-  tools, simulations, observability, and eval guidance.
+  adaptation, and host integration of reviewed AI-agent and harness assets
+  across Codex surfaces, source context, tools, observability, and eval wiring.
 - `security`: read-only host role that selects installed
   `cascade-security:<skill>` methods, supplies redacted current target evidence,
   and owns repository-specific validation and implementation handoff only.
-- `designer`: read-only host role that selects installed
-  `cascade-design:<skill>` workflows, supplies current target evidence, and
-  owns host handoff only.
-- `harness-evaluator`: owns read-only independent outcome or trajectory
-  judgment of eligible harness scenario outputs and JSONL traces.
+- `harness-evaluator`: exposes the human-facing Harness Judge and owns
+  read-only independent outcome or trajectory judgment of eligible harness
+  scenario outputs and JSONL traces.
 - `simulation-operator`: owns bounded mutable execution of one approved
   campaign, immutable evidence freezing, cleanup, and execution handoff.
 - `simulation-evaluator`: owns independent read-only cross-contour evidence,

@@ -1,6 +1,6 @@
 # Cascade Market capability map
 
-Version: 0.2.0+codex.20260827155001  
+Version: 0.2.0+codex.20260827163437
 
 This plugin consolidates the former repository Business Analyst, market
 research skills, and Marketing positioning skill into four standalone

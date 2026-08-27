@@ -32,9 +32,9 @@ config; keep reusable workflow rules in skills, agents, and patterns.
 | `.codex/plugins/cascade-evals/skills/simulation-evaluation/` | Read-only frozen-evidence, policy, oracle, semantic, and claim-support contract | Cascade Evals source and Simulation Evaluator |
 
 The repository marketplace at `.agents/plugins/marketplace.json` catalogs all
-Cascade plugin source packages under `.codex/plugins/<plugin-name>/`: Prompt,
-Simulations, Evals, Cascade Architect, Cascade Coding Agent, Personas,
-Product, Market, Design, Security, Project Management, and QA. Cascade Market
+13 Cascade plugin source packages under `.codex/plugins/<plugin-name>/`:
+Prompt, Simulations, Evals, AI Architect, Software Architect, Coding Agent,
+Personas, Product, Market, Design, Security, Project Management, and QA. Cascade Market
 owns both evidence production and evidence-backed positioning/messaging.
 Keeping catalog and source in the repository makes the packages portable; it
 does not by itself mean a plugin is installed, active, or published.

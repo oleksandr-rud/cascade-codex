@@ -26,10 +26,11 @@ conditional; onboarding is not a reason to run every review workflow.
 3. **Adapt**: fill the smallest accurate `AGENTS.md`, `CODEX.md`,
    `harness.config.yaml`, structure, glossary, and command routing changes.
 4. **Specialize only when evidenced**:
-   - Cascade Architect for a real agent-system topology change;
+   - Cascade AI Architect for a real agent-system topology change;
+   - Cascade Software Architect for a real software-boundary or workflow-architecture decision;
    - Security for security-sensitive current source;
    - Design for an actual UI surface or evidence;
-   - Product, Personas, or Market Intelligence for missing product or market
+   - Product, Personas, or Market for missing product or market
      decisions, not routine harness setup.
 5. **Validate**: run target-mode Cascade validation and only the available,
    relevant target commands. Record exact PASS, FAIL, BLOCKED, NOT_RUN, and

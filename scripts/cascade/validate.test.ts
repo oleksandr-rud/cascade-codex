@@ -298,6 +298,7 @@ describe("repo plugin validation", () => {
       longDescription: "Create source-aware production prompts.",
       developerName: "Cascade",
       category: "Productivity",
+      defaultPrompt: ["Create a reliable prompt."],
     },
   };
 
@@ -317,6 +318,21 @@ describe("repo plugin validation", () => {
   test("rejects plugin source drift", () => {
     expect(repoPluginMetadataErrors(marketplace("./plugins/cascade-prompt"), manifest)).toContain(
       "cascade-prompt marketplace source must be ./.codex/plugins/cascade-prompt",
+    );
+  });
+
+  test("enforces the supported default-prompt count and length", () => {
+    expect(repoPluginMetadataErrors(marketplace(), {
+      ...manifest,
+      interface: { ...manifest.interface, defaultPrompt: ["one", "two", "three", "four"] },
+    })).toContain(
+      "cascade-prompt manifest interface.defaultPrompt must contain one to three prompts",
+    );
+    expect(repoPluginMetadataErrors(marketplace(), {
+      ...manifest,
+      interface: { ...manifest.interface, defaultPrompt: ["x".repeat(129)] },
+    })).toContain(
+      "cascade-prompt manifest interface.defaultPrompt entries must be non-empty strings of at most 128 characters",
     );
   });
 
