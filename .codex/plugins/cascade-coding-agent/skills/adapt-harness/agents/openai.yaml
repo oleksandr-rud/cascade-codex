@@ -1,0 +1,4 @@
+interface:
+  display_name: "Adapt Harness"
+  short_description: "Adapt a coding-agent harness to a repository"
+  default_prompt: "Use $adapt-harness to produce a source-grounded target adaptation candidate while preserving target-owned instructions and package authority."

@@ -13,29 +13,88 @@ admission_policy_bundle = ".codex/task-admission/policies/core.yaml"
 admission_hook = ".codex/hooks.json"
 fallback_non_atomic = [
   "context",
-  "ingest-spec",
-  "docs-impact-map",
-  "pattern-context",
   "plan-change",
-  "orchestrate-work",
-  "functional-qa",
   "implement-change",
-  "review-change",
   "validate-change",
-  "test-autorepair",
-  "closeout",
 ]
-conditional_discovery = "discover"
-conditional_business_analysis = "market-validation"
-conditional_spec_composition = "compose-spec"
-conditional_iteration_planning = "plan-iterations"
-conditional_harness_evaluation = "harness-evaluation"
+conditional_discovery = "context"
+conditional_market_research = "cascade-market:research-market"
+conditional_market_experiments = "cascade-market:design-market-experiments"
+conditional_spec_persistence = "create-spec"
+conditional_iteration_planning = "cascade-project-management:plan-project"
+conditional_project_management = "cascade-project-management:manage-project"
+conditional_project_closeout = "cascade-project-management:close-project"
+conditional_quality_planning = "cascade-qa:plan-quality"
+conditional_test_design = "cascade-qa:design-tests"
+conditional_quality_assessment = "cascade-qa:assess-quality"
+conditional_defect_triage = "cascade-qa:triage-defects"
+conditional_harness_evaluation = "cascade-evals:harness-evaluation"
 optional_dynamic_actor_simulation = "cascade-simulations:simulate"
-conditional_simulation_campaigns = "simulation-campaigns"
-conditional_simulation_execution = "simulation-execution"
-conditional_simulation_evaluation = "simulation-evaluation"
-test_autorepair_condition = "only if stale tests"
-exception_paths = ["issue-intake"]
+plugin_capability_catalog = ".codex/plugin-capabilities.generated.json"
+plugin_workflow_validator = "scripts/cascade/plugin-workflow.ts"
+conditional_simulation_campaigns = "cascade-simulations:manage-simulation-campaign"
+conditional_simulation_execution = "cascade-simulations:execute-simulation-campaign"
+conditional_simulation_evaluation = "cascade-evals:simulation-evaluation"
+test_repair_condition = "only after cascade-qa:triage-defects proves TEST_DRIFT"
+exception_paths = ["cascade-project-management:define-work-item"]
+
+[cascade.plugin_skills]
+prompt = "cascade-prompt:prompt"
+workflow_plan = "cascade-software-architect:plan-workflow"
+software_architecture = "cascade-software-architect:architect-software-system"
+architecture_patterns = "cascade-software-architect:select-architecture-patterns"
+architecture_review = "cascade-software-architect:review-architecture"
+change_review = "cascade-software-architect:review-change"
+agent_architecture = "cascade-ai-architect:architect-ai-system"
+agent_capabilities = "cascade-ai-architect:map-agent-capabilities"
+agent_blueprint = "cascade-ai-architect:design-agent-blueprint"
+agent_workflow = "cascade-ai-architect:design-agent-workflow"
+agent_roles = "cascade-ai-architect:build-agent-roles"
+agent_skills = "cascade-ai-architect:build-agent-skills"
+agent_prompt = "cascade-ai-architect:prepare-agent-prompt"
+agent_persona_requirements = "cascade-ai-architect:derive-persona-requirements"
+agent_system_evaluation = "cascade-ai-architect:prepare-agent-evaluation"
+agent_improvement = "cascade-ai-architect:improve-agent-system"
+harness_audit = "cascade-coding-agent:audit-harness"
+harness_adaptation = "cascade-coding-agent:adapt-harness"
+harness_maintenance = "cascade-coding-agent:maintain-harness"
+harness_asset_integration = "cascade-coding-agent:integrate-agent-assets"
+persona_build = "cascade-personas:build-persona"
+persona_compile = "cascade-personas:compile-persona"
+persona_evaluate = "cascade-personas:evaluate-persona"
+market_research = "cascade-market:research-market"
+market_opportunity = "cascade-market:evaluate-market-opportunity"
+market_experiment = "cascade-market:design-market-experiments"
+marketing_brand = "cascade-market:brand-positioning"
+product_lifecycle = "cascade-product:manage-product-lifecycle"
+product_definition = "cascade-product:define-product"
+product_validation = "cascade-product:validate-product"
+simulation_execute = "cascade-simulations:simulate"
+simulation_campaign_manage = "cascade-simulations:manage-simulation-campaign"
+simulation_campaign_execute = "cascade-simulations:execute-simulation-campaign"
+simulation_review = "cascade-simulations:simulation-review"
+simulation_actor = "cascade-simulations:simulation-actor"
+evaluation = "cascade-evals:evaluate"
+judge_builder = "cascade-evals:build-judge"
+prompt_evaluation = "cascade-evals:prompt-evaluation"
+agent_evaluation = "cascade-evals:agent-evaluation"
+simulation_evaluation = "cascade-evals:simulation-evaluation"
+harness_evaluation = "cascade-evals:harness-evaluation"
+design_flow = "cascade-design:ux-flow-review"
+design_accessibility = "cascade-design:accessibility-review"
+design_visual = "cascade-design:visual-qa"
+design_system = "cascade-design:design-system"
+security_codebase = "cascade-security:codebase-audit"
+security_auth = "cascade-security:auth-analysis"
+security_design = "cascade-security:secure-design"
+work_item_definition = "cascade-project-management:define-work-item"
+project_plan = "cascade-project-management:plan-project"
+project_manage = "cascade-project-management:manage-project"
+project_close = "cascade-project-management:close-project"
+qa_plan = "cascade-qa:plan-quality"
+qa_design_tests = "cascade-qa:design-tests"
+qa_assess = "cascade-qa:assess-quality"
+qa_triage = "cascade-qa:triage-defects"
 
 # Agent concurrency is intentionally left to the active Codex runtime so this
 # project config remains portable across supported client versions.
@@ -52,8 +111,8 @@ backlog = "docs/backlog"
 
 [harness_evals]
 planning_model = "gpt-5.6-sol"
-execution_model = "gpt-5.6-terra"
-judge_model = "gpt-5.6-terra"
+execution_model = "gpt-5.6-sol"
+judge_model = "gpt-5.6-sol"
 default_model_profile = "execution"
 cases = "harness-evals/skill-cases.yaml"
 interactions = "harness-evals/interactions.yaml"
@@ -86,9 +145,9 @@ startup_timeout_sec = 20
 
 [harness_agents]
 default_orchestrator = "orchestrator"
-onboarding = "project-onboarder"
+onboarding = "agent-engineer"
 harness_design = "agent-engineer"
-business_analysis = "business-analyst"
+business_analysis = "orchestrator"
 security_review = "security"
 design_review = "designer"
 judged_evaluation = "harness-evaluator"

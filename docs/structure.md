@@ -7,42 +7,63 @@ config; keep reusable workflow rules in skills, agents, and patterns.
 
 | Folder | Purpose | Written By |
 |---|---|---|
-| `.agents/plugins/` | Repo-local plugin marketplace catalog | `plugin-creator`, `codex-maintenance` |
-| `.github/` | Pull request description contract and GitHub Copilot repository instructions | `codex-maintenance`, `adapt-harness` |
-| `docs/work/` | Active work lanes, first-class Coordination Graphs, copyable examples, lane packets, reports, handoffs | `orchestrate-work`, `market-validation`, `plan-change`, `validate-change`, `closeout` |
-| `docs/archive/work-reports/` | Compact archive capsules and relocated frozen lane, graph, and report history | `archive-work` automatically after closeout or for direct historical cleanup |
-| `docs/specs/` | Incoming and spec packets | `ingest-spec`, `synthesis-to-spec`, `compose-spec`, `discover`, `docs-impact-map`, `adapt-harness` |
-| `docs/product/` | Product intent plus stable domain/capability relationships, requirements, journeys, personas, and scenarios | `discover`, `market-validation`, `synthesis-to-spec`, `compose-spec`, `ingest-spec`, `docs-impact-map` |
-| `docs/design/` | Interaction model, tokens, components, design constraints | `discover`, `design-system`, `ingest-spec`, `docs-impact-map` |
-| `docs/brand/` | Naming, tone, content, visual direction | `discover`, `brand-positioning`, `ingest-spec`, `docs-impact-map` |
-| `docs/backlog/` | Follow-up candidates with acceptance criteria | `discover`, `synthesis-to-spec`, `compose-spec`, `validation-experiments`, `docs-impact-map`, `issue-intake`, `closeout` |
-| `docs/patterns/` | Reusable workflow, boundary, testing, context rules, and selectable context packs | `pattern-context`, `closeout`, `adapt-harness`, Agent Engineer skills |
-| `.codex/skills/` | Reusable workflow skills | `develop-skill`, Agent Engineer skills |
+| `.agents/plugins/` | Repo-local plugin marketplace catalog | `plugin-creator`, `cascade-coding-agent:maintain-harness` |
+| `.github/` | Pull request description contract and GitHub Copilot repository instructions | `cascade-coding-agent:maintain-harness`, `cascade-coding-agent:adapt-harness` |
+| `docs/work/` | Active work lanes, first-class Coordination Graphs, copyable examples, lane packets, reports, handoffs | Cascade Project Management proposals plus authorized host `plan-change`, `validate-change`, and `closeout` effects |
+| `docs/archive/work-reports/` | Compact archive capsules and relocated frozen lane, graph, and report history | `closeout` only after `cascade-project-management:close-project` proposes exact retention and current authority permits it |
+| `docs/specs/` | Preserved sources, public contracts, and spec packets | `create-spec` plus authorized host implementation |
+| `docs/product/` | Product intent plus stable domain/capability relationships, requirements, journeys, personas, and scenarios | Cascade Product/Personas artifacts persisted through `create-spec` |
+| `docs/design/` | Interaction model, tokens, components, design constraints | Cascade Design artifacts plus `create-spec` when durable persistence is needed |
+| `docs/brand/` | Naming, tone, content, visual direction | `cascade-market:brand-positioning` artifacts persisted through `create-spec` |
+| `docs/backlog/` | Follow-up candidates with acceptance criteria | `create-spec`, `cascade-project-management:define-work-item`, or `closeout` when their trigger is present |
+| `docs/patterns/` | Reusable workflow, boundary, testing, context rules, and selectable context packs | `pattern-context`, `closeout`, `cascade-coding-agent:adapt-harness` |
+| `.codex/skills/` | Repository context, persistence, mutation, validation, target execution/repair, and closeout effects | Agent Engineer and Orchestrator host integration |
 | `.codex/agents/` | Role contracts and skill maps | Agent Engineer skills |
-| `.codex/plugins/` | Repo-local plugin source packages referenced by the repository marketplace | `plugin-creator`, `codex-maintenance` |
+| `.codex/plugins/` | Repo-local plugin source packages referenced by the repository marketplace | `plugin-creator`, `cascade-coding-agent:maintain-harness` |
 | `.codex/harness-tooling/` | Isolated pinned browser-simulation dependencies and Playwright runner files | Harness maintainers |
-| `harness-evals/` | Canonical scenarios, generated catalog, target schema, judge profiles, anchored rubrics, and judgment schema | `harness-evaluation`, `judge-eval-builder` |
+| `harness-evals/` | Canonical scenarios, generated catalog, target schema, judge profiles, anchored rubrics, and judgment schema | `cascade-evals:harness-evaluation`, `cascade-evals:build-judge`, and the host runner |
 | `.artifacts/harness-evals/` | Ignored raw JSONL traces, normalized runs, eligibility, judgments, and local reports | `scripts/cascade/evals.ts` |
-| `product-evals/campaigns/`, `product-evals/tasks/`, `product-evals/simulations/` | Canonical simulation campaigns, reusable tasks, populations, scenarios, worlds, datasets, and generated catalog | `simulation-campaigns`, Agent Engineer |
-| `product-evals/intakes/harness/`, `product-evals/intakes/product/` | Scope-separated Task Envelope/product-context/action-policy bindings; product campaigns require a current READY intake before execution | `simulation-campaigns`, Agent Engineer; consumed by Simulation Operator and Simulation Evaluator |
-| `product-evals/claims/`, `product-evals/policies/`, `product-evals/oracles/`, `product-evals/metrics/`, `product-evals/treatments/`, `product-evals/calibrations/`, `product-evals/rubrics/` | Versioned claim, policy, oracle, metric, treatment, calibration, evaluator-profile, rubric, and evaluation-schema authorities | `simulation-campaigns`, `simulation-evaluation`, Agent Engineer |
-| `.artifacts/product-evals/` | Ignored append-only product-evaluation execution, evaluation, calibration, and aggregation receipts | `scripts/cascade/campaigns.ts`, `simulation-execution`, `simulation-evaluation` |
-| `.codex/skills/simulation-campaigns/` | Campaign authoring, selection, dispatch/replay planning, receipt aggregation, claim projection, and reporting contract | `develop-skill`, `codex-maintenance`, Agent Engineer |
-| `.codex/skills/simulation-execution/` | Bounded selected-run lifecycle and execution receipt contract | `simulation-operator`, `develop-skill`, `codex-maintenance` |
-| `.codex/skills/simulation-evaluation/` | Read-only frozen-evidence, policy, oracle, semantic, and claim-support contract | `simulation-evaluator`, `develop-skill`, `codex-maintenance` |
+| `product-evals/campaigns/`, `product-evals/tasks/`, `product-evals/simulations/` | Canonical simulation campaigns, reusable tasks, populations, scenarios, worlds, datasets, and generated catalog | `cascade-simulations:manage-simulation-campaign` plus host persistence |
+| `product-evals/intakes/harness/`, `product-evals/intakes/product/` | Scope-separated Task Envelope/product-context/action-policy bindings; product campaigns require a current READY intake before execution | Simulations plugin methods plus host runner; consumed by Simulation Operator and Simulation Evaluator |
+| `product-evals/claims/`, `product-evals/policies/`, `product-evals/oracles/`, `product-evals/metrics/`, `product-evals/treatments/`, `product-evals/calibrations/`, `product-evals/rubrics/` | Versioned claim, policy, oracle, metric, treatment, calibration, evaluator-profile, rubric, and evaluation-schema authorities | Simulations and Evals plugin methods plus host persistence |
+| `.artifacts/product-evals/` | Ignored append-only product-evaluation execution, evaluation, calibration, and aggregation receipts | `scripts/cascade/campaigns.ts`, Simulation Operator, and Simulation Evaluator |
+| `.codex/plugins/cascade-simulations/skills/manage-simulation-campaign/` | Campaign authoring, selection, replay planning, receipt aggregation, claim projection, and reporting contract | Cascade Simulations source |
+| `.codex/plugins/cascade-simulations/skills/execute-simulation-campaign/` | Bounded selected-run lifecycle and execution receipt contract | Cascade Simulations source and Simulation Operator |
+| `.codex/plugins/cascade-evals/skills/simulation-evaluation/` | Read-only frozen-evidence, policy, oracle, semantic, and claim-support contract | Cascade Evals source and Simulation Evaluator |
 
 The repository marketplace at `.agents/plugins/marketplace.json` catalogs all
 Cascade plugin source packages under `.codex/plugins/<plugin-name>/`: Prompt,
-Simulations, Evals, Agent Architect, Harness Maintainer, Personas, Product, and
-Market Intelligence. Keeping catalog and source in the repository makes the
-packages portable; it does not by itself mean a plugin is installed, active, or
-published.
+Simulations, Evals, Cascade Architect, Cascade Coding Agent, Personas,
+Product, Market, Design, Security, Project Management, and QA. Cascade Market
+owns both evidence production and evidence-backed positioning/messaging.
+Keeping catalog and source in the repository makes the packages portable; it
+does not by itself mean a plugin is installed, active, or published.
 
 Plugin-packaged skills remain independently namespaced and are intentionally
-not mirrored into `.codex/skills/`. Cascade references
-`cascade-simulations:simulate` through `.codex/config.toml`; that plugin owns
-compact dynamic-actor definitions, while the `product-evals/` tree below
-remains campaign evaluation infrastructure.
+not mirrored as canonical workflow bodies into `.codex/skills/`. The local
+security and architecture entries are thin evidence adapters. `context`,
+`create-spec`, `pattern-context`, `run-qa-plan`, `repair-tests`, and `closeout`
+remain because they bind current repository state, durable paths, or target
+effects. Portable methods route directly through `.codex/config.toml` aliases.
+
+The host/plugin boundary is:
+
+```text
+repository request
+  -> Task Envelope claims and policies
+  -> Plan Workflow when multiple plugins are required
+  -> validated capability DAG
+  -> local role or discovery adapter
+  -> exact namespaced plugin skill
+  -> immutable plugin artifact or receipt
+  -> local authorized persistence, execution, or validation
+```
+
+Cascade Simulations owns a bounded dynamic actor loop. The local
+`product-evals/` tree and campaign skills own multi-case/multi-contour campaign
+state, real host adapters, runtime authority, frozen artifacts, claims,
+policies, oracles, and aggregation. Cascade Evals owns generic semantic judge
+contracts and score reduction in both paths.
 
 ## Active Work Paths
 
@@ -76,14 +97,15 @@ lanes, specs, generated documents, or runtimes. Lane packets keep lane-local
 Task Graph authority and read-only graph references after direct cutover;
 `active.md` remains a derived projection.
 
-`docs/work/` is the live and recent execution surface. After a lane or graph
-completes, `closeout` automatically hands its exact closed set to
-`archive-work`. The skill moves it to `docs/archive/work-reports/` only after
-terminal evidence, dependency closure, index consistency, inbound references,
-and pre/post file digests pass; otherwise it returns `ARCHIVE_DEFERRED` and
-leaves live files in place. The compact archive capsule is the rehydration
-entrypoint; relocated originals remain detailed historical authority and are
-not rewritten.
+`docs/work/` is the live and recent execution surface. When a lane or graph may
+be terminal, `cascade-project-management:close-project` assesses completion,
+active consumers, and retention readiness without mutating files. `closeout`
+may move only the exact `RETIRE_PROPOSED` set when current user or active-state
+authority permits it and terminal evidence, dependency closure, index
+consistency, inbound references, and pre/post file digests pass. Otherwise the
+records remain live with `ARCHIVE_DEFERRED`. The compact archive capsule is the
+rehydration entrypoint; relocated originals remain detailed historical
+authority and are not rewritten.
 
 ## Spec Translation Paths
 
@@ -137,7 +159,7 @@ not rewritten.
   as a replacement product authority.
 - Plan-ready product synthesis and authoring: existing owner docs under
   `docs/product/`, `docs/specs/{slice-slug}/`, and `docs/backlog/_index.md`.
-- Source preservation: `docs/specs/source/` only when `ingest-spec` decides a
+- Source preservation: `docs/specs/source/` only when `create-spec` decides a
   raw research or source packet should be preserved.
 - Doc routing: use the shared Doc Routing Decision Matrix before appending
   durable market, product, spec, design, brand, backlog, glossary, or pattern
@@ -145,7 +167,7 @@ not rewritten.
 
 ## Cross-Folder Impact Paths
 
-Use `docs-impact-map` when a durable product, design, brand, spec, backlog,
+Use `create-spec` when a durable product, design, brand, spec, backlog,
 glossary, or pattern fact may affect sibling docs. Store compact impact reports
 under `docs/work/reports/` only when requested, multi-turn, blocked, or
 decision-heavy; otherwise update the smallest existing owner docs.
@@ -193,7 +215,7 @@ decision-heavy; otherwise update the smallest existing owner docs.
   checks, fixture acceptance, and drift:
   `scripts/cascade.ts target`
 - Target analysis schemas:
-  `.codex/skills/adapt-harness/schemas/`
+  `.codex/schemas/target/`
 
 ## Closeout Thin Diffs
 
@@ -210,7 +232,7 @@ docs when the final diff changed durable facts:
 
 If no existing doc owns the delta, write a concise report under
 `docs/work/reports/` and route larger discovery or spec normalization through
-`discover` or `ingest-spec`.
+`context` in Discovery mode or `create-spec`.
 
 ## Thin Entrypoint Policy
 
@@ -269,17 +291,17 @@ single-actor simulations use the separately installed
 
 Implemented skill and runtime authority:
 
-- Skill: `.codex/skills/simulation-campaigns/SKILL.md`
+- Skill: `.codex/plugins/cascade-simulations/skills/manage-simulation-campaign/SKILL.md`
 - Design template:
-  `.codex/skills/simulation-campaigns/templates/campaign-design.md`
+  `.codex/plugins/cascade-simulations/skills/manage-simulation-campaign/templates/campaign-design.md`
 - Quality checklist:
-  `.codex/skills/simulation-campaigns/checklists/campaign-quality.md`
+  `.codex/plugins/cascade-simulations/skills/manage-simulation-campaign/checklists/campaign-quality.md`
 - Execution skill and role:
-  `.codex/skills/simulation-execution/`;
+  `.codex/plugins/cascade-simulations/skills/execute-simulation-campaign/`;
   `.codex/agents/simulation-operator/`;
   `.codex/agents/simulation-operator.toml`
 - Evaluation skill and role:
-  `.codex/skills/simulation-evaluation/`;
+  `.codex/plugins/cascade-evals/skills/simulation-evaluation/`;
   `.codex/agents/simulation-evaluator/`;
   `.codex/agents/simulation-evaluator.toml`
 - Program:
@@ -321,9 +343,9 @@ Canonical deterministic runtime authority owned by W-004:
   `scripts/cascade/`
 - Isolated Playwright package and configuration: `.codex/harness-tooling/`
 - Machine-readable target starter:
-  `.codex/skills/simulation-campaigns/templates/starter/package.template.yaml`
+  `.codex/plugins/cascade-simulations/skills/manage-simulation-campaign/templates/starter/package.template.yaml`
 - Human design template:
-  `.codex/skills/simulation-campaigns/templates/campaign-design.md`
+  `.codex/plugins/cascade-simulations/skills/manage-simulation-campaign/templates/campaign-design.md`
 - Ignored append-only run container:
   `.artifacts/product-evals/<run-id>/`, with an immutable `execution/` namespace
   plus sibling `specialized-evaluations/`, `calibrations/`, and
@@ -379,7 +401,7 @@ Refinement proposals remain immutable run evidence. Reviewers record a separate
 disposition with `simulation dispose-refinement`; the command first verifies
 the completed run manifest and exact proposal/run binding. `ACCEPTED` requires at least
 one reviewed external-evidence manifest and authorizes only the
-`synthesis-to-spec` route. Remote storage and export are disabled by default,
+`create-spec` route. Remote storage and export are disabled by default,
 raw sensitive material is excluded, and restricted evidence requires operator
 attestation under `product-evals/artifact-policy.yaml`.
 

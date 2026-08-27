@@ -1,0 +1,28 @@
+schema_version: 1
+artifact_id: QA-PLAN-001
+selected_skill: plan-quality
+artifact_kind: QUALITY_PLAN
+status: READY
+subject:
+  id: BEHAVIOR-001
+  title: Example accepted behavior
+  behavior_ref: PROD-001@sha256
+  decision_owner: product-owner
+sources: []
+coverage: []
+tests: []
+evidence: []
+defects: []
+quality_gate:
+  recommendation: BLOCKED
+  acceptance_owner: product-owner
+  required_evidence_refs: []
+  blockers: [required checks are NOT_RUN]
+execution_requests: []
+handoffs: []
+boundaries:
+  product_story_authored: false
+  runtime_code_changed: false
+  tests_executed: false
+  test_files_changed: false
+  release_approved: false

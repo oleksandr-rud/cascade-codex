@@ -1,0 +1,4 @@
+interface:
+  display_name: "Review Change"
+  short_description: "Review diffs against architecture and contracts"
+  default_prompt: "Use $review-change to review this current diff against its request, architecture, and consumers."

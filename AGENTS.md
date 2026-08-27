@@ -62,15 +62,25 @@ Envelope selects the proportional route and controls; it does not grant
 authority, create work, or dispatch an agent. If the project hook is unavailable,
 apply the same contract in-process through `scripts/cascade.ts admission`.
 
-For a Task Envelope that selects non-atomic bounded, connected, or program work,
-use only the applicable parts of this route:
+For non-atomic work, the default route is:
 
-`context -> ingest-spec/discover if needed -> docs-impact-map when durable docs may affect sibling rules -> pattern-context when reusable pattern packs are needed -> plan-change -> plan-iterations when delivery spans horizons -> orchestrate-work when feasible committed first-iteration scope needs coordination -> functional-qa when new product-visible proof is needed -> implement-change -> review-change -> validate-change -> test-autorepair only if stale tests -> closeout`
+`context -> plan-change -> implement-change -> validate-change`
 
-`issue-intake` is an explicit exception path for issue bodies or tracker
-tickets. Human review is an explicit open-question or exception path, not a
-standalone workflow router. Worklines and work graphs do not
-auto-dispatch; use the execution-surface contract in `CODEX.md`.
+Add source intake, documentation impact, or pattern context only when its
+trigger is present. Route portable forecasting, coordination, reconciliation,
+and completion assessment through Cascade Project Management. Route quality
+planning, test design, evidence assessment, and defect triage through Cascade
+QA only when accepted behavior has a relevant quality gate. The harness retains
+target execution through `run-qa-plan`, proven test-only repair through
+`repair-tests`, and authorized durable state mutation through `closeout`. A
+bounded change completed by one owner does not need a spec, lane, work graph,
+report, receipt, or archive entry.
+
+`cascade-project-management:define-work-item` is the explicit exception path
+for issue bodies or tracker-ready work items. Human review is an explicit
+open-question or exception path, not a
+standalone workflow router. Worklines and work graphs do not auto-dispatch; use
+the execution-surface contract in `CODEX.md`.
 
 Only bypass planning for atomic mechanical edits: typo fixes, formatting, import
 cleanup, or single-line changes with no behavior or contract impact.
@@ -81,6 +91,7 @@ cleanup, or single-line changes with no behavior or contract impact.
 bun scripts/cascade.ts validate
 bun scripts/cascade.ts admission validate
 bun scripts/cascade.ts admission corpus
+bun scripts/cascade.ts workflow catalog --check
 bun scripts/cascade.ts target self-test
 bun scripts/cascade.ts campaign catalog --check
 bun scripts/cascade.ts campaign self-test
@@ -90,7 +101,7 @@ bun test --max-concurrency 4 scripts/cascade
 
 Harness evaluation is conditional, not a default validation phase. The
 `PostToolUse` harness-impact hook examines completed `apply_patch` edits and
-adds bounded guidance only when actual harness-evaluation implementation,
+adds bounded guidance only when actual `cascade-evals:harness-evaluation` implementation,
 assertions, or judge contracts changed. Run `eval catalog --check` and
 `eval self-test` only when that hook reports them. Run a focused live scenario
 and independent judge only after reviewing a changed semantic assertion that

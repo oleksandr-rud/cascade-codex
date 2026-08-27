@@ -25,6 +25,6 @@ Coverage allocation must not be presented as prevalence.
 
 Synthetic findings are proposal-only. A proposal may be reviewed into a
 separate append-only disposition receipt, but even an accepted disposition only
-routes evidence into `synthesis-to-spec`; it does not edit or validate the
+routes evidence into `create-spec`; it does not edit or validate the
 source persona. External evidence manifests contain minimized metadata and
 digests, not raw sensitive source material.

@@ -23,7 +23,7 @@ actor:
   preferred_existing_roles:
     - orchestrator
 skill_calls:
-  - skill: architecture-review
+  - skill: cascade-software-architect:review-architecture
     when: schema, lifecycle, or compatibility boundaries change
     required: true
   - skill: implement-change

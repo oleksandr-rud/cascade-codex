@@ -105,7 +105,7 @@ merge authority. This does not create another browser task kind.
 |---|---|---|---|---|---|---|---|
 | Browser smoke | candidate branch | Playwright tooling, task, fixture | yes | existing deterministic completion proof | replayed smoke | `PASS_LOCAL_REVIEW_PENDING` | `validate-change` |
 | Computer Use | current request | browser driver/action policy | yes | deterministic browser remains cheaper default | driver matrix test | `NOT_RUN` | `functional-qa` |
-| Desktop reuse | W-009 | visual action/observation contract | no | browser-specific DOM and profile logic stays local | adapter API review | `NOT_RUN` | `architecture-review` |
+| Desktop reuse | W-009 | visual action/observation contract | no | browser-specific DOM and profile logic stays local | adapter API review | `NOT_RUN` | `cascade-software-architect:review-architecture` |
 
 ## File Ownership
 

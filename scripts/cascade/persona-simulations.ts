@@ -177,7 +177,7 @@ export interface RefinementProposalCandidate {
   disposition_route:
     | "collect-external-evidence"
     | "repair-simulator"
-    | "synthesis-to-spec";
+    | "create-spec";
 }
 
 export interface PersonaRefinementProposal {
@@ -249,7 +249,7 @@ export interface PersonaRefinementDisposition {
   }>;
   persona_revision_authorized: boolean;
   direct_persona_mutation_allowed: false;
-  next_route: "synthesis-to-spec" | "collect-external-evidence" | "repair-simulator" | "none";
+  next_route: "create-spec" | "collect-external-evidence" | "repair-simulator" | "none";
   status: "REVIEWED";
   blockers: string[];
 }
@@ -896,7 +896,7 @@ export function validateRefinementProposalCandidate(
   const confidence = requiredString(value, "confidence", label);
   assertEnum(confidence, ["low", "medium", "high"], `${label}.confidence`);
   const dispositionRoute = requiredString(value, "disposition_route", label);
-  assertEnum(dispositionRoute, ["collect-external-evidence", "repair-simulator", "synthesis-to-spec"], `${label}.disposition_route`);
+  assertEnum(dispositionRoute, ["collect-external-evidence", "repair-simulator", "create-spec"], `${label}.disposition_route`);
   const evidencePaths = stringArray(value, "evidence_paths", label);
   if (
     evidencePaths.some(
@@ -1133,8 +1133,8 @@ export function buildPersonaRefinementDisposition(binding: {
   const reviewedAt = binding.reviewedAt ?? utcNow();
   if (Number.isNaN(Date.parse(reviewedAt))) throw new CascadeError("reviewed_at must be an ISO timestamp");
   if (binding.decision === "ACCEPTED") {
-    if (binding.proposal.disposition_route !== "synthesis-to-spec") {
-      throw new CascadeError("ACCEPTED is only valid for synthesis-to-spec proposals");
+    if (binding.proposal.disposition_route !== "create-spec") {
+      throw new CascadeError("ACCEPTED is only valid for create-spec proposals");
     }
     if (binding.evidence.length === 0) {
       throw new CascadeError("ACCEPTED requires reviewed external evidence");
@@ -1166,7 +1166,7 @@ export function buildPersonaRefinementDisposition(binding: {
   });
   const authorized = binding.decision === "ACCEPTED";
   const nextRoute = binding.decision === "ACCEPTED"
-    ? "synthesis-to-spec"
+    ? "create-spec"
     : binding.decision === "NEEDS_EVIDENCE"
       ? "collect-external-evidence"
       : binding.decision === "SIMULATOR_REPAIR"
@@ -1191,7 +1191,7 @@ export function buildPersonaRefinementDisposition(binding: {
     next_route: nextRoute,
     status: "REVIEWED",
     blockers: authorized
-      ? ["new persona revision must be authored and reviewed through synthesis-to-spec"]
+      ? ["new persona revision must be authored and reviewed through create-spec"]
       : ["persona revision is not authorized by this disposition"],
   };
   validatePersonaRefinementDisposition(disposition as unknown as Record<string, unknown>, binding.dispositionId);
@@ -1249,7 +1249,7 @@ export function validatePersonaRefinementDisposition(
     throw new CascadeError(`${label}.external_evidence contains duplicate IDs`);
   }
   const authorized = decision === "ACCEPTED";
-  const expectedRoute = decision === "ACCEPTED" ? "synthesis-to-spec" : decision === "NEEDS_EVIDENCE" ? "collect-external-evidence" : decision === "SIMULATOR_REPAIR" ? "repair-simulator" : "none";
+  const expectedRoute = decision === "ACCEPTED" ? "create-spec" : decision === "NEEDS_EVIDENCE" ? "collect-external-evidence" : decision === "SIMULATOR_REPAIR" ? "repair-simulator" : "none";
   if (
     value.persona_revision_authorized !== authorized ||
     value.direct_persona_mutation_allowed !== false ||

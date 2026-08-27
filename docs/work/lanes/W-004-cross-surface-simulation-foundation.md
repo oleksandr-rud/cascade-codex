@@ -81,13 +81,15 @@ review and Gate A remain blocked on an accepted N07 boundary.
 - Cross-contour campaigns may compose existing typed tasks without creating a
   hybrid task kind; the composed result retains each task, policy, oracle,
   evidence, cleanup, and claim disposition independently.
-- The `simulation-campaigns` skill owns campaign authoring, selection,
-  dispatch planning, replay planning, receipt aggregation, and reporting.
-- The `simulation-execution` skill and `simulation-operator` agent own one
-  approved mutable run, immutable evidence capture, cleanup, and its execution
-  receipt.
-- The read-only `simulation-evaluation` skill and `simulation-evaluator` agent
-  own evidence, policy, oracle, claim-ledger, and evaluation-receipt judgment;
+- The `cascade-simulations:manage-simulation-campaign` plugin skill owns
+  campaign authoring, selection, dispatch planning, replay planning, receipt
+  aggregation, and reporting.
+- The `cascade-simulations:execute-simulation-campaign` plugin skill and
+  `simulation-operator` agent own one approved mutable run, immutable evidence
+  capture, cleanup, and its execution receipt.
+- The read-only `cascade-evals:simulation-evaluation` plugin skill and
+  `simulation-evaluator` agent own evidence, policy, oracle, claim-ledger, and
+  evaluation-receipt judgment;
   Cascade route/trace evaluation first produces a specialized
   `harness-evaluator` receipt.
 - Campaign aggregation requires identity-matched execution and evaluation

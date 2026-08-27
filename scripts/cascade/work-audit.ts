@@ -455,7 +455,7 @@ function recommendedActions(queue: LaneAudit[]): WorkAuditReport["recommended_ac
     actions.push({
       priority: 1,
       lane_ids: reconciliation,
-      route: "reconcile-work-graph",
+      route: "cascade-project-management:manage-project",
       action: "Reconcile registry and authoritative lane metadata before scheduling affected work.",
       authorization_required: true,
     });
@@ -464,7 +464,7 @@ function recommendedActions(queue: LaneAudit[]): WorkAuditReport["recommended_ac
     actions.push({
       priority: 2,
       lane_ids: review,
-      route: "review-change",
+      route: "cascade-software-architect:review-change",
       action: "Run only each lane's named current-source review gate; do not substitute broad harness evaluation.",
       authorization_required: true,
     });
@@ -538,14 +538,14 @@ export type WorkAutomationMode = "audit" | "orchestrate";
 export function automationPrompt(mode: WorkAutomationMode = "audit"): string {
   const audit = `Work in ${rootPath()}.
 
-Use \`$orchestrate-work\` for this read-only audit. Run \`npx --yes bun@1.3.3 scripts/cascade.ts work audit --json --check\` and inspect its report. Read AGENTS.md, CODEX.md, docs/work/active.md, the named lane packets, and any active work graph referenced by the report. Analyze the current work queue, stale projections, blockers, ready work, review gates, and closeout candidates.
+Use \`cascade-project-management:manage-project\` for this read-only audit. Run \`npx --yes bun@1.3.3 scripts/cascade.ts work audit --json --check\` and inspect its report. Read AGENTS.md, CODEX.md, docs/work/active.md, the named lane packets, and any active work graph referenced by the report. Analyze the current work queue, stale projections, blockers, ready work, review gates, and closeout candidates.
 
 Do not edit files, change lane or graph state, dispatch agents, create tasks, create worktrees, commit, push, publish, spend provider funds, or run live/external actions. Do not run broad harness evaluation merely because a lane exists. Report only material changes since the prior run, the exact authoritative source that changed, and the smallest recommended next action. If execution or reconciliation is warranted, ask for explicit authorization in this task. If nothing material changed, return a concise no-action result.`;
 
   if (mode === "audit") return audit;
   return `Work in ${rootPath()}.
 
-Use \`$orchestrate-work\` to continue the current task's already-authorized local work. Start by running \`npx --yes bun@1.3.3 scripts/cascade.ts work audit --json --check\` and inspecting AGENTS.md, CODEX.md, docs/work/active.md, the selected lane packet, and its active work graph. The scheduled invocation does not expand authority: preserve the latest user scope, current task goal, dependency gates, lane ownership, and write boundaries.
+Use \`cascade-project-management:manage-project\` to assess the current frontier, then the applicable host implementation or closeout adapter to continue the current task's already-authorized local work. Start by running \`npx --yes bun@1.3.3 scripts/cascade.ts work audit --json --check\` and inspecting AGENTS.md, CODEX.md, docs/work/active.md, the selected lane packet, and its active work graph. The scheduled invocation does not expand authority: preserve the latest user scope, current task goal, dependency gates, lane ownership, and write boundaries.
 
 Execute at most one smallest coherent slice per run. First repair a clear local registry projection error when its authoritative lane or graph source is unambiguous. Otherwise prefer one current IN_PROGRESS lane whose named next gate is locally executable; use a READY lane only after recalculating its prerequisites and dispatch authorization. Run only the lane's named safe local commands and proportional checks. Update lane, graph, or registry state only when current-source evidence proves the transition, and never self-accept an independent review gate.
 

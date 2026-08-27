@@ -1,0 +1,57 @@
+schema_version: 1
+plugin:
+  name: cascade-qa
+  version: 0.1.0+codex.20260827143141
+model_policy:
+  model: gpt-5.6-sol
+  planning_reasoning_effort: high
+  evaluation_reasoning_effort: max
+skills:
+  - route: cascade-qa:plan-quality
+    description: Build a risk-based quality plan with evidence classes, contours, gates, and execution ownership from accepted behavior.
+    triggers: [quality scope or acceptance gates must be planned]
+    anti_triggers: [no accepted behavior exists or ordinary validation is sufficient]
+    consumes: [product-contract, change-contract]
+    produces: [quality-plan]
+    required_dependencies: []
+    optional_dependencies: [cascade-product:define-product]
+    policy_tags: [quality, planning]
+    effect: CANDIDATE_WRITE
+    authority: READ_ONLY
+    evaluation_cases: [risk-based-scope, evidence-classes]
+  - route: cascade-qa:design-tests
+    description: Design traceable test cases, data, oracles, and execution requests from accepted behavior and quality scope.
+    triggers: [test design rather than execution is requested]
+    anti_triggers: [tests must be run or product behavior is unresolved]
+    consumes: [quality-plan, product-contract]
+    produces: [test-plan]
+    required_dependencies: []
+    optional_dependencies: [cascade-prompt:prompt, cascade-simulations:simulate, cascade-evals:evaluate]
+    policy_tags: [quality, test-design]
+    effect: CANDIDATE_WRITE
+    authority: READ_ONLY
+    evaluation_cases: [traceable-oracle, no-execution]
+  - route: cascade-qa:assess-quality
+    description: Assess frozen evidence against a fixed quality plan and acceptance gate without executing missing checks or approving release.
+    triggers: [quality status or a gate recommendation is requested]
+    anti_triggers: [missing checks must be executed or defects repaired]
+    consumes: [quality-plan, frozen-evidence]
+    produces: [quality-assessment]
+    required_dependencies: []
+    optional_dependencies: [cascade-qa:triage-defects]
+    policy_tags: [quality, assessment]
+    effect: READ_ONLY
+    authority: READ_ONLY
+    evaluation_cases: [pass-fail-blocked-not-run, no-release-approval]
+  - route: cascade-qa:triage-defects
+    description: Classify observed failures as product defect, test drift, environment failure, flake, or ambiguity from current boundary evidence.
+    triggers: [failure ownership is uncertain before source or test repair]
+    anti_triggers: [the failure class is already proven and only repair is requested]
+    consumes: [failure-evidence, public-boundary-evidence]
+    produces: [defect-disposition]
+    required_dependencies: []
+    optional_dependencies: []
+    policy_tags: [quality, defect-triage]
+    effect: READ_ONLY
+    authority: READ_ONLY
+    evaluation_cases: [test-drift-proof, environment-failure]

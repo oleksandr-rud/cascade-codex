@@ -57,7 +57,7 @@ The last claim requires current external or human-labeled evidence. Synthetic ju
    `runtime/intake-interview.md` when a material gap requires Guided intake,
    grounded/safety/task overlays as applicable,
    `runtime/tier-frontier-autonomous.md`, `runtime/evaluation.md`, and
-   `runtime/model-index.json`; do not substitute another tier without a new
+   `runtime/model-index.yaml`; do not substitute another tier without a new
    versioned dependency manifest.
 5. When RUN is explicitly authorized, invoke both
    `cascade-evals:agent-evaluation` and `cascade-evals:evaluate` in a separate

@@ -20,7 +20,7 @@ traits by parsing persona Markdown. Simulation findings may create immutable
 refinement proposals, but a new persona revision still requires external
 evidence, a verified completed run, and an `ACCEPTED` append-only disposition
 receipt before accountable human review continues through
-`synthesis-to-spec -> compose-spec`. No receipt directly edits a persona.
+`create-spec`. No receipt directly edits a persona.
 
 Non-fixture derivations also declare source authority, reference window, usage
 rights, sensitivity, retention, permitted purpose, prohibited uses, and exact

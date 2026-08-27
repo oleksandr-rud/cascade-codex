@@ -54,11 +54,13 @@ node scripts/validate-quality-evals.mjs
 node scripts/run-quality-eval.mjs list
 node scripts/run-quality-eval.mjs run \
   --task structured-invoice-v1 \
-  --prompt-model gpt-5.6-terra \
-  --target-model gpt-5.6-terra
+  --prompt-model gpt-5.6-sol \
+  --target-model gpt-5.6-sol \
+  --reasoning-effort max
 node scripts/run-interview-eval.mjs list
 node scripts/run-variance-eval.mjs --task structured-invoice-v1 \
-  --prompt-model gpt-5.6-terra --target-model gpt-5.6-terra --repetitions 3
+  --prompt-model gpt-5.6-sol --target-model gpt-5.6-sol \
+  --reasoning-effort max --repetitions 3
 ```
 
 Read `evals/README.md` for the complete evidence, adapter, judge, timeout, and
@@ -73,7 +75,8 @@ calibration contract.
   model, adapter, runner, rubric, and evidence digests.
 - External adapter credentials stay in the adapter environment and never enter
   campaign artifacts.
-- `gpt-5.6-terra` is the default prompt-builder, target, and judge model.
+- `gpt-5.6-sol` with `max` reasoning is the default prompt-builder, target,
+  and judge configuration.
   Other supported models require an explicit comparison configuration.
 - This compact plugin campaign does not claim Cascade repository release
   eligibility or replace its product-evals campaign governance.

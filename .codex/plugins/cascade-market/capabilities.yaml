@@ -1,0 +1,57 @@
+schema_version: 1
+plugin:
+  name: cascade-market
+  version: 0.2.0+codex.20260827155001
+model_policy:
+  model: gpt-5.6-sol
+  planning_reasoning_effort: high
+  evaluation_reasoning_effort: max
+skills:
+  - route: cascade-market:research-market
+    description: Research a market, segment, pain cluster, competitors, pricing, alternatives, buying process, or external constraint.
+    triggers: [current attributable market evidence is required]
+    anti_triggers: [accepted market evidence already exists and only positioning is requested]
+    consumes: [market-research-brief, external-sources]
+    produces: [market-evidence-ledger]
+    required_dependencies: []
+    optional_dependencies: [cascade-personas:compile-persona]
+    policy_tags: [market-intelligence, research]
+    effect: CANDIDATE_WRITE
+    authority: READ_ONLY
+    evaluation_cases: [source-attribution, no-synthetic-proof]
+  - route: cascade-market:evaluate-market-opportunity
+    description: Score or stress-test a market opportunity or product-market-fit hypothesis from a frozen market evidence ledger.
+    triggers: [market opportunity or segment attractiveness needs assessment]
+    anti_triggers: [fresh research or product approval is the requested outcome]
+    consumes: [market-evidence-ledger]
+    produces: [market-opportunity-assessment]
+    required_dependencies: []
+    optional_dependencies: [cascade-evals:evaluate, cascade-evals:build-judge]
+    policy_tags: [market-intelligence, opportunity-assessment]
+    effect: READ_ONLY
+    authority: READ_ONLY
+    evaluation_cases: [uncertainty-preservation, no-score-as-approval]
+  - route: cascade-market:design-market-experiments
+    description: Design or audit real-world market experiments for demand, pricing, channel, positioning, retention, or buying behavior.
+    triggers: [a market hypothesis needs a bounded real-participant experiment]
+    anti_triggers: [a synthetic simulation is being presented as market proof]
+    consumes: [market-evidence-ledger, market-hypothesis]
+    produces: [market-experiment-plan]
+    required_dependencies: []
+    optional_dependencies: [cascade-prompt:prompt, cascade-product:manage-product-lifecycle, cascade-simulations:simulate, cascade-evals:evaluate]
+    policy_tags: [market-intelligence, experiment-design]
+    effect: CANDIDATE_WRITE
+    authority: READ_ONLY
+    evaluation_cases: [kill-criteria, synthetic-evidence-boundary]
+  - route: cascade-market:brand-positioning
+    description: Create or audit positioning, messaging, naming, tone, proof language, trust language, and marketing direction from accepted evidence.
+    triggers: [brand positioning or marketing language must be created or revised]
+    anti_triggers: [fresh market research or product behavior definition is the real task]
+    consumes: [market-evidence-ledger, market-opportunity-assessment, product-contract, persona-projection]
+    produces: [marketing-positioning]
+    required_dependencies: []
+    optional_dependencies: [cascade-market:research-market, cascade-market:evaluate-market-opportunity, cascade-product:define-product, cascade-personas:compile-persona, cascade-design:design-system, cascade-prompt:prompt]
+    policy_tags: [market, brand-positioning]
+    effect: CANDIDATE_WRITE
+    authority: READ_ONLY
+    evaluation_cases: [source-bound-proof, unsupported-claim-hypothesis, product-boundary]

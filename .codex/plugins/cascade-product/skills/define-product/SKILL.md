@@ -56,17 +56,35 @@ Include only applicable parts, but keep traceability intact:
 - MVP outcome boundary distinct from current iteration scope;
 - delivery and learning handoff with required proof and next decision gate.
 
-Use cascade-personas:compile-persona when a canonical persona needs a purpose-limited product view. Use cascade-market-intelligence:evaluate-market-opportunity when market claims are not accepted inputs. Use cascade-prompt:prompt only for model-facing prompts; do not bury the product contract inside a prompt.
+Use cascade-personas:compile-persona when a canonical persona needs a purpose-limited product view. Use cascade-market:evaluate-market-opportunity when market claims are not accepted inputs. Use cascade-prompt:prompt only for model-facing prompts; do not bury the product contract inside a prompt.
 
 ## Workflow
 
 1. Verify source identity, freshness, decision authority, and conflicts.
 2. Normalize vocabulary and give important outcomes, requirements, journeys, scenarios, and decisions stable identities.
+   Keep the decision layer self-contained: restate every decision-relevant
+   outcome, baseline, slice, acceptance behavior, and recovery term that is
+   visible in the accepted packet. A source ID or a sentence saying the detail
+   remains in that source is lineage, not definition content. When the packet
+   exposes only qualitative facts, write an explicit qualitative baseline and
+   outcome without inventing quantities. In a Cascade Evals fixture, complete
+   accepted/current input bindings with `absent: []` are the supplied accepted
+   source packet: do not downgrade solely because their source bodies are not
+   duplicated into the visible fixture. Produce the bounded qualitative
+   definition from the visible request and bindings, and label undisclosed
+   quantities as not supplied rather than fabricating them. Outside that
+   explicit fixture contract, a genuinely missing decision-critical term is an
+   exact GAP rather than a claim of completeness.
 3. Trace every material requirement to an accepted decision or evidence item. Mark unsupported content ASSUMPTION or GAP.
    `traceability.from_id` and every `to_ids` member must name a section_id,
    journey_id, requirement_id, or claim_id declared in the same work product.
    Link source artifacts only through those entries' `evidence_ids`; never put
    a source-artifact ID or journey-step ID in `traceability`.
+   Before serialization, every section, journey, requirement, and validation claim
+   object must include the `evidence_ids` key. Use only exact IDs from
+   `source_artifacts`; use an empty array when an unsupported GAP or NOT_RUN
+   item has no source evidence. Never omit the key, even when the array is
+   empty.
 4. Define visible behavior with positive, negative, stale-state, permission, failure, recovery, and adjacent-mode examples when applicable.
 5. Separate what users need, what the product must do, and how implementation may satisfy it.
 6. Check internal consistency across actors, journeys, requirements, metrics, non-goals, and handoffs.
@@ -92,7 +110,12 @@ Use cascade-personas:compile-persona when a canonical persona needs a purpose-li
    When a handoff is required, bind both its actual `output_artifacts` entry and
    `expected_output` to the definition's exact artifact_id, version, READY/GAP/
    BLOCKED/INVALID status, and finalized digest. Handoff status is a separate
-   field and must not replace Product status.
+   field and must not replace Product status. A READY PREPARE envelope is
+   actionable but unexecuted: populate `resume.owner`, `resume.next_action`,
+   and exactly one of `resume.required_artifact` or
+   `resume.not_applicable_reason`. Use null resume fields only for a terminal
+   acknowledged PASS, never when owner approval, consumer review, or another
+   deferred action is still required.
 
 ## Output
 

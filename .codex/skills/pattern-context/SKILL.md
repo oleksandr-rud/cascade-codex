@@ -10,8 +10,9 @@ or when onboarding or closeout needs to create or update a pattern entry or
 context pack.
 
 This skill owns the shape and retrieval rules for pattern context. It does not
-replace `docs-impact-map`; use that skill first when a durable product, design,
-brand, spec, backlog, glossary, or pattern fact may affect sibling docs.
+own product, persona, market, design, or specification semantics. When a
+pattern change affects sibling durable documents, map only the true consumers
+and route specification persistence to `create-spec`.
 
 ## Source Order
 
@@ -86,8 +87,9 @@ are reusable, bounded by a topic, and have metadata plus at least one pack file.
 
 ## Onboarding Rules
 
-During onboarding, use `adapt-harness` as the merge owner and this skill for
-pattern entries. Create or update pattern entries only after source inspection
+During onboarding, use `cascade-coding-agent:adapt-harness` as the portable
+adaptation owner and this skill for target pattern entries. Create or update
+pattern entries only after source inspection
 shows a repeated architecture, security, testing, workflow, context, memory, or
 agent-runtime rule that future planning or validation must retrieve.
 
@@ -104,5 +106,6 @@ summary, routing, documents, and sections.
 - compiled context preview command and result;
 - files changed;
 - validation evidence;
-- next route: `docs-impact-map`, `adapt-harness`, `plan-change`,
-  `validate-change`, `closeout`, or `codex-maintenance`.
+- next route: `create-spec`, `cascade-coding-agent:adapt-harness`,
+  `cascade-coding-agent:maintain-harness`, `plan-change`, `validate-change`, or
+  `closeout`.

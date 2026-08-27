@@ -1,51 +1,62 @@
+plugin_skills:
+  - cascade-software-architect:plan-workflow
+  - cascade-ai-architect:design-agent-workflow
+  - cascade-ai-architect:build-agent-roles
+  - cascade-software-architect:select-architecture-patterns
+  - cascade-software-architect:review-architecture
+  - cascade-software-architect:review-change
+  - cascade-design:design-system
+  - cascade-market:research-market
+  - cascade-market:evaluate-market-opportunity
+  - cascade-market:design-market-experiments
+  - cascade-market:brand-positioning
+  - cascade-personas:build-persona
+  - cascade-personas:compile-persona
+  - cascade-personas:evaluate-persona
+  - cascade-product:define-product
+  - cascade-product:manage-product-lifecycle
+  - cascade-product:validate-product
+  - cascade-project-management:plan-project
+  - cascade-project-management:define-work-item
+  - cascade-project-management:manage-project
+  - cascade-project-management:close-project
+  - cascade-qa:plan-quality
+  - cascade-qa:design-tests
+  - cascade-qa:assess-quality
+  - cascade-qa:triage-defects
+  - cascade-simulations:manage-simulation-campaign
+  - cascade-simulations:simulate
+  - cascade-security:secure-design
 skills:
   - name: context
     source: .codex/skills/context/SKILL.md
-  - name: agentic-workflow-builder
-    source: .codex/skills/agentic-workflow-builder/SKILL.md
-  - name: orchestrate-work
-    source: .codex/skills/orchestrate-work/SKILL.md
-  - name: reconcile-work-graph
-    source: .codex/skills/reconcile-work-graph/SKILL.md
-  - name: archive-work
-    source: .codex/skills/archive-work/SKILL.md
   - name: plan-change
     source: .codex/skills/plan-change/SKILL.md
-  - name: plan-iterations
-    source: .codex/skills/plan-iterations/SKILL.md
-  - name: functional-qa
-    source: .codex/skills/functional-qa/SKILL.md
+  - name: run-qa-plan
+    source: .codex/skills/run-qa-plan/SKILL.md
+    delegates:
+      - cascade-qa:design-tests
+      - cascade-qa:assess-quality
+      - cascade-qa:triage-defects
   - name: implement-change
     source: .codex/skills/implement-change/SKILL.md
-  - name: review-change
-    source: .codex/skills/review-change/SKILL.md
   - name: validate-change
     source: .codex/skills/validate-change/SKILL.md
-  - name: test-autorepair
-    source: .codex/skills/test-autorepair/SKILL.md
-  - name: issue-intake
-    source: .codex/skills/issue-intake/SKILL.md
+  - name: repair-tests
+    source: .codex/skills/repair-tests/SKILL.md
+    delegates:
+      - cascade-qa:triage-defects
+      - cascade-qa:assess-quality
   - name: closeout
     source: .codex/skills/closeout/SKILL.md
-  - name: architecture-review
-    source: .codex/skills/architecture-review/SKILL.md
-  - name: discover
-    source: .codex/skills/discover/SKILL.md
-  - name: ingest-spec
-    source: .codex/skills/ingest-spec/SKILL.md
-  - name: market-validation
-    source: .codex/skills/market-validation/SKILL.md
-  - name: synthesis-to-spec
-    source: .codex/skills/synthesis-to-spec/SKILL.md
-  - name: compose-spec
-    source: .codex/skills/compose-spec/SKILL.md
-  - name: brand-positioning
-    source: .codex/skills/brand-positioning/SKILL.md
-  - name: design-system
-    source: .codex/skills/design-system/SKILL.md
-  - name: docs-impact-map
-    source: .codex/skills/docs-impact-map/SKILL.md
+    delegate: cascade-project-management:close-project
+  - name: create-spec
+    source: .codex/skills/create-spec/SKILL.md
+    delegates:
+      - cascade-product:define-product
+      - cascade-product:manage-product-lifecycle
+      - cascade-personas:build-persona
+      - cascade-personas:compile-persona
+      - cascade-market:research-market
   - name: pattern-context
     source: .codex/skills/pattern-context/SKILL.md
-  - name: simulation-campaigns
-    source: .codex/skills/simulation-campaigns/SKILL.md

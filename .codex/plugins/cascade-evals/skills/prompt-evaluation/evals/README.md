@@ -63,8 +63,9 @@ node scripts/validate-quality-evals.mjs
 node scripts/run-quality-eval.mjs list
 node scripts/run-quality-eval.mjs run \
   --task structured-invoice-v1 \
-  --prompt-model gpt-5.6-terra \
-  --target-model gpt-5.6-terra
+  --prompt-model gpt-5.6-sol \
+  --target-model gpt-5.6-sol \
+  --reasoning-effort max
 ```
 
 By default the runners resolve the enabled `cascade-prompt` plugin through
@@ -77,8 +78,9 @@ override that cache with an existing Cascade Prompt response:
 ```bash
 node scripts/run-quality-eval.mjs run \
   --task structured-invoice-v1 \
-  --prompt-model gpt-5.6-terra \
-  --target-model gpt-5.6-terra \
+  --prompt-model gpt-5.6-sol \
+  --target-model gpt-5.6-sol \
+  --reasoning-effort max \
   --prompt-response-file /absolute/path/to/response.md
 ```
 
@@ -98,9 +100,10 @@ reusing only the digest-bound builder and trajectory caches:
 ```bash
 node scripts/run-variance-eval.mjs \
   --task structured-invoice-v1 \
-  --prompt-model gpt-5.6-terra \
-  --target-model gpt-5.6-terra \
-  --execute-judges --judge-model gpt-5.6-terra \
+  --prompt-model gpt-5.6-sol \
+  --target-model gpt-5.6-sol \
+  --reasoning-effort max \
+  --execute-judges --judge-model gpt-5.6-sol \
   --repetitions 3
 ```
 
@@ -150,7 +153,8 @@ state only.
 node scripts/run-interview-eval.mjs list
 node scripts/run-interview-eval.mjs run \
   --fixture support-mixed-case-v1 \
-  --model gpt-5.6-terra \
+  --model gpt-5.6-sol \
+  --reasoning-effort max \
   --installed-plugin
 ```
 

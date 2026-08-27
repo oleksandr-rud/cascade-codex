@@ -1,0 +1,222 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://cascade.local/schemas/security-review.schema.json",
+  "title": "Cascade Security review artifact",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "status",
+    "selected_skill",
+    "scope",
+    "sources",
+    "coverage",
+    "findings",
+    "handoffs",
+    "authority"
+  ],
+  "properties": {
+    "schema_version": {"const": 1},
+    "status": {"enum": ["READY", "GAP", "BLOCKED"]},
+    "selected_skill": {
+      "enum": ["codebase-audit", "auth-analysis", "secure-design"]
+    },
+    "scope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["objective", "review_only", "assumptions"],
+      "properties": {
+        "objective": {"type": "string", "minLength": 1},
+        "review_only": {"const": true},
+        "assumptions": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {"type": "string", "minLength": 1}
+        }
+      }
+    },
+    "sources": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"$ref": "#/$defs/source"}
+    },
+    "coverage": {
+      "oneOf": [
+        {"$ref": "#/$defs/codebaseCoverage"},
+        {"$ref": "#/$defs/authCoverage"},
+        {"$ref": "#/$defs/designCoverage"}
+      ]
+    },
+    "findings": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/finding"}
+    },
+    "handoffs": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/handoff"}
+    },
+    "authority": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "review_only",
+        "secrets_redacted",
+        "runtime_mutation",
+        "compliance_attestation",
+        "release_approval"
+      ],
+      "properties": {
+        "review_only": {"const": true},
+        "secrets_redacted": {"const": true},
+        "runtime_mutation": {"const": false},
+        "compliance_attestation": {"const": false},
+        "release_approval": {"const": false}
+      }
+    }
+  },
+  "$defs": {
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["source_id", "kind", "authority", "status", "locator"],
+      "properties": {
+        "source_id": {"type": "string", "pattern": "^SRC-[A-Z0-9-]+$"},
+        "kind": {
+          "enum": [
+            "user-request",
+            "target-source",
+            "target-config",
+            "target-policy",
+            "official-reference",
+            "tool-output",
+            "assumption"
+          ]
+        },
+        "authority": {
+          "enum": ["AUTHORITATIVE", "SUPPORTING", "UNTRUSTED", "ASSUMPTION", "MISSING"]
+        },
+        "status": {"enum": ["AVAILABLE", "MISSING", "CONFLICTING"]},
+        "locator": {"type": "string", "minLength": 1}
+      }
+    },
+    "finding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "finding_id",
+        "classification",
+        "severity",
+        "statement",
+        "evidence_refs",
+        "required_action",
+        "next_gate"
+      ],
+      "properties": {
+        "finding_id": {"type": "string", "pattern": "^F-[A-Z0-9-]+$"},
+        "classification": {"enum": ["control", "gap", "risk", "unknown", "conflict"]},
+        "severity": {"enum": ["P0", "P1", "P2", "P3", "INFO"]},
+        "statement": {"type": "string", "minLength": 1},
+        "evidence_refs": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {"type": "string", "pattern": "^SRC-[A-Z0-9-]+$"}
+        },
+        "required_action": {"type": "string", "minLength": 1},
+        "next_gate": {"type": "string", "minLength": 1}
+      }
+    },
+    "handoff": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["route", "status", "reason", "required_input", "expected_output"],
+      "properties": {
+        "route": {"type": "string", "minLength": 1},
+        "status": {"enum": ["OPTIONAL", "REQUIRED", "BLOCKED"]},
+        "reason": {"type": "string", "minLength": 1},
+        "required_input": {"type": "string", "minLength": 1},
+        "expected_output": {"type": "string", "minLength": 1}
+      }
+    },
+    "codebaseCoverage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "trajectories", "inventory"],
+      "properties": {
+        "kind": {"const": "codebase"},
+        "trajectories": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {"type": "string", "minLength": 1}
+        },
+        "inventory": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["scanner", "content_read", "scanned_files", "truncated"],
+          "properties": {
+            "scanner": {"enum": ["bundled", "equivalent", "not-run"]},
+            "content_read": {"const": false},
+            "scanned_files": {"type": "integer", "minimum": 0},
+            "truncated": {"type": "boolean"}
+          }
+        }
+      }
+    },
+    "authCoverage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "checks"],
+      "properties": {
+        "kind": {"const": "auth"},
+        "checks": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "enum": [
+              "session-lifecycle",
+              "server-side-authorization",
+              "tenant-isolation",
+              "client-storage",
+              "route-parity",
+              "audit-events"
+            ]
+          }
+        }
+      }
+    },
+    "designCoverage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "assets", "trust_boundaries", "abuse_cases", "required_controls"],
+      "properties": {
+        "kind": {"const": "design"},
+        "assets": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {"type": "string", "minLength": 1}
+        },
+        "trust_boundaries": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {"type": "string", "minLength": 1}
+        },
+        "abuse_cases": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {"type": "string", "minLength": 1}
+        },
+        "required_controls": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {"type": "string", "minLength": 1}
+        }
+      }
+    }
+  }
+}

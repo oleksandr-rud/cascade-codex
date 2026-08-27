@@ -1,0 +1,4 @@
+interface:
+  display_name: "Brand Positioning"
+  short_description: "Build evidence-bound positioning and messaging"
+  default_prompt: "Use $brand-positioning to create or revise the approved positioning from the supplied market, product, and audience evidence."

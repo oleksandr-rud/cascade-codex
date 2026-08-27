@@ -1,0 +1,32 @@
+{
+  "name": "cascade-security",
+  "version": "0.1.0+codex.20260827142017",
+  "description": "Audit codebases, authentication boundaries, and proposed systems through evidence-bound security reviews without exposing secrets or mutating target runtime code.",
+  "author": {
+    "name": "Cascade"
+  },
+  "keywords": [
+    "security-review",
+    "authentication",
+    "tenant-isolation",
+    "threat-modeling",
+    "secure-design"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Cascade Security",
+    "shortDescription": "Audit security boundaries and proposed systems.",
+    "longDescription": "Run evidence-bound codebase, authentication, tenant-isolation, and secure-design reviews while preserving sensitive-data, implementation, compliance, and release-authority boundaries.",
+    "developerName": "Cascade",
+    "category": "Developer Tools",
+    "capabilities": [
+      "Interactive",
+      "Write"
+    ],
+    "defaultPrompt": [
+      "Map the security surfaces and audit trajectories in this codebase.",
+      "Audit this authentication and tenant-isolation implementation.",
+      "Threat-model this feature before implementation."
+    ]
+  }
+}

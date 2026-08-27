@@ -1,0 +1,4 @@
+interface:
+  display_name: "Review Architecture"
+  short_description: "Review architecture boundaries and contracts"
+  default_prompt: "Use $review-architecture to inspect this architecture candidate and its consumers for actionable defects."

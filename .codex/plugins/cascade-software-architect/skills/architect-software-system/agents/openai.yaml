@@ -1,0 +1,4 @@
+interface:
+  display_name: "Architect Software System"
+  short_description: "Design source-grounded software architectures"
+  default_prompt: "Use $architect-software-system to design a bounded architecture for this system from the supplied sources."

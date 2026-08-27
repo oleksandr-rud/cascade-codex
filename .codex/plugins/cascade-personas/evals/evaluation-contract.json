@@ -2,7 +2,7 @@
   "schema_version": 2,
   "plugin_id": "cascade-personas",
   "subject_kind": "agent",
-  "version": "0.1.20+codex.20260823183500",
+  "version": "0.1.20+codex.20260826233510",
   "expected_case_count": 15,
   "acceptance_threshold": 0.95,
   "minimum_dimension": 3,
@@ -12,7 +12,7 @@
     "target": "gpt-5.6-sol",
     "judge": "gpt-5.6-sol",
     "reasoning_effort": "max",
-    "explicit_comparison_override": true
+    "explicit_comparison_override": false
   },
   "expected_skills": ["build-persona", "compile-persona", "evaluate-persona"],
   "required_schemas": ["persona.schema.json", "projection.schema.json", "handoff-envelope.schema.json"],
@@ -29,9 +29,10 @@
     "DETERMINISTIC_SIMULATION_COMPILER",
     "enabled installed Cascade Simulations",
     "canonical JSON Pointers",
-    "compiler-generated mapping table"
+    "compiler-generated mapping table",
+    "Unresolved decision-critical evidence conflict is GAP"
   ],
-  "forbidden_runtime_phrases": [],
+  "forbidden_runtime_phrases": ["runtime/model-index.json"],
   "required_dependency_aliases": [
     "cascade-prompt:prompt",
     "cascade-evals:agent-evaluation",
@@ -95,7 +96,7 @@
     },
     {
       "alias": "cascade-prompt:prompt",
-      "path": "skills/prompt/runtime/model-index.json"
+      "path": "skills/prompt/runtime/model-index.yaml"
     },
     {
       "alias": "cascade-evals:agent-evaluation",

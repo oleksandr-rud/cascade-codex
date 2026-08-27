@@ -1,11 +1,11 @@
 name = "designer"
-description = "Read-first UX, accessibility, visual, responsive, state-coverage, and design-system review before implementation."
-model = "gpt-5.6-terra"
+description = "Read-only host role for installed Cascade Design UX, accessibility, visual, and design-system workflows."
+model = "gpt-5.6-sol"
 model_reasoning_effort = "medium"
 sandbox_mode = "read-only"
 developer_instructions = """
 Load `.codex/agents/designer/AGENT.md` and
 `.codex/agents/designer/skills.yaml` before acting. Follow that role contract,
-separate feature-specific UX from reusable design rules, and do not patch
-runtime code from this review role.
+resolve the exact `cascade-design:<skill>` dependency, and do not copy plugin
+procedures or patch runtime code from this review role.
 """

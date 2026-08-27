@@ -38,7 +38,7 @@ skill_calls:
   - skill: implement-change
     when: frontend changes are authorized and ready
     required: true
-  - skill: functional-qa
+  - skill: cascade-qa:design-tests
     when: component, route, or browser behavior must be proven
     required: true
   - skill: validate-change
@@ -77,5 +77,5 @@ workline_policy: Split when frontend writes and local evidence are independently
 omission_rule: NOT_APPLICABLE when no client source, visible state, route, component, or changed-contract consumer is affected.
 repair:
   - Functional failure reopens implement-frontend.
-  - Locator or fixture drift routes to test-autorepair only after product behavior remains proven.
+  - Locator or fixture drift routes to repair-tests only after product behavior remains proven.
   - Contract drift reopens only affected client consumers.

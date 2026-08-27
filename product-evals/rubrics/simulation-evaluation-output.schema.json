@@ -164,7 +164,7 @@
           },
           "confidence": { "enum": ["low", "medium", "high"] },
           "disposition_route": {
-            "enum": ["collect-external-evidence", "repair-simulator", "synthesis-to-spec"]
+            "enum": ["collect-external-evidence", "repair-simulator", "create-spec"]
           }
         }
       }

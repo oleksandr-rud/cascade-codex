@@ -1530,14 +1530,14 @@ function requiredSkills(controls: ControlPack[], intent: Intent, tags: Set<strin
   const skills: string[] = [];
   if (controls.includes("GROUNDED_READ")) skills.push("context");
   if (controls.includes("ATOMIC_CHANGE")) skills.push("implement-change", "validate-change");
-  if (controls.includes("STANDARD_CHANGE")) skills.push("plan-change", "functional-qa", "implement-change", "review-change", "validate-change");
-  if (controls.includes("CONNECTED_DELIVERY") || controls.includes("PROGRAM_CONTROL")) skills.push("orchestrate-work");
+  if (controls.includes("STANDARD_CHANGE")) skills.push("plan-change", "implement-change", "cascade-software-architect:review-change", "validate-change");
+  if (controls.includes("CONNECTED_DELIVERY") || controls.includes("PROGRAM_CONTROL")) skills.push("cascade-project-management:manage-project");
   if (controls.includes("SIMULATION_GOVERNANCE")) {
-    skills.push(tags.has("simulation-campaign") ? "simulation-campaigns" : "cascade-simulations:simulate");
+    skills.push(tags.has("simulation-campaign") ? "cascade-simulations:manage-simulation-campaign" : "cascade-simulations:simulate");
   }
-  if (controls.includes("SECURITY_ASSURANCE")) skills.push("secure-design");
+  if (controls.includes("SECURITY_ASSURANCE")) skills.push("cascade-security:secure-design");
   if (controls.includes("RELEASE_EVIDENCE")) skills.push("validate-change");
-  if (!skills.length && intent === "REVIEW") skills.push("review-change");
+  if (!skills.length && intent === "REVIEW") skills.push("cascade-software-architect:review-change");
   return unique(skills);
 }
 

@@ -257,14 +257,14 @@ describe("active harness metadata validation", () => {
   });
 
   test("enforces one canonical non-atomic route order", () => {
-    const canonical = "context -> plan-change -> plan-iterations -> orchestrate-work -> functional-qa -> implement-change -> review-change -> validate-change -> test-autorepair -> closeout";
+    const canonical = "context -> plan-change -> implement-change -> validate-change";
     expect(routeOrderErrors("route", canonical)).toEqual([]);
     const drifted = canonical.replace(
-      "plan-change -> plan-iterations",
-      "plan-iterations -> plan-change",
+      "plan-change -> implement-change",
+      "implement-change -> plan-change",
     );
     expect(routeOrderErrors("route", drifted)).toContain(
-      "route missing or misordered route stage: plan-iterations",
+      "route missing or misordered route stage: implement-change",
     );
   });
 });

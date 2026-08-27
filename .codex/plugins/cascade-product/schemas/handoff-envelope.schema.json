@@ -395,10 +395,7 @@
       "if": {
         "properties": {
           "status": {
-            "enum": [
-              "READY",
-              "PASS"
-            ]
+            "const": "PASS"
           }
         }
       },
@@ -442,6 +439,85 @@
                 "type": "null"
               }
             }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "required": [
+          "mode",
+          "status"
+        ],
+        "properties": {
+          "mode": {
+            "const": "PREPARE"
+          },
+          "status": {
+            "const": "READY"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "output_artifacts": {
+            "minItems": 1
+          },
+          "freshness": {
+            "properties": {
+              "status": {
+                "const": "CURRENT"
+              }
+            }
+          },
+          "failure": {
+            "properties": {
+              "classification": {
+                "const": "NONE"
+              },
+              "message": {
+                "type": "null"
+              },
+              "retry_allowed": {
+                "const": false
+              }
+            }
+          },
+          "resume": {
+            "properties": {
+              "owner": {
+                "type": "string",
+                "minLength": 1
+              },
+              "next_action": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "oneOf": [
+              {
+                "properties": {
+                  "required_artifact": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "not_applicable_reason": {
+                    "type": "null"
+                  }
+                }
+              },
+              {
+                "properties": {
+                  "required_artifact": {
+                    "type": "null"
+                  },
+                  "not_applicable_reason": {
+                    "type": "string",
+                    "minLength": 1
+                  }
+                }
+              }
+            ]
           }
         }
       }

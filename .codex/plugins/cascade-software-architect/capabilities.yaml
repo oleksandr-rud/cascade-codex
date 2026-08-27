@@ -1,0 +1,69 @@
+schema_version: 1
+plugin:
+  name: cascade-software-architect
+  version: 0.1.0+codex.20260827140902
+model_policy:
+  model: gpt-5.6-sol
+  planning_reasoning_effort: high
+  evaluation_reasoning_effort: max
+skills:
+  - route: cascade-software-architect:plan-workflow
+    description: Select and order multiple Cascade plugin capabilities from claims, policies, artifact contracts, and dependencies.
+    triggers: [multi-plugin selection or ordering is required]
+    anti_triggers: [one ordinary implementation slice or project schedule is sufficient]
+    consumes: [task-envelope, plugin-capability-catalog]
+    produces: [plugin-plan]
+    required_dependencies: []
+    optional_dependencies: [cascade-prompt:prompt, cascade-evals:prompt-evaluation, cascade-evals:agent-evaluation]
+    policy_tags: [plugin-routing, workflow-planning]
+    effect: CANDIDATE_WRITE
+    authority: READ_ONLY
+    evaluation_cases: [multi-claim-routing, dependency-ordering, policy-preservation, no-self-dispatch]
+  - route: cascade-software-architect:architect-software-system
+    description: Design a source-grounded software architecture with explicit boundaries, state owners, interfaces, and validation seams.
+    triggers: [software system architecture is unresolved]
+    anti_triggers: [the request is an ordinary internal code edit or AI-agent topology decision]
+    consumes: [accepted-requirements, architecture-constraints]
+    produces: [software-architecture-candidate]
+    required_dependencies: []
+    optional_dependencies: [cascade-software-architect:select-architecture-patterns]
+    policy_tags: [software-architecture, boundaries]
+    effect: CANDIDATE_WRITE
+    authority: READ_ONLY
+    evaluation_cases: [boundary-ownership, pattern-composition]
+  - route: cascade-software-architect:select-architecture-patterns
+    description: Disposition and compose compatible architecture patterns from a versioned host-supplied catalog.
+    triggers: [architecture patterns or defaults must be selected]
+    anti_triggers: [no pattern catalog or architecture decision is in scope]
+    consumes: [architecture-claims, architecture-pattern-catalog]
+    produces: [architecture-pattern-selection]
+    required_dependencies: []
+    optional_dependencies: []
+    policy_tags: [software-architecture, pattern-selection]
+    effect: CANDIDATE_WRITE
+    authority: READ_ONLY
+    evaluation_cases: [adopt-adapt-reject-gap, incompatible-patterns]
+  - route: cascade-software-architect:review-architecture
+    description: Independently review software, plugin, workflow, or AI architecture for ownership, boundary, dependency, and evidence defects.
+    triggers: [an architecture candidate needs independent review]
+    anti_triggers: [the request is only a domain acceptance decision or target implementation]
+    consumes: [architecture-candidate, consumer-map]
+    produces: [architecture-review-findings]
+    required_dependencies: []
+    optional_dependencies: []
+    policy_tags: [software-architecture, independent-review]
+    effect: READ_ONLY
+    authority: READ_ONLY
+    evaluation_cases: [hidden-consumer, authority-collision, no-findings]
+  - route: cascade-software-architect:review-change
+    description: Independently review a current diff against its request, architecture, public contracts, consumers, and regression surface.
+    triggers: [a risky or requested change needs fixed-point review]
+    anti_triggers: [a tiny internal change has sufficient direct validation or implementation is requested]
+    consumes: [change-diff, change-contract, consumer-map]
+    produces: [change-review-findings]
+    required_dependencies: []
+    optional_dependencies: []
+    policy_tags: [software-architecture, independent-review]
+    effect: READ_ONLY
+    authority: READ_ONLY
+    evaluation_cases: [introduced-defect, unrelated-dirty-work, no-findings]

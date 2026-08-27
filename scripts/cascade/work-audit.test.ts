@@ -167,7 +167,7 @@ describe("active work audit", () => {
 
   test("emits a durable, read-only scheduled-task prompt", () => {
     const prompt = automationPrompt();
-    expect(prompt).toContain("$orchestrate-work");
+    expect(prompt).toContain("cascade-project-management:manage-project");
     expect(prompt).toContain("scripts/cascade.ts work audit --json --check");
     expect(prompt).toContain("Do not edit files");
     expect(prompt).toContain("ask for explicit authorization");

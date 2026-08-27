@@ -1,3 +1,4 @@
-skills:
-  - name: simulation-evaluation
-    source: .codex/skills/simulation-evaluation/SKILL.md
+plugin_skills:
+  - cascade-simulations:simulation-review
+  - cascade-evals:simulation-evaluation
+skills: []

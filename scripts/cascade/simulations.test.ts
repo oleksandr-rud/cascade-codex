@@ -82,7 +82,7 @@ function refinementProposal(runId: string) {
     recommended_change: "Route reviewed evidence to synthesis.",
     evidence_paths: ["run/execution/execution-receipt.json"],
     confidence: "medium" as const,
-    disposition_route: "synthesis-to-spec" as const,
+    disposition_route: "create-spec" as const,
     external_evidence_required: true,
     human_review_required: true,
     direct_persona_mutation_allowed: false as const,

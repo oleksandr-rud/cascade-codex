@@ -94,6 +94,7 @@ export const CAMPAIGN_FIXED_SOURCE_FILES = [
   "scripts/cascade/retry-lineage.ts",
   "scripts/cascade/runtime-handoffs.ts",
   "scripts/cascade/patterns.ts",
+  "scripts/cascade/plugin-workflow.ts",
   "scripts/cascade/policies.ts",
   "scripts/cascade/simulations.ts",
   "scripts/cascade/simulation-intake.ts",
@@ -105,16 +106,19 @@ export const CAMPAIGN_FIXED_SOURCE_FILES = [
   "scripts/cascade/target.ts",
   "scripts/cascade/validate.ts",
   "scripts/cascade/work-audit.ts",
+  ".codex/plugins/cascade-software-architect/skills/plan-workflow/references/capability-descriptor.schema.json",
+  ".codex/plugins/cascade-software-architect/skills/plan-workflow/references/capability-catalog.schema.json",
+  ".codex/plugins/cascade-software-architect/skills/plan-workflow/references/plugin-plan.schema.json",
   ".codex/harness-tooling/browser-adapter-runner.ts",
   ".codex/harness-tooling/package.json",
   ".codex/harness-tooling/bun.lock",
-  ".codex/skills/simulation-campaigns/templates/starter/package.template.yaml",
-  ".codex/skills/simulation-campaigns/templates/campaign-design.md",
+  ".codex/plugins/cascade-simulations/skills/manage-simulation-campaign/templates/starter/package.template.yaml",
+  ".codex/plugins/cascade-simulations/skills/manage-simulation-campaign/templates/campaign-design.md",
   ".codex/agents/simulation-evaluator.toml",
   ".codex/agents/simulation-evaluator/AGENT.md",
   ".codex/agents/simulation-evaluator/skills.yaml",
-  ".codex/skills/simulation-evaluation/SKILL.md",
-  ".codex/skills/simulation-evaluation/checklists/evaluation-quality.md",
+  ".codex/plugins/cascade-evals/skills/simulation-evaluation/SKILL.md",
+  ".codex/plugins/cascade-evals/skills/simulation-evaluation/checklists/evaluation-quality.md",
   "product-evals/campaigns/schema.json",
   "product-evals/campaigns/cascade-run-artifact-v1.meta-schema.json",
   "product-evals/campaigns/pairwise-distinct-fields-v1.vocabulary.schema.json",
@@ -497,7 +501,7 @@ export interface EvaluationProfileDefinition {
   id: string;
   provider: "fixture" | "codex";
   model?: string;
-  reasoning_effort?: "low" | "medium" | "high" | "xhigh";
+  reasoning_effort?: "low" | "medium" | "high" | "xhigh" | "max";
   timeout_ms: number;
   rubric_file?: string;
 }
@@ -877,7 +881,7 @@ export interface AgentTaskDefinition {
     provider: "fixture" | "codex";
     fixture_response_file?: string;
     model?: string;
-    reasoning_effort?: "low" | "medium" | "high";
+    reasoning_effort?: "low" | "medium" | "high" | "xhigh" | "max";
   };
   prompt_file: string;
   input_file: string;
@@ -2253,7 +2257,7 @@ function validateEvaluationProfile(
   if (provider === "codex") {
     requireString(value, "model", label);
     const effort = requireString(value, "reasoning_effort", label);
-    if (!new Set(["low", "medium", "high", "xhigh"]).has(effort)) {
+    if (!new Set(["low", "medium", "high", "xhigh", "max"]).has(effort)) {
       throw new CascadeError(`${label}.reasoning_effort is invalid`);
     }
     requireString(value, "rubric_file", label);
@@ -3368,7 +3372,7 @@ export function validateTask(
       (provider === "codex" &&
         (runtime.fixture_response_file !== undefined ||
           typeof runtime.model !== "string" || !runtime.model ||
-          !new Set(["low", "medium", "high"]).has(String(runtime.reasoning_effort))))
+          !new Set(["low", "medium", "high", "xhigh", "max"]).has(String(runtime.reasoning_effort))))
     ) {
       throw new CascadeError(`${label}.agent.runtime fixture source is invalid`);
     }

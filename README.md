@@ -24,11 +24,12 @@ runs remain the dominant latency in live evaluations.
 - Harness name: `cascade`
 - Runtime bridge: `CODEX.md`
 - Adapter template: `harness.config.example.yaml`
-- Local role contracts: 9
-- Registered skills: 45
+- Local role contracts: 7
+- Registered host skills: 9
 - Canonical skill and role source: `.codex/skills/` and `.codex/agents/`
+- Repo-local Cascade plugin sources: 12
 - Planning model: `gpt-5.6-sol`
-- Read-heavy execution and judge model: `gpt-5.6-terra`
+- Execution, prompt-builder, and judge model: `gpt-5.6-sol`
 - Tooling runtime: Bun `1.3.3`
 - Validator: `bun scripts/cascade.ts validate`
 
@@ -95,38 +96,44 @@ bun scripts/cascade.ts policy compile --scope all --check
 `policy compile` emits a deterministic composition to stdout unless `--check`
 is used. It does not mutate authored sources or generated evidence.
 
-For non-atomic engineering work, the compiled controls select applicable
-stages from this path:
+For non-atomic engineering work, the default path is:
 
 ```text
-context -> ingest-spec/discover/market-validation/synthesis-to-spec/compose-spec if needed -> docs-impact-map when durable docs may affect sibling rules -> pattern-context when reusable pattern packs are needed -> plan-change -> plan-iterations when delivery spans horizons -> orchestrate-work when feasible committed first-iteration scope needs coordination -> functional-qa when new product-visible proof is needed -> implement-change -> review-change -> validate-change -> test-autorepair only if stale tests -> closeout
+context -> plan-change -> implement-change -> validate-change
 ```
 
-Use `issue-intake` only for issue bodies or tracker tickets. Use
-`test-autorepair` only when automated tests are stale, flaky, or failing while
-the product behavior still matches the intended contract.
+Use `cascade-project-management:define-work-item` only for tracker-ready issue,
+story, task, enabler, or experiment candidates. Portable project planning,
+coordination, reconciliation, and completion assessment also live in Cascade
+Project Management. Portable quality planning, test design, evidence
+assessment, and defect triage live in Cascade QA. The harness retains only
+`run-qa-plan` for authorized target execution, `repair-tests` for QA-proven
+`TEST_DRIFT`, and `closeout` for authorized durable state effects. These routes
+are conditional; ordinary bounded work creates no durable process artifacts.
 
-Broad work is split by `orchestrate-work` only when lanes have independent
+Broad work is coordinated through
+`cascade-project-management:manage-project` only when lanes have independent
 source inputs, disjoint file ownership or one integration/materialization
 owner, acceptance checks, and version-bound integration/materialization
-evidence. Shared product/design/security decisions stay serialized.
+evidence. Shared product, design, security, and quality decisions stay with
+their owning plugins or decision owners.
 
 Complex lanes can use lane-local Task Graphs. Cross-workline dependencies,
 evidence or batch joins, materialization/integrated-validation boundaries,
 invalidation, or partial repair use a separate
 `docs/work/graphs/CG-XXX-*.md` Coordination Graph. Existing work records are
-audited by `reconcile-work-graph` before direct cutover; product/spec/design/
-brand documents retain rich definitions and reference the graph only when
-needed. Atomic work and unrelated worklines bypass Coordination Graphs.
+audited by the reconciliation mode of
+`cascade-project-management:manage-project` before direct cutover;
+product/spec/design/brand documents retain rich definitions and reference the
+graph only when needed. Atomic work and unrelated worklines bypass
+Coordination Graphs.
 Cascade does not add a graph runtime or replace the agent's reasoning and tool
 loop, and graph materialization never implies committing or publishing the
 active worktree.
 
-After a lane or graph completes, `closeout` retires its active projection and
-automatically chains `archive-work`. Eligible frozen originals move to
-`docs/archive/work-reports/` behind a digest-bound capsule; blocked archive
-maintenance returns `ARCHIVE_DEFERRED` without undoing completion. This is an
-instruction-driven same-turn chain, not a background scheduler.
+`cascade-project-management:close-project` assesses terminal and retention
+readiness. `closeout` applies only exact, authorized host records. Retention is
+never an automatic phase.
 
 Planning composes these flows from reusable definitions under
 `docs/patterns/workflow/fragments/`. Product, design, prototype, contract,
@@ -145,17 +152,27 @@ check so future agents get useful sourced deltas instead of broad doc rewrites.
 Discovery-heavy work uses:
 
 ```text
-discover or market-validation -> ingest-spec or synthesis-to-spec -> compose-spec -> docs-impact-map -> plan-change -> functional-qa
+context (Discovery mode) -> owning namespaced plugin -> create-spec -> plan-change
 ```
 
-Explicit workflow-packet requests are routed separately from active execution.
-Use `agentic-workflow-builder` when the requested output is an agentic
-workflow, workflow checklist, prompt bank, delegation workflow, or multi-agent
-workflow packet. Use `orchestrate-work` when the work is already accepted and
-needs active lanes, serialization, coordination/materialization ownership, or
-validation scheduling. Use `reconcile-work-graph` first when existing
-worklines need evidence-backed deduplication, stale-state reconciliation, or
-canonical graph cutover.
+Add Cascade QA only when the accepted behavior has a named quality, test,
+acceptance, or risk gate.
+
+Explicit agent-workflow requests are routed separately from active execution.
+Use `cascade-ai-architect:design-agent-workflow` for the portable behavior flow and
+`cascade-coding-agent:integrate-agent-assets` when that candidate must bind to
+actual target roles, skills, execution surfaces, permissions, paths, and
+validation. Use `cascade-project-management:manage-project` when the work
+is already accepted and needs active lanes, serialization,
+coordination/materialization ownership, or validation scheduling. Use its
+reconciliation mode first when existing worklines need evidence-backed
+deduplication, stale-state reconciliation, or canonical graph cutover.
+
+Use `cascade-software-architect:plan-workflow` when two or more plugin capabilities must
+be selected and ordered. It compiles Task Envelope claims, applied policies,
+artifact contracts, and typed plugin dependencies into a validated DAG. It is
+a planning controller only: every plan preserves `dispatch_authorized: false`,
+and host admission and execution remain separate authority gates.
 
 ## Roles And Skills
 
@@ -164,15 +181,13 @@ clear boundary:
 
 | Role | Model | Owns |
 |---|---|---|
-| `orchestrator` | `gpt-5.6-sol` | Normal task routing plus explicit workflow-packet routing across context, ingest, impact, planning, acceptance, implementation, review, validation, repair, and closeout. |
-| `project-onboarder` | `gpt-5.6-terra` | New-repository setup, read-heavy harness adaptation, config/docs migration, validation, and setup handoff. |
-| `agent-engineer` | `gpt-5.6-sol` | Cascade maintenance and target-project agent/LLM system design, including agent graphs, model/tool loops, retrieval, memory, permissions, tool contracts, simulation campaigns, observability, cost/safety controls, evals, and Codex surface decisions. |
-| `business-analyst` | `gpt-5.6-sol` | Long market validation, competitor/pain/economics lanes, evidence grading, and synthesis into specs. |
-| `security` | `gpt-5.6-sol` | Security-sensitive review, auth/session/RBAC and tenant-boundary analysis, secure-design review, audit evidence, and security validation planning. |
-| `designer` | `gpt-5.6-terra` | Read-heavy UX flow review, accessibility review, visual validation, design-system routing, and design handoff planning. |
-| `harness-evaluator` | `gpt-5.6-terra` | Read-only outcome or trajectory judgment of eligible Cascade scenario outputs and traces after deterministic hard gates. |
-| `simulation-operator` | `gpt-5.6-terra` | Bounded mutable execution of one approved command, terminal, browser, desktop, mobile, or agent-response campaign with evidence freezing and cleanup. |
-| `simulation-evaluator` | `gpt-5.6-terra` | Independent read-only evaluation of frozen cross-contour evidence, policies, oracles, semantic claims, and claim support. |
+| `orchestrator` | `gpt-5.6-sol` | Proportional normal-task routing, plugin-backed market/product work, implementation, and evidence. |
+| `agent-engineer` | `gpt-5.6-sol` | Cascade maintenance, target onboarding/adaptation, and agent/LLM system design, including tools, memory, simulations, observability, evals, and Codex surfaces. |
+| `security` | `gpt-5.6-sol` | Read-only host selection of Cascade Security methods, redacted target evidence, and repository-specific validation or implementation handoff. |
+| `designer` | `gpt-5.6-sol` | Read-only host selection of Cascade Design methods, current target evidence, and design handoff. |
+| `harness-evaluator` | `gpt-5.6-sol` | Read-only outcome or trajectory judgment of eligible Cascade scenario outputs and traces after deterministic hard gates. |
+| `simulation-operator` | `gpt-5.6-sol` | Bounded mutable execution of one approved command, terminal, browser, desktop, mobile, or agent-response campaign with evidence freezing and cleanup. |
+| `simulation-evaluator` | `gpt-5.6-sol` | Independent read-only evaluation of frozen cross-contour evidence, policies, oracles, semantic claims, and claim support. |
 
 Agent Engineer is not limited to Cascade internals. Use it for target-project
 agent and LLM systems too: framework-backed agent runtimes, project-owned
@@ -182,34 +197,35 @@ When those decisions require product/runtime code changes, the implementation
 still routes through planning, architecture or secure-design review when
 needed, `implement-change`, and validation.
 
-The 44 registered skills cluster into:
+The 9 registered host skills are repository context, persistence, mutation,
+validation, target execution/repair, and closeout boundaries;
+portable specialist methods are namespaced plugin skills. They cluster into:
 
-- Core execution and workflow packets: `context`, `agentic-workflow-builder`,
-  `orchestrate-work`, `reconcile-work-graph`, `plan-change`, `functional-qa`,
-  `implement-change`, `review-change`, `validate-change`, `test-autorepair`,
-  `issue-intake`, `closeout`.
-- Spec and product routing: `ingest-spec`, `discover`, `docs-impact-map`,
-  `synthesis-to-spec`, `compose-spec`, `brand-positioning`, `design-system`.
-- Market and business analysis: `market-validation`, `pain-mining`,
-  `competitive-map`, `market-economics`, `hypothesis-scoring`,
-  `validation-experiments`, `adversarial-critic`.
-- Specialist review: `architecture-review`, `codebase-audit`,
-  `auth-analysis`, `secure-design`, `ux-flow-review`,
-  `accessibility-review`, `visual-qa`.
-- Harness and agent-system design/maintenance: `agents-best-practices`,
-  `develop-skill`, `codex-maintenance`, `pattern-context`,
-  `adapt-harness`, `simulation-campaigns`, `simulation-execution`,
-  `simulation-evaluation`, `harness-evaluation`.
+- Core host execution: `context`, `plan-change`, `implement-change`,
+  `run-qa-plan`, `validate-change`, `repair-tests`, and `closeout`, plus the
+  namespaced Cascade Architect, Project Management, and QA skills.
+- Spec and product routing: `context` in Discovery mode and `create-spec`,
+  backed directly by Cascade Product, Personas, Market, and Design.
+- Market and business analysis: direct `cascade-market:research-market`,
+  `evaluate-market-opportunity`, `design-market-experiments`, and
+  `brand-positioning` routes.
+- Specialist review: namespaced Cascade Architect, Cascade Security, and
+  Cascade Design skills selected by the applicable host role.
+- Harness and agent-system design/maintenance: Cascade Architect and Cascade
+  Coding Agent plugin skills, plus host `pattern-context` where repository
+  persistence adds value.
 
-`simulation-campaigns` owns versioned campaign definition, selection,
+`cascade-simulations:manage-simulation-campaign` owns versioned campaign definition, selection,
 coordination, replay planning, receipt aggregation, and reporting across all
-six contours. `simulation-execution` and `simulation-operator` own the mutable
+six contours. `cascade-simulations:execute-simulation-campaign` and
+`simulation-operator` own the mutable
 run, evidence freeze, cleanup, and execution receipt.
-`simulation-evaluation` and `simulation-evaluator` independently judge frozen
-cross-contour evidence. Product-visible acceptance oracles remain with
-`functional-qa`, Cascade trace grading remains with `harness-evaluation` and
-`harness-evaluator`, and runner or schema changes remain with
-`codex-maintenance`.
+`cascade-evals:simulation-evaluation` and `simulation-evaluator` independently judge frozen
+cross-contour evidence. Product-visible quality oracles and assessment remain
+with Cascade QA, their target execution remains with `run-qa-plan`, Cascade
+trace grading routes through `cascade-evals:harness-evaluation` and the
+`harness-evaluator`; runner or schema changes use
+`cascade-coding-agent:maintain-harness` with host-authorized implementation.
 
 ## Documentation And Memory
 
@@ -354,8 +370,8 @@ For a normal setup pass:
 /goal Adapt Cascade to this repository. Run the deterministic project inventory,
 then inspect the current code, docs,
 AGENTS.md, CODEX.md, .codex/, package files, build files, test config,
-entrypoints, public contracts, and README files before writing. Use
-project-onboarder with adapt-harness to fill AGENTS.md, CODEX.md,
+entrypoints, public contracts, and README files before writing. Use Agent
+Engineer with cascade-coding-agent:adapt-harness to fill AGENTS.md, CODEX.md,
 harness.config.yaml, docs/structure.md, docs/glossary.md, validation commands,
 and doc routing. Preserve user-authored instructions unless replacement is
 required. Keep AGENTS.md thin, route project facts to the narrowest owner docs,
@@ -366,13 +382,13 @@ checks, and close with files changed, skipped, blockers, and next routes.
 For a deeper onboarding pass that builds future planning context:
 
 ```text
-/goal Run deep Cascade onboarding for this repository. Use project-onboarder
-with adapt-harness and the project onboarding workflow. Inventory stack,
+/goal Run deep Cascade onboarding for this repository. Use Agent Engineer with
+cascade-coding-agent:adapt-harness and the project onboarding workflow. Inventory stack,
 source roots, test roots, docs roots, app entrypoints, public contracts,
 commands, and runners. Build project-part specs only for meaningful backend,
 frontend, shared, data, integration, runtime, security, or tooling areas.
 Catalog product features from routes, UI surfaces, APIs, tests, specs, docs,
-and user-facing copy. Use visual-qa when the UI can run or screenshots/design
+and user-facing copy. Use `cascade-design:visual-qa` when the UI can run or screenshots/design
 evidence exists. Route product, design, brand, spec, security, architecture,
 testing, glossary, and context-memory facts to the narrowest existing owner
 docs. Create docs/work/onboarding-manifest.yaml after target configuration is
@@ -408,6 +424,7 @@ complete Cascade release should pass:
 ```bash
 bun install --cwd .codex/harness-tooling --frozen-lockfile
 bun scripts/cascade.ts validate
+bun scripts/cascade.ts workflow catalog --check
 bun scripts/cascade.ts eval catalog --check
 bun scripts/cascade.ts campaign catalog --check
 bun scripts/cascade.ts brief check
@@ -421,8 +438,8 @@ Expected output includes:
 
 ```text
 cascade_status=PASS
-agents=9
-skills=44
+agents=7
+skills=32
 project_specific_leakage=0
 ```
 

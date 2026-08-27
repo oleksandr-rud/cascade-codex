@@ -1,0 +1,45 @@
+schema_version: 1
+plugin:
+  name: cascade-security
+  version: 0.1.0+codex.20260827142017
+model_policy:
+  model: gpt-5.6-sol
+  planning_reasoning_effort: high
+  evaluation_reasoning_effort: max
+skills:
+  - route: cascade-security:codebase-audit
+    description: Audit a target codebase through evidence-bound security trajectories and a current surface inventory without patching runtime code.
+    triggers: [a codebase security audit is requested]
+    anti_triggers: [only authentication or design review is in scope]
+    consumes: [codebase-source, security-scope]
+    produces: [security-audit-findings]
+    required_dependencies: []
+    optional_dependencies: [cascade-security:auth-analysis, cascade-security:secure-design]
+    policy_tags: [security, codebase-audit]
+    effect: READ_ONLY
+    authority: READ_ONLY
+    evaluation_cases: [sensitive-value-redaction, evidence-trajectory]
+  - route: cascade-security:auth-analysis
+    description: Audit authentication, sessions, revocation, RBAC, tenant isolation, and client-server authorization contracts.
+    triggers: [authentication or tenant-isolation analysis is requested]
+    anti_triggers: [a general codebase audit or future design only is requested]
+    consumes: [auth-source, security-scope]
+    produces: [auth-analysis-findings]
+    required_dependencies: []
+    optional_dependencies: [cascade-security:codebase-audit, cascade-security:secure-design]
+    policy_tags: [security, authentication]
+    effect: READ_ONLY
+    authority: READ_ONLY
+    evaluation_cases: [tenant-boundary, revocation]
+  - route: cascade-security:secure-design
+    description: Review a proposed feature, architecture, workflow, integration, or agent-tool plan for trust boundaries and abuse cases.
+    triggers: [a proposed design needs security review before implementation]
+    anti_triggers: [runtime patching or penetration execution is requested]
+    consumes: [architecture-candidate, product-contract]
+    produces: [secure-design-findings]
+    required_dependencies: []
+    optional_dependencies: [cascade-software-architect:review-architecture, cascade-prompt:prompt, cascade-simulations:simulate, cascade-evals:evaluate, cascade-qa:design-tests]
+    policy_tags: [security, secure-design]
+    effect: READ_ONLY
+    authority: READ_ONLY
+    evaluation_cases: [trust-boundary, least-privilege]

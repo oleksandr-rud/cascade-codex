@@ -22,10 +22,10 @@ actor:
   preferred_existing_roles:
     - designer
 skill_calls:
-  - skill: design-system
+  - skill: cascade-design:design-system
     when: prototype introduces reusable rules
     required: false
-  - skill: visual-qa
+  - skill: cascade-design:visual-qa
     when: prototype evidence must be reviewed against design intent
     required: true
 nodes:

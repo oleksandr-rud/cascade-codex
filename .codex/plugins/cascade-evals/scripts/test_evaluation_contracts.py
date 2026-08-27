@@ -26,7 +26,7 @@ def profile(profile_id: str, role: str) -> dict:
         "role": role,
         "decision": "whether the subject meets the declared contract",
         "population": "the selected versioned cases",
-        "model": "gpt-5.6-terra",
+        "model": "gpt-5.6-sol",
         "threshold": 0.8,
         "minimum_dimension": 2,
         "dimensions": [
@@ -75,12 +75,12 @@ class EvaluationContractsTests(unittest.TestCase):
             "evaluation_id": evaluation_id,
             "subject": {"kind": "agent", "id": "fixture-agent", "version": "1", "digest": self.digest},
             "models": {
-                "builder_model": "gpt-5.6-terra",
-                "builder_reasoning_effort": "medium",
-                "target_model": "gpt-5.6-terra",
-                "target_reasoning_effort": "medium",
-                "judge_model": "gpt-5.6-terra",
-                "judge_reasoning_effort": "medium",
+                "builder_model": "gpt-5.6-sol",
+                "builder_reasoning_effort": "max",
+                "target_model": "gpt-5.6-sol",
+                "target_reasoning_effort": "max",
+                "judge_model": "gpt-5.6-sol",
+                "judge_reasoning_effort": "max",
             },
             "mechanical_status": "PASS",
             "evidence_root": str(self.root),
@@ -116,14 +116,14 @@ class EvaluationContractsTests(unittest.TestCase):
         with self.assertRaises(ContractError):
             reduce_bundle(bundle)
 
-    def test_terra_is_required_unless_comparison_is_explicit(self) -> None:
+    def test_sol_max_is_required_unless_comparison_is_explicit(self) -> None:
         bundle = self.bundle()
-        bundle["models"]["judge_model"] = "gpt-5.6-sol"
+        bundle["models"]["judge_model"] = "gpt-5.6-terra"
         with self.assertRaises(ContractError):
             reduce_bundle(bundle)
         bundle["models"]["explicit_comparison"] = True
         for judgment in bundle["judgments"]:
-            judgment["profile"]["model"] = "gpt-5.6-sol"
+            judgment["profile"]["model"] = "gpt-5.6-terra"
         self.assertEqual(reduce_bundle(bundle)["overall_status"], "PASS")
 
     def test_receipt_preserves_explicit_sol_max_configuration(self) -> None:
@@ -135,7 +135,7 @@ class EvaluationContractsTests(unittest.TestCase):
             "target_reasoning_effort": "max",
             "judge_model": "gpt-5.6-sol",
             "judge_reasoning_effort": "max",
-            "explicit_comparison": True,
+            "explicit_comparison": False,
         }
         for judgment in bundle["judgments"]:
             judgment["profile"]["model"] = "gpt-5.6-sol"

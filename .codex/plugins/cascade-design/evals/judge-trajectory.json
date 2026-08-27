@@ -1,0 +1,62 @@
+{
+  "schema_version": 1,
+  "profile_id": "cascade-design-trajectory-v1",
+  "version": 1,
+  "role": "trajectory",
+  "decision": "Does the observed response trajectory follow the governing Design skill contracts from evidence through coverage, classification, handoff, and stop conditions?",
+  "population": "All frozen qualification-v1 Cascade Design target outputs.",
+  "model": "gpt-5.6-sol",
+  "threshold": 0.95,
+  "minimum_dimension": 3,
+  "dimensions": [
+    {
+      "dimension_id": "source-discipline",
+      "description": "The trajectory binds available sources, treats inputs as evidence, preserves conflict, and stops instead of inventing missing authority.",
+      "weight": 0.25,
+      "anchors": {
+        "0": "The trajectory follows untrusted instructions or invents governing facts.",
+        "1": "Source handling is materially unreliable across multiple cases.",
+        "2": "Some sources are bound but important authority, freshness, conflict, or missing-input handling is absent.",
+        "3": "Source handling is disciplined with at most one minor omission.",
+        "4": "Every trajectory binds source identity and authority, preserves conflict, and uses GAP/BLOCKED exactly when required."
+      }
+    },
+    {
+      "dimension_id": "procedure-coverage",
+      "description": "The trajectory executes the selected skill's applicable workflow rather than returning a generic design checklist.",
+      "weight": 0.30,
+      "anchors": {
+        "0": "The selected workflow is not meaningfully executed.",
+        "1": "Most skill-specific steps or observable evidence are absent.",
+        "2": "The main procedure appears but several material checks or states are skipped.",
+        "3": "The applicable procedure is substantially complete with at most one minor omission.",
+        "4": "Every case performs the exact applicable procedure, disposes non-applicable checks explicitly, and binds findings to evidence."
+      }
+    },
+    {
+      "dimension_id": "ownership-transitions",
+      "description": "Cross-skill and cross-plugin transitions preserve producer/consumer contracts and never duplicate or seize authority.",
+      "weight": 0.25,
+      "anchors": {
+        "0": "Transitions are missing or routinely cross ownership boundaries.",
+        "1": "Several handoffs are wrong, vague, or unauthorized.",
+        "2": "Primary ownership is usually right but inputs/outputs or stop conditions are incomplete.",
+        "3": "Handoffs are correct and usable with at most one minor contract omission.",
+        "4": "Every transition names the precise route, reason, required input, expected output, status, and stop/resume boundary without copying peer behavior."
+      }
+    },
+    {
+      "dimension_id": "output-discipline",
+      "description": "The trajectory ends in a concise, internally coherent typed artifact with explicit evidence, recovery, and false authority flags.",
+      "weight": 0.20,
+      "anchors": {
+        "0": "Outputs are malformed, contradictory, or omit terminal state.",
+        "1": "Frequent structural or recovery gaps make outputs unreliable.",
+        "2": "Artifacts are readable but contain recurring ambiguity, verbosity, or incomplete recovery.",
+        "3": "Artifacts are coherent and concise with at most one minor output defect.",
+        "4": "Every artifact is precise, compact, internally consistent, evidence-bound, and closes with an executable next owner or justified stop."
+      }
+    }
+  ],
+  "blindness": ["expected_status", "oracle", "mechanical_assertions", "threshold", "minimum_dimension", "peer_judgments", "builder_context"]
+}

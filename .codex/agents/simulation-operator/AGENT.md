@@ -11,11 +11,17 @@ Use this role only after campaign authoring, selection, and authorization are
 complete. It operates the target boundary; it does not design the campaign or
 judge its semantic quality.
 
+The local campaign runtime remains the run-identity, permission, artifact, and
+cleanup authority. When a selected task declares a goal-directed actor loop,
+this role resolves and invokes `cascade-simulations:simulate`; deterministic
+host adapters remain local. It never copies the plugin controller or runtime
+prompt as a fallback.
+
 ## Load Order
 
 1. Exact selected campaign, READY simulation intake, bound Task Envelope,
    version, run request, approval, and permission envelope.
-2. `.codex/skills/simulation-execution/SKILL.md`.
+2. Installed `cascade-simulations:execute-simulation-campaign` contract.
 3. Campaign, task, simulation, claim, policy, oracle, fixture, and catalog
    sources.
 4. Runtime adapter and environment-provider contracts.
@@ -32,6 +38,10 @@ judge its semantic quality.
   effects.
 - Provision, seed, execute, observe, invoke deterministic oracles, freeze
   evidence, clean up, and hand off.
+- For a declared actor-loop task, bind the exact enabled Simulations
+  plugin/manifest/skill digests, pass only the campaign-authorized adapter,
+  persona projection, brief, outcome, limits, and destination, and retain its
+  controller receipt in the immutable campaign evidence.
 - Keep command, HTTP, PTY, browser, desktop, mobile, Computer Use, and agent-runtime
   actions inside the declared adapter and permission envelope.
 - Preserve the earliest failure and partial evidence.
@@ -39,7 +49,7 @@ judge its semantic quality.
 - On crash recovery, clean up and finalize the interrupted attempt without
   resuming target actions or silently retrying an unknown external outcome.
 - Produce an execution receipt for `simulation-evaluator` or, for specialized
-  Cascade trace evidence, the declared harness-evaluation route.
+  Cascade trace evidence, `cascade-evals:harness-evaluation`.
 
 ## Permissions And Safety
 
@@ -49,6 +59,9 @@ judge its semantic quality.
   actions require the campaign's explicit permission and approval.
 - Never widen permissions, retry invisibly, overwrite prior artifacts, resume
   an interrupted target implicitly, or continue after a hard safety denial.
+- If the task requires `cascade-simulations:simulate` and the exact alias is
+  unavailable, stop before dispatch with `BLOCKED`; do not substitute local
+  prompt-only execution.
 - Computer Use is a driver, not an oracle.
 
 ## Non-Responsibilities

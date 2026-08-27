@@ -8,7 +8,7 @@
 - Coverage: `complete`
 - Catalog digest: `2d24c923fe55562ab079de54e428788f4429c2051442bbceac75852340af1160`
 - Manifest digest: `ca2a2840fd9cf0a4c720d9836623d479f35e27bbd665b98bb5b2e424368a4174`
-- Selected-source digest: `7602c328cb90956d5cec238074ffb2a12998bd77a8a0130eecab7019c6408fc2`
+- Selected-source digest: `12a1573f604f0db22cd7c2d3b204f2bdf970571fa13776860d527b3c3121e906`
 - Compiler-contract digest: `4cfeada5833d864235315bb41aa63acf157b08f15c247f2914c23fc84fd9acd1`
 
 ## Purpose And Audience
@@ -30,8 +30,8 @@ Assemble the current product, evidence, simulation-authority, and reusable-rule 
 
 | Path | SHA-256 |
 |---|---|
-| `docs/specs/persona-simulation-governance/contract.md` | `32474fb563917d59fd688b9349044cf387bdfaff75a7fd776413b300b79926bc` |
-| `docs/product/personas/_index.md` | `b4f019450deb561601f71048eaae58ba744164692e8946d6a3cc159449382b78` |
+| `docs/specs/persona-simulation-governance/contract.md` | `8d2fde0eabe8c9685e145a49bb9fb0ced53029fd1dd2167e77bf1e09c869a881` |
+| `docs/product/personas/_index.md` | `348d18bc95085ce46e6463ee4d222c930e12ffdae67d850e9905a048009c626a` |
 | `docs/specs/product-context-briefs/contract.md` | `a0e5ad2910e3a475cf7ea9a306d4bacd52fe4ea4b0b3c86872562e6306f5e44e` |
 
 ## Requirements
@@ -173,7 +173,7 @@ simulator repairs, or candidate refinements. They never validate or mutate the
 source persona.
 
 When a refinement is supported by external evidence and an accepted
-append-only disposition, route it through `synthesis-to-spec -> compose-spec`
+append-only disposition, route it through `create-spec`
 to author a new reviewed persona revision. Recompute every affected brief,
 derivation, population, campaign, claim, and evaluation binding after the
 source revision changes.

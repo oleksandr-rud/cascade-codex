@@ -1,0 +1,4 @@
+interface:
+  display_name: "Close Project"
+  short_description: "Assess completion and propose safe retention"
+  default_prompt: "Use $close-project to assess terminal completion and propose evidence-preserving retention for this project."

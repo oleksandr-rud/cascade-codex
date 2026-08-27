@@ -147,7 +147,7 @@ requires it, and disclose that exception.
 ## Model policy
 
 Read `references/model-policy.json`. Default builder, target, and judge
-invocations to `gpt-5.6-terra` with the declared default reasoning efforts.
+invocations to `gpt-5.6-sol` with `max` reasoning effort.
 Explicit comparison configurations may bind a different supported model and
 reasoning effort, but every value must be frozen in the evaluation bundle and
 preserved in the receipt. Never silently change the default or reuse the target

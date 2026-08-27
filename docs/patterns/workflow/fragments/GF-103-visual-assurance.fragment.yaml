@@ -31,7 +31,7 @@ actor:
   preferred_existing_roles:
     - designer
 skill_calls:
-  - skill: visual-qa
+  - skill: cascade-design:visual-qa
     when: rendered or prototype visual evidence is available
     required: true
 nodes:

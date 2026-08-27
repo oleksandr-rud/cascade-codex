@@ -32,7 +32,7 @@ Recommended source metadata:
 
 ## Transformation Rule
 
-Use `.codex/skills/ingest-spec/SKILL.md` to normalize source material into
+Use `.codex/skills/create-spec/SKILL.md` to normalize source material into
 product/design/brand references, work lanes, behavior examples, and
 functional acceptance checks.
 

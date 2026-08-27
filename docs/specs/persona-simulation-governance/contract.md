@@ -14,7 +14,7 @@ population loop:
    simulation populations;
 2. simulations may emit immutable refinement proposals;
 3. accountable reviewers disposition proposals against external evidence;
-4. an accepted disposition authorizes `synthesis-to-spec -> compose-spec` to
+4. an accepted disposition authorizes `create-spec` to
    author a new persona revision, but never mutates the persona directly.
 
 ## Requirements
@@ -61,7 +61,7 @@ The disposition command verifies the proposal's completed immutable run before
 review and rejects an arbitrary file placed under an artifact-shaped path.
 Only `ACCEPTED` dispositions with reviewed external evidence may set
 `persona_revision_authorized=true`; even then, direct persona mutation remains
-false and the next route is `synthesis-to-spec`.
+false and the next route is `create-spec`.
 
 ### PSG-005 Artifact and privacy defaults
 
@@ -81,7 +81,7 @@ evidence is executed.
 - Given an accepted proposal without external evidence or accountable review,
   disposition creation fails and no persona revision is authorized.
 - Given a valid accepted disposition, the receipt routes to
-  `synthesis-to-spec`; no runtime path edits the source persona.
+  `create-spec`; no runtime path edits the source persona.
 - Given only framework fixtures, product execution, target calibration, and
   release eligibility remain `NOT_RUN`.
 
@@ -99,7 +99,7 @@ evidence is executed.
 |---|---|---|---|
 | product/synthetic persona authority | `ADOPTED` | reviewed Markdown persona -> digest-bound derivation -> typed population | targets replace fixtures with governed evidence and accountable review |
 | population weighting | `ADOPTED` | `test-allocation`; never prevalence by inference | `estimated-prevalence` requires representative mode, reviewed evidence, and non-fixture calibration |
-| refinement feedback | `ADOPTED` | append-only proposal plus separate disposition; no direct mutation | accepted receipts route to `synthesis-to-spec` |
+| refinement feedback | `ADOPTED` | append-only proposal plus separate disposition; no direct mutation | accepted receipts route to `create-spec` |
 | product-evaluation artifacts | `ADOPTED` | local append-only, minimized digest metadata, no raw sensitive material, no remote export | targets may adapt the public policy only with explicit encryption, access, retention, and export decisions |
 | model-backed persona generation | `GAP` | deterministic manifest generation only | separate provider, prompt/tool digest, spend, privacy, and evaluation authorization required |
 | generic application stack defaults | `NOT_APPLICABLE` | Cascade remains a harness scaffold with no target application runtime | select and record architecture-default pairs during target onboarding |

@@ -73,7 +73,7 @@ simulator repairs, or candidate refinements. They never validate or mutate the
 source persona.
 
 When a refinement is supported by external evidence and an accepted
-append-only disposition, route it through `synthesis-to-spec -> compose-spec`
+append-only disposition, route it through `create-spec`
 to author a new reviewed persona revision. Recompute every affected brief,
 derivation, population, campaign, claim, and evaluation binding after the
 source revision changes.

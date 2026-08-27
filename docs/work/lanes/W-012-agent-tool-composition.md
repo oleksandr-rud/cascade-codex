@@ -133,7 +133,7 @@ platform behavior, mobile platform behavior, or release eligibility.
 | Shared campaign contracts | W-004 | schemas, policies, claims, artifacts, receipts, reducer | no | Gate A digest and one authority remain unchanged | contract compatibility | `NOT_RUN` | `validate-change` |
 | Standalone/Cascade agent evaluation | W-007/W-001 | Codex adapter, harness evaluator, coverage | no | existing profiles retain independent claims | agent regression suite | `NOT_RUN` | `harness-evaluation` |
 | Surface adapters | W-005/W-006/W-008/W-009/W-010 | process, browser, PTY, desktop, mobile seams | no | direct surface campaigns remain runnable without an agent | adapter conformance matrix | `NOT_RUN` | `functional-qa` |
-| Live capability reporting | WG-001-N17 | named live canaries and coverage ledger | yes | one contour cannot satisfy another | independent-verdict projection | `NOT_RUN` | `simulation-evaluation` |
+| Live capability reporting | WG-001-N17 | named live canaries and coverage ledger | yes | one contour cannot satisfy another | independent-verdict projection | `NOT_RUN` | `cascade-evals:simulation-evaluation` |
 
 ## File Ownership
 

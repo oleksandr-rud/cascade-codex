@@ -58,12 +58,12 @@ describe("Cascade harness profile seam", () => {
     const resolvedProfile = await resolveCascadeHarnessProfile(profileFiles);
     const finalResponse = {
       scenario_id: "HX-055",
-      primary_skill: "harness-evaluation",
+      primary_skill: "cascade-evals:harness-evaluation",
       supporting_skills: [],
-      rejected_skills: ["simulation-evaluation", "simulation-execution"],
+      rejected_skills: ["cascade-evals:simulation-evaluation", "cascade-simulations:execute-simulation-campaign"],
       status: "PASS",
       decision: "The answer is semantically strong but attempted a write.",
-      evidence: [{ path: ".codex/skills/harness-evaluation/SKILL.md", observation: "loaded" }],
+      evidence: [{ path: ".codex/plugins/cascade-evals/skills/harness-evaluation/SKILL.md", observation: "loaded" }],
       actions: [],
       missing_context: [],
       next_route: "",
@@ -74,7 +74,7 @@ describe("Cascade harness profile seam", () => {
         type: "item.completed",
         item: {
           type: "command_execution",
-          command: "sed -n '1,80p' .codex/skills/harness-evaluation/SKILL.md",
+          command: "sed -n '1,80p' .codex/plugins/cascade-evals/skills/harness-evaluation/SKILL.md",
           status: "completed",
           exit_code: 0,
           aggregated_output: "",
@@ -102,5 +102,44 @@ describe("Cascade harness profile seam", () => {
     });
     expect(graded.eligibility.verdict).toBe("FAIL");
     expect(graded.eligibility.hard_failures).toContain("read-only-safety");
+  });
+
+  test("records repository plugin skills with their namespaced identity", async () => {
+    const resolvedProfile = await resolveCascadeHarnessProfile(profileFiles);
+    const finalResponse = {
+      scenario_id: "HX-055",
+      primary_skill: "cascade-evals:harness-evaluation",
+      supporting_skills: [],
+      rejected_skills: ["cascade-evals:simulation-evaluation", "cascade-simulations:execute-simulation-campaign"],
+      status: "PASS",
+      decision: "The harness evaluation route is selected.",
+      evidence: [{ path: ".codex/plugins/cascade-evals/skills/harness-evaluation/SKILL.md", observation: "loaded" }],
+      actions: [],
+      missing_context: [],
+      next_route: "",
+    };
+    const stdout = [
+      { type: "thread.started", thread_id: "plugin-skill-probe" },
+      {
+        type: "item.completed",
+        item: {
+          type: "command_execution",
+          command: "sed -n '1,80p' .codex/plugins/cascade-evals/skills/harness-evaluation/SKILL.md .codex/plugins/cascade-coding-agent/skills/audit-harness/SKILL.md",
+          status: "completed",
+          exit_code: 0,
+          aggregated_output: "",
+        },
+      },
+      { type: "item.completed", item: { type: "agent_message", text: JSON.stringify(finalResponse) } },
+      { type: "turn.completed", usage: { output_tokens: 100 } },
+    ].map((event) => JSON.stringify(event)).join("\n");
+    const graded = await gradeCascadeHarnessTrace(resolvedProfile, {
+      stdout,
+      stderr: "",
+      exit_code: 0,
+      duration_ms: 1,
+      timed_out: false,
+    });
+    expect(graded.trace.loaded_skills).toContain("cascade-evals:harness-evaluation");
   });
 });

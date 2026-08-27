@@ -1,0 +1,32 @@
+{
+  "name": "cascade-qa",
+  "version": "0.1.0+codex.20260827143141",
+  "description": "Plan quality, design tests, assess evidence, and triage defects from accepted behavior without taking product definition, host execution, test repair, or release authority.",
+  "author": {
+    "name": "Cascade"
+  },
+  "keywords": [
+    "quality-assurance",
+    "test-planning",
+    "test-design",
+    "quality-gates",
+    "defect-triage"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Cascade QA",
+    "shortDescription": "Plan, design, assess, and triage product quality.",
+    "longDescription": "Turn accepted behavior and risks into quality plans and test cases, assess frozen evidence conservatively, and classify defects for the correct implementation or test-repair owner.",
+    "developerName": "Cascade",
+    "category": "Developer Tools",
+    "capabilities": [
+      "Interactive",
+      "Write"
+    ],
+    "defaultPrompt": [
+      "Create a risk-based quality plan for this accepted behavior.",
+      "Design traceable test cases for this requirement.",
+      "Assess this evidence or triage these failures."
+    ]
+  }
+}

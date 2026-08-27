@@ -17,6 +17,7 @@ Use filenames like `YYYY-MM-DD-slug.md`.
 
 | Date | Report | Purpose |
 |---|---|---|
+| 2026-08-25 | `2026-08-25-plugin-first-architecture.md` | Twelve-plugin ownership topology, seven thin host roles, persona/simulation/eval wiring, PM/QA extraction, exact Sol Max qualification, installation state, and regression evidence. |
 | 2026-07-30 | `2026-07-30-wg001-n04-n05-implementation.md` | Historical N04/N05 implementation and scenario-building repair receipts; current acceptance lives in W-004 and WG-001 revision 13. |
 | 2026-07-30 | `2026-07-30-wg001-next-frontier-preparation.md` | Version-bound architecture, security, fragment, write-scope, behavior, validation, repair, and review packets that governed the completed N04/N05 implementation attempts. |
 | 2026-06-22 | `2026-06-22-pattern-context-pack-orchestration-report.md` | Recent PR analysis, skills/agents orchestration tree, pattern context-pack system, onboarding wiring, and validation evidence. |

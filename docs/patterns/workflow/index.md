@@ -1,495 +1,228 @@
 # Workflow Patterns
 
-Use this file for active work lanes, autonomous Orchestrator orchestration, current
-work-to-source coverage, refactoring, and durable handoff memory.
+Use this entry for proportional task routing and for durable coordination only
+when work must survive tasks, cross owners, or join evidence. Detailed Task
+Graph and Coordination Graph semantics live in
+[`graph-shaped-work.md`](graph-shaped-work.md).
+
+The plugin-to-plugin and plugin-to-host responsibility map, including the
+conditional QA branch, lives in
+[`plugin-orchestration.md`](plugin-orchestration.md).
 
 ## Workflow Prompt Routing
 
-When a user says "workflow", classify the requested output before selecting a
-skill. Do not load `agentic-workflow-builder` just because a task has planning,
-implementation, validation, review, delegation, or product-flow steps.
+"Workflow" describes many outputs; route by the requested result.
 
-| Requested output | Route |
+| Requested result | Primary route |
 |---|---|
-| Agent/skill workflow packet, workflow checklist, prompt bank, delegation workflow, or multi-agent workflow | `agentic-workflow-builder` |
-| Active work lanes, dependencies, scheduling, serialization, merge owner, or validation gates | `orchestrate-work` |
-| Normal implementation plan, behavior examples, risks, or validation plan | `plan-change` |
-| First iteration, MVP boundary, phased delivery, or next/later roadmap from known slices | `plan-iterations` |
-| Code or doc edits for a clear task | `implement-change` |
-| Product UX flow, wizard, screen, dashboard, or UI state coverage | `ux-flow-review` |
-| Security review of a feature, workflow, architecture, or agent/tool plan | `secure-design` |
-| Market/product validation workflow or experiments | `market-validation` plus focused lane skills |
-| Final evidence, status, or handoff | `validate-change` or `closeout` |
-| Completed lane/graph closeout and automatic compaction, or direct historical cleanup | `closeout -> archive-work` |
+| Normal non-atomic change | `context -> plan-change -> implement-change -> validate-change` |
+| Agent or skill workflow design | `cascade-ai-architect:design-agent-workflow`, then `cascade-coding-agent:integrate-agent-assets` only for target binding |
+| Tracker-ready issue, story, task, enabler, or experiment | `cascade-project-management:define-work-item` |
+| Multi-horizon roadmap or Agile MVP/version/iteration plan | `cascade-project-management:plan-project` |
+| Independently owned or resumable work, dependencies, evidence joins, status, or reconciliation | `cascade-project-management:manage-project` |
+| Quality planning or test design for accepted behavior | `cascade-qa:plan-quality` or `cascade-qa:design-tests` |
+| Authorized target execution of a frozen QA artifact | `run-qa-plan` |
+| Frozen quality evidence assessment | `cascade-qa:assess-quality` |
+| UX or security review | Installed namespaced Cascade Design or Cascade Security skill |
+| Market research or experiment design | `cascade-market:research-market` or `cascade-market:design-market-experiments` |
+| Current evidence aggregation | `validate-change` |
+| Durable handoff or active-record finalization | `closeout` |
+| Completion or retention assessment | `cascade-project-management:close-project`, then `closeout` for authorized host effects |
+
+Atomic mechanical edits may bypass planning. Bounded one-owner work uses a short
+inline plan and creates no spec, lane, graph, report, receipt, or archive record.
 
 ## Active Work
 
-Use `docs/work/active.md` as the single active registry. Use
-`docs/work/lanes/W-XXX-slug.md` only when a row is not enough.
-Use `docs/work/examples/` only as copyable reference material for first-time
-lane adaptation; example lanes are not active state.
+`docs/work/active.md` is the current registry. Create a lane packet only when
+the work needs its own status across tasks, an independent owner or handoff, a
+real dependency, or separately accepted evidence. A row or chat plan is enough
+otherwise.
 
-Create a lane packet when the workstream needs its own:
+Before resuming a lane, compare its source identity and acceptance criteria with
+current code and evidence. Mark only affected claims or consumers stale.
+Completed or unrelated lanes are historical context and must not be loaded into
+ordinary task planning.
 
-- acceptance criteria;
-- behavior examples;
-- compact source, definition/decision, constraint, and boundary ledgers;
-- connected workline discovery, ownership, and replanning history;
-- dependency/conflict tracking;
-- validation commands;
-- source inputs and freshness;
-- file ownership and merge owner;
-- MCP/tool context policy;
-- blocked/deferred handoff.
-
-Completed rows leave `docs/work/active.md` after durable evidence is preserved
-under `docs/work/reports/`. Do not create a permanent `CLOSED` active-row
-status; remove terminal projections during closeout and keep the report or lane
-packet as historical evidence.
+A lane or graph is declarative state. It grants no permission, performs no
+dispatch, and does not imply a branch, worktree, external action, or provider
+spend.
 
 ## Iteration Planning
 
-Use `plan-change` to define behavior and implementation slices. Use
-`plan-iterations` only when those slices need sequencing across delivery
-horizons. It assigns each slice one exclusive delivery disposition while MVP
-membership remains an orthogonal outcome boundary that may span iterations.
-The first iteration is `PROPOSED` until capacity and commitment authority
-support `COMMITTED`; `NEXT` and `LATER` remain candidate scope.
+Use `cascade-project-management:plan-project` only for a requested roadmap,
+Agile delivery decomposition, or work that cannot be delivered as one bounded
+slice. The compact form classifies grounded slices as `FIRST`, `NEXT`, `LATER`,
+`DEFERRED`, or `REMOVED`. The Agile form maps one accepted MVP into versions,
+iterations, stories, and tasks, fully decomposing only the first MVP iteration.
+Both forms keep proposals distinct from committed scope.
 
-Only feasible committed first-iteration candidate worklines may be instantiated in
-`docs/work/active.md`, lane packets, Task Graphs, or Coordination Graphs through
-`orchestrate-work`. Future-horizon candidates stay in the iteration plan and do
-not acquire active IDs, dispatch state, or readiness. When capacity, cadence,
-dates, or estimates are not supplied, record them as unknown instead of
-inventing velocity, points, staffing, or commitments. Unknown ability to accept
-the proposed scope prevents `ITERATION_READY`; unknown dates or estimates alone
-do not when an explicit capacity/WIP basis exists. Feasibility checks aggregate
-capacity and the dependency critical path separately; team size never shortens
-a serial dependency chain.
-
-If iteration planning changes existing active work, run
-`reconcile-work-graph` first to establish canonical identity and current
-evidence. Preserve accepted work and history; horizon placement is not
-authority to delete, demote, supersede, dispatch, or close a workline.
+Do not invent dates, cadence, capacity, staffing, points, owners, or active IDs. Use
+`cascade-project-management:manage-project` only when FIRST contains real
+cross-owner work, durable handoffs, dependencies, or evidence joins. The host
+separately applies any authorized durable-state or execution effect.
 
 ## Work Graphs
 
-Use a work graph when several worklines need explicit dependency ordering,
-merge ownership, execution surfaces, dispatch state, evidence joins,
-invalidation, repair routes, or one terminal acceptance gate. Use
-`docs/work/work-graph-template.md` as the default shape.
+Use a work graph only when several independently meaningful obligations require
+typed dependency ordering, ownership, dispatch state, evidence joins,
+invalidation, partial repair, or one terminal acceptance gate. Use the smallest
+shape that represents the real coordination boundary.
 
-A work graph exists to make non-atomic execution checkable. It must name its
-purpose, source identity, worklines, topology, node outcomes, gate contracts,
-dispatch manifest, validation, invalidation, current frontier, and closeout
-receipt. It is not an architecture graph, task generator, automatic scheduler,
-or permission to create agents, Codex tasks, branches, worktrees, external
-actions, or provider spend.
+The graph must identify its current source, outcomes, owners, dependencies,
+joins, acceptance, and revision. It is not required merely because work is
+non-atomic. Lifecycle and advanced graph mechanics are centralized in
+[`graph-shaped-work.md`](graph-shaped-work.md).
 
-Naming defaults:
-
-- worklines use `W-XXX`;
-- work graphs use `WG-XXX`;
-- graph nodes use `WG-XXX-NXX` and gates use `WG-XXX-GX`;
-- durable files use `docs/work/reports/YYYY-MM-DD-<slug>-work-graph.md`;
-- graph, node, and gate IDs are unique, graph-scoped, and never reused;
-- legacy graph namespaces require an explicit reconciliation and direct
-  cutover across every live planning/work reference. Immutable runtime run and
-  receipt IDs remain evidence identities rather than work-graph IDs.
-
-Lifecycle:
-
-1. `DRAFT`: topology or ownership is incomplete and the graph is not active.
-2. `PLANNED`: structure is validated and registered; nodes remain declarative.
-3. `ACTIVE`: at least one separately authorized node is dispatched or running.
-4. `BLOCKED`: the current frontier cannot proceed and the exact blocker is
-   recorded.
-5. `COMPLETE`: the terminal gate accepts current-source implementation and all
-   required evidence.
-6. `SUPERSEDED`: a named replacement owns the remaining scope; incomplete
-   evidence is never rewritten as complete.
-
-After `COMPLETE` or `SUPERSEDED`, preserve the durable graph/report, source
-identity, receipts, failed evidence, and invalidation history, then remove the
-terminal projection from the active registry.
-
-The defaults exist to prevent a diagram from being mistaken for execution,
-stop dependency readiness from becoming implicit authorization, keep parallel
-writes and merge ownership explicit, and preserve exact evidence when only part
-of a graph must be repaired.
-
-For a complex lane with typed dependencies, evidence joins, bounded repair, or
-revision-aware handoff, load the reusable semantics in
-[`graph-shaped-work.md`](graph-shaped-work.md). Atomic work may omit that graph
-state without bypassing normal planning, permission, validation, or closeout.
-
-For every newly completed lane or Coordination Graph, `closeout` preserves the
-report and retires active projections, then automatically invokes
-`archive-work` for the exact closed set. Archival requires accepted terminal
-or supersession authority, no active dependency, consistent indexes, a
-classified inbound-reference inventory, and matching pre/post SHA-256 for every
-moved original. Write one compact capsule under
-`docs/archive/work-reports/`, move frozen originals without editing their
-execution-era contents, and update only live indexes and non-frozen references.
-If readiness fails, retain live files and record `ARCHIVE_DEFERRED`; this does
-not invalidate completion. Atomic work without a lane/graph/report set returns
-`NOT_APPLICABLE`. An archive capsule indexes detailed history; it does not
-replace or relabel it.
+After terminal acceptance, ask
+`cascade-project-management:close-project` for a retention proposal. Remove a
+projection from active state only through `closeout`, when its remaining
+consumers and durable evidence are accounted for and current authority permits
+the exact host mutation. Retention is never automatic.
 
 ## Parallel Rules
 
-Parallel lanes are allowed only when:
-
-- they write disjoint files or have one merge owner;
-- they do not depend on each other's unfinished output;
-- they do not share unresolved product/design decisions;
-- each lane has independent validation;
-- each lane records any MCP/tool context it loaded and how results were
-  summarized;
-- evidence can be merged deterministically.
-
-Serialize lanes when file ownership, public contracts, state machines, or
-product intent overlap.
+Parallelize only when writes are disjoint or one merge owner is explicit,
+unfinished outputs are not mutually required, unresolved intent is not shared,
+and each slice has independent validation. Serialize overlapping public
+contracts, state machines, permissions, or mutation boundaries.
 
 ## Execution Surfaces And Dispatch
 
-Lane and work-graph state is declarative. A ready gate means the work
-is eligible; it does not authorize or perform dispatch.
+Readiness is not dispatch.
 
-| Surface | Runtime meaning | Authorization |
+| Surface | Meaning | Required authority |
 |---|---|---|
-| `root` | Current Codex task root agent | Current scoped implementation request |
-| `internal-subagent` | Child agent inside the current task tree | Explicit user authorization for delegation or parallel agents |
-| `user-visible-task` | Separate Codex task with its own conversation | Explicit user request to create, open, or fork separate tasks or threads |
+| `root` | Current Codex task | Current scoped request |
+| `internal-subagent` | Child inside the current task | Explicit authorization for delegation or parallel agents |
+| `user-visible-task` | Separate Codex task | Explicit request to create, open, or fork a task |
 
-Use a separate dispatch state from lane status:
-`NOT_AUTHORIZED`, `AUTHORIZED`, `DISPATCHED`, `RUNNING`, `BLOCKED`, or
-`COMPLETE`. Record dependency gate, merge owner, authorization evidence, and
-runtime handle. Never infer user-visible task creation from an implementation
-request, graph readiness, runtime concurrency capacity, or a lane's preferred
-execution surface. Agent-execution capacity is a runtime limit.
-
-If a requested surface cannot be used, mark dispatch `BLOCKED`; do not silently
-replace a separate task with an internal subagent or vice versa.
+Record runtime handles only for dispatched durable work. If an authorized
+surface is unavailable, report it as blocked; do not silently substitute another
+surface.
 
 ## Automatic Status Reconciliation
 
-A request to check, refresh, reconcile, or actualize a task, workline, or work
-graph includes authorization to update its in-scope local registry and graph
-status from current evidence.
+A request to check or refresh a named active record permits a read-only audit and
+an in-scope local status synchronization. Mark it complete only when current
+source, dependencies, required criteria, and validation all pass. Keep partial,
+stale, historical, candidate-branch, blocked, or NOT_RUN work open.
 
-Mark a lane `COMPLETE` automatically, without another confirmation, only when
-all required acceptance criteria, dependencies, validation gates, and closeout
-evidence pass against the current source identity. Synchronize lane status,
-dispatch state, next gate, graph nodes, active registry, and completion receipt.
-
-Keep the lane open when implementation is partial, a required check is
-`NOT_RUN`, or evidence comes from historical artifacts, another branch, or a
-different source identity. Automatic completion is not permission to implement
-missing work, mutate an external tracker, or remove open or unresolved rows.
-It does remove a proven terminal projection after preserving durable evidence.
+Status reconciliation does not authorize missing implementation, external
+tracker mutation, archival, or unrelated cleanup.
 
 ## Work-To-Source Coverage
 
-Use this matrix during validation and closeout:
+For a material change, map only the current criteria:
 
-| Source criterion | Code or doc artifact | Test or check | Status | Notes |
+| Criterion | Current artifact | Check | State | Note |
 |---|---|---|---|---|
-| `<REQUEST_OR_CRITERION>` | `<FILE_OR_MODULE>` | `<COMMAND_OR_FUNCTIONAL_CHECK>` | `<PASS_FAIL_BLOCKED_NOT_RUN>` | `<NOTE>` |
+| `<CRITERION>` | `<SOURCE_OR_OUTPUT>` | `<CHECK>` | `PASS/FAIL/BLOCKED/NOT_RUN/NOT_APPLICABLE` | `<NOTE>` |
 
-Rules:
-
-- Use only the latest request and directly relevant current work/spec criteria.
-- Do not pull completed or unrelated historical lanes into the matrix.
-- Mark missing required coverage as `FAIL` unless explicitly deferred or
-  blocked.
-- Mark missing required preconditions as `BLOCKED`.
-- Mark optional or out-of-scope checks as `NOT_RUN` with a reason.
+Bind claims to the current branch or revision. Historical, local, mocked, or
+structural evidence retains its narrower meaning.
 
 ## Cross-Folder Impact Scan
 
-Run `docs-impact-map` before planning or closeout when a durable product,
-design, brand, spec, backlog, glossary, or pattern fact changes and may affect
-sibling docs.
+Use `create-spec` only when a durable fact may affect sibling product,
+design, brand, spec, backlog, glossary, or pattern documents. Identify the
+authoritative owner and true consumers; prefer links or generated projections
+over duplicated prose.
 
-Use the scan to classify affected owner docs as `UPDATED`, `NO_CHANGE`,
-`DEFERRED`, `BLOCKED`, or `GAP`. Route `GAP` to `discover` or `ingest-spec`
-before `plan-change`. Route missing acceptance or scenario coverage to
-`functional-qa` or `plan-change` depending on whether expected behavior is
-already clear.
+A code-only refactor with no durable fact change records no documentation map.
 
 ## Trajectory Coverage
 
-Use this rule in planning and product-grooming skills whenever a problem,
-requirement, or gap is being turned into product/spec/design/brand docs,
-behavior examples, impact maps, validation routes, or implementation plans.
+Choose the smallest representative set of behavior paths that can expose the
+important success, failure, state, boundary, or permission risks. One path may
+be enough for a narrow change; use several only when the behavior actually has
+distinct outcomes.
 
-For each problem, requirement, or gap, run several trajectory passes before the
-final plan or groomed artifact. Trajectories may vary by user path, persona,
-lifecycle state, boundary, risk, failure mode, evidence source, implementation
-approach, or validation route, but every trajectory must cover a real problem,
-requirement, or gap from the request, code, docs, evidence, or explicit
-analysis. Do not invent decorative alternatives.
-
-After the trajectories are generated, synthesize them losslessly: keep the
-result loose enough to preserve every major and minor detail inspected or
-analyzed by the trajectories, including edge cases, contradictions, rejected
-paths, open questions, and follow-up gaps. Mark uncertain details instead of
-omitting them.
+Preserve material contradictions, edge cases, rejected paths, and uncertainty.
+Do not generate decorative alternatives or require lossless retention of every
+minor observation.
 
 ## Planning Knowledge Contract
 
-A plan is a compact index of implementation knowledge, not a replacement for
-its authoritative sources. Planning and replanning must preserve the minimum
-information needed to reconstruct why the work is shaped as it is:
+An inline plan should retain only what implementation needs:
 
-- source identity, authority, version or freshness, and the claims it supports;
-- accepted definitions and decisions, plus assumptions and unresolved
-  questions with explicit status;
-- negative constraints, rejected paths, and non-goals when losing them would
-  enable an unsafe or repeatedly rejected implementation;
-- producer/consumer boundaries, ownership, compatibility, and invalidation
-  rules;
-- for stateful work, stable identity, source of truth, mutation authority,
-  legal transitions, typed dependencies/gates/external conditions, retry and
-  resource bounds, and exhaustion behavior;
-- request-to-workline-to-artifact-to-evidence traceability;
-- current workline dependencies, blockers, changed artifacts, evidence status,
-  and next gate;
-- revision history showing what was preserved, changed, added, invalidated, or
-  superseded.
+- intended behavior and non-goals,
+- authoritative source and current assumptions,
+- affected producer and consumer boundaries,
+- mutation ownership and compatibility constraints,
+- focused validation and stop conditions.
 
-This section owns what planning must preserve. `Planning Context Preservation`
-in `docs/patterns/context-memory/index.md` owns how that knowledge is compressed,
-rehydrated, and checked for drift.
-
-Compress repeated explanation and long evidence bodies into summaries with
-stable references. Never compress away identity, provenance, status, negative
-constraints, ownership, acceptance meaning, or the difference between
-authored, executed, blocked, and accepted evidence. A compact projection must
-not become a second authority.
-
-Use planning states deliberately:
-
-- `DRAFT`: coverage or definitions remain open;
-- `DEFINITION_READY`: important terms, boundaries, authority, lifecycle, and
-  failure behavior are coherent;
-- `IMPLEMENTATION_READY`: worklines, slices, writes, dependencies, validation,
-  and stop conditions are mapped;
-- `BLOCKED`: a required source, decision, permission, or validation
-  precondition is unavailable;
-- `SUPERSEDED`: a later revision replaced this plan while retaining its
-  identity and disposition.
-
-For material replanning, increment the plan revision and record the delta
-before replacing current projections. Re-evaluate affected worklines, checks,
-and evidence; preserve unrelated accepted knowledge whose sources and
-boundaries remain current.
-
-## Composable Graph Fragments
-
-Use the reusable catalog under
-[`fragments/`](fragments/) when a non-atomic plan may affect product
-definition, design, prototypes, shared contracts, backend, frontend, data,
-integration, E2E, security, accessibility, or visual assurance. Fragment
-evaluation is a planning activity; fragment files are not active worklines,
-Coordination Graphs, implementation plans, or runtime definitions.
-
-Planning must evaluate applicable delivery fragments and assurance overlays
-before finalizing worklines. Record every inspected candidate as `SELECTED`,
-`MERGED`, `NOT_APPLICABLE`, or `BLOCKED` with an evidence-backed reason. Do not
-instantiate nodes, gates, skills, actors, or tests from `NOT_APPLICABLE`
-fragments.
-
-For every selected fragment:
-
-1. bind required input ports to selected producers, authoritative external
-   sources, or an explicit conditional omission;
-2. bind each provided port to one primary owning workline, while allowing
-   named consumers to depend on it;
-3. resolve actor capabilities to existing roles or an explicitly authorized
-   worker route without inventing dynamic agents;
-4. resolve required and conditional skill calls against current role wiring;
-5. resolve abstract test strategies to current commands, fixtures,
-   environments, evidence locations, and evaluator authority from the target
-   repository and `harness.config.yaml`;
-6. merge fragments that share one outcome, owner, write scope, and acceptance
-   seam, and split only where independent ownership, writes, handoff, or
-   evidence makes a separate workline meaningful; and
-7. synthesize the smallest legal graph: no graph for atomic work, a lane-local
-   Task Graph for connected obligations inside one lane, or a first-class
-   Coordination Graph only for genuinely connected worklines.
-
-Assurance overlays attach obligations to delivery fragments. They become
-separate worklines only when their ownership, access, writes, execution, or
-acceptance evidence is independently meaningful. A terminal gate consumes
-only required evidence from selected fragments and overlays; an omitted
-fragment must never create phantom evidence requirements.
-
-Before `IMPLEMENTATION_READY`, reject duplicate primary ownership, dangling
-required ports, unsupported required skills or actor capabilities, dependency
-cycles, contradictory dispositions, unresolved required test commands or
-environments, and a graph whose selected fragments cannot reconstruct every
-request criterion and required evidence route.
+Create a durable plan or spec only when the contract is public, the work must
+survive tasks, several owners require a shared source, or the user explicitly
+requests it. Replanning invalidates only dependent slices and evidence; current
+unaffected work remains valid.
 
 ## Adaptive Workline Planning
 
-Derive worklines from inspected work; do not begin with a requested, default,
-or aesthetically convenient number. One request may remain one coherent
-workline or produce several connected worklines. The planner chooses the
-smallest set that gives every obligation a clear owner, dependency path,
-write boundary, validation seam, and merge route.
+Start with one coherent slice. Split only when another slice has an
+independently meaningful outcome, owner, write boundary, handoff, dependency, or
+acceptance seam. Merge candidates that share unresolved intent or evidence that
+cannot be accepted independently.
 
-1. Enumerate candidate obligations from request criteria, behavior and failure
-   trajectories, boundaries, source ownership, expected outputs, write scopes,
-   and validation seams.
-2. Select a separate workline when it has an independently meaningful outcome
-   or evidence boundary and can be tracked without hiding a shared decision.
-3. Merge or serialize candidates that share unresolved product/design intent,
-   state-machine or public-contract decisions, conflicting writes, or evidence
-   that cannot be accepted independently.
-4. Give every request criterion one primary workline owner. Other worklines may
-   protect or consume that criterion, but ownership must remain unambiguous.
-5. Record cross-workline inputs, outputs, blockers, validation, and one
-   integration/materialization owner. Several worklines do not imply parallel
-   execution or delegation.
-6. Materialize a workline as a separate active lane only when it needs its own
-   status, owner, dependency, validation, integration, or handoff boundary.
-7. Repeat the boundary pass when new evidence changes scope. Add, merge,
-   serialize, or supersede worklines through a plan revision rather than
-   preserving the original count.
+A workline becomes an active lane only when its status must persist. The number
+of files, skills, tests, or available agents is not a reason to split work.
 
-Do not ask the user how many worklines or plans to create unless the number is
-itself an explicit product, organizational, or delivery constraint. Ask only
-when an undiscoverable boundary decision would materially change ownership or
-outcome.
+## Composable Graph Fragments
+
+The reusable catalog under [`fragments/`](fragments/) is optional planning
+support for connected or program work that crosses delivery or assurance
+surfaces. Do not inspect every fragment for a bounded change.
+
+For selected fragments, bind only the ports, owners, skills, tests, and evidence
+needed by the request. Merge fragments sharing one outcome and acceptance seam.
+Omitted fragments create no phantom nodes or validation requirements.
 
 ## Research Coverage
 
-Use this rule when research, source discovery, prompt policy, semantic-core
-packets, or workflow specs can become durable rules.
+For research that may become durable, record the decision it informs, source
+families checked, evidence class, claim support, conflicts, missing evidence,
+and promotion status. Simulation output, local design intent, market evidence,
+and empirical product proof remain distinct evidence classes.
 
-Do not close research because it has enough evidence for a plausible answer.
-Close it only after these statuses are explicit:
-
-- source-family coverage: which adjacent domains, venues, vocabularies,
-  acronyms, exact titles, and known-item searches were checked;
-- evidence class: whether each source supports ideation critique, simulator
-  output, benchmark result, official behavior, human pilot, empirical study, or
-  local design intent;
-- claim status: supported, partly supported, unsupported, conflicting,
-  needs-more-search, or blocked;
-- promotion status: promote, defer, remove, or keep as research only;
-- residual workflow risk: lane incompleteness, vocabulary lock-in,
-  correlated-agent agreement, validation illusion, or promotion leakage.
-
-Structural validators and compiled context previews prove artifact shape and
-reference wiring. They do not prove research coverage, evidence strength,
-claim truth, or human-validation docking.
+Close research when the decision has sufficient current support or is explicitly
+inconclusive, not when a target document has reached a desired length.
 
 ## Doc Routing Decision Matrix
 
-Use this shared matrix whenever a skill creates, changes, normalizes, validates,
-or closes out durable facts that may belong in project docs. The matrix makes
-the routing decision explicit even when no document update is needed.
+| Durable fact | Owner |
+|---|---|
+| Product intent, requirement, journey, scenario, metric | `docs/product/` |
+| Interaction, accessibility, component, visual rule | `docs/design/` |
+| Positioning, tone, naming, message rule | `docs/brand/` |
+| Approved implementation or public contract packet | `docs/specs/` |
+| Active resumable execution state | `docs/work/` |
+| Reusable workflow or architecture rule | `docs/patterns/` |
+| Codebase vocabulary | `docs/glossary.md` |
+| No durable fact | no documentation write |
 
-| Fact | Source | Owner Target | Action | Bloat Check | Evidence | Next Gate |
-|---|---|---|---|---|---|---|
-| `<DURABLE_FACT_OR_NONE>` | `<REQUEST_SPEC_DIFF_LANE>` | `<DOC_OR_FOLDER_OR_NONE>` | `<UPDATED_NO_CHANGE_DEFERRED_BLOCKED_GAP_NO_DOC_NEEDED>` | `<SMALLEST_USEFUL_DELTA_OR_REASON>` | `<VALIDATION_OR_SOURCE>` | `<SKILL_OR_DONE>` |
-
-Actions:
-
-- `UPDATED`: owner doc was changed with the smallest useful sourced delta.
-- `NO_CHANGE`: owner doc was checked and already matches the durable fact.
-- `DEFERRED`: real follow-up exists and has an owner or backlog route.
-- `BLOCKED`: required evidence or owner context is unavailable.
-- `GAP`: source material lacks enough product, design, brand, spec, glossary,
-  or architecture context for safe routing.
-- `NO_DOC_NEEDED`: change is mechanical, test-only, refactor-only, already
-  documented, or not useful for future planning or validation.
-
-Rules:
-
-- `Source`: use the strongest available identity: request or issue ID,
-  spec/spec-packet path, work lane ID, product artifact ID, changed file,
-  or prior report.
-- `Owner Target`: name the exact existing owner file when known; use a folder
-  only when owner selection is pending; use `none` only for `NO_DOC_NEEDED`.
-- `Evidence`: cite the proof or blocker: command result, functional check,
-  scenario evidence, code diff, docs-impact status, source-only basis, or
-  blocked reason.
-- `Bloat Check`: state why the row is the smallest useful durable delta, or why
-  no doc update is needed.
-- Prefer the existing owner doc or folder named in `docs/structure.md`.
-- Use `docs-impact-map` when one durable product, design, brand, spec,
-  backlog, glossary, or pattern fact may affect sibling docs.
-- Append thin sourced deltas; do not rewrite broad docs or create generic note
-  dumps.
-- Store raw source material only when `ingest-spec` decides preservation helps
-  traceability or future re-normalization.
-- Route `GAP` to `discover`, `market-validation`, `synthesis-to-spec`,
-  `compose-spec`, `brand-positioning`, `design-system`, or
-  `ingest-spec` according to the missing context and evidence maturity.
-- Route durable follow-up work to `docs/backlog/_index.md` only with acceptance
-  criteria.
-- Use `.codex/skills/closeout/templates/doc-routing-decision.md` when a formal
-  reusable matrix is useful.
+Update the narrowest owner and affected consumers. Preserve dated reports as
+history rather than silently rewriting them.
 
 ## Closeout Drift Scan
 
-Run at task finishing after validation evidence exists. Compare the final diff
-and work-lane criteria against existing docs before writing memory.
+At completion, inspect whether the final diff changed a durable fact, an
+existing active record, or a reusable handoff. If not, the final response is
+sufficient.
 
-Append a thin sourced doc diff only when the change creates or changes a
-durable:
-
-- product behavior, requirement, journey, persona, or scenario;
-- design interaction, accessibility, component, token, or state constraint;
-- brand, naming, tone, content, or visual direction;
-- normalized spec acceptance criterion or implementation constraint;
-- architecture boundary, public contract, adapter, state-machine, or runtime
-  invariant;
-- stack/runtime command, runner, source root, tracker, or memory path fact;
-- codebase term that affects future planning or validation.
-
-Do not rewrite broad docs at closeout. If no existing doc owns the fact, write a
-short work report and route substantive discovery to `discover` or source
-normalization to `ingest-spec`.
-
-## Refactoring
-
-Use for structural moves, import changes, module reshaping, shared extraction,
-dead-code deletion, or stale-path cleanup.
-
-1. Scan callers, imports, docs, generated artifacts, tests, and old paths.
-2. State behavior that must be preserved.
-3. Move or delete in the smallest coherent pass.
-4. Update all consumers found by inventory.
-5. Run targeted syntax, type, lint, test, and old-path searches.
-6. Update patterns only when a reusable rule changed.
-
-Guardrails:
-
-- Never combine unrelated refactors.
-- Shared code needs real consumers.
-- Name by behavior, not origin.
-- Prove behavior preservation at the affected public boundary.
+When durable state is affected, update only the owner documents or active
+records, record exact evidence states, and preserve unresolved risk. A report is
+warranted only when a future task cannot cheaply recover the handoff from
+current source and tests.
 
 ## Memory
 
-| Type | Location | Write When |
-|---|---|---|
-| Active work registry | `docs/work/active.md` | A lane opens, changes status, blocks, or closes |
-| Lane packet | `docs/work/lanes/W-XXX-slug.md` | A row needs criteria, definitions, connected worklines, dependencies, replanning history, or validation detail |
-| Lane examples | `docs/work/examples/` | First-time adaptation needs copyable non-active lane examples |
-| Durable report | `docs/work/reports/` | Requested, multi-turn, durable decision, blocked handoff, or complex merge |
-| Completed-work archive | `docs/archive/work-reports/` | Automatic post-closeout compaction, or direct historical cleanup, after terminal/dependency closure, reference audit, and digest equality |
-| Thin product/spec/architecture diff | Existing owner doc in `docs/product/`, `docs/design/`, `docs/brand/`, `docs/specs/`, `docs/patterns/boundaries/index.md`, `harness.config.yaml`, or `docs/glossary.md` | Closeout detects a validated durable fact not already documented |
-| Durable skill rule | `.codex/skills/` | Repeated workflow lesson |
-| Durable role rule | `.codex/agents/` | Delegation or role-boundary lesson |
-| Durable pattern | `docs/patterns/` | Reusable implementation/testing/process rule |
-| Codebase term | `docs/glossary.md` | Term affects future planning or validation |
-| Durable rejected scope | Existing backlog note, pattern, decision, or work report | A rejected concept should not be re-suggested later |
+- Current resumable state belongs in `docs/work/active.md` and necessary lane
+  or graph records.
+- Reusable rules belong in the narrowest skill, role, or pattern owner.
+- Product, design, brand, and spec facts remain in their owning trees.
+- Reports are exceptional handoffs, not a transcript of every task.
+- Archives are explicit historical cleanup and never current authority.
 
-Do not create a generic learned-pattern dump. If a lesson has no clear owner,
-it is probably not durable enough to keep.
+Compact repetition, but preserve identity, provenance, status, permissions,
+negative constraints, and the difference between authored, executed, judged,
+and accepted evidence.

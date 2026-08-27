@@ -1,4 +1,0 @@
-interface:
-  display_name: "Build Agent Prompts"
-  short_description: "Compile and audit agent prompts through Cascade Prompt."
-  default_prompt: "Use $build-agent-prompts to compile an architecture-bound prompt brief and delegate prompt creation or audit to Cascade Prompt."

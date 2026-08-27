@@ -12,9 +12,9 @@ agent:
     tools: []
   prompt_file: product-evals/tasks/agent-response/fixture-prompt.md
   runtime:
-    model: gpt-5.6-terra
+    model: gpt-5.6-sol
     provider: codex
-    reasoning_effort: medium
+    reasoning_effort: max
   source_blind: true
   target:
     instruction_file: product-evals/tasks/agent-response/fixture-instructions.md

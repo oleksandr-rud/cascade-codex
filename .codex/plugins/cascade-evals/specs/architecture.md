@@ -19,8 +19,8 @@ plugins retain their domain artifacts and adapt them to this contract.
 
 Cascade Prompt owns prompt authoring. Cascade Simulations owns actors,
 interfaces, bounded execution, evidence freezing, and run-integrity review.
-Agent Architect owns architecture-specific cases and rubrics. Harness
-Maintainer owns target-repository harness integration and repair.
+Cascade Architect owns architecture-specific cases and rubrics. Cascade Harness
+Engineering owns target-repository harness integration and repair.
 
 `scripts/run_agent_evaluation.py` is the executable agent-evaluation adapter.
 It recomputes the subject allowlist digest; binds the contract, suite, profiles,
@@ -61,8 +61,8 @@ fallback is allowed.
 
 ## Model policy
 
-`gpt-5.6-terra` at the model-policy reasoning defaults is the default builder,
-target, and judge configuration. A versioned evaluation may declare another
+`gpt-5.6-sol` with `max` reasoning is the default builder, target, and judge
+configuration. A versioned evaluation may declare another
 supported model or reasoning effort only as an explicit comparison
 configuration. Every model and reasoning-effort value is frozen into the
 bundle and copied into the receipt. Target and judge invocations remain

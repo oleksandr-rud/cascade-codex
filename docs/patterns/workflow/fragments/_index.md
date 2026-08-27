@@ -3,7 +3,8 @@
 This folder contains reusable planning-time graph fragments. A fragment is not
 an active workline, a Coordination Graph, an implementation plan, or a runtime
 node. It is a versioned rule package that helps `plan-change`,
-`orchestrate-work`, and `agentic-workflow-builder` decide which outcomes,
+`cascade-project-management:manage-project`, and
+`cascade-ai-architect:design-agent-workflow` decide which outcomes,
 skills, actors, tests, gates, and repair routes a particular request needs.
 
 Planning evaluates the complete catalog but instantiates only applicable

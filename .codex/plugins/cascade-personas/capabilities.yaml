@@ -1,0 +1,45 @@
+schema_version: 1
+plugin:
+  name: cascade-personas
+  version: 0.1.20+codex.20260826233510
+model_policy:
+  model: gpt-5.6-sol
+  planning_reasoning_effort: high
+  evaluation_reasoning_effort: max
+skills:
+  - route: cascade-personas:build-persona
+    description: Create or revise a canonical source-grounded Persona with provenance, stable traits, dynamic state, uncertainty, and privacy controls.
+    triggers: [canonical persona truth or behavior rules must change]
+    anti_triggers: [only a consumer projection or runtime actor is required]
+    consumes: [persona-evidence, persona-brief]
+    produces: [canonical-persona]
+    required_dependencies: []
+    optional_dependencies: [cascade-prompt:prompt]
+    policy_tags: [personas, canonical-model]
+    effect: CANDIDATE_WRITE
+    authority: READ_ONLY
+    evaluation_cases: [provenance, synthetic-honesty, privacy]
+  - route: cascade-personas:compile-persona
+    description: Compile a frozen canonical Persona into a digest-bound purpose-limited consumer projection.
+    triggers: [a product, market, architecture, evaluation, or simulation projection is required]
+    anti_triggers: [canonical persona facts must be created or revised]
+    consumes: [canonical-persona]
+    produces: [persona-projection]
+    required_dependencies: []
+    optional_dependencies: []
+    policy_tags: [personas, projection]
+    effect: CANDIDATE_WRITE
+    authority: READ_ONLY
+    evaluation_cases: [purpose-limitation, digest-binding]
+  - route: cascade-personas:evaluate-persona
+    description: Independently audit a frozen Persona or projection for grounding, coherence, privacy, bias risk, and consumer compatibility.
+    triggers: [a persona or projection needs independent evaluation]
+    anti_triggers: [persona creation, revision, or runtime simulation is requested]
+    consumes: [canonical-persona, persona-projection]
+    produces: [persona-evaluation]
+    required_dependencies: []
+    optional_dependencies: [cascade-evals:evaluate, cascade-evals:build-judge]
+    policy_tags: [personas, evaluation]
+    effect: READ_ONLY
+    authority: READ_ONLY
+    evaluation_cases: [builder-cannot-self-accept, consumer-compatibility]

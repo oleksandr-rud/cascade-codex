@@ -64,7 +64,7 @@ function extractCodex(jsonl) {
   return { finalText, usage: usageRecord(usage), traceMetrics: traceMetrics(jsonl) };
 }
 
-function commandAdapter(configPath, adapterId, model) {
+function commandAdapter(configPath, adapterId, model, reasoningEffort) {
   if (!configPath || !adapterId) throw new Error("command-json-v1 requires --adapter-config and a phase adapter id");
   const config = JSON.parse(readFileSync(resolve(configPath), "utf8"));
   const entry = config.adapters?.[adapterId];
@@ -72,13 +72,13 @@ function commandAdapter(configPath, adapterId, model) {
   if (!isAbsolute(entry.command)) throw new Error(`${adapterId}: adapter command must be an absolute path`);
   return {
     command: entry.command,
-    args: (entry.args ?? []).map((value) => value.replaceAll("{model}", model)),
+    args: (entry.args ?? []).map((value) => value.replaceAll("{model}", model).replaceAll("{reasoning_effort}", reasoningEffort)),
     identity: adapterId,
     protocol: "command-json-v1"
   };
 }
 
-export function runModel({ model, prompt, cwd, timeoutMs, adapter = "codex-cli", adapterConfig, adapterId }) {
+export function runModel({ model, reasoningEffort = "max", prompt, cwd, timeoutMs, adapter = "codex-cli", adapterConfig, adapterId }) {
   const startedAt = new Date().toISOString();
   const started = process.hrtime.bigint();
   let command;
@@ -87,21 +87,21 @@ export function runModel({ model, prompt, cwd, timeoutMs, adapter = "codex-cli",
   let identity;
   if (adapter === "codex-cli") {
     command = "codex";
-    commandArgs = ["exec", "--json", "--ephemeral", "--skip-git-repo-check", "--sandbox", "read-only", "-m", model, "-"];
+    commandArgs = ["exec", "--json", "--ephemeral", "--skip-git-repo-check", "--sandbox", "read-only", "-m", model, "-c", `model_reasoning_effort="${reasoningEffort}"`, "-"];
     input = prompt;
     identity = "codex-cli";
   } else if (adapter === "command-json-v1") {
-    const configured = commandAdapter(adapterConfig, adapterId, model);
+    const configured = commandAdapter(adapterConfig, adapterId, model, reasoningEffort);
     command = configured.command;
     commandArgs = configured.args;
-    input = JSON.stringify({ protocol: "cascade-evals-command-v1", model, prompt });
+    input = JSON.stringify({ protocol: "cascade-evals-command-v1", model, reasoning_effort: reasoningEffort, prompt });
     identity = configured.identity;
   } else {
     throw new Error(`unsupported execution adapter: ${adapter}`);
   }
   const result = spawnSync(command, commandArgs, { cwd, input, encoding: "utf8", maxBuffer: 64 * 1024 * 1024, timeout: timeoutMs, killSignal: "SIGTERM" });
   const durationMs = Math.round(Number(process.hrtime.bigint() - started) / 1e6);
-  const base = { model, adapter, adapter_identity: identity, timeout_ms: timeoutMs, started_at: startedAt, completed_at: new Date().toISOString(), duration_ms: durationMs, stdout: result.stdout ?? "", stderr: result.stderr ?? "" };
+  const base = { model, reasoning_effort: reasoningEffort, adapter, adapter_identity: identity, timeout_ms: timeoutMs, started_at: startedAt, completed_at: new Date().toISOString(), duration_ms: durationMs, stdout: result.stdout ?? "", stderr: result.stderr ?? "" };
   if (result.error?.code === "ETIMEDOUT" || result.signal) return { ...base, status: "TIMED_OUT", error: result.error?.message ?? `terminated by ${result.signal}` };
   if (result.error) return { ...base, status: "EXECUTION_FAILED", error: result.error.message };
   if (result.status !== 0) return { ...base, status: "EXECUTION_FAILED", exit_status: result.status, error: (result.stderr || result.stdout || "adapter failed").slice(-2000) };

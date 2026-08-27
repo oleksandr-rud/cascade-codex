@@ -13,15 +13,15 @@ routing:
     - "The task is backend-only, native-only, CLI-only, experiment-only, or an atomic frontend edit inside an established boundary."
     - "The target already has a coherent enforced frontend architecture and no boundary or policy change is proposed."
   load_when:
-    - route: architecture-review
+    - route: cascade-software-architect:review-architecture
       use_when: "A frontend boundary, stack, state, data, cache, realtime, or UI-platform decision needs a reference default."
-    - route: adapt-harness
+    - route: cascade-coding-agent:adapt-harness
       use_when: "Target onboarding detects a browser client and needs a bounded frontend comparison."
     - route: plan-change
       use_when: "A new frontend or material frontend policy needs an implementation-draft structure."
     - route: implement-change
       use_when: "An adopted React/Vite or Next.js profile needs a previewed, no-conflict starter structure."
-    - route: design-system
+    - route: cascade-design:design-system
       use_when: "Reusable tokens, accessible primitives, components, themes, documentation, or UI packaging are in scope."
   write_when:
     - "The frontend base, frontend stack profile, or one of its extension contracts changes."
@@ -30,15 +30,14 @@ routing:
     - "The rule is feature-specific and belongs in the target feature spec, design owner, or work lane."
     - "A native platform concern should use the native archetype rather than the web frontend family."
   primary_skills:
-    - architecture-review
-    - adapt-harness
+    - cascade-software-architect:review-architecture
+    - cascade-coding-agent:adapt-harness
     - plan-change
-    - design-system
+    - cascade-design:design-system
     - pattern-context
     - validate-change
   related_roles:
     - agent-engineer
-    - project-onboarder
     - orchestrator
     - designer
 selection_rules:

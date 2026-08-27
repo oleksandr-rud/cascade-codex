@@ -1,0 +1,4 @@
+interface:
+  display_name: "Plan Project"
+  short_description: "Build a lean project and iteration plan"
+  default_prompt: "Use $plan-project to turn this accepted initiative into a lean project or Agile MVP delivery plan."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Design Tests"
+  short_description: "Design traceable test cases and oracles"
+  default_prompt: "Use $design-tests to derive minimal, evidence-bound test cases and host execution requests from this accepted behavior."

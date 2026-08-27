@@ -8,7 +8,7 @@
 - Coverage: `complete`
 - Catalog digest: `2d24c923fe55562ab079de54e428788f4429c2051442bbceac75852340af1160`
 - Manifest digest: `1a69b88467c4f3dae37439902a2ce6f62b47e5c0b3b111f874af0264ca808e44`
-- Selected-source digest: `c8660aa609456bb70da06f129c3f5c5a29ac152d4d14c69d4cd377600bc0f1c7`
+- Selected-source digest: `7132c1ba9bd6f9451ce1e2bec3bc0e97bc7719e13bb49dba21480c14c2a58b0f`
 - Compiler-contract digest: `4cfeada5833d864235315bb41aa63acf157b08f15c247f2914c23fc84fd9acd1`
 
 ## Purpose And Audience
@@ -30,7 +30,7 @@ Assemble current admission, product-context, simulation-policy, and agent-handof
 
 | Path | SHA-256 |
 |---|---|
-| `docs/specs/simulation-intake-agent-bridge/contract.md` | `2fe6009dc300f15cd41f4fa6bc28b672806e9ba40fa410a96114229fed3205e7` |
+| `docs/specs/simulation-intake-agent-bridge/contract.md` | `836dd2d588e22117fb0e5846b83aa09993c61a13422edb161de6548a4d90a95c` |
 | `docs/specs/task-admission-workload/contract.md` | `cc995fef352f3576da22d4e30f661cc61cb7aded5abc84930527147cfe80ebdd` |
 | `docs/specs/product-context-briefs/contract.md` | `a0e5ad2910e3a475cf7ea9a306d4bacd52fe4ea4b0b3c86872562e6306f5e44e` |
 
@@ -172,7 +172,7 @@ simulator repairs, or candidate refinements. They never validate or mutate the
 source persona.
 
 When a refinement is supported by external evidence and an accepted
-append-only disposition, route it through `synthesis-to-spec -> compose-spec`
+append-only disposition, route it through `create-spec`
 to author a new reviewed persona revision. Recompute every affected brief,
 derivation, population, campaign, claim, and evaluation binding after the
 source revision changes.
@@ -181,102 +181,36 @@ source revision changes.
 
 Source boundary: `docs/patterns/workflow/index.md`
 
-A plan is a compact index of implementation knowledge, not a replacement for
-its authoritative sources. Planning and replanning must preserve the minimum
-information needed to reconstruct why the work is shaped as it is:
+An inline plan should retain only what implementation needs:
 
-- source identity, authority, version or freshness, and the claims it supports;
-- accepted definitions and decisions, plus assumptions and unresolved
-  questions with explicit status;
-- negative constraints, rejected paths, and non-goals when losing them would
-  enable an unsafe or repeatedly rejected implementation;
-- producer/consumer boundaries, ownership, compatibility, and invalidation
-  rules;
-- for stateful work, stable identity, source of truth, mutation authority,
-  legal transitions, typed dependencies/gates/external conditions, retry and
-  resource bounds, and exhaustion behavior;
-- request-to-workline-to-artifact-to-evidence traceability;
-- current workline dependencies, blockers, changed artifacts, evidence status,
-  and next gate;
-- revision history showing what was preserved, changed, added, invalidated, or
-  superseded.
+- intended behavior and non-goals,
+- authoritative source and current assumptions,
+- affected producer and consumer boundaries,
+- mutation ownership and compatibility constraints,
+- focused validation and stop conditions.
 
-This section owns what planning must preserve. `Planning Context Preservation`
-in `docs/patterns/context-memory/index.md` owns how that knowledge is compressed,
-rehydrated, and checked for drift.
-
-Compress repeated explanation and long evidence bodies into summaries with
-stable references. Never compress away identity, provenance, status, negative
-constraints, ownership, acceptance meaning, or the difference between
-authored, executed, blocked, and accepted evidence. A compact projection must
-not become a second authority.
-
-Use planning states deliberately:
-
-- `DRAFT`: coverage or definitions remain open;
-- `DEFINITION_READY`: important terms, boundaries, authority, lifecycle, and
-  failure behavior are coherent;
-- `IMPLEMENTATION_READY`: worklines, slices, writes, dependencies, validation,
-  and stop conditions are mapped;
-- `BLOCKED`: a required source, decision, permission, or validation
-  precondition is unavailable;
-- `SUPERSEDED`: a later revision replaced this plan while retaining its
-  identity and disposition.
-
-For material replanning, increment the plan revision and record the delta
-before replacing current projections. Re-evaluate affected worklines, checks,
-and evidence; preserve unrelated accepted knowledge whose sources and
-boundaries remain current.
+Create a durable plan or spec only when the contract is public, the work must
+survive tasks, several owners require a shared source, or the user explicitly
+requests it. Replanning invalidates only dependent slices and evidence; current
+unaffected work remains valid.
 
 ### workflow-core / doc-routing-decision-matrix
 
 Source boundary: `docs/patterns/workflow/index.md`
 
-Use this shared matrix whenever a skill creates, changes, normalizes, validates,
-or closes out durable facts that may belong in project docs. The matrix makes
-the routing decision explicit even when no document update is needed.
+| Durable fact | Owner |
+|---|---|
+| Product intent, requirement, journey, scenario, metric | `docs/product/` |
+| Interaction, accessibility, component, visual rule | `docs/design/` |
+| Positioning, tone, naming, message rule | `docs/brand/` |
+| Approved implementation or public contract packet | `docs/specs/` |
+| Active resumable execution state | `docs/work/` |
+| Reusable workflow or architecture rule | `docs/patterns/` |
+| Codebase vocabulary | `docs/glossary.md` |
+| No durable fact | no documentation write |
 
-| Fact | Source | Owner Target | Action | Bloat Check | Evidence | Next Gate |
-|---|---|---|---|---|---|---|
-| `<DURABLE_FACT_OR_NONE>` | `<REQUEST_SPEC_DIFF_LANE>` | `<DOC_OR_FOLDER_OR_NONE>` | `<UPDATED_NO_CHANGE_DEFERRED_BLOCKED_GAP_NO_DOC_NEEDED>` | `<SMALLEST_USEFUL_DELTA_OR_REASON>` | `<VALIDATION_OR_SOURCE>` | `<SKILL_OR_DONE>` |
-
-Actions:
-
-- `UPDATED`: owner doc was changed with the smallest useful sourced delta.
-- `NO_CHANGE`: owner doc was checked and already matches the durable fact.
-- `DEFERRED`: real follow-up exists and has an owner or backlog route.
-- `BLOCKED`: required evidence or owner context is unavailable.
-- `GAP`: source material lacks enough product, design, brand, spec, glossary,
-  or architecture context for safe routing.
-- `NO_DOC_NEEDED`: change is mechanical, test-only, refactor-only, already
-  documented, or not useful for future planning or validation.
-
-Rules:
-
-- `Source`: use the strongest available identity: request or issue ID,
-  spec/spec-packet path, work lane ID, product artifact ID, changed file,
-  or prior report.
-- `Owner Target`: name the exact existing owner file when known; use a folder
-  only when owner selection is pending; use `none` only for `NO_DOC_NEEDED`.
-- `Evidence`: cite the proof or blocker: command result, functional check,
-  scenario evidence, code diff, docs-impact status, source-only basis, or
-  blocked reason.
-- `Bloat Check`: state why the row is the smallest useful durable delta, or why
-  no doc update is needed.
-- Prefer the existing owner doc or folder named in `docs/structure.md`.
-- Use `docs-impact-map` when one durable product, design, brand, spec,
-  backlog, glossary, or pattern fact may affect sibling docs.
-- Append thin sourced deltas; do not rewrite broad docs or create generic note
-  dumps.
-- Store raw source material only when `ingest-spec` decides preservation helps
-  traceability or future re-normalization.
-- Route `GAP` to `discover`, `market-validation`, `synthesis-to-spec`,
-  `compose-spec`, `brand-positioning`, `design-system`, or
-  `ingest-spec` according to the missing context and evidence maturity.
-- Route durable follow-up work to `docs/backlog/_index.md` only with acceptance
-  criteria.
-- Use `.codex/skills/closeout/templates/doc-routing-decision.md` when a formal
-  reusable matrix is useful.
+Update the narrowest owner and affected consumers. Preserve dated reports as
+history rather than silently rewriting them.
 
 ### testing-core / scenario-tests
 

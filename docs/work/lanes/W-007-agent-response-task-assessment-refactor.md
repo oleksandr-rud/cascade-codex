@@ -4,7 +4,7 @@ Status: `IN_REVIEW`
 Owner: `agent-engineer`
 Created: 2026-07-27
 Lane Model: `evaluator-optimizer`
-Next Gate: `obtain focused fixed-point review and Gate A acceptance for the completed standalone and Cascade-profile candidates`
+Next Gate: `rerun the exact Cascade-profile canary against the plugin-first harness/profile/catalog identity, then obtain focused fixed-point review and Gate A acceptance`
 Execution Surface: `root`
 Dispatch State: `IN_REVIEW`
 Dispatch Authorization: explicit user implementation instruction, 2026-08-08
@@ -226,3 +226,14 @@ inherit product-brief authority.
 - Report: program report and W-001 follow-up only if current evidence changes.
 - Remaining risk: model/runtime variance remains separate from adapter
   correctness.
+
+## 2026-08-25 Current-Source Invalidation
+
+The plugin-first harness cutover changed the generated harness catalog,
+digest-bound `cascade-harness-profile-v1`, and campaign catalog. Immutable
+Cascade-profile r4 remains valid historical evidence for its frozen 2026-08-08
+manifest and retains its recorded independent scores, but it is no longer
+current-source proof. W-007 stays `IN_REVIEW`; its next evidence gate is a new
+exact Cascade-profile canary against the current profile and catalog, followed
+by focused fixed-point review and Gate A acceptance. The provider-neutral r5
+and standalone r4 meanings are unchanged by this invalidation.

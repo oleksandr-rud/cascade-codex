@@ -1,0 +1,6 @@
+interface:
+  display_name: "Codebase Security Audit"
+  short_description: "Map security surfaces and audit trajectories"
+  default_prompt: "Use $codebase-audit to map the security surfaces and evidence-bound audit trajectories for this codebase."
+policy:
+  allow_implicit_invocation: true

@@ -91,7 +91,12 @@ def handoff() -> dict:
             "status": "CURRENT",
         },
         "failure": {"classification": "NONE", "message": None, "retry_allowed": False},
-        "resume": {"owner": None, "required_artifact": None, "not_applicable_reason": None, "next_action": None},
+        "resume": {
+            "owner": "product-owner",
+            "required_artifact": "product-owner-review-receipt",
+            "not_applicable_reason": None,
+            "next_action": "Review the prepared artifact and record the bounded decision.",
+        },
         "closure": {"requires_acknowledgment": False, "acknowledged": False, "acknowledgment_id": None},
     }
 
@@ -191,6 +196,17 @@ class ProductArtifactContractTests(unittest.TestCase):
         value["authority"]["external_write_authorized"] = True
         self.assertTrue(any("cannot carry" in error for error in validate_handoff(value)))
 
+    def test_ready_prepare_handoff_requires_actionable_resume(self) -> None:
+        value = handoff()
+        value["resume"] = {
+            "owner": None,
+            "required_artifact": None,
+            "not_applicable_reason": None,
+            "next_action": None,
+        }
+        self.assertNotEqual(validate_schema(value, SCRIPT_ROOT.parent / "schemas" / "handoff-envelope.schema.json"), [])
+        self.assertTrue(any("actionable resume" in error for error in validate_handoff(value)))
+
     def test_handoff_expiration_must_follow_envelope_production(self) -> None:
         value = handoff()
         value["freshness"]["expires_at"] = value["freshness"]["produced_at"]
@@ -221,7 +237,7 @@ class ProductArtifactContractTests(unittest.TestCase):
 
     def test_inbound_optional_market_peer_uses_shared_contract_without_cycle(self) -> None:
         value = handoff()
-        value["producer"] = "cascade-market-intelligence:evaluate-market-opportunity"
+        value["producer"] = "cascade-market:evaluate-market-opportunity"
         value["producer_version"] = "0.1.8+codex.20260823005800"
         value["consumer"] = "cascade-product:manage-product-lifecycle"
         value["consumer_version"] = contract_alias_versions()["cascade-product:manage-product-lifecycle"]
@@ -234,6 +250,12 @@ class ProductArtifactContractTests(unittest.TestCase):
         errors = validate_work_product(value)
         self.assertTrue(any("requires journeys" in error for error in errors))
         self.assertTrue(any("unknown source artifacts" in error for error in errors))
+
+    def test_schema_error_identifies_missing_evidence_ids_path(self) -> None:
+        value = work_product()
+        del value["requirements"][0]["evidence_ids"]
+        errors = validate_schema(value, SCRIPT_ROOT.parent / "schemas" / "product-work-product.schema.json")
+        self.assertTrue(any("$.requirements[0]" in error and "evidence_ids" in error for error in errors))
 
     def test_malformed_decision_fails_without_exception(self) -> None:
         value = decision()

@@ -3,6 +3,7 @@
 import { readFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
+import { parse as parseYaml } from "yaml";
 import { resolveInstalledSkill, resolveSubjectSkill } from "./subject-plugin.mjs";
 
 const skillRoot = dirname(dirname(fileURLToPath(import.meta.url)));
@@ -18,6 +19,19 @@ function check(condition, message) {
 
 async function readJson(path) {
   return JSON.parse(await readFile(path, "utf8"));
+}
+
+async function readYaml(path) {
+  return parseYaml(await readFile(path, "utf8"), { uniqueKeys: true });
+}
+
+async function readModelRegistry(root) {
+  try {
+    return await readYaml(join(root, "references/model-system/model-registry.yaml"));
+  } catch (error) {
+    if (error?.code !== "ENOENT") throw error;
+    return readJson(join(root, "references/model-system/model-registry.json"));
+  }
 }
 
 async function readable(path, label) {
@@ -40,7 +54,7 @@ async function absent(path, label) {
 
 const catalog = await readJson(join(evalRoot, "task-catalog.json"));
 const matrix = await readJson(join(evalRoot, "model-matrix.json"));
-const registry = await readJson(join(subjectSkillRoot, "references/model-system/model-registry.json"));
+const registry = await readModelRegistry(subjectSkillRoot);
 const outcome = await readJson(join(evalRoot, "judges/outcome-v1.json"));
 const trajectory = await readJson(join(evalRoot, "judges/trajectory-v1.json"));
 const interviewProfile = await readJson(join(evalRoot, "judges/interview-v1.json"));
@@ -53,9 +67,10 @@ const tokenBudgets = await readJson(join(evalRoot, "token-budgets.json"));
 
 check(catalog.schema_version === 2, "task catalog schema_version must be 2");
 check(matrix.schema_version === 1, "model matrix schema_version must be 1");
-check(matrix.defaults?.prompt_model === "gpt-5.6-terra", "default prompt model must be gpt-5.6-terra");
-check(matrix.defaults?.target_model === "gpt-5.6-terra", "default target model must be gpt-5.6-terra");
-check(matrix.defaults?.judge_model === "gpt-5.6-terra", "default judge model must be gpt-5.6-terra");
+check(matrix.defaults?.prompt_model === "gpt-5.6-sol", "default prompt model must be gpt-5.6-sol");
+check(matrix.defaults?.target_model === "gpt-5.6-sol", "default target model must be gpt-5.6-sol");
+check(matrix.defaults?.judge_model === "gpt-5.6-sol", "default judge model must be gpt-5.6-sol");
+check(matrix.defaults?.reasoning_effort === "max", "default reasoning effort must be max");
 check(responseSchema.type === "object", "judge response schema must define an object");
 check(calibration.calibration_status === "NOT_RUN", "synthetic fixtures must not claim calibration");
 check(calibration.human_labeled === false, "synthetic fixtures must not claim human labels");
@@ -120,7 +135,7 @@ for (const task of catalog.tasks ?? []) {
   }
 }
 
-check(taskIds.size === 13, `task catalog must contain exactly 13 tasks, found ${taskIds.size}`);
+check(taskIds.size === 14, `task catalog must contain exactly 14 tasks, found ${taskIds.size}`);
 check((domainCounts.get("product") ?? 0) >= 3, "task catalog must contain at least three product tasks");
 check((domainCounts.get("business") ?? 0) >= 2, "task catalog must contain at least two business tasks");
 check((domainCounts.get("coding") ?? 0) >= 2, "task catalog must contain at least two coding tasks");
@@ -140,6 +155,8 @@ check(taskById.get("onboarding-experiment-v1")?.target_task_contract.includes("p
 check(taskById.get("code-review-race-v1")?.target_task_contract.includes("pass the existing requestId to gateway.capture"), "code review must bind requestId to gateway idempotency");
 check(taskById.get("code-review-race-v1")?.target_task_contract.includes("requestId database unique constraint"), "code review must preserve the database uniqueness contract");
 check(taskById.get("api-version-migration-plan-v1")?.prompt_build_request.includes("plan only"), "API migration builder request must remain planning-only");
+check(taskById.get("plugin-workflow-plan-v1")?.target_task_contract.includes("cascade-market:brand-positioning"), "plugin workflow task must bind the marketing route");
+check(taskById.get("plugin-workflow-plan-v1")?.target_task_contract.includes("dispatch_authorized false"), "plugin workflow task must preserve non-dispatch authority");
 check(taskById.get("brand-context-copy-v1")?.target_task_contract.includes("internal pilot"), "brand context task must preserve evidence attribution");
 check(taskById.get("business-opportunity-screen-v1")?.target_task_contract.includes("PROCEED_TO_VALIDATION"), "business opportunity task must preserve the bounded verdict vocabulary");
 check(taskById.get("business-opportunity-screen-v1")?.target_task_contract.includes("credible problem evidence supports one bounded experiment"), "business opportunity task must define PROCEED_TO_VALIDATION semantics");

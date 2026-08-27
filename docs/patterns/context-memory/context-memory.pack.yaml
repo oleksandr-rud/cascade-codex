@@ -29,16 +29,14 @@ routing:
   primary_skills:
     - context
     - plan-change
-    - orchestrate-work
+    - cascade-project-management:manage-project
     - pattern-context
-    - adapt-harness
+    - cascade-coding-agent:adapt-harness
     - validate-change
     - closeout
   related_roles:
     - orchestrator
-    - project-onboarder
     - agent-engineer
-    - business-analyst
 selection_rules:
   - "Use summary-only first to decide whether source-context rules are relevant."
   - "Use source-identity and retrieval-rules before loading connector or MCP output into prompts."
@@ -133,7 +131,7 @@ documents:
     description: "Pattern entry and context-pack retrieval owner."
     trigger_when:
       - "Reusable pattern memory, context-pack retrieval, or pattern-pack schema changes are in scope."
-  - path: .codex/skills/adapt-harness/SKILL.md
+  - path: .codex/plugins/cascade-coding-agent/skills/adapt-harness/SKILL.md
     kind: skill
     description: "Onboarding route for source-context and memory rules."
     trigger_when:

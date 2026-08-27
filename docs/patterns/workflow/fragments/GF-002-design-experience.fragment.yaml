@@ -22,10 +22,10 @@ actor:
   preferred_existing_roles:
     - designer
 skill_calls:
-  - skill: ux-flow-review
+  - skill: cascade-design:ux-flow-review
     when: a user flow or UI state changes
     required: true
-  - skill: design-system
+  - skill: cascade-design:design-system
     when: reusable component, token, layout, or interaction rules change
     required: false
 nodes:
@@ -48,4 +48,4 @@ workline_policy: Split only when design decisions need independent ownership, ap
 omission_rule: NOT_APPLICABLE for changes with no visible flow, component, state, responsive, or interaction effect.
 repair:
   - Unresolved flow or state behavior reopens design-flow.
-  - Reusable-rule gaps route to design-system before dependent frontend readiness.
+  - Reusable-rule gaps route to cascade-design:design-system before dependent frontend readiness.

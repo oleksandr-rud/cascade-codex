@@ -30,10 +30,10 @@ actor:
   preferred_existing_roles:
     - designer
 skill_calls:
-  - skill: accessibility-review
+  - skill: cascade-design:accessibility-review
     when: visible interaction or semantics change
     required: true
-  - skill: functional-qa
+  - skill: cascade-qa:design-tests
     when: keyboard or observable accessibility behavior can be executed
     required: false
 nodes:

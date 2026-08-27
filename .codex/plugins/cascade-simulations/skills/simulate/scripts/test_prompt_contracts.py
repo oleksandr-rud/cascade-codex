@@ -63,7 +63,17 @@ class PromptContractTest(unittest.TestCase):
         skills = list((PLUGIN / "skills").glob("*/SKILL.md"))
         self.assertEqual(
             {path.parent.name for path in skills},
-            {"simulate", "simulation-persona", "simulation-actor", "simulation-adapter", "simulation-brief", "simulation-outcome", "simulation-review"},
+            {
+                "simulate",
+                "manage-simulation-campaign",
+                "execute-simulation-campaign",
+                "simulation-persona",
+                "simulation-actor",
+                "simulation-adapter",
+                "simulation-brief",
+                "simulation-outcome",
+                "simulation-review",
+            },
         )
         for path in skills:
             text = path.read_text(encoding="utf-8")

@@ -26,7 +26,7 @@ Use this folder as the active work memory for Orchestrator.
 - `reports/`: durable reports, completed work graphs, and blocked/deferred
   handoffs.
 - `../archive/work-reports/`: compact archive capsules and relocated frozen
-  lane, graph, and report artifacts after automatic post-closeout maintenance.
+  lane, graph, and report artifacts after an explicitly authorized closeout.
 
 ## Rules
 
@@ -71,7 +71,9 @@ Use this folder as the active work memory for Orchestrator.
 - For research-heavy work, add detailed evidence to `reports/` and add compact
   durable research-memory entries to `docs/patterns/context-memory/index.md`.
 - Do not accumulate completed history indefinitely in the live work tree.
-  After a lane or graph completes, `closeout` automatically invokes
-  `archive-work` to prove terminal/dependency/reference readiness, create a
-  digest-bound capsule, and move frozen originals. If preflight cannot pass,
-  retain the files and record `ARCHIVE_DEFERRED`.
+  After a lane or graph may be complete,
+  `cascade-project-management:close-project` assesses terminal, dependency,
+  consumer, and retention readiness. `closeout` may create a digest-bound
+  capsule and move only exact `RETIRE_PROPOSED` originals under current host
+  authority. If preflight cannot pass, retain the files and record
+  `ARCHIVE_DEFERRED`; nothing invokes retention automatically.

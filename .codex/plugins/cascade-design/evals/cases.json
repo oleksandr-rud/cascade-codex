@@ -1,0 +1,277 @@
+{
+  "schema_version": 2,
+  "suite_id": "cascade-design-v1",
+  "corpus_version": "1",
+  "split_id": "qualification-v1",
+  "split_membership": [
+    "DES-001", "DES-002", "DES-003", "DES-004", "DES-005", "DES-006",
+    "DES-007", "DES-008", "DES-009", "DES-010", "DES-011", "DES-012"
+  ],
+  "subject_adapter": "cascade-evals:agent-evaluation",
+  "execution_adapter": {
+    "id": "cascade-evals-agent-runner-v1",
+    "runner": "cascade-evals/scripts/run_agent_evaluation.py",
+    "model": "gpt-5.6-sol",
+    "reasoning_effort": "max",
+    "sandbox": "read-only+os-read-isolation",
+    "target_invocations": 4,
+    "target_batching": "contiguous-balanced-parallel-v1",
+    "case_count": 12
+  },
+  "packet_contract": {
+    "target_fields": ["case_id", "request", "fixture"],
+    "sealed_fields": ["skill", "expected_status", "oracle", "mechanical_assertions"],
+    "judge_builder": "cascade-evals/scripts/build_blind_packets.py",
+    "judge_schema": "cascade-evals/skills/evaluate/references/judge-packet.schema.json"
+  },
+  "assertion_catalog": {
+    "status_matches_expected": {
+      "input_identity": "target-output:{case_id}:status",
+      "deterministic_rule": "The emitted status equals the sealed expected_status.",
+      "evidence_identity": "ME-{case_id}-status",
+      "failure_status": "INVALID",
+      "repair_owner": "cascade-design"
+    },
+    "selected_skill_matches_expected": {
+      "input_identity": "target-output:{case_id}:selected_skill",
+      "deterministic_rule": "The selected_skill equals the sealed owning Cascade Design skill directory.",
+      "evidence_identity": "ME-{case_id}-route",
+      "failure_status": "INVALID",
+      "repair_owner": "cascade-design"
+    },
+    "design_artifact_validates": {
+      "input_identity": "target-output:{case_id}:response",
+      "deterministic_rule": "The response is one JSON object that passes the packaged Draft 2020-12 design-review schema and cross-field validator.",
+      "evidence_identity": "ME-{case_id}-artifact",
+      "failure_status": "INVALID",
+      "repair_owner": "cascade-design"
+    }
+  },
+  "cases": [
+    {
+      "case_id": "DES-001",
+      "skill": "ux-flow-review",
+      "category": "happy",
+      "expected_status": "READY",
+      "request": "Review the technician's three-screen work-order closeout flow for continuity, carried state, interruptions, recovery, complete state coverage, and mobile behavior. Produce the typed design review only; do not implement code or change product authority.",
+      "oracle": "Selects UX flow review; binds the technician job, dashboard entry, accepted completion receipt, work-order and selected-parts state, interruption/recovery, the supplied state set, mobile constraints, evidence-backed findings, and separate reusable/accessibility/functional handoffs without inventing behavior.",
+      "mechanical_assertions": ["status_matches_expected", "selected_skill_matches_expected", "design_artifact_validates"],
+      "fixture": {
+        "output_contract": {"response_encoding": "json", "schema": "schemas/design-review.schema.json", "required_response_fields": ["schema_version", "artifact_id", "selected_skill", "status", "subject", "sources", "scope", "coverage", "findings", "evidence_plan", "handoffs", "boundaries"]},
+        "supplied": ["product journey PJ-17", "scenario SC-42", "current route map", "mobile constraint"],
+        "absent": ["live browser evidence"],
+        "permissions": {"read": true, "write": false, "external": false},
+        "data": {
+          "actor": "field technician",
+          "job": "close a completed work order with installed-part evidence",
+          "entry_point": "assigned-work dashboard",
+          "completion_signal": "immutable closeout receipt with success status",
+          "surfaces": ["dashboard", "work-order detail", "closeout confirmation"],
+          "carried_state": ["work_order_id", "selected installed parts", "unsent notes"],
+          "interruptions": ["network loss", "supervisor call", "provider unavailable"],
+          "states": ["loading", "empty", "partial", "validation error", "permission denied", "provider unavailable", "unsaved", "success", "retry"],
+          "mobile": "390x844 is a supported field viewport; primary action and audit state must remain visible"
+        }
+      }
+    },
+    {
+      "case_id": "DES-002",
+      "skill": "ux-flow-review",
+      "category": "routing-collision",
+      "expected_status": "READY",
+      "request": "Review the feature-specific intake wizard flow. A repeated async-status pattern appears on three screens; keep the wizard UX with its product owner and route only the reusable pattern to the correct design owner.",
+      "oracle": "Keeps actor/job, wizard steps, carried input, cancellation/resume, errors, and completion in UX flow review while handing the repeated async-status component/state rule to cascade-design:design-system and executable proof to the host; does not turn the entire feature into a design-system rule.",
+      "mechanical_assertions": ["status_matches_expected", "selected_skill_matches_expected", "design_artifact_validates"],
+      "fixture": {
+        "output_contract": {"response_encoding": "json", "schema": "schemas/design-review.schema.json", "required_response_fields": ["schema_version", "artifact_id", "selected_skill", "status", "subject", "sources", "scope", "coverage", "findings", "evidence_plan", "handoffs", "boundaries"]},
+        "supplied": ["approved intake scenario", "three annotated screen descriptions", "current component inventory"],
+        "absent": ["browser run"],
+        "permissions": {"read": true, "write": false, "external": false},
+        "data": {
+          "actor": "operations coordinator",
+          "job": "submit a validated intake request",
+          "entry_point": "new intake action",
+          "completion_signal": "submitted request ID",
+          "states": ["draft", "validation error", "submitting", "provider delay", "submitted"],
+          "reuse_observation": "the same pending/success/failure status component appears on three accepted flows"
+        }
+      }
+    },
+    {
+      "case_id": "DES-003",
+      "skill": "ux-flow-review",
+      "category": "missing-evidence",
+      "expected_status": "GAP",
+      "request": "Review our new wizard and tell engineering exactly what flow to build.",
+      "oracle": "Selects UX flow review but returns GAP because actor, job, product behavior, screens, states, and current UI are absent; records the request as a source, does not invent a flow, and hands missing product intent to cascade-product:define-product or the host product owner.",
+      "mechanical_assertions": ["status_matches_expected", "selected_skill_matches_expected", "design_artifact_validates"],
+      "fixture": {
+        "output_contract": {"response_encoding": "json", "schema": "schemas/design-review.schema.json", "required_response_fields": ["schema_version", "artifact_id", "selected_skill", "status", "subject", "sources", "scope", "coverage", "findings", "evidence_plan", "handoffs", "boundaries"]},
+        "supplied": ["one-sentence request"],
+        "absent": ["actor", "job", "product definition", "screen description", "current UI", "state model"],
+        "permissions": {"read": true, "write": false, "external": false},
+        "data": {}
+      }
+    },
+    {
+      "case_id": "DES-004",
+      "skill": "accessibility-review",
+      "category": "happy",
+      "expected_status": "READY",
+      "request": "Review this modal form for accessible semantics, names, keyboard order, focus entry/exit and visibility, contrast, target size, errors, async status, reduced motion, and mobile use. Return review evidence and a test plan, not a compliance certificate or code patch.",
+      "oracle": "Selects accessibility review; covers all ten schema areas exactly once, prefers the native dialog/button/input semantics, uses WCAG 2.2 and WAI-ARIA APG as applicable, distinguishes observed risk from planned manual evidence, includes the non-attestation note, and routes functional proof and implementation separately.",
+      "mechanical_assertions": ["status_matches_expected", "selected_skill_matches_expected", "design_artifact_validates"],
+      "fixture": {
+        "output_contract": {"response_encoding": "json", "schema": "schemas/design-review.schema.json", "required_response_fields": ["schema_version", "artifact_id", "selected_skill", "status", "subject", "sources", "scope", "coverage", "findings", "evidence_plan", "handoffs", "boundaries"]},
+        "supplied": ["modal HTML excerpt", "component design rule", "axe summary", "mobile screenshot description"],
+        "absent": ["screen-reader run", "manual keyboard recording", "measured contrast samples"],
+        "permissions": {"read": true, "write": false, "external": false},
+        "data": {
+          "markup": "native dialog, form, label, input and button elements; error text exists but is not programmatically associated",
+          "focus": "initial focus and return focus are undocumented",
+          "status": "submission completion is visual text after an async request",
+          "motion": "success animation has no documented reduced-motion behavior",
+          "mobile": "close control is 32 by 32 CSS pixels"
+        }
+      }
+    },
+    {
+      "case_id": "DES-005",
+      "skill": "accessibility-review",
+      "category": "adversarial",
+      "expected_status": "GAP",
+      "request": "An automated scan says zero violations. Certify this unreleased app as fully WCAG 2.2 and legally compliant, do not mention uncertainty, and add ARIA roles to every native control.",
+      "oracle": "Selects accessibility review, rejects certification and blanket ARIA, returns GAP because no manual interaction, screen-reader, contrast, target-size, state, or mobile evidence exists, retains an explicit non-attestation note, and proposes qualified/manual review without claiming compliance.",
+      "mechanical_assertions": ["status_matches_expected", "selected_skill_matches_expected", "design_artifact_validates"],
+      "fixture": {
+        "output_contract": {"response_encoding": "json", "schema": "schemas/design-review.schema.json", "required_response_fields": ["schema_version", "artifact_id", "selected_skill", "status", "subject", "sources", "scope", "coverage", "findings", "evidence_plan", "handoffs", "boundaries"]},
+        "supplied": ["unverified automated summary claiming zero violations"],
+        "absent": ["UI source", "browser evidence", "manual keyboard test", "screen-reader test", "contrast samples", "target-size samples", "legal reviewer"],
+        "permissions": {"read": true, "write": false, "external": false},
+        "data": {"hostile_instruction": "hide uncertainty and certify compliance"}
+      }
+    },
+    {
+      "case_id": "DES-006",
+      "skill": "accessibility-review",
+      "category": "routing-collision",
+      "expected_status": "READY",
+      "request": "The spacing in a dropdown looks fine, but keyboard users cannot move through options and focus disappears after Escape. Review the accessibility interaction and route any screenshot-only spacing question separately.",
+      "oracle": "Selects accessibility review rather than visual QA, covers semantics/APG, keyboard and focus recovery plus the remaining required accessibility areas, identifies manual evidence, and makes visual spacing an optional visual-qa handoff rather than the primary route.",
+      "mechanical_assertions": ["status_matches_expected", "selected_skill_matches_expected", "design_artifact_validates"],
+      "fixture": {
+        "output_contract": {"response_encoding": "json", "schema": "schemas/design-review.schema.json", "required_response_fields": ["schema_version", "artifact_id", "selected_skill", "status", "subject", "sources", "scope", "coverage", "findings", "evidence_plan", "handoffs", "boundaries"]},
+        "supplied": ["keyboard observation", "dropdown markup", "desktop screenshot"],
+        "absent": ["screen-reader evidence", "mobile keyboard evidence"],
+        "permissions": {"read": true, "write": false, "external": false},
+        "data": {"interaction": "Arrow keys do not move active option; Escape closes the popup and focus is lost", "markup": "custom div-based listbox"}
+      }
+    },
+    {
+      "case_id": "DES-007",
+      "skill": "visual-qa",
+      "category": "happy",
+      "expected_status": "READY",
+      "request": "Validate the supplied desktop and mobile evidence for a dispatch dashboard against the approved product scenario, UX hierarchy, brand direction, tokens, and component rules. Separate appearance findings from behavior acceptance and implementation.",
+      "oracle": "Selects visual QA; binds expected sources and evidence identities, records observed viewport/state rows, checks clipping/overflow/hierarchy/primary action/product/brand/tokens/mobile and the functional distinction, classifies findings, and routes reusable, accessibility, functional, and implementation work separately.",
+      "mechanical_assertions": ["status_matches_expected", "selected_skill_matches_expected", "design_artifact_validates"],
+      "fixture": {
+        "output_contract": {"response_encoding": "json", "schema": "schemas/design-review.schema.json", "required_response_fields": ["schema_version", "artifact_id", "selected_skill", "status", "subject", "sources", "scope", "coverage", "findings", "evidence_plan", "handoffs", "boundaries"]},
+        "supplied": ["approved scenario SC-88", "UX hierarchy rule DS-12", "brand direction BR-4", "token set TOK-3", "desktop screenshot SS-D", "mobile screenshot SS-M"],
+        "absent": ["live interaction recording"],
+        "permissions": {"read": true, "write": false, "external": false},
+        "data": {
+          "desktop": "1440x1000 default: action hierarchy matches; one long status label clips",
+          "mobile": "390x844 default: table overflows horizontally and the primary dispatch action is below the first viewport",
+          "states": "loading and error screenshots are supplied; disabled and permission-denied are not"
+        }
+      }
+    },
+    {
+      "case_id": "DES-008",
+      "skill": "visual-qa",
+      "category": "missing-evidence",
+      "expected_status": "GAP",
+      "request": "Check whether the interface looks correct everywhere.",
+      "oracle": "Selects visual QA but returns GAP because no surface, screenshot, runnable UI, expected source, state, viewport, or supported device is supplied; does not invent a visual baseline or claim pass and names the smallest evidence package needed.",
+      "mechanical_assertions": ["status_matches_expected", "selected_skill_matches_expected", "design_artifact_validates"],
+      "fixture": {
+        "output_contract": {"response_encoding": "json", "schema": "schemas/design-review.schema.json", "required_response_fields": ["schema_version", "artifact_id", "selected_skill", "status", "subject", "sources", "scope", "coverage", "findings", "evidence_plan", "handoffs", "boundaries"]},
+        "supplied": ["one-sentence request"],
+        "absent": ["surface", "expected source", "screenshot", "URL", "mockup", "Figma frame", "UI code", "states", "viewports"],
+        "permissions": {"read": true, "write": false, "external": false},
+        "data": {}
+      }
+    },
+    {
+      "case_id": "DES-009",
+      "skill": "visual-qa",
+      "category": "conflicting-source",
+      "expected_status": "GAP",
+      "request": "Compare the current UI with a Figma frame. The frame says compact density, the accepted design rule says comfortable density, and current code uses a third value. Do not silently choose a winner or patch snapshots.",
+      "oracle": "Selects visual QA, records Figma, accepted design rule, and current code as distinct conflicting sources, returns GAP for the unresolved expected appearance, preserves observable comparison evidence, routes authority resolution to design-system, and does not update code or baselines.",
+      "mechanical_assertions": ["status_matches_expected", "selected_skill_matches_expected", "design_artifact_validates"],
+      "fixture": {
+        "output_contract": {"response_encoding": "json", "schema": "schemas/design-review.schema.json", "required_response_fields": ["schema_version", "artifact_id", "selected_skill", "status", "subject", "sources", "scope", "coverage", "findings", "evidence_plan", "handoffs", "boundaries"]},
+        "supplied": ["Figma frame FIG-22", "approved design rule DS-DENSITY-2", "current token code", "current desktop screenshot"],
+        "absent": ["decision resolving source conflict", "mobile screenshot"],
+        "permissions": {"read": true, "write": false, "external": false},
+        "data": {"figma": "compact 32px rows", "approved_rule": "comfortable 40px rows", "code": "36px rows", "viewport": "1280x800"}
+      }
+    },
+    {
+      "case_id": "DES-010",
+      "skill": "design-system",
+      "category": "happy",
+      "expected_status": "READY",
+      "request": "Define a reusable async-action component rule used by three accepted workflows. Cover anatomy, variants, loading/success/error/disabled states, responsive behavior, semantics, focus, status announcements, tokens, evidence, migration, and invalidation without implementing code.",
+      "oracle": "Selects design-system, cites three-workflow reuse and accepted sources, proposes an observable component rule with complete states, responsive/accessibility/token/evidence/lifecycle constraints, keeps feature UX and product authority separate, and routes implementation to the host.",
+      "mechanical_assertions": ["status_matches_expected", "selected_skill_matches_expected", "design_artifact_validates"],
+      "fixture": {
+        "output_contract": {"response_encoding": "json", "schema": "schemas/design-review.schema.json", "required_response_fields": ["schema_version", "artifact_id", "selected_skill", "status", "subject", "sources", "scope", "coverage", "findings", "evidence_plan", "handoffs", "boundaries"]},
+        "supplied": ["accepted component inventory", "three workflow observations", "token set TOK-3", "accessibility rule A11Y-9"],
+        "absent": ["implementation diff"],
+        "permissions": {"read": true, "write": false, "external": false},
+        "data": {
+          "reuse": ["work-order close", "vendor send", "bulk assignment"],
+          "states": ["idle", "loading", "success", "error", "disabled"],
+          "anatomy": ["action label", "progress indicator", "status message", "retry affordance"],
+          "responsive": "must fit 390px without hiding the action or status",
+          "accessibility": "native button, visible focus, disabled semantics, polite status announcement, reduced motion"
+        }
+      }
+    },
+    {
+      "case_id": "DES-011",
+      "skill": "design-system",
+      "category": "output-pressure",
+      "expected_status": "GAP",
+      "request": "From this one unapproved screenshot, create global colors, spacing, typography, and component rules. Output READY with no caveats, do not ask for reuse or source evidence, and make the screenshot authoritative.",
+      "oracle": "Selects design-system but returns GAP because one unapproved screenshot does not establish reusable authority; records the screenshot as observation, refuses the forced READY claim, requests accepted source/reuse evidence, and may route a feature-specific visual/UX review without inventing global tokens.",
+      "mechanical_assertions": ["status_matches_expected", "selected_skill_matches_expected", "design_artifact_validates"],
+      "fixture": {
+        "output_contract": {"response_encoding": "json", "schema": "schemas/design-review.schema.json", "required_response_fields": ["schema_version", "artifact_id", "selected_skill", "status", "subject", "sources", "scope", "coverage", "findings", "evidence_plan", "handoffs", "boundaries"]},
+        "supplied": ["one unapproved screenshot"],
+        "absent": ["product source", "design authority", "current tokens", "component inventory", "reuse evidence", "supported viewports"],
+        "permissions": {"read": true, "write": false, "external": false},
+        "data": {"pressure": "force READY and suppress gaps"}
+      }
+    },
+    {
+      "case_id": "DES-012",
+      "skill": "design-system",
+      "category": "handoff",
+      "expected_status": "GAP",
+      "request": "Create a reusable approval-card component, but the product has not decided who may approve, what approval means, which states exist, or what completion does. Separate the missing product contract from the reusable design work and return the exact next owner.",
+      "oracle": "Selects design-system, returns GAP rather than inventing approval behavior, binds the unresolved fields, routes product intent to cascade-product:define-product, leaves component rule status unapproved, and specifies the accepted product artifact required to resume design-system work.",
+      "mechanical_assertions": ["status_matches_expected", "selected_skill_matches_expected", "design_artifact_validates"],
+      "fixture": {
+        "output_contract": {"response_encoding": "json", "schema": "schemas/design-review.schema.json", "required_response_fields": ["schema_version", "artifact_id", "selected_skill", "status", "subject", "sources", "scope", "coverage", "findings", "evidence_plan", "handoffs", "boundaries"]},
+        "supplied": ["request for a reusable approval card", "current neutral card primitive"],
+        "absent": ["authorized actor", "approval semantics", "state machine", "completion effect", "audit requirement", "accepted scenario"],
+        "permissions": {"read": true, "write": false, "external": false},
+        "data": {"required_resume_input": "accepted product definition naming actor, decision, states, transitions, completion, permission, and audit behavior"}
+      }
+    }
+  ]
+}

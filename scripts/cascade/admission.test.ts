@@ -195,7 +195,7 @@ describe("task admission compiler contract", () => {
       route: "CONNECTED",
       workload: { topology: "CONNECTED", assurance: "HIGH", evidence: "INDEPENDENT" },
     });
-    expect(campaign.required_skills).toContain("simulation-campaigns");
+    expect(campaign.required_skills).toContain("cascade-simulations:manage-simulation-campaign");
     expect(campaign.required_skills).not.toContain("cascade-simulations:simulate");
   });
 

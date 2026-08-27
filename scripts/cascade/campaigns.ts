@@ -7495,7 +7495,7 @@ async function commandRun(
       );
     } else {
       throw new CascadeError(
-        "REQUIRED specialized evaluation receipt is missing; route frozen Cascade route/trace evidence through harness-evaluation before general evaluation",
+        "REQUIRED specialized evaluation receipt is missing; route frozen Cascade route/trace evidence through cascade-evals:harness-evaluation before general evaluation",
       );
     }
     verifySpecializedEvaluationReceipt(specializedEvaluation, {

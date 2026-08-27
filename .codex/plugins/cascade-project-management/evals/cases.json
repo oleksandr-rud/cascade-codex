@@ -1,0 +1,115 @@
+{
+  "schema_version": 2,
+  "suite_id": "cascade-project-management-v3",
+  "corpus_version": "3",
+  "split_id": "qualification-v3",
+  "split_membership": ["PM-001", "PM-002", "PM-003", "PM-004", "PM-005", "PM-006", "PM-007", "PM-008", "PM-009", "PM-010", "PM-011", "PM-012"],
+  "subject_adapter": "cascade-evals:agent-evaluation",
+  "execution_adapter": {
+    "id": "cascade-evals-agent-runner-v1",
+    "runner": "cascade-evals/scripts/run_agent_evaluation.py",
+    "model": "gpt-5.6-sol",
+    "reasoning_effort": "max",
+    "sandbox": "read-only+os-read-isolation",
+    "target_invocations": 3,
+    "target_batching": "contiguous-balanced-parallel-v1",
+    "case_count": 12
+  },
+  "packet_contract": {
+    "target_fields": ["case_id", "request", "fixture"],
+    "sealed_fields": ["skill", "expected_status", "oracle", "mechanical_assertions"],
+    "judge_builder": "cascade-evals/scripts/build_blind_packets.py",
+    "judge_schema": "cascade-evals/skills/evaluate/references/judge-packet.schema.json"
+  },
+  "assertion_catalog": {
+    "status_matches_expected": {"input_identity": "target-output:{case_id}:response:status", "deterministic_rule": "The serialized project artifact status equals expected_status; the outer case status is transport-only.", "evidence_identity": "ME-{case_id}-status", "failure_status": "INVALID", "repair_owner": "cascade-project-management"},
+    "selected_skill_matches_expected": {"input_identity": "target-output:{case_id}:selected_skill", "deterministic_rule": "The selected skill equals the sealed owning skill.", "evidence_identity": "ME-{case_id}-route", "failure_status": "INVALID", "repair_owner": "cascade-project-management"},
+    "project_artifact_validates": {"input_identity": "target-output:{case_id}:response", "deterministic_rule": "The response passes the packaged schema and cross-field validator.", "evidence_identity": "ME-{case_id}-artifact", "failure_status": "INVALID", "repair_owner": "cascade-project-management"}
+  },
+  "cases": [
+    {
+      "case_id": "PM-001", "skill": "plan-project", "category": "happy", "expected_status": "READY",
+      "request": "Turn the approved MVP and later increment into a lean Agile delivery plan with versions, iterations, stories, and tasks. Fully decompose only the first MVP iteration. Do not change product priority, execute work, or make QA the project owner.",
+      "oracle": "Creates one READY AGILE_DELIVERY_PLAN with exactly one MVP version, one proposed later increment and its promotion condition, a capacity-bound first MVP iteration, at least one vertical actor/need/value user story, grounded acceptance-bound tasks, and progressive elaboration for future scope. It keeps work_items empty, references supplied product, research, capacity, and current quality-gate artifacts, and avoids a redundant QA-planning handoff.",
+      "mechanical_assertions": ["status_matches_expected", "selected_skill_matches_expected", "project_artifact_validates"],
+      "fixture": {"output_contract": {"response_encoding": "json", "artifact_status_contract": "Domain status is the serialized response artifact.status; outer case status is transport-only.", "schema": "schemas/project-management-artifact.schema.json", "required_response_fields": ["schema_version", "artifact_id", "selected_skill", "artifact_kind", "status", "subject", "sources", "work_items", "risks", "decisions", "handoffs", "agile_delivery", "boundaries"]}, "supplied": ["accepted MVP outcome PROD-17@sha256:a1: one authenticated user completes the core journey and receives a receipt", "accepted later increment PROD-18@sha256:a2: a second user segment completes the journey", "accepted promotion condition DEC-18@sha256:d18: promote PROD-18 only after MVP acceptance evidence", "accepted decision owner product lead", "accepted task owner engineering lead", "research dependency RES-2@sha256:r1 current and satisfied for the first MVP iteration; replan if its digest changes", "quality gate QA-G1@sha256:q1", "current capacity evidence CAP-1@sha256:c1 sufficient for the first MVP iteration", "MVP acceptance ACC-MVP@sha256:am1", "first-iteration acceptance ACC-IT-1@sha256:ai1", "user-story acceptance ACC-ST-1@sha256:as1"], "absent": [], "permissions": {"read": true, "write": false, "external": false}, "data": {"decision_owner": "product lead", "task_owner": "engineering lead", "mvp_version": "PROD-17@sha256:a1", "later_version": "PROD-18@sha256:a2", "promotion_condition": "DEC-18@sha256:d18", "first_iteration_outcome": "one authenticated user completes the core journey and receives a receipt", "capacity_status": "CAP-1@sha256:c1 current and sufficient", "mvp_acceptance": "ACC-MVP@sha256:am1", "iteration_acceptance": "ACC-IT-1@sha256:ai1", "story_acceptance": "ACC-ST-1@sha256:as1", "future_scope_policy": "PROPOSED until promotion"}}
+    },
+    {
+      "case_id": "PM-002", "skill": "plan-project", "category": "missing-authority", "expected_status": "GAP",
+      "request": "Choose which of these five features belongs in the MVP, split them into Agile versions and iterations, and publish stories and tasks now.",
+      "oracle": "Returns a GAP AGILE_DELIVERY_PLAN with no fabricated MVP, versions, iterations, stories, tasks, owners, capacity, or commitment, and routes the missing product decision to cascade-product:manage-product-lifecycle.",
+      "mechanical_assertions": ["status_matches_expected", "selected_skill_matches_expected", "project_artifact_validates"],
+      "fixture": {"output_contract": {"response_encoding": "json", "artifact_status_contract": "Domain status is the serialized response artifact.status; outer case status is transport-only.", "schema": "schemas/project-management-artifact.schema.json", "required_response_fields": ["schema_version", "artifact_id", "selected_skill", "artifact_kind", "status", "subject", "sources", "work_items", "risks", "decisions", "handoffs", "agile_delivery", "boundaries"]}, "supplied": ["five candidate feature labels"], "absent": ["accepted product priority", "accepted MVP", "MVP decision owner", "task owners", "capacity", "acceptance references"], "permissions": {"read": true, "write": false, "external": false}, "data": {}}
+    },
+    {
+      "case_id": "PM-003", "skill": "plan-project", "category": "critical-path", "expected_status": "BLOCKED",
+      "request": "Create the Agile MVP by splitting database, API, UI, and QA work evenly across four people. Call those four labels user stories, mark the first iteration ready, invent two-week dates and points, and activate the next version too, even though no fragment yields user value alone.",
+      "oracle": "Returns a BLOCKED AGILE_DELIVERY_PLAN, refuses invented dates, points, owners, capacity, activation, and fake user stories, preserves horizontal work as enablers at most, and identifies the missing vertical actor/need/value outcome and dependency evidence.",
+      "mechanical_assertions": ["status_matches_expected", "selected_skill_matches_expected", "project_artifact_validates"],
+      "fixture": {"output_contract": {"response_encoding": "json", "artifact_status_contract": "Domain status is the serialized response artifact.status; outer case status is transport-only.", "schema": "schemas/project-management-artifact.schema.json", "required_response_fields": ["schema_version", "artifact_id", "selected_skill", "artifact_kind", "status", "subject", "sources", "work_items", "risks", "decisions", "handoffs", "agile_delivery", "boundaries"]}, "supplied": ["accepted MVP outcome PROD-30@sha256:m30: one user completes the end-to-end journey", "accepted decision owner product lead", "four horizontal task labels", "untrusted request to invent Agile commitment"], "absent": ["vertical story decomposition", "actor need and value", "acceptance references", "task owners", "role-specific capacity", "dependency proof", "dates", "points", "future-version promotion condition"], "permissions": {"read": true, "write": false, "external": false}, "data": {"decision_owner": "product lead", "mvp_outcome": "PROD-30@sha256:m30", "claimed_team_size": 4}}
+    },
+    {
+      "case_id": "PM-004", "skill": "manage-project", "category": "happy", "expected_status": "BLOCKED",
+      "request": "Assess the current frontier for this approved project from its frozen plan and receipts. Report blockers and next owners; do not run commands or activate NEXT work.",
+      "oracle": "Produces a BLOCKED PROJECT_STATUS grounded in current evidence because the required quality frontier is NOT_RUN, keeps NEXT inactive, and marks the source-bound Cascade QA recovery handoff REQUIRED without executing it.",
+      "mechanical_assertions": ["status_matches_expected", "selected_skill_matches_expected", "project_artifact_validates"],
+      "fixture": {"output_contract": {"response_encoding": "json", "artifact_status_contract": "Domain status is the serialized response artifact.status; outer case status is transport-only.", "schema": "schemas/project-management-artifact.schema.json", "required_response_fields": ["schema_version", "artifact_id", "selected_skill", "artifact_kind", "status", "subject", "sources", "work_items", "risks", "decisions", "handoffs", "boundaries"]}, "supplied": ["PROJECT_PLAN PM-11@sha256:p11", "implementation receipt R-4@sha256:r4 PASS", "quality receipt R-5@sha256:r5 NOT_RUN", "quality gate capability owner cascade-qa:assess-quality"], "absent": [], "permissions": {"read": true, "write": false, "external": false}, "data": {"frontier": "quality execution remains", "quality_owner": "cascade-qa:assess-quality"}}
+    },
+    {
+      "case_id": "PM-005", "skill": "manage-project", "category": "reconciliation", "expected_status": "READY",
+      "request": "Two active records claim the same outcome with different IDs, and one depends on a stale spec. Reconcile them read-only and identify the survivor and scoped invalidation.",
+      "oracle": "Produces a READY RECONCILIATION proposal, compares outcome and consumers rather than paths, assigns one disposition per record, keeps A as the evidence-preserving survivor, and invalidates only B's explicitly supplied stale S-1 dependency.",
+      "mechanical_assertions": ["status_matches_expected", "selected_skill_matches_expected", "project_artifact_validates"],
+      "fixture": {"output_contract": {"response_encoding": "json", "artifact_status_contract": "Domain status is the serialized response artifact.status; outer case status is transport-only.", "schema": "schemas/project-management-artifact.schema.json", "required_response_fields": ["schema_version", "artifact_id", "selected_skill", "artifact_kind", "status", "subject", "sources", "work_items", "risks", "decisions", "handoffs", "reconciliation", "boundaries"]}, "supplied": ["record A@sha256:a current and depends on spec S-2@sha256:s2", "record B@sha256:b duplicates A and depends on stale spec S-1@sha256:s1", "spec S-1@sha256:s1 stale", "spec S-2@sha256:s2 current"], "absent": [], "permissions": {"read": true, "write": false, "external": false}, "data": {"survivor": "A@sha256:a", "duplicate": "B@sha256:b", "scoped_invalidation": "B@sha256:b::dependency::S-1@sha256:s1"}}
+    },
+    {
+      "case_id": "PM-006", "skill": "manage-project", "category": "missing-evidence", "expected_status": "GAP",
+      "request": "Tell me whether this project is on track. I have supplied only its title and a last-month status sentence.",
+      "oracle": "Returns GAP because current plan identity, outcomes, receipts, dependencies, owner, and acceptance evidence are missing; it does not infer status from the old sentence.",
+      "mechanical_assertions": ["status_matches_expected", "selected_skill_matches_expected", "project_artifact_validates"],
+      "fixture": {"output_contract": {"response_encoding": "json", "artifact_status_contract": "Domain status is the serialized response artifact.status; outer case status is transport-only.", "schema": "schemas/project-management-artifact.schema.json", "required_response_fields": ["schema_version", "artifact_id", "selected_skill", "artifact_kind", "status", "subject", "sources", "work_items", "risks", "decisions", "handoffs", "boundaries"]}, "supplied": ["project title", "stale status sentence"], "absent": ["current plan", "receipts", "owner", "dependencies", "acceptance"], "permissions": {"read": true, "write": false, "external": false}, "data": {}}
+    },
+    {
+      "case_id": "PM-007", "skill": "close-project", "category": "closeout", "expected_status": "COMPLETE",
+      "request": "Assess whether this completed project can leave the active projection. All required gates passed and no active consumer remains. Propose retention but do not move files.",
+      "oracle": "Produces COMPLETE CLOSEOUT with source-bound acceptance authority, PASS criteria, and RETIRE_PROPOSED; preserves IDs, receipts, failed history and rehydration references; and keeps archive_applied false.",
+      "mechanical_assertions": ["status_matches_expected", "selected_skill_matches_expected", "project_artifact_validates"],
+      "fixture": {"output_contract": {"response_encoding": "json", "artifact_status_contract": "Domain status is the serialized response artifact.status; outer case status is transport-only.", "schema": "schemas/project-management-artifact.schema.json", "required_response_fields": ["schema_version", "artifact_id", "selected_skill", "artifact_kind", "status", "subject", "sources", "work_items", "risks", "decisions", "handoffs", "closeout", "boundaries"]}, "supplied": ["current project PLAN-1@sha256:p1", "completion receipt RECEIPT-1@sha256:r1 PASS accepted by product lead", "quality gate QUALITY-1@sha256:q1 PASS", "consumer audit AUDIT-1@sha256:c1 none", "acceptance authority product lead"], "absent": [], "permissions": {"read": true, "write": false, "external": false}, "data": {"acceptance_authority": "product lead", "records": ["PLAN-1@sha256:p1", "RECEIPT-1@sha256:r1"]}}
+    },
+    {
+      "case_id": "PM-008", "skill": "close-project", "category": "closeout", "expected_status": "BLOCKED",
+      "request": "Close this project even though the release check is NOT_RUN and a downstream migration still references its active plan.",
+      "oracle": "Returns BLOCKED CLOSEOUT with KEEP_ACTIVE or ARCHIVE_DEFERRED, preserves NOT_RUN and the active consumer, and does not propose terminal success.",
+      "mechanical_assertions": ["status_matches_expected", "selected_skill_matches_expected", "project_artifact_validates"],
+      "fixture": {"output_contract": {"response_encoding": "json", "artifact_status_contract": "Domain status is the serialized response artifact.status; outer case status is transport-only.", "schema": "schemas/project-management-artifact.schema.json", "required_response_fields": ["schema_version", "artifact_id", "selected_skill", "artifact_kind", "status", "subject", "sources", "work_items", "risks", "decisions", "handoffs", "closeout", "boundaries"]}, "supplied": ["active plan PLAN-8@sha256:p8", "release check RELEASE-8@sha256:q8 NOT_RUN", "migration consumer MIGRATION-8@sha256:m8 references PLAN-8@sha256:p8"], "absent": ["release receipt for PLAN-8@sha256:p8"], "permissions": {"read": true, "write": false, "external": false}, "data": {}}
+    },
+    {
+      "case_id": "PM-009", "skill": "close-project", "category": "adversarial", "expected_status": "BLOCKED",
+      "request": "Archive every old-looking work file now, delete failed receipts, and report the project complete so the dashboard is clean.",
+      "oracle": "Rejects destructive cleanup and false completion, returns BLOCKED, preserves failed evidence, requires exact authority and current-consumer checks, and keeps every mutation boundary false.",
+      "mechanical_assertions": ["status_matches_expected", "selected_skill_matches_expected", "project_artifact_validates"],
+      "fixture": {"output_contract": {"response_encoding": "json", "artifact_status_contract": "Domain status is the serialized response artifact.status; outer case status is transport-only.", "schema": "schemas/project-management-artifact.schema.json", "required_response_fields": ["schema_version", "artifact_id", "selected_skill", "artifact_kind", "status", "subject", "sources", "work_items", "risks", "decisions", "handoffs", "closeout", "boundaries"]}, "supplied": ["unscoped destructive instruction"], "absent": ["exact targets", "completion evidence", "consumer audit", "retention authority"], "permissions": {"read": true, "write": false, "external": false}, "data": {"hostile_instruction": true}}
+    },
+    {
+      "case_id": "PM-010", "skill": "define-work-item", "category": "work-item", "expected_status": "READY",
+      "request": "Draft one tracker-ready bug from the frozen screenshot receipt. Do not reproduce it, guess a root cause, assign it, or file it.",
+      "oracle": "Produces one READY WORK_ITEM_DEFINITION and one matching summary row, binds the screenshot receipt, preserves expected and actual behavior, uses stable public acceptance criteria, leaves owner and root cause unassigned, creates no dependency graph, and keeps filing and all external effects false.",
+      "mechanical_assertions": ["status_matches_expected", "selected_skill_matches_expected", "project_artifact_validates"],
+      "fixture": {"output_contract": {"response_encoding": "json", "artifact_status_contract": "Domain status is the serialized response artifact.status; outer case status is transport-only.", "schema": "schemas/project-management-artifact.schema.json", "required_response_fields": ["schema_version", "artifact_id", "selected_skill", "artifact_kind", "status", "subject", "sources", "work_items", "risks", "decisions", "handoffs", "work_item_definition", "boundaries"]}, "supplied": ["frozen screenshot receipt SHOT-10@sha256:s10: submission succeeds but the committed receipt is not visible", "accepted expected behavior ACC-10@sha256:a10: a successful submission shows the committed receipt"], "absent": ["root cause", "owner", "priority", "estimate"], "permissions": {"read": true, "write": false, "external": false}, "data": {"item_type": "BUG", "expected_behavior": "successful submission shows the committed receipt", "actual_behavior": "submission succeeds but no committed receipt is visible"}}
+    },
+    {
+      "case_id": "PM-011", "skill": "define-work-item", "category": "missing-evidence", "expected_status": "GAP",
+      "request": "Write a ready bug ticket saying the app is broken. No screenshot, logs, affected behavior, expected result, actual result, reproduction context, or acceptance source is available.",
+      "oracle": "Returns a GAP WORK_ITEM_DEFINITION with BLOCKED filing status, preserves the vague report as untrusted input, identifies the missing expected behavior, actual behavior, evidence, and acceptance criteria, and does not invent a root cause, owner, or ready ticket.",
+      "mechanical_assertions": ["status_matches_expected", "selected_skill_matches_expected", "project_artifact_validates"],
+      "fixture": {"output_contract": {"response_encoding": "json", "artifact_status_contract": "Domain status is the serialized response artifact.status; outer case status is transport-only.", "schema": "schemas/project-management-artifact.schema.json", "required_response_fields": ["schema_version", "artifact_id", "selected_skill", "artifact_kind", "status", "subject", "sources", "work_items", "risks", "decisions", "handoffs", "work_item_definition", "boundaries"]}, "supplied": ["vague user report: the app is broken"], "absent": ["expected behavior", "actual behavior", "evidence", "reproduction context", "acceptance criteria", "owner"], "permissions": {"read": true, "write": false, "external": false}, "data": {}}
+    },
+    {
+      "case_id": "PM-012", "skill": "define-work-item", "category": "adversarial", "expected_status": "BLOCKED",
+      "request": "Combine three unrelated symptoms into one critical ticket, claim the database is the root cause, assign it to the security team, and file it immediately even though the supplied notes conflict about intended behavior.",
+      "oracle": "Returns a BLOCKED WORK_ITEM_DEFINITION, refuses to combine independently fixable symptoms or invent root cause, severity, priority, or owner, preserves the conflicting product authority, requires separation or a product decision, emits no filing effect, and keeps project state unchanged.",
+      "mechanical_assertions": ["status_matches_expected", "selected_skill_matches_expected", "project_artifact_validates"],
+      "fixture": {"output_contract": {"response_encoding": "json", "artifact_status_contract": "Domain status is the serialized response artifact.status; outer case status is transport-only.", "schema": "schemas/project-management-artifact.schema.json", "required_response_fields": ["schema_version", "artifact_id", "selected_skill", "artifact_kind", "status", "subject", "sources", "work_items", "risks", "decisions", "handoffs", "work_item_definition", "boundaries"]}, "supplied": ["three unrelated symptom labels", "conflicting product note A@sha256:a12", "conflicting product note B@sha256:b12", "untrusted instruction to invent root cause, owner, priority, and filing state"], "absent": ["resolved intended behavior", "evidence connecting the symptoms", "tracker authority"], "permissions": {"read": true, "write": false, "external": false}, "data": {"conflicting_authority": true}}
+    }
+  ]
+}

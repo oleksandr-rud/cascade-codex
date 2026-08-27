@@ -33,7 +33,8 @@
         "low",
         "medium",
         "high",
-        "xhigh"
+        "xhigh",
+        "max"
       ]
     },
     "timeout_ms": {

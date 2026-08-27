@@ -1,0 +1,23 @@
+# Cascade Design capability map
+
+Version: 0.1.0+codex.20260827142017  
+
+`specs/extraction-manifest.json` freezes the pre-cutover Designer role and four
+repository skill packages. The plugin owns reusable design semantics; the host
+repository retains role isolation, target paths, product authority,
+implementation, functional acceptance, and release decisions.
+
+| Capability | Development source | Plugin owner | Explicit boundary |
+| --- | --- | --- | --- |
+| Actor/job flow, hierarchy, carried state, interruption, recovery, and feature state coverage | `.codex/skills/ux-flow-review` | `ux-flow-review` | Feature-specific UX only; no product invention, reusable-rule ownership, or implementation |
+| Semantics, accessible names, keyboard/focus, contrast, target size, forms, status, motion, and mobile accessibility evidence | `.codex/skills/accessibility-review` | `accessibility-review` | Review and test planning only; no legal certification or code patching |
+| Viewport/state visual evidence, layout, hierarchy, overflow, tokens, responsive behavior, and visual regression classification | `.codex/skills/visual-qa` | `visual-qa` | Visual evidence only; no functional acceptance or blind snapshot update |
+| Reusable token, component, interaction, responsive, accessibility, motion, content, and visual-evidence rules | `.codex/skills/design-system` | `design-system` | Requires reuse evidence; no product intent, brand authority, or implementation |
+| Combined review selection and read-only specialist isolation | `.codex/agents/designer` | Host Designer custom agent | The role selects namespaced skills and host handoffs; it does not duplicate their procedures |
+
+Brand positioning remains with its existing owner. Product definition and
+lifecycle remain with Cascade Product. Persona source/projections remain with
+Cascade Personas. Goal-directed actor execution remains with Cascade
+Simulations. Prompt authoring remains with Cascade Prompt. Generic measurement,
+judges, and receipts remain with Cascade Evals. Target code changes and visible
+acceptance remain with the host harness.

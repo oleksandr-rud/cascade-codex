@@ -1,0 +1,81 @@
+schema_version: 1
+plugin:
+  name: cascade-evals
+  version: 0.2.0+codex.20260827142017
+model_policy:
+  model: gpt-5.6-sol
+  planning_reasoning_effort: high
+  evaluation_reasoning_effort: max
+skills:
+  - route: cascade-evals:evaluate
+    description: Design, validate, reduce, or audit a versioned evaluation with mechanical gates and independent semantic judges.
+    triggers: [a versioned evaluation or evidence receipt is required]
+    anti_triggers: [only target execution or subject repair is requested]
+    consumes: [evaluation-subject, evaluation-cases, frozen-evidence]
+    produces: [evaluation-receipt]
+    required_dependencies: []
+    optional_dependencies: []
+    policy_tags: [evaluation, independent-judgment]
+    effect: READ_ONLY
+    authority: READ_ONLY
+    evaluation_cases: [mechanical-before-semantic, conservative-reduction, sol-independent-contexts]
+  - route: cascade-evals:build-judge
+    description: Build or audit semantic judge profiles, anchored rubrics, schemas, labeled cases, and aggregation rules.
+    triggers: [semantic quality needs a judge contract]
+    anti_triggers: [the decision is completely deterministic]
+    consumes: [evaluation-claim, labeled-cases]
+    produces: [judge-contract]
+    required_dependencies: []
+    optional_dependencies: []
+    policy_tags: [evaluation, judge-design]
+    effect: CANDIDATE_WRITE
+    authority: READ_ONLY
+    evaluation_cases: [blind-judge, anchored-rubric]
+  - route: cascade-evals:prompt-evaluation
+    description: Run controlled prompt and interview evaluations with versioned tasks, repetitions, and independent judges.
+    triggers: [prompt quality or model fit must be measured]
+    anti_triggers: [the prompt has not been frozen or only authoring is requested]
+    consumes: [prompt-candidate, prompt-evaluation-cases]
+    produces: [prompt-evaluation-receipt]
+    required_dependencies: [cascade-prompt:prompt]
+    optional_dependencies: [cascade-simulations:simulate]
+    policy_tags: [evaluation, prompt-evaluation]
+    effect: READ_ONLY
+    authority: READ_ONLY
+    evaluation_cases: [prompt-quality, interview-behavior, repeated-variance]
+  - route: cascade-evals:agent-evaluation
+    description: Adapt the generic evaluation lifecycle to an agent, role, skill, workflow, tool loop, or architecture packet.
+    triggers: [agent behavior or routing needs controlled evaluation]
+    anti_triggers: [only prompt composition or simulation review is requested]
+    consumes: [agent-evaluation-request, agent-evaluation-cases]
+    produces: [agent-evaluation-receipt]
+    required_dependencies: []
+    optional_dependencies: [cascade-simulations:simulate]
+    policy_tags: [evaluation, agent-evaluation]
+    effect: READ_ONLY
+    authority: READ_ONLY
+    evaluation_cases: [route-selection, trace-eligibility, independent-judges]
+  - route: cascade-evals:simulation-evaluation
+    description: Independently evaluate semantic outcome, policy support, or claim support for one frozen simulation run.
+    triggers: [a frozen simulation run needs independent semantic judgment]
+    anti_triggers: [simulation execution or repair is requested]
+    consumes: [simulation-review, frozen-simulation-run]
+    produces: [simulation-evaluation-receipt]
+    required_dependencies: [cascade-simulations:simulation-review]
+    optional_dependencies: []
+    policy_tags: [evaluation, simulation-evaluation]
+    effect: READ_ONLY
+    authority: READ_ONLY
+    evaluation_cases: [claim-support, policy-support]
+  - route: cascade-evals:harness-evaluation
+    description: Adapt evaluation to coding-agent harness skills, routes, roles, outputs, and execution traces.
+    triggers: [coding-agent harness behavior needs evaluation]
+    anti_triggers: [ordinary target code validation is sufficient]
+    consumes: [harness-evaluation-cases, harness-traces]
+    produces: [harness-evaluation-receipt]
+    required_dependencies: []
+    optional_dependencies: []
+    policy_tags: [evaluation, harness-evaluation]
+    effect: READ_ONLY
+    authority: READ_ONLY
+    evaluation_cases: [trigger-collision, route-order, permission-preservation]

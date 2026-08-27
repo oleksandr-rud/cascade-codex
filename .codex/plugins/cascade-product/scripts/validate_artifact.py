@@ -327,6 +327,13 @@ def validate_handoff(value: dict[str, Any]) -> list[str]:
             errors.append("failed handoff resume must provide exactly one required_artifact or not_applicable_reason")
         if failure.get("classification") in {"MISSING_INPUT", "CONFLICT", "STALE", "SCHEMA_MISMATCH", "PERMISSION_DENIED"} and not has_artifact:
             errors.append(f"{failure.get('classification')} handoff must name the required artifact")
+    if mode == "PREPARE" and status == "READY":
+        if not resume.get("owner") or not resume.get("next_action"):
+            errors.append("READY PREPARE handoff lacks actionable resume ownership")
+        has_artifact = isinstance(resume.get("required_artifact"), str) and bool(resume["required_artifact"])
+        has_not_applicable = isinstance(resume.get("not_applicable_reason"), str) and bool(resume["not_applicable_reason"])
+        if has_artifact == has_not_applicable:
+            errors.append("READY PREPARE resume must provide exactly one required_artifact or not_applicable_reason")
     if status == "PASS" and (
         not closure.get("requires_acknowledgment")
         or not closure.get("acknowledged")
@@ -358,7 +365,11 @@ def validate_schema(value: Any, schema_path: Path) -> list[str]:
         return ["jsonschema dependency unavailable; run through uv --offline --with jsonschema"]
     schema = strict_json_file(schema_path)
     validator = Draft202012Validator(schema, format_checker=FormatChecker())
-    return [error.message for error in sorted(validator.iter_errors(value), key=lambda item: list(item.path))]
+    errors: list[str] = []
+    for error in sorted(validator.iter_errors(value), key=lambda item: list(item.path)):
+        path = "$" + "".join(f"[{item}]" if isinstance(item, int) else f".{item}" for item in error.path)
+        errors.append(f"{path}: {error.message}")
+    return errors
 
 
 def main(argv: list[str] | None = None) -> int:

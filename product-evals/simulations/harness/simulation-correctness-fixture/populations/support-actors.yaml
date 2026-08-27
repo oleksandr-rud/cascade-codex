@@ -71,10 +71,10 @@ source:
   derivation:
     id: p-999-coverage-v1
     path: product-evals/simulations/harness/simulation-correctness-fixture/derivations/P-999-coverage-v1.yaml
-    sha256: 26b95a8cb56013599e16730c2c66d2f6c15a56f430f9cc7c6beffa363e6a186a
+    sha256: fa32c3580c7c541aab218ea4e0295bb1916487ad199f4c1e588c73deef84f417
   description: Derived from approved manifest p-999-coverage-v1; synthetic evidence remains proposal-only.
   generator:
-    input_digest: 2499e79f69b762828ef7c2cd470d851e54af7245542c9f2735baf8b1c02b641f
+    input_digest: 284df2b4f322f49c0d321aa3481752bd465bdde0c70e1cfb8c58ba8cb8d70789
     kind: deterministic-manifest
     name: cascade-persona-derivation
     version: 1.0.0

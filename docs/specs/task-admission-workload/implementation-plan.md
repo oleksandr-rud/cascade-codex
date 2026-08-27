@@ -62,7 +62,7 @@ Scope Classification: `epic-sized harness change delivered through one serialize
 | `DEF-08` | Rollout is contract -> compiler -> shadow eval -> advisory hook -> hard enforcement -> route migration. | this plan | all worklines | failed gate or implementation replan | `ACCEPTED` |
 | `DEF-09` | Runtime configuration lives under `.codex/task-admission/`; evaluation fixtures live under `harness-evals/task-admission/`. | architecture review | file owners and validator | current-source structure conflict | `ACCEPTED` |
 | `DEF-10` | One W-031 lane owns the change; all shared runtime writes are serialized with a W-004 overlap preflight. | orchestration review | lane Task Graph | parallel/worktree execution authorization | `ACCEPTED` |
-| `DEF-11` | Simulation authoring/operation activates a dedicated admission control; ordinary actor/interface simulations use the bounded route, while explicit comparison, calibration, repeated-run, or release scope adds connected campaign governance. `TAP-*` workflow policy remains separate from campaign action policy. | W-032 / `SIB-002`, `SIB-004` | admission compiler, cascade-simulations:simulate, simulation-campaigns | intake or policy-boundary revision | `ACCEPTED` |
+| `DEF-11` | Simulation authoring/operation activates a dedicated admission control; ordinary actor/interface simulations use the bounded route, while explicit comparison, calibration, repeated-run, or release scope adds connected campaign governance. `TAP-*` workflow policy remains separate from campaign action policy. | W-032 / `SIB-002`, `SIB-004` | admission compiler, `cascade-simulations:simulate`, `cascade-simulations:manage-simulation-campaign` | intake or policy-boundary revision | `ACCEPTED` |
 | `DEF-12` | Shell hard-action classification normalizes current and legacy tool identities before command inspection. | hook/runtime repair | PreToolUse and PermissionRequest | hook tool protocol change | `ACCEPTED` |
 | `DEF-13` | Hard-action eligibility requires trusted direct-user provenance supplied or attested by the host; lexical fallback is advisory and cannot manufacture authority. | revision-11 independent review repair | compiler, hooks, W-032 | provenance-contract revision | `APPROVED` |
 | `DEF-14` | Host-local plan, input, wait, and status operations are workflow control, not external-write authority; delegation, durable goal creation, and actual side effects retain separate controls. | revision-11 integration repair | tool classifier and hook | tool-surface contract change | `APPROVED` |
@@ -223,7 +223,7 @@ requirements. No framework compliance is claimed from this plan.
 | `BND-04` | compiler | route/skills | valid Task Envelope and explanation trace | stale/missing envelope cannot satisfy hard-action controls | CLI and consumer tests |
 | `BND-05` | compiler | hook adapter | bounded prompt-time summary or deterministic tool decision | hook cannot add authority, scan, call network/model, or mutate work | hook side-effect tests |
 | `BND-06` | runtime/skills | work registry | persistence recommendation plus explicit user/repository authorization | recommendation never auto-creates or dispatches work | negative promotion tests |
-| `BND-07` | eval runner | launch gate | version-bound over-control, under-control, resume, security, and routing receipts | missing required case remains `NOT_RUN`/`GAP` | harness-evaluation gate |
+| `BND-07` | eval runner | launch gate | version-bound over-control, under-control, resume, security, and routing receipts | missing required case remains `NOT_RUN`/`GAP` | `cascade-evals:harness-evaluation` gate |
 
 ## Behavior And Failure Trajectories
 
@@ -266,11 +266,11 @@ Actor and assurance resolution:
 
 | Fragment | Role / Route | Skill Calls | Exact Test Strategy | Evaluator |
 |---|---|---|---|---|
-| `GF-001` | orchestrator/root | `functional-qa`, `plan-change` | request classification and negative acceptance fixtures | fixed-point Spec review |
-| `GF-004` | agent-engineer/root | `architecture-review`, `plan-change`, `implement-change` | schema/consumer compatibility tests | independent architecture review |
+| `GF-001` | orchestrator/root | `cascade-qa:design-tests`, `plan-change` | request classification and negative acceptance fixtures | fixed-point Spec review |
+| `GF-004` | agent-engineer/root | `cascade-software-architect:review-architecture`, `plan-change`, `implement-change` | schema/consumer compatibility tests | independent architecture review |
 | `GF-008` | agent-engineer/root with orchestrator integration ownership | `implement-change`, `validate-change` | CLI, hook, route, and eval integration tests | independent integration review |
-| `GF-009` | orchestrator/root | `functional-qa`, `validate-change` | public request -> envelope -> allowed/denied tool fixture | independent functional reviewer |
-| `GF-101` | security reviewer; implementation remains root | `secure-design`, `validate-change` | prompt injection, approval bypass, stale envelope, external/destructive action probes | independent security review |
+| `GF-009` | orchestrator/root | `cascade-qa:design-tests`, `validate-change` | public request -> envelope -> allowed/denied tool fixture | independent functional reviewer |
+| `GF-101` | security reviewer; implementation remains root | `cascade-security:secure-design`, `validate-change` | prompt injection, approval bypass, stale envelope, external/destructive action probes | independent security review |
 
 Emission: `LANE_LOCAL_TASK_GRAPH`. A Coordination Graph is `NOT_APPLICABLE`
 at revision 2 because one lane and one root integration owner serialize the

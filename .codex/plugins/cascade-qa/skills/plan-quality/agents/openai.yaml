@@ -1,0 +1,4 @@
+interface:
+  display_name: "Plan Quality"
+  short_description: "Build a risk-based quality plan"
+  default_prompt: "Use $plan-quality to create a traceable quality plan for this accepted behavior without inventing product intent or executing tests."

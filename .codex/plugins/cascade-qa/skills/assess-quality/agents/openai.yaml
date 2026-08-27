@@ -1,0 +1,4 @@
+interface:
+  display_name: "Assess Quality"
+  short_description: "Assess frozen evidence against quality gates"
+  default_prompt: "Use $assess-quality to validate the frozen evidence for this behavior and issue a conservative quality-gate recommendation."

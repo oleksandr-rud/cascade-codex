@@ -133,7 +133,7 @@ class AgentEvaluationRunnerTests(unittest.TestCase):
                 "target": "gpt-5.6-sol",
                 "judge": "gpt-5.6-sol",
                 "reasoning_effort": "max",
-                "explicit_comparison_override": True,
+                "explicit_comparison_override": False,
             },
         }), encoding="utf-8")
         evaluation_assets = [

@@ -1,0 +1,45 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://cascade.local/cascade-software-architect/plugin-capability-catalog.v1.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "artifact_type", "marketplace", "plugins", "catalog_digest"],
+  "properties": {
+    "schema_version": { "const": 1 },
+    "artifact_type": { "const": "cascade-plugin-capability-catalog" },
+    "marketplace": { "const": ".agents/plugins/marketplace.json" },
+    "plugins": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["name", "version", "manifest_path", "descriptor_path", "manifest_sha256", "descriptor_sha256", "model_policy", "skills"],
+        "properties": {
+          "name": { "$ref": "#/$defs/slug" },
+          "version": { "type": "string", "minLength": 1 },
+          "manifest_path": { "type": "string", "pattern": "^\\.codex/plugins/[a-z0-9-]+/\\.codex-plugin/plugin\\.json$" },
+          "descriptor_path": { "type": "string", "pattern": "^\\.codex/plugins/[a-z0-9-]+/capabilities\\.yaml$" },
+          "manifest_sha256": { "$ref": "#/$defs/digest" },
+          "descriptor_sha256": { "$ref": "#/$defs/digest" },
+          "model_policy": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["model", "planning_reasoning_effort", "evaluation_reasoning_effort"],
+            "properties": {
+              "model": { "const": "gpt-5.6-sol" },
+              "planning_reasoning_effort": { "enum": ["high", "max"] },
+              "evaluation_reasoning_effort": { "const": "max" }
+            }
+          },
+          "skills": { "type": "array", "minItems": 1, "items": { "type": "object" } }
+        }
+      }
+    },
+    "catalog_digest": { "$ref": "#/$defs/digest" }
+  },
+  "$defs": {
+    "slug": { "type": "string", "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$" },
+    "digest": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+  }
+}

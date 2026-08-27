@@ -12,6 +12,8 @@ persona authority separate from simulated behavior.
 
 1. Classify the source as `evidence-backed`, `user-provided`,
    `synthetic-hypothesis`, or `none`.
+   When a purpose-limited projection is required but not supplied, route its
+   creation to `cascade-personas:compile-persona`; do not reconstruct it here.
 2. Preserve supported facts, assumptions, uncertainty, and source references.
    Never infer demographics, prevalence, expertise, or motives from a label.
 3. When a validated `simulation-persona` profile exists, select only claims,

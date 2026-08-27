@@ -1,0 +1,6 @@
+interface:
+  display_name: "UX Flow Review"
+  short_description: "Review product flows and state coverage."
+  default_prompt: "Use $ux-flow-review to review this actor's task flow, hierarchy, carried state, interruptions, recovery, and responsive state coverage without implementing code."
+policy:
+  allow_implicit_invocation: true

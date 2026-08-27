@@ -75,10 +75,9 @@ inventory, target-config/path rejection, complete onboarding evidence,
 project-part/doc-routing checks, preservation hashes, and source drift without
 running a live model or configured target commands.
 
-The default `execution` profile pins read-heavy target probes to
-`gpt-5.6-terra`. Use `--model-profile planning` to pin planning or synthesis
-target probes to `gpt-5.6-sol`; judge profiles independently pin
-`gpt-5.6-terra` and high reasoning effort. `--model` remains an explicit
+The default `execution` and `planning` profiles pin target probes to
+`gpt-5.6-sol`; judge profiles independently pin `gpt-5.6-sol` and high
+reasoning effort. `--model` remains an explicit
 diagnostic override and is recorded as the `custom` profile.
 
 The environment variable `CASCADE_EVAL_CODEX_MODEL` can provide an explicit
@@ -89,7 +88,8 @@ directory.
 `judge-profiles.yaml` and `rubrics/` are versioned measurement contracts.
 Judges emit only 0–4 dimension ratings, rationale, evidence, and a semantic
 verdict. The runner recomputes weighted scores and requires threshold,
-minimum-dimension, and verdict agreement. Use `judge-eval-builder` to change or
-calibrate these contracts; use `harness-evaluation` to run them.
+minimum-dimension, and verdict agreement. Use `cascade-evals:build-judge` to
+change or calibrate these contracts; use
+`cascade-evals:harness-evaluation` to coordinate and reduce target evidence.
 The per-case `effectiveness_score` is the lower required-judge score, while the
 coverage ledger retains both profile scores and their distributions.

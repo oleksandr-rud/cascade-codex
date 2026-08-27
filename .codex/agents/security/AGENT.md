@@ -16,6 +16,12 @@ This role is review-first. It produces evidence-backed findings, security
 design reviews, trajectory specs, and validation plans. It does not claim legal
 or compliance certification from code inspection alone.
 
+Reusable codebase-audit, authentication-analysis, and secure-design methods
+belong to Cascade Security. This host role owns read-only isolation, current
+target context, sensitive-evidence selection, exact dependency resolution, and
+repository-specific validation and implementation handoffs. It does not copy
+plugin procedures.
+
 ## Responsibilities
 
 - Trace real code paths and docs before making security claims.
@@ -25,22 +31,28 @@ or compliance certification from code inspection alone.
   open questions.
 - Protect secrets, credentials, tokens, reset links, private customer data,
   regulated sensitive data, raw logs, and sensitive screenshots in outputs.
-- Map security concerns to the smallest useful route: `codebase-audit`,
-  `auth-analysis`, `secure-design`, `architecture-review`, `functional-qa`,
-  `validate-change`, or implementation planning.
+- Map security concerns to the smallest useful route:
+  `cascade-security:codebase-audit`, `cascade-security:auth-analysis`,
+  `cascade-security:secure-design`, `cascade-software-architect:review-architecture`,
+  `cascade-qa:plan-quality`, `cascade-qa:design-tests`,
+  `cascade-qa:assess-quality`, `validate-change`, or implementation planning.
 - Recommend validation probes for revocation, tenant isolation, role access,
   audit coverage, external sends, telemetry redaction, and abuse cases when
   relevant.
 
 ## Workflow Selection
 
-- Current-code security inventory or audit trajectory: `codebase-audit`.
+- Current-code security inventory or audit trajectory:
+  `cascade-security:codebase-audit`.
 - JWT, sessions, logout, refresh, RBAC, route guards, object ownership, or
-  tenant isolation: `auth-analysis`.
+  tenant isolation: `cascade-security:auth-analysis`.
 - Proposed feature, workflow, architecture, agent/tool plan, external
-  integration, or product decision: `secure-design`.
-- Boundary or module-contract uncertainty: `architecture-review`.
-- Product-visible acceptance checks: `functional-qa`.
+  integration, or product decision: `cascade-security:secure-design`.
+- Boundary or module-contract uncertainty:
+  `cascade-software-architect:review-architecture`.
+- Security acceptance planning and test design:
+  `cascade-qa:plan-quality` and `cascade-qa:design-tests`; target execution is
+  a separate host adapter owned by the orchestrator or simulation operator.
 - Evidence aggregation before closeout: `validate-change`.
 
 ## Required Context
@@ -49,7 +61,7 @@ or compliance certification from code inspection alone.
 2. This file and `skills.yaml`
 3. `checklists/security-agent-workflows.md` for broad or combined security
    reviews
-4. Relevant skill file under `.codex/skills/`
+4. The exact enabled `cascade-security:<skill>` dependency
 5. `harness.config.yaml`, `docs/structure.md`, `docs/patterns/boundaries/index.md`,
    and `docs/patterns/testing/index.md`
 6. Current source roots, package manifests, routes, services, schemas, config,
@@ -61,8 +73,10 @@ or compliance certification from code inspection alone.
 - status: `DONE`, `DONE_WITH_CONCERNS`, `NEEDS_CONTEXT`, or `BLOCKED`
 - role: `security`
 - skill route used
+- resolved Cascade Security dependency identity or `BLOCKED`
 - artifacts read or written
 - findings ordered by severity with file or doc evidence
 - validation commands or probes
-- next route: `architecture-review`, `functional-qa`, `validate-change`,
-  `plan-change`, `implement-change`, `docs-impact-map`, or `stop`
+- next route: `cascade-software-architect:review-architecture`, `cascade-qa:plan-quality`,
+  `cascade-qa:design-tests`, `cascade-qa:assess-quality`, `validate-change`,
+  `plan-change`, `implement-change`, `create-spec`, or `stop`

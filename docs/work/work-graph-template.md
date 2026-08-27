@@ -3,120 +3,70 @@
 Status: `<DRAFT | PLANNED | ACTIVE | BLOCKED | COMPLETE | SUPERSEDED>`
 Work Graph ID: `<WG-XXX>`
 Work Graph Revision: `<INTEGER>`
-Owner: `<ROLE_OR_WORKLINE>`
-Merge Owner: `<ROLE_OR_WORKLINE>`
-Scope: `<TASK | STORY | EPIC>`
+Owner: `<PROJECT_STATE_OWNER>`
+Scope: `<TASK | STORY | EPIC | INITIATIVE>`
 Terminal Gate: `<WG-XXX-GX>`
 
-A work graph coordinates non-atomic work across worklines, dependency gates,
-execution surfaces, dispatch state, evidence joins, invalidation, and closeout.
-It is not an architecture topology, an automatic scheduler, or authorization
-to create agents, tasks, branches, worktrees, external actions, or spending.
+Use this portable graph-shaped projection only when several independently
+meaningful items need typed dependencies, owners, evidence joins, invalidation,
+or partial repair. `cascade-project-management:manage-project` owns the method;
+the host adds current execution bindings and receipts separately.
 
-ID contract:
+## Purpose
 
-- graph: `WG-XXX`;
-- node: `WG-XXX-NXX`;
-- gate: `WG-XXX-GX`;
-- every ID is graph-scoped, unique, and never reused.
+- Outcome: `<OBSERVABLE_OUTCOME>`
+- Current source identity: `<PATH_REVISION_OR_DIGEST>`
+- Non-goals: `<BOUNDARIES>`
 
-## Purpose And Success
+## Worklines
 
-- Purpose:
-- Success criteria:
-- Non-goals:
-
-## Source Identity And Preconditions
-
-| Input | Current Identity / State | Required Disposition |
-|---|---|---|
-| Request | `<REFERENCE>` | `<REQUIRED_ACTION>` |
-| Current source | `<BRANCH_COMMIT_DIRTY_DIFF>` | `<PRESERVE_OR_CHANGE>` |
-| Worklines | `<W-XXX>` | `<OPEN_COMPLETE_BLOCKED>` |
-| Prior evidence | `<REPORT_OR_RECEIPT>` | `<CURRENT_HISTORICAL_REJECTED>` |
-
-## Workline Registry
-
-| Workline | Purpose | Owner | Writes | Requires | Produces | Status |
-|---|---|---|---|---|---|---|
-| `<W-XXX>` | `<BOUNDED_SLICE>` | `<OWNER>` | `<PATHS>` | `<INPUTS>` | `<RECEIPT_OR_SEAM>` | `<STATUS>` |
-
-## Execution Surface And Dispatch Manifest
-
-Work-graph readiness establishes eligibility only. It never authorizes or
-performs dispatch.
-
-| Nodes / Workline | Execution Surface | Dispatch State | Authorization Evidence | Runtime Handle | Eligible After | Merge Owner |
-|---|---|---|---|---|---|---|
-| `<NODE_OR_RANGE>` | `<root | internal-subagent | user-visible-task>` | `<NOT_AUTHORIZED | AUTHORIZED | DISPATCHED | RUNNING | BLOCKED | COMPLETE>` | `<REQUEST_OR_APPROVAL | none>` | `<AGENT_OR_TASK_ID | none>` | `<DEPENDENCY_GATE>` | `<OWNER>` |
-
-## Work Topology
-
-```mermaid
-flowchart TD
-    N01["WG-XXX-N01: first bounded node"]
-    G1["WG-XXX-G1: acceptance gate"]
-    N01 --> G1
-```
+| Workline | Outcome | Owner | Requires | Produces | State |
+|---|---|---|---|---|---|
+| `<W-ID>` | `<BOUNDED_OUTCOME>` | `<OWNER>` | `<INPUTS_OR_NONE>` | `<ARTIFACT_OR_RECEIPT>` | `<PENDING_READY_RUNNING_REVIEW_ACCEPTED_BLOCKED>` |
 
 ## Node Registry
 
 | Node | Workline | Outcome | Requires | Produces | State |
 |---|---|---|---|---|---|
-| `<WG-XXX-NXX>` | `<W-XXX>` | `<IMPLEMENTATION_OR_VALIDATION_OUTCOME>` | `<DEPENDENCIES>` | `<ARTIFACT_OR_RECEIPT>` | `<OPEN_BLOCKED_RUNNING_COMPLETE>` |
+| `<WG-XXX-NXX>` | `<W-ID>` | `<BOUNDED_OUTCOME>` | `<NODE_GATE_OR_EXTERNAL_IDS>` | `<ARTIFACT_OR_RECEIPT>` | `<PENDING_READY_RUNNING_REVIEW_ACCEPTED_BLOCKED>` |
 
 ## Gate Contracts
 
-### `<GATE_ID>`
+| Gate | Subject | Required Current Inputs | Acceptance | Invalidation / Repair |
+|---|---|---|---|---|
+| `<WG-XXX-GX>` | `<NODE_WORKLINE_OR_TERMINAL>` | `<EVIDENCE_DECISIONS_OR_GATES>` | `<RULE>` | `<AFFECTED_SET_AND_ROUTE>` |
 
-Required inputs:
+## Conditional QA
 
-- `<INPUT_AND_SOURCE_IDENTITY>`
+| Applicability | Accepted Behavior / Risk Inputs | QA Artifact | Host Receipt | QA Result |
+|---|---|---|---|---|
+| `<REQUIRED_NOT_APPLICABLE>` | `<SOURCE_IDS_OR_REASON>` | `<FROZEN_ARTIFACT_OR_NONE>` | `<RUN_QA_PLAN_RECEIPT_OR_NOT_RUN>` | `<ASSESSMENT_TRIAGE_OR_NOT_APPLICABLE>` |
 
-Acceptance:
+QA is optional evidence, not the graph owner or universal terminal gate.
 
-- `<MECHANICAL_ACCEPTANCE_RULE>`
+## Host Execution Bindings
 
-## Invalidation And Repair
+Readiness does not authorize dispatch.
 
-| Changed Contract Or Failure | Invalidates | Preserves |
-|---|---|---|
-| `<CHANGE_OR_FAILURE>` | `<NODES_GATES_EVIDENCE>` | `<UNAFFECTED_EVIDENCE>` |
-
-## Validation Plan
-
-| Check | Command Or Evidence | Status |
-|---|---|---|
-| `<CHECK>` | `<COMMAND_OR_RECEIPT>` | `<OPEN_PASS_FAIL_BLOCKED_NOT_RUN>` |
+| Node / Workline | Surface | Authority | Runtime Handle | Allowed Actions / Writes | Input Identity | Receipt |
+|---|---|---|---|---|---|---|
+| `<ID>` | `<root_internal-subagent_user-visible-task>` | `<REQUEST_OR_APPROVAL>` | `<HANDLE_OR_NONE>` | `<BOUNDARY>` | `<REVISION_OR_DIGEST>` | `<RECEIPT_OR_NONE>` |
 
 ## Current Frontier
 
-- Eligible node:
-- Blocked nodes and reason:
-- Dispatch authorization:
-- Runtime handles:
-- Next gate:
+- Ready: `<IDS_OR_NONE>`
+- Running or review: `<IDS_OR_NONE>`
+- Blocked: `<IDS_REASON_ROUTE_OR_NONE>`
+- Accepted and preserved: `<IDS_OR_NONE>`
+- Next authorized action: `<ACTION_OR_NONE>`
 
-## Lifecycle And Closeout
+## Closeout
 
-1. `DRAFT`: topology or ownership is incomplete; do not register as active.
-2. `PLANNED`: structure is validated and registered; every node remains
-   declarative until separately authorized.
-3. `ACTIVE`: at least one authorized node is dispatched or running.
-4. `BLOCKED`: the current frontier cannot proceed; record the exact dependency,
-   authority, runtime, or evidence blocker.
-5. `COMPLETE`: the terminal gate accepts current-source implementation and
-   required evidence; synchronize worklines and receipts.
-6. `SUPERSEDED`: a named replacement owns the remaining scope; never rewrite
-   unfinished or failed evidence as complete.
-7. Historical projection: after `COMPLETE` or `SUPERSEDED`, retain the durable
-   graph/report and receipts, then remove the graph and its terminal worklines
-   from `docs/work/active.md` during the same closeout.
+- Terminal gate evidence: `<CURRENT_RECEIPTS_OR_DIGESTS>`
+- Remaining consumers or risks: `<LIST_OR_NONE>`
+- `cascade-project-management:close-project` proposal:
+  `<KEEP_ACTIVE_RETIRE_PROPOSED_ARCHIVE_DEFERRED>`
+- Authorized host closeout action: `<ACTION_OR_NONE>`
 
-Closeout receipt:
-
-- Terminal source identity:
-- Accepted gates:
-- Preserved reports and receipts:
-- Active-registry cleanup:
-- Remaining risk:
+Retain durable graph and evidence history. Removing an active projection or
+moving frozen records requires explicit host authority; it is never automatic.

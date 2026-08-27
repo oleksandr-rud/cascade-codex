@@ -37,7 +37,7 @@ BUILDER_RESPONSE_SCHEMA = PLUGIN_ROOT / "skills" / "evaluate" / "references" / "
 JUDGE_RESPONSE_SCHEMA = PLUGIN_ROOT / "skills" / "build-judge" / "references" / "judge-response.schema.json"
 JUDGE_PACKET_SCHEMA = PLUGIN_ROOT / "skills" / "evaluate" / "references" / "judge-packet.schema.json"
 MODEL_POLICY = PLUGIN_ROOT / "skills" / "evaluate" / "references" / "model-policy.json"
-TERRA = "gpt-5.6-terra"
+DEFAULT_MODEL = "gpt-5.6-sol"
 REASONING_EFFORTS = {"low", "medium", "high", "xhigh", "max", "ultra"}
 SHA256_HEX = re.compile(r"^[0-9a-f]{64}$")
 FINALIZATION_MODE = "digest-only-json-response-v1"
@@ -743,7 +743,7 @@ def execute(args: argparse.Namespace) -> dict[str, Any]:
     )
     require(models.get("reasoning_effort") == args.reasoning_effort, "contract reasoning effort does not match")
     require(
-        models.get("explicit_comparison_override") is (args.model != TERRA or args.reasoning_effort != "medium"),
+        models.get("explicit_comparison_override") is (args.model != DEFAULT_MODEL or args.reasoning_effort != "max"),
         "explicit comparison declaration does not match model policy",
     )
     model_policy = json.loads(MODEL_POLICY.read_text(encoding="utf-8"))
@@ -752,13 +752,13 @@ def execute(args: argparse.Namespace) -> dict[str, Any]:
     require(model_policy.get("independent_judge_context_required") is True, "model policy does not require independent judges")
     defaults = model_policy.get("defaults", {})
     require(
-        defaults.get("builder_model") == TERRA
-        and defaults.get("target_model") == TERRA
-        and defaults.get("judge_model") == TERRA
-        and defaults.get("builder_reasoning_effort") == "medium"
-        and defaults.get("target_reasoning_effort") == "medium"
-        and defaults.get("judge_reasoning_effort") == "medium",
-        "model policy defaults drifted from Terra medium",
+        defaults.get("builder_model") == DEFAULT_MODEL
+        and defaults.get("target_model") == DEFAULT_MODEL
+        and defaults.get("judge_model") == DEFAULT_MODEL
+        and defaults.get("builder_reasoning_effort") == "max"
+        and defaults.get("target_reasoning_effort") == "max"
+        and defaults.get("judge_reasoning_effort") == "max",
+        "model policy defaults drifted from Sol max",
     )
     require(all(profile["model"] == args.model for profile in profiles), "judge profile model must match the selected model")
     require(len({profile["profile_id"] for profile in profiles}) == len(profiles), "judge profile IDs must be unique")
@@ -1206,7 +1206,7 @@ def execute(args: argparse.Namespace) -> dict[str, Any]:
         "target_reasoning_effort": args.reasoning_effort,
         "judge_model": args.model,
         "judge_reasoning_effort": args.reasoning_effort,
-        "explicit_comparison": args.model != TERRA or args.reasoning_effort != "medium",
+        "explicit_comparison": args.model != DEFAULT_MODEL or args.reasoning_effort != "max",
     }
     bundle = {
         "schema_version": 1,
@@ -1241,8 +1241,8 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--assertion-adapter", type=Path, required=True)
     parser.add_argument("--evaluation-id", required=True)
     parser.add_argument("--output-dir", type=Path, required=True)
-    parser.add_argument("--model", default=TERRA)
-    parser.add_argument("--reasoning-effort", default="medium")
+    parser.add_argument("--model", default=DEFAULT_MODEL)
+    parser.add_argument("--reasoning-effort", default="max")
     parser.add_argument("--timeout-seconds", type=int, default=1800)
     parser.add_argument("--execute", action="store_true")
     args = parser.parse_args(argv)

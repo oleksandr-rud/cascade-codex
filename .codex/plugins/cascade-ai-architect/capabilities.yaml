@@ -1,0 +1,129 @@
+schema_version: 1
+plugin:
+  name: cascade-ai-architect
+  version: 0.1.0+codex.20260827140902
+model_policy:
+  model: gpt-5.6-sol
+  planning_reasoning_effort: high
+  evaluation_reasoning_effort: max
+skills:
+  - route: cascade-ai-architect:architect-ai-system
+    description: Compile an end-to-end source-grounded AI agent or agentic-system architecture packet.
+    triggers: [agent system topology or complete AI architecture is unresolved]
+    anti_triggers: [only software boundaries, prompt wording, or ordinary harness maintenance is requested]
+    consumes: [agent-system-request, authoritative-sources]
+    produces: [agent-architecture-packet]
+    required_dependencies: []
+    optional_dependencies: [cascade-software-architect:select-architecture-patterns, cascade-software-architect:review-architecture]
+    policy_tags: [ai-architecture, topology]
+    effect: CANDIDATE_WRITE
+    authority: READ_ONLY
+    evaluation_cases: [smallest-topology, permission-boundary]
+  - route: cascade-ai-architect:map-agent-capabilities
+    description: Extract and cluster atomic source-grounded capabilities for an AI agent or agentic system.
+    triggers: [agent capabilities or ownership clusters must be mapped]
+    anti_triggers: [capabilities are already frozen and only implementation is requested]
+    consumes: [agent-system-request, authoritative-sources]
+    produces: [agent-capability-map]
+    required_dependencies: []
+    optional_dependencies: []
+    policy_tags: [ai-architecture, capability-mapping]
+    effect: CANDIDATE_WRITE
+    authority: READ_ONLY
+    evaluation_cases: [capability-grounding, no-opaque-claims]
+  - route: cascade-ai-architect:design-agent-blueprint
+    description: Turn a grounded capability map into a complete AI-agent behavior blueprint with exclusive ownership and bounded operation.
+    triggers: [an agent capability map needs a behavior blueprint]
+    anti_triggers: [the topology or capability map is still unresolved]
+    consumes: [agent-capability-map]
+    produces: [agent-blueprint]
+    required_dependencies: []
+    optional_dependencies: [cascade-software-architect:select-architecture-patterns]
+    policy_tags: [ai-architecture, behavior-design]
+    effect: CANDIDATE_WRITE
+    authority: READ_ONLY
+    evaluation_cases: [behavior-block-coverage]
+  - route: cascade-ai-architect:design-agent-workflow
+    description: Design a typed agent behavior flow with deterministic routes, bounded loops, recovery, budgets, and stop rules.
+    triggers: [an agent or multi-agent behavior flow must be designed]
+    anti_triggers: [a cross-plugin capability plan or project delivery schedule is requested]
+    consumes: [agent-blueprint]
+    produces: [agent-workflow]
+    required_dependencies: []
+    optional_dependencies: []
+    policy_tags: [ai-architecture, workflow-design]
+    effect: CANDIDATE_WRITE
+    authority: READ_ONLY
+    evaluation_cases: [bounded-loop, typed-handoff, deterministic-routing]
+  - route: cascade-ai-architect:build-agent-roles
+    description: Generate exclusive reviewable role contracts from a selected AI-agent topology and workflow.
+    triggers: [agent roles or handoff ownership must be defined]
+    anti_triggers: [no distinct role boundary exists]
+    consumes: [agent-blueprint, agent-workflow]
+    produces: [agent-role-contracts]
+    required_dependencies: []
+    optional_dependencies: []
+    policy_tags: [ai-architecture, role-design]
+    effect: CANDIDATE_WRITE
+    authority: READ_ONLY
+    evaluation_cases: [exclusive-ownership, collapse-unneeded-role]
+  - route: cascade-ai-architect:build-agent-skills
+    description: Design focused triggerable skill briefs from coherent AI-agent capability clusters without creating a second skill-packaging authority.
+    triggers: [reusable agent skills must be designed or audited]
+    anti_triggers: [the behavior belongs in project facts, native capability, or target implementation]
+    consumes: [agent-capability-map, agent-blueprint]
+    produces: [agent-skill-briefs]
+    required_dependencies: []
+    optional_dependencies: []
+    policy_tags: [ai-architecture, skill-design]
+    effect: CANDIDATE_WRITE
+    authority: READ_ONLY
+    evaluation_cases: [trigger-boundary, no-duplicate-skill]
+  - route: cascade-ai-architect:prepare-agent-prompt
+    description: Compile one architecture-bound prompt brief and provenance binding for Cascade Prompt without authoring or grading the prompt.
+    triggers: [an AI-agent architecture needs a prompt-ready contract]
+    anti_triggers: [prompt wording is the only unresolved work or architecture authority is missing]
+    consumes: [agent-architecture-packet]
+    produces: [prompt-brief]
+    required_dependencies: []
+    optional_dependencies: [cascade-prompt:prompt, cascade-evals:prompt-evaluation]
+    policy_tags: [ai-architecture, prompt-briefing]
+    effect: CANDIDATE_WRITE
+    authority: READ_ONLY
+    evaluation_cases: [architecture-prompt-binding, no-prompt-policy-copy]
+  - route: cascade-ai-architect:derive-persona-requirements
+    description: Translate a frozen Persona agent-architecture projection into evidence-bound user-model requirements for an AI-system blueprint.
+    triggers: [AI architecture needs persona-grounded user-model requirements]
+    anti_triggers: [canonical persona work, simulation actor compilation, or simulation execution is requested]
+    consumes: [persona-architecture-projection]
+    produces: [agent-user-model-requirements]
+    required_dependencies: []
+    optional_dependencies: [cascade-personas:compile-persona]
+    policy_tags: [ai-architecture, persona-requirements]
+    effect: CANDIDATE_WRITE
+    authority: READ_ONLY
+    evaluation_cases: [projection-only, no-persona-invention]
+  - route: cascade-ai-architect:prepare-agent-evaluation
+    description: Compile architecture-specific cases, eligibility assertions, profiles, rubrics, and budgets into an agent-evaluation request.
+    triggers: [an AI-agent architecture or workflow needs a controlled evaluation contract]
+    anti_triggers: [evaluation execution, judging, reduction, or only deterministic source validation is requested]
+    consumes: [agent-architecture-packet]
+    produces: [agent-evaluation-request, agent-evaluation-cases]
+    required_dependencies: []
+    optional_dependencies: [cascade-evals:agent-evaluation, cascade-simulations:simulate]
+    policy_tags: [ai-architecture, evaluation-briefing]
+    effect: CANDIDATE_WRITE
+    authority: READ_ONLY
+    evaluation_cases: [mechanical-before-semantic, independent-judges]
+  - route: cascade-ai-architect:improve-agent-system
+    description: Run a bounded offline evidence-driven improvement experiment from frozen AI-agent evaluation receipts.
+    triggers: [measured AI-agent failures need a bounded candidate improvement]
+    anti_triggers: [live online learning, direct active-artifact mutation, or production promotion is requested]
+    consumes: [agent-evaluation-receipt, agent-architecture-packet]
+    produces: [agent-improvement-candidate]
+    required_dependencies: []
+    optional_dependencies: [cascade-ai-architect:prepare-agent-evaluation, cascade-evals:agent-evaluation, cascade-prompt:prompt, cascade-simulations:simulate]
+    policy_tags: [ai-architecture, bounded-improvement]
+    effect: CANDIDATE_WRITE
+    authority: READ_ONLY
+    evaluation_cases: [held-out-comparison, no-self-promotion]

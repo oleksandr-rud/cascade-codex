@@ -1,0 +1,6 @@
+interface:
+  display_name: "Secure Design Review"
+  short_description: "Threat-model proposed systems before implementation"
+  default_prompt: "Use $secure-design to review this proposal for trust boundaries, abuse cases, and required controls."
+policy:
+  allow_implicit_invocation: true

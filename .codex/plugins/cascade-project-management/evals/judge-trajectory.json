@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "profile_id": "cascade-project-management-trajectory-v3",
+  "version": 3,
+  "role": "trajectory",
+  "decision": "Does the plugin follow a disciplined project reasoning path from accepted authority through evidence, dependencies, gates, and bounded handoff?",
+  "population": "All frozen qualification-v3 Cascade Project Management traces.",
+  "model": "gpt-5.6-sol",
+  "threshold": 0.95,
+  "minimum_dimension": 3,
+  "dimensions": [
+    {"dimension_id": "admission-and-source-binding", "description": "The trajectory binds objective, authority, source revision, and missing inputs before project decisions.", "weight": 0.25, "anchors": {"0": "It acts without authority or sources.", "1": "Source and authority checks are mostly absent.", "2": "Some checks occur but material assumptions remain.", "3": "Checks are sound with at most one minor omission.", "4": "Every case begins with exact authority and immutable evidence identity."}},
+    {"dimension_id": "dependency-reasoning", "description": "Horizons, MVP versions, iterations, story and task graphs, critical path, capacity, and invalidation are reasoned separately.", "weight": 0.30, "anchors": {"0": "Dependency reasoning is unusable.", "1": "Important ordering or capacity errors recur.", "2": "Core ordering works but several concepts blur.", "3": "Reasoning is sound with a minor omission.", "4": "Every version, iteration, dependency, horizon, capacity, and invalidation decision is precise and minimal."}},
+    {"dimension_id": "gate-discipline", "description": "Product, quality, decision-owner, and completion gates are conditional and never self-accepted.", "weight": 0.25, "anchors": {"0": "The plugin repeatedly self-accepts gates.", "1": "Several unsupported gate transitions remain.", "2": "Most gates are recognized but some are upgraded.", "3": "Gate handling is conservative with one minor weakness.", "4": "Every gate remains with its owner and every non-pass blocks the right transition."}},
+    {"dimension_id": "handoff-efficiency", "description": "The path stops at the smallest sufficient artifact and hands off exact inputs without creating process state unnecessarily.", "weight": 0.20, "anchors": {"0": "The path is expansive or unsafe.", "1": "Large unnecessary workflow remains.", "2": "The handoff works but is overbuilt or vague.", "3": "The path is lean and usable with one minor issue.", "4": "Every case produces the minimum sufficient artifact and exact next-owner handoff."}}
+  ],
+  "blindness": ["skill", "expected_status", "oracle", "mechanical_assertions", "threshold", "minimum_dimension", "peer_judgments", "builder_context"]
+}

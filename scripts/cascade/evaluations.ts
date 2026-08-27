@@ -181,8 +181,8 @@ const EVALUATOR_CONTRACTS = [
   ".codex/agents/simulation-evaluator.toml",
   ".codex/agents/simulation-evaluator/AGENT.md",
   ".codex/agents/simulation-evaluator/skills.yaml",
-  ".codex/skills/simulation-evaluation/SKILL.md",
-  ".codex/skills/simulation-evaluation/checklists/evaluation-quality.md",
+  ".codex/plugins/cascade-evals/skills/simulation-evaluation/SKILL.md",
+  ".codex/plugins/cascade-evals/skills/simulation-evaluation/checklists/evaluation-quality.md",
 ];
 
 function requireString(value: unknown, label: string): string {

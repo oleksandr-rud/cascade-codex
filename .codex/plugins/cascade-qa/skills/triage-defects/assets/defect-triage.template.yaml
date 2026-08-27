@@ -1,0 +1,11 @@
+id: DEFECT-001
+test_ref: TC-001@sha256
+behavior_ref: PROD-001@sha256
+observation_ref: RECEIPT-001@sha256
+classification: AMBIGUOUS
+confidence: low
+evidence_refs: []
+repair_owner: null
+prohibited_shortcuts:
+  - do not weaken the oracle to obtain green output
+rerun_contract: collect exact identity-bound reproduction evidence, then retriage before assigning repair

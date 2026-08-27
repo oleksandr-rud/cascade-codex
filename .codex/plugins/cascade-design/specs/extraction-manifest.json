@@ -1,0 +1,101 @@
+{
+  "schema_version": 1,
+  "manifest_id": "cascade-design-capability-extraction-v1",
+  "source_repository": "cascade-codex",
+  "source_revision": "d34754f350d3b94e91373ff7f0b7f066cb69f011",
+  "source_branch": "master",
+  "source_state": "LISTED_PATHS_MATCH_SOURCE_REVISION_BEFORE_CUTOVER",
+  "captured_at": "2026-08-24T17:52:25Z",
+  "artifacts": [
+    {
+      "path": ".codex/agents/designer/AGENT.md",
+      "sha256": "9cdb0e009396a3166a8dbf2df1ce3af2fb6e80c84db74257ce860659c3353166",
+      "capabilities": ["role-isolation", "skill-selection", "design-handoff"]
+    },
+    {
+      "path": ".codex/agents/designer/checklists/designer-workflows.md",
+      "sha256": "518d117c8595cbefc82f87f33f1a21341708967027d888688bcc9c676070f0f4",
+      "capabilities": ["combined-design-review"]
+    },
+    {
+      "path": ".codex/skills/accessibility-review/SKILL.md",
+      "sha256": "e4bb10bf372af20084b38f52550ae91ac72f0c05bb8a797a28abb9c3079f8a7f",
+      "capabilities": ["accessibility-review"]
+    },
+    {
+      "path": ".codex/skills/accessibility-review/checklists/accessibility-review.md",
+      "sha256": "ff7eb730c7dcaabc519b81c6028a11a2c96395338e560bc190c0443b6d682c55",
+      "capabilities": ["accessibility-quality-gate"]
+    },
+    {
+      "path": ".codex/skills/accessibility-review/references/accessibility-sources.md",
+      "sha256": "34efba81ff0ea252a6fa9e6a10828059faa6bb5ce4f6c229679dd946d527898b",
+      "capabilities": ["accessibility-source-guidance"]
+    },
+    {
+      "path": ".codex/skills/accessibility-review/templates/accessibility-review.md",
+      "sha256": "d88aa03c3c7365177b6adfaf363297d9f4e1a5c25d36e4762166ffeb3c5d8987",
+      "capabilities": ["accessibility-artifact"]
+    },
+    {
+      "path": ".codex/skills/design-system/SKILL.md",
+      "sha256": "662f795414f9d74258277ad6195c976dd6a7658c855b072036a0539904f54397",
+      "capabilities": ["reusable-design-rule"]
+    },
+    {
+      "path": ".codex/skills/design-system/templates/component-rule.md",
+      "sha256": "539956331133bf68b6730eacedf6560898b39f6e22e7fad2e3bb2eedbcad76d6",
+      "capabilities": ["component-contract"]
+    },
+    {
+      "path": ".codex/skills/design-system/templates/design-rule.md",
+      "sha256": "ecfdf696bb7b5b8496e838a8215fdc07c1c1e35ee99c6cf30d4e6943349dd40d",
+      "capabilities": ["design-rule-contract"]
+    },
+    {
+      "path": ".codex/skills/ux-flow-review/SKILL.md",
+      "sha256": "fb4b7fa7cde74192ed70d02a204e566c48a9ff5bec272a2591c2c9cc599bbe06",
+      "capabilities": ["ux-flow-review"]
+    },
+    {
+      "path": ".codex/skills/ux-flow-review/checklists/ux-flow-review.md",
+      "sha256": "c70ccd6260dbf02dbd3b6a9fc0653653369094f5e2a4c0666f7692e335e7a2c1",
+      "capabilities": ["ux-quality-gate"]
+    },
+    {
+      "path": ".codex/skills/ux-flow-review/references/ux-flow-patterns.md",
+      "sha256": "1f3023ff31bcd5fe56b4426c1fde8867c736030c9a5da5f772da0fd7110a64df",
+      "capabilities": ["ux-source-guidance"]
+    },
+    {
+      "path": ".codex/skills/ux-flow-review/templates/product-ux-delta.md",
+      "sha256": "15a65642da329d65fdbc72b1f2f519943a3c7a0eaa75d23be4909e4123a94e28",
+      "capabilities": ["product-ux-handoff"]
+    },
+    {
+      "path": ".codex/skills/ux-flow-review/templates/ux-flow-review.md",
+      "sha256": "a70d09c4a40b257fdf421b1e240fa3a366b7aef9e3da4fedfc4429db1cfeb203",
+      "capabilities": ["ux-review-artifact"]
+    },
+    {
+      "path": ".codex/skills/visual-qa/SKILL.md",
+      "sha256": "70d3c1a0ab7503410164e6a07ba5cab862a5f49c6339b994ae1e94b5bdbde08c",
+      "capabilities": ["visual-evidence-review"]
+    },
+    {
+      "path": ".codex/skills/visual-qa/checklists/visual-validation.md",
+      "sha256": "dcc9c96aa83b6eb830376192819f391d00836412afd12819613395f0948a2581",
+      "capabilities": ["visual-quality-gate"]
+    },
+    {
+      "path": ".codex/skills/visual-qa/references/visual-validation.md",
+      "sha256": "c9f1daae7a1fbe50b721b3196f47ff9dc4581992846de7174f1cea70d3ffa805",
+      "capabilities": ["visual-evidence-guidance"]
+    },
+    {
+      "path": ".codex/skills/visual-qa/templates/visual-validation-report.md",
+      "sha256": "362e42a1d66ce37d0d651b8064c4a3f1f02c6b81d5bc644ac3bcdf20ae376e3f",
+      "capabilities": ["visual-review-artifact"]
+    }
+  ]
+}

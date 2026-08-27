@@ -1,0 +1,4 @@
+interface:
+  display_name: "Select Architecture Patterns"
+  short_description: "Select compatible architecture patterns"
+  default_prompt: "Use $select-architecture-patterns to disposition and compose the relevant patterns from this catalog."

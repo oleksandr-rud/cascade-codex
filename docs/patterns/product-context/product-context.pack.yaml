@@ -24,14 +24,13 @@ routing:
   defer_when:
     - "A fact is product-specific and belongs in docs/product, docs/specs, or a target evidence report."
   primary_skills:
-    - compose-spec
-    - synthesis-to-spec
-    - docs-impact-map
+    - create-spec
+    - create-spec
+    - create-spec
     - pattern-context
     - plan-change
   related_roles:
     - orchestrator
-    - business-analyst
     - agent-engineer
 selection_rules:
   - "Load product-authority-graph before generating or changing a brief."

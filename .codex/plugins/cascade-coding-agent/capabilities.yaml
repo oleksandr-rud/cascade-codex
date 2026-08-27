@@ -1,0 +1,57 @@
+schema_version: 1
+plugin:
+  name: cascade-coding-agent
+  version: 0.2.0+codex.20260827142017
+model_policy:
+  model: gpt-5.6-sol
+  planning_reasoning_effort: high
+  evaluation_reasoning_effort: max
+skills:
+  - route: cascade-coding-agent:audit-harness
+    description: Audit a coding-agent harness for routing, ownership, dependency, permission, model, evidence, and installation defects.
+    triggers: [an existing coding-agent harness needs a read-only audit]
+    anti_triggers: [a new software or agent architecture must first be designed]
+    consumes: [harness-source, installed-plugin-inventory]
+    produces: [harness-audit]
+    required_dependencies: []
+    optional_dependencies: []
+    policy_tags: [coding-agent, audit]
+    effect: READ_ONLY
+    authority: READ_ONLY
+    evaluation_cases: [dependency-drift, model-policy-drift, authority-collision]
+  - route: cascade-coding-agent:adapt-harness
+    description: Adapt a coding-agent harness to a target repository from current inventory, protected paths, commands, and installation state.
+    triggers: [a new repository needs coding-agent onboarding or an existing harness needs target adaptation]
+    anti_triggers: [only a generic agent architecture or an atomic harness fix is requested]
+    consumes: [target-repository-inventory, installed-plugin-inventory]
+    produces: [harness-adaptation-candidate]
+    required_dependencies: []
+    optional_dependencies: [cascade-coding-agent:audit-harness, cascade-ai-architect:architect-ai-system, cascade-prompt:prompt]
+    policy_tags: [coding-agent, adaptation]
+    effect: CANDIDATE_WRITE
+    authority: READ_ONLY
+    evaluation_cases: [preserve-target-source, explicit-install-authority]
+  - route: cascade-coding-agent:maintain-harness
+    description: Implement a scoped authorized change to an existing coding-agent harness while preserving source ownership and validation.
+    triggers: [an accepted harness finding or explicit harness change must be implemented]
+    anti_triggers: [agent-system topology or domain semantics are unresolved]
+    consumes: [harness-audit, harness-change-contract]
+    produces: [harness-change-candidate]
+    required_dependencies: []
+    optional_dependencies: [cascade-ai-architect:architect-ai-system, cascade-prompt:prompt, cascade-evals:harness-evaluation]
+    policy_tags: [coding-agent, maintenance]
+    effect: CANDIDATE_WRITE
+    authority: READ_ONLY
+    evaluation_cases: [source-not-cache, preserve-permissions]
+  - route: cascade-coding-agent:integrate-agent-assets
+    description: Map reviewed architecture, skill, role, workflow, prompt, or evaluation candidates into target-owned harness surfaces with explicit authority, execution-surface, write-scope, validation, and handoff bindings.
+    triggers: [reviewed agent assets need target harness integration]
+    anti_triggers: [the architecture candidate is missing or unreviewed]
+    consumes: [agent-architecture-packet, agent-assets]
+    produces: [harness-integration-map, workflow-host-binding]
+    required_dependencies: []
+    optional_dependencies: [cascade-ai-architect:architect-ai-system, cascade-prompt:prompt, cascade-evals:harness-evaluation]
+    policy_tags: [coding-agent, asset-integration]
+    effect: CANDIDATE_WRITE
+    authority: READ_ONLY
+    evaluation_cases: [one-owner-per-artifact, no-plugin-copy]

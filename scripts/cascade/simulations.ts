@@ -61,9 +61,9 @@ import {
 } from "./simulation-intake";
 
 const TEMPLATE_PATH =
-  ".codex/skills/simulation-campaigns/templates/starter/package.template.yaml";
+  ".codex/plugins/cascade-simulations/skills/manage-simulation-campaign/templates/starter/package.template.yaml";
 const DESIGN_TEMPLATE_PATH =
-  ".codex/skills/simulation-campaigns/templates/campaign-design.md";
+  ".codex/plugins/cascade-simulations/skills/manage-simulation-campaign/templates/campaign-design.md";
 const CATALOG_PATH = rootPath("product-evals/campaigns/catalog.generated.json");
 const SIMULATION_ID = /^[a-z0-9][a-z0-9.-]+$/;
 const OWNER_LANE = /^W-[0-9]{3}$/;

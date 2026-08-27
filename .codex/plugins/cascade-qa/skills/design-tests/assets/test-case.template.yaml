@@ -1,0 +1,10 @@
+id: TC-001
+behavior_ref: PROD-001@sha256
+risk_ref: RISK-001
+contour: API
+preconditions: []
+data_class: synthetic
+actions: []
+expected_observations: []
+evidence_requirements: []
+cleanup: preserve receipt; remove only case-owned transient data

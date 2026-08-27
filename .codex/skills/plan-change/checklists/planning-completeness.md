@@ -110,9 +110,10 @@ Use before marking a non-atomic plan `DEFINITION_READY`, before marking it
       or inseparable validation were merged or ordered.
 - [ ] Every request criterion has exactly one primary slice owner; protected
       consumers and dependencies are visible.
-- [ ] Multi-horizon scope routes to `plan-iterations`; only its committed
-      first-iteration scope may route to `orchestrate-work` for active
-      worklines.
+- [ ] Multi-horizon scope routes to
+      `cascade-project-management:plan-project`; only its committed current
+      scope may route to `cascade-project-management:manage-project` for
+      coordination.
 - [ ] Creating slices or future candidates does not imply delegation, active
       lane creation, graph state, or parallel execution.
 - [ ] New discoveries trigger another boundary pass; the original slice or
@@ -133,7 +134,8 @@ Use before marking a non-atomic plan `DEFINITION_READY`, before marking it
 - [ ] The highest useful validation seam proves behavior without coupling only
       to private implementation shape.
 - [ ] The plan identifies either one current coherent slice or a required
-      `plan-iterations` handoff; future scope is not treated as active work.
+      `cascade-project-management:plan-project` handoff; future scope is not
+      treated as active work.
 
 ## Replanning And Handoff
 

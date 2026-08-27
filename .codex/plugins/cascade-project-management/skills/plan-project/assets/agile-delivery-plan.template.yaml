@@ -1,0 +1,45 @@
+schema_version: 1
+artifact_id: PM-AGILE-001
+selected_skill: plan-project
+artifact_kind: AGILE_DELIVERY_PLAN
+status: PROPOSED
+subject:
+  id: INIT-001
+  title: Example initiative
+  kind: product
+  outcome: Accepted product outcome
+  decision_owner: null
+sources: []
+work_items: []
+risks: []
+decisions: []
+handoffs: []
+agile_delivery:
+  methodology: AGILE_ITERATIVE
+  mvp_version_id: VER-MVP
+  versions:
+    - id: VER-MVP
+      sequence: 1
+      stage: MVP
+      outcome: First usable product outcome
+      state: PROPOSED
+      acceptance_refs: []
+      promotion_condition: null
+      artifact_refs: []
+  iterations:
+    - id: IT-MVP-1
+      version_id: VER-MVP
+      sequence: 1
+      objective: First observable step toward the MVP
+      state: PROPOSED
+      # READY requires an exact CURRENT SRC-* ID or full digest-qualified identity.
+      capacity_ref: null
+      acceptance_refs: []
+  # If the artifact becomes READY, all first-iteration stories and their tasks are READY.
+  stories: []
+  tasks: []
+boundaries:
+  product_priority_changed: false
+  project_state_mutated: false
+  external_action_executed: false
+  archive_applied: false

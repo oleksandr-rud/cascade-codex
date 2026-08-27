@@ -14,9 +14,9 @@ routing:
     - "The task only needs current target facts, an atomic file edit, or a framework installation command."
     - "The target already has a coherent established architecture and no boundary change is proposed."
   load_when:
-    - route: architecture-review
+    - route: cascade-software-architect:review-architecture
       use_when: "A cross-boundary plan needs a matching reference topology and exception criteria."
-    - route: adapt-harness
+    - route: cascade-coding-agent:adapt-harness
       use_when: "Target onboarding needs to compare detected architecture with bounded defaults."
     - route: plan-change
       use_when: "A new service, native client, CLI, experiment, SDK/library, or cache boundary needs an implementation-draft structure."
@@ -29,14 +29,13 @@ routing:
     - "The proposed rule is target-specific and belongs in harness.config.yaml, target boundary docs, or a work lane."
     - "No repeated decision or supported profile has been demonstrated."
   primary_skills:
-    - architecture-review
-    - adapt-harness
+    - cascade-software-architect:review-architecture
+    - cascade-coding-agent:adapt-harness
     - plan-change
     - pattern-context
     - validate-change
   related_roles:
     - agent-engineer
-    - project-onboarder
     - orchestrator
     - designer
 selection_rules:

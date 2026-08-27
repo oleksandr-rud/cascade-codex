@@ -194,9 +194,10 @@ if (command === "list") {
 }
 if (command !== "run") fail(`unknown command: ${command}`);
 if (!args.fixture) fail("--fixture is required");
-args.model ??= "gpt-5.6-terra";
-if (args["execute-judge"]) args["judge-model"] ??= "gpt-5.6-terra";
-if (args["execute-target"]) args["target-model"] ??= "gpt-5.6-terra";
+args.model ??= "gpt-5.6-sol";
+args["reasoning-effort"] ??= "max";
+if (args["execute-judge"]) args["judge-model"] ??= "gpt-5.6-sol";
+if (args["execute-target"]) args["target-model"] ??= "gpt-5.6-sol";
 
 const fixture = catalog.fixtures.find((candidate) => candidate.id === args.fixture);
 if (!fixture) fail(`unknown fixture: ${args.fixture}`);
@@ -214,7 +215,7 @@ const timeouts = {
   judge: positiveTimeout(args["judge-timeout-ms"], DEFAULT_TIMEOUTS_MS.judge, "--judge-timeout-ms")
 };
 async function executePhase({ phaseName, model, prompt, timeoutMs, adapter, adapterId }) {
-  return requireCompleted(await runAgentResponseSimulation({ phase: phaseName, runId, runRoot, model, prompt, cwd: workspace, timeoutMs, adapter, adapterConfig: args["adapter-config"], adapterId }), { phase: phaseName, runRoot });
+  return requireCompleted(await runAgentResponseSimulation({ phase: phaseName, runId, runRoot, model, reasoningEffort: args["reasoning-effort"], prompt, cwd: workspace, timeoutMs, adapter, adapterConfig: args["adapter-config"], adapterId }), { phase: phaseName, runRoot });
 }
 
 const skillInstruction = args["installed-plugin"]
@@ -308,7 +309,7 @@ const summary = {
   fixture: { id: fixture.id, version: fixture.version, catalog_id: catalog.catalog_id, tier: fixture.tier, expected_mode: fixture.expected_mode },
   configuration: {
     subject_plugin: args["subject-plugin"] ?? "cascade-prompt", subject_skill: args["subject-skill"] ?? "prompt", subject_skill_root: subjectSkillRoot,
-    model: args.model, installed_plugin: Boolean(args["installed-plugin"]), judge_model: args["judge-model"] ?? null, target_model: args["target-model"] ?? null,
+    model: args.model, installed_plugin: Boolean(args["installed-plugin"]), judge_model: args["judge-model"] ?? null, target_model: args["target-model"] ?? null, reasoning_effort: args["reasoning-effort"],
     adapters: { model: args["model-adapter"] ?? "codex-cli", target: args["target-adapter"] ?? "codex-cli", judge: args["judge-adapter"] ?? "codex-cli" },
     adapter_ids: { model: args["model-adapter-id"] ?? null, target: args["target-adapter-id"] ?? null, judge: args["judge-adapter-id"] ?? null },
     timeouts_ms: timeouts

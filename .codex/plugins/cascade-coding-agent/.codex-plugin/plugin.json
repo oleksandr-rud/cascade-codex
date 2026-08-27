@@ -1,0 +1,33 @@
+{
+  "name": "cascade-coding-agent",
+  "version": "0.2.0+codex.20260827142017",
+  "description": "Audits, adapts, integrates, and evolves Codex and coding-agent harnesses while preserving target-repository authority.",
+  "author": {
+    "name": "Cascade"
+  },
+  "keywords": [
+    "codex-harness",
+    "agent-harness",
+    "skills",
+    "agents",
+    "tooling",
+    "project-onboarding"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Cascade Coding Agent",
+    "shortDescription": "Engineer coding-agent harnesses.",
+    "longDescription": "Audit, adapt, and safely evolve AGENTS.md, Codex routing, skills, roles, configuration, hooks, tools, memory, observability, evaluation wiring, and validation surfaces. This plugin engineers coding-agent systems; Cascade Evals owns harness evaluation, and this plugin does not grant execution authority or replace target runners and persistence.",
+    "developerName": "Cascade",
+    "category": "Productivity",
+    "capabilities": [
+      "Interactive",
+      "Write"
+    ],
+    "defaultPrompt": [
+      "Audit this repository's Codex and agent harness for defects and duplicate authority.",
+      "Adapt this coding-agent harness to a target repository.",
+      "Maintain this harness or integrate a reviewed agent architecture packet with the smallest validated change."
+    ]
+  }
+}

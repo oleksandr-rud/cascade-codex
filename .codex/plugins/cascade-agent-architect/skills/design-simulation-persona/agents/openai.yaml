@@ -1,4 +1,0 @@
-interface:
-  display_name: "Design Simulation Persona"
-  short_description: "Design grounded personas for agent simulations"
-  default_prompt: "Use $design-simulation-persona to build a source-grounded or explicitly synthetic persona for this agent-system design."

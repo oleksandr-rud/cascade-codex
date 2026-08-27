@@ -1,0 +1,115 @@
+{
+  "schema_version": 2,
+  "plugin_id": "cascade-security",
+  "subject_kind": "agent",
+  "version": "0.1.0+codex.20260827142017",
+  "expected_case_count": 9,
+  "acceptance_threshold": 0.95,
+  "minimum_dimension": 3,
+  "evaluation_manifest": "evals/manifest.json",
+  "models": {
+    "builder": "gpt-5.6-sol",
+    "target": "gpt-5.6-sol",
+    "judge": "gpt-5.6-sol",
+    "reasoning_effort": "max",
+    "explicit_comparison_override": false
+  },
+  "expected_skills": [
+    "codebase-audit",
+    "auth-analysis",
+    "secure-design"
+  ],
+  "required_schemas": ["security-review.schema.json"],
+  "required_runtime_phrases": [
+    "untrusted evidence",
+    "../../schemas/security-review.schema.json",
+    "cascade-security:auth-analysis",
+    "cascade-security:codebase-audit",
+    "cascade-software-architect:review-architecture",
+    "cascade-prompt:prompt",
+    "cascade-simulations:simulate",
+    "cascade-evals:evaluate",
+    "target-host"
+  ],
+  "forbidden_runtime_phrases": [
+    "certify compliance",
+    "print secret values",
+    "frontend authorization is sufficient",
+    "implements runtime fixes by default"
+  ],
+  "required_dependency_aliases": [
+    "cascade-prompt:prompt",
+    "cascade-evals:agent-evaluation",
+    "cascade-evals:build-judge",
+    "cascade-evals:evaluate",
+    "cascade-software-architect:review-architecture",
+    "cascade-ai-architect:architect-ai-system",
+    "cascade-coding-agent:integrate-agent-assets"
+  ],
+  "routed_peer_aliases": [
+    "cascade-simulations:simulate",
+    "cascade-product:validate-product",
+    "cascade-qa:design-tests"
+  ],
+  "required_case_categories": [
+    "happy",
+    "routing-collision",
+    "missing-evidence",
+    "adversarial",
+    "conflicting-source",
+    "output-pressure",
+    "handoff"
+  ],
+  "required_subject_assets": [
+    ".codex-plugin/plugin.json",
+    "skills/codebase-audit/SKILL.md",
+    "skills/codebase-audit/agents/openai.yaml",
+    "skills/codebase-audit/checklists/trajectory-generation.md",
+    "skills/codebase-audit/templates/trajectory-spec.md",
+    "skills/codebase-audit/scripts/security_stack_scan.ts",
+    "skills/auth-analysis/SKILL.md",
+    "skills/auth-analysis/agents/openai.yaml",
+    "skills/auth-analysis/checklists/auth-hardening.md",
+    "skills/auth-analysis/templates/auth-analysis-report.md",
+    "skills/secure-design/SKILL.md",
+    "skills/secure-design/agents/openai.yaml",
+    "skills/secure-design/checklists/secure-design.md",
+    "skills/secure-design/templates/secure-design-review.md",
+    "schemas/security-review.schema.json",
+    "scripts/validate_artifact.py",
+    "specs/architecture.md",
+    "specs/capability-map.md",
+    "specs/extraction-manifest.json"
+  ],
+  "required_evaluation_assets": [
+    "evals/evaluation-contract.json",
+    "evals/cases.json",
+    "evals/judge-outcome.json",
+    "evals/judge-trajectory.json",
+    "scripts/evaluate_case_assertions.py"
+  ],
+  "required_dependency_artifacts": [
+    {"alias": "cascade-prompt:prompt", "path": "skills/prompt/SKILL.md"},
+    {"alias": "cascade-prompt:prompt", "path": "skills/prompt/runtime/grounded.md"},
+    {"alias": "cascade-prompt:prompt", "path": "skills/prompt/runtime/evaluation.md"},
+    {"alias": "cascade-prompt:prompt", "path": "skills/prompt/runtime/model-index.yaml"},
+    {"alias": "cascade-evals:agent-evaluation", "path": "skills/agent-evaluation/SKILL.md"},
+    {"alias": "cascade-evals:evaluate", "path": "skills/evaluate/SKILL.md"},
+    {"alias": "cascade-evals:evaluate", "path": "scripts/run_agent_evaluation.py"},
+    {"alias": "cascade-evals:evaluate", "path": "scripts/build_blind_packets.py"},
+    {"alias": "cascade-evals:evaluate", "path": "scripts/reduce_evaluation.py"},
+    {"alias": "cascade-evals:evaluate", "path": "scripts/validate_judge.py"},
+    {"alias": "cascade-evals:evaluate", "path": "skills/evaluate/references/agent-builder-response.schema.json"},
+    {"alias": "cascade-evals:evaluate", "path": "skills/evaluate/references/agent-target-response.schema.json"},
+    {"alias": "cascade-evals:evaluate", "path": "skills/evaluate/references/judge-packet.schema.json"},
+    {"alias": "cascade-evals:evaluate", "path": "skills/evaluate/references/model-policy.json"},
+    {"alias": "cascade-evals:build-judge", "path": "skills/build-judge/SKILL.md"},
+    {"alias": "cascade-evals:build-judge", "path": "skills/build-judge/references/judge-response.schema.json"},
+    {"alias": "cascade-software-architect:review-architecture", "path": "skills/review-architecture/SKILL.md"},
+    {"alias": "cascade-ai-architect:architect-ai-system", "path": "skills/architect-ai-system/SKILL.md"},
+    {"alias": "cascade-coding-agent:integrate-agent-assets", "path": "skills/integrate-agent-assets/SKILL.md"},
+    {"alias": "cascade-simulations:simulate", "path": "skills/simulate/SKILL.md"},
+    {"alias": "cascade-product:validate-product", "path": "skills/validate-product/SKILL.md"},
+    {"alias": "cascade-qa:design-tests", "path": "skills/design-tests/SKILL.md"}
+  ]
+}

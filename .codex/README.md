@@ -13,10 +13,46 @@ merge a target application's root package manifest or lockfile.
 
 `.codex/plugins/` contains repo-local plugin source packages. Their catalog is
 `.agents/plugins/marketplace.json`; local source paths in that catalog resolve
-from the repository root. The catalog owns Cascade Prompt, Simulations, Evals,
-Agent Architect, Harness Maintainer, Personas, Product, and Market Intelligence
-sources under `.codex/plugins/<plugin-name>/`. Source presence is distinct from
-installed, active, or published state.
+from the repository root. The catalog owns 12 sources: Cascade Prompt,
+Simulations, Evals, Architect, Coding Agent, Personas, Product, Market,
+Design, Security, Project Management, and QA under
+`.codex/plugins/<plugin-name>/`. Source presence is distinct from installed,
+active, or published state.
+
+Cascade is plugin-first. Plugins own reusable behavior, schemas, templates,
+deterministic package validators, and subject evaluation packs. Repository
+agents and `.codex/skills/` retain only target discovery, current source and
+dirty-state binding, permissions, mutation, durable write targets, campaign
+infrastructure, and repository validation. A host adapter must resolve the
+exact namespaced plugin skill and fail closed; it cannot embed a fallback copy.
+
+| Plugin | Reusable owner |
+|---|---|
+| Cascade Prompt | Prompt and context-plan construction or audit |
+| Cascade Architect | Cross-plugin Plan Workflow; software and agent architecture; pattern selection; architecture and change review; roles, skills, prompts, evaluation packs, and bounded improvement |
+| Cascade Coding Agent | Coding-agent harness audit, target adaptation, maintenance, asset integration, and evaluation coordination |
+| Cascade Personas | Canonical human models, purpose-limited projections, and persona evaluation |
+| Cascade Simulations | Runtime actors, persona consumption, briefs, outcomes, adapters, campaign governance/execution, bounded actor loops, and frozen-run review |
+| Cascade Evals | Generic evaluation lifecycle, judge contracts, response validation, score reduction, calibration state, and receipts |
+| Cascade Product | Product definition, lifecycle decisions, and product validation |
+| Cascade Market | Market research, opportunity assessment, experiments, positioning, category, proof, messaging, naming, tone, and trust language |
+| Cascade Design | UX, accessibility, visual, and reusable design-system review |
+| Cascade Security | Codebase security trajectories, auth/session/tenant analysis, secure-design review, typed findings, and filename-only stack inventory |
+| Cascade Project Management | Tracker-ready work-item definition, project planning, coordination, reconciliation, lifecycle state, and closeout assessment |
+| Cascade QA | Quality planning, test design, evidence assessment, and defect triage |
+
+The route registry is `[cascade.plugin_skills]` in `.codex/config.toml`. Every
+repo-local plugin exposes a typed `capabilities.yaml`; the deterministic
+compiler writes `.codex/plugin-capabilities.generated.json`, and Plan Workflow
+plans validate through `scripts/cascade.ts workflow validate` before dispatch.
+Project Management, QA, Design, and focused Market capabilities use namespaced
+plugin skills directly.
+Security methods route directly to installed namespaced skills; the Security
+role binds target context and sensitive-evidence boundaries. Other host skills
+remain only where repository
+context, mutation, execution, or persistence adds behavior. Campaign methods
+live in Simulations and Evals; this repository still owns its `product-evals/`
+registries, runners, artifact policy, and actual runtime authority.
 
 ## Task Admission And Skills
 
@@ -29,54 +65,42 @@ the default for direct answers or atomic edits.
 
 Core non-atomic fallback:
 
-`context -> ingest-spec/discover/market-validation/synthesis-to-spec/compose-spec if needed -> docs-impact-map -> pattern-context when reusable pattern packs are needed -> plan-change -> plan-iterations when delivery spans horizons -> orchestrate-work when feasible committed first-iteration scope needs coordination -> functional-qa -> implement-change -> review-change -> validate-change -> test-autorepair only if stale tests -> closeout`
+`context -> plan-change -> implement-change -> validate-change`
 
-`compose-spec` may register stable product domains and capabilities in
+Source intake, docs impact, and pattern context are conditional. Portable
+iteration forecasting, coordination, reconciliation, and project closeout
+assessment route directly to Cascade Project Management. Portable quality
+planning, test design, evidence assessment, and defect triage route directly
+to Cascade QA only when applicable. The harness keeps `run-qa-plan`,
+`repair-tests`, and `closeout` for target effects. Bounded one-owner work
+creates no spec, lane, graph, report, receipt, or archive entry by default.
+
+`create-spec` may register stable product domains and capabilities in
 `docs/product/catalog.yaml` and author a per-slice `brief.yaml`. The
 `product_briefs` registry in `.codex/config.toml` points to the schemas and
 deterministic Bun compiler; generated briefs remain projections rather than
 product authority.
 
-When a lane or Coordination Graph completes, `closeout` automatically chains
-`archive-work` for the exact closed set. The archive result is `ARCHIVED`,
-`ARCHIVE_DEFERRED`, or `NOT_APPLICABLE`; this is not a background scheduler.
+`cascade-project-management:close-project` proposes retention and `closeout`
+applies exact authorized host changes. Retention is not automatic.
 
-Supporting skills:
+Host skills (9):
 
-- `agentic-workflow-builder`
-- `architecture-review`
-- `agents-best-practices`
-- `codex-maintenance`
-- `develop-skill`
+- `closeout`
+- `context`
+- `create-spec`
+- `implement-change`
 - `pattern-context`
-- `simulation-campaigns`
-- `simulation-execution`
-- `simulation-evaluation`
-- `harness-evaluation`
-- `discover`
-- `market-validation`
-- `pain-mining`
-- `competitive-map`
-- `market-economics`
-- `hypothesis-scoring`
-- `validation-experiments`
-- `adversarial-critic`
-- `synthesis-to-spec`
-- `compose-spec`
-- `adapt-harness`
-- `issue-intake`
-- `orchestrate-work`
-- `plan-iterations`
-- `reconcile-work-graph`
-- `archive-work`
-- `review-change`
-- `ingest-spec`
-- `codebase-audit`
-- `auth-analysis`
-- `secure-design`
-- `ux-flow-review`
-- `accessibility-review`
-- `visual-qa`
+- `plan-change`
+- `repair-tests`
+- `run-qa-plan`
+- `validate-change`
+
+Portable Market, Product, Persona, Design, Security, Architect, Coding Agent,
+Simulation, Evaluation, Project Management, QA, and Prompt methods route
+directly to namespaced plugin skills. Host skills remain only for context,
+mutation, validation, QA target execution/repair, spec or pattern persistence,
+and closeout effects.
 
 ## Dynamic Simulation Plugin
 
@@ -84,30 +108,24 @@ When installed from the repository marketplace, `cascade-simulations:simulate`
 is the default route for one actor performing meaningful work through a
 declared interface toward an observable outcome. It uses a compact
 interface-adapter, persona, actor, domain-and-feature brief, outcome, and limits
-contract. Keep
-`simulation-campaigns` for explicit controlled comparisons, calibration,
-an independently packaged source under `.codex/plugins/cascade-simulations/`;
-its runtime skills are not duplicated into the repo-local `.codex/skills/`
-tree.
+contract. Use `cascade-simulations:manage-simulation-campaign` for controlled
+comparisons and `cascade-simulations:execute-simulation-campaign` for an
+approved campaign run. Independent semantic judgment remains
+`cascade-evals:simulation-evaluation`; none of these methods is duplicated in
+the host skill tree.
 
 ## Agents
 
 - `orchestrator`: orchestrates the cascade.
-- `project-onboarder`: orchestrates new-project setup, harness adaptation,
-  deterministic project inventory, config/docs migration, schema-backed
-  onboarding evidence, preservation/drift validation, and setup handoff.
-- `agent-engineer`: owns Cascade maintenance plus target-project agent/LLM
-  system design, Codex surface best practices, agentic workflow checklists,
-  source-context, skill, tool-contract, simulation-campaign, observability, and
-  eval guidance.
-- `business-analyst`: owns long market validation, live research,
-  business-analysis lanes, evidence grading, and synthesis into specs.
-- `security`: owns security-sensitive review, auth/session/RBAC and
-  tenant-boundary analysis, secure-design review, audit evidence, and security
-  validation planning.
-- `designer`: owns UX flow review, reusable design-system routing,
-  accessibility review, screenshot-backed visual validation, and design
-  handoff planning.
+- `agent-engineer`: owns Cascade maintenance, target-project onboarding and
+  adaptation, agent/LLM system design, Codex surfaces, source context, skills,
+  tools, simulations, observability, and eval guidance.
+- `security`: read-only host role that selects installed
+  `cascade-security:<skill>` methods, supplies redacted current target evidence,
+  and owns repository-specific validation and implementation handoff only.
+- `designer`: read-only host role that selects installed
+  `cascade-design:<skill>` workflows, supplies current target evidence, and
+  owns host handoff only.
 - `harness-evaluator`: owns read-only independent outcome or trajectory
   judgment of eligible harness scenario outputs and JSONL traces.
 - `simulation-operator`: owns bounded mutable execution of one approved
@@ -117,14 +135,14 @@ tree.
 
 Agent TOML files use the current Codex custom-agent schema with top-level
 `name`, `description`, `model`, and `developer_instructions`. Planning,
-synthesis, and security-reasoning roles pin `gpt-5.6-sol`; bounded read-heavy,
-target-execution, and judged-evaluation roles pin `gpt-5.6-terra`. Detailed Cascade scope,
+synthesis, execution, and judged-evaluation roles pin `gpt-5.6-sol`; prompt and
+evaluation campaigns additionally freeze `max` reasoning. Detailed Cascade scope,
 delegation, workflow, and skill mapping stay in the companion `AGENT.md` and
 `skills.yaml` files.
 
-Cascade is intentionally skill-first except for repeated long-running or
-specialist review boundaries such as business analysis, security review, and
-design review. Keep architecture review, functional acceptance, test repair,
-and issue intake as skills unless the target project proves it needs a
-dedicated delegated role. Use subagents only when the user explicitly
+Cascade is skill-first. Market/product analysis stays in plugin-backed skills
+under Orchestrator, and onboarding uses
+`cascade-coding-agent:adapt-harness` under Agent Engineer. Retain roles only
+for a real permission, mutable-execution, or
+independent-review boundary. Use subagents only when the user explicitly
 authorizes delegation in the target runtime.

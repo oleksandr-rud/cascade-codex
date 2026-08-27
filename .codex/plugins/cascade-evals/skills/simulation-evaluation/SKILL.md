@@ -29,3 +29,7 @@ Consume a frozen run; never operate the target.
    persona-fidelity, or population evidence.
 
 Self-review is diagnostic and cannot satisfy an independence requirement.
+
+Use `checklists/evaluation-quality.md` before accepting an evaluation and
+`templates/evaluation-receipt.md` when the target host needs a durable receipt
+shape. The target host remains the persistence and release-policy owner.

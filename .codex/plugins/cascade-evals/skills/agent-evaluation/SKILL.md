@@ -1,6 +1,6 @@
 ---
 name: agent-evaluation
-description: Adapt the generic Cascade Evals lifecycle to an AI agent, role, skill, workflow, tool loop, or architecture packet. Use for agent-task corpora, trace eligibility, outcome and trajectory judging, version comparison, or improvement evidence; keep architecture-specific packs with their owning Agent Architect source.
+description: Adapt the generic Cascade Evals lifecycle to an AI agent, role, skill, workflow, tool loop, or architecture packet. Use for agent-task corpora, trace eligibility, outcome and trajectory judging, version comparison, or improvement evidence; keep architecture-specific packs with their owning Cascade Architect source.
 ---
 
 # Agent Evaluation
@@ -9,7 +9,7 @@ Evaluate one digest-bound agent-system claim through `$evaluate`.
 
 ## Boundary
 
-- The owning agent or Agent Architect package supplies subject-specific cases,
+- The owning agent or Cascade Architect package supplies subject-specific cases,
   rubrics, schemas, permissions, and success oracles.
 - Cascade Evals owns lifecycle, judge validation, score recomputation,
   aggregation, calibration state, and receipts.

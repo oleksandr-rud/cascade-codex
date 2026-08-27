@@ -40,7 +40,8 @@ change or operation prompt activates `SIMULATION_GOVERNANCE`. An ordinary
 actor/interface simulation stays on the bounded `cascade-simulations:simulate`
 route and does not create a campaign intake. Explicit controlled comparison,
 calibration, repeated-run, product-intake, or release scope adds the connected
-route, high assurance, independent evidence, and `simulation-campaigns`; this
+route, high assurance, independent evidence, and
+`cascade-simulations:manage-simulation-campaign`; this
 contract owns that escalated campaign/intake boundary.
 
 A compiled intake snapshots the current Task Envelope beneath its scope root
@@ -122,14 +123,14 @@ They remain separate authorities and cannot substitute for each other.
 
 | Stage | Role / skill | Required input | Authority | Output |
 |---|---|---|---|---|
-| author | `agent-engineer` / `simulation-campaigns` | Task Envelope, product brief when product scoped, current definitions | author campaign/intake changes only | validated campaign and READY intake |
-| execute | `simulation-operator` / `simulation-execution` | explicit run authorization and READY intake | mutate only the approved isolated target/run boundary | frozen evidence, cleanup, execution receipt |
-| evaluate | `simulation-evaluator` / `simulation-evaluation` | frozen run plus frozen intake | read-only judgment | claim ledger, evaluation receipt, repair/refinement route |
-| harness judge | `harness-evaluator` / `harness-evaluation` | Cascade route/trace packet | specialized read-only harness judgment | harness receipt consumed by general evaluation |
+| author | `agent-engineer` / `cascade-simulations:manage-simulation-campaign` | Task Envelope, product brief when product scoped, current definitions | author campaign/intake changes only | validated campaign and READY intake |
+| execute | `simulation-operator` / `cascade-simulations:execute-simulation-campaign` | explicit run authorization and READY intake | mutate only the approved isolated target/run boundary | frozen evidence, cleanup, execution receipt |
+| evaluate | `simulation-evaluator` / `cascade-evals:simulation-evaluation` | frozen run plus frozen intake | read-only judgment | claim ledger, evaluation receipt, repair/refinement route |
+| harness judge | `harness-evaluator` / `cascade-evals:harness-evaluation` | Cascade route/trace packet | specialized read-only harness judgment | harness receipt consumed by general evaluation |
 
 Authoring does not dispatch execution. Execution does not change campaign
 intent. Evaluation does not execute or repair. Product-document promotion
-returns through `synthesis-to-spec -> compose-spec`, external evidence where
+returns through `create-spec`, external evidence where
 required, and accountable review.
 
 ## SIB-006 Lifecycle And Invalidation

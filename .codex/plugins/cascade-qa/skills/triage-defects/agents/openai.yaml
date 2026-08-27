@@ -1,0 +1,4 @@
+interface:
+  display_name: "Triage Defects"
+  short_description: "Classify failures and route repair ownership"
+  default_prompt: "Use $triage-defects to classify these failures from current public-boundary evidence before any source or test repair."

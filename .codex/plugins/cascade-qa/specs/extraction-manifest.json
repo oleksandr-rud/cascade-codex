@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "manifest_id": "cascade-qa-capability-extraction-v1",
+  "source_repository": "cascade-codex",
+  "source_revision": "d34754f350d3b94e91373ff7f0b7f066cb69f011",
+  "source_state": "WORKTREE_SNAPSHOT_BEFORE_CUTOVER",
+  "captured_at": "2026-08-25T16:12:03Z",
+  "artifacts": [
+    {"path": ".codex/skills/functional-qa/SKILL.md", "sha256": "9dbabf422f41a736c5306de0a16cdda3fd716de0dc802d78de181cc265ed8358", "capabilities": ["quality planning", "functional test design", "evidence classes"]},
+    {"path": ".codex/skills/functional-qa/checklists/functional-test-quality.md", "sha256": "c33173740638c3cc21e24d213fa86f4c712d4c674cbc3b6ff78925d18aa82324", "capabilities": ["acceptance coverage", "read-back checks"]},
+    {"path": ".codex/skills/functional-qa/templates/functional-test-plan.md", "sha256": "5fa049cd38430ea83aa34c269e8ffaa60ddba8880e0116808f6b06844d79ed47", "capabilities": ["quality artifact"]},
+    {"path": ".codex/skills/test-autorepair/SKILL.md", "sha256": "71444efd9bd24d6c4637dc003bd059b367ea5f607280acd586c3863052033ac7", "capabilities": ["defect classification", "test drift policy"]},
+    {"path": ".codex/skills/test-autorepair/checklists/semantic-repair-checklist.md", "sha256": "9e0447b90372f368b2212e4c737d7e173a223ef3c0dcee20048bb582f1bb90c2", "capabilities": ["repair admission", "rerun rules"]},
+    {"path": ".codex/skills/test-autorepair/templates/repair-report.md", "sha256": "edeed6c9e6d8a8d81042d74e1d907bf110aaa50a60202216398e059608cc5173", "capabilities": ["triage and repair receipt"]}
+  ]
+}

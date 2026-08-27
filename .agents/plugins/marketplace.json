@@ -41,10 +41,10 @@
       "category": "Productivity"
     },
     {
-      "name": "cascade-agent-architect",
+      "name": "cascade-ai-architect",
       "source": {
         "source": "local",
-        "path": "./.codex/plugins/cascade-agent-architect"
+        "path": "./.codex/plugins/cascade-ai-architect"
       },
       "policy": {
         "installation": "AVAILABLE",
@@ -53,10 +53,22 @@
       "category": "Productivity"
     },
     {
-      "name": "cascade-harness-maintainer",
+      "name": "cascade-software-architect",
       "source": {
         "source": "local",
-        "path": "./.codex/plugins/cascade-harness-maintainer"
+        "path": "./.codex/plugins/cascade-software-architect"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity"
+    },
+    {
+      "name": "cascade-coding-agent",
+      "source": {
+        "source": "local",
+        "path": "./.codex/plugins/cascade-coding-agent"
       },
       "policy": {
         "installation": "AVAILABLE",
@@ -89,16 +101,64 @@
       "category": "Productivity"
     },
     {
-      "name": "cascade-market-intelligence",
+      "name": "cascade-market",
       "source": {
         "source": "local",
-        "path": "./.codex/plugins/cascade-market-intelligence"
+        "path": "./.codex/plugins/cascade-market"
       },
       "policy": {
         "installation": "AVAILABLE",
         "authentication": "ON_INSTALL"
       },
       "category": "Productivity"
+    },
+    {
+      "name": "cascade-design",
+      "source": {
+        "source": "local",
+        "path": "./.codex/plugins/cascade-design"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity"
+    },
+    {
+      "name": "cascade-security",
+      "source": {
+        "source": "local",
+        "path": "./.codex/plugins/cascade-security"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Developer Tools"
+    },
+    {
+      "name": "cascade-project-management",
+      "source": {
+        "source": "local",
+        "path": "./.codex/plugins/cascade-project-management"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity"
+    },
+    {
+      "name": "cascade-qa",
+      "source": {
+        "source": "local",
+        "path": "./.codex/plugins/cascade-qa"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Developer Tools"
     }
   ]
 }

@@ -21,15 +21,17 @@ actor:
     - acceptance-authoring
   preferred_existing_roles:
     - orchestrator
-    - business-analyst
 skill_calls:
-  - skill: discover
+  - skill: context
     when: product or journey intent is missing
     required: false
-  - skill: compose-spec
+  - skill: cascade-product:define-product
+    when: product intent must be grounded and accepted
+    required: false
+  - skill: create-spec
     when: validated intent needs durable requirements or scenarios
     required: false
-  - skill: functional-qa
+  - skill: cascade-qa:design-tests
     when: behavior examples need an executable acceptance route
     required: true
 nodes:

@@ -1,0 +1,6 @@
+interface:
+  display_name: "Visual QA"
+  short_description: "Validate rendered UI across viewports."
+  default_prompt: "Use $visual-qa to compare this rendered interface with its expected product, UX, brand, and design sources across relevant viewports and states."
+policy:
+  allow_implicit_invocation: true

@@ -2,7 +2,7 @@
 
 ## Authority
 
-build-persona exclusively creates or revises the canonical versioned human model. evaluate-persona only audits a frozen canonical artifact or projection, and compile-persona only produces immutable purpose-limited projections. Cascade Simulations consumes the canonical projection and owns runtime persona/actor execution; Agent Architect consumes it for architecture context and never creates a parallel canonical model. No Persona skill executes a simulation, determines market truth, prioritizes a product, authors generic prompt mechanics, or reduces a generic evaluation.
+build-persona exclusively creates or revises the canonical versioned human model. evaluate-persona only audits a frozen canonical artifact or projection, and compile-persona only produces immutable purpose-limited projections. Cascade Simulations consumes the canonical projection and owns runtime persona/actor execution; Cascade Architect consumes it for architecture context and never creates a parallel canonical model. No Persona skill executes a simulation, determines market truth, prioritizes a product, authors generic prompt mechanics, or reduces a generic evaluation.
 
 ## Integration aliases
 
@@ -18,7 +18,7 @@ Dependencies are resolved from the current enabled plugin registry by exact alia
 
 ## Data flow
 
-sources -> claim ledger -> canonical persona + digest -> projection manifest + digest -> Product | Market Intelligence | Agent Architect | Simulations | Evals
+sources -> claim ledger -> canonical persona + digest -> projection manifest + digest -> Product | Market Intelligence | Cascade Architect | Simulations | Evals
 
 Every downstream artifact binds the canonical digest and mapping version.
 Canonical artifacts use the packaged `scripts/canonicalize_json.mjs`

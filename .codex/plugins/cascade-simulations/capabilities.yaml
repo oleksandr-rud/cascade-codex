@@ -1,0 +1,117 @@
+schema_version: 1
+plugin:
+  name: cascade-simulations
+  version: 0.2.4+codex.20260826233510
+model_policy:
+  model: gpt-5.6-sol
+  planning_reasoning_effort: high
+  evaluation_reasoning_effort: max
+skills:
+  - route: cascade-simulations:manage-simulation-campaign
+    description: Design, version, register, govern, and aggregate a multi-case or multi-contour simulation campaign without executing targets.
+    triggers: [an explicit versioned simulation campaign or controlled comparison is required]
+    anti_triggers: [one bounded actor run or independent frozen-run evaluation is requested]
+    consumes: [simulation-decision, simulation-contracts]
+    produces: [simulation-campaign]
+    required_dependencies: []
+    optional_dependencies: [cascade-personas:compile-persona, cascade-qa:design-tests, cascade-evals:simulation-evaluation]
+    policy_tags: [simulation, campaign-governance]
+    effect: CANDIDATE_WRITE
+    authority: READ_ONLY
+    evaluation_cases: [fixed-contracts, non-dispatching-campaign]
+  - route: cascade-simulations:execute-simulation-campaign
+    description: Preflight and execute one approved campaign through host-authorized adapters, freeze immutable evidence, clean up, and emit an execution receipt.
+    triggers: [an approved resolved simulation campaign must be executed]
+    anti_triggers: [campaign design or independent semantic judgment is requested]
+    consumes: [simulation-campaign, host-runtime-contract]
+    produces: [frozen-simulation-campaign-run]
+    required_dependencies: []
+    optional_dependencies: [cascade-simulations:simulate, cascade-qa:design-tests]
+    policy_tags: [simulation, campaign-execution]
+    effect: HOST_EFFECT
+    authority: LOCAL_WRITE
+    evaluation_cases: [preflight-block, immutable-evidence, cleanup]
+  - route: cascade-simulations:simulate
+    description: Prepare or run one bounded goal-directed actor simulation through a declared interface and observable outcome contract.
+    triggers: [a real or synthetic actor should perform meaningful bounded work]
+    anti_triggers: [a multi-campaign portfolio or independent evaluation is requested]
+    consumes: [simulation-actor, simulation-brief, simulation-outcome, simulation-adapter]
+    produces: [frozen-simulation-run]
+    required_dependencies: []
+    optional_dependencies: []
+    policy_tags: [simulation, execution]
+    effect: HOST_EFFECT
+    authority: LOCAL_WRITE
+    evaluation_cases: [bounded-loop, authority-preservation, frozen-evidence]
+  - route: cascade-simulations:simulation-actor
+    description: Derive an executable simulation actor from grounded persona evidence, a supplied role, or an explicit synthetic hypothesis.
+    triggers: [a simulation needs an actor contract]
+    anti_triggers: [canonical persona creation or target execution is requested]
+    consumes: [persona-projection, actor-brief]
+    produces: [simulation-actor]
+    required_dependencies: []
+    optional_dependencies: [cascade-personas:compile-persona]
+    policy_tags: [simulation, actor]
+    effect: CANDIDATE_WRITE
+    authority: READ_ONLY
+    evaluation_cases: [knowledge-boundary, synthetic-honesty]
+  - route: cascade-simulations:simulation-persona
+    description: Validate and consume a frozen Persona simulation projection as the immutable runtime persona contract.
+    triggers: [a Persona-backed simulation needs projection validation]
+    anti_triggers: [persona creation or revision is requested]
+    consumes: [persona-projection]
+    produces: [simulation-persona-contract]
+    required_dependencies: [cascade-personas:compile-persona]
+    optional_dependencies: []
+    policy_tags: [simulation, persona-consumption]
+    effect: READ_ONLY
+    authority: READ_ONLY
+    evaluation_cases: [projection-digest, no-persona-mutation]
+  - route: cascade-simulations:simulation-brief
+    description: Compile a grounded domain and feature brief for an actor without prescribing a click-by-click script.
+    triggers: [a simulation actor needs domain and feature context]
+    anti_triggers: [the simulation outcome or interface is the missing contract]
+    consumes: [product-contract, domain-evidence]
+    produces: [simulation-brief]
+    required_dependencies: []
+    optional_dependencies: []
+    policy_tags: [simulation, brief]
+    effect: CANDIDATE_WRITE
+    authority: READ_ONLY
+    evaluation_cases: [grounded-brief, no-scripted-solution]
+  - route: cascade-simulations:simulation-outcome
+    description: Define observable success, evidence, failure, and prohibited-shortcut conditions for a simulation.
+    triggers: [a simulation needs an outcome contract]
+    anti_triggers: [run review or target execution is requested]
+    consumes: [simulation-goal]
+    produces: [simulation-outcome]
+    required_dependencies: []
+    optional_dependencies: []
+    policy_tags: [simulation, outcome]
+    effect: CANDIDATE_WRITE
+    authority: READ_ONLY
+    evaluation_cases: [observable-success, prohibited-shortcut]
+  - route: cascade-simulations:simulation-adapter
+    description: Define or audit an action-level interface adapter with permissions, confirmations, idempotency, errors, recovery, and cleanup.
+    triggers: [a simulation interface adapter is missing or unsafe]
+    anti_triggers: [campaign execution is already frozen and only review is requested]
+    consumes: [interface-contract, permission-policy]
+    produces: [simulation-adapter]
+    required_dependencies: []
+    optional_dependencies: []
+    policy_tags: [simulation, adapter]
+    effect: CANDIDATE_WRITE
+    authority: READ_ONLY
+    evaluation_cases: [permission-boundary, cleanup]
+  - route: cascade-simulations:simulation-review
+    description: Review one frozen dynamic simulation run against its actor, interface, brief, outcome, permissions, and limits.
+    triggers: [a frozen simulation run needs controller review]
+    anti_triggers: [simulation execution, repair, or independent semantic evaluation is requested]
+    consumes: [frozen-simulation-run]
+    produces: [simulation-review]
+    required_dependencies: []
+    optional_dependencies: []
+    policy_tags: [simulation, review]
+    effect: READ_ONLY
+    authority: READ_ONLY
+    evaluation_cases: [run-contract, no-target-repair]

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Manage Simulation Campaign"
+  short_description: "Design and govern simulation campaigns"
+  default_prompt: "Use $manage-simulation-campaign to design, version, coordinate, aggregate, or report a controlled simulation campaign without executing targets."

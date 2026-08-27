@@ -1349,7 +1349,7 @@ describe("simulation definition contracts", () => {
         recommended_change: "Route reviewed evidence to a new persona revision.",
         evidence_paths: ["evaluation/evaluation.json"],
         confidence: "medium",
-        disposition_route: "synthesis-to-spec",
+        disposition_route: "create-spec",
       },
       {
         runId: "run-governed-refinement",
@@ -1409,7 +1409,7 @@ describe("simulation definition contracts", () => {
     });
     expect(disposition.persona_revision_authorized).toBe(true);
     expect(disposition.direct_persona_mutation_allowed).toBe(false);
-    expect(disposition.next_route).toBe("synthesis-to-spec");
+    expect(disposition.next_route).toBe("create-spec");
     expect(() =>
       validatePersonaRefinementDisposition(
         { ...disposition, direct_persona_mutation_allowed: true },

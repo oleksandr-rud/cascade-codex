@@ -9,7 +9,8 @@ Current scaffold boundaries:
 
 | Area | Target Path | Owner | Notes |
 |---|---|---|---|
-| Harness skills | `.codex/skills/` | Cascade maintainers | Reusable workflow contracts and templates. |
+| Harness skills | `.codex/skills/` | Cascade maintainers | Target-repository context, authority, mutation, execution, persistence, and validation adapters; portable methods belong in plugins. |
+| Plugin sources | `.codex/plugins/` | Plugin maintainers | Standalone reusable methods, schemas, templates, validators, and subject evaluation packs. |
 | Harness agents | `.codex/agents/` | Cascade maintainers | Role manifests, instructions, and skill maps. |
 | Durable docs | `docs/` | Project maintainers | Product, design, spec, work, glossary, and pattern memory. |
 | Validation script | `scripts/cascade/validate.ts` | Project maintainers | Primary executable check for the current scaffold. |

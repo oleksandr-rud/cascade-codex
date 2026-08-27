@@ -82,7 +82,7 @@ single next state is genuinely being proposed.
 ## Routing
 
 - Use cascade-personas:build-persona only when a canonical human model is missing; use cascade-personas:compile-persona for a product or simulation view.
-- Use cascade-market-intelligence:research-market, cascade-market-intelligence:evaluate-market-opportunity, or cascade-market-intelligence:design-market-experiments for external market evidence and PMF hypotheses.
+- Use cascade-market:research-market, cascade-market:evaluate-market-opportunity, or cascade-market:design-market-experiments for external market evidence and PMF hypotheses.
 - Use cascade-prompt:prompt to compile production interview, research, agent, or evaluation prompts.
 - Use cascade-simulations:simulate for bounded behavior or workflow rehearsals; synthetic runs reveal design and interaction risks but do not prove demand or product-market fit.
 - Use cascade-evals:prompt-evaluation for a controlled prompt campaign,
@@ -126,6 +126,11 @@ work product with its exact artifact_id, version, status, and finalized digest.
 Its `expected_output` must repeat that same Product artifact_id, version,
 Product status, and digest; never substitute the handoff's READY/PASS status for
 the Product work product's PROPOSED or PENDING_APPROVAL status.
+Because PREPARE means the consumer has not acted, a successful READY PREPARE
+envelope must still close the deferred action: name the resume owner and next
+action and provide exactly one required artifact or a reason no artifact is
+applicable. Null resume fields are valid only after terminal acknowledged PASS,
+not when the surrounding decision still requires approval or consumer review.
 Additional real inbound receipts may remain separate, but they do not replace
 that one Product-output binding.
 
@@ -133,9 +138,18 @@ that one Product-output binding.
 
 1. Freeze the current decision, lifecycle state, product scope, actors, evidence horizon, authority, and non-goals.
 2. Build a decision ledger: decision ID, question, accepted inputs, rejected inputs, owner, state, rationale, confidence, invalidation trigger, and next gate.
+   Keep each recommendation self-contained at the decision layer. Restate the
+   visible outcome, current baseline, proposed slice, and acceptance boundary;
+   do not delegate those material terms to an opaque source package. If a
+   required term is absent from the visible packet, preserve it as a named gap
+   rather than inventing or silently omitting it.
    In the typed work product, `traceability` may connect only declared
    section_id, journey_id, requirement_id, or claim_id values. Source-artifact
    IDs belong only in `evidence_ids`; journey-step IDs are not trace nodes.
+   Before serialization, every section, journey, requirement, and validation
+   claim object must include the `evidence_ids` key. Populate it only with
+   exact `source_artifacts` IDs, or with an empty array for an unsupported GAP
+   or NOT_RUN item; never omit the key.
 3. Identify the earliest evidence gap. Route only the needed contributor; do not run the whole plugin stack by default.
 4. Use $define-product when the opportunity is sufficiently grounded to write or revise the product definition.
 5. Use $validate-product when a product hypothesis, workflow, requirement, or release decision needs a bounded evidence plan or assessment.
@@ -143,6 +157,11 @@ that one Product-output binding.
    Freeze the target population or cohort, current baseline, observation
    window, success and kill rules, and guardrails in the proposal before any
    release. Do not defer those learning-contract fields until launch.
+   When a threshold, window, baseline, or guardrail is proposed rather than
+   supplied, label it explicitly as a decision term awaiting owner acceptance,
+   keep its validation claim NOT_RUN, and do not cite pain or market evidence
+   as if that evidence established the numeric value. Trace the proposed term
+   to the proposal/decision node and its owner-confirmation condition.
 7. Produce a delivery-ready handoff only when requirements, non-goals, journeys, acceptance evidence, dependencies, risks, and open questions are explicit.
 8. Validate every decision/gate artifact before it is used:
    `uv run --offline --with jsonschema python ../../scripts/validate_artifact.py decision DECISION.json --schema ../../schemas/product-decision.schema.json`.

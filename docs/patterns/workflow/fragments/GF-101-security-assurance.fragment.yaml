@@ -29,10 +29,10 @@ actor:
   preferred_existing_roles:
     - security
 skill_calls:
-  - skill: secure-design
+  - skill: cascade-security:secure-design
     when: design or architecture risk exists before implementation
     required: true
-  - skill: auth-analysis
+  - skill: cascade-security:auth-analysis
     when: authentication, session, role, or tenant behavior changes
     required: false
   - skill: validate-change

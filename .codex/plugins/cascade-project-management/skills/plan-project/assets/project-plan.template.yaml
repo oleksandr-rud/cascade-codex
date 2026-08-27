@@ -1,0 +1,33 @@
+schema_version: 1
+artifact_id: PM-PLAN-001
+selected_skill: plan-project
+artifact_kind: PROJECT_PLAN
+status: PROPOSED
+subject:
+  id: INIT-001
+  title: Example initiative
+  kind: engineering
+  outcome: Observable outcome
+  decision_owner: null
+sources: []
+work_items:
+  - id: WI-001
+    outcome: First observable slice
+    owner: null
+    state: PROPOSED
+    horizon: FIRST
+    depends_on: []
+    artifact_refs: []
+    acceptance_ref: null
+    next_action:
+      owner: decision-owner
+      adapter_id: null
+      input_ref: null
+risks: []
+decisions: []
+handoffs: []
+boundaries:
+  product_priority_changed: false
+  project_state_mutated: false
+  external_action_executed: false
+  archive_applied: false

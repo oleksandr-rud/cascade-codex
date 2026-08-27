@@ -1,0 +1,4 @@
+interface:
+  display_name: "Prepare Agent Prompt"
+  short_description: "Prepare an architecture-bound prompt brief"
+  default_prompt: "Use $prepare-agent-prompt to compile an architecture-bound brief for Cascade Prompt."

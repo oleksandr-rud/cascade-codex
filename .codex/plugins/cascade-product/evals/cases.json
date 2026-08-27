@@ -84,12 +84,39 @@
       ],
     "fixture": {
         "output_contract": {"response_encoding": "json", "required_response_fields": ["product_artifact", "product_artifact_sha256", "decision", "decision_sha256", "handoffs"], "handoff_wrapper_fields": ["artifact", "sha256"], "product_artifact_schema": "schemas/product-work-product.schema.json", "expected_artifact_kind": "LIFECYCLE_RECORD", "decision_schema": "schemas/product-decision.schema.json", "handoff_schema": "schemas/handoff-envelope.schema.json", "require_handoff": false},
-        "supplied": [
-          "validated pain evidence",
-          "current lifecycle state",
-          "named decision owner"
-        ],
-        "absent": [],
+    "supplied": [
+      "validated pain evidence",
+      "current lifecycle state",
+      "named decision owner"
+    ],
+    "input_bindings": [
+      {
+        "artifact_id": "validated-pain-evidence",
+        "version": "1.0.0",
+        "sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+        "status": "ACCEPTED",
+        "freshness": "CURRENT",
+        "accepted_by": "repair-workflow-decision-owner"
+      },
+      {
+        "artifact_id": "current-lifecycle-state",
+        "version": "1.0.0",
+        "sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+        "status": "ACCEPTED",
+        "freshness": "CURRENT",
+        "accepted_by": "repair-workflow-decision-owner"
+      },
+      {
+        "artifact_id": "repair-workflow-owner-receipt",
+        "version": "1.0.0",
+        "sha256": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+        "status": "ACCEPTED",
+        "freshness": "CURRENT",
+        "accepted_by": "repair-workflow-decision-owner"
+      }
+    ],
+    "decision_owner": "repair-workflow-decision-owner",
+    "absent": [],
         "permissions": {
           "model_calls": false,
           "tools": false,
@@ -220,10 +247,21 @@
       ],
       "fixture": {
         "output_contract": {"response_encoding": "json", "required_response_fields": ["product_artifact", "product_artifact_sha256", "decision", "decision_sha256", "handoffs"], "handoff_wrapper_fields": ["artifact", "sha256"], "product_artifact_schema": "schemas/product-work-product.schema.json", "expected_artifact_kind": "VALIDATION_REPORT", "decision_schema": "schemas/product-decision.schema.json", "handoff_schema": "schemas/handoff-envelope.schema.json", "require_handoff": false},
-        "supplied": [
-          "ten synthetic persona receipts"
-        ],
-        "absent": [],
+    "supplied": [
+      "ten synthetic persona receipts"
+    ],
+    "input_bindings": [
+      {
+        "artifact_id": "synthetic-persona-receipt-set",
+        "version": "10",
+        "sha256": "5555555555555555555555555555555555555555555555555555555555555555",
+        "status": "PASS",
+        "freshness": "CURRENT",
+        "accepted_by": "product-market-evidence-owner"
+      }
+    ],
+    "decision_owner": "product-market-evidence-owner",
+    "absent": [],
         "permissions": {
           "model_calls": false,
           "tools": false,
@@ -322,11 +360,30 @@
       ],
       "fixture": {
         "output_contract": {"response_encoding": "json", "required_response_fields": ["product_artifact", "product_artifact_sha256", "decision", "decision_sha256", "handoffs"], "handoff_wrapper_fields": ["artifact", "sha256"], "product_artifact_schema": "schemas/product-work-product.schema.json", "expected_artifact_kind": "VALIDATION_REPORT", "decision_schema": "schemas/product-decision.schema.json", "handoff_schema": "schemas/handoff-envelope.schema.json", "require_handoff": false},
-        "supplied": [
-          "source inspection receipt",
-          "schema test receipt"
-        ],
-        "absent": [
+    "supplied": [
+      "source inspection receipt",
+      "schema test receipt"
+    ],
+    "input_bindings": [
+      {
+        "artifact_id": "source-inspection-receipt",
+        "version": "1",
+        "sha256": "8888888888888888888888888888888888888888888888888888888888888888",
+        "status": "PASS",
+        "freshness": "CURRENT",
+        "accepted_by": "product-release-evidence-owner"
+      },
+      {
+        "artifact_id": "schema-test-receipt",
+        "version": "1",
+        "sha256": "9999999999999999999999999999999999999999999999999999999999999999",
+        "status": "PASS",
+        "freshness": "CURRENT",
+        "accepted_by": "product-release-evidence-owner"
+      }
+    ],
+    "decision_owner": "product-release-evidence-owner",
+    "absent": [
           "runtime proof",
           "deployment proof",
           "release receipt",
@@ -358,10 +415,29 @@
       ],
       "fixture": {
         "output_contract": {"response_encoding": "json", "required_response_fields": ["product_artifact", "product_artifact_sha256", "decision", "decision_sha256", "handoffs"], "handoff_wrapper_fields": ["artifact", "sha256"], "product_artifact_schema": "schemas/product-work-product.schema.json", "expected_artifact_kind": "LIFECYCLE_RECORD", "decision_schema": "schemas/product-decision.schema.json", "handoff_schema": "schemas/handoff-envelope.schema.json", "require_handoff": false},
-        "supplied": [
-          "conflicting accepted interviews and analytics"
-        ],
-        "absent": [
+    "supplied": [
+      "conflicting accepted interviews and analytics"
+    ],
+    "input_bindings": [
+      {
+        "artifact_id": "accepted-interview-ledger",
+        "version": "1",
+        "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "status": "ACCEPTED",
+        "freshness": "CURRENT",
+        "accepted_by": "product-evidence-owner"
+      },
+      {
+        "artifact_id": "accepted-analytics-ledger",
+        "version": "1",
+        "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "status": "ACCEPTED",
+        "freshness": "CURRENT",
+        "accepted_by": "product-evidence-owner"
+      }
+    ],
+    "decision_owner": "product-evidence-owner",
+    "absent": [
           "governing precedence rule"
         ],
         "permissions": {
@@ -381,7 +457,7 @@
       "skill": "manage-product-lifecycle",
       "category": "missing-dependency",
       "expected_status": "BLOCKED",
-      "request": "The next gate requires cascade-market-intelligence:research-market, but the plugin is disabled.",
+      "request": "The next gate requires cascade-market:research-market, but the plugin is disabled.",
       "oracle": "Emits a typed BLOCKED handoff with exact alias, owner, required artifact, and resume action.",
       "mechanical_assertions": [
         "status_matches_expected",
@@ -394,7 +470,7 @@
           "required disabled dependency alias"
         ],
         "absent": [
-          "enabled cascade-market-intelligence:research-market"
+          "enabled cascade-market:research-market"
         ],
         "permissions": {
           "model_calls": false,

@@ -99,7 +99,7 @@ Computer Use evidence cannot cover them.
 | Feature / Flow | Source Docs Or Spec IDs | Code Areas / Public Contracts | Touched Directly? | Protected Adjacent Behavior | Required Check | Status | Route |
 |---|---|---|---|---|---|---|---|
 | Native desktop simulation | current request | desktop adapter/environment provider | yes | isolation and platform identity | desktop fixture campaign | `NOT_RUN` | `implement-change` |
-| Computer Use visual loop | W-006/program | shared visual interface | yes | browser-specific logic remains in browser | adapter conformance | `NOT_RUN` | `architecture-review` |
+| Computer Use visual loop | W-006/program | shared visual interface | yes | browser-specific logic remains in browser | adapter conformance | `NOT_RUN` | `cascade-software-architect:review-architecture` |
 | Native architecture evidence | native default | app lifecycle and platform permissions | no | simulator proof is not release proof | evidence classification | `NOT_RUN` | `validate-change` |
 
 ## File Ownership

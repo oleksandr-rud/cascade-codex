@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "profile_id": "cascade-qa-trajectory-v1",
+  "version": 1,
+  "role": "trajectory",
+  "decision": "Does Cascade QA follow a disciplined path from accepted behavior through risk, test design, evidence eligibility, gate reduction, and repair routing?",
+  "population": "All frozen qualification-v1 Cascade QA traces.",
+  "model": "gpt-5.6-sol",
+  "threshold": 0.95,
+  "minimum_dimension": 3,
+  "dimensions": [
+    {"dimension_id": "behavior-admission", "description": "The trajectory verifies accepted behavior and authority before quality decisions and returns GAP rather than inventing intent.", "weight": 0.25, "anchors": {"0": "It invents behavior or acts without authority.", "1": "Behavior checks are mostly absent.", "2": "Some checks occur but assumptions remain.", "3": "Admission is sound with one minor omission.", "4": "Every case binds exact behavior and authority before proceeding."}},
+    {"dimension_id": "risk-to-oracle", "description": "Material risks map to proportional contours, deterministic or semantic oracles, evidence identities, and cleanup.", "weight": 0.30, "anchors": {"0": "Coverage and oracles are unusable.", "1": "Most risks lack valid proof routes.", "2": "Core risks map but several evidence or oracle gaps remain.", "3": "Mapping is sound with one minor omission.", "4": "Every selected risk has the minimum sufficient, exact, and executable evidence contract."}},
+    {"dimension_id": "eligibility-and-reduction", "description": "Evidence identity, freshness, claim scope, and non-compensating deterministic gates are applied before recommendation.", "weight": 0.25, "anchors": {"0": "Ineligible evidence drives success.", "1": "Several missing or failed checks are upgraded.", "2": "Most gates work but evidence classes sometimes blur.", "3": "Reduction is conservative with one minor weakness.", "4": "Every recommendation follows exact eligibility and non-compensation rules."}},
+    {"dimension_id": "repair-routing", "description": "Failures route to product, test, environment, or evidence owners only after sufficient public-boundary proof.", "weight": 0.20, "anchors": {"0": "Repair ownership is arbitrary or unsafe.", "1": "Several failures route incorrectly.", "2": "Primary classifications work but proof is incomplete.", "3": "Routing is sound with one minor issue.", "4": "Every failure receives an evidence-supported classification, exact owner, prohibited shortcuts, and rerun contract."}}
+  ],
+  "blindness": ["skill", "expected_status", "oracle", "mechanical_assertions", "threshold", "minimum_dimension", "peer_judgments", "builder_context"]
+}

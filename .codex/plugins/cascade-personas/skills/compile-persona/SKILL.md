@@ -104,7 +104,7 @@ Resolve a required dependency by its exact installed alias. If a required alias 
    Prompt's `runtime/intake-interview.md` when Guided intake is required, the
    applicable grounded/safety/task overlays,
    `runtime/tier-frontier-autonomous.md`, `runtime/evaluation.md` when testing,
-   and `runtime/model-index.json`; no other tier is in this frozen composition.
+   and `runtime/model-index.yaml`; no other tier is in this frozen composition.
 
 ## Output
 

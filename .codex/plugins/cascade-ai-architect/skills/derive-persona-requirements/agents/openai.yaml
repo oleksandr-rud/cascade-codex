@@ -1,0 +1,4 @@
+interface:
+  display_name: "Derive Persona Requirements"
+  short_description: "Derive AI requirements from a persona view"
+  default_prompt: "Use $derive-persona-requirements to translate this frozen persona projection into AI-system requirements."

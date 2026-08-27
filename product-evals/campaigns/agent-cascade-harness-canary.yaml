@@ -25,7 +25,7 @@ specialized_evaluation:
     - agent-cascade-harness-coverage
   reason: This campaign evaluates a Cascade route and trace, so deterministic eligibility and independent harness-evaluator evidence must precede general simulation evaluation.
   route_ids:
-    - harness-evaluation
+    - cascade-evals:harness-evaluation
   trace_ids:
     - HX-055
 task_files:

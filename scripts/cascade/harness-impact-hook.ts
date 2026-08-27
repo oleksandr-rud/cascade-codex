@@ -46,13 +46,13 @@ function decisionForPath(path: string, patch = ""): HarnessImpactDecision {
     path === "harness-evals/judge-profiles.yaml"
     || path === "harness-evals/judge-response.schema.json"
     || path.startsWith("harness-evals/rubrics/")
-    || path.startsWith(".codex/skills/judge-eval-builder/")
+    || path.startsWith(".codex/plugins/cascade-evals/skills/build-judge/")
   ) return "JUDGE_CONTRACT_REVIEW";
   if (
     path === "harness-evals/skill-cases.yaml"
     || path === "harness-evals/interactions.yaml"
     || path === "harness-evals/agent-outcomes.yaml"
-    || path.startsWith(".codex/skills/harness-evaluation/")
+    || path.startsWith(".codex/plugins/cascade-evals/skills/harness-evaluation/")
     || path === ".codex/agents/harness-evaluator.toml"
     || path.startsWith(".codex/agents/harness-evaluator/")
   ) return "ASSERTION_REVIEW";

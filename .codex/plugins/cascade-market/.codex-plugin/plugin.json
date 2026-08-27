@@ -1,0 +1,36 @@
+{
+  "name": "cascade-market",
+  "version": "0.2.0+codex.20260827155001",
+  "description": "Research markets, evaluate opportunities, design decision-grade experiments, and create evidence-backed positioning and messaging without converting synthetic actors into market proof.",
+  "author": {
+    "name": "Cascade"
+  },
+  "keywords": [
+    "market-research",
+    "market-validation",
+    "competitive-intelligence",
+    "customer-pain",
+    "market-economics",
+    "product-market-fit",
+    "brand-positioning",
+    "messaging"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Cascade Market",
+    "shortDescription": "Research markets and shape evidence-backed positioning.",
+    "longDescription": "Build current source ledgers for pains, segments, competitors, alternatives, economics, and constraints; assess opportunities; design experiments; and turn accepted evidence into positioning, messaging, naming, tone, proof, and trust language without inventing market claims.",
+    "developerName": "Cascade",
+    "category": "Productivity",
+    "capabilities": [
+      "Interactive",
+      "Write"
+    ],
+    "defaultPrompt": [
+      "Research this market with a current evidence ledger.",
+      "Evaluate and challenge this market opportunity.",
+      "Design a market experiment with success and kill criteria.",
+      "Create evidence-backed positioning and messaging for this product."
+    ]
+  }
+}

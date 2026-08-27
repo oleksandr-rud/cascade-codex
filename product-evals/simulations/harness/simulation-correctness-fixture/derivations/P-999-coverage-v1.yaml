@@ -85,14 +85,14 @@ evidence_sources:
     reference: P-999 exists only to exercise contract mechanics.
     reference_window: not applicable
     retention_policy:
-      deletion_owner: Cascade harness maintainer
+      deletion_owner: Cascade coding-agent maintainer
       expires_at: null
       mode: source-controlled
     sensitivity: none
-    source_authority: Cascade harness maintainer
+    source_authority: Cascade coding-agent maintainer
     usage_rights: fixture
 generator:
-  input_digest: 2499e79f69b762828ef7c2cd470d851e54af7245542c9f2735baf8b1c02b641f
+  input_digest: 284df2b4f322f49c0d321aa3481752bd465bdde0c70e1cfb8c58ba8cb8d70789
   kind: deterministic-manifest
   name: cascade-persona-derivation
   version: 1.0.0
@@ -115,7 +115,7 @@ product_personas:
     sha256: ec4a9d65defa3f02d6e03565d4be64b3062eb317f279cdb0dc15f483956a4bbf
 review:
   reviewed_at: 2026-08-03T00:00:00Z
-  reviewer_identity: cascade-harness-maintainer
+  reviewer_identity: cascade-coding-agent
   status: approved
 schema_version: 1
 simulation_id: simulation-correctness-fixture

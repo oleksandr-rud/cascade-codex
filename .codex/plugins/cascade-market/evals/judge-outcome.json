@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "profile_id": "market-outcome",
+  "version": 3,
+  "role": "outcome",
+  "decision": "Does the plugin produce trustworthy, decision-relevant market research, opportunity assessments, experiments, and positioning candidates without overstating evidence?",
+  "population": "Market research, opportunity assessment, validation experiment, and brand-positioning requests across complete, sparse, adversarial, and out-of-authority evidence. Apply each dimension only to cases where the visible request and subject contract make it applicable; a correct typed omission outside that scope is compliance, not missing output.",
+  "model": "gpt-5.6-sol",
+  "threshold": 0.95,
+  "minimum_dimension": 3,
+  "dimensions": [
+    {"dimension_id": "evidence-quality", "description": "Claims are current, attributable, classified, triangulated where material, and contradiction-aware.", "weight": 0.16, "anchors": {"0": "Fabricated or unattributed claims.", "1": "Weak sources treated as fact.", "2": "Mixed source quality.", "3": "Trustworthy with minor omissions.", "4": "Decision-grade provenance, freshness, directness, and limits."}},
+    {"dimension_id": "market-coverage", "description": "The output covers the decision-relevant pains, segments, alternatives, competitors, economics, buyers, and constraints.", "weight": 0.16, "anchors": {"0": "No useful market view.", "1": "Single superficial lane.", "2": "Material gaps.", "3": "Applicable coverage with minor gaps.", "4": "Focused, complete, and non-redundant coverage."}},
+    {"dimension_id": "uncertainty-honesty", "description": "Inference, vendor claims, estimates, contradictions, gaps, and synthetic inputs retain their true evidence state.", "weight": 0.16, "anchors": {"0": "False certainty.", "1": "Material overclaiming.", "2": "Mixed labeling.", "3": "Honest with minor gaps.", "4": "Exact claim classes, scope, confidence, sensitivity, and gaps."}},
+    {"dimension_id": "experiment-strength", "description": "Experiments are falsifiable, behavior-aligned, predeclared, bias-aware, and decision-linked.", "weight": 0.16, "anchors": {"0": "No valid test.", "1": "Vanity or leading proxy.", "2": "Partial experiment.", "3": "Decision-capable with minor gaps.", "4": "Minimal, ethical, instrumented, success/kill-bound test."}},
+    {"dimension_id": "handoff-quality", "description": "Frozen evidence and results reach Product without turning into unauthorized requirements or decisions.", "weight": 0.16, "anchors": {"0": "Makes unsupported product decisions.", "1": "Vague handoff.", "2": "Partial identity or scope.", "3": "Actionable with minor gaps.", "4": "Digest-bound evidence, limits, invalidation, and terminal owner."}},
+    {"dimension_id": "positioning-quality", "description": "Brand candidates bind audience, category, promise, proof, tone, terminology, and candidate state to accepted Market, Product, and Persona sources without inventing superiority or outcomes.", "weight": 0.2, "anchors": {"0": "Invented positioning, proof, audience, or accepted state.", "1": "Material claims lack source support or cross owner boundaries.", "2": "Useful candidate with important positioning or evidence gaps.", "3": "Grounded positioning with minor omissions or imprecision.", "4": "Exact audience, category, promise, proof, tone, terminology, source limits, and reviewable candidate state."}}
+  ],
+  "blindness": ["No acceptance threshold in judge packet", "No sealed expected labels", "No peer judgments", "No builder rationale"]
+}

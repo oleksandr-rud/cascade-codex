@@ -70,4 +70,4 @@ Graph Revision: `<REVISION_OR_NONE>`
 
 ## Next Entry Point
 
-`context | ingest-spec | discover | docs-impact-map | pattern-context | orchestrate-work | plan-change | functional-qa | implement-change | review-change | validate-change | test-autorepair | issue-intake | closeout`
+`context | create-spec | pattern-context | cascade-project-management:define-work-item | cascade-project-management:plan-project | cascade-project-management:manage-project | plan-change | cascade-qa:plan-quality | cascade-qa:design-tests | implement-change | run-qa-plan | cascade-qa:assess-quality | cascade-qa:triage-defects | repair-tests | cascade-software-architect:review-change | validate-change | cascade-project-management:close-project | closeout`

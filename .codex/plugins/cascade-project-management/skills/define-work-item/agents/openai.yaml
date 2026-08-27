@@ -1,0 +1,4 @@
+interface:
+  display_name: "Define Work Item"
+  short_description: "Draft grounded issues, stories, and tasks"
+  default_prompt: "Use $define-work-item to turn this evidence into one tracker-ready issue, story, or task."

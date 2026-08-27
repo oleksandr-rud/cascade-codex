@@ -24,19 +24,109 @@ import { validateBriefRepository } from "./briefs";
 import { validateAdmissionRepository } from "./admission";
 import { loadProductArtifactPolicy, loadProductPolicyRegistry } from "./policies";
 import { parseStrictYaml, readStructured } from "./structured-data";
+import {
+  buildPluginCapabilityCatalog,
+  PLUGIN_CAPABILITY_CATALOG_RELATIVE,
+} from "./plugin-workflow";
 
 const REPO_PLUGIN_NAMES = [
   "cascade-prompt",
   "cascade-simulations",
   "cascade-evals",
-  "cascade-agent-architect",
-  "cascade-harness-maintainer",
+  "cascade-ai-architect",
+  "cascade-software-architect",
+  "cascade-coding-agent",
   "cascade-personas",
   "cascade-product",
-  "cascade-market-intelligence",
+  "cascade-market",
+  "cascade-design",
+  "cascade-security",
+  "cascade-project-management",
+  "cascade-qa",
 ] as const;
 const REPO_PLUGIN_MARKETPLACE = ".agents/plugins/marketplace.json";
 const CASCADE_PROMPT_PLUGIN_NAME = "cascade-prompt";
+const PLUGIN_SKILL_ROUTES = {
+  prompt: "cascade-prompt:prompt",
+  workflow_plan: "cascade-software-architect:plan-workflow",
+  software_architecture: "cascade-software-architect:architect-software-system",
+  architecture_patterns: "cascade-software-architect:select-architecture-patterns",
+  architecture_review: "cascade-software-architect:review-architecture",
+  change_review: "cascade-software-architect:review-change",
+  agent_architecture: "cascade-ai-architect:architect-ai-system",
+  agent_capabilities: "cascade-ai-architect:map-agent-capabilities",
+  agent_blueprint: "cascade-ai-architect:design-agent-blueprint",
+  agent_workflow: "cascade-ai-architect:design-agent-workflow",
+  agent_roles: "cascade-ai-architect:build-agent-roles",
+  agent_skills: "cascade-ai-architect:build-agent-skills",
+  agent_prompt: "cascade-ai-architect:prepare-agent-prompt",
+  agent_persona_requirements: "cascade-ai-architect:derive-persona-requirements",
+  agent_system_evaluation: "cascade-ai-architect:prepare-agent-evaluation",
+  agent_improvement: "cascade-ai-architect:improve-agent-system",
+  harness_audit: "cascade-coding-agent:audit-harness",
+  harness_adaptation: "cascade-coding-agent:adapt-harness",
+  harness_maintenance: "cascade-coding-agent:maintain-harness",
+  harness_asset_integration: "cascade-coding-agent:integrate-agent-assets",
+  persona_build: "cascade-personas:build-persona",
+  persona_compile: "cascade-personas:compile-persona",
+  persona_evaluate: "cascade-personas:evaluate-persona",
+  market_research: "cascade-market:research-market",
+  market_opportunity: "cascade-market:evaluate-market-opportunity",
+  market_experiment: "cascade-market:design-market-experiments",
+  marketing_brand: "cascade-market:brand-positioning",
+  product_lifecycle: "cascade-product:manage-product-lifecycle",
+  product_definition: "cascade-product:define-product",
+  product_validation: "cascade-product:validate-product",
+  simulation_execute: "cascade-simulations:simulate",
+  simulation_campaign_manage: "cascade-simulations:manage-simulation-campaign",
+  simulation_campaign_execute: "cascade-simulations:execute-simulation-campaign",
+  simulation_review: "cascade-simulations:simulation-review",
+  simulation_actor: "cascade-simulations:simulation-actor",
+  evaluation: "cascade-evals:evaluate",
+  judge_builder: "cascade-evals:build-judge",
+  prompt_evaluation: "cascade-evals:prompt-evaluation",
+  agent_evaluation: "cascade-evals:agent-evaluation",
+  simulation_evaluation: "cascade-evals:simulation-evaluation",
+  harness_evaluation: "cascade-evals:harness-evaluation",
+  design_flow: "cascade-design:ux-flow-review",
+  design_accessibility: "cascade-design:accessibility-review",
+  design_visual: "cascade-design:visual-qa",
+  design_system: "cascade-design:design-system",
+  security_codebase: "cascade-security:codebase-audit",
+  security_auth: "cascade-security:auth-analysis",
+  security_design: "cascade-security:secure-design",
+  work_item_definition: "cascade-project-management:define-work-item",
+  project_plan: "cascade-project-management:plan-project",
+  project_manage: "cascade-project-management:manage-project",
+  project_close: "cascade-project-management:close-project",
+  qa_plan: "cascade-qa:plan-quality",
+  qa_design_tests: "cascade-qa:design-tests",
+  qa_assess: "cascade-qa:assess-quality",
+  qa_triage: "cascade-qa:triage-defects",
+} as const;
+const PLUGIN_ADAPTER_DELEGATES: Record<string, string[]> = {
+  "create-spec": [
+    PLUGIN_SKILL_ROUTES.product_definition,
+    PLUGIN_SKILL_ROUTES.product_lifecycle,
+    PLUGIN_SKILL_ROUTES.persona_build,
+    PLUGIN_SKILL_ROUTES.persona_compile,
+    PLUGIN_SKILL_ROUTES.market_research,
+  ],
+  "run-qa-plan": [
+    PLUGIN_SKILL_ROUTES.qa_design_tests,
+    PLUGIN_SKILL_ROUTES.qa_assess,
+    PLUGIN_SKILL_ROUTES.qa_triage,
+  ],
+  "repair-tests": [
+    PLUGIN_SKILL_ROUTES.qa_triage,
+    PLUGIN_SKILL_ROUTES.qa_assess,
+  ],
+  closeout: [PLUGIN_SKILL_ROUTES.project_close],
+};
+const PLUGIN_ONLY_HOST_ADAPTERS = new Set([
+  "run-qa-plan",
+  "repair-tests",
+]);
 
 const REQUIRED_FILES = [
   "README.md",
@@ -47,6 +137,7 @@ const REQUIRED_FILES = [
   ".codex/config.toml",
   ".codex/hooks.json",
   ".agents/plugins/marketplace.json",
+  PLUGIN_CAPABILITY_CATALOG_RELATIVE,
   ...REPO_PLUGIN_NAMES.map((name) => `.codex/plugins/${name}/.codex-plugin/plugin.json`),
   ".codex/plugins/cascade-prompt/skills/prompt/references/model-system/model-registry.yaml",
   ".codex/plugins/cascade-prompt/skills/prompt/runtime/model-index.yaml",
@@ -166,10 +257,18 @@ const REQUIRED_FILES = [
   "product-evals/simulations/README.md",
   "product-evals/simulations/harness/README.md",
   "product-evals/simulations/product/README.md",
-  ".codex/agents/security/scripts/security_stack_scan.ts",
-  ".codex/skills/adapt-harness/schemas/harness-config.schema.json",
-  ".codex/skills/adapt-harness/schemas/onboarding-manifest.schema.json",
-  ".codex/skills/adapt-harness/schemas/project-inventory.schema.json",
+  ".codex/plugins/cascade-security/skills/codebase-audit/scripts/security_stack_scan.ts",
+  ".codex/plugins/cascade-project-management/schemas/project-management-artifact.schema.json",
+  ".codex/plugins/cascade-project-management/scripts/check_plugin.py",
+  ".codex/plugins/cascade-project-management/evals/evaluation-contract.json",
+  ".codex/plugins/cascade-project-management/evals/cases.json",
+  ".codex/plugins/cascade-qa/schemas/qa-artifact.schema.json",
+  ".codex/plugins/cascade-qa/scripts/check_plugin.py",
+  ".codex/plugins/cascade-qa/evals/evaluation-contract.json",
+  ".codex/plugins/cascade-qa/evals/cases.json",
+  ".codex/schemas/target/harness-config.schema.json",
+  ".codex/schemas/target/onboarding-manifest.schema.json",
+  ".codex/schemas/target/project-inventory.schema.json",
 ];
 
 const REQUIRED_FOLDERS = [
@@ -210,56 +309,31 @@ const REQUIRED_FOLDERS = [
   "scripts/cascade",
 ];
 
-const ARCHIVE_CHAIN_SURFACES: Record<string, string[]> = {
-  "CODEX.md": [
-    "automatically invokes",
-    "archive-work",
-    "ARCHIVED",
-    "ARCHIVE_DEFERRED",
-    "NOT_APPLICABLE",
-    "not a background scheduler",
-  ],
-  ".codex/agents/orchestrator/AGENT.md": [
-    "automatically use `archive-work`",
-    "ARCHIVED",
-    "ARCHIVE_DEFERRED",
-    "NOT_APPLICABLE",
-    "completion authority",
-  ],
-  "docs/patterns/workflow/index.md": [
-    "automatically invokes",
-    "archive-work",
-    "ARCHIVE_DEFERRED",
-    "NOT_APPLICABLE",
-  ],
-};
-
+const RETIRED_MODEL_PATTERN = /\bgpt-5\.(?:1|2|3|4|5)(?:-[a-z0-9-]+)?\b/i;
 const FORBIDDEN = [
   new RegExp(["Lee", "ra"].join(""), "i"),
   new RegExp(["roy", "rud1902"].join(""), "i"),
   new RegExp(["", "Users", "[^/\\s]+", ""].join("/")),
   new RegExp(`\\b${["portable", "codex", "harness"].join("-")}\\b`, "i"),
   new RegExp(`\\b${["standalone", "qa"].join("[- ]")}\\b`, "i"),
-  /\bgpt-5\.(?:1|2|3|4|5)(?:-[a-z0-9-]+)?\b/i,
+  RETIRED_MODEL_PATTERN,
   new RegExp(`\\b${["max", "threads"].join("_")}\\b`),
-  new RegExp(["orchestrate-work", "plan-change"].join("\\s*->\\s*")),
+  new RegExp(["cascade-project-management:manage-project", "plan-change"].join("\\s*->\\s*")),
 ];
+const FROZEN_PLUGIN_HISTORY_PATHS = new Set<string>();
+const PLUGIN_RETIRED_MODEL_GUARD_PATHS = new Set([
+  ".codex/plugins/cascade-evals/scripts/reduce_evaluation.py",
+  ".codex/plugins/cascade-evals/scripts/run_agent_evaluation.py",
+  ".codex/plugins/cascade-evals/skills/evaluate/references/model-policy.json",
+]);
 
 const CANONICAL_NON_ATOMIC_ROUTE = [
   "context",
   "plan-change",
-  "plan-iterations",
-  "orchestrate-work",
-  "functional-qa",
   "implement-change",
-  "review-change",
   "validate-change",
-  "test-autorepair",
-  "closeout",
 ] as const;
-const CONFIG_NON_ATOMIC_ROUTE = CANONICAL_NON_ATOMIC_ROUTE.filter(
-  (token) => token !== "plan-iterations",
-);
+const CONFIG_NON_ATOMIC_ROUTE = CANONICAL_NON_ATOMIC_ROUTE;
 const SEMVER = /^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-(?:0|[1-9]\d*|\d*[A-Za-z-][0-9A-Za-z-]*)(?:\.(?:0|[1-9]\d*|\d*[A-Za-z-][0-9A-Za-z-]*))*)?(?:\+[0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*)?$/;
 const MODEL_REGISTRY_MAX_AGE_DAYS = 45;
 
@@ -689,8 +763,16 @@ async function validateRoutingContracts(
   } else {
     errors.push(...routeOrderErrors(".codex/config.toml", configRoute.join(" -> "), CONFIG_NON_ATOMIC_ROUTE));
   }
-  if (config.cascade?.conditional_iteration_planning !== "plan-iterations") {
-    errors.push(".codex/config.toml must route conditional iteration planning to plan-iterations");
+  if (config.cascade?.conditional_iteration_planning !== PLUGIN_SKILL_ROUTES.project_plan) {
+    errors.push(".codex/config.toml must route conditional iteration planning to Cascade Project Management");
+  }
+  const configuredPluginSkills = config.cascade?.plugin_skills;
+  if (
+    !configuredPluginSkills
+    || typeof configuredPluginSkills !== "object"
+    || stableJson(configuredPluginSkills) !== stableJson(PLUGIN_SKILL_ROUTES)
+  ) {
+    errors.push(".codex/config.toml cascade.plugin_skills must match the plugin-first route contract");
   }
 }
 
@@ -764,6 +846,50 @@ async function validateRepoPlugins(errors: string[]): Promise<void> {
     }
   }
 
+  for (const alias of Object.values(PLUGIN_SKILL_ROUTES)) {
+    const match = /^([a-z0-9-]+):([a-z0-9-]+)$/.exec(alias);
+    if (!match) {
+      errors.push(`invalid plugin skill alias: ${alias}`);
+      continue;
+    }
+    const [, pluginName, skillName] = match;
+    const skillPath = rootPath(
+      ".codex/plugins",
+      pluginName!,
+      "skills",
+      skillName!,
+      "SKILL.md",
+    );
+    if (!(await isFile(skillPath))) {
+      errors.push(`plugin skill route is missing source: ${alias}`);
+      continue;
+    }
+    try {
+      const frontmatter = parseYamlFrontmatterRecord(await readText(skillPath));
+      if (frontmatter.name !== skillName) {
+        errors.push(`plugin skill route name mismatch: ${alias}`);
+      }
+    } catch (error) {
+      errors.push(`invalid plugin skill route: ${alias}: ${errorMessage(error)}`);
+    }
+  }
+
+  const personaAdapterRoot = rootPath(
+    ".codex/plugins/cascade-ai-architect/skills/derive-persona-requirements",
+  );
+  const personaAdapterFiles = (
+    await walkFiles(personaAdapterRoot, { include: () => true })
+  ).map((path) => rel(path)).sort();
+  const allowedPersonaAdapterFiles = [
+    ".codex/plugins/cascade-ai-architect/skills/derive-persona-requirements/SKILL.md",
+    ".codex/plugins/cascade-ai-architect/skills/derive-persona-requirements/agents/openai.yaml",
+  ];
+  if (stableJson(personaAdapterFiles) !== stableJson(allowedPersonaAdapterFiles)) {
+    errors.push(
+      "cascade-ai-architect derive-persona-requirements must remain a thin Persona projection adapter",
+    );
+  }
+
   try {
     const promptRoot = `.codex/plugins/${CASCADE_PROMPT_PLUGIN_NAME}`;
     const registryPath = rootPath(
@@ -814,6 +940,18 @@ async function validateRepoPlugins(errors: string[]): Promise<void> {
     }
   } catch (error) {
     errors.push(`invalid ${CASCADE_PROMPT_PLUGIN_NAME} model registry: ${errorMessage(error)}`);
+  }
+
+  try {
+    const expectedCatalog = await buildPluginCapabilityCatalog();
+    const currentCatalog = await readJson<Record<string, any>>(
+      rootPath(PLUGIN_CAPABILITY_CATALOG_RELATIVE),
+    );
+    if (stableJson(currentCatalog) !== stableJson(expectedCatalog)) {
+      errors.push("generated plugin capability catalog is stale");
+    }
+  } catch (error) {
+    errors.push(`invalid plugin capability catalog: ${errorMessage(error)}`);
   }
 }
 
@@ -886,8 +1024,8 @@ async function validateConfigToml(
   if (config.model !== "gpt-5.6-sol") errors.push("default model must be gpt-5.6-sol");
   const evals = config.harness_evals ?? {};
   if (evals.planning_model !== "gpt-5.6-sol") errors.push("planning model mismatch");
-  if (evals.execution_model !== "gpt-5.6-terra") errors.push("execution model mismatch");
-  if (evals.judge_model !== "gpt-5.6-terra") errors.push("judge model mismatch");
+  if (evals.execution_model !== "gpt-5.6-sol") errors.push("execution model mismatch");
+  if (evals.judge_model !== "gpt-5.6-sol") errors.push("judge model mismatch");
   if (evals.runner !== "scripts/cascade/evals.ts") {
     errors.push("harness eval runner must point to scripts/cascade/evals.ts");
   }
@@ -950,7 +1088,50 @@ async function validateSkills(
       errors.push(`agent skill map missing: ${rel(mapPath)}`);
       continue;
     }
-    const skillMap = await readStructured(mapPath, rel(mapPath));
+    const skillMap = await readStructured<Record<string, any>>(mapPath, rel(mapPath));
+    const skillEntries = Array.isArray(skillMap.skills) ? skillMap.skills : [];
+    for (const entry of skillEntries) {
+      if (!entry || typeof entry !== "object" || typeof entry.name !== "string") {
+        errors.push(`${rel(mapPath)} contains an invalid skill entry`);
+        continue;
+      }
+      const expectedDelegates = PLUGIN_ADAPTER_DELEGATES[entry.name];
+      const actualDelegates = typeof entry.delegate === "string"
+        ? [entry.delegate]
+        : Array.isArray(entry.delegates)
+          ? entry.delegates
+          : [];
+      if (expectedDelegates) {
+        if (stableJson(actualDelegates) !== stableJson(expectedDelegates)) {
+          errors.push(
+            `${rel(mapPath)} ${entry.name} plugin delegates must be ${expectedDelegates.join(", ")}`,
+          );
+        }
+      } else if (actualDelegates.length) {
+        errors.push(`${rel(mapPath)} ${entry.name} declares unexpected plugin delegates`);
+      }
+    }
+    const knownPluginSkills = new Set(Object.values(PLUGIN_SKILL_ROUTES));
+    const pluginSkills = skillMap.plugin_skills === undefined
+      ? []
+      : Array.isArray(skillMap.plugin_skills)
+        ? skillMap.plugin_skills
+        : null;
+    if (pluginSkills === null) {
+      errors.push(`${rel(mapPath)} plugin_skills must be an array`);
+    } else {
+      const seenPluginSkills = new Set<string>();
+      for (const pluginSkill of pluginSkills) {
+        if (typeof pluginSkill !== "string" || !knownPluginSkills.has(pluginSkill)) {
+          errors.push(`${rel(mapPath)} declares unknown plugin skill: ${String(pluginSkill)}`);
+          continue;
+        }
+        if (seenPluginSkills.has(pluginSkill)) {
+          errors.push(`${rel(mapPath)} declares duplicate plugin skill: ${pluginSkill}`);
+        }
+        seenPluginSkills.add(pluginSkill);
+      }
+    }
     for (const source of collectSources(skillMap)) {
       const match = /^\.codex\/skills\/([a-z0-9-]+)\/SKILL\.md$/.exec(source);
       if (!match) {
@@ -976,6 +1157,16 @@ async function validateSkills(
     if (!wired.has(skill)) errors.push(`skill is not wired to an agent: ${skill}`);
   }
   for (const skill of wired) if (!skills.has(skill)) errors.push(`wired skill missing: ${skill}`);
+  for (const skill of PLUGIN_ONLY_HOST_ADAPTERS) {
+    const adapterRoot = rootPath(".codex/skills", skill);
+    const files = (await walkFiles(adapterRoot, { include: () => true }))
+      .map((path) => rel(path))
+      .sort();
+    const expected = [`.codex/skills/${skill}/SKILL.md`];
+    if (stableJson(files) !== stableJson(expected)) {
+      errors.push(`${skill} host adapter must not retain plugin implementation resources`);
+    }
+  }
 }
 
 async function validateReferences(errors: string[]): Promise<void> {
@@ -1171,12 +1362,14 @@ async function validateLeakage(errors: string[]): Promise<number> {
   }
   for (const path of files) {
     const relativePath = rel(path);
-    // Packaged plugins own compatibility fixtures and are validated through
-    // their manifests, skill contracts, and focused package test suites.
-    if (relativePath.startsWith(".codex/plugins/")) continue;
-    if (!/\.(md|yaml|yml|toml|ts|json)$/.test(path)) continue;
+    if (FROZEN_PLUGIN_HISTORY_PATHS.has(relativePath)) continue;
+    if (!/\.(md|yaml|yml|toml|ts|mjs|py|json)$/.test(path)) continue;
     const text = await readText(path);
     for (const pattern of FORBIDDEN) {
+      if (
+        pattern === RETIRED_MODEL_PATTERN
+        && PLUGIN_RETIRED_MODEL_GUARD_PATHS.has(relativePath)
+      ) continue;
       if (pattern.test(text)) {
         errors.push(`project-specific or retired token in ${relativePath}: ${pattern}`);
         count += 1;
@@ -1281,12 +1474,6 @@ async function validateHarness(errors: string[]): Promise<{
   await validateSimulationLayout(errors);
   await validateCampaigns(errors);
   await validateBunCutover(errors);
-  for (const [path, tokens] of Object.entries(ARCHIVE_CHAIN_SURFACES)) {
-    const text = await readText(rootPath(path));
-    for (const token of tokens) {
-      if (!text.includes(token)) errors.push(`${path} missing archive contract: ${token}`);
-    }
-  }
   const configResult = await validateConfig(ROOT, "harness.config.yaml");
   errors.push(...configResult.errors.map((item) => `harness config: ${item}`));
   const generated = await generateCatalog();

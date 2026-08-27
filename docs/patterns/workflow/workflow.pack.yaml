@@ -3,17 +3,18 @@ entry_id: workflow
 title: Workflow Core Pattern Pack
 kind: pattern-context-pack
 owner: Cascade maintainers
-summary: "Selectable workflow rules for routing, composable graph fragments, lanes, work graphs, execution surfaces, dispatch authorization, Task Graphs, Coordination Graphs, worktree materialization, adaptive worklines, planning knowledge, coverage, doc impact, closeout, archive compaction, and memory."
-description: "Use this pack when a prompt or skill needs workflow, graph-fragment composition, graph-shaped work, planning-preservation, workline, reconciliation, materialization, closeout, or completed-work archive rules without loading every pattern entry."
+summary: "Proportional workflow routing, conditional durable coordination, scoped invalidation, evidence, documentation impact, handoff, and explicit historical cleanup."
+description: "Use this pack when a task needs more than the default inline context, plan, implementation, and validation route."
 routing:
   use_when:
-    - "A task needs lane/workline routing, dependency handling, planning preservation, work-to-source coverage, or closeout memory."
-    - "Planning must select and compose product, design, implementation, integration, test, or assurance fragments into the smallest request-specific flow."
+    - "A task needs durable lane/workline routing, dependency handling, planning preservation, work-to-source coverage, or closeout memory."
+    - "Connected or program planning may need selected product, design, implementation, integration, test, or assurance fragments."
     - "A complex lane needs typed dependency readiness, evidence joins, bounded repair, revision history, or cross-lane invalidation rules."
     - "Two or more connected worklines need a separate Coordination Graph, dedicated-worktree dispatch, batch evaluation, materialization, or integrated acceptance."
-    - "A completed lane or graph needs automatic post-closeout compaction into a digest-bound archive without losing frozen evidence."
+    - "Explicit cleanup must retire a completed durable record without losing frozen evidence."
     - "A skill references the Doc Routing Decision Matrix or trajectory coverage."
   do_not_use_when:
+    - "A bounded one-owner task only needs inline context, planning, implementation, and validation."
     - "The task only needs architecture boundary rules, functional testing rules, or source-context retrieval rules."
   load_when:
     - route: active-work
@@ -38,25 +39,23 @@ routing:
       use_when: "Durable facts may require product, design, brand, spec, backlog, glossary, or pattern updates."
     - route: research
       use_when: "Research or source discovery may become durable rules or specs."
-    - route: archive-work
-      use_when: "Completed lane, graph, or report artifacts should be compacted and moved out of the live work tree."
+    - route: cascade-project-management:close-project
+      use_when: "The user explicitly requests retirement or historical cleanup of completed durable records."
   write_when:
-    - "A repeated workflow, graph fragment, graph-shaped coordination, Coordination Graph, worktree materialization, planning-knowledge, adaptive-workline, routing, closeout, archive-compaction, or research-coverage rule changes."
+    - "A repeated proportional-routing, durable-coordination, planning, closeout, or research-coverage rule changes."
     - "A validated harness change updates the Doc Routing Decision Matrix, lane model, or memory routing."
   defer_when:
     - "The fact is product-specific and belongs in docs/product, docs/design, docs/brand, docs/specs, or docs/backlog."
   primary_skills:
     - context
-    - orchestrate-work
+    - cascade-project-management:manage-project
     - plan-change
-    - docs-impact-map
+    - create-spec
     - validate-change
     - closeout
-    - archive-work
+    - cascade-project-management:close-project
   related_roles:
     - orchestrator
-    - project-onboarder
-    - business-analyst
     - agent-engineer
 selection_rules:
   - "Prefer summary-only first when deciding whether the pack is relevant."
@@ -72,7 +71,7 @@ documents:
         title: Workflow Prompt Routing
         anchor: "## Workflow Prompt Routing"
         summary: "Classifies workflow prompts into workflow-packet, active-lane, planning, implementation, UX, security, market, validation, or closeout routes."
-        routing_description: "Use before choosing agentic-workflow-builder, orchestrate-work, plan-change, implement-change, or specialist review skills."
+        routing_description: "Use before choosing cascade-ai-architect:design-agent-workflow, cascade-coding-agent:integrate-agent-assets, cascade-project-management:manage-project, plan-change, implement-change, or specialist review skills."
         tags:
           - routing
           - skills
@@ -80,8 +79,8 @@ documents:
       - id: active-work
         title: Active Work
         anchor: "## Active Work"
-        summary: "Defines active registry, lane packets, lane examples, completed-row cleanup, and automatic post-closeout digest-bound archive compaction."
-        routing_description: "Use when opening, updating, splitting, closing, automatically archiving, or directly cleaning historical work lanes."
+        summary: "Defines the threshold for active registry and lane packets, current-source resume checks, and explicit historical cleanup."
+        routing_description: "Use when durable work must be opened, resumed, split, closed, or explicitly archived."
         tags:
           - lanes
           - orchestration
@@ -129,7 +128,7 @@ documents:
       - id: trajectory-coverage
         title: Trajectory Coverage
         anchor: "## Trajectory Coverage"
-        summary: "Requires several real trajectories for problems, requirements, gaps, plans, or groomed artifacts."
+        summary: "Selects the smallest representative success, failure, state, boundary, or permission paths needed by the risk."
         routing_description: "Use in planning, product grooming, impact mapping, and validation-route design."
         tags:
           - planning
@@ -138,8 +137,8 @@ documents:
       - id: planning-knowledge-contract
         title: Planning Knowledge Contract
         anchor: "## Planning Knowledge Contract"
-        summary: "Preserves authoritative sources, definitions, constraints, boundaries, traceability, evidence meaning, and revision deltas in compact plans."
-        routing_description: "Use before non-atomic planning or replanning when implementation knowledge must survive handoff or compaction."
+        summary: "Preserves only the authoritative sources, decisions, boundaries, evidence meaning, and stop conditions implementation needs."
+        routing_description: "Use when planning knowledge must survive a handoff or public-contract change."
         tags:
           - planning
           - context
@@ -158,8 +157,8 @@ documents:
       - id: composable-graph-fragments
         title: Composable Graph Fragments
         anchor: "## Composable Graph Fragments"
-        summary: "Selects delivery fragments and assurance overlays by impact, resolves ports, actors, skills, tests, and workline boundaries, then emits the smallest legal task or coordination graph."
-        routing_description: "Use during non-atomic planning before final workline selection, workflow skill calls, test assignment, or graph emission."
+        summary: "Optionally selects delivery fragments and assurance overlays for connected or program work, without creating phantom nodes or gates."
+        routing_description: "Use only when a change crosses meaningful delivery or assurance surfaces."
         tags:
           - planning
           - graph-fragments
@@ -303,14 +302,14 @@ documents:
         title: Composition Contract
         anchor: "## Composition Contract"
         summary: "Evaluates fragment dispositions, binds ports, resolves capabilities and tests, merges compatible fragments, and emits only the minimal active graph."
-        routing_description: "Use before plan-change or orchestrate-work finalizes worklines and graph topology."
+        routing_description: "Use before plan-change or cascade-project-management:manage-project finalizes worklines and graph topology."
         tags:
           - planning
           - graph-fragments
           - roles
           - skills
           - testing
-  - path: .codex/skills/orchestrate-work/SKILL.md
+  - path: .codex/plugins/cascade-project-management/skills/manage-project/SKILL.md
     kind: skill
     description: "Adaptive workline discovery, lane materialization, dependency, scheduling, and merge routing."
     trigger_when:
@@ -320,7 +319,7 @@ documents:
     description: "Definition-ready planning, compact knowledge preservation, workline coverage, implementation slices, and validation."
     trigger_when:
       - "A non-atomic implementation, bug fix, refactor, contract change, or material replan needs an implementation-ready plan."
-  - path: .codex/skills/docs-impact-map/SKILL.md
+  - path: .codex/skills/create-spec/SKILL.md
     kind: skill
     description: "Cross-folder impact and doc routing."
     trigger_when:
@@ -335,7 +334,7 @@ documents:
     description: "Final evidence, memory, and thin doc diffs."
     trigger_when:
       - "Work is finishing and needs validation evidence, memory routing, or handoff recorded."
-  - path: .codex/skills/archive-work/SKILL.md
+  - path: .codex/plugins/cascade-project-management/skills/close-project/SKILL.md
     kind: skill
     description: "Explicit completed-work eligibility audit, compact archive capsule, immutable relocation, and reference maintenance."
     trigger_when:

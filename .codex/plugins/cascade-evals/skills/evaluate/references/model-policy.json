@@ -2,12 +2,12 @@
   "schema_version": 1,
   "policy_id": "cascade-evals-model-policy-v1",
   "defaults": {
-    "builder_model": "gpt-5.6-terra",
-    "builder_reasoning_effort": "medium",
-    "target_model": "gpt-5.6-terra",
-    "target_reasoning_effort": "medium",
-    "judge_model": "gpt-5.6-terra",
-    "judge_reasoning_effort": "medium"
+    "builder_model": "gpt-5.6-sol",
+    "builder_reasoning_effort": "max",
+    "target_model": "gpt-5.6-sol",
+    "target_reasoning_effort": "max",
+    "judge_model": "gpt-5.6-sol",
+    "judge_reasoning_effort": "max"
   },
   "explicit_comparison_overrides_allowed": true,
   "independent_judge_context_required": true,

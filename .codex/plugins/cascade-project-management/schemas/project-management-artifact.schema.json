@@ -1,0 +1,310 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://cascade.local/schemas/project-management-artifact.schema.json",
+  "title": "Cascade Project Management artifact",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "artifact_id",
+    "selected_skill",
+    "artifact_kind",
+    "status",
+    "subject",
+    "sources",
+    "work_items",
+    "risks",
+    "decisions",
+    "handoffs",
+    "boundaries"
+  ],
+  "properties": {
+    "schema_version": {"const": 1},
+    "artifact_id": {"type": "string", "pattern": "^PM-[A-Z0-9][A-Z0-9._-]*$"},
+    "selected_skill": {"enum": ["define-work-item", "plan-project", "manage-project", "close-project"]},
+    "artifact_kind": {"enum": ["WORK_ITEM_DEFINITION", "PROJECT_PLAN", "AGILE_DELIVERY_PLAN", "PROJECT_STATUS", "RECONCILIATION", "CLOSEOUT"]},
+    "status": {"description": "Artifact-kind outcome: PROJECT_STATUS reports the current required frontier; RECONCILIATION reports proposal readiness; CLOSEOUT reports the terminal project outcome.", "enum": ["PROPOSED", "READY", "ACTIVE", "BLOCKED", "GAP", "COMPLETE", "SUPERSEDED"]},
+    "subject": {"$ref": "#/$defs/subject"},
+    "sources": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/source"}
+    },
+    "work_items": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/workItem"}
+    },
+    "risks": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/risk"}
+    },
+    "decisions": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/decision"}
+    },
+    "handoffs": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/handoff"}
+    },
+    "reconciliation": {"$ref": "#/$defs/reconciliation"},
+    "closeout": {"$ref": "#/$defs/closeout"},
+    "agile_delivery": {"$ref": "#/$defs/agileDelivery"},
+    "work_item_definition": {"$ref": "#/$defs/workItemDefinition"},
+    "boundaries": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["product_priority_changed", "project_state_mutated", "external_action_executed", "archive_applied"],
+      "properties": {
+        "product_priority_changed": {"const": false},
+        "project_state_mutated": {"const": false},
+        "external_action_executed": {"const": false},
+        "archive_applied": {"const": false}
+      }
+    }
+  },
+  "$defs": {
+    "nullableString": {"type": ["string", "null"]},
+    "nullableNonEmptyString": {
+      "anyOf": [
+        {"type": "string", "minLength": 1},
+        {"type": "null"}
+      ]
+    },
+    "subject": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "title", "kind", "outcome", "decision_owner"],
+      "properties": {
+        "id": {"type": "string", "minLength": 1},
+        "title": {"type": "string", "minLength": 1},
+        "kind": {"enum": ["product", "research", "marketing", "engineering", "qa", "other"]},
+        "outcome": {"type": "string", "minLength": 1},
+        "decision_owner": {"$ref": "#/$defs/nullableString"}
+      }
+    },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["source_id", "kind", "identity", "digest", "status"],
+      "properties": {
+        "source_id": {"type": "string", "pattern": "^SRC-[A-Z0-9][A-Z0-9._-]*$"},
+        "kind": {"type": "string", "minLength": 1},
+        "identity": {"type": "string", "minLength": 1},
+        "digest": {"$ref": "#/$defs/nullableString"},
+        "status": {"enum": ["CURRENT", "STALE", "MISSING", "CONFLICTING"]}
+      }
+    },
+    "workItem": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "outcome", "owner", "state", "horizon", "depends_on", "artifact_refs", "acceptance_ref", "next_action"],
+      "properties": {
+        "id": {"type": "string", "pattern": "^WI-[A-Z0-9][A-Z0-9._-]*$"},
+        "outcome": {"type": "string", "minLength": 1},
+        "owner": {"$ref": "#/$defs/nullableString"},
+        "state": {"enum": ["PROPOSED", "READY", "ACTIVE", "BLOCKED", "COMPLETE", "SUPERSEDED"]},
+        "horizon": {"enum": ["FIRST", "NEXT", "LATER", "DEFERRED", "REMOVED"]},
+        "depends_on": {"description": "Graph-local IDs of other work_items in this artifact; external source or artifact identities are not dependencies here.", "type": "array", "uniqueItems": true, "items": {"type": "string", "pattern": "^WI-[A-Z0-9][A-Z0-9._-]*$"}},
+        "artifact_refs": {"description": "External product, research, quality, evidence, decision, or source identities consumed by this work item.", "type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+        "acceptance_ref": {"$ref": "#/$defs/nullableString"},
+        "next_action": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["owner", "adapter_id", "input_ref"],
+          "properties": {
+            "owner": {"$ref": "#/$defs/nullableString"},
+            "adapter_id": {"$ref": "#/$defs/nullableString"},
+            "input_ref": {"$ref": "#/$defs/nullableString"}
+          }
+        }
+      }
+    },
+    "workItemDefinition": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "item_type", "title", "summary", "expected_behavior", "actual_behavior", "actor", "need", "value", "reproduction_steps", "evidence_refs", "interface_refs", "acceptance_criteria", "owner_hint", "filing_status"],
+      "properties": {
+        "id": {"type": "string", "pattern": "^WI-[A-Z0-9][A-Z0-9._-]*$"},
+        "item_type": {"enum": ["BUG", "ISSUE", "STORY", "TASK", "ENABLER", "EXPERIMENT"]},
+        "title": {"type": "string", "minLength": 1},
+        "summary": {"type": "string", "minLength": 1},
+        "expected_behavior": {"$ref": "#/$defs/nullableNonEmptyString"},
+        "actual_behavior": {"$ref": "#/$defs/nullableNonEmptyString"},
+        "actor": {"$ref": "#/$defs/nullableNonEmptyString"},
+        "need": {"$ref": "#/$defs/nullableNonEmptyString"},
+        "value": {"$ref": "#/$defs/nullableNonEmptyString"},
+        "reproduction_steps": {"type": "array", "items": {"type": "string", "minLength": 1}},
+        "evidence_refs": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+        "interface_refs": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+        "acceptance_criteria": {"type": "array", "items": {"type": "string", "minLength": 1}},
+        "owner_hint": {"$ref": "#/$defs/nullableNonEmptyString"},
+        "filing_status": {"enum": ["CANDIDATE", "BLOCKED"]}
+      }
+    },
+    "risk": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "statement", "status", "owner", "mitigation"],
+      "properties": {
+        "id": {"type": "string", "minLength": 1},
+        "statement": {"type": "string", "minLength": 1},
+        "status": {"enum": ["OPEN", "MITIGATED", "ACCEPTED", "BLOCKED"]},
+        "owner": {"$ref": "#/$defs/nullableString"},
+        "mitigation": {"$ref": "#/$defs/nullableString"}
+      }
+    },
+    "decision": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "question", "status", "owner", "decision", "source_ref"],
+      "properties": {
+        "id": {"type": "string", "minLength": 1},
+        "question": {"type": "string", "minLength": 1},
+        "status": {"enum": ["OPEN", "DECIDED", "DEFERRED"]},
+        "owner": {"$ref": "#/$defs/nullableString"},
+        "decision": {"$ref": "#/$defs/nullableString"},
+        "source_ref": {"$ref": "#/$defs/nullableString"}
+      }
+    },
+    "handoff": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["route", "status", "reason", "input_refs", "expected_output"],
+      "properties": {
+        "route": {"type": "string", "minLength": 1},
+        "status": {"enum": ["OPTIONAL", "REQUIRED", "BLOCKED", "COMPLETE"]},
+        "reason": {"type": "string", "minLength": 1},
+        "input_refs": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+        "expected_output": {"type": "string", "minLength": 1}
+      }
+    },
+    "agileDelivery": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["methodology", "mvp_version_id", "versions", "iterations", "stories", "tasks"],
+      "properties": {
+        "methodology": {"const": "AGILE_ITERATIVE"},
+        "mvp_version_id": {
+          "anyOf": [
+            {"type": "string", "pattern": "^VER-[A-Z0-9][A-Z0-9._-]*$"},
+            {"type": "null"}
+          ]
+        },
+        "versions": {"type": "array", "items": {"$ref": "#/$defs/agileVersion"}},
+        "iterations": {"type": "array", "items": {"$ref": "#/$defs/agileIteration"}},
+        "stories": {"type": "array", "items": {"$ref": "#/$defs/agileStory"}},
+        "tasks": {"type": "array", "items": {"$ref": "#/$defs/agileTask"}}
+      }
+    },
+    "agileVersion": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "sequence", "stage", "outcome", "state", "acceptance_refs", "promotion_condition", "artifact_refs"],
+      "properties": {
+        "id": {"type": "string", "pattern": "^VER-[A-Z0-9][A-Z0-9._-]*$"},
+        "sequence": {"type": "integer", "minimum": 1},
+        "stage": {"enum": ["MVP", "INCREMENT", "OPTION"]},
+        "outcome": {"type": "string", "minLength": 1},
+        "state": {"enum": ["PROPOSED", "READY", "BLOCKED"]},
+        "acceptance_refs": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+        "promotion_condition": {"$ref": "#/$defs/nullableNonEmptyString"},
+        "artifact_refs": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}}
+      }
+    },
+    "agileIteration": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "version_id", "sequence", "objective", "state", "capacity_ref", "acceptance_refs"],
+      "properties": {
+        "id": {"type": "string", "pattern": "^IT-[A-Z0-9][A-Z0-9._-]*$"},
+        "version_id": {"type": "string", "pattern": "^VER-[A-Z0-9][A-Z0-9._-]*$"},
+        "sequence": {"type": "integer", "minimum": 1},
+        "objective": {"type": "string", "minLength": 1},
+        "state": {"enum": ["PROPOSED", "READY", "BLOCKED"]},
+        "capacity_ref": {"$ref": "#/$defs/nullableNonEmptyString"},
+        "acceptance_refs": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}}
+      }
+    },
+    "agileStory": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "iteration_id", "kind", "actor", "need", "value", "outcome", "state", "depends_on", "acceptance_refs", "artifact_refs"],
+      "properties": {
+        "id": {"type": "string", "pattern": "^ST-[A-Z0-9][A-Z0-9._-]*$"},
+        "iteration_id": {"type": "string", "pattern": "^IT-[A-Z0-9][A-Z0-9._-]*$"},
+        "kind": {"enum": ["USER_STORY", "ENABLER", "EXPERIMENT"]},
+        "actor": {"$ref": "#/$defs/nullableNonEmptyString"},
+        "need": {"$ref": "#/$defs/nullableNonEmptyString"},
+        "value": {"$ref": "#/$defs/nullableNonEmptyString"},
+        "outcome": {"type": "string", "minLength": 1},
+        "state": {"enum": ["PROPOSED", "READY", "BLOCKED"]},
+        "depends_on": {"type": "array", "uniqueItems": true, "items": {"type": "string", "pattern": "^ST-[A-Z0-9][A-Z0-9._-]*$"}},
+        "acceptance_refs": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+        "artifact_refs": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}}
+      }
+    },
+    "agileTask": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "story_id", "outcome", "owner", "state", "depends_on", "adapter_id", "input_ref", "acceptance_ref"],
+      "properties": {
+        "id": {"type": "string", "pattern": "^TK-[A-Z0-9][A-Z0-9._-]*$"},
+        "story_id": {"type": "string", "pattern": "^ST-[A-Z0-9][A-Z0-9._-]*$"},
+        "outcome": {"type": "string", "minLength": 1},
+        "owner": {"$ref": "#/$defs/nullableNonEmptyString"},
+        "state": {"enum": ["PROPOSED", "READY", "BLOCKED"]},
+        "depends_on": {"type": "array", "uniqueItems": true, "items": {"type": "string", "pattern": "^TK-[A-Z0-9][A-Z0-9._-]*$"}},
+        "adapter_id": {"$ref": "#/$defs/nullableNonEmptyString"},
+        "input_ref": {"$ref": "#/$defs/nullableNonEmptyString"},
+        "acceptance_ref": {"$ref": "#/$defs/nullableNonEmptyString"}
+      }
+    },
+    "reconciliation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["mode", "dispositions", "invalidated_refs"],
+      "properties": {
+        "mode": {"enum": ["AUDIT", "APPLY_PROPOSED"]},
+        "dispositions": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["record_id", "disposition", "survivor_id", "reason"],
+            "properties": {
+              "record_id": {"type": "string", "minLength": 1},
+              "disposition": {"enum": ["KEEP", "UPDATE", "MERGE_INTO", "SUPERSEDE_BY", "RETIRE_PROPOSED", "BLOCKED_REVIEW"]},
+              "survivor_id": {"$ref": "#/$defs/nullableString"},
+              "reason": {"type": "string", "minLength": 1}
+            }
+          }
+        },
+        "invalidated_refs": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}}
+      }
+    },
+    "closeout": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["completion_status", "criteria", "retention_action", "records", "evidence_refs", "blockers"],
+      "properties": {
+        "completion_status": {"enum": ["PASS", "FAIL", "BLOCKED", "NOT_RUN", "GAP", "STALE", "SUPERSEDED"]},
+        "criteria": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["criterion", "status", "evidence_refs"],
+            "properties": {
+              "criterion": {"type": "string", "minLength": 1},
+              "status": {"enum": ["PASS", "FAIL", "BLOCKED", "NOT_RUN", "GAP", "STALE"]},
+              "evidence_refs": {"type": "array", "items": {"type": "string", "minLength": 1}}
+            }
+          }
+        },
+        "retention_action": {"enum": ["KEEP_ACTIVE", "RETIRE_PROPOSED", "ARCHIVE_DEFERRED", "NOT_APPLICABLE"]},
+        "records": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+        "evidence_refs": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+        "blockers": {"type": "array", "items": {"type": "string", "minLength": 1}}
+      }
+    }
+  }
+}

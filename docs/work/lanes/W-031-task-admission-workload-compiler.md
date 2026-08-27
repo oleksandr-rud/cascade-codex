@@ -120,9 +120,9 @@ Out:
 | Feature / Flow | Source Docs Or Spec IDs | Code Areas / Public Contracts | Touched Directly? | Protected Adjacent Behavior | Required Check | Status | Route |
 |---|---|---|---|---|---|---|---|
 | task routing and skill selection | `TA-001` to `TA-011` | `AGENTS.md`, `CODEX.md`, `.codex/config.toml`, workflow skills | yes | direct answers and atomic changes stay lightweight | route corpus and Standards/Spec review | `PASS_LOCAL_REVIEW_PENDING` | `implement-change` |
-| permission/tool enforcement | `TA-008`, `TA-012` | hooks and policy decisions | yes | prompt/tool content cannot grant authority | GF-101 negative probes | `PASS_LOCAL_REVIEW_PENDING` | `secure-design` |
+| permission/tool enforcement | `TA-008`, `TA-012` | hooks and policy decisions | yes | prompt/tool content cannot grant authority | GF-101 negative probes | `PASS_LOCAL_REVIEW_PENDING` | `cascade-security:secure-design` |
 | harness evaluations | all contract acceptance criteria | `harness-evals/`, eval CLI, generated catalog | yes | current 45-skill/386-scenario catalog remains valid; current live coverage is explicitly invalidated | catalog, self-test, coverage, admission corpus | `PASS_SHADOW_LIVE_NOT_RUN` | `harness-evaluation` |
-| simulation claim/policy contracts | W-004 | `product-evals/`, campaign/runtime schemas | no | remain simulation-specific, no duplicate task-admission authority | hidden-consumer and compatibility review | `PASS_LOCAL_REVIEW_PENDING` | `architecture-review` |
+| simulation claim/policy contracts | W-004 | `product-evals/`, campaign/runtime schemas | no | remain simulation-specific, no duplicate task-admission authority | hidden-consumer and compatibility review | `PASS_LOCAL_REVIEW_PENDING` | `cascade-software-architect:review-architecture` |
 | active work and dispatch | `TA-011` | `docs/work/`, orchestration routes | yes | planning/readiness never dispatches automatically | negative promotion and dispatch fixtures | `PASS_LOCAL_REVIEW_PENDING` | `orchestrate-work` |
 | current direct workflow | `SRC-03` | boot route and target adapter defaults | yes | only admission is default; the full path is a conditional non-atomic fallback | full validation before route migration | `PASS_LOCAL_REVIEW_PENDING` | `validate-change` |
 
@@ -158,10 +158,10 @@ Out:
 | Fragment Instance | Source Fragment / Version | Disposition | Bound Ports | Actor / Skills | Tests / Evaluator | Owning Workline | Invalidation / Omission Rule |
 |---|---|---|---|---|---|---|---|
 | `FI-01` | `GF-001@1` | `SELECTED` | request objective -> product acceptance | orchestrator; plan-change, functional-qa | route acceptance fixtures; Spec reviewer | WL-01 | acceptance contract change reopens consumers |
-| `FI-04` | `GF-004@1` | `SELECTED` | product acceptance -> shared contract | agent-engineer/root; architecture-review, plan-change, implement-change | schema/consumer compatibility; architecture reviewer | WL-01/WL-02, primary WL-01 | schema drift reopens bound consumers |
+| `FI-04` | `GF-004@1` | `SELECTED` | product acceptance -> shared contract | agent-engineer/root; cascade-software-architect:review-architecture, plan-change, implement-change | schema/consumer compatibility; architecture reviewer | WL-01/WL-02, primary WL-01 | schema drift reopens bound consumers |
 | `FI-08` | `GF-008@1` | `SELECTED` | compiler/hook outputs -> integration accepted | root integration owner; implement-change, validate-change | CLI/hook/route integration; integration reviewer | WL-04/WL-06, primary WL-06 | earliest failed producer plus affected consumers reopen |
 | `FI-09` | `GF-009@1` | `SELECTED` | product acceptance + integration -> E2E accepted | orchestrator/root; functional-qa, validate-change | request-to-tool fixture; independent functional reviewer | WL-06 | E2E failure reopens earliest responsible workline |
-| `FI-101` | `GF-101@1` | `SELECTED` | implementation output -> security assurance | security reviewer; secure-design, validate-change | risk-selected negative probes; independent security reviewer | WL-05 | security failure reopens affected design/contract/implementation |
+| `FI-101` | `GF-101@1` | `SELECTED` | implementation output -> security assurance | security reviewer; cascade-security:secure-design, validate-change | risk-selected negative probes; independent security reviewer | WL-05 | security failure reopens affected design/contract/implementation |
 
 All other catalog fragments are `NOT_APPLICABLE` for revision 2: no UI,
 prototype, backend service, frontend client, persistence/migration,

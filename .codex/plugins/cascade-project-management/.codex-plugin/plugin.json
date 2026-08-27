@@ -1,0 +1,35 @@
+{
+  "name": "cascade-project-management",
+  "version": "0.1.0+codex.20260827101842",
+  "description": "Define tracker-ready work items and plan or coordinate evidence-bound projects and lean Agile MVP delivery without taking product priority, filing, or target execution authority.",
+  "author": {
+    "name": "Cascade"
+  },
+  "keywords": [
+    "project-management",
+    "work-items",
+    "iteration-planning",
+    "agile-delivery",
+    "mvp-planning",
+    "coordination",
+    "dependency-management",
+    "project-closeout"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Cascade Project Management",
+    "shortDescription": "Plan, coordinate, reconcile, and close projects.",
+    "longDescription": "Draft grounded issues, stories, and tasks; create lean project or Agile MVP plans across versions and iterations; coordinate dependency-bound work; reconcile stale project state; and propose evidence-preserving closeout while leaving strategy, filing, and execution with their owners.",
+    "developerName": "Cascade",
+    "category": "Productivity",
+    "capabilities": [
+      "Interactive",
+      "Write"
+    ],
+    "defaultPrompt": [
+      "Draft one grounded tracker-ready issue, story, or task from this evidence.",
+      "Turn this initiative into a lean project or Agile MVP plan.",
+      "Reconcile or close this project without losing evidence."
+    ]
+  }
+}

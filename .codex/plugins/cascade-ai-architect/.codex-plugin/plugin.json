@@ -1,0 +1,34 @@
+{
+  "name": "cascade-ai-architect",
+  "version": "0.1.0+codex.20260827140902",
+  "description": "Designs source-grounded AI agents and agentic systems while delegating prompt authoring, evaluation execution, simulation, and harness integration to their owning plugins.",
+  "author": {
+    "name": "Cascade"
+  },
+  "keywords": [
+    "ai-architecture",
+    "agent-architecture",
+    "agent-roles",
+    "agent-skills",
+    "agent-workflows",
+    "prompt-briefs",
+    "agent-evaluation"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Cascade AI Architect",
+    "shortDescription": "Design bounded AI agents and agentic systems.",
+    "longDescription": "Map AI-agent capabilities, select the smallest agent topology, design behavior, roles, skills, workflows, prompt briefs, persona-derived requirements, evaluation requests, and bounded improvement candidates. Cascade Prompt authors prompts, Cascade Evals executes and judges evaluations, Cascade Simulations executes actors, and Cascade Coding Agent integrates reviewed assets into a harness.",
+    "developerName": "Cascade",
+    "category": "Productivity",
+    "capabilities": [
+      "Interactive",
+      "Write"
+    ],
+    "defaultPrompt": [
+      "Design the smallest safe AI-agent architecture for this request.",
+      "Prepare an architecture-bound prompt brief for this agent.",
+      "Prepare an evaluation request for this agent architecture."
+    ]
+  }
+}

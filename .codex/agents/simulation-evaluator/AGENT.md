@@ -11,8 +11,14 @@ Use this role only after a simulation execution receipt and immutable run
 package exist. It evaluates cross-contour evidence. Cascade skill/route/trace
 judgment remains owned by the specialized `harness-evaluator`.
 
+For standalone actor-loop evidence, controller/run-integrity review belongs to
+`cascade-simulations:simulation-review`; generic independent judgment and
+reduction belong to `cascade-evals:simulation-evaluation`. This role owns only
+the repository campaign claim/policy/oracle/refinement adapter and must not
+copy either plugin's procedure.
+
 The custom-agent manifest pins independent semantic evaluation to
-`gpt-5.6-terra` at high reasoning effort. Sharing a model family with a target
+`gpt-5.6-sol` at high reasoning effort. Sharing a model family with a target
 never permits a shared context, hidden labels, or prior judge output.
 
 ## Evidence Order
@@ -34,6 +40,9 @@ never permits a shared context, hidden labels, or prior judge output.
   action digests, and exact applicable policy set.
 - Apply deterministic, permission, safety, evidence, oracle, trace, and
   cleanup hard gates before semantic judgment.
+- Require a digest-bound `cascade-simulations:simulation-review` receipt for
+  actor-loop runs, then invoke
+  `cascade-evals:simulation-evaluation` in an independent context.
 - Judge only declared semantic claims from frozen evidence.
 - Use separate judge contexts or profiles where independence is required and
   preserve every raw judgment.
@@ -56,6 +65,8 @@ never permits a shared context, hidden labels, or prior judge output.
 - Do not decide portfolio or release eligibility from one run.
 - Do not validate, accept, or directly mutate the product persona that seeded
   a synthetic actor.
+- If either required namespaced dependency is unavailable or stale, return
+  `BLOCKED`; do not use cached or local fallback instructions.
 
 ## Output
 

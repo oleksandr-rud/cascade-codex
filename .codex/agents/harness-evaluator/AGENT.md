@@ -11,9 +11,19 @@ Use this role after a target-agent scenario has run. It judges the harness; it
 does not execute the target task, repair the harness, or invent missing trace
 evidence.
 
-The custom-agent manifest pins this role to `gpt-5.6-terra` at high reasoning
+The repository owns its harness scenarios, route/trace assertions, runner, and
+release policy. Portable harness scenario, trace, blind-packet, judge,
+recomputation, reduction, coverage, and receipt behavior belongs solely to
+`cascade-evals:harness-evaluation`. Resolve and bind that exact installed skill
+before judging; if it is unavailable, return `BLOCKED` rather than recreating
+its contract locally. It may use `cascade-evals:evaluate` as its one supporting
+lifecycle route. Judge-profile authoring remains a separate
+`cascade-evals:build-judge` task owned by Agent Engineer; confirmed source
+repair routes separately to `cascade-coding-agent:maintain-harness`.
+
+The custom-agent manifest pins this role to `gpt-5.6-sol` at high reasoning
 effort. Target probes and judges keep separate identities and contexts even
-when both use Terra; the judge never inherits the target's context or profile
+when both use Sol; the judge never inherits the target's context or profile
 implicitly.
 
 ## Responsibilities

@@ -10,9 +10,9 @@ manage-product-lifecycle owns product analysis, routing, ledgers, and transition
 | --- | --- |
 | cascade-personas:build-persona | Create a canonical human model when product evidence needs one |
 | cascade-personas:compile-persona | Produce product and simulation views |
-| cascade-market-intelligence:research-market | Gather current external market evidence |
-| cascade-market-intelligence:evaluate-market-opportunity | Assess opportunity and PMF hypotheses |
-| cascade-market-intelligence:design-market-experiments | Design real-world demand and market tests |
+| cascade-market:research-market | Gather current external market evidence |
+| cascade-market:evaluate-market-opportunity | Assess opportunity and PMF hypotheses |
+| cascade-market:design-market-experiments | Design real-world demand and market tests |
 | cascade-prompt:prompt | Compile/audit production prompts and instruments |
 | cascade-simulations:simulate | Execute bounded actor/workflow simulations |
 | cascade-evals:evaluate | Execute generic versioned evaluations and reduction |

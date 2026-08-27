@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "manifest_id": "cascade-project-management-capability-extraction-v1",
+  "source_repository": "cascade-codex",
+  "source_revision": "d34754f350d3b94e91373ff7f0b7f066cb69f011",
+  "source_state": "WORKTREE_SNAPSHOT_BEFORE_CUTOVER",
+  "captured_at": "2026-08-25T16:12:03Z",
+  "artifacts": [
+    {"path": ".codex/skills/issue-intake/SKILL.md", "sha256": "b4d0a82d49feae807a1551c2b9c64c5102ae7a5926f31c18d21cfc2588b035d0", "capabilities": ["tracker-ready issue body", "evidence-grounded work-item intake"]},
+    {"path": ".codex/skills/plan-iterations/SKILL.md", "sha256": "7ef2207955435c4b9654d8aeabbb3d767f8b58e267be77c42c83d6c9d4e52790", "capabilities": ["project planning", "delivery horizons"]},
+    {"path": ".codex/skills/plan-iterations/checklists/iteration-plan-quality.md", "sha256": "c9037ccc18102b4189572a81b90870080510b3ce8df20b255f07e6d46cd42bfb", "capabilities": ["readiness", "capacity", "critical path"]},
+    {"path": ".codex/skills/plan-iterations/templates/iteration-delivery-plan.md", "sha256": "baca36fc26403bf396afd4e06f19f28ebc9e8561f431ae95619f98f01bf333fa", "capabilities": ["iteration artifact"]},
+    {"path": ".codex/skills/orchestrate-work/SKILL.md", "sha256": "966ada79e70f8093db71a42428b3197bc337f0743325be346145caf7135ddce9", "capabilities": ["coordination", "dependency joins"]},
+    {"path": ".codex/skills/reconcile-work-graph/SKILL.md", "sha256": "01f4a7f3dd5f4bc573d29de86e3bcfc2f3a79ee0a4839ffe29bdf54b3befeda0", "capabilities": ["reconciliation"]},
+    {"path": ".codex/skills/reconcile-work-graph/checklists/reconciliation.md", "sha256": "15891d219312d8fdff6edd30e6537add140a7f6968ddb3f621295a8214bd521b", "capabilities": ["survivor selection", "invalidation"]},
+    {"path": ".codex/skills/archive-work/SKILL.md", "sha256": "98de3c49fada30340455bb3794c7f47096e3d344761936ddaa8093d4ececd6cf", "capabilities": ["retention decision"]},
+    {"path": ".codex/skills/archive-work/checklists/archive-readiness.md", "sha256": "69db135f263349ab6637238a710b2bdb792bc08d433664b83bd236302076cd13", "capabilities": ["retention readiness"]},
+    {"path": ".codex/skills/archive-work/templates/archive-capsule.md", "sha256": "bb1fb0c2888a466e88a6d99c5b8fb1b19e96e3a9abdca7339174eefcab550956", "capabilities": ["retention manifest"]}
+  ]
+}

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Manage Project"
+  short_description: "Coordinate and reconcile current project work"
+  default_prompt: "Use $manage-project to assess this project's current work, dependencies, blockers, and reconciliation needs."

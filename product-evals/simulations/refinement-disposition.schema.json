@@ -45,7 +45,7 @@
     },
     "persona_revision_authorized": { "type": "boolean" },
     "direct_persona_mutation_allowed": { "const": false },
-    "next_route": { "enum": ["synthesis-to-spec", "collect-external-evidence", "repair-simulator", "none"] },
+    "next_route": { "enum": ["create-spec", "collect-external-evidence", "repair-simulator", "none"] },
     "status": { "const": "REVIEWED" },
     "blockers": {
       "type": "array",

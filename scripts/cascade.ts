@@ -11,6 +11,7 @@ import { main as simulationMain } from "./cascade/simulations";
 import { main as targetMain } from "./cascade/target";
 import { main as validateMain } from "./cascade/validate";
 import { main as workMain } from "./cascade/work-audit";
+import { main as workflowMain } from "./cascade/plugin-workflow";
 
 const [command, ...args] = Bun.argv.slice(2);
 
@@ -36,6 +37,8 @@ async function main(): Promise<number> {
       return simulationMain(args);
     case "work":
       return workMain(args);
+    case "workflow":
+      return workflowMain(args);
     case "--help":
     case "-h":
     case undefined:
@@ -71,6 +74,8 @@ Usage:
   bun scripts/cascade.ts brief check
   bun scripts/cascade.ts work audit [--json] [--check]
   bun scripts/cascade.ts work automation-prompt [--mode audit|orchestrate]
+  bun scripts/cascade.ts workflow catalog [--check|--write]
+  bun scripts/cascade.ts workflow validate --plan PATH --envelope PATH
   bun scripts/cascade.ts simulation init <simulation-id> --owner-lane W-NNN
     [--title "Title"] [--reference-date YYYY-MM-DD] [--dry-run]
     Output root: product-evals/simulations/product/<simulation-id>/

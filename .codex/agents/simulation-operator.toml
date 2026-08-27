@@ -1,6 +1,6 @@
 name = "simulation-operator"
 description = "Bounded operator for approved simulation campaigns across command, HTTP, terminal, browser, desktop, mobile, and agent-response runtimes."
-model = "gpt-5.6-terra"
+model = "gpt-5.6-sol"
 model_reasoning_effort = "medium"
 sandbox_mode = "workspace-write"
 developer_instructions = """

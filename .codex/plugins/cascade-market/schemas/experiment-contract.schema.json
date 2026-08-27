@@ -1,0 +1,690 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://cascade.local/cascade-market/experiment-contract-v4.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "experiment_id",
+    "version",
+    "hypothesis",
+    "segment",
+    "geography",
+    "method",
+    "primary_metric",
+    "guardrail_metrics",
+    "success_criteria",
+    "kill_criteria",
+    "sample_rule",
+    "stopping_rule",
+    "input_artifacts",
+    "hypothesis_evidence_ids",
+    "recruitment",
+    "privacy_plan",
+    "instrument",
+    "baseline",
+    "duration",
+    "instrumentation",
+    "contamination_controls",
+    "permissions",
+    "operator",
+    "execution_state",
+    "evidence_location",
+    "receipt",
+    "analysis_method",
+    "decision_routes",
+    "invalidation_conditions"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": 4
+    },
+    "experiment_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "version": {
+      "type": "string",
+      "minLength": 1
+    },
+    "hypothesis": {
+      "type": "string",
+      "minLength": 1
+    },
+    "segment": {
+      "type": "string",
+      "minLength": 1
+    },
+    "geography": {
+      "type": "string",
+      "minLength": 1
+    },
+    "method": {
+      "type": "string",
+      "minLength": 1
+    },
+    "success_criteria": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "uniqueItems": true
+    },
+    "kill_criteria": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "uniqueItems": true
+    },
+    "sample_rule": {
+      "type": "string",
+      "minLength": 1
+    },
+    "stopping_rule": {
+      "type": "string",
+      "minLength": 1
+    },
+    "input_artifacts": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "version", "sha256", "alias", "status", "evidence_class", "scope", "permitted_use"],
+        "properties": {
+          "id": {"type": "string", "minLength": 1},
+          "version": {"type": "string", "minLength": 1},
+          "sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+          "alias": {"type": "string", "pattern": "^cascade-[a-z0-9-]+:[a-z0-9-]+$"},
+          "status": {"enum": ["READY", "PASS", "APPROVED", "GAP", "BLOCKED", "INVALID"]},
+          "evidence_class": {"enum": ["SUPPLIED", "OBSERVED", "ACCEPTED_DECISION", "DERIVED", "SYNTHETIC", "SIMULATION", "RECEIPT"]},
+          "scope": {"type": "string", "minLength": 1},
+          "permitted_use": {"const": "EXPERIMENT_DESIGN"}
+        }
+      }
+    },
+    "hypothesis_evidence_ids": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {"type": "string", "minLength": 1}
+    },
+    "recruitment": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["channel", "eligibility_rule", "exclusion_rule", "target_count"],
+      "properties": {
+        "channel": {"type": "string", "minLength": 1},
+        "eligibility_rule": {"type": "string", "minLength": 1},
+        "exclusion_rule": {"type": "string", "minLength": 1},
+        "target_count": {"type": "integer", "minimum": 1}
+      }
+    },
+    "privacy_plan": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["classification", "destination", "retention_days", "consent_required", "cleanup_required"],
+      "properties": {
+        "classification": {"enum": ["PUBLIC", "INTERNAL", "CONFIDENTIAL", "RESTRICTED"]},
+        "destination": {"type": "string", "minLength": 1},
+        "retention_days": {"type": "integer", "minimum": 0},
+        "consent_required": {"type": "boolean"},
+        "cleanup_required": {"type": "boolean"}
+      }
+    },
+    "instrument": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "version", "sha256", "kind"],
+      "properties": {
+        "id": {"type": "string", "minLength": 1},
+        "version": {"type": "string", "minLength": 1},
+        "sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+        "kind": {"enum": ["SURVEY", "INTERVIEW_GUIDE", "LANDING_PAGE", "PROTOTYPE", "BEHAVIORAL_TASK", "PRICING_TEST"]}
+      }
+    },
+    "baseline": {
+      "type": ["object", "null"],
+      "additionalProperties": false,
+      "required": ["metric_id", "value", "source_artifact_id"],
+      "properties": {
+        "metric_id": {"type": "string", "minLength": 1},
+        "value": {"type": "number"},
+        "source_artifact_id": {"type": "string", "minLength": 1}
+      }
+    },
+    "duration": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["start", "end"],
+      "properties": {
+        "start": {"type": "string", "format": "date-time"},
+        "end": {"type": "string", "format": "date-time"}
+      }
+    },
+    "instrumentation": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["event_id", "trigger", "schema_sha256"],
+        "properties": {
+          "event_id": {"type": "string", "minLength": 1},
+          "trigger": {"type": "string", "minLength": 1},
+          "schema_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"}
+        }
+      }
+    },
+    "contamination_controls": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {"type": "string", "minLength": 1}
+    },
+    "permissions": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "external_execution_authorized",
+        "data_destination_approved",
+        "cost_budget_approved",
+        "authority_receipt"
+      ],
+      "properties": {
+        "external_execution_authorized": {
+          "type": "boolean"
+        },
+        "data_destination_approved": {
+          "type": "boolean"
+        },
+        "cost_budget_approved": {
+          "type": "boolean"
+        },
+        "authority_receipt": {
+          "oneOf": [
+            {"type": "null"},
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["id", "version", "sha256", "issuer", "subject", "scopes", "issued_at", "expires_at", "destination", "budget_reference"],
+              "properties": {
+                "id": {"type": "string", "minLength": 1},
+                "version": {"type": "string", "minLength": 1},
+                "sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+                "issuer": {"type": "string", "minLength": 1},
+                "subject": {"type": "string", "minLength": 1},
+                "scopes": {
+                  "type": "array",
+                  "minItems": 1,
+                  "uniqueItems": true,
+                  "items": {"type": "string", "minLength": 1}
+                },
+                "issued_at": {"type": "string", "format": "date-time"},
+                "expires_at": {"type": "string", "format": "date-time"},
+                "destination": {"type": "string", "minLength": 1},
+                "budget_reference": {"type": "string", "minLength": 1}
+              }
+            }
+          ]
+        }
+      }
+    },
+    "execution_state": {
+      "enum": [
+        "NOT_RUN",
+        "RECEIPT_SUPPLIED",
+        "INVALID"
+      ]
+    },
+    "evidence_location": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "analysis_method": {
+      "type": "string",
+      "minLength": 1
+    },
+    "decision_routes": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "PASS",
+        "FAIL",
+        "MIXED",
+        "INVALID",
+        "INCONCLUSIVE"
+      ],
+      "properties": {
+        "PASS": {
+          "type": "string",
+          "minLength": 1
+        },
+        "FAIL": {
+          "type": "string",
+          "minLength": 1
+        },
+        "MIXED": {
+          "type": "string",
+          "minLength": 1
+        },
+        "INVALID": {
+          "type": "string",
+          "minLength": 1
+        },
+        "INCONCLUSIVE": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "invalidation_conditions": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "uniqueItems": true
+    },
+    "primary_metric": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "metric_id",
+        "observable_event",
+        "unit",
+        "success_operator",
+        "success_value",
+        "kill_operator",
+        "kill_value"
+      ],
+      "properties": {
+        "metric_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "observable_event": {
+          "type": "string",
+          "minLength": 1
+        },
+        "unit": {
+          "type": "string",
+          "minLength": 1
+        },
+        "success_operator": {
+          "enum": [
+            "GT",
+            "GTE",
+            "LT",
+            "LTE",
+            "EQ"
+          ]
+        },
+        "success_value": {
+          "type": "number"
+        },
+        "kill_operator": {
+          "enum": [
+            "GT",
+            "GTE",
+            "LT",
+            "LTE",
+            "EQ"
+          ]
+        },
+        "kill_value": {
+          "type": "number"
+        }
+      }
+    },
+    "guardrail_metrics": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "metric_id",
+          "observable_event",
+          "unit",
+          "success_operator",
+          "success_value",
+          "kill_operator",
+          "kill_value"
+        ],
+        "properties": {
+          "metric_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "observable_event": {
+            "type": "string",
+            "minLength": 1
+          },
+          "unit": {
+            "type": "string",
+            "minLength": 1
+          },
+          "success_operator": {
+            "enum": [
+              "GT",
+              "GTE",
+              "LT",
+              "LTE",
+              "EQ"
+            ]
+          },
+          "success_value": {
+            "type": "number"
+          },
+          "kill_operator": {
+            "enum": [
+              "GT",
+              "GTE",
+              "LT",
+              "LTE",
+              "EQ"
+            ]
+          },
+          "kill_value": {
+            "type": "number"
+          }
+        }
+      }
+    },
+    "operator": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "owner",
+        "destination",
+        "budget_reference",
+        "budget_limit",
+        "cleanup_rule"
+      ],
+      "properties": {
+        "owner": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "destination": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "budget_reference": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "budget_limit": {
+          "oneOf": [
+            {"type": "null"},
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["currency", "amount"],
+              "properties": {
+                "currency": {"type": "string", "pattern": "^[A-Z]{3}$"},
+                "amount": {"type": "number", "minimum": 0}
+              }
+            }
+          ]
+        },
+        "cleanup_rule": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "receipt": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "receipt_id",
+            "version",
+            "sha256",
+            "status",
+            "completeness_status",
+            "experiment_id",
+            "experiment_version",
+            "issuer",
+            "operator",
+            "destination",
+            "budget_reference",
+            "authority_receipt_sha256",
+            "executed_at",
+            "expires_at",
+            "raw_outcome_sha256",
+            "raw_outcome",
+            "exclusions",
+            "deviations",
+            "failures",
+            "actual_cost",
+            "cleanup_status",
+            "cleanup_proof_sha256",
+            "cleanup_proof",
+            "cleanup_not_applicable_reason"
+          ],
+          "properties": {
+            "receipt_id": {
+              "type": "string",
+              "minLength": 1
+            },
+            "version": {
+              "type": "string",
+              "minLength": 1
+            },
+            "sha256": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            "status": {
+              "enum": [
+                "PASS",
+                "FAIL",
+                "PARTIAL",
+                "INVALID"
+              ]
+            },
+            "completeness_status": {
+              "enum": ["COMPLETE", "PARTIAL"]
+            },
+            "experiment_id": {"type": "string", "minLength": 1},
+            "experiment_version": {"type": "string", "minLength": 1},
+            "issuer": {"type": "string", "minLength": 1},
+            "operator": {
+              "type": "string",
+              "minLength": 1
+            },
+            "destination": {"type": "string", "minLength": 1},
+            "budget_reference": {"type": "string", "minLength": 1},
+            "authority_receipt_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+            "executed_at": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "expires_at": {"type": "string", "format": "date-time"},
+            "raw_outcome_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+            "raw_outcome": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["artifact_id", "version", "record_count", "metric_id", "observed_value"],
+              "properties": {
+                "artifact_id": {"type": "string", "minLength": 1},
+                "version": {"type": "string", "minLength": 1},
+                "record_count": {"type": "integer", "minimum": 0},
+                "metric_id": {"type": "string", "minLength": 1},
+                "observed_value": {"type": "number"}
+              }
+            },
+            "exclusions": {
+              "type": "array",
+              "uniqueItems": true,
+              "items": {"type": "string", "minLength": 1}
+            },
+            "deviations": {
+              "type": "array",
+              "uniqueItems": true,
+              "items": {"type": "string", "minLength": 1}
+            },
+            "failures": {
+              "type": "array",
+              "uniqueItems": true,
+              "items": {"type": "string", "minLength": 1}
+            },
+            "actual_cost": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["currency", "amount"],
+              "properties": {
+                "currency": {"type": "string", "pattern": "^[A-Z]{3}$"},
+                "amount": {"type": "number", "minimum": 0}
+              }
+            },
+            "cleanup_status": {
+              "enum": [
+                "PASS",
+                "FAIL",
+                "NOT_APPLICABLE"
+              ]
+            },
+            "cleanup_proof_sha256": {
+              "type": ["string", "null"],
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            "cleanup_proof": {
+              "oneOf": [
+                {"type": "null"},
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": ["artifact_id", "version", "completed_at", "action"],
+                  "properties": {
+                    "artifact_id": {"type": "string", "minLength": 1},
+                    "version": {"type": "string", "minLength": 1},
+                    "completed_at": {"type": "string", "format": "date-time"},
+                    "action": {"type": "string", "minLength": 1}
+                  }
+                }
+              ]
+            },
+            "cleanup_not_applicable_reason": {
+              "type": ["string", "null"],
+              "minLength": 1
+            }
+          },
+          "allOf": [
+            {
+              "if": {"properties": {"cleanup_status": {"const": "PASS"}}},
+              "then": {
+                "properties": {
+                  "cleanup_proof_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+                  "cleanup_proof": {"type": "object"},
+                  "cleanup_not_applicable_reason": {"type": "null"}
+                }
+              }
+            },
+            {
+              "if": {"properties": {"cleanup_status": {"const": "NOT_APPLICABLE"}}},
+              "then": {
+                "properties": {
+                  "cleanup_proof_sha256": {"type": "null"},
+                  "cleanup_proof": {"type": "null"},
+                  "cleanup_not_applicable_reason": {"type": "string", "minLength": 1}
+                }
+              }
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "execution_state": {
+            "const": "NOT_RUN"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "evidence_location": {
+            "type": "null"
+          },
+          "receipt": {
+            "type": "null"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "execution_state": {
+            "const": "RECEIPT_SUPPLIED"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "evidence_location": {
+            "type": "string",
+            "minLength": 1
+          },
+          "receipt": {
+            "type": "object"
+          },
+          "operator": {
+            "properties": {
+              "owner": {
+                "type": "string",
+                "minLength": 1
+              },
+              "destination": {
+                "type": "string",
+                "minLength": 1
+              },
+              "budget_reference": {
+                "type": "string",
+                "minLength": 1
+              },
+              "budget_limit": {
+                "type": "object"
+              }
+            }
+          },
+          "permissions": {
+            "properties": {
+              "external_execution_authorized": {"const": true},
+              "data_destination_approved": {"const": true},
+              "cost_budget_approved": {"const": true},
+              "authority_receipt": {"type": "object"}
+            }
+          }
+        }
+      }
+    }
+  ]
+}

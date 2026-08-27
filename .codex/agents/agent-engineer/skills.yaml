@@ -1,27 +1,34 @@
+plugin_skills:
+  - cascade-ai-architect:architect-ai-system
+  - cascade-ai-architect:map-agent-capabilities
+  - cascade-ai-architect:design-agent-blueprint
+  - cascade-ai-architect:design-agent-workflow
+  - cascade-ai-architect:build-agent-roles
+  - cascade-ai-architect:build-agent-skills
+  - cascade-ai-architect:prepare-agent-prompt
+  - cascade-software-architect:select-architecture-patterns
+  - cascade-software-architect:review-architecture
+  - cascade-software-architect:review-change
+  - cascade-ai-architect:prepare-agent-evaluation
+  - cascade-ai-architect:improve-agent-system
+  - cascade-coding-agent:audit-harness
+  - cascade-coding-agent:adapt-harness
+  - cascade-coding-agent:maintain-harness
+  - cascade-coding-agent:integrate-agent-assets
+  - cascade-evals:evaluate
+  - cascade-evals:build-judge
+  - cascade-evals:harness-evaluation
+  - cascade-prompt:prompt
+  - cascade-simulations:manage-simulation-campaign
+  - cascade-security:secure-design
 skills:
-  - name: simulation-campaigns
-    source: .codex/skills/simulation-campaigns/SKILL.md
-  - name: harness-evaluation
-    source: .codex/skills/harness-evaluation/SKILL.md
-  - name: judge-eval-builder
-    source: .codex/skills/judge-eval-builder/SKILL.md
-  - name: agentic-workflow-builder
-    source: .codex/skills/agentic-workflow-builder/SKILL.md
-  - name: agents-best-practices
-    source: .codex/skills/agents-best-practices/SKILL.md
-  - name: architecture-review
-    source: .codex/skills/architecture-review/SKILL.md
-  - name: secure-design
-    source: .codex/skills/secure-design/SKILL.md
-  - name: develop-skill
-    source: .codex/skills/develop-skill/SKILL.md
-  - name: codex-maintenance
-    source: .codex/skills/codex-maintenance/SKILL.md
-  - name: adapt-harness
-    source: .codex/skills/adapt-harness/SKILL.md
-  - name: ingest-spec
-    source: .codex/skills/ingest-spec/SKILL.md
-  - name: docs-impact-map
-    source: .codex/skills/docs-impact-map/SKILL.md
+  - name: create-spec
+    source: .codex/skills/create-spec/SKILL.md
+    delegates:
+      - cascade-product:define-product
+      - cascade-product:manage-product-lifecycle
+      - cascade-personas:build-persona
+      - cascade-personas:compile-persona
+      - cascade-market:research-market
   - name: pattern-context
     source: .codex/skills/pattern-context/SKILL.md

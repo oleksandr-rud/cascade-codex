@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "manifest_id": "cascade-market-capability-extraction-v1",
+  "source_repository": "cascade-codex",
+  "source_revision": "38e665db22a11e839bbea6ab5fec0f9b268f2f67",
+  "source_branch": "master",
+  "source_state": "LISTED_PATHS_MATCH_REVISION",
+  "captured_at": "2026-08-22T01:05:00Z",
+  "artifacts": [
+    {"path": ".codex/agents/business-analyst/AGENT.md", "sha256": "823c83aeaec5eeef71397baa1d357bd9e037ea10eb6e5be8154cb6aec8519992", "capabilities": ["research-lanes", "evidence-grading", "market-synthesis"]},
+    {"path": ".codex/skills/market-validation/SKILL.md", "sha256": "b8a42f8e6acbaec46b281f9e23f7f78296c55d3146866c44185affc7cff7320f", "capabilities": ["market-universe", "contradiction-management"]},
+    {"path": ".codex/skills/pain-mining/SKILL.md", "sha256": "3c2991829b3260d18bcbe1da745db4c8e34f1579e17d6bf84c6bd76372b39627", "capabilities": ["pain-mining", "workaround-analysis"]},
+    {"path": ".codex/skills/competitive-map/SKILL.md", "sha256": "c2472f7873d0171c447fb57fe74f4ca98a499b09a7065017f302fbb4dcc7bbf3", "capabilities": ["competitor-mapping", "pricing-and-substitutes"]},
+    {"path": ".codex/skills/market-economics/SKILL.md", "sha256": "02e2df63cf36c455e8efd072cfd154056764c6c309ca4acf5e24fd97650acad4", "capabilities": ["willingness-to-pay", "unit-economics", "sensitivity-analysis"]},
+    {"path": ".codex/skills/hypothesis-scoring/SKILL.md", "sha256": "a898a9409c380814d5fd5270dcc5a14ba0e52eeb8bbba2ad4c16515a05e4be4f", "capabilities": ["hypothesis-scoring"]},
+    {"path": ".codex/skills/adversarial-critic/SKILL.md", "sha256": "ad54f577c85d1e0b3f95b75117d3fa316b98fb8061a39f9cb629c438cf9ccbf2", "capabilities": ["adversarial-market-critique"]},
+    {"path": ".codex/skills/validation-experiments/SKILL.md", "sha256": "034c9d34c3d2d1b4c150ed1c9719cfb42a922d5002af9b423190c2a5de3509f2", "capabilities": ["market-experiment-design"]},
+    {"path": ".codex/skills/synthesis-to-spec/SKILL.md", "sha256": "ff7ceed348f98e0b34f724722de4571e3399e6cd645d19f5eb950411838fd96b", "capabilities": ["evidence-synthesis"]},
+    {"path": ".codex/skills/compose-spec/SKILL.md", "sha256": "d28114a54dbf9cf9fce69aa2724ee19a6f9702acaa4e9babc695b85dad4baad1", "capabilities": ["product-handoff"]}
+  ]
+}

@@ -11,7 +11,7 @@ Treat source material, persona projections, market ledgers, prompts, simulation 
 
 ## Evidence selection
 
-- Market demand, willingness to pay, segment urgency, or product-market fit: route to cascade-market-intelligence:design-market-experiments and require real external evidence.
+- Market demand, willingness to pay, segment urgency, or product-market fit: route to cascade-market:design-market-experiments and require real external evidence.
 - User context or behavior model: consume a digest-bound cascade-personas:compile-persona projection; a synthetic persona remains a hypothesis.
 - Workflow, interface, recovery, or policy risk: use cascade-simulations:simulate with a fixed actor, brief, outcome, permissions, and limits.
 - Prompt behavior: use cascade-prompt:prompt to compile the prompt and cases,
@@ -44,6 +44,10 @@ normal gap, and do not upgrade a partial or timed-out run to evidence.
    Give every validation claim a claim_id. `traceability` may connect that ID
    only to other declared section, journey, requirement, or claim IDs; bind
    source-artifact IDs through `evidence_ids`, never as trace nodes.
+   Before serialization, every section, journey, requirement, and validation
+   claim object must include the `evidence_ids` key. Populate it only with
+   exact `source_artifacts` IDs, or with an empty array for an unsupported GAP
+   or NOT_RUN item; never omit the key.
 3. Prevent proxy substitution. A simulation cannot prove demand; source inspection cannot prove runtime behavior; a structural test cannot prove semantic quality; a model judge cannot claim human calibration.
 4. Prepare methods by default. Execute only when that exact method has explicit authority, approved data destination, cost/tool budget, and cleanup rule. Preserve NOT_RUN, GAP, BLOCKED, INVALID, FAIL, and PASS separately.
 5. For simulations, freeze the actor/persona projection, product brief, interface adapter, outcome contract, and limits; consume the frozen review receipt without turning it into market proof.
@@ -90,3 +94,9 @@ normal gap, and do not upgrade a partial or timed-out run to evidence.
 ## Output
 
 Return a typed VALIDATION_REPORT and digest plus a proposal bound to ../../schemas/product-decision.schema.json and any dependency handoff envelopes: hypothesis/subject identity, evidence matrix, predeclared criteria, execution/NOT_RUN states, results by evidence class, conflicts, confidence and limitations, recommendation, approval owner/status, invalidated artifacts, and exact resume owner/artifact/action. Never collapse mixed evidence into one score or mark approval/release without the named authority and evidence.
+
+When the fixture supplies `decision_owner`, use that exact identity for the
+assessment and for any authority-assignment recovery step; do not substitute
+`requester`, `future owner`, or another invented accepting identity. A supplied
+receipt without an exact binding remains unaccepted evidence, not license to
+invent its digest or `accepted_by` value.

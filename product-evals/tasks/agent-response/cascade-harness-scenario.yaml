@@ -1,24 +1,25 @@
 expectation:
-  allowed_supporting: []
+  allowed_supporting:
+    - cascade-evals:evaluate
   delegation_policy: none
   forbidden_primary:
-    - simulation-campaigns
+    - cascade-simulations:manage-simulation-campaign
   must_load_skills:
-    - harness-evaluation
+    - cascade-evals:harness-evaluation
   mutation_policy: none
   network_policy: none
   next_route: ""
-  primary_skill: harness-evaluation
+  primary_skill: cascade-evals:harness-evaluation
   status_any:
     - BLOCKED
     - FAIL
     - GAP
     - NOT_RUN
     - PASS
-  target_skill: harness-evaluation
+  target_skill: cascade-evals:harness-evaluation
 id: HX-055
 kind: interaction
 owner: orchestrator
 prompt: Evaluate generated Cascade routing scenarios and JSONL traces with deterministic hard gates and independent semantic judgment.
 source: harness-evals/interactions.yaml
-target_skill: harness-evaluation
+target_skill: cascade-evals:harness-evaluation

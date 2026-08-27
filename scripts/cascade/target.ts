@@ -906,7 +906,7 @@ export async function runFixtureSelfTest(): Promise<string[]> {
   const failures: string[] = [];
   if (!(await isDirectory(FIXTURE_ROOT))) return [`missing fixture: ${FIXTURE_ROOT}`];
   const schema = await readJson<Record<string, any>>(
-    rootPath(".codex/skills/adapt-harness/schemas/onboarding-manifest.schema.json"),
+    rootPath(".codex/schemas/target/onboarding-manifest.schema.json"),
   );
   const schemaStatuses = new Set(schema.properties?.status?.enum ?? []);
   for (const status of ["draft", "current", "blocked", "superseded"]) {

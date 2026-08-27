@@ -31,7 +31,7 @@ actor:
   preferred_existing_roles:
     - orchestrator
 skill_calls:
-  - skill: functional-qa
+  - skill: cascade-qa:design-tests
     when: a public-start journey must be executed
     required: true
   - skill: validate-change

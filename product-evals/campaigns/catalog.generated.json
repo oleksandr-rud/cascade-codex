@@ -1,5 +1,5 @@
 {
-  "digest": "fbe1e909813fa00da066d3f18322323d65fe65df86d02e32a732ad251c4b5779",
+  "digest": "f897ead882c978be6080b03827be8294144e78d01b5189ccec748392da08c1ef",
   "entries": [
     {
       "adapters": [
@@ -15,7 +15,7 @@
       "drivers": [
         "agent-runtime"
       ],
-      "evaluation_model": "gpt-5.6-terra",
+      "evaluation_model": "gpt-5.6-sol",
       "evaluation_profile_id": "codex-independent-v1",
       "evaluation_provider": "codex",
       "id": "agent-cascade-harness-canary",
@@ -25,7 +25,7 @@
       "intake_status": null,
       "intake_task_envelope_id": null,
       "manifest": "product-evals/campaigns/agent-cascade-harness-canary.yaml",
-      "manifest_digest": "fb22617e56a661b44a2499e5543282ff29611cbf695c5fbd0a60623c649ee330",
+      "manifest_digest": "b546895211e7d19a8a12822fc29b8281880121649a97d35b88548a51e2a16bd2",
       "metric_ids": [
         "agent-response-contract-rate-v1"
       ],
@@ -39,7 +39,7 @@
       "rubric_id": "simulation-evaluator-v1",
       "simulation_id": "agent-cascade-harness",
       "simulation_scope": "harness",
-      "source_digest": "6b260f754e088549c96a9378d8ab16ab5fe94d90b933770072bc5566daac75e3",
+      "source_digest": "e32501e37b1d8bc45bd3a5f8779cd50c0c641304e062a132433a5a804cb70ff5",
       "task_ids": [
         "AGENT-CASCADE-HARNESS-CANARY"
       ],
@@ -87,7 +87,7 @@
       "rubric_id": null,
       "simulation_id": "agent-response-fixture",
       "simulation_scope": "harness",
-      "source_digest": "0f4ad554dbc6b792b6482eedb4929c44b866a36853daf8228c6bf0d0f5cd31d6",
+      "source_digest": "dfe90a1f22925d3d3ac5dcf554979b9c66b84d855fc4b1fd64d0aeaa301f08aa",
       "task_ids": [
         "AGENT-RESPONSE-FIXTURE-SMOKE"
       ],
@@ -111,7 +111,7 @@
       "drivers": [
         "agent-runtime"
       ],
-      "evaluation_model": "gpt-5.6-terra",
+      "evaluation_model": "gpt-5.6-sol",
       "evaluation_profile_id": "codex-independent-v1",
       "evaluation_provider": "codex",
       "id": "agent-standalone-codex-canary",
@@ -135,7 +135,7 @@
       "rubric_id": "simulation-evaluator-v1",
       "simulation_id": "agent-standalone-codex",
       "simulation_scope": "harness",
-      "source_digest": "8bfaaa89a4816f34dc2b45a19ddaf8908b1b5bcceceec2cc1a063646b4c503f6",
+      "source_digest": "64ae6c2577b6215b10d7a1ec30bb902e0c0e91039177b2e231131a35c9e5f1c4",
       "task_ids": [
         "AGENT-STANDALONE-CODEX-CANARY"
       ],
@@ -188,7 +188,7 @@
       "rubric_id": null,
       "simulation_id": "browser-local-fixture",
       "simulation_scope": "harness",
-      "source_digest": "5ff93923b2f0c2cc808fe98eb1bd806fb977ac796ad8869e167c1e3810e1be1d",
+      "source_digest": "b9d5cfe9697a98f37c0fd57b2204a632775612a8969b7d92e5204c54c95e0e9b",
       "task_ids": [
         "BROWSER-SIMULATION-SMOKE",
         "BROWSER-EXTERNAL-NAVIGATION-DENIED",
@@ -241,7 +241,7 @@
       "rubric_id": null,
       "simulation_id": "command-failure-fixture",
       "simulation_scope": "harness",
-      "source_digest": "b94bf7da57c1f64f3f033fa7788f3382b7a5966f0648e97b1fbf33103cf871ae",
+      "source_digest": "f82376b18bfbca61845a9e55f35c47cb626a9bf53d400f644560fb9ac87051d9",
       "task_ids": [
         "COMMAND-EXPECTED-FAILURE",
         "COMMAND-MISSING-OUTPUT"
@@ -299,7 +299,7 @@
       "rubric_id": null,
       "simulation_id": "simulation-correctness-fixture",
       "simulation_scope": "harness",
-      "source_digest": "d4a1637ebf19f86d245813a7fa3e55a87c123dc112cf59a9cfa4779822491fe2",
+      "source_digest": "7737a461e6c9a32baf8099ce01ffd5d6e74647978301f7e49b94c7cff924a4dd",
       "task_ids": [
         "FAKE-COMMAND-HANDOFF",
         "FAKE-HTTP-HANDOFF",
@@ -355,7 +355,7 @@
       "rubric_id": null,
       "simulation_id": "desktop-linux-fixture",
       "simulation_scope": "harness",
-      "source_digest": "15e74cd04f65452fe93743b3aa980ecf7fb59b91afaffa41c0173779d5538a43",
+      "source_digest": "2dbad68f849356f2e95d6f35c87e980575718adb9b411cf57df220d49af9a356",
       "task_ids": [
         "DESKTOP-LINUX-SMOKE"
       ],
@@ -403,7 +403,7 @@
       "rubric_id": null,
       "simulation_id": "command-static-fixture",
       "simulation_scope": "harness",
-      "source_digest": "02cb75ac94cdbd8c7ab3e9b39adc7b997af5177e0bd78830764c6b03d98264a9",
+      "source_digest": "a507ad3313b8f85bc36c0b885f462d07e9c4683e30c7efaed1565156b51df201",
       "task_ids": [
         "HARNESS-STATIC-SMOKE"
       ],
@@ -451,7 +451,7 @@
       "rubric_id": null,
       "simulation_id": "mobile-provider-fixture",
       "simulation_scope": "harness",
-      "source_digest": "312ce9bd95e713049ffeb32ef1d6bfb74ec17cfec636338da74d21ccc52d2da6",
+      "source_digest": "b2f38a90a83a4e2b082f60c0ba30f5a007cd17a6950f190a9b4ff4f9adbafae3",
       "task_ids": [
         "MOBILE-ANDROID-PREFLIGHT"
       ],
@@ -502,7 +502,7 @@
       "rubric_id": null,
       "simulation_id": "simulation-correctness-fixture",
       "simulation_scope": "harness",
-      "source_digest": "90a5f76b365e941118112b65cc914d6b0e1106b485cb9d9eba49c5494d09131f",
+      "source_digest": "1744cec74e231154895b3c54a2fa0157cf3bd1812ac1748ebed54af78d982d09",
       "task_ids": [
         "SIMULATION-STATE-SMOKE"
       ],
@@ -530,7 +530,7 @@
       "drivers": [
         "fake"
       ],
-      "evaluation_model": "gpt-5.6-terra",
+      "evaluation_model": "gpt-5.6-sol",
       "evaluation_profile_id": "codex-independent-v1",
       "evaluation_provider": "codex",
       "id": "simulation-codex-evaluation-smoke",
@@ -555,7 +555,7 @@
       "rubric_id": "simulation-evaluator-v1",
       "simulation_id": "simulation-correctness-fixture",
       "simulation_scope": "harness",
-      "source_digest": "03172e672aee83de70bbafccbbabf8a18a8bb9c23ef88030693a3f28c712a7b4",
+      "source_digest": "013174b85168fc31627373636b53d05aab2c6e0734b019c387d756fc6c95ee4f",
       "task_ids": [
         "SIMULATION-STATE-SMOKE"
       ],
@@ -608,7 +608,7 @@
       "rubric_id": null,
       "simulation_id": "simulation-correctness-fixture",
       "simulation_scope": "harness",
-      "source_digest": "ee205f4358d6f5aa7f11f6234080f3d809ce3baacd32b485a71c7d92428b9005",
+      "source_digest": "87023381561b12047d122310ee33ca9b09012016ee6241eefd75874d096a9c0b",
       "task_ids": [
         "SIMULATION-STATE-SMOKE"
       ],
@@ -661,7 +661,7 @@
       "rubric_id": null,
       "simulation_id": "simulation-correctness-fixture",
       "simulation_scope": "harness",
-      "source_digest": "c44ea7ef81a077539a1b556b2934a3e3b717b718b1fc717f69af254e86ebd0f6",
+      "source_digest": "509eaf137c332e5d207b8a34581603e2f9aa1a428cf9f6defbfe3b9130c97e5a",
       "task_ids": [
         "SIMULATION-STATE-SMOKE"
       ],
@@ -714,7 +714,7 @@
       "rubric_id": null,
       "simulation_id": "simulation-correctness-fixture",
       "simulation_scope": "harness",
-      "source_digest": "43e1a1c2bede48ce079b5591d7ee0847403fc44dde55a635a55eea3e35a074c8",
+      "source_digest": "199e2138da915e149c593949d1cd817a280d9bf06cc3c9ef0c05cdb3312b6163",
       "task_ids": [
         "SIMULATION-STATE-SMOKE"
       ],
@@ -767,7 +767,7 @@
       "rubric_id": null,
       "simulation_id": "simulation-correctness-fixture",
       "simulation_scope": "harness",
-      "source_digest": "64c98ccd648f665159890cb8f44304adc81c1986ae2082c1884b21abbbce673a",
+      "source_digest": "6e0607a749a5cf5e13d2063fac2c34927637976654626108c504356595b735cd",
       "task_ids": [
         "SIMULATION-STATE-SMOKE"
       ],
@@ -820,7 +820,7 @@
       "rubric_id": null,
       "simulation_id": "simulation-correctness-fixture",
       "simulation_scope": "harness",
-      "source_digest": "0a49b69e15a4a4e3d7ed9a762cb67cf3feba53cb82999cbbbfde0e702c7396f0",
+      "source_digest": "f6c3a0c5b129768ccc351cdf683f43a876f673e505a5013dc595873da83f6553",
       "task_ids": [
         "SIMULATION-STATE-SMOKE"
       ],
@@ -875,7 +875,7 @@
       "rubric_id": null,
       "simulation_id": "terminal-pty-fixture",
       "simulation_scope": "harness",
-      "source_digest": "b00056996b30ffb7bdbf3c8d44fe66d5657b775f0df1b4019115fa7e7360f2a8",
+      "source_digest": "6b6c436cd5367398215d54e0a1c34458e6512dec648812a1a8ec1fe48cd5b101",
       "task_ids": [
         "TERMINAL-PTY-SMOKE",
         "TERMINAL-SIGNAL-SMOKE",

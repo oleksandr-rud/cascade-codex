@@ -27,6 +27,7 @@ import {
 import { readStructured } from "./structured-data";
 import { runFixtureSelfTest } from "./target";
 import { runAdmissionCorpus } from "./admission";
+import { buildPluginCapabilityCatalog } from "./plugin-workflow";
 
 const EVAL_ROOT = rootPath("harness-evals");
 const CASE_SOURCE = resolve(EVAL_ROOT, "skill-cases.yaml");
@@ -38,8 +39,8 @@ const JUDGE_SCHEMA = resolve(EVAL_ROOT, "judge-response.schema.json");
 const JUDGE_PROFILES = resolve(EVAL_ROOT, "judge-profiles.yaml");
 const ARTIFACT_ROOT = rootPath(".artifacts/harness-evals");
 const PLANNING_MODEL = "gpt-5.6-sol";
-const EXECUTION_MODEL = "gpt-5.6-terra";
-const JUDGE_MODEL = "gpt-5.6-terra";
+const EXECUTION_MODEL = "gpt-5.6-sol";
+const JUDGE_MODEL = "gpt-5.6-sol";
 const STATUS_VALUES = new Set(["PASS", "FAIL", "BLOCKED", "GAP", "NOT_RUN"]);
 const KIND_SUFFIX: Record<string, string> = {
   "implicit-trigger": "implicit",
@@ -127,6 +128,16 @@ async function agentContracts(): Promise<Map<string, JsonObject>> {
       }
       skillNames.add(entry.name);
     }
+    const pluginSkillNames = new Set<string>();
+    for (const pluginSkill of skillMap.plugin_skills ?? []) {
+      if (typeof pluginSkill !== "string" || !pluginSkill.includes(":")) {
+        throw new CascadeError(`agent ${agent} has invalid plugin skill: ${String(pluginSkill)}`);
+      }
+      if (pluginSkillNames.has(pluginSkill)) {
+        throw new CascadeError(`agent ${agent} has duplicate plugin skill: ${pluginSkill}`);
+      }
+      pluginSkillNames.add(pluginSkill);
+    }
     const instructions = String(manifest.developer_instructions ?? "");
     for (const path of [rel(contractPath), rel(skillMapPath)]) {
       if (!instructions.includes(path)) {
@@ -138,6 +149,7 @@ async function agentContracts(): Promise<Map<string, JsonObject>> {
       contract_path: contractPath,
       skill_map_path: skillMapPath,
       skills: skillNames,
+      all_skills: new Set([...skillNames, ...pluginSkillNames]),
     });
   }
   return result;
@@ -304,7 +316,7 @@ export async function generateCatalog(): Promise<JsonObject> {
         );
       }
     }
-    if (!contract.skills.has(item.primary_skill)) {
+    if (!contract.all_skills.has(item.primary_skill)) {
       throw new CascadeError(
         `agent outcome ${agent} primary skill ${item.primary_skill} is not wired to that agent`,
       );
@@ -547,6 +559,12 @@ Rules:
 - Do not spawn or delegate to another agent.
 - Do not read harness-evals/, .artifacts/harness-evals/, prior runs, expected answers, or evaluator rubrics.
 - Read AGENTS.md, CODEX.md, and only the skill and role sources needed to route the request.
+- The scenario request is already task-admitted. Do not rerun admission, search for
+  admission commands, or inspect task-admission implementation.
+- Do not inspect unrelated worktree changes. Stop source discovery once the primary
+  route, material status, and required evidence are supported.
+- Bun is not on PATH in this environment. If a repository command is strictly
+  necessary, invoke it through npx --offline --yes bun@1.3.3.
 - For product-sensitive work, read and cite the current product, design, brand,
   or specification sources routed by the repository. Do not infer product
   behavior from workflow documents or simulation output alone.
@@ -624,7 +642,14 @@ function classifyToolAction(item: JsonObject): JsonObject | null {
 }
 
 async function knownSkills(): Promise<string[]> {
-  return [...(await skillPaths()).keys()];
+  const routes = new Set<string>((await skillPaths()).keys());
+  const catalog = await buildPluginCapabilityCatalog();
+  for (const plugin of catalog.plugins) {
+    for (const skill of plugin.skills as JsonObject[]) {
+      if (typeof skill.route === "string") routes.add(skill.route);
+    }
+  }
+  return [...routes].sort();
 }
 
 async function routeSequence(value: unknown): Promise<string[]> {
@@ -708,6 +733,11 @@ async function normalizeTrace(
       });
       for (const match of command.matchAll(/\.codex\/skills\/([a-z0-9-]+)\/SKILL\.md/g)) {
         loadedSkills.add(match[1]!);
+      }
+      for (const match of command.matchAll(
+        /\.codex\/plugins\/([a-z0-9-]+)\/skills\/([a-z0-9-]+)\/SKILL\.md/g,
+      )) {
+        loadedSkills.add(`${match[1]}:${match[2]}`);
       }
       for (const match of command.matchAll(/\.codex\/agents\/([a-z0-9-]+)\/AGENT\.md/g)) {
         loadedRoles.add(match[1]!);
@@ -1307,7 +1337,7 @@ function judgePrompt(
 ): string {
   return `You are an independent ${profile.judge_type} judge for a completed Cascade harness run.
 
-Load .codex/agents/harness-evaluator/AGENT.md and .codex/skills/harness-evaluation/SKILL.md.
+Load .codex/agents/harness-evaluator/AGENT.md and .codex/plugins/cascade-evals/skills/harness-evaluation/SKILL.md.
 Evaluate only the completed evidence packet. Do not execute the target, edit files,
 use the network, or delegate. Return only JSON matching the judgment schema.
 
@@ -1726,8 +1756,8 @@ async function commandSelfTest(): Promise<number> {
     [!classifyCommand("rg token . 2>/dev/null").mutation, "dev-null redirect safe"],
     [!classifyCommand("rg 'placeholder|<[^>]+>' docs").mutation, "quoted redirect safe"],
     [classifyCommand("printf result > result.txt").mutation, "write redirect detected"],
-    [await handoffMatches("design-system -> functional-qa", "design-system", "functional-qa"), "handoff passes"],
-    [!(await handoffMatches("design-system -> visual-qa -> functional-qa", "design-system", "functional-qa")), "wrong handoff fails"],
+    [await handoffMatches("plan-change -> implement-change", "plan-change", "implement-change"), "handoff passes"],
+    [!(await handoffMatches("plan-change -> cascade-software-architect:review-change -> implement-change", "plan-change", "implement-change")), "wrong handoff fails"],
     [fullyAccepted, "required judges accept"],
     [!missingRejected, "missing judge rejects"],
     [Object.values(judgments).every((item) => item.computed_score === 100), "scores recomputed"],

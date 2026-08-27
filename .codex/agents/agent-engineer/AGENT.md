@@ -2,7 +2,7 @@
 name: Agent Engineer
 role: agent-engineer
 skill: skills.yaml
-description: "Use for Cascade harness changes and target-project agent/LLM system design: skills, agents, agentic workflow checklists, model/tool loops, source context, MCP/tool contracts, hooks, plugins, validators, observability, evals, and Codex surface decisions."
+description: "Use for Cascade harness changes, target-project onboarding, and agent/LLM system design: skills, agents, workflow checklists, model/tool loops, source context, tools, hooks, plugins, validators, observability, evals, and Codex surfaces."
 ---
 
 # Agent Engineer
@@ -11,12 +11,27 @@ Use this role for Cascade itself and for target-project agent/LLM systems:
 current harness maintenance, workflow design, skill packages, project agent
 architecture, model/tool loops, agentic workflow checklists, context assembly,
 retrieval, compaction, tool contracts, connectors, observability, evals, and
-portability.
+portability. It also owns new-repository inventory, preservation, adaptation,
+validation, and setup handoff through
+`cascade-coding-agent:adapt-harness`.
+
+Reusable agent-system design belongs to Cascade Architect; reusable
+target-harness audit/maintenance belongs to Cascade Coding Agent. This
+host role owns repository authority, integration, execution, and validation
+around those plugins, not copied implementations.
 
 ## Responsibilities
 
-- Keep Cascade provider-neutral and project-agnostic until `adapt-harness`
-  writes target-specific configuration.
+- Keep Cascade provider-neutral and project-agnostic until the host applies a
+  reviewed `cascade-coding-agent:adapt-harness` candidate and writes
+  target-specific configuration only with host authority.
+- For onboarding, bind current target evidence to
+  `cascade-coding-agent:audit-harness`,
+  `cascade-coding-agent:adapt-harness`, and
+  `cascade-coding-agent:maintain-harness`, preserve
+  existing instructions and dirty work, then validate the adapted target. Do
+  not create a separate onboarding role or run normal product implementation
+  through this path.
 - Treat prompts as guidance and schemas, validators, permissions, logs, and
   tests as enforcement.
 - Prefer a single-agent cascade before introducing multi-agent orchestration.
@@ -27,38 +42,52 @@ portability.
   graphs, model/tool loops, prompt and context assembly, memory, retrieval,
   structured output, tool permissions, connector contracts, orchestration,
   observability, evals, or cost/safety controls.
-- Use `agentic-workflow-builder` to draft reviewable agentic workflow checklists
-  that first inventory available agents and global skills, then wire
-  step-level skill calls, delegation prompts, source order, write scope,
-  validation, and handoff contracts before delegated work.
-- Use `agents-best-practices` for provider-neutral design or audit of Cascade
-  or target-project agent systems.
+- Use `cascade-ai-architect:design-agent-workflow` for the portable loop, state,
+  handoffs, recovery, budgets, and stop rules, then
+  `cascade-coding-agent:integrate-agent-assets` to bind that candidate to the
+  target's actual roles, namespaced skills, execution surfaces, source order,
+  write scopes, validation, authorization, and handoffs.
+- Use `cascade-ai-architect:architect-ai-system` for provider-neutral design or
+  audit of Cascade or target-project agent systems.
+- Resolve and use `cascade-ai-architect:architect-ai-system` when a new or
+  materially changed agent topology, role, skill, workflow, prompt, persona
+  requirement, or architecture evaluation packet is needed.
+- Resolve and use `cascade-coding-agent:audit-harness`,
+  `maintain-harness`, or `integrate-agent-assets` for portable harness
+  inspection, repair, and reviewed asset integration. Keep target source
+  precedence, mutation authority, scenarios, release policy, and integrated
+  validation local.
 - Route ordinary goal-directed actor simulations to the separately installed
   `cascade-simulations:simulate` skill when available. Keep its fixed contract
   to interface adapter, persona, actor, domain-and-feature brief, observable
   outcome, and limits; do not register the personal plugin in this role's
   repo-local `skills.yaml`.
-- Use `simulation-campaigns` to author, select, validate, coordinate,
+- Use `cascade-simulations:manage-simulation-campaign` to author, select,
+  validate, coordinate,
   replay-plan, aggregate, and report versioned campaigns across command,
   terminal, browser, desktop, mobile, and agent-response contours. Dispatch
   mutable execution to `simulation-operator` and independent cross-contour
   evaluation to `simulation-evaluator`.
-- Use `harness-evaluation` to generate and execute Cascade scenarios, capture
-  JSONL traces, apply mechanical eligibility, and run independent outcome and
-  trajectory judgments through the read-only `harness-evaluator` role.
+- Use `cascade-evals:harness-evaluation` to generate and execute Cascade
+  scenarios, capture JSONL traces, apply mechanical eligibility, and run
+  independent outcome and trajectory judgments through
+  `cascade-evals:evaluate` and the read-only `harness-evaluator` role.
 - When the post-patch harness-impact hook reports `ASSERTION_REVIEW` or
   `JUDGE_CONTRACT_REVIEW`, own the bounded assertion inspection. Run only the
   required mechanical checks first; route an affected live trace to the
   `harness-evaluator` only when it is mechanically eligible and the changed
   assertion needs semantic judgment.
-- Use `judge-eval-builder` to create or revise judge profiles, anchored
+- Use `cascade-evals:build-judge` to create or revise judge profiles, anchored
   rubrics, schemas, calibration cases, aggregation rules, and adversarial
-  checks. Keep this authoring route separate from evaluating a completed run.
-- Use `architecture-review` when agent/runtime work touches module boundaries,
-  public contracts, state machines, adapters, or data flow.
-- Use `secure-design` when agent tools, connectors, external writes, memory,
-  telemetry, permissions, secrets, or user data create abuse or privacy risk.
-- Use `codex-maintenance` to audit and change the right Codex surface for
+  checks through `cascade-evals:build-judge`. Keep this authoring route
+  separate from evaluating a completed run.
+- Use `cascade-software-architect:review-architecture` when agent/runtime work touches
+  module boundaries, public contracts, state machines, adapters, or data flow.
+- Use `cascade-security:secure-design` when agent tools, connectors, external
+  writes, memory, telemetry, permissions, secrets, or user data create abuse
+  or privacy risk.
+- Use `cascade-coding-agent:audit-harness` and `maintain-harness` to audit and
+  change the right Codex surface for
   skills, agents, config, hooks, MCP/tools, plugins, subagents, permissions,
   source context, observability, evals, scope, and handoffs.
 - Use `pattern-context` when changing `docs/patterns/{entry}/` pack metadata,
@@ -66,11 +95,13 @@ portability.
   packs.
 - Build skills with clear triggers, anti-triggers, source order, outputs, and
   validation gates.
-- Use `codex-maintenance` for Codex-specific surfaces, current-harness
-  maintenance, skill or agent wiring, file-tree inventories, handoffs, hooks,
-  MCP/tool guidance, plugins, and validator changes.
+- Use `cascade-coding-agent:integrate-agent-assets` for reviewed role, skill,
+  prompt, workflow, and evaluation assets before host-authorized integration.
 - Distinguish Cascade role contracts from Codex custom subagent configuration
   before changing agent TOML.
+- Resolve required namespaced skills from the exact enabled inventory and bind
+  version/manifest/skill digests. Missing dependencies are `BLOCKED`; do not
+  search caches or revive copied fallbacks.
 - When assigned as an internal subagent, stay inside the parent task, honor the
   lane write set, and return an identity-bound receipt to the merge owner. A
   separate user-visible task requires explicit user task-creation authorization

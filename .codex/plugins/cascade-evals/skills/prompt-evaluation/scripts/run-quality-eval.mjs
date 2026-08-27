@@ -286,9 +286,10 @@ if (command === "list") {
 }
 
 if (command !== "run") fail(`unknown command: ${command}`);
-args["prompt-model"] ??= matrix.defaults?.prompt_model ?? "gpt-5.6-terra";
-args["target-model"] ??= matrix.defaults?.target_model ?? "gpt-5.6-terra";
-if (args["execute-judges"]) args["judge-model"] ??= matrix.defaults?.judge_model ?? "gpt-5.6-terra";
+args["prompt-model"] ??= matrix.defaults?.prompt_model ?? "gpt-5.6-sol";
+args["target-model"] ??= matrix.defaults?.target_model ?? "gpt-5.6-sol";
+args["reasoning-effort"] ??= matrix.defaults?.reasoning_effort ?? "max";
+if (args["execute-judges"]) args["judge-model"] ??= matrix.defaults?.judge_model ?? "gpt-5.6-sol";
 for (const required of ["task"]) {
   if (!args[required]) fail(`--${required} is required`);
 }
@@ -321,7 +322,7 @@ const timeouts = {
   judge: positiveTimeout(args["judge-timeout-ms"], DEFAULT_TIMEOUTS_MS.judge, "--judge-timeout-ms")
 };
 async function executePhase({ phase, model, prompt, timeoutMs, adapter, adapterId }) {
-  return requireCompleted(await runAgentResponseSimulation({ phase, runId, runRoot, model, prompt, cwd: targetWorkspace, timeoutMs, adapter, adapterConfig: args["adapter-config"], adapterId }), { phase, runRoot });
+  return requireCompleted(await runAgentResponseSimulation({ phase, runId, runRoot, model, reasoningEffort: args["reasoning-effort"], prompt, cwd: targetWorkspace, timeoutMs, adapter, adapterConfig: args["adapter-config"], adapterId }), { phase, runRoot });
 }
 
 const contractDigest = await runtimeContractDigest(subjectSkillRoot);
@@ -472,7 +473,7 @@ const summary = {
   task: { id: task.id, version: task.version, builder_mode: task.builder_mode, tier: task.tier, catalog_id: catalog.catalog_id, outcome_evaluation: task.outcome_evaluation, trajectory_evaluation: task.trajectory_evaluation },
   configuration: {
     subject_plugin: args["subject-plugin"] ?? "cascade-prompt", subject_skill: args["subject-skill"] ?? "prompt", subject_skill_root: subjectSkillRoot,
-    prompt_model: args["prompt-model"], target_model: args["target-model"], judge_model: args["judge-model"] ?? null,
+    prompt_model: args["prompt-model"], target_model: args["target-model"], judge_model: args["judge-model"] ?? null, reasoning_effort: args["reasoning-effort"],
     adapters: { prompt: args["prompt-adapter"] ?? "codex-cli", target: args["target-adapter"] ?? "codex-cli", judge: args["judge-adapter"] ?? "codex-cli" },
     adapter_ids: { prompt: args["prompt-adapter-id"] ?? null, target: args["target-adapter-id"] ?? null, judge: args["judge-adapter-id"] ?? null },
     timeouts_ms: timeouts

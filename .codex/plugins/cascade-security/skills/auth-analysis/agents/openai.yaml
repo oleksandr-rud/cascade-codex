@@ -1,0 +1,6 @@
+interface:
+  display_name: "Authentication Analysis"
+  short_description: "Audit auth, sessions, RBAC, and tenant isolation"
+  default_prompt: "Use $auth-analysis to audit this authentication, session, authorization, and tenant-isolation path."
+policy:
+  allow_implicit_invocation: true

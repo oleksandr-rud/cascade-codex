@@ -1,5 +1,10 @@
+plugin_skills:
+  - cascade-simulations:execute-simulation-campaign
+  - cascade-simulations:simulate
 skills:
-  - name: simulation-execution
-    source: .codex/skills/simulation-execution/SKILL.md
-  - name: functional-qa
-    source: .codex/skills/functional-qa/SKILL.md
+  - name: run-qa-plan
+    source: .codex/skills/run-qa-plan/SKILL.md
+    delegates:
+      - cascade-qa:design-tests
+      - cascade-qa:assess-quality
+      - cascade-qa:triage-defects
