@@ -82,12 +82,12 @@ receipts. Local regression success cannot substitute for those acceptances.
 
 ## Validation
 
+The module-level regression suites in the original plan were retired on
+2026-09-08. The retained runtime safety smoke suite below does not replace
+their coverage or satisfy the historical integration and acceptance gates.
+
 ```bash
-npx --yes bun@1.3.3 test scripts/cascade/admission.test.ts \
-  scripts/cascade/common.test.ts \
-  scripts/cascade/simulation-intake.test.ts \
-  scripts/cascade/simulations.test.ts \
-  scripts/cascade/simulation-definitions.test.ts
+npx --offline --yes bun@1.3.3 run test
 npx --yes bun@1.3.3 scripts/cascade.ts admission corpus
 npx --yes bun@1.3.3 scripts/cascade.ts brief validate PB-002
 npx --yes bun@1.3.3 scripts/cascade.ts brief generate PB-002 --check

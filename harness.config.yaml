@@ -27,7 +27,7 @@ project:
       - "Codex runtime"
       - "GitHub repository"
     test:
-      unit: "Bun test for campaign tooling"
+      unit: "Minimal Bun runtime safety smoke suite"
       functional: "Cascade validator, judged harness evals, and simulation campaign self-test"
       e2e: "Playwright browser-task simulations"
 
@@ -224,7 +224,7 @@ validation_commands:
     - "bun scripts/cascade.ts campaign catalog --check"
     - "bun scripts/cascade.ts campaign self-test"
   unit:
-    - "bun test --max-concurrency 4 scripts/cascade"
+    - "bun run test"
   lint: []
   typecheck: []
   build:

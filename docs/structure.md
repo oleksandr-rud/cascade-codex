@@ -47,6 +47,14 @@ tests, browser tooling, source scripts, and the three evaluator/simulation
 lab roles. Installed plugins provide portable methods; the target retains only
 Orchestrator, Agent Engineer, Security, and repository-bound adapters/effects.
 
+The repository's default `bun run test` command retains only five runtime
+safety smoke files under `scripts/cascade/`: admission authority, filesystem
+and process boundaries, workspace artifact persistence, the real MCP adapter,
+and the lean runtime bundle. This is deliberately reduced coverage, not an
+exhaustive unit suite. Plugin package tests, lab corpora, and built-in targeted
+self-tests remain separate and run only for an affected contract; do not
+recreate broad module-by-module test suites as a routine harness task.
+
 The repository marketplace at `.agents/plugins/marketplace.json` catalogs all
 14 Cascade plugin source packages under `.codex/plugins/<plugin-name>/`:
 Prompt, Simulations, Evals, Coordinator, AI Architect, Software Architect, Coding Agent,
@@ -390,6 +398,44 @@ Canonical deterministic runtime authority owned by W-004:
   `.artifacts/product-evals/refinement-reviews/<disposition-id>/`; these bind a
   frozen proposal and reviewed external-evidence manifests, and never mutate a
   persona source file.
+
+The campaign runtime is independent of the default Bun smoke suite. Removing
+module-level tests does not remove adapters, artifact storage, evaluation
+providers, reducers, or campaign definitions. Its current operational path is:
+
+1. Orchestrator selects `cascade-simulations:manage-simulation-campaign` for a
+   campaign, or `cascade-simulations:simulate` for one bounded actor loop.
+2. Simulation Operator follows `cascade-simulations:execute-simulation-campaign`;
+   `campaign run` owns policy checks, execution, source/evidence copies,
+   cleanup, and `execution/execution-receipt.json`.
+3. General campaign evaluation uses its declared fixture or Codex profile.
+   Simulation Evaluator owns the independent semantic boundary via
+   `cascade-evals:simulation-evaluation`; actor-loop evidence first needs
+   `cascade-simulations:simulation-review`. Cascade route/trace claims require
+   the specialized Harness Evaluator and `cascade-evals:harness-evaluation`.
+4. The runner reduces eligible receipts, writes `aggregations/` and
+   `summary.json`, then seals the complete run with `finalization.json`.
+   `campaign verify <run-id>` verifies that frozen package without rerunning it.
+
+Current limits must remain explicit:
+
+- The built-in browser adapter captures PNG screenshots and Playwright ZIP
+  traces, not video. `.codex/harness-tooling/browser-adapter-runner.ts` does not
+  configure recording, and its task evidence contract has no video field.
+- `summary.json` and typed receipts are the automatic reports. There is no
+  automatic campaign HTML/Markdown report or video report renderer.
+- `campaign run` currently combines execution, evaluation, aggregation, and
+  finalization. It freezes a separate Codex evaluator input before invoking
+  that provider, but seals the whole run only afterward. There is no separate
+  campaign CLI command to append a new evaluation to a finalized run; later
+  independent review must keep its output separate and reference the original
+  run identity and manifest digest. Do not reopen or overwrite that run.
+- A campaign requiring specialized harness judgment stops if its bound
+  receipt is missing; the general evaluator cannot substitute for that judge.
+- The core target bundle excludes these source/lab runners and specialist
+  roles. Installed plugins provide methods, not a target's browser runtime,
+  recording facility, artifact store, or permission grant. Bind those through
+  the target's declared adapters before claiming simulation readiness.
 
 The deterministic framework fixture proves definition resolution, stateful
 fake execution, policy/oracle reduction, evidence freezing, treatment

@@ -31,17 +31,13 @@ pattern_context:
   - pack_id: testing-core
     section_ids: [scenario-tests]
 simulation_context:
-  - path: scripts/cascade/simulation-intake.test.ts
-    scope: contract-test
-    authority: implementation
-    status: authored
-    purpose: Exercises the intake schema, draft starter, and normalized action boundary without claiming product behavior.
   - path: product-evals/simulations/harness/simulation-correctness-fixture/manifest.yaml
     scope: harness-simulation
     authority: mechanics-only
     status: authored
     purpose: Exercises framework mechanics only and cannot establish target-product behavior or persona truth.
 gaps:
+  - Module-level contract tests were retired on 2026-09-08; the retained runtime safety smoke suite does not provide equivalent intake coverage.
   - No target-product campaign has yet compiled a READY intake from PB-002.
   - No authorized product execution or independent product evaluation receipt exists.
   - No reviewed target-user evidence exists for a non-fixture persona refinement.

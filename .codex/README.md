@@ -4,7 +4,7 @@ This directory contains reusable workflow skills and role contracts.
 
 This source checkout also contains plugin packages and lab tooling. A normal
 target does not copy this tree wholesale: `bun run build:runtime` emits a core
-profile with 9 host skills, 6 roles, the frozen capability catalog, admission,
+profile with 9 host skills, 3 roles, the frozen capability catalog, admission,
 Coordinator validation, and Workspace MCP. Plugin source and eval/simulation
 labs stay here and resolve separately through installed plugins or explicit
 lab packs.

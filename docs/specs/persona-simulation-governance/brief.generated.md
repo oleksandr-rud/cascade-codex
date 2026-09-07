@@ -6,9 +6,9 @@
 - Brief: `PB-001` revision `1`
 - Status: `reviewed`
 - Coverage: `complete`
-- Catalog digest: `2d24c923fe55562ab079de54e428788f4429c2051442bbceac75852340af1160`
+- Catalog digest: `df37463e28d651950ec6e9146a1a1643cfa328ce44643baaf8d8ae608c09b110`
 - Manifest digest: `ca2a2840fd9cf0a4c720d9836623d479f35e27bbd665b98bb5b2e424368a4174`
-- Selected-source digest: `12a1573f604f0db22cd7c2d3b204f2bdf970571fa13776860d527b3c3121e906`
+- Selected-source digest: `4567fa120a807ba817efe1d4a86ffab4a14111065eb790f56205ed8a31e7d758`
 - Compiler-contract digest: `4cfeada5833d864235315bb41aa63acf157b08f15c247f2914c23fc84fd9acd1`
 
 ## Purpose And Audience

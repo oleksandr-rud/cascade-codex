@@ -90,15 +90,12 @@ cleanup, or single-line changes with no behavior or contract impact.
 
 ```bash
 bun scripts/cascade.ts validate
-bun scripts/cascade.ts admission validate
-bun scripts/cascade.ts admission corpus
-bun scripts/cascade.ts workflow catalog --check
-bun scripts/cascade.ts target self-test
-bun scripts/cascade.ts campaign catalog --check
-bun scripts/cascade.ts campaign self-test
-bun scripts/cascade.ts brief check
-bun test --max-concurrency 4 scripts/cascade
+bun run test
 ```
+
+The default test command runs only the retained runtime safety smoke suite.
+Use the targeted commands in `harness.config.yaml` only for affected contracts;
+plugin package tests and lab corpora are not default repository checks.
 
 Harness evaluation is conditional, not a default validation phase. The
 `PostToolUse` harness-impact hook examines completed `apply_patch` edits and

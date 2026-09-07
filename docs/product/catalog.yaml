@@ -62,11 +62,7 @@ capabilities:
       - PS-007
       - PS-008
     persona_ids: []
-    evaluation_refs:
-      - path: scripts/cascade/briefs.test.ts
-        kind: contract-test
-        authority: implementation
-        status: authored
+    evaluation_refs: []
   - id: PC-003
     domain_id: PD-001
     name: Evidence-bound simulation intake and agent handoff
@@ -81,8 +77,4 @@ capabilities:
     journey_ids: [J-002]
     scenario_ids: [PS-009, PS-010, PS-011, PS-012]
     persona_ids: []
-    evaluation_refs:
-      - path: scripts/cascade/simulation-intake.test.ts
-        kind: contract-test
-        authority: implementation
-        status: authored
+    evaluation_refs: []

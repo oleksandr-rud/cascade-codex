@@ -289,14 +289,14 @@ Core repository checks:
 
 ```bash
 bun scripts/cascade.ts validate
-bun scripts/cascade.ts admission validate
-bun scripts/cascade.ts admission corpus
-bun scripts/cascade.ts target self-test
-bun scripts/cascade.ts campaign catalog --check
-bun scripts/cascade.ts campaign self-test
-bun scripts/cascade.ts brief check
-bun test --max-concurrency 4 scripts/cascade
+bun run test
 ```
+
+The test command is a small runtime safety smoke suite, not exhaustive
+module or campaign coverage. Select additional checks from
+`harness.config.yaml` only when their source or public contract changed.
+Plugin package tests and admission/evaluation/simulation corpora remain
+separate, opt-in checks; they do not run for ordinary documentation changes.
 
 ## Harness Evaluation
 
