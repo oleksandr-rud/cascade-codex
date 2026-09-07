@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://cascade.local/cascade-software-architect/plugin-capability-catalog.v1.schema.json",
+  "$id": "https://cascade.local/cascade-coordinator/plugin-capability-catalog.v1.schema.json",
   "type": "object",
   "additionalProperties": false,
   "required": ["schema_version", "artifact_type", "marketplace", "plugins", "catalog_digest"],

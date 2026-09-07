@@ -32,7 +32,7 @@ project:
       e2e: "Playwright browser-task simulations"
 
 models:
-  default: "gpt-5.6-sol"
+  default: "gpt-6-astra"
   planning: "gpt-5.6-sol"
   judged_evaluation: "gpt-5.6-sol"
   subagent_execution: "gpt-5.6-sol"
@@ -40,12 +40,18 @@ models:
 
 plugin_architecture:
   mode: "plugin-first"
-  route_registry: ".codex/config.toml#[cascade.plugin_skills]"
+  route_registry: ".codex/plugin-capabilities.generated.json"
+  route_alias_projection: ".codex/config.toml#[cascade.plugin_skills]"
   plugin_owns: "reusable workflows, schemas, templates, package validators, dynamic actor semantics, generic judges, and subject evaluation packs"
   host_owns: "current repository context, permissions, mutation, durable paths, target commands, multi-contour campaign state, and repository validation"
   capability_catalog: ".codex/plugin-capabilities.generated.json"
-  workflow_planner: "cascade-software-architect:plan-workflow"
-  workflow_validator: "scripts/cascade/plugin-workflow.ts"
+  capability_selector: "cascade-coordinator:select-capabilities"
+  workflow_planner: "cascade-coordinator:plan-workflow"
+  coordinator_validator: "scripts/cascade/plugin-workflow.ts"
+  workspace_mcp_server: "cascade_workspace"
+  workspace_mcp_runner: "scripts/cascade/workspace-mcp.ts"
+  workspace_artifact_registry: ".codex/artifact-destinations.json"
+  durable_persistence_owner: "closeout"
   missing_dependency: "BLOCKED without copied or cache-searched fallback"
   state_distinction: "repository source, installed cache, execution artifacts, and released package are separate"
 
@@ -73,8 +79,13 @@ paths:
     - ".github/copilot-instructions.md"
     - "harness.config.yaml"
     - ".codex/config.toml"
+    - ".codex/artifact-destinations.json"
+    - ".codex/schemas/workspace/artifact-destinations.schema.json"
+    - ".codex/schemas/workspace/preparation-receipt.schema.json"
+    - ".codex/schemas/workspace/persistence-receipt.schema.json"
     - ".codex/hooks.json"
     - ".codex/plugins/cascade-ai-architect/.codex-plugin/plugin.json"
+    - ".codex/plugins/cascade-coordinator/.codex-plugin/plugin.json"
     - ".codex/plugins/cascade-software-architect/.codex-plugin/plugin.json"
     - ".codex/plugins/cascade-design/.codex-plugin/plugin.json"
     - ".codex/plugins/cascade-evals/.codex-plugin/plugin.json"
@@ -93,10 +104,14 @@ paths:
     - ".codex/task-admission/policy-source.schema.json"
     - "package.json"
     - "scripts/cascade.ts"
+    - "scripts/cascade-runtime.ts"
+    - "scripts/build-runtime-bundle.ts"
     - "scripts/cascade/admission.ts"
     - "scripts/cascade/policies.ts"
     - "scripts/cascade/plugin-workflow.ts"
     - "scripts/cascade/structured-data.ts"
+    - "scripts/cascade/workspace-service.ts"
+    - "scripts/cascade/workspace-mcp.ts"
     - "scripts/cascade/validate.ts"
     - "scripts/cascade/target.ts"
     - "scripts/cascade/evals.ts"
@@ -212,7 +227,8 @@ validation_commands:
     - "bun test --max-concurrency 4 scripts/cascade"
   lint: []
   typecheck: []
-  build: []
+  build:
+    - "bun run build:runtime"
   functional:
     - "bun scripts/cascade.ts validate"
     - "bun scripts/cascade.ts campaign self-test"
@@ -220,7 +236,7 @@ validation_commands:
     - "bun run test:browser"
 
 routing:
-  model_policy: "Use gpt-5.6-sol for planning, synthesis, execution, prompt building, prompt evaluation, and independent judged evaluation; freeze the reasoning effort in each receipt and use max for prompt/evaluation campaigns unless an explicit comparison says otherwise."
+  model_policy: "Use gpt-6-astra with max reasoning by default for the primary session. Explicit custom-agent and evaluation profiles retain gpt-5.6-sol; freeze the reasoning effort in each receipt and use max for prompt/evaluation campaigns unless an explicit comparison says otherwise."
   admission: "Compile every request through the task-admission microkernel; the Task Envelope selects proportional controls without granting authority or dispatching work."
   non_atomic_fallback_path:
     - "context"
@@ -237,7 +253,8 @@ routing:
   conditional_quality_execution: "run-qa-plan only for an authorized frozen Cascade QA artifact"
   conditional_quality_assessment: "cascade-qa:assess-quality only when frozen evidence must be reduced against a quality gate"
   conditional_review: "cascade-software-architect:review-change for public, cross-boundary, security-sensitive, harness-semantic, large, or explicitly requested review"
-  conditional_plugin_workflow: "cascade-software-architect:plan-workflow only when multiple plugin capabilities require semantic selection, ordering, parallelization, or a join; its candidate never authorizes dispatch"
+  conditional_capability_selection: "cascade-coordinator:select-capabilities for ambiguous or multi-domain requests; one exact route with satisfied inputs loads directly"
+  conditional_plugin_workflow: "cascade-coordinator:plan-workflow only after a validated selection needs multiple nodes, dependencies, artifact handoffs, parallelization, or a join; its candidate never authorizes dispatch"
   conditional_test_repair: "repair-tests only after cascade-qa:triage-defects proves TEST_DRIFT from current public-boundary evidence"
   conditional_closeout: "closeout only for an existing durable work record or reusable handoff"
   conditional_project_closeout: "cascade-project-management:close-project proposes retention; closeout applies exact authorized host changes and never archives automatically"
@@ -247,7 +264,7 @@ routing:
   business_analysis: "orchestrator binds host evidence to Cascade Market and hands frozen findings to Cascade Product; local market skills are adapters"
   security_review: "security selects cascade-security:codebase-audit, cascade-security:auth-analysis, or cascade-security:secure-design directly before target-host implementation"
   design_review: "the requesting role or orchestrator invokes cascade-design:ux-flow-review, cascade-design:accessibility-review, cascade-design:visual-qa, or cascade-design:design-system directly; no dedicated Designer agent or same-named local skill aliases remain"
-  agent_system: "Agent Engineer binds host evidence and authorized integration to Cascade AI Architect for agent behavior and Cascade Software Architect for software boundaries, patterns, workflow planning, and review"
+  agent_system: "Agent Engineer binds host evidence and authorized integration to Cascade AI Architect for agent behavior, Cascade Software Architect for software boundaries and review, and Cascade Coordinator for cross-plugin selection and planning"
   marketing: "Cascade Market owns portable positioning, messaging, naming, tone, proof, and trust-language candidates; the host adapter owns authorized docs/brand projection"
   harness_maintenance: "Agent Engineer binds target evidence, onboarding, and authorized writes to Cascade Coding Agent; local Codex maintenance and skill development routes are adapters"
   simulation: "Cascade Simulations owns one bounded actor loop; local campaign skills own repository multi-case/multi-contour state, execution authority, policies, frozen artifacts, and aggregation"

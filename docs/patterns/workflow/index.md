@@ -25,6 +25,8 @@ conditional QA branch, lives in
 | Frozen quality evidence assessment | `cascade-qa:assess-quality` |
 | UX or security review | Installed namespaced Cascade Design or Cascade Security skill |
 | Market research or experiment design | `cascade-market:research-market` or `cascade-market:design-market-experiments` |
+| Ambiguous or multi-domain capability selection | `cascade-coordinator:select-capabilities` |
+| Validated multi-capability ordering, artifact handoffs, parallel branches, or joins | `cascade-coordinator:plan-workflow` |
 | Current evidence aggregation | `validate-change` |
 | Durable handoff or active-record finalization | `closeout` |
 | Completion or retention assessment | `cascade-project-management:close-project`, then `closeout` for authorized host effects |

@@ -1,7 +1,7 @@
 schema_id: architecture-default-graph-v1
 graph_id: event-driven
 pair_kind: extension
-title: Event-Driven Service Extension
+title: Durable Event-Driven Extension
 status: reference-default
 spec_path: docs/patterns/architecture-defaults/event-driven.spec.md
 extends:
@@ -17,11 +17,14 @@ preserves:
   - "service-api-worker:startup-composition"
   - "service-api-worker:shared-libs-scope"
   - "service-api-worker:module-public-surface"
+  - "service-api-worker:module-before-service"
+  - "service-api-worker:module-data-ownership"
 default_when:
-  - "A backend module publishes facts to independent consumers or owns deferred work that must survive process failure."
+  - "A backend module publishes durable facts to independent consumers or owns deferred work that must survive process failure."
   - "Fan-out, availability isolation, replay, or long-running work justifies asynchronous infrastructure."
 do_not_use_when:
   - "A direct in-process or synchronous call is simpler and the producer needs the immediate result."
+  - "Only best-effort local notifications are needed; no delivery durability or independent consumer is required."
   - "The system cannot operate eventual consistency, duplicate delivery, replay, and poison-message recovery."
 nodes:
   - id: module-application
@@ -83,6 +86,9 @@ edges:
     to: event-observability
     relation: emits
 decisions:
+  - id: preserve-monolith-boundary
+    default: "Keep producers and consumers in the same application/release boundary unless a separate service has its own demonstrated isolation reason."
+    exception_when: "An existing external consumer or hard deployment constraint requires an independent service."
   - id: facts-not-hidden-commands
     default: "Publish past-tense facts; use an owned job or command channel when one consumer is responsible for work."
     exception_when: "The broker contract explicitly models commands with one owner and response semantics."

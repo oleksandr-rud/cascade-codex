@@ -16,9 +16,10 @@ validation, and setup handoff through
 `cascade-coding-agent:adapt-harness`.
 
 Reusable agent-system design belongs to Cascade AI Architect; software-system
-boundaries and cross-plugin workflow review belong to Cascade Software
-Architect; reusable target-harness audit and maintenance belong to Cascade
-Coding Agent. This host role owns repository authority, integration,
+boundaries and architecture review belong to Cascade Software Architect;
+capability selection and non-dispatching cross-plugin planning belong to
+Cascade Coordinator; reusable target-harness audit and maintenance belong to
+Cascade Coding Agent. This host role owns repository authority, integration,
 execution, and validation around those plugins, not copied implementations.
 
 ## Responsibilities
@@ -74,7 +75,8 @@ execution, and validation around those plugins, not copied implementations.
   scenarios, capture JSONL traces, apply mechanical eligibility, and run
   independent outcome and trajectory judgments through
   `cascade-evals:evaluate` and the read-only Harness Judge
-  (`harness-evaluator`) role.
+  (`harness-evaluator`) role. Treat generated runs as ignored, disposable
+  diagnostics; track reusable cases and contracts, not passing run artifacts.
 - When the post-patch harness-impact hook reports `ASSERTION_REVIEW` or
   `JUDGE_CONTRACT_REVIEW`, own the bounded assertion inspection. Run only the
   required mechanical checks first; route an affected live trace to the

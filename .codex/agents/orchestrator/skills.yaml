@@ -1,5 +1,6 @@
 plugin_skills:
-  - cascade-software-architect:plan-workflow
+  - cascade-coordinator:select-capabilities
+  - cascade-coordinator:plan-workflow
   - cascade-ai-architect:design-agent-workflow
   - cascade-ai-architect:build-agent-roles
   - cascade-software-architect:select-architecture-patterns

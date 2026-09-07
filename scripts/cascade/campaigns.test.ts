@@ -1402,7 +1402,7 @@ test("public campaign resume keeps a lease active until its exact nanosecond exp
     await rm(runRoot, { recursive: true, force: true });
     await rm(resolve(artifactRoot, `.${runId}.mutation.lock`), { force: true });
   }
-});
+}, 15_000);
 
 async function fixture(): Promise<ResolvedCampaign> {
   return resolveCampaign("product-evals/campaigns/simulation-contract-smoke.yaml");

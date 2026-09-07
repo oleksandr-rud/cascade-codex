@@ -23,4 +23,9 @@ A handoff contains only typed, task-relevant state: goal, accepted inputs, sourc
 
 ## Topology evidence
 
+For stateful conversational systems, evaluate the
+[Analyzer–Policy Engine–Composer default](analyzer-policy-composer.md) first.
+Its proposal, deterministic state/policy, semantic output, optional research,
+and voice delivery responsibilities are logical boundaries, not deployment units.
+
 For each topology candidate, record benefits, cost, additional failure surfaces, context/tool boundary, evaluator, and evidence. Select the least complex candidate that covers the capabilities. A manager-worker split is appropriate only when specialists perform bounded independently checkable work and the manager owns integration. A decentralized handoff is appropriate only when control and user-facing responsibility genuinely transfer. An evaluator-optimizer loop requires a fixed oracle, finite candidate budget, protected evaluation data, and a non-self-authorizing promotion path.

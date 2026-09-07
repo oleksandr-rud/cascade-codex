@@ -364,7 +364,8 @@ describe("simulation intake contract", () => {
       ownerLane: "W-032",
       referenceDate: "2026-08-05",
     });
-    const campaignPath = `product-evals/campaigns/${token}-smoke.yaml`;
+    const renderedCampaignPath = `product-evals/campaigns/${token}-smoke.yaml`;
+    const campaignPath = `product-evals/campaigns/.tmp-${token}-smoke.yaml`;
     const intakePath = `product-evals/intakes/product/${token}-smoke.json`;
     const seedPath = `product-evals/intakes/product/seed-bindings/${token}-smoke.json`;
     const envelopePath = `.artifacts/.tmp-${token}-envelope.json`;
@@ -383,10 +384,11 @@ describe("simulation intake contract", () => {
     const snapshotPath = `product-evals/intakes/product/task-envelopes/${envelope.envelope_id}.json`;
     try {
       for (const file of rendered) {
-        await mkdir(dirname(rootPath(file.path)), { recursive: true });
-        if (file.format === "json") await writeJson(rootPath(file.path), file.content);
-        else if (file.format === "yaml") await writeFile(rootPath(file.path), stringifyYaml(file.content));
-        else await writeFile(rootPath(file.path), String(file.content));
+        const outputPath = file.path === renderedCampaignPath ? campaignPath : file.path;
+        await mkdir(dirname(rootPath(outputPath)), { recursive: true });
+        if (file.format === "json") await writeJson(rootPath(outputPath), file.content);
+        else if (file.format === "yaml") await writeFile(rootPath(outputPath), stringifyYaml(file.content));
+        else await writeFile(rootPath(outputPath), String(file.content));
       }
       await writeJson(rootPath(envelopePath), envelope);
       await mkdir(rootPath(briefDirectory), { recursive: true });
@@ -510,6 +512,7 @@ describe("simulation intake contract", () => {
       await rm(rootPath(snapshotPath), { force: true });
       await rm(rootPath(envelopePath), { force: true });
       await rm(rootPath(briefDirectory), { recursive: true, force: true });
+      await rm(rootPath(campaignPath), { force: true });
       for (const file of [...rendered].reverse()) await rm(rootPath(file.path), { force: true });
     }
   });

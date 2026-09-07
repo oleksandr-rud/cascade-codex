@@ -14,6 +14,8 @@ Source snapshot: `<digest or locator>`
 
 ## Topology decision
 
+- Stateful conversational default: [Analyzer–Policy Engine–Composer](../references/analyzer-policy-composer.md).
+- Pattern version/disposition and [variant template](analyzer-policy-composer.template.md):
 - Selected topology:
 - Why it is the smallest sufficient design:
 - Rejected alternatives:

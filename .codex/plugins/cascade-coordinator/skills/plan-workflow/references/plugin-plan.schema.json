@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://cascade.local/cascade-software-architect/plugin-plan.v1.schema.json",
+  "$id": "https://cascade.local/cascade-coordinator/plugin-plan.v1.schema.json",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -10,6 +10,7 @@
     "task_envelope_id",
     "request_digest",
     "capability_catalog_digest",
+    "capability_selection_digest",
     "planner",
     "input_artifacts",
     "selected_nodes",
@@ -28,15 +29,16 @@
     "task_envelope_id": { "type": "string", "pattern": "^TE-[a-f0-9]{16}$" },
     "request_digest": { "$ref": "#/$defs/digest" },
     "capability_catalog_digest": { "$ref": "#/$defs/digest" },
+    "capability_selection_digest": { "$ref": "#/$defs/digest" },
     "planner": {
       "type": "object",
       "additionalProperties": false,
       "required": ["route", "model", "reasoning_effort", "prompt_sha256"],
       "properties": {
-        "route": { "const": "cascade-software-architect:plan-workflow" },
+        "route": { "const": "cascade-coordinator:plan-workflow" },
         "model": { "const": "gpt-5.6-sol" },
         "reasoning_effort": { "enum": ["high", "max"] },
-        "prompt_sha256": { "anyOf": [{ "$ref": "#/$defs/digest" }, { "type": "null" }] }
+        "prompt_sha256": { "$ref": "#/$defs/digest" }
       }
     },
     "input_artifacts": { "$ref": "#/$defs/slugList" },
@@ -78,8 +80,8 @@
         }
       }
     },
-    "validation_gates": { "$ref": "#/$defs/textList" },
-    "stop_conditions": { "$ref": "#/$defs/textList" },
+    "validation_gates": { "$ref": "#/$defs/nonEmptyTextList" },
+    "stop_conditions": { "$ref": "#/$defs/nonEmptyTextList" },
     "blockers": { "$ref": "#/$defs/textList" },
     "dispatch_authorized": { "const": false }
   },
@@ -93,6 +95,12 @@
     },
     "textList": {
       "type": "array",
+      "uniqueItems": true,
+      "items": { "type": "string", "minLength": 3 }
+    },
+    "nonEmptyTextList": {
+      "type": "array",
+      "minItems": 1,
       "uniqueItems": true,
       "items": { "type": "string", "minLength": 3 }
     },
@@ -120,6 +128,7 @@
         "plugin_version": { "type": "string", "minLength": 1 },
         "claim_ids": {
           "type": "array",
+          "minItems": 1,
           "uniqueItems": true,
           "items": { "type": "string", "pattern": "^CL-[0-9]{3}$" }
         },

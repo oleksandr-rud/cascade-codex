@@ -1,0 +1,33 @@
+schema_version: 1
+plugin:
+  name: cascade-coordinator
+  version: 0.1.0+codex.20260901204823
+model_policy:
+  model: gpt-5.6-sol
+  planning_reasoning_effort: high
+  evaluation_reasoning_effort: max
+skills:
+  - route: cascade-coordinator:select-capabilities
+    description: Select the smallest sufficient Cascade capability set from request claims, triggers, exclusions, artifacts, authority, and current plugin identities.
+    triggers: [a request spans multiple plugin domains or its exact namespaced capability route is ambiguous]
+    anti_triggers: [one exact namespaced skill is already requested and its required inputs and dependencies are satisfied]
+    consumes: [task-envelope, plugin-capability-catalog]
+    produces: [capability-selection]
+    required_dependencies: []
+    optional_dependencies: [cascade-evals:agent-evaluation]
+    policy_tags: [plugin-routing, capability-selection]
+    effect: CANDIDATE_WRITE
+    authority: READ_ONLY
+    evaluation_cases: [single-route-selection, multi-domain-selection, anti-trigger-exclusion, ambiguity-blocked, no-self-dispatch]
+  - route: cascade-coordinator:plan-workflow
+    description: Compile an accepted capability selection into an ordered, dependency-safe, artifact-complete, non-dispatching Cascade plugin workflow plan.
+    triggers: [two or more selected plugin capabilities require ordering, parallelization, an artifact handoff, or a join]
+    anti_triggers: [one ordinary implementation slice or project schedule is sufficient]
+    consumes: [task-envelope, plugin-capability-catalog, capability-selection]
+    produces: [plugin-plan]
+    required_dependencies: [cascade-coordinator:select-capabilities]
+    optional_dependencies: [cascade-prompt:prompt, cascade-evals:prompt-evaluation, cascade-evals:agent-evaluation]
+    policy_tags: [plugin-routing, workflow-planning]
+    effect: CANDIDATE_WRITE
+    authority: READ_ONLY
+    evaluation_cases: [multi-claim-routing, dependency-ordering, artifact-edge-completeness, safe-parallelism, policy-preservation, no-self-dispatch]

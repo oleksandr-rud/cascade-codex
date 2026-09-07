@@ -570,7 +570,7 @@ describe("simulation definition contracts", () => {
 
   test("rejects every unsafe seed spelling before loading any referenced campaign file", async () => {
     const token = `seed-scope-order-${crypto.randomUUID()}`;
-    const relativePath = `product-evals/campaigns/${token}.yaml`;
+    const relativePath = `product-evals/campaigns/.tmp-${token}.yaml`;
     const path = rootPath(relativePath);
     const harnessCampaign = await readStructured<Record<string, unknown>>(
       rootPath("product-evals/campaigns/simulation-contract-smoke.yaml"),

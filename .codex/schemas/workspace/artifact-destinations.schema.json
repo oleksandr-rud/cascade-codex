@@ -1,0 +1,63 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://cascade.local/workspace/artifact-destinations.v1.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["$schema", "schema_version", "artifact_type", "policies"],
+  "properties": {
+    "$schema": { "const": "./schemas/workspace/artifact-destinations.schema.json" },
+    "schema_version": { "const": 1 },
+    "artifact_type": { "const": "cascade-workspace-artifact-destinations" },
+    "policies": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/policy" }
+    }
+  },
+  "$defs": {
+    "slug": {
+      "type": "string",
+      "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+    },
+    "repositoryPrefix": {
+      "type": "string",
+      "pattern": "^(?:docs/(?:specs|product|design|brand|patterns|work|backlog))(?:/[a-zA-Z0-9._-]+)*/?$"
+    },
+    "policy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "prefixes",
+        "formats",
+        "max_bytes",
+        "workflow_owner",
+        "retention"
+      ],
+      "properties": {
+        "kind": { "$ref": "#/$defs/slug" },
+        "prefixes": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/repositoryPrefix" }
+        },
+        "formats": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "enum": ["json", "yaml", "markdown", "text"]
+          }
+        },
+        "max_bytes": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 1048576
+        },
+        "workflow_owner": { "const": "closeout" },
+        "retention": { "const": "durable" }
+      }
+    }
+  }
+}

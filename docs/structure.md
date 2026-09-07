@@ -30,10 +30,26 @@ config; keep reusable workflow rules in skills, agents, and patterns.
 | `.codex/plugins/cascade-simulations/skills/manage-simulation-campaign/` | Campaign authoring, selection, replay planning, receipt aggregation, claim projection, and reporting contract | Cascade Simulations source |
 | `.codex/plugins/cascade-simulations/skills/execute-simulation-campaign/` | Bounded selected-run lifecycle and execution receipt contract | Cascade Simulations source and Simulation Operator |
 | `.codex/plugins/cascade-evals/skills/simulation-evaluation/` | Read-only frozen-evidence, policy, oracle, semantic, and claim-support contract | Cascade Evals source and Simulation Evaluator |
+| `scripts/cascade/cli/` | Async command dispatcher shared by the executable entrypoint and future transports | Cascade CLI application layer |
+| `scripts/cascade/workspace-service.ts`, `scripts/cascade/workspace-mcp.ts` | Project-level MCP context compilation and registry-bound artifact prepare/persist adapter | Active host for reads; `closeout` for durable writes |
+| `.codex/artifact-destinations.json`, `.codex/schemas/workspace/` | Durable artifact kind, path, format, and receipt contracts for Workspace MCP | Agent Engineer plus authorized host maintenance |
+| `scripts/cascade/campaign/adapters/` | One module per execution contour plus the built-in adapter registry and shared transport resolution | Campaign infrastructure adapters |
+| `scripts/cascade/campaign/artifacts/` | Application-facing artifact repository ports; filesystem persistence remains in `campaign-artifacts.ts` | Campaign application and infrastructure boundary |
+| `scripts/cascade-runtime.ts`, `scripts/build-runtime-bundle.ts` | Five-command core target entrypoint and deterministic lean-bundle builder | Agent Engineer and source validation |
+| `dist/cascade-runtime/` | Ignored generated target profile: host adapters, frozen plugin catalog, Coordinator contracts, admission, and Workspace MCP only | Runtime bundle builder |
+
+The source checkout and target runtime are intentionally different products.
+The source checkout currently has 14 plugin packages plus harness-eval,
+simulation-campaign, fixture, source-test, and historical evidence layers. The
+generated core profile has a hard ceiling of 120 files and excludes
+`.codex/plugins/`, `harness-evals/`, `product-evals/`, `docs/archive/`, source
+tests, browser tooling, source scripts, and the three evaluator/simulation
+lab roles. Installed plugins provide portable methods; the target retains only
+Orchestrator, Agent Engineer, Security, and repository-bound adapters/effects.
 
 The repository marketplace at `.agents/plugins/marketplace.json` catalogs all
-13 Cascade plugin source packages under `.codex/plugins/<plugin-name>/`:
-Prompt, Simulations, Evals, AI Architect, Software Architect, Coding Agent,
+14 Cascade plugin source packages under `.codex/plugins/<plugin-name>/`:
+Prompt, Simulations, Evals, Coordinator, AI Architect, Software Architect, Coding Agent,
 Personas, Product, Market, Design, Security, Project Management, and QA. Cascade Market
 owns both evidence production and evidence-backed positioning/messaging.
 Keeping catalog and source in the repository makes the packages portable; it
@@ -51,7 +67,8 @@ The host/plugin boundary is:
 ```text
 repository request
   -> Task Envelope claims and policies
-  -> Plan Workflow when multiple plugins are required
+  -> Coordinator capability selection when the exact route is ambiguous
+  -> Plan Workflow when the validated selection requires a graph
   -> validated capability DAG
   -> local role or discovery adapter
   -> exact namespaced plugin skill
@@ -64,6 +81,23 @@ Cascade Simulations owns a bounded dynamic actor loop. The local
 state, real host adapters, runtime authority, frozen artifacts, claims,
 policies, oracles, and aggregation. Cascade Evals owns generic semantic judge
 contracts and score reduction in both paths.
+
+Cascade evolves as a modular monolith: admission, plugin workflow, workspace
+artifacts, campaigns, evaluation, and target analysis remain concrete ownership
+areas within one runtime codebase and release. CLI, hooks, and Workspace MCP are
+host-facing adapters, not independently deployed domain services. Host-required
+process boundaries do not justify duplicating domain logic or adding internal
+HTTP/RPC. Extract large implementations incrementally behind existing public
+contracts; do not replace the runtime with generic service or manager modules.
+
+The runtime dependency direction is CLI or transport -> command/application
+service -> ports -> built-in adapters and filesystem infrastructure. A module
+boundary does not imply another process. The project-level Workspace MCP is a
+narrow stdio transport for allowlisted context reads and closeout-owned
+artifact persistence; it is not a daemon, plugin dispatcher, or generic CLI
+proxy. A future asynchronous command transport should call
+`executeCascadeCommand` or submit concurrent requests to the serialized
+`CascadeCommandExecutor`, while keeping the CLI as a peer adapter.
 
 ## Active Work Paths
 

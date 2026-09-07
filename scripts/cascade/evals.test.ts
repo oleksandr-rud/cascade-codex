@@ -30,6 +30,14 @@ describe("Cascade harness profile seam", () => {
     expect(resolvedProfile.harness_source_manifest.digest).toBe(
       resolvedProfile.profile.harness_source_digest,
     );
+    const sourcePaths = new Set(
+      resolvedProfile.harness_source_manifest.files.map((item: { path: string }) => item.path),
+    );
+    expect(sourcePaths).toContain(".agents/plugins/marketplace.json");
+    expect(sourcePaths).toContain(".codex/plugin-capabilities.generated.json");
+    expect(sourcePaths).toContain(
+      ".codex/plugins/cascade-coordinator/skills/select-capabilities/SKILL.md",
+    );
     expect(resolvedProfile.prompt).not.toContain("expected_primary");
   });
 

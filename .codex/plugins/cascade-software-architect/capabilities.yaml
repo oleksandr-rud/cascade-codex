@@ -1,26 +1,14 @@
 schema_version: 1
 plugin:
   name: cascade-software-architect
-  version: 0.1.0+codex.20260827161121
+  version: 0.1.2+codex.20260904164520
 model_policy:
   model: gpt-5.6-sol
   planning_reasoning_effort: high
   evaluation_reasoning_effort: max
 skills:
-  - route: cascade-software-architect:plan-workflow
-    description: Select and order multiple Cascade plugin capabilities from claims, policies, artifact contracts, and dependencies.
-    triggers: [multi-plugin selection or ordering is required]
-    anti_triggers: [one ordinary implementation slice or project schedule is sufficient]
-    consumes: [task-envelope, plugin-capability-catalog]
-    produces: [plugin-plan]
-    required_dependencies: []
-    optional_dependencies: [cascade-prompt:prompt, cascade-evals:prompt-evaluation, cascade-evals:agent-evaluation]
-    policy_tags: [plugin-routing, workflow-planning]
-    effect: CANDIDATE_WRITE
-    authority: READ_ONLY
-    evaluation_cases: [multi-claim-routing, dependency-ordering, policy-preservation, no-self-dispatch]
   - route: cascade-software-architect:architect-software-system
-    description: Design a source-grounded software architecture with explicit boundaries, state owners, interfaces, and validation seams.
+    description: Design a source-grounded software architecture, defaulting server-side systems to a modular monolith with concrete domain modules and explicit state owners.
     triggers: [software system architecture is unresolved]
     anti_triggers: [the request is an ordinary internal code edit or AI-agent topology decision]
     consumes: [accepted-requirements, architecture-constraints]

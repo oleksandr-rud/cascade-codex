@@ -9,6 +9,8 @@
   "scripts": {
     "postinstall": "node scripts/prepare-node-pty.mjs",
     "cascade": "bun scripts/cascade.ts",
+    "build:cli": "bun scripts/build-cascade-cli.ts",
+    "build:runtime": "bun scripts/build-runtime-bundle.ts",
     "validate": "bun scripts/cascade.ts validate",
     "eval:catalog": "bun scripts/cascade.ts eval catalog --check",
     "eval:self-test": "bun scripts/cascade.ts eval self-test",

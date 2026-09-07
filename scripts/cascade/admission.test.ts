@@ -3606,6 +3606,68 @@ describe("task admission tool and hook enforcement", () => {
     expect(context.length).toBeLessThan(1200);
   });
 
+  test("prompt hook blocks exact noise, filler, and standalone controls without admitting work", async () => {
+    delete Bun.env.CASCADE_TASK_ENVELOPE;
+    const sessionId = "noise-control-hook-test";
+    const envelopePath = rootPath(`.artifacts/task-admission/hook-${sha256Text(sessionId).slice(0, 24)}.json`);
+    await mkdir(rootPath(".artifacts/task-admission"), { recursive: true });
+    await writeFile(envelopePath, "stale envelope\n");
+
+    for (const prompt of ["[background noise]", "Шум.", "Е-е-е...", "[нерозбірливо]"]) {
+      const result = await handleHook({ hook_event_name: "UserPromptSubmit", session_id: sessionId, prompt });
+      expect(result).toMatchObject({ decision: "block" });
+      expect(result.reason).toContain("noise or filler");
+      expect(await Bun.file(envelopePath).exists()).toBe(false);
+    }
+
+    for (const prompt of ["Стоп.", "Stop.", "Скасуй!"]) {
+      const result = await handleHook({ hook_event_name: "UserPromptSubmit", session_id: sessionId, prompt });
+      expect(result).toMatchObject({ decision: "block" });
+      expect(result.reason).toContain("stop or cancel control");
+    }
+
+    const meaningful = await handleHook({
+      hook_event_name: "UserPromptSubmit",
+      session_id: sessionId,
+      prompt: "Перевір, чому в аудіо є фоновий шум.",
+    });
+    expect(meaningful.hookSpecificOutput.additionalContext).toContain("route=DIRECT_READ");
+    await unlink(envelopePath);
+  });
+
+  test("interrupt hook clears only the ephemeral session envelope", async () => {
+    delete Bun.env.CASCADE_TASK_ENVELOPE;
+    const sessionId = "interrupt-hook-test";
+    const envelopePath = rootPath(`.artifacts/task-admission/hook-${sha256Text(sessionId).slice(0, 24)}.json`);
+    await mkdir(rootPath(".artifacts/task-admission"), { recursive: true });
+    await writeFile(envelopePath, "interrupted envelope\n");
+
+    expect(await handleHook({ hook_event_name: "Interrupt", session_id: sessionId })).toEqual({});
+    expect(await Bun.file(envelopePath).exists()).toBe(false);
+  });
+
+  test("prompt hook persists a claim-bound routing envelope without exposing claim text", async () => {
+    delete Bun.env.CASCADE_TASK_ENVELOPE;
+    const marker = "private-claim-marker-8391";
+    const result = await handleHook({
+      hook_event_name: "UserPromptSubmit",
+      session_id: "claim-resource-hook-test",
+      prompt: `Review ${marker} and plan the relevant plugin workflow.`,
+    });
+    const context = result.hookSpecificOutput.additionalContext as string;
+    const match = context.match(/envelope_path=([^;]+);/);
+    expect(match?.[1]).toMatch(/^\.artifacts\/task-admission\/hook-[a-f0-9]{24}\.json$/);
+    expect(context).toContain("request_digest=");
+    expect(context).toContain("claims=");
+    expect(context).not.toContain(marker);
+
+    const envelope = await readBoundedTaskEnvelope(rootPath(match![1]!), ".artifacts/task-admission/");
+    expect(envelope.task_id).toBe("claim-resource-hook-test");
+    expect(envelope.claims.length).toBeGreaterThan(0);
+    expect(envelope.claims.some((claim) => claim.statement.includes(marker))).toBe(true);
+    expect(envelope.persistence.dispatch_authorized).toBe(false);
+  });
+
   test("advisory prompt hook reclassifies a trusted prior envelope without carrying authority", async () => {
     const directory = rootPath(".artifacts/task-admission");
     const path = rootPath(".artifacts/task-admission/admission-hook-prior-test.json");
@@ -3781,5 +3843,29 @@ describe("task admission tool and hook enforcement", () => {
       expect(envelope).toMatchObject({ route: "DIRECT_READ", control_packs: ["BASE", "GROUNDED_READ"] });
       expect(envelope.claims.some((claim) => claim.kind === "CURRENT_STATE" && claim.source === "USER")).toBe(true);
     }
+  });
+
+  test("classifies a direct Ukrainian implementation request without upgrading an explanation question", async () => {
+    const implementation = await compileTaskEnvelope({
+      request: "А тепер ми можемо зробити MCP, нашу програму, як хабом для роботи зі всіма плагінами.",
+      produced_at: fixed,
+    });
+    expect(implementation).toMatchObject({
+      relation: "NEW",
+      intent: "CHANGE",
+      route: "BOUNDED",
+      workload: { authority: "LOCAL_WRITE" },
+    });
+
+    const explanation = await compileTaskEnvelope({
+      request: "Чому нам потрібен MCP і як він працюватиме з іншими плагінами?",
+      produced_at: fixed,
+    });
+    expect(explanation).toMatchObject({
+      relation: "NEW",
+      intent: "ANSWER",
+      route: "DIRECT_READ",
+      workload: { authority: "READ_ONLY" },
+    });
   });
 });

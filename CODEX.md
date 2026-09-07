@@ -26,7 +26,7 @@ durable paths, target commands, campaign state, and acceptance.
 | Capability | Plugin route | Host owner |
 |---|---|---|
 | Prompt creation and prompt diagnosis | `cascade-prompt:prompt` | Requesting role |
-| Cross-plugin claim, policy, dependency, and artifact ordering | `cascade-software-architect:plan-workflow` | Orchestrator |
+| Semantic capability selection and cross-plugin artifact ordering | `cascade-coordinator:select-capabilities` then `cascade-coordinator:plan-workflow` when a graph is needed | Orchestrator |
 | Software, plugin, and workflow architecture, patterns, and independent review | `cascade-software-architect:<skill>` | Requesting role; Agent Engineer for host integration |
 | AI-agent topology, behavior, roles, skills, prompt briefs, persona requirements, and evaluation briefs | `cascade-ai-architect:<skill>` | Requesting role; Agent Engineer for host integration |
 | Harness audit, maintenance, and asset integration | `cascade-coding-agent:<skill>` | Agent Engineer |
@@ -46,6 +46,12 @@ durable paths, target commands, campaign state, and acceptance.
 | Project planning, coordination, reconciliation, and closeout assessment | `cascade-project-management:<skill>` | Orchestrator |
 | Quality planning, test design, assessment, and defect triage | `cascade-qa:<skill>` | Requesting role |
 
+Harness Judge, Simulation Operator, and Simulation Evaluator are source/lab
+roles. The generated core target profile omits them and their corpora or run
+packages; ordinary target work calls the exact installed plugin skill from the
+requesting role. Add a lab role only with the corresponding explicit eval or
+campaign pack.
+
 Resolve required namespaced skills from the enabled installed inventory. Missing
 required dependencies are `BLOCKED`; do not restore copied local
 implementations or search caches as a hidden fallback.
@@ -56,10 +62,43 @@ role has `.codex/agents/<role>/AGENT.md`. Use those exact paths without a broad
 `.codex` inventory. Do not probe alternative skill files merely to record a
 rejection after the primary route and owner are already supported.
 
+For one explicit capability whose inputs and required dependencies are already
+satisfied, load that exact skill directly. For an ambiguous or multi-domain
+request, `cascade-coordinator:select-capabilities` emits the smallest
+claim-bound selected set and explicit rejections. Use
+`cascade-coordinator:plan-workflow` only when the validated selection needs more
+than one node, a dependency, an artifact handoff, parallel branches, or a join.
+Both are non-dispatching controllers; the active host role retains repository
+access, execution, persistence, and acceptance.
+
+### Workspace MCP boundary
+
+`cascade_workspace` is the single project-level MCP resource and artifact
+adapter shared by all active plugin skills. It does not belong to a domain
+plugin and does not make plugins call one another. The Codex host invokes its
+tools while following the selected skill contract:
+
+- `get_workspace_context` compiles explicit allowlisted files into one
+  digest-bound, size-bounded untrusted-data bundle;
+- `read_workspace_artifact` reads only a registered durable artifact kind;
+- `prepare_workspace_artifact` validates destination, format, size, current
+  digest, and an optional repository JSON Schema without writing;
+- `persist_workspace_artifact` is a closeout-only atomic commit using the exact
+  short-lived preparation token and optimistic current digest.
+
+The destination authority is `.codex/artifact-destinations.json`. Plugin skills
+produce candidate artifacts; they do not silently persist target state. The
+active host verifies current user authority and validation, then `closeout`
+may commit and require a read-back receipt. The service never grants authority,
+dispatches a role, selects a capability, executes arbitrary commands, or turns
+a Coordinator plan into automatic work. When the project MCP is unavailable,
+the candidate and handoff remain usable through ordinary authorized host file
+tools, preserving standalone plugin behavior.
+
 ## Model Routing
 
-Use `gpt-5.6-sol` for planning, synthesis, security reasoning, architecture,
-prompt construction, target execution, and independent evaluation. Prompt and
+Use `gpt-6-astra` with `max` reasoning by default for the primary session.
+Explicit custom-agent and evaluation profiles retain `gpt-5.6-sol`. Prompt and
 evaluation campaigns freeze `max` reasoning for builder, target, and judge
 unless a versioned explicit comparison says otherwise.
 The exact configured model and reasoning effort in `.codex/config.toml` and
@@ -75,6 +114,24 @@ a proportional routing hint: it does not grant permission, create work,
 dispatch an agent, or establish a pass. Correct an obvious lexical
 misclassification in-process from the direct request and current repository
 evidence.
+
+Normal admission loads only the versioned policy, control catalog, and Task
+Envelope schema. The 981-case admission corpus is source-checkout regression
+data and must not be read, copied, or validated on every target request. The
+core runtime exposes `admission validate`, but keeps `admission corpus`
+source-only.
+
+`UserPromptSubmit` atomically writes the full claim-bearing envelope to a
+session-keyed file under ignored `.artifacts/task-admission/` and exposes only
+its path, identity, request digest, and claim count in hook context. Coordinator
+or a future read-only resource provider may consume that validated file; the
+summary itself is never an envelope, authority binding, or durable evidence.
+Exact non-semantic transcription markers and filler-only prompts are blocked
+before model or tool work and do not produce an envelope. Standalone stop or
+cancel controls are acknowledged as controls rather than admitted as new work.
+`Interrupt` removes only the interrupted session's ephemeral envelope. These
+hooks do not prevent the Codex host from allocating the active `turn_id` before
+`UserPromptSubmit` runs.
 
 The default non-atomic route is:
 
@@ -94,7 +151,8 @@ actual trigger:
 | Work needs a roadmap, multiple horizons, or Agile MVP/version/iteration decomposition | `cascade-project-management:plan-project` |
 | Independent owners, resumable handoffs, dependencies, evidence joins, or reconciliation exist | `cascade-project-management:manage-project` |
 | Accepted behavior needs a quality plan or test design | `cascade-qa:plan-quality` or `cascade-qa:design-tests` |
-| Two or more plugin capabilities need semantic selection, exclusion, ordering, parallelization, or a join | `cascade-software-architect:plan-workflow` |
+| The exact namespaced route is ambiguous or the request spans plugin domains | `cascade-coordinator:select-capabilities` |
+| A validated capability selection needs multiple nodes, ordering, parallelization, an artifact handoff, or a join | `cascade-coordinator:plan-workflow` |
 | An authorized frozen QA plan needs target execution | `run-qa-plan` |
 | Frozen evidence needs a quality recommendation | `cascade-qa:assess-quality` |
 | Public, cross-boundary, security-sensitive, harness-semantic, large, or requested review | `cascade-software-architect:review-change` |
@@ -247,6 +305,17 @@ implementation, scenarios, expectations, or judge contracts change. Run a
 focused live scenario only when mechanical evidence cannot decide a changed
 semantic assertion.
 
+Live harness traces, judgments, and coverage reports are disposable diagnostics
+under ignored `.artifacts/harness-evals/`. They must not be promoted into
+tracked work state or treated as product, simulation, provider, deployment,
+release, or architecture evidence. Re-run the exact current source-bound case
+when a semantic diagnostic is needed again.
+
+Only an already registered simulation campaign with an explicit specialized
+route/trace claim may retain its minimal digest-bound receipt inside the frozen
+run package. That exception does not make the generic harness run durable or
+prove target-product behavior.
+
 ```bash
 bun scripts/cascade.ts eval catalog --check
 bun scripts/cascade.ts eval audit
@@ -256,7 +325,7 @@ bun scripts/cascade.ts eval evaluate --run-dir .artifacts/harness-evals/<run-id>
 bun scripts/cascade.ts eval judge --run-dir .artifacts/harness-evals/<run-id>
 ```
 
-Live targets run read-only. Accepted coverage requires a current source-bound
+Live targets run read-only. Accepted diagnostic coverage requires a current source-bound
 scenario, complete trace, mechanical eligibility, and every configured
 independent judgment. A semantic score cannot override a schema, permission,
 mutation, or trace-integrity failure.

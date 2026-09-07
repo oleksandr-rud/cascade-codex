@@ -40,6 +40,11 @@ Pair kinds are:
 Architecture defaults are `reference-default`: a first candidate to evaluate,
 not automatic permission to scaffold files.
 
+For server-side systems, start with a modular monolith. Domain modules are
+source/data ownership boundaries inside one application, not separate services
+or stack-selection units. The stable `service-api-worker` pair owns this
+contract; `event-driven` is an optional durable-delivery extension.
+
 1. Inspect the target's stack, source roots, public contracts, build and
    deployment units, data ownership, operations, and vocabulary.
 2. Start with `architecture-selection` when topology is open.
@@ -72,12 +77,13 @@ pair IDs, tags, relationships, and target evidence.
 ## Pair Catalog
 
 The original six pair IDs and the stable `app-stack` ID are preserved. The
-current catalog has 34 graph/spec pairs: five decisions, six archetypes, and
-23 extensions.
+current catalog has 35 graph/spec pairs: five decisions, six archetypes, and
+24 extensions.
 
 | Pair ID | Kind | Default use |
 |---|---|---|
 | `architecture-selection` | decision | Select the simplest sufficient topology from constraints and quality attributes. |
+| `analyzer-policy-composer` | extension | Default stateful conversational agents to proposal-only analysis, deterministic policy/state/context, canonical composition, optional voice and research; behavior is owned by Cascade AI Architect. |
 | `stack-selection` | decision | Map a selected topology to a complete application/runtime and operated-capability profile before concrete technology or infrastructure products. |
 | `app-stack` | extension | Route one application unit to its backend, frontend, native, CLI, experiment, or library stack extension. |
 | `backend-stack` | extension | Select backend API/worker runtime, framework, process, and packaging technology. |
@@ -94,12 +100,12 @@ current catalog has 34 graph/spec pairs: five decisions, six archetypes, and
 | `tenancy-strategy` | decision | Apply tenant, account, region, brand, or first-party app isolation across every boundary. |
 | `interface-strategy` | decision | Select synchronous, asynchronous, operator, streaming, webhook, or batch interfaces around application contracts. |
 | `caching-strategy` | decision | Define server/data cache freshness, invalidation, isolation, and stampede policy. |
-| `service-api-worker` | archetype | Use app-owned startup, vertical module slices, and reusable shared technical libraries for backend apps. |
+| `service-api-worker` | archetype | Default to a modular monolith with app-owned startup, public in-process contracts, and concrete domain/data owners. |
 | `web-frontend` | archetype | Use feature entrypoints and optional interface/application/domain/data responsibilities around a thin app shell. |
 | `native-app` | archetype | Use feature, domain, data, offline, and platform boundaries for Swift, Kotlin, React Native, or Flutter apps. |
 | `cli` | archetype | Use stable commands, reusable use cases, adapters, and automation-safe output contracts. |
 | `experiment` | archetype | Separate reproducible inputs, isolated runs, artifacts, analysis, and production promotion. |
-| `event-driven` | extension | Add outbox, broker, idempotent subscribers, retry, dead letter, replay, and operations to backend modules. |
+| `event-driven` | extension | Add durable delivery, outbox, broker, idempotency, and replay only for accepted asynchronous requirements; retain the monolith by default. |
 | `frontend-state-data` | extension | Define ownership for URL, UI/form, client, server, durable, and realtime state plus mutation policy. |
 | `frontend-cache` | extension | Define request, query, browser, service-worker, HTTP, and CDN cache layers. |
 | `frontend-realtime` | extension | Select polling, SSE, WebSocket, or subscriptions and define recoverable reconciliation. |
@@ -117,6 +123,16 @@ resource needs while retaining the four resource authorities:
 | `experiment-infrastructure` | extension | Govern local or ephemeral compute, artifacts, tracking, queues, budget, TTL, teardown, and production promotion. |
 | `library-infrastructure` | extension | Default libraries to no production runtime and add only evidence-backed build or delivery resources. |
 | `sdk-library` | archetype | Use stable public exports around core behavior, ports, adapters, isolated generated code, consumer contracts, compatibility, documentation, and release policy. |
+
+## Agent Defaults
+
+For stateful conversational agents, select `analyzer-policy-composer` after
+`architecture-selection`. Load its graph/spec and the linked versioned
+`cascade-ai-architect` contract together. Voice and research are optional
+variants; AI roles are logical boundaries within the selected application.
+The plugin owns the behavior and reusable template; this catalog owns selection
+and deployment fit. A deterministic or stateless task may record a simpler
+exception. No universal quality or latency advantage is implied.
 
 ## Frontend Defaults
 
@@ -160,7 +176,7 @@ The four selection layers answer different questions:
 
 | Layer | Question | Example result |
 |---|---|---|
-| `architecture-selection` | What topology and ownership boundaries fit? | Modular service plus a separate browser client. |
+| `architecture-selection` | What topology and ownership boundaries fit? | Modular monolith plus a separate browser client. |
 | `stack-selection` | What complete operable profile implements it? | TypeScript API, relational database, React client, test and deployment profile. |
 | `app-stack` plus contour extension | Which named application technologies implement that profile? | `backend-stack:bun-hono` or `frontend-stack:nextjs`. |
 | `infrastructure` plus contour profile and resource extension | Which resources does this app shape need, and where do those resources run? | `frontend-infrastructure` selects SSR resource needs; compute and delivery extensions select the operated topology. |
@@ -293,8 +309,9 @@ dependency direction, public entrypoints, or file structure.
 
 Examples:
 
-- `event-driven` extends `service-api-worker` while preserving app-owned
-  vertical slices, startup composition, shared-lib scope, and module surfaces.
+- `event-driven` extends `service-api-worker` while preserving concrete domain
+  ownership, startup composition, consumer-proven shared scope, and module
+  surfaces.
 - `app-stack` extends `stack-selection` while preserving its claim,
   policy, application-unit, whole-profile, proof, boundary, and lifecycle
   decisions.
@@ -328,11 +345,11 @@ structures can be rendered from
 
 | Profile | Selected technology | Preserved source boundary |
 |---|---|---|
-| `backend-bun` | `backend-stack:bun-hono` | `src/<app>/startup`, `src/<app>/modules/<module>`, `src/libs` |
-| `backend-go` | `backend-stack:go-standard-library` | `src/<app>/startup`, `src/<app>/modules/<module>`, `src/libs` |
-| `backend-fastapi` | `backend-stack:python-fastapi` | `src/<app>/startup`, `src/<app>/modules/<module>`, `src/libs` |
-| `frontend-react-vite` | `frontend-stack:react-vite` | `src/app`, `src/features/<feature>`, `src/shared` |
-| `frontend-nextjs` | `frontend-stack:nextjs` | thin `src/app` routes, `src/features/<feature>`, `src/shared` |
+| `backend-bun` | `backend-stack:bun-hono` | `src/<app>/startup`, `src/<app>/modules/<concrete-domain>` |
+| `backend-go` | `backend-stack:go-standard-library` | `src/<app>/startup`, `src/<app>/modules/<concrete-domain>` |
+| `backend-fastapi` | `backend-stack:python-fastapi` | `src/<app>/startup`, `src/<app>/modules/<concrete-domain>` |
+| `frontend-react-vite` | `frontend-stack:react-vite` | `src/app`, `src/features/<concrete-capability>` |
+| `frontend-nextjs` | `frontend-stack:nextjs` | thin `src/app` routes, `src/features/<concrete-capability>` |
 
 Infrastructure extensions do not generate provider configuration. Provider,
 account, region, identity, state, secret, and policy details are target-specific
@@ -351,7 +368,10 @@ python3 scripts/scaffold_architecture_default.py preview \
 
 `write` is explicit and performs a complete conflict preflight. It creates new
 files only; it has no overwrite mode, does not install dependencies, does not
-run generated code, and does not select package versions.
+run generated code, and does not select package versions. Obvious generic
+module names such as `core`, `common`, or `services` are rejected. The baseline
+does not emit shared libraries, cache, events, messaging, providers, or generic
+repository bases.
 
 ## Pair Extension Rules
 

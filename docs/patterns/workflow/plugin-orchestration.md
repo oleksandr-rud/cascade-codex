@@ -8,9 +8,13 @@ host projections. No plugin is a universal hub.
 flowchart TB
     TE[Validated Task Envelope<br/>claims, policies, authority]
     CAT[Digest-bound capability catalog]
-    PW[Cascade Software Architect<br/>Plan Workflow]
+    CS[Cascade Coordinator<br/>Select Capabilities]
+    PW[Cascade Coordinator<br/>Plan Workflow]
     DAG[Validated plugin DAG<br/>dispatch_authorized: false]
 
+    TE --> CS
+    CAT --> CS
+    CS --> PW
     TE --> PW
     CAT --> PW
     PW --> DAG
@@ -78,15 +82,15 @@ flowchart TB
 - Product defines accepted product behavior; Market owns research, opportunity
   assessment, experiments, positioning, and message language; Personas owns
   canonical human models; Design and Security own their specialist methods;
-  Software Architect owns software architecture, pattern selection,
-  architecture/change review, and multi-plugin Plan Workflow; AI Architect
-  owns agent behavior and design assets; Prompt owns prompt construction;
-  Coding Agent owns harness engineering; Simulations owns bounded actor
-  execution contracts.
-- Plan Workflow selects the smallest sufficient set from typed capability
-  descriptors, expands required dependencies, orders artifact edges, and names
-  safe parallel groups and merge owners. It never dispatches or grants
-  authority; deterministic host validation must pass before any execution.
+  Software Architect owns software architecture, pattern selection, and
+  architecture/change review; AI Architect owns agent behavior and design
+  assets; Prompt owns prompt construction; Coding Agent owns harness
+  engineering; Simulations owns bounded actor execution contracts.
+- Coordinator selects the smallest sufficient claim-bound capability set from
+  typed descriptors and explicit rejections. Only when that validated selection
+  needs a graph does Plan Workflow expand dependencies, order artifact edges,
+  and name safe parallel groups and merge owners. Neither route dispatches or
+  grants authority; deterministic host validation must pass before execution.
 - Prompt evaluation requires Prompt. Simulations is added only when the case
   needs a dynamic actor or adaptive-interview contour; deterministic prompt
   quality cases do not inherit simulation overhead.

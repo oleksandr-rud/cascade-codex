@@ -156,6 +156,7 @@ check(taskById.get("code-review-race-v1")?.target_task_contract.includes("pass t
 check(taskById.get("code-review-race-v1")?.target_task_contract.includes("requestId database unique constraint"), "code review must preserve the database uniqueness contract");
 check(taskById.get("api-version-migration-plan-v1")?.prompt_build_request.includes("plan only"), "API migration builder request must remain planning-only");
 check(taskById.get("plugin-workflow-plan-v1")?.target_task_contract.includes("cascade-market:brand-positioning"), "plugin workflow task must bind the marketing route");
+check(taskById.get("plugin-workflow-plan-v1")?.target_task_contract.includes("validated Cascade Coordinator capability selection"), "plugin workflow task must bind the Coordinator selection");
 check(taskById.get("plugin-workflow-plan-v1")?.target_task_contract.includes("dispatch_authorized false"), "plugin workflow task must preserve non-dispatch authority");
 check(taskById.get("brand-context-copy-v1")?.target_task_contract.includes("internal pilot"), "brand context task must preserve evidence attribution");
 check(taskById.get("business-opportunity-screen-v1")?.target_task_contract.includes("PROCEED_TO_VALIDATION"), "business opportunity task must preserve the bounded verdict vocabulary");

@@ -1,0 +1,22 @@
+[Policy catalog]
+•
+  Target — "conversation-identity.preferred_name"
+  Meaning — "Як звертатися до користувача"
+  Type — "Текст до 80 символів"
+  Changes
+    • "set"
+    • "clear"
+  Evidence — "Лише прямо повідомлене користувачем"
+•
+  Target — "response-style.emotion_observation"
+  Meaning — "Поточна емоційна ознака"
+  Values
+    • "concern"
+  Evidence — "Повідомлене або явно позначений висновок"
+•
+  Target — "response-style.requested_format"
+  Meaning — "Бажаний формат пояснення"
+  Values
+    • "one_step_at_a_time"
+    • "short_explanation"
+    • "steps"

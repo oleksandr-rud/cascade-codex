@@ -3,10 +3,11 @@ entry_id: architecture-defaults
 title: Architecture Default Graph And Spec Pairs
 kind: pattern-context-pack
 owner: Cascade maintainers
-summary: "Selectable stack, contour technology, application infrastructure, resource infrastructure, cross-cutting, backend, native, CLI, experiment, and SDK/library defaults; frontend defaults have a dedicated pack."
-description: "Use after target inspection when selecting architecture, stack, application technology, application-contour infrastructure, resource infrastructure, or backend, native, CLI, experiment, SDK/library, caching, tenancy, interface, and event concerns."
+summary: "Selectable architecture, stack, infrastructure, application, and stateful-agent defaults; frontend defaults have a dedicated pack."
+description: "Use after target inspection when selecting architecture, stack, application technology, infrastructure, stateful-agent behavior, caching, tenancy, interface, and event concerns."
 routing:
   use_when:
+    - "A stateful conversational agent needs the Analyzer Policy Engine Composer default, voice, memory, or optional research."
     - "A target needs a starting architecture decision, file structure, or implementation-draft boundary model."
     - "Onboarding or architecture review needs a reusable chooser, contour technology, infrastructure, caching, backend, native, CLI, experiment, SDK/library, tenancy, interface, or event reference."
   do_not_use_when:
@@ -14,6 +15,8 @@ routing:
     - "The task only needs current target facts, an atomic file edit, or a framework installation command."
     - "The target already has a coherent established architecture and no boundary change is proposed."
   load_when:
+    - route: cascade-ai-architect:design-agent-blueprint
+      use_when: "A stateful conversational agent needs the Analyzer, Policy Engine, Composer reference default and optional voice/research variants."
     - route: cascade-software-architect:review-architecture
       use_when: "A cross-boundary plan needs a matching reference topology and exception criteria."
     - route: cascade-coding-agent:adapt-harness
@@ -74,7 +77,7 @@ documents:
       - id: architecture-catalog
         title: Pair Catalog
         anchor: "## Pair Catalog"
-        summary: "Catalogs the validated 34 architecture graph/spec pairs while preserving stable IDs and separated application, contour, and resource authority."
+        summary: "Catalogs 35 architecture graph/spec pairs while preserving stable IDs and separated application, contour, resource, and agent behavior authority."
         routing_description: "Load when choosing the smallest pair set for a task."
         tags:
           - catalog
@@ -98,6 +101,39 @@ documents:
           - scaffold
           - generator
           - boilerplate
+  - path: docs/patterns/architecture-defaults/analyzer-policy-composer.graph.yaml
+    kind: architecture-graph
+    description: "Stateful-agent default with proposal-only Analyzer, deterministic policy/state/context, canonical Composer, and optional voice/research."
+    trigger_when:
+      - "A conversational or voice agent needs an architecture default."
+  - path: docs/patterns/architecture-defaults/analyzer-policy-composer.spec.md
+    kind: architecture-spec
+    description: "Host selection and deployment fit for the canonical Cascade AI Architect behavior contract and template."
+    trigger_when:
+      - "An agent blueprint needs the default state, memory, claims, policy, context, voice, or research boundaries."
+    sections:
+      - id: agent-analyzer-policy-composer
+        title: Default Architecture
+        anchor: "## Default Architecture"
+        summary: "Routes stateful conversational designs to the plugin-owned Analyzer Policy Engine Composer contract."
+        routing_description: "Load when designing a stateful agent, optional Researcher, or two-composer voice flow."
+        tags:
+          - agents
+          - voice
+          - memory
+          - policy
+          - research
+      - id: agent-state-policy-projection
+        title: State And Role Context Contracts
+        anchor: "## State And Role Context Contracts"
+        summary: "Routes typed deltas, policy data, per-role projections and checkpointed memory to their canonical plugin contract."
+        routing_description: "Load when designing field updates, policy records, context mappings, history windows, summary coverage or no-op behavior."
+        tags:
+          - agents
+          - state
+          - policy-data
+          - projection
+          - memory
   - path: docs/patterns/architecture-defaults/architecture-default-graph.schema.yaml
     kind: schema
     description: "Machine-readable contract shared by every architecture-default graph."
@@ -110,14 +146,14 @@ documents:
       - "A new system or major boundary needs a topology decision before stack selection."
   - path: docs/patterns/architecture-defaults/architecture-selection.spec.md
     kind: architecture-spec
-    description: "Evidence-led architecture choosing strategy and adoption classification."
+    description: "Modular-monolith-first architecture selection with evidence-based exceptions and adoption classification."
     trigger_when:
       - "A team must compare modular, service, event, client, CLI, or experiment shapes."
     sections:
       - id: architecture-selection-default
         title: Default Architecture
         anchor: "## Default Architecture"
-        summary: "Chooses the simplest sufficient topology from constraints before technology."
+        summary: "Starts server-side work as a modular monolith; evidence determines any separate deployment boundary before technology."
         routing_description: "Load before selecting an archetype, tenancy model, interface, stack, or extension."
         tags:
           - architecture
@@ -847,20 +883,20 @@ documents:
           - boilerplate
   - path: docs/patterns/architecture-defaults/service-api-worker.graph.yaml
     kind: architecture-graph
-    description: "App startup, vertical module slices, shared technical libs, models, repositories, events, API, and worker topology."
+    description: "Modular-monolith startup, public in-process contracts, concrete domain/data ownership, and evidence-based service splits."
     trigger_when:
-      - "A backend API, worker, or server-side app needs vertical slices, startup composition, or shared infrastructure boundaries."
+      - "A backend API, worker, or server-side app needs concrete domain modules, startup composition, or a justified service boundary."
   - path: docs/patterns/architecture-defaults/service-api-worker.spec.md
     kind: architecture-spec
-    description: "Vertical-slice backend default with TypeScript, Python, and Go app/startup/module/libs profiles."
+    description: "Modular-monolith backend contract with acyclic modules, owned data in a shared database, and no speculative transport or shared boilerplate."
     trigger_when:
-      - "An API/backend/worker implementation draft needs module interfaces, application/domain layers, shared libs, models, repositories, or events."
+      - "An API/backend/worker draft needs real module names, ownership, interfaces, state, or an evidence-based service split."
     sections:
       - id: service-default
         title: Default Architecture
         anchor: "## Default Architecture"
-        summary: "Uses app-owned startup composition, vertical module slices, module-owned adapters, and dependency-inverted shared technical libs."
-        routing_description: "Load for app, startup, module, interface, application, domain, repository, event, API, worker, or shared-lib boundaries."
+        summary: "Keeps one application/release boundary, direct public module calls, acyclic dependencies, and module-owned data; separate services require evidence."
+        routing_description: "Load for app, startup, domain-module, state ownership, API, worker, or service-boundary decisions."
         tags:
           - backend
           - api
@@ -868,8 +904,8 @@ documents:
       - id: service-file-structure
         title: Reference File Structure
         anchor: "## Reference File Structure"
-        summary: "Maps src/<app-name>/startup, src/<app-name>/modules, and src/libs to TypeScript, Python, and Go layouts."
-        routing_description: "Load when drafting a vertical-slice backend tree or shared server-side technical libraries."
+        summary: "Maps a minimal startup plus concrete module tree and explains when internal folders or shared technical code are justified."
+        routing_description: "Load when drafting a lean domain-module backend tree without speculative boilerplate."
         tags:
           - backend
           - files
@@ -881,7 +917,7 @@ documents:
       - "A backend module publishes facts or owns deferred work that must survive process failure."
   - path: docs/patterns/architecture-defaults/event-driven.spec.md
     kind: architecture-spec
-    description: "Event-driven service extension that preserves backend vertical slices and startup composition."
+    description: "Optional durable-delivery extension preserving the modular monolith, domain ownership, and startup composition."
     trigger_when:
       - "Fan-out, availability isolation, replay, or long-running work justifies asynchronous infrastructure."
     sections:
@@ -897,7 +933,7 @@ documents:
       - id: event-driven-structure
         title: Reference File Structure
         anchor: "## Reference File Structure"
-        summary: "Keeps event meaning in module slices and reusable transport mechanics in src/libs."
+        summary: "Keeps event, outbox, and inbox state in owning modules; shared broker mechanics are optional and consumer-proven."
         routing_description: "Load when applying the event extension to the backend archetype."
         tags:
           - events

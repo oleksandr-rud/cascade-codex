@@ -14,6 +14,18 @@
         ]
       }
     ],
+    "Interrupt": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "npx --offline --yes bun@1.3.3 \"$(git rev-parse --show-toplevel)/scripts/cascade/task-admission-hook.ts\"",
+            "timeout": 3,
+            "statusMessage": "Clearing interrupted task admission"
+          }
+        ]
+      }
+    ],
     "PreToolUse": [
       {
         "matcher": "*",

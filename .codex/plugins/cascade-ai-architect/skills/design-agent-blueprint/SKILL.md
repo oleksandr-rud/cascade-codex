@@ -13,7 +13,43 @@ pattern-selection procedure or treat a default as a mandate.
 
 ## Select the topology
 
-Evaluate in order:
+For stateful conversational agents, use
+[Analyzer–Policy Engine–Composer](references/analyzer-policy-composer.md) as the
+preferred reference default and fill
+[its template](assets/analyzer-policy-composer.template.md). Analyzer emits only
+state-change proposals; deterministic runtime owns policy, state, and context;
+Main Composer owns canonical meaning. Voice adds presentation-only composition;
+Researcher runs only for an admitted delta request. Read the contract before
+adopting it. Record target evidence, variants, and any exception; this default
+does not assert measured superiority or require separate services.
+
+When specifying delta updates, policy data, memory or downstream context, read
+[the state and projection contract](references/state-delta-policy-projection.md).
+Use [the machine schema bundle](references/agent-contracts.schema.json) as the
+wire authority and [the completeness assessment](references/implementation-and-completeness.md)
+for target implementation gates. Validate candidate payloads using
+`python3 scripts/validate_agent_contracts.py` and run
+`python3 scripts/test_agent_contracts.py` from this skill directory when modifying
+these contracts. Separate definitions, collected values and derived evaluations; bind field
+identity, transaction/no-op semantics, role projections and summary coverage.
+
+For this pattern, also bind [event projections and model text](references/event-projections-and-context-format.md):
+checkpoint-owned attempts/deltas/state/context references; accepted events;
+read-model cursors; multi-policy local/canonical references; JSON Analyzer output (optional YAML);
+and compact block-text role inputs with a stable prompt/catalog prefix. Follow
+its authoring rules in role, workflow and prompt briefs. Do not add a duplicate
+TurnState store or send raw YAML/JSON state catalogs as model context.
+Runtime envelopes are not model payloads. Policy Engine builds a semantic prompt
+view; render it as readable text sections with `role-text@1`. Keep checkpoint,
+revision, digest, timing and invocation metadata in a private runtime manifest,
+outside both prefix and suffix. Expose only reference handles needed to cite or
+address task content. `compileBlocks` is a diagnostic codec only.
+The host reference codec uses its existing `yaml` package. Run
+`bun test ./scripts/context_transport.test.mjs` from this skill directory after
+changing transport or rendering. Provider cache hits and semantic output reliability
+require separate target evidence.
+
+For scopes outside that default, evaluate in order:
 
 1. deterministic workflow with no model-controlled execution;
 2. one agent with one focused instruction contract;

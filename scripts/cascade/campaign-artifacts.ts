@@ -36,6 +36,16 @@ import {
   type SimulationSessionCheckpoint,
   type SimulationSessionEvent,
 } from "./simulation-sessions";
+import type {
+  CampaignArtifactFile,
+  FreezeCampaignFileInput,
+  FrozenCampaignArtifact,
+} from "./campaign/artifacts/artifact-types";
+export type {
+  CampaignArtifactFile,
+  FreezeCampaignFileInput,
+  FrozenCampaignArtifact,
+} from "./campaign/artifacts/artifact-types";
 import {
   type PersonaRefinementProposal,
   refinementProposalCandidateDigest,
@@ -356,25 +366,6 @@ type CurrentShapeCampaignLeaseState =
   | CampaignLeaseState
   | PreviousCampaignLeaseState;
 
-export interface CampaignArtifactFile {
-  path: string;
-  sha256: string;
-  size: number;
-}
-
-export interface FrozenCampaignArtifact extends CampaignArtifactFile {
-  source_path: string;
-  producer: string;
-  platform: string;
-  frozen_at: string;
-  redaction_profile: "source-code-v1" | "no-secrets-v1";
-  redaction_status: "CLEAN";
-  lineage: {
-    run_id: string;
-    source_digest: string;
-  };
-}
-
 export interface CampaignRunFinalization {
   schema_version: typeof CAMPAIGN_ARTIFACT_SCHEMA_VERSION;
   artifact_type: "campaign-run-finalization";
@@ -484,15 +475,6 @@ export interface ReserveCampaignRunInput {
   specialized_evaluation: SpecializedEvaluationDeclaration | null;
   identities: CampaignIdentityEnvelope;
   lease: CampaignLease;
-}
-
-export interface FreezeCampaignFileInput {
-  source_path: string;
-  namespace: string;
-  producer: string;
-  platform: string;
-  redaction_profile: "source-code-v1" | "no-secrets-v1";
-  max_bytes?: number;
 }
 
 function requireNonEmpty(name: string, value: string): void {

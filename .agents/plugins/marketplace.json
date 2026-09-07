@@ -159,6 +159,18 @@
         "authentication": "ON_INSTALL"
       },
       "category": "Developer Tools"
+    },
+    {
+      "name": "cascade-coordinator",
+      "source": {
+        "source": "local",
+        "path": "./.codex/plugins/cascade-coordinator"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity"
     }
   ]
 }

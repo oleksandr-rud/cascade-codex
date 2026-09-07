@@ -1,9 +1,9 @@
 {
   "agent_count": 6,
   "agent_scenario_count": 6,
-  "catalog_digest": "386373dcb3cb0a6743de89069d801fa39fe21ddc852d01e181736e2470f1fd40",
+  "catalog_digest": "e06e4813e7cafcf3f2262a1cc6c6e95fd6ab3fba8e8ad8bbe435292fa07dcdc4",
   "generated_by": "scripts/cascade/evals.ts",
-  "scenario_count": 133,
+  "scenario_count": 138,
   "scenarios": [
     {
       "expectation": {
@@ -3744,10 +3744,168 @@
       "target_skill": "create-spec"
     },
     {
+      "expectation": {
+        "allowed_supporting": [],
+        "delegation_policy": "none",
+        "forbidden_primary": [
+          "cascade-coordinator:select-capabilities",
+          "cascade-coordinator:plan-workflow"
+        ],
+        "must_load_skills": [
+          "cascade-market:research-market"
+        ],
+        "mutation_policy": "none",
+        "network_policy": "none",
+        "next_route": "",
+        "primary_skill": "cascade-market:research-market",
+        "status_any": [
+          "BLOCKED",
+          "FAIL",
+          "GAP",
+          "NOT_RUN",
+          "PASS"
+        ],
+        "target_skill": "cascade-market:research-market"
+      },
+      "id": "HX-066",
+      "kind": "interaction",
+      "owner": "orchestrator",
+      "prompt": "Use cascade-market:research-market to investigate the stated segment, pain, alternatives, pricing, and buying process. No other plugin capability or workflow graph is requested.",
+      "source": "harness-evals/interactions.yaml",
+      "target_skill": "cascade-market:research-market"
+    },
+    {
+      "expectation": {
+        "allowed_supporting": [
+          "context"
+        ],
+        "delegation_policy": "none",
+        "forbidden_primary": [
+          "cascade-coordinator:plan-workflow",
+          "cascade-project-management:manage-project"
+        ],
+        "must_load_skills": [
+          "cascade-coordinator:select-capabilities"
+        ],
+        "mutation_policy": "none",
+        "network_policy": "none",
+        "next_route": "",
+        "primary_skill": "cascade-coordinator:select-capabilities",
+        "status_any": [
+          "BLOCKED",
+          "FAIL",
+          "GAP",
+          "NOT_RUN",
+          "PASS"
+        ],
+        "target_skill": "cascade-coordinator:select-capabilities"
+      },
+      "id": "HX-067",
+      "kind": "interaction",
+      "owner": "orchestrator",
+      "prompt": "Determine the smallest exact Cascade capability set for a request that may need market evidence, a canonical persona, an MVP contract, a bounded synthetic-user simulation, independent evaluation, and approved repository persistence. Return selected and rejected routes with claim, trigger, input, dependency, and authority reasoning; do not order, execute, persist, or dispatch them yet.",
+      "source": "harness-evals/interactions.yaml",
+      "target_skill": "cascade-coordinator:select-capabilities"
+    },
+    {
+      "expectation": {
+        "allowed_supporting": [],
+        "delegation_policy": "none",
+        "forbidden_primary": [
+          "cascade-coordinator:select-capabilities",
+          "cascade-software-architect:architect-software-system",
+          "cascade-project-management:manage-project"
+        ],
+        "must_load_skills": [
+          "cascade-coordinator:plan-workflow"
+        ],
+        "mutation_policy": "none",
+        "network_policy": "none",
+        "next_route": "",
+        "primary_skill": "cascade-coordinator:plan-workflow",
+        "status_any": [
+          "BLOCKED",
+          "FAIL",
+          "GAP",
+          "NOT_RUN",
+          "PASS"
+        ],
+        "target_skill": "cascade-coordinator:plan-workflow"
+      },
+      "id": "HX-068",
+      "kind": "interaction",
+      "owner": "orchestrator",
+      "prompt": "A current validated Cascade Coordinator selection already contains market research, persona compilation, product definition, simulation construction and execution, and independent evaluation. Compile only its dependency-safe artifact DAG with explicit edges, read-safe parallel groups, joins, stop conditions, and dispatch_authorized false; do not add or execute routes.",
+      "source": "harness-evals/interactions.yaml",
+      "target_skill": "cascade-coordinator:plan-workflow"
+    },
+    {
+      "expectation": {
+        "allowed_supporting": [],
+        "delegation_policy": "none",
+        "forbidden_primary": [
+          "cascade-coordinator:select-capabilities",
+          "cascade-coordinator:plan-workflow"
+        ],
+        "must_load_skills": [
+          "cascade-project-management:plan-project"
+        ],
+        "mutation_policy": "none",
+        "network_policy": "none",
+        "next_route": "",
+        "primary_skill": "cascade-project-management:plan-project",
+        "status_any": [
+          "BLOCKED",
+          "FAIL",
+          "GAP",
+          "NOT_RUN",
+          "PASS"
+        ],
+        "target_skill": "cascade-project-management:plan-project"
+      },
+      "id": "HX-069",
+      "kind": "interaction",
+      "owner": "orchestrator",
+      "prompt": "The exact domain capabilities and artifacts are already accepted. Split delivery into FIRST, NEXT, and LATER MVP iterations with dependencies and promotion evidence; do not reselect plugins or execute work.",
+      "source": "harness-evals/interactions.yaml",
+      "target_skill": "cascade-project-management:plan-project"
+    },
+    {
+      "expectation": {
+        "allowed_supporting": [],
+        "delegation_policy": "none",
+        "forbidden_primary": [
+          "cascade-coordinator:select-capabilities",
+          "cascade-simulations:simulate"
+        ],
+        "must_load_skills": [
+          "cascade-simulations:simulation-actor"
+        ],
+        "mutation_policy": "none",
+        "network_policy": "none",
+        "next_route": "",
+        "primary_skill": "cascade-simulations:simulation-actor",
+        "status_any": [
+          "BLOCKED",
+          "FAIL",
+          "GAP",
+          "NOT_RUN",
+          "PASS"
+        ],
+        "target_skill": "cascade-simulations:simulation-actor"
+      },
+      "id": "HX-070",
+      "kind": "interaction",
+      "owner": "orchestrator",
+      "prompt": "Use cascade-simulations:simulation-actor to derive one bounded actor contract from the supplied frozen persona projection and actor brief. Do not run the actor or plan a multi-plugin workflow.",
+      "source": "harness-evals/interactions.yaml",
+      "target_skill": "cascade-simulations:simulation-actor"
+    },
+    {
       "context_bindings": [
         {
           "path": ".codex/agents/agent-engineer/AGENT.md",
-          "sha256": "0e8d81c551657b8cd894b6df8897f0064342f130cc8b26593f9032574032646a"
+          "sha256": "a9a3ff1dc44e23b1ce6c61db7bab1db668eee807a0706b4fe2b72fc6a5e863ff"
         },
         {
           "path": ".codex/agents/agent-engineer/skills.yaml",
@@ -3759,11 +3917,11 @@
         },
         {
           "path": "AGENTS.md",
-          "sha256": "150d2a3a24ca6b919fa19b2c77813c8f4ca38a2c0f11324e1a07bf0498bee0bc"
+          "sha256": "b7bad926b7c8f057938e5d8d9b602e6bb2884d75e9e6e47105de336c977810f5"
         },
         {
           "path": "CODEX.md",
-          "sha256": "4dcfd7e462345a32521f7dad124d57843b70d83c5732b979a2dbe33d660bcf8d"
+          "sha256": "824a850c91a28a4e9088bbabc48018fcb951fb98a0c58db178c872781946eb25"
         }
       ],
       "execution": {
@@ -3810,11 +3968,11 @@
       "context_bindings": [
         {
           "path": ".codex/agents/harness-evaluator/AGENT.md",
-          "sha256": "d9a87da765e1b6b651b8508e59efeeddd3dacb3654d8e82b4284e33d55988bce"
+          "sha256": "5053cd09ae19d7072e4bdecb18872c09b6ca87d79f783b2b363f72c0b64ad8d9"
         },
         {
           "path": ".codex/plugins/cascade-evals/skills/harness-evaluation/SKILL.md",
-          "sha256": "f1ce6775edbd196b98d78045fb91a7ac2898cab9440b96ac49f0c5d1de65ba37"
+          "sha256": "cc4794ef10b1bfa65dffcd568ad96a9275c106eaa54eaf243cd0d684c0bca587"
         }
       ],
       "execution": {
@@ -3922,7 +4080,7 @@
       "context_bindings": [
         {
           "path": "docs/patterns/boundaries/index.md",
-          "sha256": "9987d2356bc00337bc7fde37780557bfa7dbd997ba91ca057861c1f6ce28e6cf"
+          "sha256": "82428224469a7bc1649beb249fa65eb8797161a2b39e48660f747c7c3cd5d768"
         },
         {
           "path": "docs/product/requirements.md",

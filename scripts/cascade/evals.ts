@@ -390,8 +390,10 @@ export async function harnessSourceManifest(): Promise<JsonObject> {
     "AGENTS.md",
     "CODEX.md",
     "harness.config.yaml",
+    ".agents/plugins/marketplace.json",
     ".codex/config.toml",
     ".codex/hooks.json",
+    ".codex/plugin-capabilities.generated.json",
     ".codex/task-admission/task-envelope.schema.json",
     ".codex/task-admission/policy.schema.json",
     ".codex/task-admission/policy-source.schema.json",
@@ -412,6 +414,7 @@ export async function harnessSourceManifest(): Promise<JsonObject> {
   ].map((path) => rootPath(path));
   const dynamic = [
     ...(await walkFiles(rootPath("scripts/cascade"))),
+    ...(await walkFiles(rootPath(".codex/plugins"))),
     ...(await walkFiles(rootPath(".codex/skills"))),
     ...(await walkFiles(rootPath(".codex/agents"))),
     ...(await walkFiles(resolve(EVAL_ROOT, "rubrics"))),

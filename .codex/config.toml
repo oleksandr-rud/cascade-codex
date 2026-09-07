@@ -1,5 +1,5 @@
-model = "gpt-5.6-sol"
-model_reasoning_effort = "high"
+model = "gpt-6-astra"
+model_reasoning_effort = "max"
 
 [harness]
 name = "cascade"
@@ -31,7 +31,8 @@ conditional_defect_triage = "cascade-qa:triage-defects"
 conditional_harness_evaluation = "cascade-evals:harness-evaluation"
 optional_dynamic_actor_simulation = "cascade-simulations:simulate"
 plugin_capability_catalog = ".codex/plugin-capabilities.generated.json"
-plugin_workflow_validator = "scripts/cascade/plugin-workflow.ts"
+conditional_capability_selection = "cascade-coordinator:select-capabilities"
+plugin_coordinator_validator = "scripts/cascade/plugin-workflow.ts"
 conditional_simulation_campaigns = "cascade-simulations:manage-simulation-campaign"
 conditional_simulation_execution = "cascade-simulations:execute-simulation-campaign"
 conditional_simulation_evaluation = "cascade-evals:simulation-evaluation"
@@ -40,7 +41,8 @@ exception_paths = ["cascade-project-management:define-work-item"]
 
 [cascade.plugin_skills]
 prompt = "cascade-prompt:prompt"
-workflow_plan = "cascade-software-architect:plan-workflow"
+capability_selection = "cascade-coordinator:select-capabilities"
+workflow_plan = "cascade-coordinator:plan-workflow"
 software_architecture = "cascade-software-architect:architect-software-system"
 architecture_patterns = "cascade-software-architect:select-architecture-patterns"
 architecture_review = "cascade-software-architect:review-architecture"
@@ -74,6 +76,10 @@ simulation_campaign_manage = "cascade-simulations:manage-simulation-campaign"
 simulation_campaign_execute = "cascade-simulations:execute-simulation-campaign"
 simulation_review = "cascade-simulations:simulation-review"
 simulation_actor = "cascade-simulations:simulation-actor"
+simulation_persona = "cascade-simulations:simulation-persona"
+simulation_brief = "cascade-simulations:simulation-brief"
+simulation_outcome = "cascade-simulations:simulation-outcome"
+simulation_adapter = "cascade-simulations:simulation-adapter"
 evaluation = "cascade-evals:evaluate"
 judge_builder = "cascade-evals:build-judge"
 prompt_evaluation = "cascade-evals:prompt-evaluation"
@@ -141,6 +147,12 @@ runner = "scripts/cascade/briefs.ts"
 [mcp_servers.context7]
 command = "npx"
 args = ["-y", "@upstash/context7-mcp"]
+startup_timeout_sec = 20
+
+[mcp_servers.cascade_workspace]
+command = "npx"
+args = ["--offline", "--yes", "bun@1.3.3", "scripts/cascade/workspace-mcp.ts"]
+cwd = "."
 startup_timeout_sec = 20
 
 [harness_agents]

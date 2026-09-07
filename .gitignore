@@ -21,11 +21,12 @@ __pycache__/
 
 # JavaScript dependencies, if local tooling is added
 node_modules/
+dist/
 
 # Logs
 *.log
 
-# Local harness evaluation traces and reports
+# Local generated runtime artifacts, including disposable harness eval traces
 .artifacts/
 
 # Local archives excluded from release and development branches

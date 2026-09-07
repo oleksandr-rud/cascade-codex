@@ -29,7 +29,7 @@ nodes:
     owns: "Modular monolith, service split, event-driven, client, CLI, experiment, and independently distributed library candidates."
   - id: boundary-map
     kind: architecture-contract
-    owns: "Deployable units, data ownership, public interfaces, failure domains, and dependency direction."
+    owns: "Domain modules, data ownership, public in-process or external interfaces, deployment boundaries, failure domains, and dependency direction."
   - id: quality-attributes
     kind: evaluation
     owns: "Changeability, reliability, operability, performance, isolation, and cost trade-offs."
@@ -63,7 +63,7 @@ decisions:
     default: "Define responsibility, data ownership, public contracts, and failure domains before frameworks or infrastructure."
     exception_when: "A mandated platform fixes a boundary; still record the imposed constraint."
   - id: modular-first
-    default: "Start server-side product logic as a modular monolith with explicit module entrypoints and ports."
+    default: "Start server-side product logic as a modular monolith whose modules name real domain entities, aggregates, or cohesive capabilities and expose explicit entrypoints."
     exception_when: "Independent deployment or failure isolation is already proven necessary."
   - id: evidence-classification
     default: "Record each catalog pair as ADOPTED, ADAPTED, REJECTED, or GAP with target evidence."

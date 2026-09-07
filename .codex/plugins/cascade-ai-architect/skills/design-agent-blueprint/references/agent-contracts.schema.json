@@ -1,0 +1,1611 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:cascade:agent-contracts:2.0",
+  "title": "Analyzer Policy Composer reference contracts 2.0",
+  "$defs": {
+    "JsonValue": {
+      "oneOf": [
+        {"type": "null"},
+        {"type": "boolean"},
+        {"type": "number"},
+        {"type": "string", "maxLength": 16000},
+        {"type": "array", "items": {"$ref": "#/$defs/JsonValue"}, "minItems": 0, "maxItems": 128},
+        {"type": "object", "maxProperties": 64, "additionalProperties": {"$ref": "#/$defs/JsonValue"}}
+      ]
+    },
+    "Binding": {
+      "type": "object",
+      "properties": {
+        "ref": {"type": "string", "minLength": 3, "maxLength": 240, "pattern": "^.+@[^@]+$"},
+        "digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"}
+      },
+      "required": ["ref", "digest"],
+      "additionalProperties": false
+    },
+    "SourceDependency": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "enum": [
+            "state",
+            "policy",
+            "projection",
+            "identity",
+            "event",
+            "memory",
+            "delivery",
+            "plan",
+            "choice",
+            "authorization",
+            "prompt",
+            "schema"
+          ]
+        },
+        "binding": {"$ref": "#/$defs/Binding"}
+      },
+      "required": ["kind", "binding"],
+      "additionalProperties": false
+    },
+    "AcceptedEvent": {
+      "type": "object",
+      "properties": {
+        "event_id": {"type": "string", "minLength": 1, "maxLength": 240},
+        "turn_id": {"type": "string", "minLength": 1, "maxLength": 240},
+        "sequence": {"type": "integer", "minimum": 0},
+        "kind": {"enum": ["user_message", "research_result", "executor_receipt", "runtime_event"]},
+        "speaker_ref": {"type": "string", "minLength": 1, "maxLength": 240},
+        "finalized": {"const": true},
+        "text": {"type": "string", "minLength": 1, "maxLength": 16000},
+        "source_refs": {"type": "array", "items": {"type": "string", "minLength": 1, "maxLength": 240}, "minItems": 1, "maxItems": 128}
+      },
+      "required": ["event_id", "turn_id", "sequence", "kind", "speaker_ref", "finalized", "text", "source_refs"],
+      "additionalProperties": false
+    },
+    "AgentIdentityDefinition": {
+      "type": "object",
+      "properties": {
+        "binding": {"$ref": "#/$defs/Binding"},
+        "agent_ref": {"type": "string", "minLength": 1, "maxLength": 240},
+        "display_name": {"type": "string", "minLength": 1, "maxLength": 16000},
+        "mission": {"type": "string", "minLength": 1, "maxLength": 16000},
+        "capabilities": {"type": "array", "items": {"type": "string", "minLength": 1, "maxLength": 240}, "minItems": 0, "maxItems": 128},
+        "limitations": {"type": "array", "items": {"type": "string", "minLength": 1, "maxLength": 240}, "minItems": 0, "maxItems": 128},
+        "approved_self_description": {"type": "string", "minLength": 1, "maxLength": 16000},
+        "disclosure_policy_ref": {"type": "string", "minLength": 3, "maxLength": 240, "pattern": "^.+@[^@]+$"}
+      },
+      "required": [
+        "binding",
+        "agent_ref",
+        "display_name",
+        "mission",
+        "capabilities",
+        "limitations",
+        "approved_self_description",
+        "disclosure_policy_ref"
+      ],
+      "additionalProperties": false
+    },
+    "ProfileAttribute": {
+      "type": "object",
+      "properties": {
+        "subject_ref": {"type": "string", "minLength": 1, "maxLength": 240},
+        "attribute_ref": {"type": "string", "minLength": 3, "maxLength": 240, "pattern": "^.+@[^@]+$"},
+        "value_or_ref": {"$ref": "#/$defs/JsonValue"},
+        "support": {"enum": ["reported", "observed", "configured"]},
+        "evidence_refs": {"type": "array", "items": {"type": "string", "minLength": 1, "maxLength": 240}, "minItems": 1, "maxItems": 128}
+      },
+      "required": ["subject_ref", "attribute_ref", "value_or_ref", "support", "evidence_refs"],
+      "additionalProperties": false
+    },
+    "IdentityContext": {
+      "type": "object",
+      "properties": {
+        "identity_context_id": {"type": "string", "minLength": 1, "maxLength": 240},
+        "mode": {"enum": ["minimal", "personalization", "identity_answer", "introduction", "capability_disclosure"]},
+        "activation_rule_ref": {"type": "string", "minLength": 3, "maxLength": 240, "pattern": "^.+@[^@]+$"},
+        "requested_identity_subject_refs": {"type": "array", "items": {"type": "string", "minLength": 1, "maxLength": 240}, "minItems": 0, "maxItems": 128},
+        "authenticated_scope_ref": {"type": "string", "minLength": 1, "maxLength": 240},
+        "session_ref": {"type": "string", "minLength": 1, "maxLength": 240},
+        "turn_ref": {"type": "string", "minLength": 1, "maxLength": 240},
+        "channel": {"enum": ["text", "voice", "other"]},
+        "actor_ref": {"type": "string", "minLength": 1, "maxLength": 240},
+        "actor_type": {"enum": ["user", "operator", "system", "service"]},
+        "role_refs": {"type": "array", "items": {"type": "string", "minLength": 1, "maxLength": 240}, "minItems": 0, "maxItems": 128},
+        "participant_refs": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "participant_ref": {"type": "string", "minLength": 1, "maxLength": 240},
+              "relation": {"type": "string", "minLength": 1, "maxLength": 16000}
+            },
+            "required": ["participant_ref", "relation"],
+            "additionalProperties": false
+          },
+          "minItems": 0,
+          "maxItems": 128
+        },
+        "agent_identity": {"$ref": "#/$defs/AgentIdentityDefinition"},
+        "projected_profile": {"type": "array", "items": {"$ref": "#/$defs/ProfileAttribute"}, "minItems": 0, "maxItems": 128},
+        "locale": {"type": "string", "minLength": 1, "maxLength": 240},
+        "issued_at": {"type": "string", "minLength": 1, "maxLength": 240},
+        "expires_at": {"type": "string", "minLength": 1, "maxLength": 240}
+      },
+      "required": [
+        "identity_context_id",
+        "mode",
+        "activation_rule_ref",
+        "requested_identity_subject_refs",
+        "authenticated_scope_ref",
+        "session_ref",
+        "turn_ref",
+        "channel",
+        "actor_ref",
+        "actor_type",
+        "role_refs",
+        "participant_refs",
+        "agent_identity",
+        "projected_profile",
+        "issued_at",
+        "expires_at"
+      ],
+      "additionalProperties": false
+    },
+    "PolicyCell": {
+      "type": "object",
+      "properties": {
+        "instance_ref": {"type": "string", "minLength": 1, "maxLength": 240},
+        "field_ref": {"type": "string", "minLength": 3, "maxLength": 240, "pattern": "^.+@[^@]+$"},
+        "value_or_ref": {"$ref": "#/$defs/JsonValue"},
+        "support": {"enum": ["reported", "observed", "inferred"]},
+        "evidence_refs": {"type": "array", "items": {"type": "string", "minLength": 1, "maxLength": 240}, "minItems": 1, "maxItems": 128}
+      },
+      "required": ["instance_ref", "field_ref", "value_or_ref", "support", "evidence_refs"],
+      "additionalProperties": false
+    },
+    "PolicyContext": {
+      "type": "object",
+      "properties": {
+        "policy_context_id": {"type": "string", "minLength": 1, "maxLength": 240},
+        "definition_bindings": {"type": "array", "items": {"$ref": "#/$defs/Binding"}, "minItems": 0, "maxItems": 128},
+        "evaluation_bindings": {"type": "array", "items": {"$ref": "#/$defs/Binding"}, "minItems": 0, "maxItems": 128},
+        "projection_binding": {"$ref": "#/$defs/Binding"},
+        "selected_policy_data": {"type": "array", "items": {"$ref": "#/$defs/PolicyCell"}, "minItems": 0, "maxItems": 128},
+        "obligations": {"type": "array", "items": {"type": "string", "minLength": 1, "maxLength": 240}, "minItems": 0, "maxItems": 128},
+        "allowed_acts": {"type": "array", "items": {"type": "string", "minLength": 1, "maxLength": 240}, "minItems": 0, "maxItems": 128},
+        "required_confirmations": {"type": "array", "items": {"type": "string", "minLength": 1, "maxLength": 240}, "minItems": 0, "maxItems": 128},
+        "restrictions": {"type": "array", "items": {"type": "string", "minLength": 1, "maxLength": 240}, "minItems": 0, "maxItems": 128},
+        "limitations": {"type": "array", "items": {"type": "string", "minLength": 1, "maxLength": 240}, "minItems": 0, "maxItems": 128},
+        "issued_at": {"type": "string", "minLength": 1, "maxLength": 240},
+        "expires_at": {"type": "string", "minLength": 1, "maxLength": 240}
+      },
+      "required": [
+        "policy_context_id",
+        "definition_bindings",
+        "evaluation_bindings",
+        "projection_binding",
+        "selected_policy_data",
+        "obligations",
+        "allowed_acts",
+        "required_confirmations",
+        "restrictions",
+        "limitations",
+        "issued_at",
+        "expires_at"
+      ],
+      "additionalProperties": false
+    },
+    "ConversationBackground": {
+      "type": "object",
+      "properties": {
+        "task_ref": {"type": "string", "minLength": 1, "maxLength": 240},
+        "current_goal": {"type": "string", "minLength": 1, "maxLength": 16000},
+        "interaction_phase": {"type": "string", "minLength": 1, "maxLength": 240},
+        "active_entity_refs": {"type": "array", "items": {"type": "string", "minLength": 1, "maxLength": 240}, "minItems": 0, "maxItems": 128},
+        "relevant_claim_refs": {"type": "array", "items": {"type": "string", "minLength": 1, "maxLength": 240}, "minItems": 0, "maxItems": 128},
+        "pending_question_refs": {"type": "array", "items": {"type": "string", "minLength": 1, "maxLength": 240}, "minItems": 0, "maxItems": 128},
+        "omitted_categories": {"type": "array", "items": {"type": "string", "minLength": 1, "maxLength": 240}, "minItems": 0, "maxItems": 128},
+        "limitations": {"type": "array", "items": {"type": "string", "minLength": 1, "maxLength": 240}, "minItems": 0, "maxItems": 128}
+      },
+      "required": [
+        "current_goal",
+        "interaction_phase",
+        "active_entity_refs",
+        "relevant_claim_refs",
+        "pending_question_refs",
+        "omitted_categories",
+        "limitations"
+      ],
+      "additionalProperties": false
+    },
+    "MemorySlice": {
+      "type": "object",
+      "properties": {
+        "status": {"enum": ["available", "empty", "stale", "blocked"]},
+        "binding": {"$ref": "#/$defs/Binding"},
+        "summary": {"type": "string", "minLength": 1, "maxLength": 16000},
+        "source_turn_refs": {"type": "array", "items": {"type": "string", "minLength": 1, "maxLength": 240}, "minItems": 0, "maxItems": 128},
+        "coverage_through_checkpoint": {"type": "string", "minLength": 1, "maxLength": 240},
+        "fact_refs": {"type": "array", "items": {"type": "string", "minLength": 1, "maxLength": 240}, "minItems": 0, "maxItems": 128},
+        "decision_refs": {"type": "array", "items": {"type": "string", "minLength": 1, "maxLength": 240}, "minItems": 0, "maxItems": 128},
+        "unresolved_question_refs": {"type": "array", "items": {"type": "string", "minLength": 1, "maxLength": 240}, "minItems": 0, "maxItems": 128},
+        "preference_refs": {"type": "array", "items": {"type": "string", "minLength": 1, "maxLength": 240}, "minItems": 0, "maxItems": 128},
+        "invalidation_refs": {"type": "array", "items": {"type": "string", "minLength": 1, "maxLength": 240}, "minItems": 0, "maxItems": 128}
+      },
+      "required": [
+        "status",
+        "source_turn_refs",
+        "fact_refs",
+        "decision_refs",
+        "unresolved_question_refs",
+        "preference_refs",
+        "invalidation_refs"
+      ],
+      "additionalProperties": false
+    },
+    "MemoryContext": {
+      "type": "object",
+      "properties": {
+        "task_summary": {"$ref": "#/$defs/MemorySlice"},
+        "relevant_durable_memory": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "binding": {"$ref": "#/$defs/Binding"},
+              "text": {"type": "string", "minLength": 1, "maxLength": 16000},
+              "evidence_refs": {
+                "type": "array",
+                "items": {"type": "string", "minLength": 1, "maxLength": 240},
+                "minItems": 1,
+                "maxItems": 128
+              },
+              "expires_at": {"type": "string", "minLength": 1, "maxLength": 240}
+            },
+            "required": ["binding", "text", "evidence_refs", "expires_at"],
+            "additionalProperties": false
+          },
+          "minItems": 0,
+          "maxItems": 128
+        },
+        "limitations": {"type": "array", "items": {"type": "string", "minLength": 1, "maxLength": 240}, "minItems": 0, "maxItems": 128}
+      },
+      "required": ["task_summary", "relevant_durable_memory", "limitations"],
+      "additionalProperties": false
+    },
+    "DeliveryAttempt": {
+      "type": "object",
+      "properties": {
+        "attempt_id": {"type": "string", "minLength": 1, "maxLength": 240},
+        "channel": {"enum": ["text", "voice"]},
+        "delivery_epoch": {"type": "integer", "minimum": 0},
+        "status": {"enum": ["queued", "playing", "interrupted", "delivered", "failed", "unknown_delivery"]},
+        "acknowledged_through_segment": {"type": "integer", "minimum": 0},
+        "receipt_refs": {"type": "array", "items": {"type": "string", "minLength": 1, "maxLength": 240}, "minItems": 0, "maxItems": 128}
+      },
+      "required": ["attempt_id", "channel", "delivery_epoch", "status", "receipt_refs"],
+      "additionalProperties": false
+    },
+    "HistoryMessage": {
+      "type": "object",
+      "properties": {
+        "message_ref": {"type": "string", "minLength": 1, "maxLength": 240},
+        "speaker_ref": {"type": "string", "minLength": 1, "maxLength": 240},
+        "role": {"enum": ["user", "assistant", "system"]},
+        "text": {"type": "string", "minLength": 1, "maxLength": 16000},
+        "source_refs": {"type": "array", "items": {"type": "string", "minLength": 1, "maxLength": 240}, "minItems": 1, "maxItems": 128},
+        "response_revision": {"type": "integer", "minimum": 0},
+        "commit_status": {"enum": ["committed", "superseded"]},
+        "delivery_attempts": {"type": "array", "items": {"$ref": "#/$defs/DeliveryAttempt"}, "minItems": 0, "maxItems": 128}
+      },
+      "required": ["message_ref", "speaker_ref", "role", "text", "source_refs", "delivery_attempts"],
+      "additionalProperties": false
+    },
+    "HistoryTurn": {
+      "type": "object",
+      "properties": {
+        "turn_ref": {"type": "string", "minLength": 1, "maxLength": 240},
+        "status": {"enum": ["open", "closed"]},
+        "messages": {"type": "array", "items": {"$ref": "#/$defs/HistoryMessage"}, "minItems": 1, "maxItems": 32},
+        "relevant_event_refs": {"type": "array", "items": {"type": "string", "minLength": 1, "maxLength": 240}, "minItems": 0, "maxItems": 128}
+      },
+      "required": ["turn_ref", "status", "messages", "relevant_event_refs"],
+      "additionalProperties": false
+    },
+    "ContinuityContext": {
+      "type": "object",
+      "properties": {
+        "window": {
+          "type": "object",
+          "properties": {
+            "turn_limit": {"type": "integer", "minimum": 1, "maximum": 20},
+            "first_turn_ref": {"type": "string", "minLength": 1, "maxLength": 240},
+            "last_turn_ref": {"type": "string", "minLength": 1, "maxLength": 240},
+            "includes_current_event": {"type": "boolean"},
+            "omitted_older_turn_count": {"type": "integer", "minimum": 0}
+          },
+          "required": ["turn_limit", "includes_current_event", "omitted_older_turn_count"],
+          "additionalProperties": false
+        },
+        "recent_memory": {"$ref": "#/$defs/MemorySlice"},
+        "formatted_history": {"type": "array", "items": {"$ref": "#/$defs/HistoryTurn"}, "minItems": 0, "maxItems": 20},
+        "formatting_profile_ref": {"type": "string", "minLength": 3, "maxLength": 240, "pattern": "^.+@[^@]+$"},
+        "limitations": {"type": "array", "items": {"type": "string", "minLength": 1, "maxLength": 240}, "minItems": 0, "maxItems": 128}
+      },
+      "required": ["window", "recent_memory", "formatted_history", "formatting_profile_ref", "limitations"],
+      "additionalProperties": false
+    },
+    "Step": {
+      "type": "object",
+      "properties": {
+        "step_ref": {"type": "string", "minLength": 1, "maxLength": 240},
+        "title": {"type": "string", "minLength": 1, "maxLength": 16000},
+        "kind": {"enum": ["action", "research", "question", "wait", "explanation", "handoff"]},
+        "status": {
+          "enum": [
+            "proposed",
+            "awaiting_confirmation",
+            "authorized",
+            "in_progress",
+            "completed",
+            "failed",
+            "unknown_outcome",
+            "blocked",
+            "cancelled",
+            "superseded"
+          ]
+        },
+        "owner_ref": {"type": "string", "minLength": 1, "maxLength": 240},
+        "dependency_refs": {"type": "array", "items": {"type": "string", "minLength": 1, "maxLength": 240}, "minItems": 0, "maxItems": 128},
+        "precondition_refs": {"type": "array", "items": {"type": "string", "minLength": 1, "maxLength": 240}, "minItems": 0, "maxItems": 128},
+        "required_confirmation_refs": {"type": "array", "items": {"type": "string", "minLength": 1, "maxLength": 240}, "minItems": 0, "maxItems": 128},
+        "evidence_or_receipt_refs": {"type": "array", "items": {"type": "string", "minLength": 1, "maxLength": 240}, "minItems": 0, "maxItems": 128},
+        "blocking_reason_refs": {"type": "array", "items": {"type": "string", "minLength": 1, "maxLength": 240}, "minItems": 0, "maxItems": 128},
+        "superseded_by": {"type": "string", "minLength": 1, "maxLength": 240}
+      },
+      "required": [
+        "step_ref",
+        "title",
+        "kind",
+        "status",
+        "owner_ref",
+        "dependency_refs",
+        "precondition_refs",
+        "required_confirmation_refs",
+        "evidence_or_receipt_refs",
+        "blocking_reason_refs"
+      ],
+      "additionalProperties": false
+    },
+    "NextStepContext": {
+      "type": "object",
+      "properties": {
+        "task_ref": {"type": "string", "minLength": 1, "maxLength": 240},
+        "plan_revision": {"type": "integer", "minimum": 0},
+        "completeness": {"enum": ["complete_for_authorized_task_projection", "partial", "blocked"]},
+        "current_step_ref": {"type": "string", "minLength": 1, "maxLength": 240},
+        "steps": {"type": "array", "items": {"$ref": "#/$defs/Step"}, "minItems": 0, "maxItems": 128},
+        "omitted_step_refs": {"type": "array", "items": {"type": "string", "minLength": 1, "maxLength": 240}, "minItems": 0, "maxItems": 128},
+        "limitations": {"type": "array", "items": {"type": "string", "minLength": 1, "maxLength": 240}, "minItems": 0, "maxItems": 128}
+      },
+      "required": ["task_ref", "plan_revision", "completeness", "steps", "omitted_step_refs", "limitations"],
+      "additionalProperties": false
+    },
+    "UnresolvedChoice": {
+      "type": "object",
+      "properties": {
+        "choice_ref": {"type": "string", "minLength": 1, "maxLength": 240},
+        "revision": {"type": "integer", "minimum": 0},
+        "task_ref": {"type": "string", "minLength": 1, "maxLength": 240},
+        "status": {"enum": ["pending", "resolved", "expired", "superseded", "cancelled"]},
+        "origin_delta_ref": {"type": "string", "minLength": 1, "maxLength": 240},
+        "block_id": {"type": "string", "minLength": 1, "maxLength": 240},
+        "part_id": {"type": "string", "minLength": 1, "maxLength": 240},
+        "selection_policy_ref": {"type": "string", "minLength": 3, "maxLength": 240, "pattern": "^.+@[^@]+$"},
+        "base_revision": {"type": "integer", "minimum": 0},
+        "candidate_refs": {"type": "array", "items": {"type": "string", "minLength": 1, "maxLength": 240}, "minItems": 2, "maxItems": 8},
+        "question_ref": {"type": "string", "minLength": 1, "maxLength": 240},
+        "question_text": {"type": "string", "minLength": 1, "maxLength": 16000},
+        "presented_candidate_refs": {"type": "array", "items": {"type": "string", "minLength": 1, "maxLength": 240}, "minItems": 0, "maxItems": 128},
+        "presentation_response_ref": {"type": "string", "minLength": 1, "maxLength": 240},
+        "selected_candidate_refs": {"type": "array", "items": {"type": "string", "minLength": 1, "maxLength": 240}, "minItems": 0, "maxItems": 128},
+        "evidence_refs": {"type": "array", "items": {"type": "string", "minLength": 1, "maxLength": 240}, "minItems": 1, "maxItems": 128},
+        "expires_at": {"type": "string", "minLength": 1, "maxLength": 240},
+        "candidate_options": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "candidate_ref": {"type": "string", "minLength": 1, "maxLength": 240},
+              "label": {"type": "string", "minLength": 1, "maxLength": 500}
+            },
+            "required": ["candidate_ref", "label"],
+            "additionalProperties": false
+          },
+          "maxItems": 128
+        }
+      },
+      "required": [
+        "choice_ref",
+        "revision",
+        "task_ref",
+        "status",
+        "origin_delta_ref",
+        "block_id",
+        "part_id",
+        "selection_policy_ref",
+        "base_revision",
+        "candidate_refs",
+        "question_ref",
+        "question_text",
+        "presented_candidate_refs",
+        "selected_candidate_refs",
+        "evidence_refs",
+        "expires_at",
+        "candidate_options"
+      ],
+      "additionalProperties": false
+    },
+    "FieldChange": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {"kind": {"const": "set"}, "value": {"$ref": "#/$defs/JsonValue"}},
+          "required": ["kind", "value"],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {"kind": {"const": "set_ref"}, "value_ref": {"type": "string", "minLength": 1, "maxLength": 240}},
+          "required": ["kind", "value_ref"],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {"kind": {"const": "clear"}},
+          "required": ["kind"],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {"const": "add_item"},
+            "item_key": {"type": "string", "minLength": 1, "maxLength": 240},
+            "value": {"$ref": "#/$defs/JsonValue"}
+          },
+          "required": ["kind", "item_key", "value"],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {"kind": {"const": "remove_item"}, "item_key": {"type": "string", "minLength": 1, "maxLength": 240}},
+          "required": ["kind", "item_key"],
+          "additionalProperties": false
+        }
+      ]
+    },
+    "ClaimProposal": {
+      "type": "object",
+      "properties": {
+        "local_ref": {"type": "string", "minLength": 1, "maxLength": 240},
+        "subject_ref": {"type": "string", "minLength": 1, "maxLength": 240},
+        "predicate": {"type": "string", "minLength": 1, "maxLength": 240},
+        "value": {"$ref": "#/$defs/JsonValue"},
+        "literal_quote": {"type": "string", "minLength": 1, "maxLength": 16000},
+        "support": {"enum": ["reported", "observed", "inferred"]},
+        "evidence_refs": {"type": "array", "items": {"type": "string", "minLength": 1, "maxLength": 240}, "minItems": 1, "maxItems": 128}
+      },
+      "required": ["local_ref", "subject_ref", "predicate", "value", "literal_quote", "support", "evidence_refs"],
+      "additionalProperties": false
+    },
+    "PlanStepProposal": {
+      "type": "object",
+      "properties": {
+        "local_ref": {"type": "string", "minLength": 1, "maxLength": 240},
+        "title": {"type": "string", "minLength": 1, "maxLength": 16000},
+        "kind": {"enum": ["action", "research", "question", "wait", "explanation", "handoff"]},
+        "owner_ref": {"type": "string", "minLength": 1, "maxLength": 240},
+        "dependency_refs": {"type": "array", "items": {"type": "string", "minLength": 1, "maxLength": 240}, "minItems": 0, "maxItems": 128},
+        "precondition_refs": {"type": "array", "items": {"type": "string", "minLength": 1, "maxLength": 240}, "minItems": 0, "maxItems": 128},
+        "evidence_refs": {"type": "array", "items": {"type": "string", "minLength": 1, "maxLength": 240}, "minItems": 1, "maxItems": 128}
+      },
+      "required": ["local_ref", "title", "kind", "owner_ref", "dependency_refs", "precondition_refs", "evidence_refs"],
+      "additionalProperties": false
+    },
+    "Operation": {
+      "oneOf": [
+        {"$ref": "#/$defs/PolicyFieldChange"},
+        {
+          "type": "object",
+          "properties": {
+            "op": {"const": "propose_claim"},
+            "op_id": {"type": "string", "minLength": 1, "maxLength": 240},
+            "claim": {"$ref": "#/$defs/ClaimProposal"}
+          },
+          "required": ["op", "op_id", "claim"],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "op": {"const": "supersede_claim"},
+            "op_id": {"type": "string", "minLength": 1, "maxLength": 240},
+            "claim_ref": {"type": "string", "minLength": 1, "maxLength": 240},
+            "expected_claim_revision": {"type": "integer", "minimum": 0},
+            "replacement": {"$ref": "#/$defs/ClaimProposal"},
+            "evidence_refs": {
+              "type": "array",
+              "items": {"type": "string", "minLength": 1, "maxLength": 240},
+              "minItems": 1,
+              "maxItems": 128
+            }
+          },
+          "required": ["op", "op_id", "claim_ref", "expected_claim_revision", "replacement", "evidence_refs"],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "op": {"const": "resolve_question"},
+            "op_id": {"type": "string", "minLength": 1, "maxLength": 240},
+            "question_ref": {"type": "string", "minLength": 1, "maxLength": 240},
+            "expected_question_revision": {"type": "integer", "minimum": 0},
+            "answer": {"$ref": "#/$defs/JsonValue"},
+            "evidence_refs": {
+              "type": "array",
+              "items": {"type": "string", "minLength": 1, "maxLength": 240},
+              "minItems": 1,
+              "maxItems": 128
+            }
+          },
+          "required": ["op", "op_id", "question_ref", "expected_question_revision", "answer", "evidence_refs"],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "op": {"const": "request_research"},
+            "op_id": {"type": "string", "minLength": 1, "maxLength": 240},
+            "local_ref": {"type": "string", "minLength": 1, "maxLength": 240},
+            "gap_ref": {"type": "string", "minLength": 1, "maxLength": 240},
+            "query": {"type": "string", "minLength": 1, "maxLength": 16000},
+            "sources": {"type": "array", "items": {"enum": ["web", "kb"]}, "minItems": 1, "maxItems": 2},
+            "evidence_refs": {
+              "type": "array",
+              "items": {"type": "string", "minLength": 1, "maxLength": 240},
+              "minItems": 1,
+              "maxItems": 128
+            }
+          },
+          "required": ["op", "op_id", "local_ref", "gap_ref", "query", "sources", "evidence_refs"],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "op": {"const": "propose_action"},
+            "op_id": {"type": "string", "minLength": 1, "maxLength": 240},
+            "local_ref": {"type": "string", "minLength": 1, "maxLength": 240},
+            "action_contract_ref": {"type": "string", "minLength": 3, "maxLength": 240, "pattern": "^.+@[^@]+$"},
+            "arguments": {"$ref": "#/$defs/JsonValue"},
+            "evidence_refs": {
+              "type": "array",
+              "items": {"type": "string", "minLength": 1, "maxLength": 240},
+              "minItems": 1,
+              "maxItems": 128
+            }
+          },
+          "required": ["op", "op_id", "local_ref", "action_contract_ref", "arguments", "evidence_refs"],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "op": {"const": "propose_memory"},
+            "op_id": {"type": "string", "minLength": 1, "maxLength": 240},
+            "kind": {"enum": ["append_note", "replace_summary"]},
+            "local_ref": {"type": "string", "minLength": 1, "maxLength": 240},
+            "scope": {"enum": ["recent_window", "task", "durable"]},
+            "text": {"type": "string", "minLength": 1, "maxLength": 16000},
+            "source_turn_refs": {
+              "type": "array",
+              "items": {"type": "string", "minLength": 1, "maxLength": 240},
+              "minItems": 1,
+              "maxItems": 128
+            },
+            "evidence_refs": {
+              "type": "array",
+              "items": {"type": "string", "minLength": 1, "maxLength": 240},
+              "minItems": 1,
+              "maxItems": 128
+            },
+            "expected_memory_revision": {"type": "integer", "minimum": 0},
+            "coverage_through_checkpoint": {"type": "string", "minLength": 1, "maxLength": 240},
+            "trigger_ref": {"type": "string", "minLength": 1, "maxLength": 240}
+          },
+          "required": [
+            "op",
+            "op_id",
+            "kind",
+            "local_ref",
+            "scope",
+            "text",
+            "source_turn_refs",
+            "evidence_refs",
+            "expected_memory_revision",
+            "trigger_ref"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "op": {"const": "resolve_choice"},
+            "op_id": {"type": "string", "minLength": 1, "maxLength": 240},
+            "choice_ref": {"type": "string", "minLength": 1, "maxLength": 240},
+            "expected_choice_revision": {"type": "integer", "minimum": 0},
+            "selected_candidate_refs": {
+              "type": "array",
+              "items": {"type": "string", "minLength": 1, "maxLength": 240},
+              "minItems": 1,
+              "maxItems": 128
+            },
+            "presentation_response_ref": {"type": "string", "minLength": 1, "maxLength": 240},
+            "evidence_refs": {
+              "type": "array",
+              "items": {"type": "string", "minLength": 1, "maxLength": 240},
+              "minItems": 1,
+              "maxItems": 128
+            }
+          },
+          "required": [
+            "op",
+            "op_id",
+            "choice_ref",
+            "expected_choice_revision",
+            "selected_candidate_refs",
+            "presentation_response_ref",
+            "evidence_refs"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "op": {"const": "propose_plan_change"},
+            "op_id": {"type": "string", "minLength": 1, "maxLength": 240},
+            "task_ref": {"type": "string", "minLength": 1, "maxLength": 240},
+            "expected_plan_revision": {"type": "integer", "minimum": 0},
+            "add_steps": {"type": "array", "items": {"$ref": "#/$defs/PlanStepProposal"}, "minItems": 0, "maxItems": 128},
+            "supersede_steps": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "step_ref": {"type": "string", "minLength": 1, "maxLength": 240},
+                  "replacement_local_ref": {"type": "string", "minLength": 1, "maxLength": 240}
+                },
+                "required": ["step_ref", "replacement_local_ref"],
+                "additionalProperties": false
+              },
+              "minItems": 0,
+              "maxItems": 128
+            },
+            "cancel_step_refs": {
+              "type": "array",
+              "items": {"type": "string", "minLength": 1, "maxLength": 240},
+              "minItems": 0,
+              "maxItems": 128
+            },
+            "evidence_refs": {
+              "type": "array",
+              "items": {"type": "string", "minLength": 1, "maxLength": 240},
+              "minItems": 1,
+              "maxItems": 128
+            }
+          },
+          "required": [
+            "op",
+            "op_id",
+            "task_ref",
+            "expected_plan_revision",
+            "add_steps",
+            "supersede_steps",
+            "cancel_step_refs",
+            "evidence_refs"
+          ],
+          "additionalProperties": false
+        }
+      ]
+    },
+    "UpdateGroup": {
+      "type": "object",
+      "properties": {
+        "group_id": {"type": "string", "minLength": 1, "maxLength": 240},
+        "depends_on": {"type": "array", "items": {"type": "string", "minLength": 1, "maxLength": 240}, "minItems": 0, "maxItems": 128},
+        "operations": {"type": "array", "items": {"$ref": "#/$defs/Operation"}, "minItems": 1, "maxItems": 32}
+      },
+      "required": ["group_id", "depends_on", "operations"],
+      "additionalProperties": false
+    },
+    "Candidate": {
+      "type": "object",
+      "properties": {
+        "candidate_id": {"type": "string", "minLength": 1, "maxLength": 240},
+        "support": {"enum": ["reported", "observed", "inferred"]},
+        "evidence_refs": {"type": "array", "items": {"type": "string", "minLength": 1, "maxLength": 240}, "minItems": 1, "maxItems": 128},
+        "selection_features": {"type": "object", "maxProperties": 16, "additionalProperties": {"$ref": "#/$defs/JsonValue"}},
+        "model_score": {"type": "number", "minimum": 0, "maximum": 1},
+        "groups": {"type": "array", "items": {"$ref": "#/$defs/UpdateGroup"}, "minItems": 1, "maxItems": 8}
+      },
+      "required": ["candidate_id", "support", "evidence_refs", "selection_features", "groups"],
+      "additionalProperties": false
+    },
+    "AnalysisPart": {
+      "type": "object",
+      "properties": {
+        "part_id": {"type": "string", "minLength": 1, "maxLength": 240},
+        "selection_mode": {"enum": ["apply_all_eligible", "choose_zero_or_one", "choose_exactly_one", "ordered_fallback"]},
+        "selection_policy_ref": {"type": "string", "minLength": 3, "maxLength": 240, "pattern": "^.+@[^@]+$"},
+        "candidates": {"type": "array", "items": {"$ref": "#/$defs/Candidate"}, "minItems": 1, "maxItems": 8}
+      },
+      "required": ["part_id", "selection_mode", "selection_policy_ref", "candidates"],
+      "additionalProperties": false
+    },
+    "AnalysisBlock": {
+      "type": "object",
+      "properties": {
+        "block_id": {"type": "string", "minLength": 1, "maxLength": 240},
+        "block_type": {"type": "string", "minLength": 1, "maxLength": 240},
+        "source_refs": {"type": "array", "items": {"type": "string", "minLength": 1, "maxLength": 240}, "minItems": 1, "maxItems": 128},
+        "parts": {"type": "array", "items": {"$ref": "#/$defs/AnalysisPart"}, "minItems": 1, "maxItems": 8}
+      },
+      "required": ["block_id", "block_type", "source_refs", "parts"],
+      "additionalProperties": false
+    },
+    "StateDelta": {
+      "type": "object",
+      "properties": {
+        "schema_version": {"const": "state-delta.v3"},
+        "input_context_id": {"type": "string", "minLength": 1, "maxLength": 240},
+        "event_id": {"type": "string", "minLength": 1, "maxLength": 240},
+        "turn_id": {"type": "string", "minLength": 1, "maxLength": 240},
+        "checkpoint_id": {"type": "string", "minLength": 1, "maxLength": 240},
+        "base_revision": {"type": "integer", "minimum": 0},
+        "idempotency_key": {"type": "string", "minLength": 1, "maxLength": 240},
+        "groups": {"type": "array", "items": {"$ref": "#/$defs/UpdateGroup"}, "minItems": 0, "maxItems": 16},
+        "blocks": {"type": "array", "items": {"$ref": "#/$defs/AnalysisBlock"}, "minItems": 0, "maxItems": 8}
+      },
+      "required": [
+        "schema_version",
+        "input_context_id",
+        "event_id",
+        "turn_id",
+        "checkpoint_id",
+        "base_revision",
+        "idempotency_key",
+        "groups",
+        "blocks"
+      ],
+      "additionalProperties": false
+    },
+    "WritableTarget": {
+      "type": "object",
+      "properties": {
+        "policy_id": {"type": "string", "minLength": 1, "maxLength": 240},
+        "instance_id": {"type": "string", "minLength": 1, "maxLength": 240},
+        "field_id": {"type": "string", "minLength": 1, "maxLength": 240},
+        "field_revision": {"type": "integer", "minimum": 0},
+        "value_schema_ref": {"type": "string", "minLength": 3, "maxLength": 240, "pattern": "^.+@[^@]+$"},
+        "allowed_changes": {
+          "type": "array",
+          "items": {"enum": ["set", "set_ref", "clear", "add_item", "remove_item"]},
+          "minItems": 1,
+          "maxItems": 5
+        },
+        "allowed_support": {"type": "array", "items": {"enum": ["reported", "observed", "inferred"]}, "minItems": 1, "maxItems": 3},
+        "merge_rule_ref": {"type": "string", "minLength": 3, "maxLength": 240, "pattern": "^.+@[^@]+$"},
+        "value_schema": {"$ref": "#/$defs/JsonValue"}
+      },
+      "required": [
+        "policy_id",
+        "instance_id",
+        "field_id",
+        "field_revision",
+        "value_schema_ref",
+        "allowed_changes",
+        "allowed_support",
+        "merge_rule_ref",
+        "value_schema"
+      ],
+      "additionalProperties": false
+    },
+    "AnalyzerBlockContract": {
+      "type": "object",
+      "properties": {
+        "block_id": {"type": "string", "minLength": 1, "maxLength": 240},
+        "block_type": {"type": "string", "minLength": 1, "maxLength": 240},
+        "parts": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "part_id": {"type": "string", "minLength": 1, "maxLength": 240},
+              "selection_mode": {"enum": ["apply_all_eligible", "choose_zero_or_one", "choose_exactly_one", "ordered_fallback"]},
+              "selection_policy_ref": {"type": "string", "minLength": 3, "maxLength": 240, "pattern": "^.+@[^@]+$"},
+              "feature_schema_ref": {"type": "string", "minLength": 3, "maxLength": 240, "pattern": "^.+@[^@]+$"},
+              "max_candidates": {"type": "integer", "minimum": 1, "maximum": 8},
+              "feature_schema": {"$ref": "#/$defs/JsonValue"}
+            },
+            "required": [
+              "part_id",
+              "selection_mode",
+              "selection_policy_ref",
+              "feature_schema_ref",
+              "max_candidates",
+              "feature_schema"
+            ],
+            "additionalProperties": false
+          },
+          "minItems": 1,
+          "maxItems": 8
+        }
+      },
+      "required": ["block_id", "block_type", "parts"],
+      "additionalProperties": false
+    },
+    "AnalyzerContext": {
+      "type": "object",
+      "properties": {
+        "schema_version": {"const": "analyzer-context.v2"},
+        "role_id": {"const": "analyzer"},
+        "purpose": {"enum": ["analyze-accepted-event", "analyze-research-result", "summarize-range"]},
+        "event": {"$ref": "#/$defs/AcceptedEvent"},
+        "base_revision": {"type": "integer", "minimum": 0},
+        "context_id": {"type": "string", "minLength": 1, "maxLength": 240},
+        "invocation_id": {"type": "string", "minLength": 1, "maxLength": 240},
+        "checkpoint_id": {"type": "string", "minLength": 1, "maxLength": 240},
+        "identity": {"$ref": "#/$defs/IdentityContext"},
+        "policy": {"$ref": "#/$defs/PolicyContext"},
+        "background": {"$ref": "#/$defs/ConversationBackground"},
+        "continuity": {"$ref": "#/$defs/ContinuityContext"},
+        "memory": {"$ref": "#/$defs/MemoryContext"},
+        "next_steps": {"$ref": "#/$defs/NextStepContext"},
+        "unresolved_choices": {"type": "array", "items": {"$ref": "#/$defs/UnresolvedChoice"}, "minItems": 0, "maxItems": 128},
+        "source_dependencies": {"type": "array", "items": {"$ref": "#/$defs/SourceDependency"}, "minItems": 1, "maxItems": 128},
+        "expires_at": {"type": "string", "minLength": 1, "maxLength": 240},
+        "writable_targets": {"type": "array", "items": {"$ref": "#/$defs/WritableTarget"}, "minItems": 0, "maxItems": 128},
+        "block_contracts": {"type": "array", "items": {"$ref": "#/$defs/AnalyzerBlockContract"}, "minItems": 0, "maxItems": 128},
+        "output_contract": {
+          "type": "object",
+          "properties": {
+            "schema": {"const": "state-delta.v3"},
+            "allowed_operations": {
+              "type": "array",
+              "items": {
+                "enum": [
+                  "change_policy_data",
+                  "propose_claim",
+                  "supersede_claim",
+                  "resolve_question",
+                  "request_research",
+                  "propose_action",
+                  "propose_memory",
+                  "resolve_choice",
+                  "propose_plan_change"
+                ]
+              },
+              "minItems": 1,
+              "maxItems": 9
+            },
+            "max_groups": {"type": "integer", "minimum": 1, "maximum": 16},
+            "max_blocks": {"type": "integer", "minimum": 1, "maximum": 8},
+            "max_parts_per_block": {"type": "integer", "minimum": 1, "maximum": 8},
+            "max_candidates_per_part": {"type": "integer", "minimum": 1, "maximum": 8},
+            "max_operations": {"type": "integer", "minimum": 1, "maximum": 128}
+          },
+          "required": [
+            "schema",
+            "allowed_operations",
+            "max_groups",
+            "max_blocks",
+            "max_parts_per_block",
+            "max_candidates_per_part",
+            "max_operations"
+          ],
+          "additionalProperties": false
+        },
+        "evidence_catalog": {"type": "array", "items": {"$ref": "#/$defs/EvidenceEntry"}, "maxItems": 128},
+        "idempotency_key": {"type": "string", "minLength": 1, "maxLength": 240},
+        "budget": {"$ref": "#/$defs/InvocationBudget"}
+      },
+      "required": [
+        "schema_version",
+        "role_id",
+        "purpose",
+        "event",
+        "base_revision",
+        "context_id",
+        "invocation_id",
+        "checkpoint_id",
+        "identity",
+        "policy",
+        "background",
+        "continuity",
+        "memory",
+        "next_steps",
+        "unresolved_choices",
+        "source_dependencies",
+        "expires_at",
+        "writable_targets",
+        "block_contracts",
+        "output_contract",
+        "evidence_catalog",
+        "idempotency_key",
+        "budget"
+      ],
+      "additionalProperties": false
+    },
+    "ResponseContract": {
+      "type": "object",
+      "properties": {
+        "answer_mode": {"enum": ["answer", "ask", "acknowledge", "refuse", "status", "request_confirmation", "handoff"]},
+        "channel": {"enum": ["text", "voice"]},
+        "language": {"type": "string", "minLength": 1, "maxLength": 240},
+        "response_intents": {"type": "array", "items": {"type": "string", "minLength": 1, "maxLength": 240}, "minItems": 0, "maxItems": 128},
+        "format": {
+          "type": "object",
+          "properties": {
+            "structure": {"enum": ["plain", "steps", "bullets", "structured"]},
+            "schema_ref": {"type": "string", "minLength": 3, "maxLength": 240, "pattern": "^.+@[^@]+$"},
+            "max_characters": {"type": "integer", "minimum": 0},
+            "max_sentences": {"type": "integer", "minimum": 0},
+            "max_questions": {"type": "integer", "minimum": 0},
+            "markdown": {"enum": ["allowed", "forbidden", "required"]},
+            "citation_mode": {"enum": ["none", "when_grounded", "required"]}
+          },
+          "required": ["structure", "markdown", "citation_mode"],
+          "additionalProperties": false
+        },
+        "style": {
+          "type": "object",
+          "properties": {
+            "tone": {
+              "type": "array",
+              "items": {"type": "string", "minLength": 1, "maxLength": 240},
+              "minItems": 0,
+              "maxItems": 128
+            },
+            "directness": {"type": "string", "minLength": 1, "maxLength": 240},
+            "warmth": {"type": "string", "minLength": 1, "maxLength": 240},
+            "jargon": {"type": "string", "minLength": 1, "maxLength": 240},
+            "spoken_pace": {"type": "string", "minLength": 1, "maxLength": 240}
+          },
+          "required": ["tone"],
+          "additionalProperties": false
+        },
+        "required_elements": {"type": "array", "items": {"type": "string", "minLength": 1, "maxLength": 240}, "minItems": 0, "maxItems": 128},
+        "forbidden_elements": {"type": "array", "items": {"type": "string", "minLength": 1, "maxLength": 240}, "minItems": 0, "maxItems": 128},
+        "required_disclosures": {"type": "array", "items": {"type": "string", "minLength": 1, "maxLength": 240}, "minItems": 0, "maxItems": 128},
+        "allowed_response_acts": {"type": "array", "items": {"type": "string", "minLength": 1, "maxLength": 240}, "minItems": 0, "maxItems": 128},
+        "claim_usage": {"const": "admitted_only"},
+        "missing_information": {"enum": ["ask", "state_limitation", "return_context_gap"]}
+      },
+      "required": [
+        "answer_mode",
+        "channel",
+        "language",
+        "response_intents",
+        "format",
+        "style",
+        "required_elements",
+        "forbidden_elements",
+        "required_disclosures",
+        "allowed_response_acts",
+        "claim_usage",
+        "missing_information"
+      ],
+      "additionalProperties": false
+    },
+    "ComposerContext": {
+      "type": "object",
+      "properties": {
+        "schema_version": {"const": "composer-context.v2"},
+        "role_id": {"const": "main-composer"},
+        "purpose": {"enum": ["reply-to-current-user", "research-followup", "status-update"]},
+        "state_revision": {"type": "integer", "minimum": 0},
+        "context_id": {"type": "string", "minLength": 1, "maxLength": 240},
+        "invocation_id": {"type": "string", "minLength": 1, "maxLength": 240},
+        "checkpoint_id": {"type": "string", "minLength": 1, "maxLength": 240},
+        "identity": {"$ref": "#/$defs/IdentityContext"},
+        "policy": {"$ref": "#/$defs/PolicyContext"},
+        "background": {"$ref": "#/$defs/ConversationBackground"},
+        "continuity": {"$ref": "#/$defs/ContinuityContext"},
+        "memory": {"$ref": "#/$defs/MemoryContext"},
+        "next_steps": {"$ref": "#/$defs/NextStepContext"},
+        "unresolved_choices": {"type": "array", "items": {"$ref": "#/$defs/UnresolvedChoice"}, "minItems": 0, "maxItems": 128},
+        "source_dependencies": {"type": "array", "items": {"$ref": "#/$defs/SourceDependency"}, "minItems": 1, "maxItems": 128},
+        "expires_at": {"type": "string", "minLength": 1, "maxLength": 240},
+        "knowledge": {
+          "type": "object",
+          "properties": {
+            "admitted_claims": {
+              "type": "array",
+              "items": {"type": "string", "minLength": 1, "maxLength": 240},
+              "minItems": 0,
+              "maxItems": 128
+            },
+            "evidence_excerpts": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "ref": {"type": "string", "minLength": 1, "maxLength": 240},
+                  "text": {"type": "string", "minLength": 1, "maxLength": 16000},
+                  "support": {"enum": ["reported", "observed", "inferred"]}
+                },
+                "required": ["ref", "text", "support"],
+                "additionalProperties": false
+              },
+              "minItems": 0,
+              "maxItems": 128
+            },
+            "verified_action_receipts": {
+              "type": "array",
+              "items": {"type": "string", "minLength": 1, "maxLength": 240},
+              "minItems": 0,
+              "maxItems": 128
+            },
+            "unknowns": {
+              "type": "array",
+              "items": {"type": "string", "minLength": 1, "maxLength": 240},
+              "minItems": 0,
+              "maxItems": 128
+            }
+          },
+          "required": ["admitted_claims", "evidence_excerpts", "verified_action_receipts", "unknowns"],
+          "additionalProperties": false
+        },
+        "response_contract": {"$ref": "#/$defs/ResponseContract"},
+        "budget": {"$ref": "#/$defs/InvocationBudget"}
+      },
+      "required": [
+        "schema_version",
+        "role_id",
+        "purpose",
+        "state_revision",
+        "context_id",
+        "invocation_id",
+        "checkpoint_id",
+        "identity",
+        "policy",
+        "background",
+        "continuity",
+        "memory",
+        "next_steps",
+        "unresolved_choices",
+        "source_dependencies",
+        "expires_at",
+        "knowledge",
+        "response_contract",
+        "budget"
+      ],
+      "additionalProperties": false
+    },
+    "ProjectionRule": {
+      "type": "object",
+      "properties": {
+        "rule_id": {"type": "string", "minLength": 1, "maxLength": 240},
+        "source": {"type": "string", "minLength": 1, "maxLength": 240},
+        "destination": {"type": "string", "minLength": 1, "maxLength": 240},
+        "transform_ref": {"type": "string", "minLength": 3, "maxLength": 240, "pattern": "^.+@[^@]+$"},
+        "required": {"type": "boolean"},
+        "when_rule_ref": {"type": "string", "minLength": 3, "maxLength": 240, "pattern": "^.+@[^@]+$"},
+        "max_items": {"type": "integer", "minimum": 1, "maximum": 128}
+      },
+      "required": ["rule_id", "source", "destination", "transform_ref", "required", "when_rule_ref"],
+      "additionalProperties": false
+    },
+    "ProjectionPolicy": {
+      "type": "object",
+      "properties": {
+        "binding": {"$ref": "#/$defs/Binding"},
+        "role_id": {"type": "string", "minLength": 1, "maxLength": 240},
+        "target_contract": {"type": "string", "minLength": 1, "maxLength": 240},
+        "history_mode": {"enum": ["recent_window", "summary_plus_recent", "none"]},
+        "include_current_event": {"type": "boolean"},
+        "max_turns": {"type": "integer", "minimum": 1, "maximum": 20},
+        "max_tokens": {"type": "integer", "minimum": 1},
+        "rules": {"type": "array", "items": {"$ref": "#/$defs/ProjectionRule"}, "minItems": 1, "maxItems": 128}
+      },
+      "required": [
+        "binding",
+        "role_id",
+        "target_contract",
+        "history_mode",
+        "include_current_event",
+        "max_turns",
+        "max_tokens",
+        "rules"
+      ],
+      "additionalProperties": false
+    },
+    "PolicyDefinition": {
+      "type": "object",
+      "properties": {
+        "binding": {"$ref": "#/$defs/Binding"},
+        "policy_id": {"type": "string", "minLength": 1, "maxLength": 240},
+        "scope": {"enum": ["turn", "task", "session", "durable"]},
+        "authority_ref": {"type": "string", "minLength": 3, "maxLength": 240, "pattern": "^.+@[^@]+$"},
+        "priority": {"type": "integer", "minimum": 0},
+        "field_registry": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "field_id": {"type": "string", "minLength": 1, "maxLength": 240},
+              "value_schema_ref": {"type": "string", "minLength": 3, "maxLength": 240, "pattern": "^.+@[^@]+$"},
+              "merge_rule_ref": {"type": "string", "minLength": 3, "maxLength": 240, "pattern": "^.+@[^@]+$"}
+            },
+            "required": ["field_id", "value_schema_ref", "merge_rule_ref"],
+            "additionalProperties": false
+          },
+          "minItems": 0,
+          "maxItems": 128
+        },
+        "condition_rule_ref": {"type": "string", "minLength": 3, "maxLength": 240, "pattern": "^.+@[^@]+$"},
+        "effect": {"enum": ["ALLOW", "DENY", "REQUIRE_INPUT", "REQUIRE_CONFIRMATION", "REDACT", "DEFER"]},
+        "depends_on_policy_refs": {"type": "array", "items": {"type": "string", "minLength": 1, "maxLength": 240}, "minItems": 0, "maxItems": 128},
+        "completion_rule_ref": {"type": "string", "minLength": 3, "maxLength": 240, "pattern": "^.+@[^@]+$"},
+        "invalidation_rule_ref": {"type": "string", "minLength": 3, "maxLength": 240, "pattern": "^.+@[^@]+$"}
+      },
+      "required": [
+        "binding",
+        "policy_id",
+        "scope",
+        "authority_ref",
+        "priority",
+        "field_registry",
+        "condition_rule_ref",
+        "effect",
+        "depends_on_policy_refs",
+        "completion_rule_ref",
+        "invalidation_rule_ref"
+      ],
+      "additionalProperties": false
+    },
+    "PolicyEvaluation": {
+      "type": "object",
+      "properties": {
+        "binding": {"$ref": "#/$defs/Binding"},
+        "definition_binding": {"$ref": "#/$defs/Binding"},
+        "instance_ref": {"type": "string", "minLength": 1, "maxLength": 240},
+        "state_revision": {"type": "integer", "minimum": 0},
+        "effect": {"enum": ["ALLOW", "DENY", "REQUIRE_INPUT", "REQUIRE_CONFIRMATION", "REDACT", "DEFER"]},
+        "obligations": {"type": "array", "items": {"type": "string", "minLength": 1, "maxLength": 240}, "minItems": 0, "maxItems": 128},
+        "reason_refs": {"type": "array", "items": {"type": "string", "minLength": 1, "maxLength": 240}, "minItems": 0, "maxItems": 128},
+        "dependencies": {"type": "array", "items": {"$ref": "#/$defs/SourceDependency"}, "minItems": 1, "maxItems": 128}
+      },
+      "required": [
+        "binding",
+        "definition_binding",
+        "instance_ref",
+        "state_revision",
+        "effect",
+        "obligations",
+        "reason_refs",
+        "dependencies"
+      ],
+      "additionalProperties": false
+    },
+    "AppliedChangeSet": {
+      "type": "object",
+      "properties": {
+        "schema_version": {"const": "applied-change-set.v1"},
+        "input_context_id": {"type": "string", "minLength": 1, "maxLength": 240},
+        "event_id": {"type": "string", "minLength": 1, "maxLength": 240},
+        "status": {"enum": ["APPLIED", "PARTIAL", "NOOP", "REJECTED"]},
+        "before_revision": {"type": "integer", "minimum": 0},
+        "after_revision": {"type": "integer", "minimum": 0},
+        "transaction_ref": {"type": "string", "minLength": 1, "maxLength": 240},
+        "semantic_changed": {"type": "boolean"},
+        "group_outcomes": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "group_id": {"type": "string", "minLength": 1, "maxLength": 240},
+              "status": {"enum": ["applied", "noop", "rejected", "skipped"]},
+              "operation_refs": {
+                "type": "array",
+                "items": {"type": "string", "minLength": 1, "maxLength": 240},
+                "minItems": 0,
+                "maxItems": 128
+              },
+              "reason_refs": {
+                "type": "array",
+                "items": {"type": "string", "minLength": 1, "maxLength": 240},
+                "minItems": 0,
+                "maxItems": 128
+              }
+            },
+            "required": ["group_id", "status", "operation_refs", "reason_refs"],
+            "additionalProperties": false
+          },
+          "minItems": 0,
+          "maxItems": 128
+        },
+        "selection_outcomes": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "block_id": {"type": "string", "minLength": 1, "maxLength": 240},
+              "part_id": {"type": "string", "minLength": 1, "maxLength": 240},
+              "selected_candidate_refs": {
+                "type": "array",
+                "items": {"type": "string", "minLength": 1, "maxLength": 240},
+                "minItems": 0,
+                "maxItems": 128
+              },
+              "deferred_candidate_refs": {
+                "type": "array",
+                "items": {"type": "string", "minLength": 1, "maxLength": 240},
+                "minItems": 0,
+                "maxItems": 128
+              },
+              "choice_ref": {"type": "string", "minLength": 1, "maxLength": 240}
+            },
+            "required": ["block_id", "part_id", "selected_candidate_refs", "deferred_candidate_refs"],
+            "additionalProperties": false
+          },
+          "minItems": 0,
+          "maxItems": 128
+        },
+        "record_changes": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "record_ref": {"type": "string", "minLength": 1, "maxLength": 240},
+              "before_revision": {"type": "integer", "minimum": 0},
+              "after_revision": {"type": "integer", "minimum": 0}
+            },
+            "required": ["record_ref", "before_revision", "after_revision"],
+            "additionalProperties": false
+          },
+          "minItems": 0,
+          "maxItems": 128
+        },
+        "invalidated_refs": {"type": "array", "items": {"type": "string", "minLength": 1, "maxLength": 240}, "minItems": 0, "maxItems": 128},
+        "dispatch_intent_refs": {"type": "array", "items": {"type": "string", "minLength": 1, "maxLength": 240}, "minItems": 0, "maxItems": 128},
+        "checkpoint_ref": {"type": "string", "minLength": 1, "maxLength": 240}
+      },
+      "required": [
+        "schema_version",
+        "input_context_id",
+        "event_id",
+        "status",
+        "before_revision",
+        "after_revision",
+        "transaction_ref",
+        "semantic_changed",
+        "group_outcomes",
+        "selection_outcomes",
+        "record_changes",
+        "invalidated_refs",
+        "dispatch_intent_refs",
+        "checkpoint_ref"
+      ],
+      "additionalProperties": false
+    },
+    "ResearchRequest": {
+      "type": "object",
+      "properties": {
+        "schema_version": {"const": "research-request.v1"},
+        "request_ref": {"type": "string", "minLength": 1, "maxLength": 240},
+        "parent_event_ref": {"type": "string", "minLength": 1, "maxLength": 240},
+        "turn_ref": {"type": "string", "minLength": 1, "maxLength": 240},
+        "state_revision": {"type": "integer", "minimum": 0},
+        "gap_ref": {"type": "string", "minLength": 1, "maxLength": 240},
+        "query": {"type": "string", "minLength": 1, "maxLength": 16000},
+        "sources": {"type": "array", "items": {"enum": ["web", "kb"]}, "minItems": 1, "maxItems": 2},
+        "authorization_binding": {"$ref": "#/$defs/Binding"},
+        "acl_filter_ref": {"type": "string", "minLength": 3, "maxLength": 240, "pattern": "^.+@[^@]+$"},
+        "max_calls": {"type": "integer", "minimum": 1},
+        "max_tokens": {"type": "integer", "minimum": 1},
+        "deadline": {"type": "string", "minLength": 1, "maxLength": 240},
+        "cancellation_ref": {"type": "string", "minLength": 1, "maxLength": 240},
+        "dedupe_key": {"type": "string", "minLength": 1, "maxLength": 240},
+        "response_dependency": {"enum": ["blocking", "nonblocking"]}
+      },
+      "required": [
+        "schema_version",
+        "request_ref",
+        "parent_event_ref",
+        "turn_ref",
+        "state_revision",
+        "gap_ref",
+        "query",
+        "sources",
+        "authorization_binding",
+        "acl_filter_ref",
+        "max_calls",
+        "max_tokens",
+        "deadline",
+        "cancellation_ref",
+        "dedupe_key",
+        "response_dependency"
+      ],
+      "additionalProperties": false
+    },
+    "ResearchResult": {
+      "type": "object",
+      "properties": {
+        "schema_version": {"const": "research-result.v1"},
+        "request_ref": {"type": "string", "minLength": 1, "maxLength": 240},
+        "status": {"enum": ["COMPLETED", "NO_EVIDENCE", "PARTIAL", "FAILED", "TIMED_OUT", "CANCELLED"]},
+        "evidence": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "ref": {"type": "string", "minLength": 1, "maxLength": 240},
+              "locator": {"type": "string", "minLength": 1, "maxLength": 16000},
+              "digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+              "excerpt": {"type": "string", "minLength": 1, "maxLength": 16000},
+              "retrieved_at": {"type": "string", "minLength": 1, "maxLength": 240}
+            },
+            "required": ["ref", "locator", "digest", "excerpt", "retrieved_at"],
+            "additionalProperties": false
+          },
+          "minItems": 0,
+          "maxItems": 128
+        },
+        "limitations": {"type": "array", "items": {"type": "string", "minLength": 1, "maxLength": 240}, "minItems": 0, "maxItems": 128}
+      },
+      "required": ["schema_version", "request_ref", "status", "evidence", "limitations"],
+      "additionalProperties": false
+    },
+    "ResponseCandidate": {
+      "type": "object",
+      "properties": {
+        "schema_version": {"const": "response-candidate.v1"},
+        "context_id": {"type": "string", "minLength": 1, "maxLength": 240},
+        "response_act": {"type": "string", "minLength": 1, "maxLength": 240},
+        "text": {"type": "string", "minLength": 1, "maxLength": 16000},
+        "spoken_text": {"type": "string", "minLength": 1, "maxLength": 16000},
+        "claim_refs": {"type": "array", "items": {"type": "string", "minLength": 1, "maxLength": 240}, "minItems": 0, "maxItems": 128}
+      },
+      "required": ["schema_version", "context_id", "response_act", "text", "claim_refs"],
+      "additionalProperties": false
+    },
+    "VoiceContext": {
+      "type": "object",
+      "properties": {
+        "schema_version": {"const": "voice-context.v1"},
+        "response_ref": {"type": "string", "minLength": 1, "maxLength": 240},
+        "response_revision": {"type": "integer", "minimum": 0},
+        "canonical_digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+        "spoken_text": {"type": "string", "minLength": 1, "maxLength": 16000},
+        "language": {"type": "string", "minLength": 1, "maxLength": 240},
+        "delivery_epoch": {"type": "integer", "minimum": 0},
+        "pronunciation_rule_ref": {"type": "string", "minLength": 3, "maxLength": 240, "pattern": "^.+@[^@]+$"},
+        "pace": {"enum": ["normal", "unhurried", "brisk"]},
+        "expires_at": {"type": "string", "minLength": 1, "maxLength": 240}
+      },
+      "required": [
+        "schema_version",
+        "response_ref",
+        "response_revision",
+        "canonical_digest",
+        "spoken_text",
+        "language",
+        "delivery_epoch",
+        "pronunciation_rule_ref",
+        "pace",
+        "expires_at"
+      ],
+      "additionalProperties": false
+    },
+    "PolicyData": {
+      "type": "object",
+      "properties": {
+        "instance_ref": {"type": "string", "minLength": 1, "maxLength": 240},
+        "policy_id": {"type": "string", "minLength": 1, "maxLength": 240},
+        "definition_binding": {"$ref": "#/$defs/Binding"},
+        "subject_ref": {"type": "string", "minLength": 1, "maxLength": 240},
+        "scope": {"enum": ["turn", "task", "session", "durable"]},
+        "revision": {"type": "integer", "minimum": 0},
+        "collection_status": {"enum": ["empty", "partial", "ready", "conflicted"]},
+        "fields": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "field_id": {"type": "string", "minLength": 1, "maxLength": 240},
+              "field_revision": {"type": "integer", "minimum": 0},
+              "value_or_ref": {"$ref": "#/$defs/JsonValue"},
+              "support": {"enum": ["reported", "observed", "inferred"]},
+              "lifecycle": {"enum": ["present", "cleared", "conflicted", "expired"]},
+              "evidence_refs": {"type": "array", "items": {"type": "string", "minLength": 1, "maxLength": 240}, "maxItems": 128},
+              "last_changed_event": {"type": "string", "minLength": 1, "maxLength": 240}
+            },
+            "required": [
+              "field_id",
+              "field_revision",
+              "value_or_ref",
+              "support",
+              "lifecycle",
+              "evidence_refs",
+              "last_changed_event"
+            ],
+            "additionalProperties": false
+          },
+          "maxItems": 128
+        }
+      },
+      "required": [
+        "instance_ref",
+        "policy_id",
+        "definition_binding",
+        "subject_ref",
+        "scope",
+        "revision",
+        "collection_status",
+        "fields"
+      ],
+      "additionalProperties": false
+    },
+    "EvidenceEntry": {
+      "type": "object",
+      "properties": {
+        "ref": {"type": "string", "minLength": 1, "maxLength": 240},
+        "text": {"type": "string", "minLength": 1, "maxLength": 16000},
+        "source_binding": {"$ref": "#/$defs/Binding"}
+      },
+      "required": ["ref", "text", "source_binding"],
+      "additionalProperties": false
+    },
+    "ExecutionCommand": {
+      "type": "object",
+      "properties": {
+        "schema_version": {"const": "execution-command.v1"},
+        "command_ref": {"type": "string", "minLength": 1, "maxLength": 240},
+        "step_ref": {"type": "string", "minLength": 1, "maxLength": 240},
+        "action_contract_ref": {"type": "string", "pattern": "^.+@[^@]+$"},
+        "arguments": {"$ref": "#/$defs/JsonValue"},
+        "authorization_binding": {"$ref": "#/$defs/Binding"},
+        "confirmation_refs": {"type": "array", "items": {"type": "string", "minLength": 1, "maxLength": 240}, "maxItems": 128},
+        "idempotency_key": {"type": "string", "minLength": 1, "maxLength": 240},
+        "deadline": {"type": "string", "minLength": 1, "maxLength": 240},
+        "cancellation_ref": {"type": "string", "minLength": 1, "maxLength": 240}
+      },
+      "required": [
+        "schema_version",
+        "command_ref",
+        "step_ref",
+        "action_contract_ref",
+        "arguments",
+        "authorization_binding",
+        "confirmation_refs",
+        "idempotency_key",
+        "deadline",
+        "cancellation_ref"
+      ],
+      "additionalProperties": false
+    },
+    "ExecutionReceipt": {
+      "type": "object",
+      "properties": {
+        "schema_version": {"const": "execution-receipt.v1"},
+        "command_ref": {"type": "string", "minLength": 1, "maxLength": 240},
+        "attempt_ref": {"type": "string", "minLength": 1, "maxLength": 240},
+        "status": {"enum": ["completed", "failed", "unknown_outcome", "cancelled"]},
+        "provider_receipt_refs": {"type": "array", "items": {"type": "string", "minLength": 1, "maxLength": 240}, "maxItems": 128},
+        "evidence_refs": {"type": "array", "items": {"type": "string", "minLength": 1, "maxLength": 240}, "maxItems": 128},
+        "retry_disposition": {"enum": ["forbidden", "reconcile_first", "new_attempt_allowed"]},
+        "observed_at": {"type": "string", "minLength": 1, "maxLength": 240}
+      },
+      "required": [
+        "schema_version",
+        "command_ref",
+        "attempt_ref",
+        "status",
+        "provider_receipt_refs",
+        "evidence_refs",
+        "retry_disposition",
+        "observed_at"
+      ],
+      "additionalProperties": false
+    },
+    "CanonicalResponse": {
+      "type": "object",
+      "properties": {
+        "schema_version": {"const": "canonical-response.v1"},
+        "response_ref": {"type": "string", "minLength": 1, "maxLength": 240},
+        "turn_ref": {"type": "string", "minLength": 1, "maxLength": 240},
+        "revision": {"type": "integer", "minimum": 0},
+        "context_id": {"type": "string", "minLength": 1, "maxLength": 240},
+        "text": {"type": "string", "minLength": 1, "maxLength": 16000},
+        "spoken_text": {"type": "string", "minLength": 1, "maxLength": 16000},
+        "digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+        "validation_receipt_ref": {"type": "string", "minLength": 1, "maxLength": 240},
+        "source_dependencies": {"type": "array", "items": {"$ref": "#/$defs/SourceDependency"}, "minItems": 1, "maxItems": 128}
+      },
+      "required": [
+        "schema_version",
+        "response_ref",
+        "turn_ref",
+        "revision",
+        "context_id",
+        "text",
+        "digest",
+        "validation_receipt_ref",
+        "source_dependencies"
+      ],
+      "additionalProperties": false
+    },
+    "TurnDecision": {
+      "type": "object",
+      "properties": {
+        "schema_version": {"const": "turn-decision.v1"},
+        "turn_ref": {"type": "string", "minLength": 1, "maxLength": 240},
+        "state_revision": {"type": "integer", "minimum": 0},
+        "route": {"enum": ["compose", "wait_for_research", "request_input", "dispatch_action", "status", "stop"]},
+        "policy_evaluation_refs": {"type": "array", "items": {"type": "string", "minLength": 1, "maxLength": 240}, "maxItems": 128},
+        "blocking_work_refs": {"type": "array", "items": {"type": "string", "minLength": 1, "maxLength": 240}, "maxItems": 128},
+        "eligible_invocation_refs": {"type": "array", "items": {"type": "string", "minLength": 1, "maxLength": 240}, "maxItems": 128},
+        "reason_refs": {"type": "array", "items": {"type": "string", "minLength": 1, "maxLength": 240}, "maxItems": 128}
+      },
+      "required": [
+        "schema_version",
+        "turn_ref",
+        "state_revision",
+        "route",
+        "policy_evaluation_refs",
+        "blocking_work_refs",
+        "eligible_invocation_refs",
+        "reason_refs"
+      ],
+      "additionalProperties": false
+    },
+    "PolicyFieldChange": {
+      "type": "object",
+      "properties": {
+        "op": {"const": "change_policy_data"},
+        "op_id": {"type": "string", "minLength": 1, "maxLength": 240},
+        "policy_id": {"type": "string", "minLength": 1, "maxLength": 240},
+        "instance_id": {"type": "string", "minLength": 1, "maxLength": 240},
+        "field_id": {"type": "string", "minLength": 1, "maxLength": 240},
+        "expected_field_revision": {"type": "integer", "minimum": 0},
+        "change": {"$ref": "#/$defs/FieldChange"},
+        "support": {"enum": ["reported", "observed", "inferred"]},
+        "evidence_refs": {"type": "array", "items": {"type": "string", "minLength": 1, "maxLength": 240}, "minItems": 1, "maxItems": 128}
+      },
+      "required": [
+        "op",
+        "op_id",
+        "policy_id",
+        "instance_id",
+        "field_id",
+        "expected_field_revision",
+        "change",
+        "support",
+        "evidence_refs"
+      ],
+      "additionalProperties": false
+    },
+    "InvocationBudget": {
+      "type": "object",
+      "properties": {
+        "max_input_tokens": {"type": "integer", "minimum": 1, "maximum": 1000000},
+        "max_output_tokens": {"type": "integer", "minimum": 1, "maximum": 1000000},
+        "remaining_task_model_calls": {"type": "integer", "minimum": 1, "maximum": 1000000},
+        "remaining_task_milliseconds": {"type": "integer", "minimum": 1, "maximum": 1000000}
+      },
+      "required": ["max_input_tokens", "max_output_tokens", "remaining_task_model_calls", "remaining_task_milliseconds"],
+      "additionalProperties": false
+    }
+  }
+}

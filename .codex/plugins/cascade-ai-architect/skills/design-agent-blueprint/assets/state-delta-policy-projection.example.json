@@ -1,0 +1,3350 @@
+{
+  "fixture_kind": "schema-validated-design-fixture",
+  "executable_runtime": false,
+  "description": "Synthetic identities and digests. Full reference wire envelopes; no model, database or provider execution. Rule references require target implementations.",
+  "event": {
+    "event_id": "user-message-1",
+    "turn_id": "user-turn-1",
+    "sequence": 1,
+    "finalized": true,
+    "text": "Я Олена. Я хвилююся. Поясни по одному кроку, без пошуку.",
+    "speaker_ref": "user-example",
+    "kind": "user_message",
+    "source_refs": ["user-message-1/name", "user-message-1/concern", "user-message-1/format"]
+  },
+  "evidence": [
+    {
+      "ref": "user-message-1/name",
+      "event_id": "user-message-1",
+      "exact_quote": "Я Олена."
+    },
+    {
+      "ref": "user-message-1/concern",
+      "event_id": "user-message-1",
+      "exact_quote": "Я хвилююся."
+    },
+    {
+      "ref": "user-message-1/format",
+      "event_id": "user-message-1",
+      "exact_quote": "Поясни по одному кроку, без пошуку."
+    }
+  ],
+  "definition_excerpts": [
+    {
+      "policy_id": "conversation-identity",
+      "version": 1,
+      "instance_id": "identity-current-user",
+      "scope": "session",
+      "writable_fields": {
+        "preferred_name": {
+          "type": "string",
+          "maxLength": 80,
+          "allowed_changes": ["set", "clear"],
+          "allowed_support": ["reported"]
+        }
+      },
+      "ready_when": "preferred_name is present"
+    },
+    {
+      "policy_id": "response-style",
+      "version": 1,
+      "instance_id": "response-style-current-turn",
+      "scope": "turn",
+      "writable_fields": {
+        "emotion_observation": {
+          "type": "string",
+          "enum": ["concern"],
+          "allowed_changes": ["set", "clear"],
+          "allowed_support": ["reported", "inferred"]
+        },
+        "requested_format": {
+          "type": "string",
+          "enum": ["one_step_at_a_time"],
+          "allowed_changes": ["set", "clear"],
+          "allowed_support": ["reported"]
+        }
+      },
+      "ready_when": "both fields are present",
+      "evaluation_mapping": {
+        "concern": "acknowledge_concern",
+        "one_step_at_a_time": "one_step_at_a_time"
+      },
+      "mandatory_constraint": "preserve_uncertainty"
+    }
+  ],
+  "state_before": {
+    "state_revision": 0,
+    "policy_data": {
+      "identity-current-user": {
+        "policy_id": "conversation-identity",
+        "fields": {},
+        "collection_status": "empty"
+      },
+      "response-style-current-turn": {
+        "policy_id": "response-style",
+        "fields": {},
+        "collection_status": "empty"
+      }
+    },
+    "policy_evaluations": {},
+    "memory": {
+      "revision": 0,
+      "recent_window_summaries": [],
+      "task_summaries": [],
+      "durable_notes": []
+    },
+    "pending_work": [],
+    "task_plans": {
+      "reply-to-current-user": {
+        "plan_revision": 0,
+        "steps": []
+      }
+    },
+    "unresolved_choices": []
+  },
+  "analyzer_delta": {
+    "schema_version": "state-delta.v3",
+    "input_context_id": "analyzer-input-1",
+    "event_id": "user-message-1",
+    "turn_id": "user-turn-1",
+    "checkpoint_id": "checkpoint-1",
+    "base_revision": 0,
+    "idempotency_key": "session-example/user-message-1/analysis-1",
+    "groups": [
+      {
+        "group_id": "update-conversation-identity",
+        "depends_on": [],
+        "operations": [
+          {
+            "op": "change_policy_data",
+            "op_id": "set-preferred-name",
+            "policy_id": "conversation-identity",
+            "instance_id": "identity-current-user",
+            "field_id": "preferred_name",
+            "expected_field_revision": 0,
+            "change": {
+              "kind": "set",
+              "value": "Олена"
+            },
+            "support": "reported",
+            "evidence_refs": ["user-message-1/name"]
+          }
+        ]
+      },
+      {
+        "group_id": "update-current-response-style",
+        "depends_on": [],
+        "operations": [
+          {
+            "op": "change_policy_data",
+            "op_id": "record-current-concern",
+            "policy_id": "response-style",
+            "instance_id": "response-style-current-turn",
+            "field_id": "emotion_observation",
+            "expected_field_revision": 0,
+            "change": {
+              "kind": "set",
+              "value": "concern"
+            },
+            "support": "reported",
+            "evidence_refs": ["user-message-1/concern"]
+          },
+          {
+            "op": "change_policy_data",
+            "op_id": "set-requested-format",
+            "policy_id": "response-style",
+            "instance_id": "response-style-current-turn",
+            "field_id": "requested_format",
+            "expected_field_revision": 0,
+            "change": {
+              "kind": "set",
+              "value": "one_step_at_a_time"
+            },
+            "support": "reported",
+            "evidence_refs": ["user-message-1/format"]
+          }
+        ]
+      }
+    ],
+    "blocks": []
+  },
+  "expected_state_after": {
+    "state_revision": 1,
+    "policy_data": {
+      "identity-current-user": {
+        "policy_id": "conversation-identity",
+        "collection_status": "ready",
+        "fields": {
+          "preferred_name": {
+            "value": "Олена",
+            "field_revision": 1,
+            "support": "reported",
+            "lifecycle": "present",
+            "evidence_refs": ["user-message-1/name"],
+            "last_changed_event": "user-message-1"
+          }
+        }
+      },
+      "response-style-current-turn": {
+        "policy_id": "response-style",
+        "collection_status": "ready",
+        "fields": {
+          "emotion_observation": {
+            "value": "concern",
+            "field_revision": 1,
+            "support": "reported",
+            "lifecycle": "present",
+            "evidence_refs": ["user-message-1/concern"],
+            "last_changed_event": "user-message-1"
+          },
+          "requested_format": {
+            "value": "one_step_at_a_time",
+            "field_revision": 1,
+            "support": "reported",
+            "lifecycle": "present",
+            "evidence_refs": ["user-message-1/format"],
+            "last_changed_event": "user-message-1"
+          }
+        }
+      }
+    },
+    "policy_evaluations": {
+      "response-style-current-turn": {
+        "definition_version": 1,
+        "activation": "active",
+        "response_constraints": ["acknowledge_concern", "one_step_at_a_time", "preserve_uncertainty"],
+        "dependencies": ["response-style-current-turn/emotion_observation@1", "response-style-current-turn/requested_format@1"]
+      }
+    },
+    "memory": {
+      "revision": 0,
+      "recent_window_summaries": [],
+      "task_summaries": [],
+      "durable_notes": []
+    },
+    "pending_work": [],
+    "task_plans": {
+      "reply-to-current-user": {
+        "plan_revision": 0,
+        "steps": []
+      }
+    },
+    "unresolved_choices": []
+  },
+  "noop_case": {
+    "description": "Independent state snapshot with no expiry, turn-scoped data, permission changes or summarization trigger. This is not a continuation of the preceding style example.",
+    "analyzer_delta": {
+      "schema_version": "state-delta.v3",
+      "input_context_id": "analyzer-input-noop",
+      "event_id": "user-message-noop",
+      "turn_id": "user-turn-noop",
+      "checkpoint_id": "checkpoint-noop",
+      "base_revision": 10,
+      "idempotency_key": "session-noop/user-message-noop/analysis-1",
+      "groups": [],
+      "blocks": []
+    },
+    "expected": {
+      "status": "NOOP",
+      "before_revision": 10,
+      "after_revision": 10,
+      "memory_revision_before": 2,
+      "memory_revision_after": 2,
+      "memory_notes_created": 0,
+      "research_jobs_created": 0,
+      "checkpoint_id": "checkpoint-noop"
+    }
+  },
+  "summary_coverage_case": {
+    "description": "Independent example: processing advances without rewriting a valid summary.",
+    "summary": {
+      "summary_id": "summary-example",
+      "revision": 2,
+      "coverage_through_checkpoint": "checkpoint-4",
+      "covered_through_sequence": 4
+    },
+    "latest_checkpoint": "checkpoint-6",
+    "recent_turn_refs_to_project": ["turn-5", "turn-6"],
+    "summary_revision_after_noop": 2,
+    "coverage_after_noop": "checkpoint-4"
+  },
+  "multi_part_variant_case": {
+    "description": "One Analyzer block returns two parts and two alternatives for each part. Policy cannot safely choose, so it applies none of the candidate groups and asks for clarification.",
+    "event": {
+      "event_id": "ambiguous-message-1",
+      "text": "Можливо, це інструкція або звіт. Мені потрібне коротке пояснення чи список кроків."
+    },
+    "delta": {
+      "schema_version": "state-delta.v3",
+      "input_context_id": "analyzer-input-variants-1",
+      "event_id": "ambiguous-message-1",
+      "turn_id": "ambiguous-turn-1",
+      "checkpoint_id": "ambiguous-checkpoint-1",
+      "base_revision": 20,
+      "idempotency_key": "session-variants/ambiguous-message-1/analysis-1",
+      "groups": [],
+      "blocks": [
+        {
+          "block_id": "understand-document-request",
+          "block_type": "intent-and-response-shape",
+          "source_refs": ["ambiguous-message-1"],
+          "parts": [
+            {
+              "part_id": "document-kind",
+              "selection_mode": "choose_zero_or_one",
+              "selection_policy_ref": "clarify-unresolved-explicit-alternatives@1",
+              "candidates": [
+                {
+                  "candidate_id": "document-is-instruction",
+                  "support": "reported",
+                  "evidence_refs": ["ambiguous-message-1"],
+                  "selection_features": {
+                    "literal_option": "інструкція"
+                  },
+                  "groups": [
+                    {
+                      "group_id": "set-document-instruction",
+                      "depends_on": [],
+                      "operations": [
+                        {
+                          "op": "change_policy_data",
+                          "op_id": "set-document-kind-instruction",
+                          "policy_id": "document-classification",
+                          "instance_id": "document-current",
+                          "field_id": "kind",
+                          "expected_field_revision": 0,
+                          "change": {
+                            "kind": "set",
+                            "value": "instruction"
+                          },
+                          "support": "reported",
+                          "evidence_refs": ["ambiguous-message-1"]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "candidate_id": "document-is-report",
+                  "support": "reported",
+                  "evidence_refs": ["ambiguous-message-1"],
+                  "selection_features": {
+                    "literal_option": "звіт"
+                  },
+                  "groups": [
+                    {
+                      "group_id": "set-document-report",
+                      "depends_on": [],
+                      "operations": [
+                        {
+                          "op": "change_policy_data",
+                          "op_id": "set-document-kind-report",
+                          "policy_id": "document-classification",
+                          "instance_id": "document-current",
+                          "field_id": "kind",
+                          "expected_field_revision": 0,
+                          "change": {
+                            "kind": "set",
+                            "value": "report"
+                          },
+                          "support": "reported",
+                          "evidence_refs": ["ambiguous-message-1"]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "part_id": "response-shape",
+              "selection_mode": "choose_zero_or_one",
+              "selection_policy_ref": "clarify-unresolved-explicit-alternatives@1",
+              "candidates": [
+                {
+                  "candidate_id": "respond-with-short-explanation",
+                  "support": "reported",
+                  "evidence_refs": ["ambiguous-message-1"],
+                  "selection_features": {
+                    "literal_option": "коротке пояснення"
+                  },
+                  "groups": [
+                    {
+                      "group_id": "set-short-explanation",
+                      "depends_on": [],
+                      "operations": [
+                        {
+                          "op": "change_policy_data",
+                          "op_id": "set-response-short-explanation",
+                          "policy_id": "response-style",
+                          "instance_id": "response-style-current-turn",
+                          "field_id": "requested_format",
+                          "expected_field_revision": 0,
+                          "change": {
+                            "kind": "set",
+                            "value": "short_explanation"
+                          },
+                          "support": "reported",
+                          "evidence_refs": ["ambiguous-message-1"]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "candidate_id": "respond-with-steps",
+                  "support": "reported",
+                  "evidence_refs": ["ambiguous-message-1"],
+                  "selection_features": {
+                    "literal_option": "список кроків"
+                  },
+                  "groups": [
+                    {
+                      "group_id": "set-response-steps",
+                      "depends_on": [],
+                      "operations": [
+                        {
+                          "op": "change_policy_data",
+                          "op_id": "set-response-steps",
+                          "policy_id": "response-style",
+                          "instance_id": "response-style-current-turn",
+                          "field_id": "requested_format",
+                          "expected_field_revision": 0,
+                          "change": {
+                            "kind": "set",
+                            "value": "steps"
+                          },
+                          "support": "reported",
+                          "evidence_refs": ["ambiguous-message-1"]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "expected_selection_receipt": {
+      "status": "DEFER",
+      "selected_candidate_ids": [],
+      "deferred_parts": ["understand-document-request/document-kind", "understand-document-request/response-shape"],
+      "candidate_operations_applied": 0,
+      "pending_question_refs": ["clarify-document-kind", "clarify-response-shape"]
+    },
+    "pending_choice": {
+      "choice_ref": "choose-document-kind",
+      "revision": 1,
+      "task_ref": "reply-to-current-user",
+      "status": "pending",
+      "origin_delta_ref": "ambiguous-delta-1",
+      "block_id": "understand-document-request",
+      "part_id": "document-kind",
+      "selection_policy_ref": "clarify-unresolved-explicit-alternatives@1",
+      "base_revision": 20,
+      "candidate_refs": ["document-is-instruction", "document-is-report"],
+      "question_ref": "clarify-document-kind",
+      "question_text": "Do you mean an instruction or a report?",
+      "presented_candidate_refs": ["document-is-instruction", "document-is-report"],
+      "presentation_response_ref": "clarification-response-1",
+      "selected_candidate_refs": [],
+      "evidence_refs": ["ambiguous-message-1"],
+      "expires_at": "2026-09-04T12:05:00Z",
+      "candidate_options": [
+        {
+          "candidate_ref": "document-is-instruction",
+          "label": "Instruction"
+        },
+        {
+          "candidate_ref": "document-is-report",
+          "label": "Report"
+        }
+      ]
+    }
+  },
+  "value_schemas": {
+    "preferred-name@1": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 80
+    },
+    "emotion-observation@1": {
+      "enum": ["concern"]
+    },
+    "requested-format@1": {
+      "enum": ["one_step_at_a_time", "short_explanation", "steps"]
+    },
+    "document-kind@1": {
+      "enum": ["instruction", "report"]
+    },
+    "literal-option@1": {
+      "type": "object",
+      "properties": {
+        "literal_option": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "required": ["literal_option"],
+      "additionalProperties": false
+    }
+  },
+  "analyzer_context": {
+    "schema_version": "analyzer-context.v2",
+    "context_id": "analyzer-input-1",
+    "purpose": "analyze-accepted-event",
+    "base_revision": 0,
+    "checkpoint_id": "checkpoint-1",
+    "identity": {
+      "identity_context_id": "identity-context-analyzer-1",
+      "mode": "minimal",
+      "requested_identity_subject_refs": [],
+      "authenticated_scope_ref": "auth-scope-example",
+      "session_ref": "session-example",
+      "turn_ref": "user-turn-1",
+      "channel": "text",
+      "actor_ref": "user-example",
+      "actor_type": "user",
+      "role_refs": ["conversation-participant"],
+      "participant_refs": [
+        {
+          "participant_ref": "user-example",
+          "relation": "current-speaker"
+        }
+      ],
+      "projected_profile": [],
+      "issued_at": "2026-09-04T12:00:00Z",
+      "expires_at": "2026-09-04T12:05:00Z",
+      "activation_rule_ref": "minimal-identity@1",
+      "agent_identity": {
+        "binding": {
+          "ref": "support-guide@1",
+          "digest": "sha256:ba072a6bc8485b338ebe796e72f61981813dc1f4673f3ee05a83afca03d346f6"
+        },
+        "agent_ref": "support-guide",
+        "display_name": "Support Guide",
+        "mission": "Explain admitted information and ask about missing task context.",
+        "capabilities": ["explain", "clarify"],
+        "limitations": ["cannot-execute-actions"],
+        "approved_self_description": "I am an assistant that explains information and helps clarify the next step.",
+        "disclosure_policy_ref": "agent-introduction@1"
+      }
+    },
+    "policy": {
+      "policy_context_id": "policy-context-analyzer-1",
+      "definition_bindings": [
+        {
+          "ref": "conversation-identity@1",
+          "digest": "sha256:be967495291a1d44857f60685864ef56ae4827e5edb6d976fcb44657c74b4862"
+        },
+        {
+          "ref": "response-style@1",
+          "digest": "sha256:f5ca371a00529b08738d8bd69608dd76784bcf4283a405bbaa1c3a857687ca12"
+        }
+      ],
+      "evaluation_bindings": [],
+      "projection_binding": {
+        "ref": "analyzer-default@2",
+        "digest": "sha256:9af90ca5a554f02032aa9c2997e6998c3409343fc80642a150a28d24f23ca424"
+      },
+      "selected_policy_data": [],
+      "obligations": ["ground-every-change-in-current-event"],
+      "allowed_acts": ["propose-state-delta"],
+      "required_confirmations": [],
+      "restrictions": ["no-response-prose", "no-policy-definition-edits", "no-direct-research"],
+      "limitations": [],
+      "issued_at": "2026-09-04T12:00:00Z",
+      "expires_at": "2026-09-04T12:05:00Z"
+    },
+    "background": {
+      "current_goal": "reply-to-current-user",
+      "interaction_phase": "understand-current-message",
+      "active_entity_refs": [],
+      "relevant_claim_refs": [],
+      "pending_question_refs": [],
+      "omitted_categories": [],
+      "limitations": ["first accepted message; no earlier authorized history"]
+    },
+    "continuity": {
+      "window": {
+        "turn_limit": 20,
+        "includes_current_event": false,
+        "omitted_older_turn_count": 0
+      },
+      "recent_memory": {
+        "status": "empty",
+        "source_turn_refs": [],
+        "fact_refs": [],
+        "decision_refs": [],
+        "unresolved_question_refs": [],
+        "preference_refs": [],
+        "invalidation_refs": []
+      },
+      "formatted_history": [],
+      "formatting_profile_ref": "compact-dialogue@1",
+      "limitations": ["first accepted message; no prior continuity"]
+    },
+    "next_steps": {
+      "completeness": "complete_for_authorized_task_projection",
+      "steps": [],
+      "omitted_step_refs": [],
+      "limitations": [],
+      "task_ref": "reply-to-current-user",
+      "plan_revision": 0
+    },
+    "writable_targets": [
+      {
+        "policy_id": "conversation-identity",
+        "instance_id": "identity-current-user",
+        "field_id": "preferred_name",
+        "field_revision": 0,
+        "value_schema_ref": "preferred-name@1",
+        "allowed_changes": ["set", "clear"],
+        "allowed_support": ["reported"],
+        "merge_rule_ref": "replace-after-admission@1",
+        "value_schema": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80
+        }
+      },
+      {
+        "policy_id": "response-style",
+        "instance_id": "response-style-current-turn",
+        "field_id": "emotion_observation",
+        "field_revision": 0,
+        "value_schema_ref": "emotion-observation@1",
+        "allowed_changes": ["set", "clear"],
+        "allowed_support": ["reported", "inferred"],
+        "merge_rule_ref": "replace-after-admission@1",
+        "value_schema": {
+          "enum": ["concern"]
+        }
+      },
+      {
+        "policy_id": "response-style",
+        "instance_id": "response-style-current-turn",
+        "field_id": "requested_format",
+        "field_revision": 0,
+        "value_schema_ref": "requested-format@1",
+        "allowed_changes": ["set", "clear"],
+        "allowed_support": ["reported"],
+        "merge_rule_ref": "replace-after-admission@1",
+        "value_schema": {
+          "enum": ["one_step_at_a_time", "short_explanation", "steps"]
+        }
+      }
+    ],
+    "block_contracts": [],
+    "output_contract": {
+      "schema": "state-delta.v3",
+      "max_groups": 8,
+      "max_blocks": 6,
+      "max_parts_per_block": 6,
+      "max_candidates_per_part": 4,
+      "max_operations": 24,
+      "allowed_operations": ["change_policy_data", "propose_claim", "supersede_claim", "resolve_question", "request_research", "propose_action", "propose_memory", "resolve_choice", "propose_plan_change"]
+    },
+    "expires_at": "2026-09-04T12:05:00Z",
+    "role_id": "analyzer",
+    "invocation_id": "analyze-turn-1",
+    "memory": {
+      "task_summary": {
+        "status": "empty",
+        "source_turn_refs": [],
+        "fact_refs": [],
+        "decision_refs": [],
+        "unresolved_question_refs": [],
+        "preference_refs": [],
+        "invalidation_refs": []
+      },
+      "relevant_durable_memory": [],
+      "limitations": []
+    },
+    "unresolved_choices": [],
+    "source_dependencies": [
+      {
+        "kind": "state",
+        "binding": {
+          "ref": "session-example@0",
+          "digest": "sha256:8a4e801cf5bdb6b41e535d2c0db0cb98d7bf2223ba363d64dd17eca3aad44c8a"
+        }
+      },
+      {
+        "kind": "identity",
+        "binding": {
+          "ref": "support-guide@1",
+          "digest": "sha256:ba072a6bc8485b338ebe796e72f61981813dc1f4673f3ee05a83afca03d346f6"
+        }
+      },
+      {
+        "kind": "projection",
+        "binding": {
+          "ref": "analyzer-default@2",
+          "digest": "sha256:9af90ca5a554f02032aa9c2997e6998c3409343fc80642a150a28d24f23ca424"
+        }
+      },
+      {
+        "kind": "plan",
+        "binding": {
+          "ref": "reply-to-current-user@0",
+          "digest": "sha256:1e2c75bd6d1e8bed19a11e0b6fae0d58e98dc7037d4895cf89334b31fa71eafb"
+        }
+      },
+      {
+        "kind": "policy",
+        "binding": {
+          "ref": "conversation-identity@1",
+          "digest": "sha256:be967495291a1d44857f60685864ef56ae4827e5edb6d976fcb44657c74b4862"
+        }
+      },
+      {
+        "kind": "policy",
+        "binding": {
+          "ref": "response-style@1",
+          "digest": "sha256:f5ca371a00529b08738d8bd69608dd76784bcf4283a405bbaa1c3a857687ca12"
+        }
+      },
+      {
+        "kind": "event",
+        "binding": {
+          "ref": "user-message-1@1",
+          "digest": "sha256:2d1d457a95a51924595c3d881f5fbfafa00f5f4312e10e581c1711a58568c0d3"
+        }
+      },
+      {
+        "kind": "authorization",
+        "binding": {
+          "ref": "auth-scope-example@1",
+          "digest": "sha256:8056b732f6002efc8a489e72b6e4c09ac4344630a0727203e437575e6eb0138a"
+        }
+      },
+      {
+        "kind": "memory",
+        "binding": {
+          "ref": "session-memory@0",
+          "digest": "sha256:8093db4f2247a73f0cf02dc22ba450e1639da3f9892c83afa58f6754b88b0acb"
+        }
+      },
+      {
+        "kind": "delivery",
+        "binding": {
+          "ref": "session-delivery@0",
+          "digest": "sha256:8bab7c0d7ecfe5acd5ebc8541b71c5bea2c57c0521b789291d7389910ea9cb68"
+        }
+      }
+    ],
+    "event": {
+      "event_id": "user-message-1",
+      "turn_id": "user-turn-1",
+      "sequence": 1,
+      "finalized": true,
+      "text": "Я Олена. Я хвилююся. Поясни по одному кроку, без пошуку.",
+      "speaker_ref": "user-example",
+      "kind": "user_message",
+      "source_refs": ["user-message-1/name", "user-message-1/concern", "user-message-1/format"]
+    },
+    "evidence_catalog": [
+      {
+        "ref": "user-message-1",
+        "text": "Я Олена. Я хвилююся. Поясни по одному кроку, без пошуку.",
+        "source_binding": {
+          "ref": "user-message-1@1",
+          "digest": "sha256:2d1d457a95a51924595c3d881f5fbfafa00f5f4312e10e581c1711a58568c0d3"
+        }
+      },
+      {
+        "ref": "user-message-1/concern",
+        "text": "Я хвилююся.",
+        "source_binding": {
+          "ref": "user-message-1@1",
+          "digest": "sha256:2d1d457a95a51924595c3d881f5fbfafa00f5f4312e10e581c1711a58568c0d3"
+        }
+      },
+      {
+        "ref": "user-message-1/format",
+        "text": "Поясни по одному кроку, без пошуку.",
+        "source_binding": {
+          "ref": "user-message-1@1",
+          "digest": "sha256:2d1d457a95a51924595c3d881f5fbfafa00f5f4312e10e581c1711a58568c0d3"
+        }
+      },
+      {
+        "ref": "user-message-1/name",
+        "text": "Я Олена.",
+        "source_binding": {
+          "ref": "user-message-1@1",
+          "digest": "sha256:2d1d457a95a51924595c3d881f5fbfafa00f5f4312e10e581c1711a58568c0d3"
+        }
+      }
+    ],
+    "idempotency_key": "session-example/user-message-1/analysis-1",
+    "budget": {
+      "max_input_tokens": 6000,
+      "max_output_tokens": 2000,
+      "remaining_task_model_calls": 6,
+      "remaining_task_milliseconds": 30000
+    }
+  },
+  "composer_context": {
+    "context_id": "composer-context-1",
+    "schema_version": "composer-context.v2",
+    "role_id": "main-composer",
+    "purpose": "reply-to-current-user",
+    "invocation_id": "compose-turn-1",
+    "state_revision": 1,
+    "checkpoint_id": "checkpoint-1",
+    "identity": {
+      "identity_context_id": "identity-context-composer-1",
+      "mode": "personalization",
+      "requested_identity_subject_refs": ["user-example"],
+      "authenticated_scope_ref": "auth-scope-example",
+      "session_ref": "session-example",
+      "turn_ref": "user-turn-1",
+      "channel": "text",
+      "actor_ref": "user-example",
+      "actor_type": "user",
+      "role_refs": ["conversation-participant"],
+      "participant_refs": [
+        {
+          "participant_ref": "user-example",
+          "relation": "current-speaker"
+        }
+      ],
+      "locale": "uk-UA",
+      "projected_profile": [
+        {
+          "attribute_ref": "identity-current-user/preferred_name@1",
+          "value_or_ref": "Олена",
+          "support": "reported",
+          "evidence_refs": ["user-message-1/name"],
+          "subject_ref": "user-example"
+        }
+      ],
+      "issued_at": "2026-09-04T12:00:01Z",
+      "expires_at": "2026-09-04T12:05:00Z",
+      "activation_rule_ref": "address-current-user@1",
+      "agent_identity": {
+        "binding": {
+          "ref": "support-guide@1",
+          "digest": "sha256:ba072a6bc8485b338ebe796e72f61981813dc1f4673f3ee05a83afca03d346f6"
+        },
+        "agent_ref": "support-guide",
+        "display_name": "Support Guide",
+        "mission": "Explain admitted information and ask about missing task context.",
+        "capabilities": ["explain", "clarify"],
+        "limitations": ["cannot-execute-actions"],
+        "approved_self_description": "I am an assistant that explains information and helps clarify the next step.",
+        "disclosure_policy_ref": "agent-introduction@1"
+      }
+    },
+    "policy": {
+      "policy_context_id": "policy-context-composer-1",
+      "definition_bindings": [
+        {
+          "ref": "response-style@1",
+          "digest": "sha256:f5ca371a00529b08738d8bd69608dd76784bcf4283a405bbaa1c3a857687ca12"
+        },
+        {
+          "ref": "canonical-response@1",
+          "digest": "sha256:516731b4344b62b70f9ccc667abff7b986976fbb7b7c062ffc370c7bd85adcb4"
+        },
+        {
+          "ref": "conversation-identity@1",
+          "digest": "sha256:be967495291a1d44857f60685864ef56ae4827e5edb6d976fcb44657c74b4862"
+        }
+      ],
+      "evaluation_bindings": [
+        {
+          "ref": "response-style-current-turn@state-revision-1",
+          "digest": "sha256:378a2fb33d3ac09b964aef2af9d2d5b6dbacba895e036a5689e2ad4bb8fa21c4"
+        }
+      ],
+      "projection_binding": {
+        "ref": "main-composer-default@2",
+        "digest": "sha256:0d69fefe25a6a2c9971fc22a28fd7d8ae3708ad77e1de200902723d3f6ac34c8"
+      },
+      "selected_policy_data": [
+        {
+          "instance_ref": "identity-current-user",
+          "field_ref": "preferred_name@1",
+          "value_or_ref": "Олена",
+          "support": "reported",
+          "evidence_refs": ["user-message-1/name"]
+        },
+        {
+          "instance_ref": "response-style-current-turn",
+          "field_ref": "requested_format@1",
+          "value_or_ref": "one_step_at_a_time",
+          "support": "reported",
+          "evidence_refs": ["user-message-1/format"]
+        }
+      ],
+      "obligations": ["preserve_uncertainty"],
+      "allowed_acts": ["answer", "ask"],
+      "required_confirmations": [],
+      "restrictions": ["no-unsupported-reassurance", "no-research-call"],
+      "limitations": [],
+      "issued_at": "2026-09-04T12:00:01Z",
+      "expires_at": "2026-09-04T12:05:00Z"
+    },
+    "background": {
+      "current_goal": "reply-to-current-user",
+      "interaction_phase": "compose-current-answer",
+      "active_entity_refs": [],
+      "relevant_claim_refs": [],
+      "pending_question_refs": [],
+      "omitted_categories": [],
+      "limitations": ["first accepted message; no earlier authorized history"]
+    },
+    "continuity": {
+      "window": {
+        "turn_limit": 20,
+        "first_turn_ref": "user-turn-1",
+        "last_turn_ref": "user-turn-1",
+        "includes_current_event": true,
+        "omitted_older_turn_count": 0
+      },
+      "recent_memory": {
+        "status": "empty",
+        "source_turn_refs": [],
+        "fact_refs": [],
+        "decision_refs": [],
+        "unresolved_question_refs": [],
+        "preference_refs": [],
+        "invalidation_refs": []
+      },
+      "formatted_history": [
+        {
+          "turn_ref": "user-turn-1",
+          "status": "open",
+          "messages": [
+            {
+              "message_ref": "user-message-1",
+              "speaker_ref": "user-example",
+              "role": "user",
+              "text": "Я Олена. Я хвилююся. Поясни по одному кроку, без пошуку.",
+              "source_refs": ["user-message-1"],
+              "delivery_attempts": []
+            }
+          ],
+          "relevant_event_refs": ["user-message-1/name", "user-message-1/concern", "user-message-1/format"]
+        }
+      ],
+      "formatting_profile_ref": "compact-dialogue@1",
+      "limitations": []
+    },
+    "next_steps": {
+      "task_ref": "reply-to-current-user",
+      "completeness": "complete_for_authorized_task_projection",
+      "steps": [],
+      "omitted_step_refs": [],
+      "limitations": [],
+      "plan_revision": 0
+    },
+    "knowledge": {
+      "admitted_claims": [],
+      "evidence_excerpts": [],
+      "verified_action_receipts": [],
+      "unknowns": []
+    },
+    "response_contract": {
+      "answer_mode": "ask",
+      "channel": "text",
+      "language": "uk-UA",
+      "response_intents": ["acknowledge_concern", "one_step_at_a_time"],
+      "format": {
+        "structure": "steps",
+        "max_sentences": 4,
+        "max_questions": 1,
+        "markdown": "allowed",
+        "citation_mode": "none"
+      },
+      "style": {
+        "tone": ["calm", "supportive"],
+        "directness": "clear",
+        "warmth": "moderate",
+        "jargon": "plain-language"
+      },
+      "required_elements": ["ask-what-needs-explanation"],
+      "forbidden_elements": ["unsupported-reassurance", "invented-facts", "research-claim"],
+      "required_disclosures": [],
+      "allowed_response_acts": ["ask"],
+      "claim_usage": "admitted_only",
+      "missing_information": "ask"
+    },
+    "source_dependencies": [
+      {
+        "kind": "state",
+        "binding": {
+          "ref": "session-example@1",
+          "digest": "sha256:47ca1d791a98aa6b57d067f2a0cb6e5247c4c60d889b5bff577ee7fa57fadd42"
+        }
+      },
+      {
+        "kind": "identity",
+        "binding": {
+          "ref": "support-guide@1",
+          "digest": "sha256:ba072a6bc8485b338ebe796e72f61981813dc1f4673f3ee05a83afca03d346f6"
+        }
+      },
+      {
+        "kind": "projection",
+        "binding": {
+          "ref": "main-composer-default@2",
+          "digest": "sha256:0d69fefe25a6a2c9971fc22a28fd7d8ae3708ad77e1de200902723d3f6ac34c8"
+        }
+      },
+      {
+        "kind": "plan",
+        "binding": {
+          "ref": "reply-to-current-user@0",
+          "digest": "sha256:1e2c75bd6d1e8bed19a11e0b6fae0d58e98dc7037d4895cf89334b31fa71eafb"
+        }
+      },
+      {
+        "kind": "policy",
+        "binding": {
+          "ref": "response-style@1",
+          "digest": "sha256:f5ca371a00529b08738d8bd69608dd76784bcf4283a405bbaa1c3a857687ca12"
+        }
+      },
+      {
+        "kind": "policy",
+        "binding": {
+          "ref": "canonical-response@1",
+          "digest": "sha256:516731b4344b62b70f9ccc667abff7b986976fbb7b7c062ffc370c7bd85adcb4"
+        }
+      },
+      {
+        "kind": "policy",
+        "binding": {
+          "ref": "conversation-identity@1",
+          "digest": "sha256:be967495291a1d44857f60685864ef56ae4827e5edb6d976fcb44657c74b4862"
+        }
+      },
+      {
+        "kind": "policy",
+        "binding": {
+          "ref": "response-style-current-turn@state-revision-1",
+          "digest": "sha256:378a2fb33d3ac09b964aef2af9d2d5b6dbacba895e036a5689e2ad4bb8fa21c4"
+        }
+      },
+      {
+        "kind": "event",
+        "binding": {
+          "ref": "user-message-1@1",
+          "digest": "sha256:2d1d457a95a51924595c3d881f5fbfafa00f5f4312e10e581c1711a58568c0d3"
+        }
+      },
+      {
+        "kind": "authorization",
+        "binding": {
+          "ref": "auth-scope-example@1",
+          "digest": "sha256:8056b732f6002efc8a489e72b6e4c09ac4344630a0727203e437575e6eb0138a"
+        }
+      },
+      {
+        "kind": "memory",
+        "binding": {
+          "ref": "session-memory@0",
+          "digest": "sha256:8093db4f2247a73f0cf02dc22ba450e1639da3f9892c83afa58f6754b88b0acb"
+        }
+      },
+      {
+        "kind": "delivery",
+        "binding": {
+          "ref": "session-delivery@0",
+          "digest": "sha256:8bab7c0d7ecfe5acd5ebc8541b71c5bea2c57c0521b789291d7389910ea9cb68"
+        }
+      }
+    ],
+    "expires_at": "2026-09-04T12:05:00Z",
+    "memory": {
+      "task_summary": {
+        "status": "empty",
+        "source_turn_refs": [],
+        "fact_refs": [],
+        "decision_refs": [],
+        "unresolved_question_refs": [],
+        "preference_refs": [],
+        "invalidation_refs": []
+      },
+      "relevant_durable_memory": [],
+      "limitations": []
+    },
+    "unresolved_choices": [],
+    "budget": {
+      "max_input_tokens": 6000,
+      "max_output_tokens": 2000,
+      "remaining_task_model_calls": 6,
+      "remaining_task_milliseconds": 30000
+    }
+  },
+  "projection_policy": {
+    "binding": {
+      "ref": "main-composer-default@2",
+      "digest": "sha256:0d69fefe25a6a2c9971fc22a28fd7d8ae3708ad77e1de200902723d3f6ac34c8"
+    },
+    "role_id": "main-composer",
+    "target_contract": "ComposerContext",
+    "history_mode": "recent_window",
+    "include_current_event": true,
+    "max_turns": 20,
+    "max_tokens": 6000,
+    "rules": [
+      {
+        "rule_id": "current-name",
+        "source": "admitted.identity-profile",
+        "destination": "identity.projected_profile",
+        "transform_ref": "project-approved-profile@1",
+        "required": true,
+        "when_rule_ref": "role-and-purpose-authorized@1"
+      },
+      {
+        "rule_id": "response-intents",
+        "source": "admitted.response-intents",
+        "destination": "response_contract.response_intents",
+        "transform_ref": "approved-enum-list@1",
+        "required": true,
+        "when_rule_ref": "role-and-purpose-authorized@1"
+      },
+      {
+        "rule_id": "obligations",
+        "source": "admitted.obligations",
+        "destination": "policy.obligations",
+        "transform_ref": "approved-enum-list@1",
+        "required": true,
+        "when_rule_ref": "role-and-purpose-authorized@1"
+      },
+      {
+        "rule_id": "recent-turns",
+        "source": "authorized-event-log.recent-turns-with-current-open",
+        "destination": "continuity.formatted_history",
+        "transform_ref": "compact-role-attributed-turns@2",
+        "required": true,
+        "when_rule_ref": "role-and-purpose-authorized@1"
+      },
+      {
+        "rule_id": "recent-memory",
+        "source": "memory.recent-window",
+        "destination": "continuity.recent_memory",
+        "transform_ref": "project-window-memory@1",
+        "required": true,
+        "when_rule_ref": "role-and-purpose-authorized@1"
+      },
+      {
+        "rule_id": "task-memory",
+        "source": "memory.task-summary",
+        "destination": "memory.task_summary",
+        "transform_ref": "project-task-summary@1",
+        "required": true,
+        "when_rule_ref": "role-and-purpose-authorized@1"
+      },
+      {
+        "rule_id": "durable-memory",
+        "source": "memory.relevant-durable",
+        "destination": "memory.relevant_durable_memory",
+        "transform_ref": "project-durable-memory@1",
+        "required": true,
+        "when_rule_ref": "role-and-purpose-authorized@1"
+      },
+      {
+        "rule_id": "current-task-steps",
+        "source": "task-plans.current",
+        "destination": "next_steps",
+        "transform_ref": "project-plan-with-receipts@1",
+        "required": true,
+        "when_rule_ref": "role-and-purpose-authorized@1"
+      }
+    ]
+  },
+  "applied_change_set": {
+    "schema_version": "applied-change-set.v1",
+    "input_context_id": "analyzer-input-1",
+    "event_id": "user-message-1",
+    "status": "APPLIED",
+    "before_revision": 0,
+    "after_revision": 1,
+    "transaction_ref": "transaction-1",
+    "semantic_changed": true,
+    "group_outcomes": [
+      {
+        "group_id": "update-conversation-identity",
+        "status": "applied",
+        "operation_refs": ["set-preferred-name"],
+        "reason_refs": []
+      },
+      {
+        "group_id": "update-current-response-style",
+        "status": "applied",
+        "operation_refs": ["record-current-concern", "set-requested-format"],
+        "reason_refs": []
+      }
+    ],
+    "selection_outcomes": [],
+    "record_changes": [
+      {
+        "record_ref": "identity-current-user/preferred_name",
+        "before_revision": 0,
+        "after_revision": 1
+      },
+      {
+        "record_ref": "response-style-current-turn/emotion_observation",
+        "before_revision": 0,
+        "after_revision": 1
+      },
+      {
+        "record_ref": "response-style-current-turn/requested_format",
+        "before_revision": 0,
+        "after_revision": 1
+      }
+    ],
+    "invalidated_refs": [],
+    "dispatch_intent_refs": ["compose-turn-1"],
+    "checkpoint_ref": "checkpoint-1"
+  },
+  "contract_cases": [
+    {
+      "name": "pending-choice",
+      "contract": "UnresolvedChoice",
+      "value": {
+        "choice_ref": "choose-document-kind",
+        "revision": 1,
+        "task_ref": "reply-to-current-user",
+        "status": "pending",
+        "origin_delta_ref": "ambiguous-delta-1",
+        "block_id": "understand-document-request",
+        "part_id": "document-kind",
+        "selection_policy_ref": "clarify-unresolved-explicit-alternatives@1",
+        "base_revision": 20,
+        "candidate_refs": ["document-is-instruction", "document-is-report"],
+        "question_ref": "clarify-document-kind",
+        "question_text": "Do you mean an instruction or a report?",
+        "presented_candidate_refs": ["document-is-instruction", "document-is-report"],
+        "presentation_response_ref": "clarification-response-1",
+        "selected_candidate_refs": [],
+        "evidence_refs": ["ambiguous-message-1"],
+        "expires_at": "2026-09-04T12:05:00Z",
+        "candidate_options": [
+          {
+            "candidate_ref": "document-is-instruction",
+            "label": "Instruction"
+          },
+          {
+            "candidate_ref": "document-is-report",
+            "label": "Report"
+          }
+        ]
+      }
+    },
+    {
+      "name": "resolved-choice",
+      "contract": "UnresolvedChoice",
+      "value": {
+        "choice_ref": "choose-document-kind",
+        "revision": 2,
+        "task_ref": "reply-to-current-user",
+        "status": "resolved",
+        "origin_delta_ref": "ambiguous-delta-1",
+        "block_id": "understand-document-request",
+        "part_id": "document-kind",
+        "selection_policy_ref": "clarify-unresolved-explicit-alternatives@1",
+        "base_revision": 20,
+        "candidate_refs": ["document-is-instruction", "document-is-report"],
+        "question_ref": "clarify-document-kind",
+        "question_text": "Do you mean an instruction or a report?",
+        "presented_candidate_refs": ["document-is-instruction", "document-is-report"],
+        "presentation_response_ref": "clarification-response-1",
+        "selected_candidate_refs": ["document-is-report"],
+        "evidence_refs": ["ambiguous-message-1", "clarification-answer-1"],
+        "expires_at": "2026-09-04T12:05:00Z",
+        "candidate_options": [
+          {
+            "candidate_ref": "document-is-instruction",
+            "label": "Instruction"
+          },
+          {
+            "candidate_ref": "document-is-report",
+            "label": "Report"
+          }
+        ]
+      }
+    },
+    {
+      "name": "question-and-wait-plan",
+      "contract": "NextStepContext",
+      "value": {
+        "task_ref": "reply-to-current-user",
+        "plan_revision": 1,
+        "completeness": "complete_for_authorized_task_projection",
+        "current_step_ref": "wait-task",
+        "steps": [
+          {
+            "step_ref": "ask-task",
+            "title": "Ask what needs explanation",
+            "kind": "question",
+            "status": "completed",
+            "owner_ref": "main-composer",
+            "dependency_refs": [],
+            "precondition_refs": [],
+            "required_confirmation_refs": [],
+            "evidence_or_receipt_refs": ["question-delivered-1"],
+            "blocking_reason_refs": []
+          },
+          {
+            "step_ref": "wait-task",
+            "title": "Wait for the user to name the task",
+            "kind": "wait",
+            "status": "in_progress",
+            "owner_ref": "runtime",
+            "dependency_refs": ["ask-task"],
+            "precondition_refs": [],
+            "required_confirmation_refs": [],
+            "evidence_or_receipt_refs": [],
+            "blocking_reason_refs": []
+          }
+        ],
+        "omitted_step_refs": [],
+        "limitations": []
+      }
+    },
+    {
+      "name": "voice-interrupt-and-repeat",
+      "contract": "ContinuityContext",
+      "value": {
+        "window": {
+          "turn_limit": 20,
+          "first_turn_ref": "user-turn-1",
+          "last_turn_ref": "user-turn-1",
+          "includes_current_event": false,
+          "omitted_older_turn_count": 0
+        },
+        "recent_memory": {
+          "status": "empty",
+          "source_turn_refs": [],
+          "fact_refs": [],
+          "decision_refs": [],
+          "unresolved_question_refs": [],
+          "preference_refs": [],
+          "invalidation_refs": []
+        },
+        "formatted_history": [
+          {
+            "turn_ref": "user-turn-1",
+            "status": "closed",
+            "messages": [
+              {
+                "message_ref": "user-message-1",
+                "speaker_ref": "user-example",
+                "role": "user",
+                "text": "Я Олена. Я хвилююся. Поясни по одному кроку, без пошуку.",
+                "source_refs": ["user-message-1"],
+                "delivery_attempts": []
+              },
+              {
+                "message_ref": "response-1",
+                "speaker_ref": "support-guide",
+                "role": "assistant",
+                "text": "What would you like me to explain?",
+                "source_refs": ["canonical-response-1"],
+                "response_revision": 1,
+                "commit_status": "committed",
+                "delivery_attempts": [
+                  {
+                    "attempt_id": "text-1",
+                    "channel": "text",
+                    "delivery_epoch": 0,
+                    "status": "delivered",
+                    "receipt_refs": ["text-receipt-1"]
+                  },
+                  {
+                    "attempt_id": "voice-1",
+                    "channel": "voice",
+                    "delivery_epoch": 1,
+                    "status": "interrupted",
+                    "acknowledged_through_segment": 0,
+                    "receipt_refs": ["interrupt-receipt-1"]
+                  },
+                  {
+                    "attempt_id": "voice-repeat-1",
+                    "channel": "voice",
+                    "delivery_epoch": 2,
+                    "status": "delivered",
+                    "receipt_refs": ["voice-receipt-2"]
+                  }
+                ]
+              }
+            ],
+            "relevant_event_refs": ["user-message-1/name", "user-message-1/concern", "user-message-1/format"]
+          }
+        ],
+        "formatting_profile_ref": "compact-dialogue@1",
+        "limitations": []
+      }
+    },
+    {
+      "name": "older-task-and-durable-memory",
+      "contract": "MemoryContext",
+      "value": {
+        "task_summary": {
+          "status": "available",
+          "source_turn_refs": ["turn-1"],
+          "fact_refs": [],
+          "decision_refs": [],
+          "unresolved_question_refs": [],
+          "preference_refs": ["no-external-search@1"],
+          "invalidation_refs": [],
+          "binding": {
+            "ref": "task-summary@2",
+            "digest": "sha256:ad5982cad5f10ffb3926e5cd386e96d33dbddc09862a61156b86319604ce80e4"
+          },
+          "summary": "The user requested no external search.",
+          "coverage_through_checkpoint": "checkpoint-1"
+        },
+        "relevant_durable_memory": [
+          {
+            "binding": {
+              "ref": "preferred-language@1",
+              "digest": "sha256:58329f02570efd72de7be4dd121bd15d1699655e32f674fce28a146834a0a99e"
+            },
+            "text": "Use Ukrainian.",
+            "evidence_refs": ["user-language-setting@1"],
+            "expires_at": "2027-01-01T00:00:00Z"
+          }
+        ],
+        "limitations": []
+      }
+    },
+    {
+      "name": "policy-triggered-introduction",
+      "contract": "IdentityContext",
+      "value": {
+        "identity_context_id": "identity-context-composer-1",
+        "mode": "introduction",
+        "requested_identity_subject_refs": ["support-guide"],
+        "authenticated_scope_ref": "auth-scope-example",
+        "session_ref": "session-example",
+        "turn_ref": "user-turn-1",
+        "channel": "text",
+        "actor_ref": "user-example",
+        "actor_type": "user",
+        "role_refs": ["conversation-participant"],
+        "participant_refs": [
+          {
+            "participant_ref": "user-example",
+            "relation": "current-speaker"
+          }
+        ],
+        "locale": "uk-UA",
+        "projected_profile": [
+          {
+            "attribute_ref": "identity-current-user/preferred_name@1",
+            "value_or_ref": "Олена",
+            "support": "reported",
+            "evidence_refs": ["user-message-1/name"],
+            "subject_ref": "user-example"
+          }
+        ],
+        "issued_at": "2026-09-04T12:00:01Z",
+        "expires_at": "2026-09-04T12:05:00Z",
+        "activation_rule_ref": "first-contact-disclosure@1",
+        "agent_identity": {
+          "binding": {
+            "ref": "support-guide@1",
+            "digest": "sha256:ba072a6bc8485b338ebe796e72f61981813dc1f4673f3ee05a83afca03d346f6"
+          },
+          "agent_ref": "support-guide",
+          "display_name": "Support Guide",
+          "mission": "Explain admitted information and ask about missing task context.",
+          "capabilities": ["explain", "clarify"],
+          "limitations": ["cannot-execute-actions"],
+          "approved_self_description": "I am an assistant that explains information and helps clarify the next step.",
+          "disclosure_policy_ref": "agent-introduction@1"
+        }
+      }
+    }
+  ],
+  "delta_cases": [
+    {
+      "name": "multi-part-admitted-selection-witness",
+      "context": {
+        "schema_version": "analyzer-context.v2",
+        "context_id": "analyzer-input-variants-1",
+        "purpose": "analyze-accepted-event",
+        "base_revision": 20,
+        "checkpoint_id": "ambiguous-checkpoint-1",
+        "identity": {
+          "identity_context_id": "identity-context-analyzer-1",
+          "mode": "minimal",
+          "requested_identity_subject_refs": [],
+          "authenticated_scope_ref": "auth-scope-example",
+          "session_ref": "session-example",
+          "turn_ref": "ambiguous-turn-1",
+          "channel": "text",
+          "actor_ref": "user-example",
+          "actor_type": "user",
+          "role_refs": ["conversation-participant"],
+          "participant_refs": [
+            {
+              "participant_ref": "user-example",
+              "relation": "current-speaker"
+            }
+          ],
+          "projected_profile": [],
+          "issued_at": "2026-09-04T12:00:00Z",
+          "expires_at": "2026-09-04T12:05:00Z",
+          "activation_rule_ref": "minimal-identity@1",
+          "agent_identity": {
+            "binding": {
+              "ref": "support-guide@1",
+              "digest": "sha256:ba072a6bc8485b338ebe796e72f61981813dc1f4673f3ee05a83afca03d346f6"
+            },
+            "agent_ref": "support-guide",
+            "display_name": "Support Guide",
+            "mission": "Explain admitted information and ask about missing task context.",
+            "capabilities": ["explain", "clarify"],
+            "limitations": ["cannot-execute-actions"],
+            "approved_self_description": "I am an assistant that explains information and helps clarify the next step.",
+            "disclosure_policy_ref": "agent-introduction@1"
+          }
+        },
+        "policy": {
+          "policy_context_id": "policy-context-analyzer-1",
+          "definition_bindings": [
+            {
+              "ref": "conversation-identity@1",
+              "digest": "sha256:be967495291a1d44857f60685864ef56ae4827e5edb6d976fcb44657c74b4862"
+            },
+            {
+              "ref": "response-style@1",
+              "digest": "sha256:f5ca371a00529b08738d8bd69608dd76784bcf4283a405bbaa1c3a857687ca12"
+            }
+          ],
+          "evaluation_bindings": [],
+          "projection_binding": {
+            "ref": "analyzer-default@2",
+            "digest": "sha256:9af90ca5a554f02032aa9c2997e6998c3409343fc80642a150a28d24f23ca424"
+          },
+          "selected_policy_data": [],
+          "obligations": ["ground-every-change-in-current-event"],
+          "allowed_acts": ["propose-state-delta"],
+          "required_confirmations": [],
+          "restrictions": ["no-response-prose", "no-policy-definition-edits", "no-direct-research"],
+          "limitations": [],
+          "issued_at": "2026-09-04T12:00:00Z",
+          "expires_at": "2026-09-04T12:05:00Z"
+        },
+        "background": {
+          "current_goal": "reply-to-current-user",
+          "interaction_phase": "understand-current-message",
+          "active_entity_refs": [],
+          "relevant_claim_refs": [],
+          "pending_question_refs": [],
+          "omitted_categories": [],
+          "limitations": ["first accepted message; no earlier authorized history"]
+        },
+        "continuity": {
+          "window": {
+            "turn_limit": 20,
+            "includes_current_event": false,
+            "omitted_older_turn_count": 0
+          },
+          "recent_memory": {
+            "status": "empty",
+            "source_turn_refs": [],
+            "fact_refs": [],
+            "decision_refs": [],
+            "unresolved_question_refs": [],
+            "preference_refs": [],
+            "invalidation_refs": []
+          },
+          "formatted_history": [],
+          "formatting_profile_ref": "compact-dialogue@1",
+          "limitations": ["first accepted message; no prior continuity"]
+        },
+        "next_steps": {
+          "completeness": "complete_for_authorized_task_projection",
+          "steps": [],
+          "omitted_step_refs": [],
+          "limitations": [],
+          "task_ref": "reply-to-current-user",
+          "plan_revision": 0
+        },
+        "writable_targets": [
+          {
+            "policy_id": "conversation-identity",
+            "instance_id": "identity-current-user",
+            "field_id": "preferred_name",
+            "field_revision": 0,
+            "value_schema_ref": "preferred-name@1",
+            "allowed_changes": ["set", "clear"],
+            "allowed_support": ["reported"],
+            "merge_rule_ref": "replace-after-admission@1",
+            "value_schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 80
+            }
+          },
+          {
+            "policy_id": "response-style",
+            "instance_id": "response-style-current-turn",
+            "field_id": "emotion_observation",
+            "field_revision": 0,
+            "value_schema_ref": "emotion-observation@1",
+            "allowed_changes": ["set", "clear"],
+            "allowed_support": ["reported", "inferred"],
+            "merge_rule_ref": "replace-after-admission@1",
+            "value_schema": {
+              "enum": ["concern"]
+            }
+          },
+          {
+            "policy_id": "response-style",
+            "instance_id": "response-style-current-turn",
+            "field_id": "requested_format",
+            "field_revision": 0,
+            "value_schema_ref": "requested-format@1",
+            "allowed_changes": ["set", "clear"],
+            "allowed_support": ["reported"],
+            "merge_rule_ref": "replace-after-admission@1",
+            "value_schema": {
+              "enum": ["one_step_at_a_time", "short_explanation", "steps"]
+            }
+          },
+          {
+            "policy_id": "document-classification",
+            "instance_id": "document-current",
+            "field_id": "kind",
+            "field_revision": 0,
+            "value_schema_ref": "document-kind@1",
+            "allowed_changes": ["set"],
+            "allowed_support": ["reported"],
+            "merge_rule_ref": "replace-after-admission@1",
+            "value_schema": {
+              "enum": ["instruction", "report"]
+            }
+          }
+        ],
+        "block_contracts": [
+          {
+            "block_id": "understand-document-request",
+            "block_type": "intent-and-response-shape",
+            "parts": [
+              {
+                "part_id": "document-kind",
+                "selection_mode": "choose_zero_or_one",
+                "selection_policy_ref": "clarify-unresolved-explicit-alternatives@1",
+                "feature_schema_ref": "literal-option@1",
+                "max_candidates": 4,
+                "feature_schema": {
+                  "type": "object",
+                  "properties": {
+                    "literal_option": {
+                      "type": "string",
+                      "minLength": 1
+                    }
+                  },
+                  "required": ["literal_option"],
+                  "additionalProperties": false
+                }
+              },
+              {
+                "part_id": "response-shape",
+                "selection_mode": "choose_zero_or_one",
+                "selection_policy_ref": "clarify-unresolved-explicit-alternatives@1",
+                "feature_schema_ref": "literal-option@1",
+                "max_candidates": 4,
+                "feature_schema": {
+                  "type": "object",
+                  "properties": {
+                    "literal_option": {
+                      "type": "string",
+                      "minLength": 1
+                    }
+                  },
+                  "required": ["literal_option"],
+                  "additionalProperties": false
+                }
+              }
+            ]
+          }
+        ],
+        "output_contract": {
+          "schema": "state-delta.v3",
+          "max_groups": 8,
+          "max_blocks": 6,
+          "max_parts_per_block": 6,
+          "max_candidates_per_part": 4,
+          "max_operations": 24,
+          "allowed_operations": ["change_policy_data", "propose_claim", "supersede_claim", "resolve_question", "request_research", "propose_action", "propose_memory", "resolve_choice", "propose_plan_change"]
+        },
+        "expires_at": "2026-09-04T12:05:00Z",
+        "role_id": "analyzer",
+        "invocation_id": "analyze-variants",
+        "memory": {
+          "task_summary": {
+            "status": "empty",
+            "source_turn_refs": [],
+            "fact_refs": [],
+            "decision_refs": [],
+            "unresolved_question_refs": [],
+            "preference_refs": [],
+            "invalidation_refs": []
+          },
+          "relevant_durable_memory": [],
+          "limitations": []
+        },
+        "unresolved_choices": [],
+        "source_dependencies": [
+          {
+            "kind": "state",
+            "binding": {
+              "ref": "session-example@20",
+              "digest": "sha256:eeff80585d3c69ee8b855249e24c21a622c26c2402b112ba7c5fb980e4ec5dab"
+            }
+          },
+          {
+            "kind": "identity",
+            "binding": {
+              "ref": "support-guide@1",
+              "digest": "sha256:ba072a6bc8485b338ebe796e72f61981813dc1f4673f3ee05a83afca03d346f6"
+            }
+          },
+          {
+            "kind": "projection",
+            "binding": {
+              "ref": "analyzer-default@2",
+              "digest": "sha256:9af90ca5a554f02032aa9c2997e6998c3409343fc80642a150a28d24f23ca424"
+            }
+          },
+          {
+            "kind": "plan",
+            "binding": {
+              "ref": "reply-to-current-user@0",
+              "digest": "sha256:1e2c75bd6d1e8bed19a11e0b6fae0d58e98dc7037d4895cf89334b31fa71eafb"
+            }
+          },
+          {
+            "kind": "policy",
+            "binding": {
+              "ref": "conversation-identity@1",
+              "digest": "sha256:be967495291a1d44857f60685864ef56ae4827e5edb6d976fcb44657c74b4862"
+            }
+          },
+          {
+            "kind": "policy",
+            "binding": {
+              "ref": "response-style@1",
+              "digest": "sha256:f5ca371a00529b08738d8bd69608dd76784bcf4283a405bbaa1c3a857687ca12"
+            }
+          },
+          {
+            "kind": "event",
+            "binding": {
+              "ref": "ambiguous-message-1@1",
+              "digest": "sha256:9fc2b24a110d130285f96d1d260f1ba98aa6c0b05fbec6f94086c81bbbc0cbad"
+            }
+          },
+          {
+            "kind": "authorization",
+            "binding": {
+              "ref": "auth-scope-example@1",
+              "digest": "sha256:8056b732f6002efc8a489e72b6e4c09ac4344630a0727203e437575e6eb0138a"
+            }
+          },
+          {
+            "kind": "memory",
+            "binding": {
+              "ref": "session-memory@0",
+              "digest": "sha256:8093db4f2247a73f0cf02dc22ba450e1639da3f9892c83afa58f6754b88b0acb"
+            }
+          },
+          {
+            "kind": "delivery",
+            "binding": {
+              "ref": "session-delivery@0",
+              "digest": "sha256:8bab7c0d7ecfe5acd5ebc8541b71c5bea2c57c0521b789291d7389910ea9cb68"
+            }
+          }
+        ],
+        "event": {
+          "event_id": "ambiguous-message-1",
+          "turn_id": "ambiguous-turn-1",
+          "sequence": 1,
+          "finalized": true,
+          "text": "Можливо, це інструкція або звіт. Мені потрібне коротке пояснення чи список кроків.",
+          "speaker_ref": "user-example",
+          "kind": "user_message",
+          "source_refs": ["ambiguous-message-1"]
+        },
+        "evidence_catalog": [
+          {
+            "ref": "ambiguous-message-1",
+            "text": "Можливо, це інструкція або звіт. Мені потрібне коротке пояснення чи список кроків.",
+            "source_binding": {
+              "ref": "ambiguous-message-1@1",
+              "digest": "sha256:9fc2b24a110d130285f96d1d260f1ba98aa6c0b05fbec6f94086c81bbbc0cbad"
+            }
+          }
+        ],
+        "idempotency_key": "session-variants/ambiguous-message-1/analysis-1",
+        "budget": {
+          "max_input_tokens": 6000,
+          "max_output_tokens": 2000,
+          "remaining_task_model_calls": 6,
+          "remaining_task_milliseconds": 30000
+        }
+      },
+      "delta": {
+        "schema_version": "state-delta.v3",
+        "input_context_id": "analyzer-input-variants-1",
+        "event_id": "ambiguous-message-1",
+        "turn_id": "ambiguous-turn-1",
+        "checkpoint_id": "ambiguous-checkpoint-1",
+        "base_revision": 20,
+        "idempotency_key": "session-variants/ambiguous-message-1/analysis-1",
+        "groups": [],
+        "blocks": [
+          {
+            "block_id": "understand-document-request",
+            "block_type": "intent-and-response-shape",
+            "source_refs": ["ambiguous-message-1"],
+            "parts": [
+              {
+                "part_id": "document-kind",
+                "selection_mode": "choose_zero_or_one",
+                "selection_policy_ref": "clarify-unresolved-explicit-alternatives@1",
+                "candidates": [
+                  {
+                    "candidate_id": "document-is-instruction",
+                    "support": "reported",
+                    "evidence_refs": ["ambiguous-message-1"],
+                    "selection_features": {
+                      "literal_option": "інструкція"
+                    },
+                    "groups": [
+                      {
+                        "group_id": "set-document-instruction",
+                        "depends_on": [],
+                        "operations": [
+                          {
+                            "op": "change_policy_data",
+                            "op_id": "set-document-kind-instruction",
+                            "policy_id": "document-classification",
+                            "instance_id": "document-current",
+                            "field_id": "kind",
+                            "expected_field_revision": 0,
+                            "change": {
+                              "kind": "set",
+                              "value": "instruction"
+                            },
+                            "support": "reported",
+                            "evidence_refs": ["ambiguous-message-1"]
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "candidate_id": "document-is-report",
+                    "support": "reported",
+                    "evidence_refs": ["ambiguous-message-1"],
+                    "selection_features": {
+                      "literal_option": "звіт"
+                    },
+                    "groups": [
+                      {
+                        "group_id": "set-document-report",
+                        "depends_on": [],
+                        "operations": [
+                          {
+                            "op": "change_policy_data",
+                            "op_id": "set-document-kind-report",
+                            "policy_id": "document-classification",
+                            "instance_id": "document-current",
+                            "field_id": "kind",
+                            "expected_field_revision": 0,
+                            "change": {
+                              "kind": "set",
+                              "value": "report"
+                            },
+                            "support": "reported",
+                            "evidence_refs": ["ambiguous-message-1"]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "part_id": "response-shape",
+                "selection_mode": "choose_zero_or_one",
+                "selection_policy_ref": "clarify-unresolved-explicit-alternatives@1",
+                "candidates": [
+                  {
+                    "candidate_id": "respond-with-short-explanation",
+                    "support": "reported",
+                    "evidence_refs": ["ambiguous-message-1"],
+                    "selection_features": {
+                      "literal_option": "коротке пояснення"
+                    },
+                    "groups": [
+                      {
+                        "group_id": "set-short-explanation",
+                        "depends_on": [],
+                        "operations": [
+                          {
+                            "op": "change_policy_data",
+                            "op_id": "set-response-short-explanation",
+                            "policy_id": "response-style",
+                            "instance_id": "response-style-current-turn",
+                            "field_id": "requested_format",
+                            "expected_field_revision": 0,
+                            "change": {
+                              "kind": "set",
+                              "value": "short_explanation"
+                            },
+                            "support": "reported",
+                            "evidence_refs": ["ambiguous-message-1"]
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "candidate_id": "respond-with-steps",
+                    "support": "reported",
+                    "evidence_refs": ["ambiguous-message-1"],
+                    "selection_features": {
+                      "literal_option": "список кроків"
+                    },
+                    "groups": [
+                      {
+                        "group_id": "set-response-steps",
+                        "depends_on": [],
+                        "operations": [
+                          {
+                            "op": "change_policy_data",
+                            "op_id": "set-response-steps",
+                            "policy_id": "response-style",
+                            "instance_id": "response-style-current-turn",
+                            "field_id": "requested_format",
+                            "expected_field_revision": 0,
+                            "change": {
+                              "kind": "set",
+                              "value": "steps"
+                            },
+                            "support": "reported",
+                            "evidence_refs": ["ambiguous-message-1"]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "receipt": {
+        "schema_version": "applied-change-set.v1",
+        "input_context_id": "analyzer-input-variants-1",
+        "event_id": "ambiguous-message-1",
+        "status": "APPLIED",
+        "before_revision": 20,
+        "after_revision": 21,
+        "transaction_ref": "transaction-variants",
+        "semantic_changed": true,
+        "group_outcomes": [
+          {
+            "group_id": "set-document-instruction",
+            "status": "applied",
+            "operation_refs": ["set-document-kind-instruction"],
+            "reason_refs": ["synthetic-policy-selection"]
+          },
+          {
+            "group_id": "set-short-explanation",
+            "status": "applied",
+            "operation_refs": ["set-response-short-explanation"],
+            "reason_refs": ["synthetic-policy-selection"]
+          }
+        ],
+        "selection_outcomes": [
+          {
+            "block_id": "understand-document-request",
+            "part_id": "document-kind",
+            "selected_candidate_refs": ["document-is-instruction"],
+            "deferred_candidate_refs": []
+          },
+          {
+            "block_id": "understand-document-request",
+            "part_id": "response-shape",
+            "selected_candidate_refs": ["respond-with-short-explanation"],
+            "deferred_candidate_refs": []
+          }
+        ],
+        "record_changes": [
+          {
+            "record_ref": "document-current/kind",
+            "before_revision": 0,
+            "after_revision": 1
+          },
+          {
+            "record_ref": "response-style-current-turn/requested_format",
+            "before_revision": 0,
+            "after_revision": 1
+          }
+        ],
+        "invalidated_refs": [],
+        "dispatch_intent_refs": ["compose-variants"],
+        "checkpoint_ref": "ambiguous-checkpoint-1"
+      }
+    },
+    {
+      "name": "multi-part-deferred-choices",
+      "context": {
+        "schema_version": "analyzer-context.v2",
+        "context_id": "analyzer-input-variants-1",
+        "purpose": "analyze-accepted-event",
+        "base_revision": 20,
+        "checkpoint_id": "ambiguous-checkpoint-1",
+        "identity": {
+          "identity_context_id": "identity-context-analyzer-1",
+          "mode": "minimal",
+          "requested_identity_subject_refs": [],
+          "authenticated_scope_ref": "auth-scope-example",
+          "session_ref": "session-example",
+          "turn_ref": "ambiguous-turn-1",
+          "channel": "text",
+          "actor_ref": "user-example",
+          "actor_type": "user",
+          "role_refs": ["conversation-participant"],
+          "participant_refs": [
+            {
+              "participant_ref": "user-example",
+              "relation": "current-speaker"
+            }
+          ],
+          "projected_profile": [],
+          "issued_at": "2026-09-04T12:00:00Z",
+          "expires_at": "2026-09-04T12:05:00Z",
+          "activation_rule_ref": "minimal-identity@1",
+          "agent_identity": {
+            "binding": {
+              "ref": "support-guide@1",
+              "digest": "sha256:ba072a6bc8485b338ebe796e72f61981813dc1f4673f3ee05a83afca03d346f6"
+            },
+            "agent_ref": "support-guide",
+            "display_name": "Support Guide",
+            "mission": "Explain admitted information and ask about missing task context.",
+            "capabilities": ["explain", "clarify"],
+            "limitations": ["cannot-execute-actions"],
+            "approved_self_description": "I am an assistant that explains information and helps clarify the next step.",
+            "disclosure_policy_ref": "agent-introduction@1"
+          }
+        },
+        "policy": {
+          "policy_context_id": "policy-context-analyzer-1",
+          "definition_bindings": [
+            {
+              "ref": "conversation-identity@1",
+              "digest": "sha256:be967495291a1d44857f60685864ef56ae4827e5edb6d976fcb44657c74b4862"
+            },
+            {
+              "ref": "response-style@1",
+              "digest": "sha256:f5ca371a00529b08738d8bd69608dd76784bcf4283a405bbaa1c3a857687ca12"
+            }
+          ],
+          "evaluation_bindings": [],
+          "projection_binding": {
+            "ref": "analyzer-default@2",
+            "digest": "sha256:9af90ca5a554f02032aa9c2997e6998c3409343fc80642a150a28d24f23ca424"
+          },
+          "selected_policy_data": [],
+          "obligations": ["ground-every-change-in-current-event"],
+          "allowed_acts": ["propose-state-delta"],
+          "required_confirmations": [],
+          "restrictions": ["no-response-prose", "no-policy-definition-edits", "no-direct-research"],
+          "limitations": [],
+          "issued_at": "2026-09-04T12:00:00Z",
+          "expires_at": "2026-09-04T12:05:00Z"
+        },
+        "background": {
+          "current_goal": "reply-to-current-user",
+          "interaction_phase": "understand-current-message",
+          "active_entity_refs": [],
+          "relevant_claim_refs": [],
+          "pending_question_refs": [],
+          "omitted_categories": [],
+          "limitations": ["first accepted message; no earlier authorized history"]
+        },
+        "continuity": {
+          "window": {
+            "turn_limit": 20,
+            "includes_current_event": false,
+            "omitted_older_turn_count": 0
+          },
+          "recent_memory": {
+            "status": "empty",
+            "source_turn_refs": [],
+            "fact_refs": [],
+            "decision_refs": [],
+            "unresolved_question_refs": [],
+            "preference_refs": [],
+            "invalidation_refs": []
+          },
+          "formatted_history": [],
+          "formatting_profile_ref": "compact-dialogue@1",
+          "limitations": ["first accepted message; no prior continuity"]
+        },
+        "next_steps": {
+          "completeness": "complete_for_authorized_task_projection",
+          "steps": [],
+          "omitted_step_refs": [],
+          "limitations": [],
+          "task_ref": "reply-to-current-user",
+          "plan_revision": 0
+        },
+        "writable_targets": [
+          {
+            "policy_id": "conversation-identity",
+            "instance_id": "identity-current-user",
+            "field_id": "preferred_name",
+            "field_revision": 0,
+            "value_schema_ref": "preferred-name@1",
+            "allowed_changes": ["set", "clear"],
+            "allowed_support": ["reported"],
+            "merge_rule_ref": "replace-after-admission@1",
+            "value_schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 80
+            }
+          },
+          {
+            "policy_id": "response-style",
+            "instance_id": "response-style-current-turn",
+            "field_id": "emotion_observation",
+            "field_revision": 0,
+            "value_schema_ref": "emotion-observation@1",
+            "allowed_changes": ["set", "clear"],
+            "allowed_support": ["reported", "inferred"],
+            "merge_rule_ref": "replace-after-admission@1",
+            "value_schema": {
+              "enum": ["concern"]
+            }
+          },
+          {
+            "policy_id": "response-style",
+            "instance_id": "response-style-current-turn",
+            "field_id": "requested_format",
+            "field_revision": 0,
+            "value_schema_ref": "requested-format@1",
+            "allowed_changes": ["set", "clear"],
+            "allowed_support": ["reported"],
+            "merge_rule_ref": "replace-after-admission@1",
+            "value_schema": {
+              "enum": ["one_step_at_a_time", "short_explanation", "steps"]
+            }
+          },
+          {
+            "policy_id": "document-classification",
+            "instance_id": "document-current",
+            "field_id": "kind",
+            "field_revision": 0,
+            "value_schema_ref": "document-kind@1",
+            "allowed_changes": ["set"],
+            "allowed_support": ["reported"],
+            "merge_rule_ref": "replace-after-admission@1",
+            "value_schema": {
+              "enum": ["instruction", "report"]
+            }
+          }
+        ],
+        "block_contracts": [
+          {
+            "block_id": "understand-document-request",
+            "block_type": "intent-and-response-shape",
+            "parts": [
+              {
+                "part_id": "document-kind",
+                "selection_mode": "choose_zero_or_one",
+                "selection_policy_ref": "clarify-unresolved-explicit-alternatives@1",
+                "feature_schema_ref": "literal-option@1",
+                "max_candidates": 4,
+                "feature_schema": {
+                  "type": "object",
+                  "properties": {
+                    "literal_option": {
+                      "type": "string",
+                      "minLength": 1
+                    }
+                  },
+                  "required": ["literal_option"],
+                  "additionalProperties": false
+                }
+              },
+              {
+                "part_id": "response-shape",
+                "selection_mode": "choose_zero_or_one",
+                "selection_policy_ref": "clarify-unresolved-explicit-alternatives@1",
+                "feature_schema_ref": "literal-option@1",
+                "max_candidates": 4,
+                "feature_schema": {
+                  "type": "object",
+                  "properties": {
+                    "literal_option": {
+                      "type": "string",
+                      "minLength": 1
+                    }
+                  },
+                  "required": ["literal_option"],
+                  "additionalProperties": false
+                }
+              }
+            ]
+          }
+        ],
+        "output_contract": {
+          "schema": "state-delta.v3",
+          "max_groups": 8,
+          "max_blocks": 6,
+          "max_parts_per_block": 6,
+          "max_candidates_per_part": 4,
+          "max_operations": 24,
+          "allowed_operations": ["change_policy_data", "propose_claim", "supersede_claim", "resolve_question", "request_research", "propose_action", "propose_memory", "resolve_choice", "propose_plan_change"]
+        },
+        "expires_at": "2026-09-04T12:05:00Z",
+        "role_id": "analyzer",
+        "invocation_id": "analyze-variants",
+        "memory": {
+          "task_summary": {
+            "status": "empty",
+            "source_turn_refs": [],
+            "fact_refs": [],
+            "decision_refs": [],
+            "unresolved_question_refs": [],
+            "preference_refs": [],
+            "invalidation_refs": []
+          },
+          "relevant_durable_memory": [],
+          "limitations": []
+        },
+        "unresolved_choices": [],
+        "source_dependencies": [
+          {
+            "kind": "state",
+            "binding": {
+              "ref": "session-example@20",
+              "digest": "sha256:eeff80585d3c69ee8b855249e24c21a622c26c2402b112ba7c5fb980e4ec5dab"
+            }
+          },
+          {
+            "kind": "identity",
+            "binding": {
+              "ref": "support-guide@1",
+              "digest": "sha256:ba072a6bc8485b338ebe796e72f61981813dc1f4673f3ee05a83afca03d346f6"
+            }
+          },
+          {
+            "kind": "projection",
+            "binding": {
+              "ref": "analyzer-default@2",
+              "digest": "sha256:9af90ca5a554f02032aa9c2997e6998c3409343fc80642a150a28d24f23ca424"
+            }
+          },
+          {
+            "kind": "plan",
+            "binding": {
+              "ref": "reply-to-current-user@0",
+              "digest": "sha256:1e2c75bd6d1e8bed19a11e0b6fae0d58e98dc7037d4895cf89334b31fa71eafb"
+            }
+          },
+          {
+            "kind": "policy",
+            "binding": {
+              "ref": "conversation-identity@1",
+              "digest": "sha256:be967495291a1d44857f60685864ef56ae4827e5edb6d976fcb44657c74b4862"
+            }
+          },
+          {
+            "kind": "policy",
+            "binding": {
+              "ref": "response-style@1",
+              "digest": "sha256:f5ca371a00529b08738d8bd69608dd76784bcf4283a405bbaa1c3a857687ca12"
+            }
+          },
+          {
+            "kind": "event",
+            "binding": {
+              "ref": "ambiguous-message-1@1",
+              "digest": "sha256:9fc2b24a110d130285f96d1d260f1ba98aa6c0b05fbec6f94086c81bbbc0cbad"
+            }
+          },
+          {
+            "kind": "authorization",
+            "binding": {
+              "ref": "auth-scope-example@1",
+              "digest": "sha256:8056b732f6002efc8a489e72b6e4c09ac4344630a0727203e437575e6eb0138a"
+            }
+          },
+          {
+            "kind": "memory",
+            "binding": {
+              "ref": "session-memory@0",
+              "digest": "sha256:8093db4f2247a73f0cf02dc22ba450e1639da3f9892c83afa58f6754b88b0acb"
+            }
+          },
+          {
+            "kind": "delivery",
+            "binding": {
+              "ref": "session-delivery@0",
+              "digest": "sha256:8bab7c0d7ecfe5acd5ebc8541b71c5bea2c57c0521b789291d7389910ea9cb68"
+            }
+          }
+        ],
+        "event": {
+          "event_id": "ambiguous-message-1",
+          "turn_id": "ambiguous-turn-1",
+          "sequence": 1,
+          "finalized": true,
+          "text": "Можливо, це інструкція або звіт. Мені потрібне коротке пояснення чи список кроків.",
+          "speaker_ref": "user-example",
+          "kind": "user_message",
+          "source_refs": ["ambiguous-message-1"]
+        },
+        "evidence_catalog": [
+          {
+            "ref": "ambiguous-message-1",
+            "text": "Можливо, це інструкція або звіт. Мені потрібне коротке пояснення чи список кроків.",
+            "source_binding": {
+              "ref": "ambiguous-message-1@1",
+              "digest": "sha256:9fc2b24a110d130285f96d1d260f1ba98aa6c0b05fbec6f94086c81bbbc0cbad"
+            }
+          }
+        ],
+        "idempotency_key": "session-variants/ambiguous-message-1/analysis-1",
+        "budget": {
+          "max_input_tokens": 6000,
+          "max_output_tokens": 2000,
+          "remaining_task_model_calls": 6,
+          "remaining_task_milliseconds": 30000
+        }
+      },
+      "delta": {
+        "schema_version": "state-delta.v3",
+        "input_context_id": "analyzer-input-variants-1",
+        "event_id": "ambiguous-message-1",
+        "turn_id": "ambiguous-turn-1",
+        "checkpoint_id": "ambiguous-checkpoint-1",
+        "base_revision": 20,
+        "idempotency_key": "session-variants/ambiguous-message-1/analysis-1",
+        "groups": [],
+        "blocks": [
+          {
+            "block_id": "understand-document-request",
+            "block_type": "intent-and-response-shape",
+            "source_refs": ["ambiguous-message-1"],
+            "parts": [
+              {
+                "part_id": "document-kind",
+                "selection_mode": "choose_zero_or_one",
+                "selection_policy_ref": "clarify-unresolved-explicit-alternatives@1",
+                "candidates": [
+                  {
+                    "candidate_id": "document-is-instruction",
+                    "support": "reported",
+                    "evidence_refs": ["ambiguous-message-1"],
+                    "selection_features": {
+                      "literal_option": "інструкція"
+                    },
+                    "groups": [
+                      {
+                        "group_id": "set-document-instruction",
+                        "depends_on": [],
+                        "operations": [
+                          {
+                            "op": "change_policy_data",
+                            "op_id": "set-document-kind-instruction",
+                            "policy_id": "document-classification",
+                            "instance_id": "document-current",
+                            "field_id": "kind",
+                            "expected_field_revision": 0,
+                            "change": {
+                              "kind": "set",
+                              "value": "instruction"
+                            },
+                            "support": "reported",
+                            "evidence_refs": ["ambiguous-message-1"]
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "candidate_id": "document-is-report",
+                    "support": "reported",
+                    "evidence_refs": ["ambiguous-message-1"],
+                    "selection_features": {
+                      "literal_option": "звіт"
+                    },
+                    "groups": [
+                      {
+                        "group_id": "set-document-report",
+                        "depends_on": [],
+                        "operations": [
+                          {
+                            "op": "change_policy_data",
+                            "op_id": "set-document-kind-report",
+                            "policy_id": "document-classification",
+                            "instance_id": "document-current",
+                            "field_id": "kind",
+                            "expected_field_revision": 0,
+                            "change": {
+                              "kind": "set",
+                              "value": "report"
+                            },
+                            "support": "reported",
+                            "evidence_refs": ["ambiguous-message-1"]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "part_id": "response-shape",
+                "selection_mode": "choose_zero_or_one",
+                "selection_policy_ref": "clarify-unresolved-explicit-alternatives@1",
+                "candidates": [
+                  {
+                    "candidate_id": "respond-with-short-explanation",
+                    "support": "reported",
+                    "evidence_refs": ["ambiguous-message-1"],
+                    "selection_features": {
+                      "literal_option": "коротке пояснення"
+                    },
+                    "groups": [
+                      {
+                        "group_id": "set-short-explanation",
+                        "depends_on": [],
+                        "operations": [
+                          {
+                            "op": "change_policy_data",
+                            "op_id": "set-response-short-explanation",
+                            "policy_id": "response-style",
+                            "instance_id": "response-style-current-turn",
+                            "field_id": "requested_format",
+                            "expected_field_revision": 0,
+                            "change": {
+                              "kind": "set",
+                              "value": "short_explanation"
+                            },
+                            "support": "reported",
+                            "evidence_refs": ["ambiguous-message-1"]
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "candidate_id": "respond-with-steps",
+                    "support": "reported",
+                    "evidence_refs": ["ambiguous-message-1"],
+                    "selection_features": {
+                      "literal_option": "список кроків"
+                    },
+                    "groups": [
+                      {
+                        "group_id": "set-response-steps",
+                        "depends_on": [],
+                        "operations": [
+                          {
+                            "op": "change_policy_data",
+                            "op_id": "set-response-steps",
+                            "policy_id": "response-style",
+                            "instance_id": "response-style-current-turn",
+                            "field_id": "requested_format",
+                            "expected_field_revision": 0,
+                            "change": {
+                              "kind": "set",
+                              "value": "steps"
+                            },
+                            "support": "reported",
+                            "evidence_refs": ["ambiguous-message-1"]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "receipt": {
+        "schema_version": "applied-change-set.v1",
+        "input_context_id": "analyzer-input-variants-1",
+        "event_id": "ambiguous-message-1",
+        "status": "APPLIED",
+        "before_revision": 20,
+        "after_revision": 21,
+        "transaction_ref": "transaction-variants",
+        "semantic_changed": true,
+        "group_outcomes": [],
+        "selection_outcomes": [
+          {
+            "block_id": "understand-document-request",
+            "part_id": "document-kind",
+            "selected_candidate_refs": [],
+            "deferred_candidate_refs": ["document-is-instruction", "document-is-report"],
+            "choice_ref": "choice-document-kind"
+          },
+          {
+            "block_id": "understand-document-request",
+            "part_id": "response-shape",
+            "selected_candidate_refs": [],
+            "deferred_candidate_refs": ["respond-with-short-explanation", "respond-with-steps"],
+            "choice_ref": "choice-response-shape"
+          }
+        ],
+        "record_changes": [
+          {
+            "record_ref": "choice-document-kind",
+            "before_revision": 0,
+            "after_revision": 1
+          },
+          {
+            "record_ref": "choice-response-shape",
+            "before_revision": 0,
+            "after_revision": 1
+          }
+        ],
+        "invalidated_refs": [],
+        "dispatch_intent_refs": ["ask-variants"],
+        "checkpoint_ref": "ambiguous-checkpoint-1"
+      }
+    },
+    {
+      "name": "resolve-presented-choice",
+      "context": {
+        "schema_version": "analyzer-context.v2",
+        "context_id": "analyzer-input-1",
+        "purpose": "analyze-accepted-event",
+        "base_revision": 0,
+        "checkpoint_id": "checkpoint-1",
+        "identity": {
+          "identity_context_id": "identity-context-analyzer-1",
+          "mode": "minimal",
+          "requested_identity_subject_refs": [],
+          "authenticated_scope_ref": "auth-scope-example",
+          "session_ref": "session-example",
+          "turn_ref": "user-turn-1",
+          "channel": "text",
+          "actor_ref": "user-example",
+          "actor_type": "user",
+          "role_refs": ["conversation-participant"],
+          "participant_refs": [
+            {
+              "participant_ref": "user-example",
+              "relation": "current-speaker"
+            }
+          ],
+          "projected_profile": [],
+          "issued_at": "2026-09-04T12:00:00Z",
+          "expires_at": "2026-09-04T12:05:00Z",
+          "activation_rule_ref": "minimal-identity@1",
+          "agent_identity": {
+            "binding": {
+              "ref": "support-guide@1",
+              "digest": "sha256:ba072a6bc8485b338ebe796e72f61981813dc1f4673f3ee05a83afca03d346f6"
+            },
+            "agent_ref": "support-guide",
+            "display_name": "Support Guide",
+            "mission": "Explain admitted information and ask about missing task context.",
+            "capabilities": ["explain", "clarify"],
+            "limitations": ["cannot-execute-actions"],
+            "approved_self_description": "I am an assistant that explains information and helps clarify the next step.",
+            "disclosure_policy_ref": "agent-introduction@1"
+          }
+        },
+        "policy": {
+          "policy_context_id": "policy-context-analyzer-1",
+          "definition_bindings": [
+            {
+              "ref": "conversation-identity@1",
+              "digest": "sha256:be967495291a1d44857f60685864ef56ae4827e5edb6d976fcb44657c74b4862"
+            },
+            {
+              "ref": "response-style@1",
+              "digest": "sha256:f5ca371a00529b08738d8bd69608dd76784bcf4283a405bbaa1c3a857687ca12"
+            }
+          ],
+          "evaluation_bindings": [],
+          "projection_binding": {
+            "ref": "analyzer-default@2",
+            "digest": "sha256:9af90ca5a554f02032aa9c2997e6998c3409343fc80642a150a28d24f23ca424"
+          },
+          "selected_policy_data": [],
+          "obligations": ["ground-every-change-in-current-event"],
+          "allowed_acts": ["propose-state-delta"],
+          "required_confirmations": [],
+          "restrictions": ["no-response-prose", "no-policy-definition-edits", "no-direct-research"],
+          "limitations": [],
+          "issued_at": "2026-09-04T12:00:00Z",
+          "expires_at": "2026-09-04T12:05:00Z"
+        },
+        "background": {
+          "current_goal": "reply-to-current-user",
+          "interaction_phase": "understand-current-message",
+          "active_entity_refs": [],
+          "relevant_claim_refs": [],
+          "pending_question_refs": [],
+          "omitted_categories": [],
+          "limitations": ["first accepted message; no earlier authorized history"]
+        },
+        "continuity": {
+          "window": {
+            "turn_limit": 20,
+            "includes_current_event": false,
+            "omitted_older_turn_count": 0
+          },
+          "recent_memory": {
+            "status": "empty",
+            "source_turn_refs": [],
+            "fact_refs": [],
+            "decision_refs": [],
+            "unresolved_question_refs": [],
+            "preference_refs": [],
+            "invalidation_refs": []
+          },
+          "formatted_history": [],
+          "formatting_profile_ref": "compact-dialogue@1",
+          "limitations": ["first accepted message; no prior continuity"]
+        },
+        "next_steps": {
+          "completeness": "complete_for_authorized_task_projection",
+          "steps": [],
+          "omitted_step_refs": [],
+          "limitations": [],
+          "task_ref": "reply-to-current-user",
+          "plan_revision": 0
+        },
+        "writable_targets": [
+          {
+            "policy_id": "conversation-identity",
+            "instance_id": "identity-current-user",
+            "field_id": "preferred_name",
+            "field_revision": 0,
+            "value_schema_ref": "preferred-name@1",
+            "allowed_changes": ["set", "clear"],
+            "allowed_support": ["reported"],
+            "merge_rule_ref": "replace-after-admission@1",
+            "value_schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 80
+            }
+          },
+          {
+            "policy_id": "response-style",
+            "instance_id": "response-style-current-turn",
+            "field_id": "emotion_observation",
+            "field_revision": 0,
+            "value_schema_ref": "emotion-observation@1",
+            "allowed_changes": ["set", "clear"],
+            "allowed_support": ["reported", "inferred"],
+            "merge_rule_ref": "replace-after-admission@1",
+            "value_schema": {
+              "enum": ["concern"]
+            }
+          },
+          {
+            "policy_id": "response-style",
+            "instance_id": "response-style-current-turn",
+            "field_id": "requested_format",
+            "field_revision": 0,
+            "value_schema_ref": "requested-format@1",
+            "allowed_changes": ["set", "clear"],
+            "allowed_support": ["reported"],
+            "merge_rule_ref": "replace-after-admission@1",
+            "value_schema": {
+              "enum": ["one_step_at_a_time", "short_explanation", "steps"]
+            }
+          }
+        ],
+        "block_contracts": [],
+        "output_contract": {
+          "schema": "state-delta.v3",
+          "max_groups": 8,
+          "max_blocks": 6,
+          "max_parts_per_block": 6,
+          "max_candidates_per_part": 4,
+          "max_operations": 24,
+          "allowed_operations": ["change_policy_data", "propose_claim", "supersede_claim", "resolve_question", "request_research", "propose_action", "propose_memory", "resolve_choice", "propose_plan_change"]
+        },
+        "expires_at": "2026-09-04T12:05:00Z",
+        "role_id": "analyzer",
+        "invocation_id": "analyze-turn-1",
+        "memory": {
+          "task_summary": {
+            "status": "empty",
+            "source_turn_refs": [],
+            "fact_refs": [],
+            "decision_refs": [],
+            "unresolved_question_refs": [],
+            "preference_refs": [],
+            "invalidation_refs": []
+          },
+          "relevant_durable_memory": [],
+          "limitations": []
+        },
+        "unresolved_choices": [
+          {
+            "choice_ref": "choose-document-kind",
+            "revision": 1,
+            "task_ref": "reply-to-current-user",
+            "status": "pending",
+            "origin_delta_ref": "ambiguous-delta-1",
+            "block_id": "understand-document-request",
+            "part_id": "document-kind",
+            "selection_policy_ref": "clarify-unresolved-explicit-alternatives@1",
+            "base_revision": 20,
+            "candidate_refs": ["document-is-instruction", "document-is-report"],
+            "question_ref": "clarify-document-kind",
+            "question_text": "Do you mean an instruction or a report?",
+            "presented_candidate_refs": ["document-is-instruction", "document-is-report"],
+            "presentation_response_ref": "clarification-response-1",
+            "selected_candidate_refs": [],
+            "evidence_refs": ["ambiguous-message-1"],
+            "expires_at": "2026-09-04T12:05:00Z",
+            "candidate_options": [
+              {
+                "candidate_ref": "document-is-instruction",
+                "label": "Instruction"
+              },
+              {
+                "candidate_ref": "document-is-report",
+                "label": "Report"
+              }
+            ]
+          }
+        ],
+        "source_dependencies": [
+          {
+            "kind": "state",
+            "binding": {
+              "ref": "session-example@0",
+              "digest": "sha256:8a4e801cf5bdb6b41e535d2c0db0cb98d7bf2223ba363d64dd17eca3aad44c8a"
+            }
+          },
+          {
+            "kind": "identity",
+            "binding": {
+              "ref": "support-guide@1",
+              "digest": "sha256:ba072a6bc8485b338ebe796e72f61981813dc1f4673f3ee05a83afca03d346f6"
+            }
+          },
+          {
+            "kind": "projection",
+            "binding": {
+              "ref": "analyzer-default@2",
+              "digest": "sha256:9af90ca5a554f02032aa9c2997e6998c3409343fc80642a150a28d24f23ca424"
+            }
+          },
+          {
+            "kind": "plan",
+            "binding": {
+              "ref": "reply-to-current-user@0",
+              "digest": "sha256:1e2c75bd6d1e8bed19a11e0b6fae0d58e98dc7037d4895cf89334b31fa71eafb"
+            }
+          },
+          {
+            "kind": "policy",
+            "binding": {
+              "ref": "conversation-identity@1",
+              "digest": "sha256:be967495291a1d44857f60685864ef56ae4827e5edb6d976fcb44657c74b4862"
+            }
+          },
+          {
+            "kind": "policy",
+            "binding": {
+              "ref": "response-style@1",
+              "digest": "sha256:f5ca371a00529b08738d8bd69608dd76784bcf4283a405bbaa1c3a857687ca12"
+            }
+          },
+          {
+            "kind": "event",
+            "binding": {
+              "ref": "user-message-1@1",
+              "digest": "sha256:271051e30351f30350425b2c77a96cfb513daa2f81c463b0c03f28743b3042b1"
+            }
+          },
+          {
+            "kind": "authorization",
+            "binding": {
+              "ref": "auth-scope-example@1",
+              "digest": "sha256:8056b732f6002efc8a489e72b6e4c09ac4344630a0727203e437575e6eb0138a"
+            }
+          },
+          {
+            "kind": "memory",
+            "binding": {
+              "ref": "session-memory@0",
+              "digest": "sha256:8093db4f2247a73f0cf02dc22ba450e1639da3f9892c83afa58f6754b88b0acb"
+            }
+          },
+          {
+            "kind": "delivery",
+            "binding": {
+              "ref": "session-delivery@0",
+              "digest": "sha256:8bab7c0d7ecfe5acd5ebc8541b71c5bea2c57c0521b789291d7389910ea9cb68"
+            }
+          },
+          {
+            "kind": "choice",
+            "binding": {
+              "ref": "choose-document-kind@1",
+              "digest": "sha256:2d14646227355f1514bfc114c7eec71b61c55955bdde00a32b3d7e6feb541806"
+            }
+          }
+        ],
+        "event": {
+          "event_id": "user-message-1",
+          "turn_id": "user-turn-1",
+          "sequence": 1,
+          "finalized": true,
+          "text": "Другий варіант, звіт.",
+          "speaker_ref": "user-example",
+          "kind": "user_message",
+          "source_refs": ["user-message-1/name", "user-message-1/concern", "user-message-1/format"]
+        },
+        "evidence_catalog": [
+          {
+            "ref": "user-message-1",
+            "text": "Другий варіант, звіт.",
+            "source_binding": {
+              "ref": "user-message-1@1",
+              "digest": "sha256:271051e30351f30350425b2c77a96cfb513daa2f81c463b0c03f28743b3042b1"
+            }
+          },
+          {
+            "ref": "user-message-1/concern",
+            "text": "Я хвилююся.",
+            "source_binding": {
+              "ref": "user-message-1@1",
+              "digest": "sha256:271051e30351f30350425b2c77a96cfb513daa2f81c463b0c03f28743b3042b1"
+            }
+          },
+          {
+            "ref": "user-message-1/format",
+            "text": "Поясни по одному кроку, без пошуку.",
+            "source_binding": {
+              "ref": "user-message-1@1",
+              "digest": "sha256:271051e30351f30350425b2c77a96cfb513daa2f81c463b0c03f28743b3042b1"
+            }
+          },
+          {
+            "ref": "user-message-1/name",
+            "text": "Я Олена.",
+            "source_binding": {
+              "ref": "user-message-1@1",
+              "digest": "sha256:271051e30351f30350425b2c77a96cfb513daa2f81c463b0c03f28743b3042b1"
+            }
+          }
+        ],
+        "idempotency_key": "session-example/user-message-1/analysis-1",
+        "budget": {
+          "max_input_tokens": 6000,
+          "max_output_tokens": 2000,
+          "remaining_task_model_calls": 6,
+          "remaining_task_milliseconds": 30000
+        }
+      },
+      "delta": {
+        "schema_version": "state-delta.v3",
+        "input_context_id": "analyzer-input-1",
+        "event_id": "user-message-1",
+        "turn_id": "user-turn-1",
+        "checkpoint_id": "checkpoint-1",
+        "base_revision": 0,
+        "idempotency_key": "session-example/user-message-1/analysis-1",
+        "groups": [
+          {
+            "group_id": "resolve-document-choice",
+            "depends_on": [],
+            "operations": [
+              {
+                "op": "resolve_choice",
+                "op_id": "choose-report",
+                "choice_ref": "choose-document-kind",
+                "expected_choice_revision": 1,
+                "selected_candidate_refs": ["document-is-report"],
+                "presentation_response_ref": "clarification-response-1",
+                "evidence_refs": ["user-message-1"]
+              }
+            ]
+          }
+        ],
+        "blocks": []
+      }
+    },
+    {
+      "name": "propose-explanation-step",
+      "context": {
+        "schema_version": "analyzer-context.v2",
+        "context_id": "analyzer-input-1",
+        "purpose": "analyze-accepted-event",
+        "base_revision": 0,
+        "checkpoint_id": "checkpoint-1",
+        "identity": {
+          "identity_context_id": "identity-context-analyzer-1",
+          "mode": "minimal",
+          "requested_identity_subject_refs": [],
+          "authenticated_scope_ref": "auth-scope-example",
+          "session_ref": "session-example",
+          "turn_ref": "user-turn-1",
+          "channel": "text",
+          "actor_ref": "user-example",
+          "actor_type": "user",
+          "role_refs": ["conversation-participant"],
+          "participant_refs": [
+            {
+              "participant_ref": "user-example",
+              "relation": "current-speaker"
+            }
+          ],
+          "projected_profile": [],
+          "issued_at": "2026-09-04T12:00:00Z",
+          "expires_at": "2026-09-04T12:05:00Z",
+          "activation_rule_ref": "minimal-identity@1",
+          "agent_identity": {
+            "binding": {
+              "ref": "support-guide@1",
+              "digest": "sha256:ba072a6bc8485b338ebe796e72f61981813dc1f4673f3ee05a83afca03d346f6"
+            },
+            "agent_ref": "support-guide",
+            "display_name": "Support Guide",
+            "mission": "Explain admitted information and ask about missing task context.",
+            "capabilities": ["explain", "clarify"],
+            "limitations": ["cannot-execute-actions"],
+            "approved_self_description": "I am an assistant that explains information and helps clarify the next step.",
+            "disclosure_policy_ref": "agent-introduction@1"
+          }
+        },
+        "policy": {
+          "policy_context_id": "policy-context-analyzer-1",
+          "definition_bindings": [
+            {
+              "ref": "conversation-identity@1",
+              "digest": "sha256:be967495291a1d44857f60685864ef56ae4827e5edb6d976fcb44657c74b4862"
+            },
+            {
+              "ref": "response-style@1",
+              "digest": "sha256:f5ca371a00529b08738d8bd69608dd76784bcf4283a405bbaa1c3a857687ca12"
+            }
+          ],
+          "evaluation_bindings": [],
+          "projection_binding": {
+            "ref": "analyzer-default@2",
+            "digest": "sha256:9af90ca5a554f02032aa9c2997e6998c3409343fc80642a150a28d24f23ca424"
+          },
+          "selected_policy_data": [],
+          "obligations": ["ground-every-change-in-current-event"],
+          "allowed_acts": ["propose-state-delta"],
+          "required_confirmations": [],
+          "restrictions": ["no-response-prose", "no-policy-definition-edits", "no-direct-research"],
+          "limitations": [],
+          "issued_at": "2026-09-04T12:00:00Z",
+          "expires_at": "2026-09-04T12:05:00Z"
+        },
+        "background": {
+          "current_goal": "reply-to-current-user",
+          "interaction_phase": "understand-current-message",
+          "active_entity_refs": [],
+          "relevant_claim_refs": [],
+          "pending_question_refs": [],
+          "omitted_categories": [],
+          "limitations": ["first accepted message; no earlier authorized history"]
+        },
+        "continuity": {
+          "window": {
+            "turn_limit": 20,
+            "includes_current_event": false,
+            "omitted_older_turn_count": 0
+          },
+          "recent_memory": {
+            "status": "empty",
+            "source_turn_refs": [],
+            "fact_refs": [],
+            "decision_refs": [],
+            "unresolved_question_refs": [],
+            "preference_refs": [],
+            "invalidation_refs": []
+          },
+          "formatted_history": [],
+          "formatting_profile_ref": "compact-dialogue@1",
+          "limitations": ["first accepted message; no prior continuity"]
+        },
+        "next_steps": {
+          "task_ref": "reply-to-current-user",
+          "plan_revision": 1,
+          "completeness": "complete_for_authorized_task_projection",
+          "current_step_ref": "wait-task",
+          "steps": [
+            {
+              "step_ref": "ask-task",
+              "title": "Ask what needs explanation",
+              "kind": "question",
+              "status": "completed",
+              "owner_ref": "main-composer",
+              "dependency_refs": [],
+              "precondition_refs": [],
+              "required_confirmation_refs": [],
+              "evidence_or_receipt_refs": ["question-delivered-1"],
+              "blocking_reason_refs": []
+            },
+            {
+              "step_ref": "wait-task",
+              "title": "Wait for the user to name the task",
+              "kind": "wait",
+              "status": "in_progress",
+              "owner_ref": "runtime",
+              "dependency_refs": ["ask-task"],
+              "precondition_refs": [],
+              "required_confirmation_refs": [],
+              "evidence_or_receipt_refs": [],
+              "blocking_reason_refs": []
+            }
+          ],
+          "omitted_step_refs": [],
+          "limitations": []
+        },
+        "writable_targets": [
+          {
+            "policy_id": "conversation-identity",
+            "instance_id": "identity-current-user",
+            "field_id": "preferred_name",
+            "field_revision": 0,
+            "value_schema_ref": "preferred-name@1",
+            "allowed_changes": ["set", "clear"],
+            "allowed_support": ["reported"],
+            "merge_rule_ref": "replace-after-admission@1",
+            "value_schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 80
+            }
+          },
+          {
+            "policy_id": "response-style",
+            "instance_id": "response-style-current-turn",
+            "field_id": "emotion_observation",
+            "field_revision": 0,
+            "value_schema_ref": "emotion-observation@1",
+            "allowed_changes": ["set", "clear"],
+            "allowed_support": ["reported", "inferred"],
+            "merge_rule_ref": "replace-after-admission@1",
+            "value_schema": {
+              "enum": ["concern"]
+            }
+          },
+          {
+            "policy_id": "response-style",
+            "instance_id": "response-style-current-turn",
+            "field_id": "requested_format",
+            "field_revision": 0,
+            "value_schema_ref": "requested-format@1",
+            "allowed_changes": ["set", "clear"],
+            "allowed_support": ["reported"],
+            "merge_rule_ref": "replace-after-admission@1",
+            "value_schema": {
+              "enum": ["one_step_at_a_time", "short_explanation", "steps"]
+            }
+          }
+        ],
+        "block_contracts": [],
+        "output_contract": {
+          "schema": "state-delta.v3",
+          "max_groups": 8,
+          "max_blocks": 6,
+          "max_parts_per_block": 6,
+          "max_candidates_per_part": 4,
+          "max_operations": 24,
+          "allowed_operations": ["change_policy_data", "propose_claim", "supersede_claim", "resolve_question", "request_research", "propose_action", "propose_memory", "resolve_choice", "propose_plan_change"]
+        },
+        "expires_at": "2026-09-04T12:05:00Z",
+        "role_id": "analyzer",
+        "invocation_id": "analyze-turn-1",
+        "memory": {
+          "task_summary": {
+            "status": "empty",
+            "source_turn_refs": [],
+            "fact_refs": [],
+            "decision_refs": [],
+            "unresolved_question_refs": [],
+            "preference_refs": [],
+            "invalidation_refs": []
+          },
+          "relevant_durable_memory": [],
+          "limitations": []
+        },
+        "unresolved_choices": [],
+        "source_dependencies": [
+          {
+            "kind": "state",
+            "binding": {
+              "ref": "session-example@0",
+              "digest": "sha256:8a4e801cf5bdb6b41e535d2c0db0cb98d7bf2223ba363d64dd17eca3aad44c8a"
+            }
+          },
+          {
+            "kind": "identity",
+            "binding": {
+              "ref": "support-guide@1",
+              "digest": "sha256:ba072a6bc8485b338ebe796e72f61981813dc1f4673f3ee05a83afca03d346f6"
+            }
+          },
+          {
+            "kind": "projection",
+            "binding": {
+              "ref": "analyzer-default@2",
+              "digest": "sha256:9af90ca5a554f02032aa9c2997e6998c3409343fc80642a150a28d24f23ca424"
+            }
+          },
+          {
+            "kind": "plan",
+            "binding": {
+              "ref": "reply-to-current-user@1",
+              "digest": "sha256:50187eb795d4e3e5e5c2eeed0778727a62268aa7ce66d5b78ed272c543128614"
+            }
+          },
+          {
+            "kind": "policy",
+            "binding": {
+              "ref": "conversation-identity@1",
+              "digest": "sha256:be967495291a1d44857f60685864ef56ae4827e5edb6d976fcb44657c74b4862"
+            }
+          },
+          {
+            "kind": "policy",
+            "binding": {
+              "ref": "response-style@1",
+              "digest": "sha256:f5ca371a00529b08738d8bd69608dd76784bcf4283a405bbaa1c3a857687ca12"
+            }
+          },
+          {
+            "kind": "event",
+            "binding": {
+              "ref": "user-message-1@1",
+              "digest": "sha256:2d1d457a95a51924595c3d881f5fbfafa00f5f4312e10e581c1711a58568c0d3"
+            }
+          },
+          {
+            "kind": "authorization",
+            "binding": {
+              "ref": "auth-scope-example@1",
+              "digest": "sha256:8056b732f6002efc8a489e72b6e4c09ac4344630a0727203e437575e6eb0138a"
+            }
+          },
+          {
+            "kind": "memory",
+            "binding": {
+              "ref": "session-memory@0",
+              "digest": "sha256:8093db4f2247a73f0cf02dc22ba450e1639da3f9892c83afa58f6754b88b0acb"
+            }
+          },
+          {
+            "kind": "delivery",
+            "binding": {
+              "ref": "session-delivery@0",
+              "digest": "sha256:8bab7c0d7ecfe5acd5ebc8541b71c5bea2c57c0521b789291d7389910ea9cb68"
+            }
+          }
+        ],
+        "event": {
+          "event_id": "user-message-1",
+          "turn_id": "user-turn-1",
+          "sequence": 1,
+          "finalized": true,
+          "text": "Я Олена. Я хвилююся. Поясни по одному кроку, без пошуку.",
+          "speaker_ref": "user-example",
+          "kind": "user_message",
+          "source_refs": ["user-message-1/name", "user-message-1/concern", "user-message-1/format"]
+        },
+        "evidence_catalog": [
+          {
+            "ref": "user-message-1",
+            "text": "Я Олена. Я хвилююся. Поясни по одному кроку, без пошуку.",
+            "source_binding": {
+              "ref": "user-message-1@1",
+              "digest": "sha256:2d1d457a95a51924595c3d881f5fbfafa00f5f4312e10e581c1711a58568c0d3"
+            }
+          },
+          {
+            "ref": "user-message-1/concern",
+            "text": "Я хвилююся.",
+            "source_binding": {
+              "ref": "user-message-1@1",
+              "digest": "sha256:2d1d457a95a51924595c3d881f5fbfafa00f5f4312e10e581c1711a58568c0d3"
+            }
+          },
+          {
+            "ref": "user-message-1/format",
+            "text": "Поясни по одному кроку, без пошуку.",
+            "source_binding": {
+              "ref": "user-message-1@1",
+              "digest": "sha256:2d1d457a95a51924595c3d881f5fbfafa00f5f4312e10e581c1711a58568c0d3"
+            }
+          },
+          {
+            "ref": "user-message-1/name",
+            "text": "Я Олена.",
+            "source_binding": {
+              "ref": "user-message-1@1",
+              "digest": "sha256:2d1d457a95a51924595c3d881f5fbfafa00f5f4312e10e581c1711a58568c0d3"
+            }
+          }
+        ],
+        "idempotency_key": "session-example/user-message-1/analysis-1",
+        "budget": {
+          "max_input_tokens": 6000,
+          "max_output_tokens": 2000,
+          "remaining_task_model_calls": 6,
+          "remaining_task_milliseconds": 30000
+        }
+      },
+      "delta": {
+        "schema_version": "state-delta.v3",
+        "input_context_id": "analyzer-input-1",
+        "event_id": "user-message-1",
+        "turn_id": "user-turn-1",
+        "checkpoint_id": "checkpoint-1",
+        "base_revision": 0,
+        "idempotency_key": "session-example/user-message-1/analysis-1",
+        "groups": [
+          {
+            "group_id": "revise-explanation-plan",
+            "depends_on": [],
+            "operations": [
+              {
+                "op": "propose_plan_change",
+                "op_id": "add-explanation",
+                "task_ref": "reply-to-current-user",
+                "expected_plan_revision": 1,
+                "add_steps": [
+                  {
+                    "local_ref": "local-explanation",
+                    "title": "Explain the clarified task",
+                    "kind": "explanation",
+                    "owner_ref": "main-composer",
+                    "dependency_refs": ["wait-task"],
+                    "precondition_refs": [],
+                    "evidence_refs": ["user-message-1"]
+                  }
+                ],
+                "supersede_steps": [],
+                "cancel_step_refs": [],
+                "evidence_refs": ["user-message-1"]
+              }
+            ]
+          }
+        ],
+        "blocks": []
+      }
+    }
+  ],
+  "projection_cases": [
+    {
+      "name": "bounded-research-request",
+      "policy": {
+        "binding": {
+          "ref": "researcher-default@1",
+          "digest": "sha256:9ab86912dda649c072115cfa195d64312b716d7710920b528186d4c6258efba9"
+        },
+        "role_id": "researcher",
+        "target_contract": "ResearchRequest",
+        "history_mode": "none",
+        "include_current_event": false,
+        "max_turns": 20,
+        "max_tokens": 2000,
+        "rules": [
+          {
+            "rule_id": "project-input",
+            "source": "approved-research.query",
+            "destination": "query",
+            "transform_ref": "authorized-role-input@1",
+            "required": true,
+            "when_rule_ref": "role-and-purpose-authorized@1"
+          }
+        ]
+      },
+      "context": {
+        "schema_version": "research-request.v1",
+        "request_ref": "research-1",
+        "parent_event_ref": "event-1",
+        "turn_ref": "turn-1",
+        "state_revision": 1,
+        "gap_ref": "gap-1",
+        "query": "Find the applicable procedure in the authorized knowledge base.",
+        "sources": ["kb"],
+        "authorization_binding": {
+          "ref": "research-authorization@1",
+          "digest": "sha256:1f10cc67fdf48be86b23fef0128e938a150d03eecee81f37aec21f280e88ecc7"
+        },
+        "acl_filter_ref": "tenant-and-document-acl@1",
+        "max_calls": 2,
+        "max_tokens": 2000,
+        "deadline": "2026-09-05T12:01:00Z",
+        "cancellation_ref": "cancel-research-1",
+        "dedupe_key": "research-1-once",
+        "response_dependency": "blocking"
+      }
+    },
+    {
+      "name": "canonical-voice-delivery",
+      "policy": {
+        "binding": {
+          "ref": "voice-composer-default@1",
+          "digest": "sha256:a994e966ed1f2e52017552a39c7f225c7604244642a0dda9d9d58f8181586dec"
+        },
+        "role_id": "voice-composer",
+        "target_contract": "VoiceContext",
+        "history_mode": "none",
+        "include_current_event": false,
+        "max_turns": 20,
+        "max_tokens": 2000,
+        "rules": [
+          {
+            "rule_id": "project-input",
+            "source": "canonical-response.spoken-text",
+            "destination": "spoken_text",
+            "transform_ref": "authorized-role-input@1",
+            "required": true,
+            "when_rule_ref": "role-and-purpose-authorized@1"
+          }
+        ]
+      },
+      "context": {
+        "schema_version": "voice-context.v1",
+        "response_ref": "response-1",
+        "response_revision": 1,
+        "canonical_digest": "sha256:329c8847ebc467cdcad32f5c922eac8f9f2734c2f3981543c463f3b1fa57ce2f",
+        "spoken_text": "What needs explaining?",
+        "language": "en",
+        "delivery_epoch": 1,
+        "pronunciation_rule_ref": "literal-approved-pronunciation@1",
+        "pace": "unhurried",
+        "expires_at": "2026-09-05T12:01:00Z"
+      }
+    }
+  ]
+}

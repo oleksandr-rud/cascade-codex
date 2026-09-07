@@ -11,9 +11,9 @@ This file is the thin repository boot contract for coding agents. Detailed stack
 - Product or system type: standalone coding-agent workflow harness.
 - Primary users: project maintainers and coding agents working in this
   repository.
-- Primary runtime stack summary: no application runtime exists; the repository
-  contains Cascade documentation, role/skill contracts, Python validators, and
-  harness evaluation tooling.
+- Primary runtime stack summary: Bun/TypeScript harness runtime with CLI and
+  stdio MCP adapters, plugin and role/skill contracts, validators, and evaluation
+  tooling; no target-product backend or UI is implemented here.
 - Source of truth when docs conflict with code: current code, then this file,
   then `CODEX.md`, then repo-local skills and docs.
 
@@ -34,7 +34,8 @@ This file is the thin repository boot contract for coding agents. Detailed stack
 ## Architecture Guardrails
 
 Prefer the repository's current harness vocabulary over generic modeling
-labels. Until application source exists, treat this repository as a scaffold:
+labels. This repository is a harness runtime and plugin source checkout, not a
+target-product application:
 
 - Agent instructions -> `CODEX.md` runtime bridge -> `.codex/` role and skill
   contracts -> `docs/` memory targets -> `scripts/cascade.ts`.

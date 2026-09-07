@@ -14,6 +14,20 @@ effect: CANDIDATE_WRITE
 - prompt-evaluation-cases
 </available_artifacts>
 
+<validated_capability_selection>
+selector: cascade-coordinator:select-capabilities
+selected_routes:
+- cascade-market:brand-positioning
+- cascade-prompt:prompt
+- cascade-evals:prompt-evaluation
+rejected_routes:
+- cascade-market:research-market
+- cascade-product:define-product
+- cascade-software-architect:architect-software-system
+- cascade-simulations:simulate
+dispatch_authorized: false
+</validated_capability_selection>
+
 <plugin_capability_catalog>
 - cascade-market:research-market
   consumes: [research-question]
@@ -33,8 +47,11 @@ effect: CANDIDATE_WRITE
 - cascade-software-architect:architect-software-system
   consumes: [accepted-requirements, architecture-constraints]
   produces: [software-architecture-candidate]
-- cascade-software-architect:plan-workflow
+- cascade-coordinator:select-capabilities
   consumes: [task-envelope, plugin-capability-catalog]
+  produces: [capability-selection]
+- cascade-coordinator:plan-workflow
+  consumes: [task-envelope, plugin-capability-catalog, capability-selection]
   produces: [plugin-plan]
 - cascade-simulations:simulate
   consumes: [simulation-definition]

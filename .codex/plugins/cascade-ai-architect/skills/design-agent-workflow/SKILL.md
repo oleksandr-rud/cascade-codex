@@ -21,6 +21,27 @@ Mark missing material authority as `GAP`. Ask only questions whose answers can c
 
 ## Design procedure
 
+For stateful conversational blueprints, consume the
+[Analyzer–Policy Engine–Composer contract](../design-agent-blueprint/references/analyzer-policy-composer.md).
+Bind its delta → policy/reducer → context → canonical response path, optional
+research return through analysis, and voice epoch/order rules to concrete
+workflow phases. Do not substitute a direct Analyzer tool call or pass raw
+deltas to a Composer. The generic loop below must preserve these boundaries.
+
+Use [event projections and authoring rules](../design-agent-blueprint/references/event-projections-and-context-format.md)
+for checkpoint-owned processing groups, accepted-event batches, pure transitions,
+projection cursors and context compilation. Distinguish semantic replay from live
+re-analysis and dispatch. Bind the configured JSON/YAML ingress gate and block-text egress gate;
+state/context grouping does not require a separate persisted TurnState object.
+
+For record-level updates and context handoffs, bind
+[StateDelta, policy data, and role projections](../design-agent-blueprint/references/state-delta-policy-projection.md):
+atomic groups, registered fields, derived evaluations, per-role projection
+contracts, no-op processing checkpoints, and summary coverage/invalidation.
+Bind deferred-choice resolution, plan supersession, blocking/nonblocking research
+and one-transaction admission to the versioned wire contracts; validate candidate
+examples with the blueprint skill's contract checker.
+
 1. Start from the smallest loop that can complete the goal:
    `accept -> assemble context -> select next action -> authorize -> act -> observe -> validate -> update state -> complete or recover`.
 2. Name every durable state, event, and transition. Keep application state in the harness or target system, not only in prompt history.

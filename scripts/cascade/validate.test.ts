@@ -33,6 +33,7 @@ function admissionHooks(command = admissionHookCommand): Record<string, any> {
   return {
     hooks: {
       UserPromptSubmit: [group(undefined, true)],
+      Interrupt: [group()],
       PreToolUse: [group("*")],
       PermissionRequest: [group("*")],
       PostToolUse: [{
@@ -175,12 +176,17 @@ describe("task admission hook validation", () => {
     expect(admissionHookWiringErrors({ cascade: { admission_hook: ".codex/other-hooks.json" } }, admissionHooks())).toContain("Cascade admission hook path is invalid");
     expect(admissionHookWiringErrors({ cascade: { admission_hook: ".codex/hooks.json" } }, admissionHooks("bun scripts/cascade/task-admission-hook.ts"))).toEqual(expect.arrayContaining([
       "Cascade admission hook command is invalid for UserPromptSubmit",
+      "Cascade admission hook command is invalid for Interrupt",
       "Cascade admission hook command is invalid for PreToolUse",
       "Cascade admission hook command is invalid for PermissionRequest",
     ]));
     const missing = admissionHooks();
     delete missing.hooks.PermissionRequest;
     expect(admissionHookWiringErrors({ cascade: { admission_hook: ".codex/hooks.json" } }, missing)).toContain("Cascade admission hook wiring is invalid for PermissionRequest");
+
+    const missingInterrupt = admissionHooks();
+    delete missingInterrupt.hooks.Interrupt;
+    expect(admissionHookWiringErrors({ cascade: { admission_hook: ".codex/hooks.json" } }, missingInterrupt)).toContain("Cascade admission hook wiring is invalid for Interrupt");
 
     const missingImpact = admissionHooks();
     delete missingImpact.hooks.PostToolUse;
@@ -203,6 +209,10 @@ describe("task admission hook validation", () => {
     const unboundedTimeout = admissionHooks();
     unboundedTimeout.hooks.PermissionRequest[0].hooks[0].timeout = 300;
     expect(admissionHookWiringErrors({ cascade: { admission_hook: ".codex/hooks.json" } }, unboundedTimeout)).toContain("Cascade admission hook timeout is invalid for PermissionRequest");
+
+    const slowInterrupt = admissionHooks();
+    slowInterrupt.hooks.Interrupt[0].hooks[0].timeout = 4;
+    expect(admissionHookWiringErrors({ cascade: { admission_hook: ".codex/hooks.json" } }, slowInterrupt)).toContain("Cascade admission hook timeout is invalid for Interrupt");
 
     const missingContext = admissionHooks();
     delete missingContext.hooks.UserPromptSubmit[0].hooks[0].additionalContextLimit;

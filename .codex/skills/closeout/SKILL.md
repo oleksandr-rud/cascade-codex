@@ -32,6 +32,37 @@ documentation. It is not a mandatory final phase for every bounded change.
    current host mutation authority; revalidate indexes and preserve the source
    artifact, failed history, and rehydration path. Retention is never automatic.
 
+## Validated artifact persistence
+
+When a plugin skill returns a candidate artifact that must become durable
+repository state, the active host—not the producer skill—routes the candidate
+through closeout. If the `cascade_workspace` MCP server is available:
+
+1. Read `cascade://workspace/artifact-destinations` and bind one exact artifact
+   kind, target path, format, and optional repository schema. Do not infer a
+   destination outside that registry.
+2. Call `prepare_workspace_artifact`. Treat its receipt as mechanical evidence
+   for path, format, size, current-target digest, and optional schema only; it
+   is not user permission, semantic acceptance, or a plugin dispatch receipt.
+3. Reconfirm that the current Task Envelope and direct user authority permit
+   the exact target, that proportional validation passed, and that unrelated
+   dirty work remains preserved.
+4. Call `persist_workspace_artifact` with the exact short-lived preparation
+   token, receipt identity, candidate digest, and expected current digest.
+   Never reconstruct, reuse, or weaken those bindings.
+5. Require the returned atomic read-back receipt before reporting a durable
+   write. A stale target, expired/replayed token, schema failure, or path-policy
+   failure is `BLOCKED`; re-prepare from current source rather than overriding
+   the guard.
+
+The MCP server never grants authority and cannot prove that this skill is
+active. Its write tool is therefore a closeout-only host convention enforced
+by this contract, Codex tool approval, destination policy, and validation—not a
+plugin-to-plugin call. If the server is unavailable, standalone plugin skills
+still return their candidate artifact and persistence handoff; use the same
+host checks with ordinary repository tools instead of copying hub logic into
+the plugin.
+
 ## Output
 
 Return outcome, changed files, evidence, residual risk, durable updates,

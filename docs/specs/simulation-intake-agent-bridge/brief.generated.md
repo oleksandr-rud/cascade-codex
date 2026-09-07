@@ -8,7 +8,7 @@
 - Coverage: `complete`
 - Catalog digest: `2d24c923fe55562ab079de54e428788f4429c2051442bbceac75852340af1160`
 - Manifest digest: `1a69b88467c4f3dae37439902a2ce6f62b47e5c0b3b111f874af0264ca808e44`
-- Selected-source digest: `7132c1ba9bd6f9451ce1e2bec3bc0e97bc7719e13bb49dba21480c14c2a58b0f`
+- Selected-source digest: `53c5520cb6881078956867da41da6036c3522a8e54d9d2c51ca50ab884e7d159`
 - Compiler-contract digest: `4cfeada5833d864235315bb41aa63acf157b08f15c247f2914c23fc84fd9acd1`
 
 ## Purpose And Audience
@@ -72,14 +72,14 @@ _No reviewed non-fixture product persona is selected._
 
 | Path | Scope / authority | Status | Purpose | SHA-256 |
 |---|---|---|---|---|
-| `scripts/cascade/simulation-intake.test.ts` | `contract-test` / `implementation` | `authored` | Exercises the intake schema, draft starter, and normalized action boundary without claiming product behavior. | `a1a0036c2f6417f886f5cf2b51e39a0537ef6351dbdd43640e2723253c30fadb` |
+| `scripts/cascade/simulation-intake.test.ts` | `contract-test` / `implementation` | `authored` | Exercises the intake schema, draft starter, and normalized action boundary without claiming product behavior. | `73f7d2d855beeb02217cec4beca9e354dda1faa1fdaab554c02b1d956387527f` |
 | `product-evals/simulations/harness/simulation-correctness-fixture/manifest.yaml` | `harness-simulation` / `mechanics-only` | `authored` | Exercises framework mechanics only and cannot establish target-product behavior or persona truth. | `23776ad788f0b35381eea1727573ac5bb5d1d7e8a74eceda6198fd461254a9bb` |
 
 ## Capability Evaluation References
 
 | Path | Kind / authority | Status | SHA-256 |
 |---|---|---|---|
-| `scripts/cascade/simulation-intake.test.ts` | `contract-test` / `implementation` | `authored` | `a1a0036c2f6417f886f5cf2b51e39a0537ef6351dbdd43640e2723253c30fadb` |
+| `scripts/cascade/simulation-intake.test.ts` | `contract-test` / `implementation` | `authored` | `73f7d2d855beeb02217cec4beca9e354dda1faa1fdaab554c02b1d956387527f` |
 
 ## Gaps
 

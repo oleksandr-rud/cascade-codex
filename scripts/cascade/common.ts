@@ -17,7 +17,21 @@ import { constants } from "node:fs";
 import { dirname, relative, resolve, sep } from "node:path";
 import { fileURLToPath } from "node:url";
 
-export const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "../..");
+const MODULE_PATH = fileURLToPath(import.meta.url);
+const SOURCE_ROOT = resolve(dirname(MODULE_PATH), "../..");
+const COMPILED_EXECUTABLE = MODULE_PATH.split(sep).includes("$bunfs");
+const EXPLICIT_ROOT = process.env.CASCADE_ROOT?.trim();
+
+/**
+ * Source execution is anchored to this repository as before. A compiled CLI
+ * cannot use Bun's virtual module path as a physical evidence root, so it
+ * operates on an explicit CASCADE_ROOT or the caller's current directory.
+ */
+export const ROOT = EXPLICIT_ROOT
+  ? resolve(EXPLICIT_ROOT)
+  : COMPILED_EXECUTABLE
+    ? resolve(process.cwd())
+    : SOURCE_ROOT;
 
 export class CascadeError extends Error {}
 

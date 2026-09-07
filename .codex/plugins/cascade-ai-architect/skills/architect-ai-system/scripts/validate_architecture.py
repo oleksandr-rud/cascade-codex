@@ -288,7 +288,7 @@ def validate_packet(packet: dict[str, Any], schema: dict[str, Any] | None = None
         errors.append("topology deterministic_workflow requires exactly zero agents")
     elif topology_kind in {"single_agent", "single_agent_with_skills"} and agent_count != 1:
         errors.append(f"topology {topology_kind} requires exactly one agent; found {agent_count}")
-    elif topology_kind in {"manager_with_specialists", "decentralized_handoffs", "evaluator_optimizer"} and agent_count < 2:
+    elif topology_kind in {"model_pipeline", "manager_with_specialists", "decentralized_handoffs", "evaluator_optimizer"} and agent_count < 2:
         errors.append(f"topology {topology_kind} requires at least two role-backed agents; found {agent_count}")
     for slug, tool in tools.items():
         if tool.get("effect") != "read_only":

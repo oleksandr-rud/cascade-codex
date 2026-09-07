@@ -15,6 +15,18 @@ Retain a separate role only when it has an independently goal-directed and evalu
 
 ## Build the contracts
 
+When the selected blueprint uses
+[Analyzer–Policy Engine–Composer](../design-agent-blueprint/references/analyzer-policy-composer.md),
+use its ownership table. Analyzer has proposal-only output, Main Composer owns
+canonical meaning, Voice Composer owns delivery, and Researcher supplies
+evidence only. Policy Engine is deterministic runtime code, not an agent role.
+Do not invent tool access to make a tool-free role appear more agentic.
+
+Apply the [agent authoring rules](../design-agent-blueprint/references/event-projections-and-context-format.md):
+bind JSON delta output to checkpoint/attempt identity, compact block-text input
+to the validated role projection, multi-policy reference scope, and a stable
+role/catalog prefix. Preserve independent role authority and explicit gaps.
+
 1. Assign every capability to exactly one primary role. Contributors may assist, but cannot share final mutation or completion authority.
 2. Assign one owner for the final system output and one merge owner for every parallel branch.
 3. For each role, define mission, activation condition, owned capabilities, non-goals, accepted inputs, source authority, decisions, tools, permissions, state access, target model capability envelope, output, and observable done condition.

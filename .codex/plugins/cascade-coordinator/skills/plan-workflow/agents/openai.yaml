@@ -1,0 +1,4 @@
+interface:
+  display_name: "Plan Workflow"
+  short_description: "Plan ordered, policy-safe plugin workflows"
+  default_prompt: "Use $plan-workflow to compile the validated Cascade capability selection into an ordered, non-dispatching workflow plan."

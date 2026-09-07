@@ -58,6 +58,11 @@ non-atomic.
 
 ## Specialist routing
 
+- Route ambiguous or multi-domain requests through
+  `cascade-coordinator:select-capabilities`. When the validated selection has
+  multiple nodes, dependencies, artifact handoffs, parallel branches, or a
+  join, compile it through `cascade-coordinator:plan-workflow`. Coordinator
+  artifacts never grant dispatch or repository authority.
 - Route market research, opportunity assessment, experiments, positioning,
   and messaging directly through Cascade Market.
 - Route product definition, prioritization, lifecycle, and validation through

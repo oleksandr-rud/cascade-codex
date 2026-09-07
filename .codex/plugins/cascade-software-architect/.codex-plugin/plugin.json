@@ -1,14 +1,13 @@
 {
   "name": "cascade-software-architect",
-  "version": "0.1.0+codex.20260827161121",
-  "description": "Designs and independently reviews source-grounded software, plugin, and workflow architectures without implementing or accepting them.",
+  "version": "0.1.2+codex.20260904164520",
+  "description": "Designs and independently reviews source-grounded software and plugin architectures without implementing, coordinating, or accepting them.",
   "author": {
     "name": "Cascade"
   },
   "keywords": [
     "software-architecture",
     "system-design",
-    "workflow-planning",
     "architecture-patterns",
     "architecture-review",
     "change-review"
@@ -17,7 +16,7 @@
   "interface": {
     "displayName": "Cascade Software Architect",
     "shortDescription": "Design and review software and plugin systems.",
-    "longDescription": "Design source-grounded software-system boundaries, select compatible architecture patterns, compile non-dispatching cross-plugin workflow graphs, and independently review architecture candidates or current changes. Domain plugins retain their decisions, Cascade AI Architect owns agent behavior, and the target host owns implementation and execution.",
+    "longDescription": "Default server-side systems to a modular monolith with concrete domain modules and public contracts, select compatible architecture patterns, and independently review architecture candidates or current changes. Cascade Coordinator owns cross-plugin capability selection and workflow planning, Cascade AI Architect owns agent behavior, and the target host owns implementation and execution.",
     "developerName": "Cascade",
     "category": "Productivity",
     "capabilities": [
@@ -26,7 +25,6 @@
     ],
     "defaultPrompt": [
       "Design the software-system boundaries for this request.",
-      "Plan the smallest dependency-safe Cascade plugin workflow.",
       "Review this architecture or change for boundary defects."
     ]
   }

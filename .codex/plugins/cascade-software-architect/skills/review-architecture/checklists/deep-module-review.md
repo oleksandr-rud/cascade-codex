@@ -9,6 +9,14 @@ abstractions, state-machine changes, or major refactors.
 - [ ] Owning boundary is identified.
 - [ ] Change type is classified: additive, behavior-preserving, breaking,
       state-machine, integration-sensitive, user-visible, or internal.
+- [ ] Every top-level module names a real domain entity, aggregate, cohesive
+      capability, or selected infrastructure mechanism rather than a generic
+      category such as core, common, services, helpers, or utils.
+- [ ] A separately deployed service has a current release, scale, data,
+      security, availability, or failure-isolation reason; source modularity
+      alone is not treated as deployment evidence.
+- [ ] A modular monolith uses public in-process contracts and acyclic module
+      dependencies, without internal network or broker boundaries by default.
 
 ## Interface Depth
 
@@ -36,6 +44,8 @@ abstractions, state-machine changes, or major refactors.
 - [ ] Access patterns are named before proposing data-shape changes.
 - [ ] Source of truth, duplicated fields, update path, staleness tolerance, and
       validation checks are named for copied data.
+- [ ] A shared database does not permit cross-module storage access; each
+      module owns its tables, migrations, and writes through public use cases.
 - [ ] Unbounded histories or arrays are rejected unless the product need and
       retention rule require them.
 - [ ] Query or index recommendations name the owner query and expected evidence.
@@ -53,6 +63,8 @@ abstractions, state-machine changes, or major refactors.
 ## Seam And Adapter Discipline
 
 - [ ] A new seam has a real variation today.
+- [ ] Shared technical code has at least two current consumers and owns stable
+      mechanics without product or entity semantics.
 - [ ] Existing codebase seams are reused first.
 - [ ] Public contracts and generated artifacts are inventoried.
 - [ ] Stale, duplicate, replaced, or legacy paths use direct migration,

@@ -1,0 +1,34 @@
+example_kind: illustrative-checkpoint-group
+checkpoint_id: checkpoint-1
+scope_ref: auth-scope-example
+input_event_ref: user-message-1
+root_checkpoint_ref: checkpoint-1
+conversation_alias: user-turn-1
+processing_revision: 2
+status: committed
+attempts:
+  - invocation_ref: analyze-turn-1
+    input_context_ref: analyzer-input-1
+    delta_ref: analyzer-delta.example.json
+    receipt_ref: worked-trace/applied_change_set
+    idempotency_key: session-example/user-message-1/analysis-1
+state_binding:
+  base_revision: 0
+  accepted_revision: 1
+  snapshot_ref: worked-trace/expected_state_after
+committed_batch_refs: []
+role_context_refs:
+  - role: analyzer
+    context_ref: analyzer-input-1
+    state_revision: 0
+    compiled_text_ref: analyzer-context.example.txt
+  - role: main-composer
+    context_ref: composer-context-1
+    state_revision: 1
+    compiled_text_ref: composer-context.example.txt
+response_refs: []
+dispatch_intent_refs:
+  - compose-turn-1
+limitations:
+  - Reference fixture only; no event-store batch was produced.
+  - No delivery receipt is implied by checkpoint status.

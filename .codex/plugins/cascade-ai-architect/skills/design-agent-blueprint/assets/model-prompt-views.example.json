@@ -1,0 +1,208 @@
+{
+  "analyzer": {
+    "catalogView": {
+      "sections": [
+        {
+          "title": "Policy catalog",
+          "content": [
+            {
+              "Target": "conversation-identity.preferred_name",
+              "Meaning": "Як звертатися до користувача",
+              "Type": "Текст до 80 символів",
+              "Changes": [
+                "set",
+                "clear"
+              ],
+              "Evidence": "Лише прямо повідомлене користувачем"
+            },
+            {
+              "Target": "response-style.emotion_observation",
+              "Meaning": "Поточна емоційна ознака",
+              "Values": [
+                "concern"
+              ],
+              "Evidence": "Повідомлене або явно позначений висновок"
+            },
+            {
+              "Target": "response-style.requested_format",
+              "Meaning": "Бажаний формат пояснення",
+              "Values": [
+                "one_step_at_a_time",
+                "short_explanation",
+                "steps"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "modelView": {
+      "sections": [
+        {
+          "title": "Current input",
+          "content": "Я Олена. Я хвилююся. Поясни по одному кроку, без пошуку."
+        },
+        {
+          "title": "Evidence",
+          "content": [
+            {
+              "Source": "e1",
+              "Text": "Я Олена."
+            },
+            {
+              "Source": "e2",
+              "Text": "Я хвилююся."
+            },
+            {
+              "Source": "e3",
+              "Text": "Поясни по одному кроку, без пошуку."
+            }
+          ]
+        },
+        {
+          "title": "Current state",
+          "content": "Перше повідомлення. Ім’я та формат ще не записані; конкретна задача не уточнена."
+        },
+        {
+          "title": "Applicable rules",
+          "content": [
+            "Запропонувати лише обґрунтовані зміни.",
+            "Користувач просить без пошуку."
+          ]
+        }
+      ]
+    },
+    "runtimeManifest": {
+      "checkpoint_id": "checkpoint-1",
+      "context_id": "analyzer-context-1",
+      "profile_version": "example-1",
+      "example_kind": "illustrative-policy-engine-semantic-selection",
+      "evidence_handles": {
+        "e1": "user-message-1/name",
+        "e2": "user-message-1/concern",
+        "e3": "user-message-1/format"
+      },
+      "targets": {
+        "conversation-identity.preferred_name": "identity-current-user",
+        "response-style.emotion_observation": "response-style-current-turn",
+        "response-style.requested_format": "response-style-current-turn"
+      }
+    }
+  },
+  "composer": {
+    "catalogView": {
+      "sections": [
+        {
+          "title": "Response policy",
+          "content": [
+            "Використовувати лише прийняті факти.",
+            "Не вигадувати виконані дії та не давати безпідставних запевнень."
+          ]
+        }
+      ]
+    },
+    "modelView": {
+      "sections": [
+        {
+          "title": "Current input",
+          "content": "Я Олена. Я хвилююся. Поясни по одному кроку, без пошуку."
+        },
+        {
+          "title": "Known facts",
+          "content": {
+            "Name": "Олена",
+            "Source": "Користувач повідомив сам"
+          }
+        },
+        {
+          "title": "Response task",
+          "content": "Уточнити, що саме потрібно пояснити."
+        },
+        {
+          "title": "Response guidance",
+          "content": {
+            "Language": "Українська",
+            "Tone": "Спокійний, підтримувальний",
+            "Format": "По одному кроку; проста мова",
+            "Limits": "До 4 речень, не більше одного запитання",
+            "Required": "Визнати хвилювання та запитати, що потрібно пояснити",
+            "Restrictions": "Без пошуку, вигаданих фактів і безпідставних запевнень"
+          }
+        }
+      ]
+    },
+    "runtimeManifest": {
+      "checkpoint_id": "checkpoint-1",
+      "context_id": "composer-context-1",
+      "profile_version": "example-1",
+      "example_kind": "illustrative-policy-engine-semantic-selection"
+    }
+  },
+  "researcher": {
+    "catalogView": {
+      "sections": [
+        {
+          "title": "Research policy",
+          "content": [
+            "Шукати лише в дозволених джерелах.",
+            "Повернути знайдені твердження з посиланнями та уривками; явно зазначити прогалини."
+          ]
+        }
+      ]
+    },
+    "modelView": {
+      "sections": [
+        {
+          "title": "Research question",
+          "content": "Знайти відповідну процедуру в дозволеній базі знань."
+        },
+        {
+          "title": "Search constraints",
+          "content": {
+            "Sources": "Knowledge base",
+            "Calls": "Не більше двох пошукових викликів"
+          }
+        }
+      ]
+    },
+    "runtimeManifest": {
+      "checkpoint_id": "checkpoint-1",
+      "context_id": "researcher-context-1",
+      "profile_version": "example-1",
+      "example_kind": "illustrative-policy-engine-semantic-selection"
+    }
+  },
+  "voice": {
+    "catalogView": {
+      "sections": [
+        {
+          "title": "Voice policy",
+          "content": [
+            "Озвучити затверджений текст без зміни змісту."
+          ]
+        }
+      ]
+    },
+    "modelView": {
+      "sections": [
+        {
+          "title": "Text to speak",
+          "content": "Що саме потрібно пояснити?"
+        },
+        {
+          "title": "Delivery",
+          "content": {
+            "Language": "Українська",
+            "Pace": "Неквапливо"
+          }
+        }
+      ]
+    },
+    "runtimeManifest": {
+      "checkpoint_id": "checkpoint-1",
+      "context_id": "voice-context-1",
+      "profile_version": "example-1",
+      "example_kind": "illustrative-policy-engine-semantic-selection"
+    }
+  }
+}

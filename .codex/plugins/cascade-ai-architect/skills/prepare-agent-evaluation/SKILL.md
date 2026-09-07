@@ -24,6 +24,20 @@ outputs to the target or candidate generator.
 
 ## Workflow
 
+For the [Analyzer–Policy Engine–Composer default](../design-agent-blueprint/references/analyzer-policy-composer.md),
+map its acceptance table to target cases. Include zero research calls without
+an admitted request, policy/delta/context boundaries, memory invalidation,
+stale revisions, and voice cancellation/order. Keep structural, semantic,
+provider, and physical acoustic evidence separate. Also bind the
+[implementation acceptance scenarios](../design-agent-blueprint/references/implementation-and-completeness.md):
+transaction rollback/replay, multi-part selection and clarification, memory beyond
+the recent window, plan supersession, source resolution and channel-specific delivery.
+For the [event/projection/text extension](../design-agent-blueprint/references/event-projections-and-context-format.md),
+also bind checkpoint retry/child lineage, multi-policy reference resolution, JSON/optional YAML
+parse/schema reliability, block-text structure/literal preservation, projection
+lag/rebuild and stable-prefix tests. Measure actual provider cache reuse separately
+from local prefix equality; replay must produce zero external invocations.
+
 1. Freeze the claim, target, case split, subject adapter, architecture profiles,
    rubrics, budgets, model policy, and run identity before any execution.
 2. Select representative positive, negative, collision, permission, recovery,

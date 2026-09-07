@@ -24,6 +24,17 @@ this whole pack into the generated prompt.
 - **Tool orchestration** — triggers: tools, agent, execute, automate, workflow.
   Resolve available tools, selection rules, permissions and confirmations,
   budgets, tool-error behavior, recovery/cleanup, and terminal proof.
+  For a supplied Analyzer–Policy Engine–Composer architecture brief, consume
+  its frozen `event-projections-and-context-format` contract and authoring rules.
+  Preserve checkpoint/attempt bindings in the private runtime manifest, proposal-only multi-policy JSON output
+  by default (YAML only when configured), Policy Engine-selected role context,
+  and readable semantic text sections. Never serialize the runtime envelope into
+  model messages; omit its IDs/revisions/digests/timestamps even from the suffix.
+  Keep only task-relevant evidence/target handles. Keep approved stable role/catalog
+  instructions before variable state/history and bind the provider cache boundary.
+  Do not infer the input format from output transport or add a duplicate mutable turn store. Require
+  resolvable contract content in the brief; do not invent it from the contract ID.
+  Prefix equality is local evidence; cache hits and model adherence need execution.
 - **Comparison** — triggers: choose, compare, recommend, rank. Resolve
   candidates, disqualifiers, criteria/weights, evidence, uncertainty, and
   recommendation conditions.
