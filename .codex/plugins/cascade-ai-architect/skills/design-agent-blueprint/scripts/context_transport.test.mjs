@@ -99,7 +99,7 @@ describe('Analyzer JSON/optional YAML and block context reference', () => {
     expect(() => parseBlocks('context{}garbage')).toThrow('trailing');
   });
   test('runtime metadata never changes prompt bytes; changed semantic catalog does', () => {
-    const setup = { instructions: 'Reference role instructions.', ...views.analyzer };
+    const setup = { systemPrompt: 'Reference system prompt.', instructions: 'Reference role instructions.', ...views.analyzer };
     const first = assembleContext(setup);
     const second = assembleContext({ ...setup, runtimeManifest: {checkpoint_id:'new', state_revision:99} });
     expect(first.prefix).toBe(second.prefix);
@@ -111,5 +111,8 @@ describe('Analyzer JSON/optional YAML and block context reference', () => {
     expect(next.prefix).toBe(first.prefix);
     expect(next.data).not.toBe(first.data);
     expect(first.cache_boundary).toBe('after-prefix');
+    expect(first.messages.map(m=>m.role)).toEqual(['system','developer','user']);
+    expect(first.messages[0].content).toBe(setup.systemPrompt);
+    expect(first.messages[1].content.indexOf('[Role instructions]')).toBeLessThan(first.messages[1].content.indexOf('[Policy catalog]'));
   });
 });

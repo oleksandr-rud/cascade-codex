@@ -163,15 +163,20 @@ export function renderPromptView(view) {
   }).join('\n\n')+'\n';
 }
 
-export function assembleContext({ instructions, catalogView, modelView, runtimeManifest }) {
+export function assembleContext({ systemPrompt, instructions, catalogView, modelView, runtimeManifest }) {
+  if (!systemPrompt || typeof systemPrompt !== 'string') throw Error('system prompt required');
   if (!instructions || typeof instructions !== 'string') throw Error('instructions required');
   if (!runtimeManifest || typeof runtimeManifest !== 'object') throw Error('runtime manifest required');
   // Policy Engine supplies approved semantic views; renderer does not select data.
-  const prefix = instructions+'\n\n'+renderPromptView(catalogView);
+  const developer = '[Role instructions]\n'+instructions+'\n\n'+renderPromptView(catalogView);
+  const data = renderPromptView(modelView);
+  const prefix = systemPrompt+'\n\n'+developer;
   return {
     prefix,
+    messages: [{ role: 'system', content: systemPrompt },
+      { role: 'developer', content: developer }, { role: 'user', content: data }],
     manifest: { ...runtimeManifest, prefix_digest: 'sha256:'+createHash('sha256').update(prefix).digest('hex') },
-    data: renderPromptView(modelView),
+    data,
     cache_boundary: 'after-prefix', // Adapter must translate into supported provider API.
   };
 }

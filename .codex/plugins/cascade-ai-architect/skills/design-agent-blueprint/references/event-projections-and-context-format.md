@@ -377,16 +377,22 @@ rendered text. Fewer characters are not proof of lower model cost or better answ
 Architecture specifies assembly and evidence requirements; Cascade Prompt owns
 the actual role instructions. Construct the request in this order:
 
-1. Stable system/developer role contract, configured JSON/YAML output or response
-   format rules, plain-text block conventions and minimal trusted agent identity.
-2. Stable, authorized role/profile catalog: approved policy semantics, field
+1. System prompt: stable shared agent identity, mission and global trust boundaries.
+2. Role instructions after the system prompt: role responsibility, configured
+   output format, evidence rules and plain-text input conventions.
+3. Stable, authorized role/profile catalog after the role instructions: policy semantics, field
    schemas and fixed examples compiled as readable text blocks. Include only the needed profile.
-3. Explicit cache boundary where the provider/model supports it.
-4. Variable semantic context: relevant policy effects and accepted facts, selected
+4. Explicit cache boundary where the provider/model supports it.
+5. Variable semantic context: relevant policy effects and accepted facts, selected
    memory/history/input, next steps and task-relevant limits. Runtime metadata is
    outside all model messages, including this suffix.
 
-Keep the first two segments byte-stable for a fixed prompt/profile/format version.
+Keep the first three segments byte-stable for a fixed prompt/profile/format version.
+The reference assembler emits system, developer (role instructions then catalog),
+and user/data messages in that order. Adapters preserve that ordering and authority
+using the provider's supported message types; the diagnostic prefix string is not
+a claim about the provider's internal chat encoding. Runtime metadata remains
+outside the messages.
 Do not place current timestamps, session IDs or selected-state digests there.
 Bind catalog/profile/identity and format versions in a stable deployment manifest;
 changing one deliberately invalidates that prefix. Keep tools and provider output
