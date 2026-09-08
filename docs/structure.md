@@ -19,6 +19,10 @@ config; keep reusable workflow rules in skills, agents, and patterns.
 | `docs/patterns/` | Reusable workflow, boundary, testing, context rules, and selectable context packs | `pattern-context`, `closeout`, `cascade-coding-agent:adapt-harness` |
 | `.codex/skills/` | Repository context, persistence, mutation, validation, target execution/repair, and closeout effects | Agent Engineer and Orchestrator host integration |
 | `.codex/agents/` | Role contracts and skill maps | Agent Engineer skills |
+| `.codex/agents/product-designer/` and sibling `.toml` | Mockup creation and frontend design handoff | Agent Engineer integration; Product Designer owns scoped design artifacts |
+| `.codex/agents/software-engineer/` and sibling `.toml` | Application/domain/data/integration implementation | Agent Engineer integration; Software Engineer owns assigned target slice |
+| `.codex/agents/code-reviewer/` and sibling `.toml` | Read-only fixed-diff review | Agent Engineer integration; Code Reviewer owns scoped findings |
+| `.codex/agents/frontend-engineer/` and sibling `.toml` | Frontend implementation, responsive/state behavior and approved-mockup fidelity role | Agent Engineer integration; Frontend Engineer executes scoped target work |
 | `.codex/plugins/` | Repo-local plugin source packages referenced by the repository marketplace | `plugin-creator`, `cascade-coding-agent:maintain-harness` |
 | `.codex/harness-tooling/` | Isolated pinned browser-simulation dependencies and Playwright runner files | Harness maintainers |
 | `harness-evals/` | Canonical scenarios, generated catalog, target schema, judge profiles, anchored rubrics, and judgment schema | `cascade-evals:harness-evaluation`, `cascade-evals:build-judge`, and the host runner |
@@ -32,26 +36,29 @@ config; keep reusable workflow rules in skills, agents, and patterns.
 | `.codex/plugins/cascade-simulations/skills/execute-simulation-campaign/` | Bounded selected-run lifecycle and execution receipt contract | Cascade Simulations source and Simulation Operator |
 | `.codex/plugins/cascade-evals/skills/simulation-evaluation/` | Read-only frozen-evidence, policy, oracle, semantic, and claim-support contract | Cascade Evals source and Simulation Evaluator |
 | `scripts/cascade/cli/` | Async command dispatcher shared by the executable entrypoint and future transports | Cascade CLI application layer |
+| `scripts/cascade/closeout.ts`, `scripts/cascade/closeout-hook.ts` | Shared task/turn-scoped integrity checker and advisory prompt/Stop adapter | Host closeout; never launches tests or judges |
+| `.artifacts/closeout/` | Optional ignored current-turn contracts and evidence summaries | Active host after real scoped checks; no authority from file presence |
 | `scripts/cascade/workspace-service.ts`, `scripts/cascade/workspace-mcp.ts` | Project-level MCP context compilation and registry-bound artifact prepare/persist adapter | Active host for reads; `closeout` for durable writes |
 | `.codex/artifact-destinations.json`, `.codex/schemas/workspace/` | Durable artifact kind, path, format, and receipt contracts for Workspace MCP | Agent Engineer plus authorized host maintenance |
 | `scripts/cascade/campaign/adapters/` | One module per execution contour plus the built-in adapter registry and shared transport resolution | Campaign infrastructure adapters |
 | `scripts/cascade/campaign/artifacts/` | Application-facing artifact repository ports; filesystem persistence remains in `campaign-artifacts.ts` | Campaign application and infrastructure boundary |
-| `scripts/cascade-runtime.ts`, `scripts/build-runtime-bundle.ts` | Five-command core target entrypoint and deterministic lean-bundle builder | Agent Engineer and source validation |
-| `dist/cascade-runtime/` | Ignored generated target profile: host adapters, frozen plugin catalog, Coordinator contracts, admission, and Workspace MCP only | Runtime bundle builder |
+| `scripts/cascade-runtime.ts`, `scripts/build-runtime-bundle.ts` | Six-command core target entrypoint and deterministic lean-bundle builder | Agent Engineer and source validation |
+| `dist/cascade-runtime/` | Ignored generated target profile: host adapters, frozen plugin catalog, Coordinator contracts, admission, closeout, and Workspace MCP | Runtime bundle builder |
 
 The source checkout and target runtime are intentionally different products.
 The source checkout currently has 14 plugin packages plus harness-eval,
 simulation-campaign, fixture, source-test, and historical evidence layers. The
 generated core profile has a hard ceiling of 120 files and excludes
 `.codex/plugins/`, `harness-evals/`, `product-evals/`, `docs/archive/`, source
-tests, browser tooling, source scripts, and the three evaluator/simulation
-lab roles. Installed plugins provide portable methods; the target retains only
-Orchestrator, Agent Engineer, Security, and repository-bound adapters/effects.
+tests, browser tooling, source scripts, and the two simulation lab roles.
+Harness judging is an optional Evals profile, with no dedicated host role.
+Installed plugins provide portable methods; the target retains the host roles
+and repository-bound adapters/effects selected by the runtime bundle manifest.
 
-The repository's default `bun run test` command retains only five runtime
+The repository's default `bun run test` command retains only six runtime
 safety smoke files under `scripts/cascade/`: admission authority, filesystem
 and process boundaries, workspace artifact persistence, the real MCP adapter,
-and the lean runtime bundle. This is deliberately reduced coverage, not an
+closeout integrity, and the lean runtime bundle. This is deliberately reduced coverage, not an
 exhaustive unit suite. Plugin package tests, lab corpora, and built-in targeted
 self-tests remain separate and run only for an affected contract; do not
 recreate broad module-by-module test suites as a routine harness task.

@@ -143,16 +143,21 @@ the host skill tree.
 
 ## Agents
 
+Harness judgment is an optional Cascade Evals subject profile, not a registered
+host role. The legacy receipt principal remains compatible. Completion checks
+use the existing closeout skill and shared CLI/Stop-hook implementation.
+
 - `orchestrator`: orchestrates the cascade.
+- `product-designer`: creates mockups and implementation handoffs through Cascade Design.
+- `software-engineer`: owns scoped software implementation and verification.
+- `frontend-engineer`: implements approved UI designs with rendered evidence.
+- `code-reviewer`: reviews a fixed diff without edits; independence requires a separate context.
 - `agent-engineer`: owns Cascade maintenance, target-project onboarding and
   adaptation, and host integration of reviewed AI-agent and harness assets
   across Codex surfaces, source context, tools, observability, and eval wiring.
 - `security`: read-only host role that selects installed
   `cascade-security:<skill>` methods, supplies redacted current target evidence,
   and owns repository-specific validation and implementation handoff only.
-- `harness-evaluator`: exposes the human-facing Harness Judge and owns
-  read-only independent outcome or trajectory judgment of eligible harness
-  scenario outputs and JSONL traces.
 - `simulation-operator`: owns bounded mutable execution of one approved
   campaign, immutable evidence freezing, cleanup, and execution handoff.
 - `simulation-evaluator`: owns independent read-only cross-contour evidence,

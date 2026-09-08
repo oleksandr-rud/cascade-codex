@@ -17,6 +17,13 @@ plugin, pattern, or schema—not here.
 Current code outranks stale planning prose. Preserve unrelated dirty work and
 never infer authority from a work record, plugin, prompt, or passing check.
 
+For repository searches in any role or skill, use `rg --files <root>` to locate
+files and `rg -n -e '<pattern>' <paths>` to search content. Start with the known
+owner's paths; use `--hidden` for `.codex` assets and `-g` for filename filters.
+Respect ignore rules; add `--no-ignore` only for an explicitly needed ignored
+source, never for a whole cache or artifact inventory. Prefer exact file reads
+when the path is known. If ripgrep is unavailable, use the available equivalent.
+
 ## Plugin-First Capability Routing
 
 Plugins own portable methods, schemas, templates, and generic evaluation
@@ -35,22 +42,28 @@ durable paths, target commands, campaign state, and acceptance.
 | Product definition, lifecycle, and validation | `cascade-product:<skill>` | Orchestrator |
 | Canonical personas and compiled projections | `cascade-personas:<skill>` | Orchestrator |
 | UX, accessibility, visual, and design-system review | `cascade-design:<skill>` | Requesting role or Orchestrator |
+| Design authoring and mockup handoff | `cascade-design:create-design`; host artifact persistence | Product Designer |
+| Software implementation | Host context, planning, implementation and validation skills | Software Engineer; Orchestrator may apply locally |
+| Independent code review | `cascade-software-architect:review-change` | Code Reviewer; separate context and fixed diff |
+| Frontend implementation and approved-mockup repair | Host implementation cascade; Design skills for evidence | Frontend Engineer; role selection does not authorize delegation |
 | Codebase, auth, and secure-design review | `cascade-security:<skill>` | Security or Agent Engineer |
 | Bounded actor simulation and run review | `cascade-simulations:<skill>` | Requesting role |
 | Approved simulation-campaign execution and evidence freeze | `cascade-simulations:execute-simulation-campaign` | Simulation Operator |
 | Frozen simulation outcome or policy judgment | `cascade-evals:simulation-evaluation` | Simulation Evaluator |
-| Cascade route, skill, agent, output, or JSONL-trace evaluation | `cascade-evals:harness-evaluation` | Harness Judge (`harness-evaluator`) |
+| Cascade route, skill, agent, output, or JSONL-trace evaluation | `cascade-evals:harness-evaluation` | Ephemeral Cascade Evals judge using the harness subject profile |
 | Prompt or adaptive-interview evaluation | `cascade-evals:prompt-evaluation` | Requesting role; independent judge identity declared by the frozen evaluation |
 | AI-agent, role, skill, workflow, tool-loop, or architecture evaluation | `cascade-evals:agent-evaluation` | Requesting role; independent judge identity declared by the frozen evaluation |
 | Generic evaluation design or judge-contract construction | `cascade-evals:evaluate` or `cascade-evals:build-judge` | Requesting role; Agent Engineer only for harness-owned judge contracts |
 | Project planning, coordination, reconciliation, and closeout assessment | `cascade-project-management:<skill>` | Orchestrator |
 | Quality planning, test design, assessment, and defect triage | `cascade-qa:<skill>` | Requesting role |
 
-Harness Judge, Simulation Operator, and Simulation Evaluator are source/lab
-roles. The generated core target profile omits them and their corpora or run
-packages; ordinary target work calls the exact installed plugin skill from the
-requesting role. Add a lab role only with the corresponding explicit eval or
-campaign pack.
+Simulation Operator and Simulation Evaluator are optional source/lab roles.
+Harness judgment is an optional Cascade Evals subject profile; no dedicated
+harness-evaluator host role is registered. Existing campaign receipt principals
+keep their compatibility identity. The core target bundle omits simulation lab
+roles and corpora. Ordinary completion uses the existing closeout skill and
+`cascade closeout check`; see its runtime contract for task/turn registration,
+current evidence and the advisory Stop hook.
 
 Resolve required namespaced skills from the enabled installed inventory. Missing
 required dependencies are `BLOCKED`; do not restore copied local
@@ -170,6 +183,10 @@ archive entry by default.
 Repo-local roles provide context, permission, and independence boundaries; they
 do not duplicate plugin methods.
 
+- `product-designer`: authorized mockup creation and frontend handoff through Cascade Design.
+- `software-engineer`: scoped target implementation and proportional verification.
+- `frontend-engineer`: approved-design UI implementation and rendered fidelity evidence.
+- `code-reviewer`: read-only diff review; separate context required for independence.
 - `orchestrator`: proportional normal routing, host market/product adapters,
   implementation, and evidence.
 - `agent-engineer`: Cascade maintenance, target onboarding through
@@ -177,17 +194,14 @@ do not duplicate plugin methods.
   tooling, observability, and eval wiring.
 - `security`: read-only Security plugin selection with minimized sensitive
   evidence.
-- `harness-evaluator`: human-facing Harness Judge for independent outcome and
-  trajectory judgment after deterministic harness gates.
 - `simulation-operator`: bounded mutable execution of one approved campaign
   run, evidence freezing, and cleanup.
 - `simulation-evaluator`: independent read-only judgment of a frozen run.
 
-The harness-evaluation CLI launches an ephemeral read-only Codex judge and
-explicitly loads `.codex/agents/harness-evaluator/AGENT.md` plus
-`cascade-evals:harness-evaluation`. The custom-agent TOML remains its host
-adapter, while `harness-evaluator` remains the machine principal recorded in
-handoffs, schemas, reservations, and receipts.
+The optional harness-evaluation CLI launches ephemeral read-only judges through
+Cascade Evals and its `harness-evaluation/references/judge-profile.md`. The
+legacy `harness-evaluator` receipt principal denotes the profile, not a host
+role. Existing receipts, reservations and validation remain unchanged.
 
 Use role contracts locally. Spawn or delegate only when the user explicitly
 authorizes parallel agents. A separate user-visible task requires an explicit

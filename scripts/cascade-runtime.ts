@@ -3,6 +3,7 @@
 import { CascadeError, printError } from "./cascade/common";
 
 export type CoreRuntimeCommand =
+  | "closeout"
   | "admission"
   | "workflow"
   | "target"
@@ -16,6 +17,7 @@ interface CommandModule {
 type CommandLoader = () => Promise<CommandModule>;
 
 const DEFAULT_LOADERS: Record<CoreRuntimeCommand, CommandLoader> = {
+  closeout: () => import("./cascade/closeout"),
   admission: () => import("./cascade/admission"),
   workflow: () => import("./cascade/plugin-workflow"),
   target: () => import("./cascade/target"),
@@ -33,6 +35,7 @@ export function coreRuntimeHelpText(): string {
   return `Cascade core target runtime
 
 Usage:
+  cascade closeout <snapshot|check|path>
   cascade admission <validate|assess|explain|check-envelope>
   cascade workflow <validate-selection|validate-plan>
   cascade target <inventory|init-manifest|refresh-manifest|validate|drift|probe-commands>

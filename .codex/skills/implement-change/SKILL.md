@@ -24,6 +24,13 @@ the user's authority and the plan's mutation boundary.
    behavior.
 3. Match existing conventions and avoid adjacent cleanup.
 4. Preserve public compatibility unless the request explicitly changes it.
+   For UI implementation from an approved mockup, reproduce its layout, spacing,
+   typography, colors, assets and component/state details. Inspect the actual
+   reference, render at its viewport/state, compare screenshots, repair mismatches
+   and recapture. Use `cascade-design:visual-qa` and its approved-mockup fidelity
+   contract for evidence. Preserve authorized deviations; missing references or
+   unresolved design/accessibility conflicts are explicit gaps. Do not claim
+   pixel-perfect completion without matched rendered evidence.
 5. Keep implementation and focused feedback close: run the cheapest meaningful
    check after each risky boundary.
 6. Update tests and durable documentation only when their governed behavior or

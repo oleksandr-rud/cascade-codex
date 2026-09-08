@@ -55,3 +55,15 @@ skills:
     effect: READ_ONLY
     authority: READ_ONLY
     evaluation_cases: [viewport-states, no-pixel-proof-from-source]
+  - route: cascade-design:create-design
+    description: Create editable product mockups, inspected previews and a version-bound frontend handoff from grounded requirements.
+    triggers: [create or revise concrete mockups or a design prototype]
+    anti_triggers: [review-only request, production frontend implementation]
+    consumes: [product-contract, design-evidence]
+    produces: [design-candidate, frontend-design-handoff]
+    required_dependencies: []
+    optional_dependencies: [cascade-product:define-product, cascade-design:design-system, cascade-design:accessibility-review, cascade-design:visual-qa]
+    policy_tags: [design, design-authoring]
+    effect: CANDIDATE_WRITE
+    authority: READ_ONLY
+    evaluation_cases: [candidate-handoff, missing-design-inputs, required-tool-unavailable]

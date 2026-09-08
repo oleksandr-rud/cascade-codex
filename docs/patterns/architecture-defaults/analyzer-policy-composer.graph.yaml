@@ -26,16 +26,13 @@ nodes:
     owns: "Checkpoint-bound JSON StateDelta proposals from scoped compact block-text input."
   - id: policy-runtime
     kind: application-policy
-    owns: "Deterministic admission/selection, atomic state/event commit, state-machine guards, and eligible dispatch."
+    owns: "Deterministic admission/selection, current-state transactions, lifecycle guards, role/task policy-state slice issuance, and eligible direct work calls."
   - id: state-memory
     kind: data-boundary
     owns: "Claims/state/memory and checkpoint-owned delta, state/context bindings and receipts; derived turn views."
-  - id: read-projections
-    kind: data-boundary
-    owns: "Versioned read views, committed source positions and dependency freshness."
   - id: context-compiler
     kind: application-policy
-    owns: "Role/access/budget projection and compact block text with stable prompt/catalog prefix."
+    owns: "Format only Policy Engine/admission-issued role/task slices and approved prompt assets as compact text; no independent state selection or access."
   - id: main-composer
     kind: model-boundary
     owns: "Canonical response candidates from compiled ComposerContext."
@@ -57,16 +54,13 @@ edges:
     relation: proposes_delta
   - from: policy-runtime
     to: state-memory
-    relation: atomically_commits_state_events_checkpoint
+    relation: atomically_commits_current_state_receipts_pending_work
   - from: state-memory
-    to: read-projections
-    relation: projects_committed_snapshot_or_events
-  - from: read-projections
-    to: context-compiler
-    relation: supplies_fresh_authorized_source_views
+    to: policy-runtime
+    relation: supplies_committed_current_state
   - from: policy-runtime
     to: context-compiler
-    relation: binds_eligible_role_purpose
+    relation: issues_admitted_role_task_policy_state_slice
   - from: context-compiler
     to: main-composer
     relation: supplies_compiled_context
@@ -74,7 +68,7 @@ edges:
     to: response-gate
     relation: proposes_response
   - from: response-gate
-    to: context-compiler
+    to: policy-runtime
     relation: binds_canonical_text_for_voice_if_enabled
   - from: context-compiler
     to: voice-composer
@@ -93,7 +87,7 @@ decisions:
     default: "Consume the versioned Cascade AI Architect analyzer-policy-composer contract and template."
     exception_when: "The selected plugin contract is unavailable; record GAP instead of inventing a local replacement."
   - id: logical-boundaries
-    default: "Keep analysis, policy/state, and composition separate within the smallest sufficient deployment."
+    default: "One modular monolith with vertical use-case slices, current state and direct context functions; no required CQRS/event journal/read-model store."
     exception_when: "Measured isolation, scaling, or recovery requirements justify separate processes or services."
   - id: optional-variants
     default: "Enable Voice Composer only for voice; create research work only for an accepted Analyzer delta request."

@@ -1,9 +1,9 @@
 {
-  "agent_count": 6,
-  "agent_scenario_count": 6,
-  "catalog_digest": "f1bd9e9207a8d27225ca165a3da598a957cd8ee5478fcec388e49845490dcf60",
+  "agent_count": 9,
+  "agent_scenario_count": 9,
+  "catalog_digest": "6f52a1b93930d4f4e2214f9df090951dc07e1971ca65f92a06058c6269b8d133",
   "generated_by": "scripts/cascade/evals.ts",
-  "scenario_count": 138,
+  "scenario_count": 142,
   "scenarios": [
     {
       "expectation": {
@@ -1759,6 +1759,36 @@
       "prompt": "Aggregate current host evidence, bind the frozen receipts, and route any product-visible quality gate to Cascade QA for independent assessment.",
       "source": "harness-evals/skill-cases.yaml",
       "target_skill": "validate-change"
+    },
+    {
+      "expectation": {
+        "allowed_supporting": [],
+        "delegation_policy": "none",
+        "forbidden_primary": [
+          "closeout"
+        ],
+        "must_load_skills": [
+          "cascade-evals:harness-evaluation"
+        ],
+        "mutation_policy": "none",
+        "network_policy": "none",
+        "next_route": "",
+        "primary_skill": "cascade-evals:harness-evaluation",
+        "status_any": [
+          "BLOCKED",
+          "FAIL",
+          "GAP",
+          "NOT_RUN",
+          "PASS"
+        ],
+        "target_skill": "cascade-evals:harness-evaluation"
+      },
+      "id": "HX-071",
+      "kind": "interaction",
+      "owner": "orchestrator",
+      "prompt": "Determine whether a claimed successful coding-agent outcome can be independently judged when only the scenario description exists and raw output, normalized trace and immutable run packet are missing. Use the optional Cascade Evals harness subject profile; stay read-only, report missing evidence and do not infer a pass, execute a target or require a registered evaluator role.",
+      "source": "harness-evals/interactions.yaml",
+      "target_skill": "cascade-evals:harness-evaluation"
     },
     {
       "expectation": {
@@ -3905,7 +3935,7 @@
       "context_bindings": [
         {
           "path": ".codex/agents/agent-engineer/AGENT.md",
-          "sha256": "a9a3ff1dc44e23b1ce6c61db7bab1db668eee807a0706b4fe2b72fc6a5e863ff"
+          "sha256": "f898d586cc65e496bcfd981727c189aa356bc8dc9e3ea02964066b464b43a19e"
         },
         {
           "path": ".codex/agents/agent-engineer/skills.yaml",
@@ -3917,11 +3947,11 @@
         },
         {
           "path": "AGENTS.md",
-          "sha256": "ce2cff5de5b16d2958039057301502919bbea9015ca9005c3cbf813f4a2c1aaf"
+          "sha256": "916b37688a9445160f23aec531814ee69eeec0a27221f10f6218f2ce50278bfc"
         },
         {
           "path": "CODEX.md",
-          "sha256": "b6fb569e6b12f747ec45c9c9e1eb3a8215fe7fc4050f107fe8112351b35cfe3c"
+          "sha256": "8b4e281f9942f2dabd0d14923cf6d9101a85ae879229f32d0e52da199334006d"
         }
       ],
       "execution": {
@@ -3967,12 +3997,16 @@
     {
       "context_bindings": [
         {
-          "path": ".codex/agents/harness-evaluator/AGENT.md",
-          "sha256": "5053cd09ae19d7072e4bdecb18872c09b6ca87d79f783b2b363f72c0b64ad8d9"
+          "path": ".codex/agents/code-reviewer/AGENT.md",
+          "sha256": "ff2729b038a685675b11aaad185efa201a9fd40597d04b41e7111d93afd65891"
         },
         {
-          "path": ".codex/plugins/cascade-evals/skills/harness-evaluation/SKILL.md",
-          "sha256": "cc4794ef10b1bfa65dffcd568ad96a9275c106eaa54eaf243cd0d684c0bca587"
+          "path": ".codex/agents/code-reviewer/skills.yaml",
+          "sha256": "81a1f875c095821d8103f19d35d3aac5ceb108905eda5a06167f9f1273a4a269"
+        },
+        {
+          "path": ".codex/plugins/cascade-software-architect/skills/review-change/SKILL.md",
+          "sha256": "4447dfec2f44137823915a2ba2c131e147690c85a3e5b09b85a9fb5587e691a3"
         }
       ],
       "execution": {
@@ -3982,41 +4016,101 @@
       },
       "expectation": {
         "allowed_supporting": [
-          "cascade-evals:evaluate"
+          "context"
         ],
         "delegation_policy": "none",
         "forbidden_primary": [],
         "max_commands": 8,
         "max_loaded_roles": 1,
         "max_loaded_skills": 2,
-        "max_output_chars": 5000,
+        "max_output_chars": 6000,
         "must_load_roles": [
-          "harness-evaluator"
+          "code-reviewer"
         ],
         "must_load_skills": [
-          "cascade-evals:harness-evaluation"
+          "cascade-software-architect:review-change"
         ],
         "mutation_policy": "none",
         "network_policy": "none",
         "next_route": "",
-        "primary_skill": "cascade-evals:harness-evaluation",
+        "primary_skill": "cascade-software-architect:review-change",
         "required_evidence_paths": [
-          ".codex/agents/harness-evaluator/AGENT.md",
-          ".codex/plugins/cascade-evals/skills/harness-evaluation/SKILL.md"
+          ".codex/agents/code-reviewer/AGENT.md",
+          ".codex/plugins/cascade-software-architect/skills/review-change/SKILL.md"
         ],
         "status_any": [
-          "BLOCKED",
           "GAP"
         ],
-        "target_skill": "cascade-evals:harness-evaluation"
+        "target_skill": "cascade-software-architect:review-change"
       },
-      "id": "HA-harness-evaluator-outcome",
+      "id": "HA-code-reviewer-outcome",
       "kind": "agent-outcome",
-      "owner": "harness-evaluator",
+      "owner": "code-reviewer",
       "product_context_required": false,
-      "prompt": "Determine whether a claimed successful agent outcome is eligible for independent harness judgment when only the scenario description is available and the raw output, normalized trace, and immutable run packet are missing. Remain read-only and do not execute or repair the target.",
+      "prompt": "Use Code Reviewer to assess a claimed bug fix when only a success summary is supplied and the actual request, base/head diff and verification evidence are absent. Stay read-only, identify the review gaps, do not fabricate findings or a clean verdict, and do not confuse code review with harness trace judgment or independent context creation.",
       "source": "harness-evals/agent-outcomes.yaml",
-      "target_skill": "cascade-evals:harness-evaluation"
+      "target_skill": "cascade-software-architect:review-change"
+    },
+    {
+      "context_bindings": [
+        {
+          "path": ".codex/agents/frontend-engineer/AGENT.md",
+          "sha256": "e312c78e2b76ba92626fbdb27ac01d1eff8da6132023d5bc4a43ac8291d8d272"
+        },
+        {
+          "path": ".codex/agents/frontend-engineer/skills.yaml",
+          "sha256": "9ef5de5c39a9fa5726a25bb6f60c18dc0e4021044c80192d09c5c2de9af1adca"
+        },
+        {
+          "path": ".codex/plugins/cascade-design/skills/design-system/references/design-system-contract.md",
+          "sha256": "523318b7972949190db49b1132d990a0daf34f3901369e91701ab196bd738d84"
+        },
+        {
+          "path": ".codex/skills/plan-change/SKILL.md",
+          "sha256": "f242f0d2e5583851d5f434bdcea2fdb91786ae8e821dda974c61b35b124f5d64"
+        }
+      ],
+      "execution": {
+        "model": "gpt-5.6-sol",
+        "reasoning_effort": "high",
+        "sandbox_mode": "default"
+      },
+      "expectation": {
+        "allowed_supporting": [
+          "cascade-design:visual-qa"
+        ],
+        "delegation_policy": "none",
+        "forbidden_primary": [],
+        "max_commands": 8,
+        "max_loaded_roles": 1,
+        "max_loaded_skills": 2,
+        "max_output_chars": 6000,
+        "must_load_roles": [
+          "frontend-engineer"
+        ],
+        "must_load_skills": [
+          "plan-change"
+        ],
+        "mutation_policy": "none",
+        "network_policy": "none",
+        "next_route": "",
+        "primary_skill": "plan-change",
+        "required_evidence_paths": [
+          ".codex/agents/frontend-engineer/AGENT.md",
+          ".codex/plugins/cascade-design/skills/design-system/references/design-system-contract.md"
+        ],
+        "status_any": [
+          "GAP"
+        ],
+        "target_skill": "plan-change"
+      },
+      "id": "HA-frontend-engineer-outcome",
+      "kind": "agent-outcome",
+      "owner": "frontend-engineer",
+      "product_context_required": false,
+      "prompt": "Plan a scoped frontend implementation from an approved mockup using the Frontend Engineer role and the supplied fidelity contract. No actual target UI, mockup frame or screenshot is provided. Identify the missing target sources and the implement-render-compare-repair path, distinguish design ownership from implementation, and state which evidence is required before a pixel-perfect claim. Stay read-only, do not invent a design or claim rendered parity, and do not spawn an agent.",
+      "source": "harness-evals/agent-outcomes.yaml",
+      "target_skill": "plan-change"
     },
     {
       "context_bindings": [
@@ -4075,6 +4169,63 @@
       "prompt": "Prepare the smallest implementation-ready plan for a product-visible change to the current Cascade persona-simulation workflow. Use docs/product/requirements.md, docs/product/scenarios.md, and docs/specs/persona-simulation-governance/contract.md as the routed product sources. Keep specifications proportional, avoid creating a work graph unless the request truly needs one, and identify the appropriate implementation handoff.",
       "source": "harness-evals/agent-outcomes.yaml",
       "target_skill": "plan-change"
+    },
+    {
+      "context_bindings": [
+        {
+          "path": ".codex/agents/product-designer/AGENT.md",
+          "sha256": "480d3ed20e73efa81f893c8c7d8d9b670fda04462223c63bde3b1d435e09acbb"
+        },
+        {
+          "path": ".codex/agents/product-designer/skills.yaml",
+          "sha256": "482564eaac9efc527f57c8f2c73f1f9b423871d7ffd02c14fdfe96a273a319c9"
+        },
+        {
+          "path": ".codex/plugins/cascade-design/skills/create-design/SKILL.md",
+          "sha256": "da583fa101df06ce6192d927e8ab58d8f9b80ca5f23dfa40ef87fabbcc1253aa"
+        }
+      ],
+      "execution": {
+        "model": "gpt-5.6-sol",
+        "reasoning_effort": "high",
+        "sandbox_mode": "default"
+      },
+      "expectation": {
+        "allowed_supporting": [
+          "plan-change"
+        ],
+        "delegation_policy": "none",
+        "forbidden_primary": [],
+        "max_commands": 8,
+        "max_loaded_roles": 1,
+        "max_loaded_skills": 2,
+        "max_output_chars": 6000,
+        "must_load_roles": [
+          "product-designer"
+        ],
+        "must_load_skills": [
+          "cascade-design:create-design"
+        ],
+        "mutation_policy": "none",
+        "network_policy": "none",
+        "next_route": "",
+        "primary_skill": "cascade-design:create-design",
+        "required_evidence_paths": [
+          ".codex/agents/product-designer/AGENT.md",
+          ".codex/plugins/cascade-design/skills/create-design/SKILL.md"
+        ],
+        "status_any": [
+          "GAP"
+        ],
+        "target_skill": "cascade-design:create-design"
+      },
+      "id": "HA-product-designer-outcome",
+      "kind": "agent-outcome",
+      "owner": "product-designer",
+      "product_context_required": false,
+      "prompt": "Plan mockup creation and a frontend handoff for a saved-items screen using the Product Designer role. The request establishes a reader filtering saved items, desktop/mobile layouts, default and empty states. No target design files or preview tools are supplied and this run is read-only. Bind the useful input, expose missing visual artifacts, distinguish candidate readiness from approval, and do not invent frame paths or spawn agents.",
+      "source": "harness-evals/agent-outcomes.yaml",
+      "target_skill": "cascade-design:create-design"
     },
     {
       "context_bindings": [
@@ -4139,7 +4290,7 @@
       "context_bindings": [
         {
           "path": ".codex/agents/simulation-evaluator/AGENT.md",
-          "sha256": "353169f3e1e54cc0be676697027ff1b207489adff7c4405f42a5a97158e36488"
+          "sha256": "de945670922b7f823fb3a66f3393ffb6b438bf391644482b22a02867efdd2617"
         },
         {
           "path": ".codex/plugins/cascade-evals/skills/simulation-evaluation/SKILL.md",
@@ -4250,6 +4401,63 @@
       "prompt": "Preflight the simulation-contract-smoke campaign for execution, but treat approval and resolved runtime intake as unavailable. Do not execute, widen permissions, judge results, or edit artifacts; report the precise blocking inputs.",
       "source": "harness-evals/agent-outcomes.yaml",
       "target_skill": "cascade-simulations:execute-simulation-campaign"
+    },
+    {
+      "context_bindings": [
+        {
+          "path": ".codex/agents/software-engineer/AGENT.md",
+          "sha256": "e22c2ab457008c62be7e897156f9d51bd5b7e0d3dfb293abe561060ab2f9d51b"
+        },
+        {
+          "path": ".codex/agents/software-engineer/skills.yaml",
+          "sha256": "46b7c7bf3e5204082482703d95bdb12268bf66584e719854d3f9624d388ca1d7"
+        },
+        {
+          "path": ".codex/skills/plan-change/SKILL.md",
+          "sha256": "f242f0d2e5583851d5f434bdcea2fdb91786ae8e821dda974c61b35b124f5d64"
+        }
+      ],
+      "execution": {
+        "model": "gpt-5.6-sol",
+        "reasoning_effort": "high",
+        "sandbox_mode": "default"
+      },
+      "expectation": {
+        "allowed_supporting": [
+          "context"
+        ],
+        "delegation_policy": "none",
+        "forbidden_primary": [],
+        "max_commands": 8,
+        "max_loaded_roles": 1,
+        "max_loaded_skills": 2,
+        "max_output_chars": 6000,
+        "must_load_roles": [
+          "software-engineer"
+        ],
+        "must_load_skills": [
+          "plan-change"
+        ],
+        "mutation_policy": "none",
+        "network_policy": "none",
+        "next_route": "",
+        "primary_skill": "plan-change",
+        "required_evidence_paths": [
+          ".codex/agents/software-engineer/AGENT.md",
+          ".codex/skills/plan-change/SKILL.md"
+        ],
+        "status_any": [
+          "GAP"
+        ],
+        "target_skill": "plan-change"
+      },
+      "id": "HA-software-engineer-outcome",
+      "kind": "agent-outcome",
+      "owner": "software-engineer",
+      "product_context_required": false,
+      "prompt": "Use Software Engineer to plan a retry-safe application use case in a target project. No target repository, API contract or persistence implementation is supplied. Explain the required source inspection and proportional behavior verification, preserve frontend and harness ownership boundaries, and return missing inputs instead of inventing a stack, editing files or spawning agents.",
+      "source": "harness-evals/agent-outcomes.yaml",
+      "target_skill": "plan-change"
     }
   ],
   "schema_version": 2,

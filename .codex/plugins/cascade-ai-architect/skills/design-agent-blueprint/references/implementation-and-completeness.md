@@ -1,6 +1,6 @@
 # Implementation and completeness of Analyzer Policy Composer
 
-Pattern: `analyzer-policy-composer@2.3`
+Pattern: `analyzer-policy-composer@2.4`
 Assessment scope: reference architecture and offline contract checks; extended 2026-09-08.
 
 The architecture is implementable as a single application module with several
@@ -12,12 +12,12 @@ establish that two calls outperform one; that requires a target-specific baselin
 
 ```text
 accepted event + authenticated scope
-  -> snapshot reader + Analyzer context builder
+  -> Policy Engine/admission issues initial Analyzer task slice -> compile
   -> Analyzer adapter -> JSON StateDelta v3 -> safe parse/schema validation
   -> admission + candidate selection + staged reduction
-  -> cross-group invariants -> one transaction/CAS + accepted events + receipt + dispatch intent
-  -> checkpoint-grouped state/context bindings -> read views
-  -> scheduler + role context projection -> compact block-text compiler
+  -> cross-group invariants -> one transaction/CAS + current state + receipt + pending work
+  -> checkpoint-grouped current state -> Policy Engine/admission issues next role/task slice
+  -> eligible scheduler + issued slice -> compact block-text compiler
        -> Main Composer -> response gate -> canonical response
        -> Researcher -> source-bound result -> Analyzer
        -> executor -> action receipt -> admitted runtime transition
@@ -26,13 +26,16 @@ accepted event + authenticated scope
 
 Start with one feature module, one transactional state store and direct in-process
 calls. Map these responsibilities onto the target's existing module conventions.
+Use [vertical use-case slices](simple-modular-agent.md); current records are the
+authority. No accepted-event journal, stored read models or CQRS framework is
+required. Event sourcing/read-model obligations below are conditional on adoption.
 In a Bun/TypeScript target, runtime functions can be ordinary typed application
 functions, model/provider clients can be adapters, and the store can expose one
 `commit(expectedRevision, changeSet, receipt, dispatchIntents)` boundary. The
 portable JSON schemas remain independent of that implementation language.
 
-Use named entrypoints: `acceptEvent`, `buildAnalyzerContext`, `admitDelta`,
-`stageChanges`, `commitChangeSet`, `decideTurn`, `projectRoleContext`,
+Use named entrypoints: `acceptEvent`, `issueRoleTaskSlice`, `compileContext`, `admitDelta`,
+`stageChanges`, `commitChangeSet`, `decideTurn`,
 `validateResponse`, and `recordDelivery`. These are responsibility names, not a
 requirement for separate classes, files, services or a generic workflow framework.
 Only committed dispatch intents can reach a provider or action adapter.
@@ -51,7 +54,7 @@ commit merely because individual writes succeeded.
 | Input | AcceptedEvent, evidence catalog, identity, closed delta operations | Authenticated ingress, STT finalization, attachment/media extraction and trusted source adapters |
 | Output | ResponseContract, ResponseCandidate, CanonicalResponse, context gate | Output renderer, grounding/entailment checks and bounded semantic repair |
 | Loop | TurnDecision, research dependency, scheduler and terminal routes | Concrete rule registry, deadlines, cancellation and task-wide budget ledger |
-| State | Single staged transaction, receipts, CAS, plans, choices, field identity | Store adapter, isolation tests, crash recovery, exact replay and migrations |
+| State | Single staged transaction, receipts, CAS, plans, choices, field identity | Store adapter, isolation tests, pending-work recovery and migrations; exact replay only for event-sourced targets |
 | Context | Role schemas, mapping, independent bindings, current open turn | Selector/transform implementations, token accounting, redaction and source resolution |
 | Memory | Recent window, task summary, durable notes, no-op and invalidation | Summarization triggers/models, fidelity tests, retention, deletion and rebuild |
 | Tools | Proposal -> ExecutionCommand -> ExecutionReceipt | Allowlisted adapters, confirmation bindings, idempotency and unknown-outcome reconciliation |
@@ -64,10 +67,61 @@ commit merely because individual writes succeeded.
 
 Coverage means the responsibility and required contract are defined. A row does
 not become implemented or production-ready because it appears in this table.
-The repository contains a design validator and synthetic fixtures, not the target
-Policy Engine, state store, provider integrations or application UI.
+The repository contains a design validator, synthetic fixtures and the executable
+schema/value issuer/renderer/cache described below. The target domain Policy
+Engine, state store, live authorization, provider integrations and UI remain
+separate integration work.
 
 ## Previously missing parts now specified
+
+### Cross-aspect source review, 2026-09-08
+
+The subsequent simplification decision makes the [current-state vertical-slice
+profile](simple-modular-agent.md) the default. Event-specific findings/gates in
+this review apply to optional extensions; they do not require a journal, read
+model, emitter or publisher in the baseline.
+
+Conclusion: coherent reference design with concrete offline assembly/validation
+code; ready to bind to a target, not a production implementation. The coverage
+table above is the assessment across all fourteen behavior blocks. Author-performed
+source review is not independent model evaluation or a numerical quality score.
+
+| Finding | Source correction | Remaining evidence boundary |
+| --- | --- | --- |
+| Projection issuer and context formatter were conflated | Executable schema/value engine separates trusted profiles/values, issues opaque role/task-bound slices, rechecks host admission and formats only selected blocks | Offline mismatch/revocation/budget/cache tests exist; live domain rules, database snapshots and real tokenizer/provider integration remain target work |
+| Analyzer model output and full runtime delta were described inconsistently | Transport and role contracts distinguish advertised semantic schema, runtime binding and complete-delta validation | The target still must implement the advertised schema/handle resolver/binder and adversarial adapter tests |
+| Core flow obscured whether projections precede commit | Explicit stage -> atomic commit -> direct context build; projection failure cannot undo committed state | Database rollback and pending-work recovery; lag tests only for persisted async views |
+| Voice role was credited with playback events | Model owns presentation; adapter/client owns observations and runtime owns receipts | Physical playback, barge-in and reconnect evidence |
+| Changed catalogs could be put in the data suffix | Changed definitions rebuild a trusted role profile; accepted policy effects remain data | Provider authority mapping and role-specific semantic tests |
+| Streaming validation order was underspecified | Whole-response validation is baseline; incremental release requires an explicit irrevocable-prefix protocol | No incremental publication implementation is supplied |
+| Context size and cumulative hash work were insufficiently bounded | Reference renderer/request now enforce byte ceilings and incremental compatible prefix hashing | Target token budgets, concurrency/load and cache cost/latency measurements |
+| New history/interim rules were missing from some artifact builders | Shared authoring checklist and affected role/workflow/prompt/evaluation/integration consumers aligned | Installed activation and target discovery are separate from source updates |
+
+The strongest parts are ownership, typed multi-policy updates, consistent
+projections and canonical-response/delivery separation. The largest practical
+risks are incorrect semantic extraction, policy/selector implementation bugs,
+source revocation across derived stores, external unknown outcomes, and serial
+model-call latency. Schema correctness does not remove any of those risks.
+
+Potential is highest for stateful assistants with multiple policies, auditable
+actions, retrieval or typed/voice continuity. For simple one-shot tasks, two model
+calls, journaling and projection machinery may cost more than their benefit.
+Compare against a simpler baseline on held-out tasks; do not promote this default
+as universally best. Full event sourcing, multiple services and an extra voice
+model remain optional. Plain TTS and fixed interim phrases may meet the need.
+
+Use [stateful-agent authoring best practices](architecture-best-practices.md) for
+the acceptance checklist and explicit target decisions. Do not count every
+described target obligation as another implemented feature.
+
+### Reference extensions
+
+The [executable block profile](executable-projections.md) implements trusted
+YAML/JSON profile decoding, supported-schema selection, process-local opaque
+slice issuance, admission rechecks, complete-request accounting through a supplied
+counter, compact text and a bounded scoped local cache. A runnable example wires
+all four roles through the implementation. Fixture callbacks and character
+accounting prove local behavior, not live policy decisions or provider token use.
 
 The [event/projection/transport extension](event-projections-and-context-format.md)
 adds checkpoint-owned processing groups, accepted-event reconstruction requirements,
@@ -75,6 +129,15 @@ projection freshness/cursors, pure state transitions, multi-policy reference sco
 JSON transport (optional YAML), semantic text rendering with a private metadata
 manifest, and a stable prompt cache boundary. Raw runtime-envelope serialization
 is diagnostic only and must never supply model messages.
+The [iterative caching contract](iterative-context-caching.md) adds ordered
+system/role/policy assembly for all four roles, optional history data messages and
+private cumulative cache candidates in the reference assembler. It specifies
+consistent state/policy projections, memory placement, compaction and invalidation;
+it does not implement production projection storage or provider cache operations.
+The optional [interim response profile](interim-responses.md) defines status-only
+Composer and Voice projections, a fixed-phrase fast path, cancellation/dedupe and
+main-answer priority. Saved views exercise the renderer; scheduler, output-gate
+and physical delivery cases remain target integration obligations.
 Its codec checks are offline proof; event-store replay, domain reference resolution,
 provider token accounting/cache hit rate and model adherence remain target gates.
 

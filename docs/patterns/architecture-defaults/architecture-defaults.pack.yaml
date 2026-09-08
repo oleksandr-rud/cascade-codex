@@ -103,7 +103,7 @@ documents:
           - boilerplate
   - path: docs/patterns/architecture-defaults/analyzer-policy-composer.graph.yaml
     kind: architecture-graph
-    description: "Stateful-agent default with proposal-only Analyzer, deterministic policy/state/context, canonical Composer, and optional voice/research."
+    description: "Modular stateful-agent default: vertical slices, current state, direct context builders, proposal-only Analyzer and optional voice/research."
     trigger_when:
       - "A conversational or voice agent needs an architecture default."
   - path: docs/patterns/architecture-defaults/analyzer-policy-composer.spec.md
@@ -115,7 +115,7 @@ documents:
       - id: agent-analyzer-policy-composer
         title: Default Architecture
         anchor: "## Default Architecture"
-        summary: "Routes stateful conversational designs to the plugin-owned Analyzer Policy Engine Composer contract."
+        summary: "Routes to the plugin-owned current-state vertical-slice profile; CQRS/event sourcing and persisted read models are optional."
         routing_description: "Load when designing a stateful agent, optional Researcher, or two-composer voice flow."
         tags:
           - agents

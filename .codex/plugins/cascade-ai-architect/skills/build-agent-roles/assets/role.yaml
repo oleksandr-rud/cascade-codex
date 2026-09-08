@@ -11,6 +11,16 @@ non_goals: []
 inputs:
   accepted: []
   source_authority: []
+  # Bind for the schema/value stateful profile; omit when a different topology applies.
+  projection:
+    contract: "schema-values-text@1"
+    profile_ref: "GAP"
+    issuer: "application-policy-engine-and-admission"
+    role_task_step_binding: "GAP"
+    selected_sources: []
+    input_token_budget: "GAP"
+    cache_scope: "GAP"
+    stale_or_denied: "reissue-through-admission-or-return-context-gap"
 decisions:
   model_controlled: []
   deterministic: []

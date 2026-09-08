@@ -1,7 +1,7 @@
 # Analyzer, Policy Engine, and Composer
 
 Pattern ID: `analyzer-policy-composer`\
-Version: `2.3`
+Version: `2.4`
 Status: `reference-default`\
 Owner: Cascade AI Architect
 
@@ -33,13 +33,14 @@ manager or self-directed tool loop.
 
 ```mermaid
 flowchart TD
-    I[Accepted input or observation] --> X[Policy-scoped Analyzer context]
+    I[Accepted input or observation] --> X[Policy Engine + admission: issue Analyzer task slice]
     S[(Authoritative state)] --> X
-    X --> A[Analyzer]
+    X --> F[Compile issued slice]
+    F --> A[Analyzer]
     A --> D[StateDelta only]
     D --> P[Policy Engine: validate, reduce, compile]
     P --> S
-    P --> C[ComposerContext]
+    P --> C[Issue and compile Composer task slice]
     C --> M[Main Composer]
     M --> G[Response validation and commit]
     G --> T[Canonical text and UI]
@@ -50,21 +51,27 @@ flowchart TD
 ```
 
 The Policy Engine is deterministic application code, not a model or a prompt.
-It contains named validation, state-reduction, routing, and context-compilation
-functions under one runtime owner; these need not be separate services.
+With admission, it owns validation, state-reduction, routing and issuance of
+role- and task-specific policy/state slices. Trusted projection helpers implement
+that selection; the Context Compiler only formats the issued slice and approved
+prompt assets. These functions share one application owner and need not be
+separate services. This applies before the initial Analyzer call as well as to
+Composer, Researcher, Voice and separately authorized frontend views.
 
 | Component | Reads | Produces | Authority |
 |---|---|---|---|
 | Analyzer | Accepted event, scoped state, evidence, extraction contract | `StateDelta` | Proposals only; no user answer, persistence, direct research call, or domain tool execution |
 | Policy Engine / runtime | Delta, authoritative state, versioned policy, authenticated scope | Accepted state revision, decision receipt, context projections, authorized work requests | Sole state commit, memory write, routing, and authorization owner |
-| Main Composer | `ComposerContext` | `ResponseCandidate` | Sole semantic author of the canonical response; no state/memory writes or tools |
-| Voice Composer | Validated canonical answer and delivery controls | Speech segments and playback events | Presentation only; no independent facts, policy decisions, research, or tools |
+| Main Composer | `ComposerContext` | `ResponseCandidate` | Sole model author of canonical meaning; approved fixed runtime status phrases are the narrow documented exception; no state/memory writes or tools |
+| Voice Composer | Validated canonical answer and delivery controls | Presentation/segmentation output for the voice adapter | Presentation only; no independent facts, delivery confirmation, policy decisions, research, or tools |
 | Researcher | One authorized `ResearchRequest` | `ResearchResult` evidence | Read-only retrieval inside the supplied scope; no answer publication or state commit |
 
 An action executor, when the product needs side effects, consumes only runtime-
 authorized commands and returns receipts as observations. It is an adapter, not
 an additional agent by default. A proposed action, successful generation, or
 spoken claim never proves that the action happened.
+The voice adapter/client produces playback observations; runtime validates and
+records delivery receipts. A model cannot certify that its own output was heard.
 
 ## Claims and the Analyzer boundary
 
@@ -74,9 +81,12 @@ checkpointed memory behavior. `PolicyDefinition` owns rules; `PolicyData` owns
 collected values; `PolicyEvaluation` owns derived decisions. Only runtime may
 commit them within their declared writer boundaries.
 
-Bind every delta to `schema_version`, `event_id`, `turn_id`, `base_revision`,
-`idempotency_key`, and host-provided scope. Treat model-echoed scope as data;
-compare it with authenticated runtime scope. Accept only typed, allowlisted
+The adapter binds each parsed semantic proposal to runtime-owned `schema_version`,
+`event_id`, `turn_id`, `base_revision`, `idempotency_key` and authenticated scope.
+Advertise only the semantic proposal schema to Analyzer; hidden envelope fields
+are not model output requirements. Reject attempts to supply runtime-owned fields
+rather than accepting model authority. See the [transport boundary](event-projections-and-context-format.md#analyzer-output-profiles).
+Accept only typed, allowlisted
 operations such as `change_policy_data`, `propose_claim`, `supersede_claim`, `resolve_question`,
 `propose_memory`, `request_research`, `propose_action`, `resolve_choice`,
 and `propose_plan_change`. No arbitrary JSON
@@ -125,12 +135,14 @@ For each event, the runtime performs:
 3. Validate its delta, exact source references, permitted operations, and
    `base_revision`. Reject or re-analyze stale proposals; never blindly merge.
 4. Evaluate versioned policies against current authority and proposed state.
-   Reduce accepted operations atomically into a new revision with a decision
-   receipt. Group dependent operations so a partial rejection cannot publish
-   their dependents as successful.
-5. Compile the accepted revision into per-consumer projections and authorized
-   work requests. Commit dispatch intent atomically with state; use an outbox
-   only when an external queue needs it. Deduplicate both enqueue and consume.
+   Stage accepted operations and cross-group invariants with a decision receipt.
+   Group dependent operations so a partial rejection cannot publish dependents.
+5. Commit current state, receipt and pending work in one transaction/CAS.
+   Build role contexts directly from that committed snapshot. Event journaling
+   and persisted read models are optional. Use an outbox when an
+   external queue needs it; recover undispatched intents even without a broker.
+   Deduplicate both enqueue and consume. Projection failure after commit does not
+   roll back accepted state; retry projection or return a context gap.
 6. Before dispatch, recheck cancellation, permissions, policy version, and
    relevant revision. On research completion, route the evidence back through
    the Analyzer and Policy Engine. Recompile context after accepted changes.
@@ -184,6 +196,14 @@ does not trigger direct retrieval or invent a value. Context or policy expiry
 requires revalidation before publication. Schema and reference checks establish
 structural eligibility; factual entailment and faithful phrasing still require
 semantic evaluation. Do not describe deterministic checks as proof of meaning.
+
+The baseline buffers and validates the whole response before external release.
+Provider token streaming is internal until that gate passes. A target that needs
+incremental publication must define a separate chunk protocol: each released
+prefix is validated against current dependencies, ordered and irrevocable, with
+response/segment identities, cancellation and partial-delivery receipts. Later
+validation cannot retract already visible text or heard speech. Do not enable
+raw token forwarding merely to meet a first-token latency target.
 
 ## Memory lifecycle
 
@@ -260,6 +280,9 @@ preserve unknown delivery where needed. Reconnect uses revision/epoch checks,
 not unconditional buffered replay. Optional latency acknowledgements must be
 policy-approved fixed phrases with no task facts or promises. Measure STT,
 analysis, policy, composition, first audio, and interrupt-stop latency separately.
+Use the [interim response contract](interim-responses.md) for optional Composer
+selection or direct delivery of an approved fixed phrase through Voice Composer.
+Both paths retain response validation, checkpoint dedupe and stale-delivery gates.
 
 ## Acceptance and evidence
 
@@ -280,7 +303,7 @@ Target designs must bind these cases to actual interfaces and finite budgets:
 | Research failure or exhausted budget | Bounded partial/question/blocked result; no recursive loop |
 | Unsupported Composer assertion | Candidate withheld or corrected; semantic verdict recorded separately |
 
-Trace accepted events, deltas, revisions, policy decisions, context manifests,
+Trace accepted inputs, deltas, revisions, policy decisions, context manifests,
 research lifecycle, response commits, tool and delivery receipts, budgets, and
 terminal reasons with redaction. Pin architecture, schema, prompt, policy,
 source, and model identities. Test deterministic invariants separately from
@@ -289,12 +312,15 @@ or schema pass proves none of those runtime outcomes.
 
 ## Implementation and completeness
 
-Pattern 2.3 adopts [event projections, checkpoint grouping and compact model text](event-projections-and-context-format.md).
+Pattern 2.4 adopts [event projections, checkpoint grouping and compact model text](event-projections-and-context-format.md).
 Analyzer emits JSON StateDelta; deterministic admission commits accepted changes,
-read views expose accepted state, and Context Compiler emits compact block text
-under role/access/freshness/budget rules. Keep stable role/catalog prompt segments
+Policy Engine/admission issues role/task policy-state slices under access,
+freshness and budget rules, and Context Compiler formats only those issued inputs.
+Keep stable role/catalog prompt segments
 ahead of dynamic context with a supported cache boundary. Apply the extension's
 authoring checklist when generating roles, workflows or prompt briefs.
+The [simple modular/vertical-slice profile](simple-modular-agent.md) is the default;
+CQRS, persisted read views and event sourcing are explicit optional extensions.
 
 Read the [coverage and implementation assessment](implementation-and-completeness.md)
 for all fourteen behavior blocks, remaining target adapters, adoption scenarios

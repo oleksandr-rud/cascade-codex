@@ -154,7 +154,8 @@ const REQUIRED_FILES = [
   "scripts/cascade/admission.ts",
   "scripts/cascade/admission.test.ts",
   "scripts/cascade/task-admission-hook.ts",
-  "scripts/cascade/harness-impact-hook.ts",
+  "scripts/cascade/closeout.ts",
+  "scripts/cascade/closeout-hook.ts",
   "scripts/cascade/briefs.ts",
   "scripts/cascade/work-audit.ts",
   "scripts/cascade/persona-simulations.ts",
@@ -946,7 +947,7 @@ async function validateRepoPlugins(errors: string[]): Promise<void> {
 
 const TASK_ADMISSION_HOOK_PATH = ".codex/hooks.json";
 const TASK_ADMISSION_HOOK_COMMAND = "npx --offline --yes bun@1.3.3 \"$(git rev-parse --show-toplevel)/scripts/cascade/task-admission-hook.ts\"";
-const HARNESS_IMPACT_HOOK_COMMAND = "npx --offline --yes bun@1.3.3 \"$(git rev-parse --show-toplevel)/scripts/cascade/harness-impact-hook.ts\"";
+const CLOSEOUT_HOOK_COMMAND = "npx --offline --yes bun@1.3.3 \"$(git rev-parse --show-toplevel)/scripts/cascade/closeout-hook.ts\"";
 const TASK_ADMISSION_HOOK_MAX_TIMEOUT_SECONDS = 30;
 const INTERRUPT_HOOK_MAX_TIMEOUT_SECONDS = 3;
 const TASK_ADMISSION_HOOK_MIN_CONTEXT_CHARACTERS = 1200;
@@ -957,12 +958,18 @@ export function admissionHookWiringErrors(config: Record<string, any>, hooks: Re
   if (config.cascade?.admission_hook !== TASK_ADMISSION_HOOK_PATH) errors.push("Cascade admission hook path is invalid");
   for (const event of ["UserPromptSubmit", "Interrupt", "PreToolUse", "PermissionRequest"]) {
     const groups = hooks.hooks?.[event];
-    if (!Array.isArray(groups) || groups.length !== 1 || !Array.isArray(groups[0]?.hooks) || groups[0].hooks.length !== 1) {
+    if (!Array.isArray(groups) || groups.length !== 1 || !Array.isArray(groups[0]?.hooks) || groups[0].hooks.length !== (event === "UserPromptSubmit" ? 2 : 1)) {
       errors.push(`Cascade admission hook wiring is invalid for ${event}`);
       continue;
     }
     if (["UserPromptSubmit", "Interrupt"].includes(event) ? groups[0].matcher !== undefined : groups[0].matcher !== "*") {
       errors.push(`Cascade admission hook matcher is invalid for ${event}`);
+    }
+    if (event === "UserPromptSubmit") {
+      const binding = groups[0].hooks[1];
+      if (binding?.type !== "command" || binding.command !== CLOSEOUT_HOOK_COMMAND || binding.timeout !== 3 || binding.additionalContextLimit !== 1200) {
+        errors.push("Cascade closeout turn binding hook is invalid");
+      }
     }
     const hook = groups[0].hooks[0];
     if (hook?.type !== "command" || hook.command !== TASK_ADMISSION_HOOK_COMMAND) errors.push(`Cascade admission hook command is invalid for ${event}`);
@@ -976,30 +983,15 @@ export function admissionHookWiringErrors(config: Record<string, any>, hooks: Re
       errors.push("Cascade admission hook additional context limit is invalid for UserPromptSubmit");
     }
   }
-  const postToolGroups = hooks.hooks?.PostToolUse;
-  if (
-    !Array.isArray(postToolGroups)
-    || postToolGroups.length !== 1
-    || postToolGroups[0]?.matcher !== "apply_patch"
-    || !Array.isArray(postToolGroups[0]?.hooks)
-    || postToolGroups[0].hooks.length !== 1
-  ) {
-    errors.push("Cascade harness impact hook wiring is invalid for PostToolUse");
+  if (hooks.hooks?.PostToolUse !== undefined) errors.push("retired post-patch evaluation hook must be removed");
+  const groups = hooks.hooks?.Stop;
+  if (!Array.isArray(groups) || groups.length !== 1 || groups[0]?.matcher !== undefined
+    || !Array.isArray(groups[0]?.hooks) || groups[0].hooks.length !== 1) {
+    errors.push("Cascade closeout hook wiring is invalid for Stop");
   } else {
-    const hook = postToolGroups[0].hooks[0];
-    if (hook?.type !== "command" || hook.command !== HARNESS_IMPACT_HOOK_COMMAND) {
-      errors.push("Cascade harness impact hook command is invalid for PostToolUse");
-    }
-    if (!Number.isInteger(hook?.timeout) || hook.timeout < 1 || hook.timeout > TASK_ADMISSION_HOOK_MAX_TIMEOUT_SECONDS) {
-      errors.push("Cascade harness impact hook timeout is invalid for PostToolUse");
-    }
-    if (
-      !Number.isInteger(hook?.additionalContextLimit)
-      || hook.additionalContextLimit < TASK_ADMISSION_HOOK_MIN_CONTEXT_CHARACTERS
-      || hook.additionalContextLimit > TASK_ADMISSION_HOOK_MAX_CONTEXT_CHARACTERS
-    ) {
-      errors.push("Cascade harness impact hook additional context limit is invalid for PostToolUse");
-    }
+    const hook = groups[0].hooks[0];
+    if (hook?.type !== "command" || hook.command !== CLOSEOUT_HOOK_COMMAND) errors.push("Cascade closeout hook command is invalid");
+    if (!Number.isInteger(hook?.timeout) || hook.timeout < 1 || hook.timeout > 30) errors.push("Cascade closeout hook timeout is invalid");
   }
   return errors;
 }

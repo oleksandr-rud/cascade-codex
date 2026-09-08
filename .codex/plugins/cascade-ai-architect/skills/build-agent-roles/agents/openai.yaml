@@ -1,4 +1,4 @@
 interface:
   display_name: "Build Agent Roles"
   short_description: "Generate reviewable agent role contracts"
-  default_prompt: "Use $build-agent-roles to generate bounded role contracts and an ownership index for this agent architecture."
+  default_prompt: "Use $build-agent-roles to generate bounded role contracts and an ownership index for this agent architecture. For schema-values-text@1, bind each role's profile, selected schema/value inputs, task scope, budget and admission owner."

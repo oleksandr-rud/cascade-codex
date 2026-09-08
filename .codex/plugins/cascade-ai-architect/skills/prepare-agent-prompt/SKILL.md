@@ -33,8 +33,10 @@ context-only Main Composer, optional canonical-text Voice Composer, and
 request-only Researcher. Policy enforcement remains runtime code. Do not copy
 full state, policy authority, or research tools into the voice brief.
 
-For Analyzer, bind `AnalyzerContext` as its only context envelope and
-`StateDelta` as its only semantic output. Explain how to use the supplied
+For Analyzer, bind `AnalyzerContext` as its runtime context envelope and a
+versioned advertised semantic proposal schema as its model output. The adapter
+restores hidden runtime bindings and validates full `StateDelta`; do not require
+the model to echo metadata absent from its text input. Explain how to use the supplied
 identity, policy, conversation background, continuity and next-step blocks to
 detect new facts, corrections, answers, intent and gaps without responding to
 the user. For Main Composer, bind `ComposerContext` and its `ResponseContract`;
@@ -80,7 +82,7 @@ into one whole-state guess, invent block/selection rules, or put mutually
 exclusive scalar values into direct updates. Policy Engine owns candidate
 selection and unresolved-ambiguity outcomes.
 
-For pattern 2.3, the brief must include the source-bound
+For pattern 2.4, the brief must include the source-bound
 [event/projection/text contract](../design-agent-blueprint/references/event-projections-and-context-format.md).
 Default to JSON as Analyzer output; permit YAML only as a configured output alternative.
 Compile the selected semantic view as readable text sections, preserving meaning,
@@ -92,8 +94,13 @@ Bind each input section to a Policy Engine projection rule: approved catalog,
 accepted state/policy effects, current input, or relevant earlier checkpoint input.
 Reusing Analyzer input requires current role/source authorization; never forward
 the full Analyzer envelope or raw candidates to Composer by default.
-Bind stable role instructions/approved catalog first, a provider-supported cache
-boundary, then selected semantic content. Keep schema/format/profile versions in
+Bind system first, role instructions then approved policy descriptions, a
+provider-supported cache boundary, optional stable history and current semantic
+content. Keep changing recent-memory summaries in current data. Rebuild the
+trusted profile when definitions change; never promote policy data to instructions.
+Apply the [architecture checklist](../design-agent-blueprint/references/architecture-best-practices.md),
+including optional interim status, delivery authority and release gates.
+Keep schema/format/profile versions in
 the runtime manifest. Put no turn IDs, hashes or routing timestamps in model
 messages; current values belong in the selected semantic suffix.
 Supply the contract content or a resolvable frozen resource to Cascade Prompt;

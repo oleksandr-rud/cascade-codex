@@ -1,6 +1,6 @@
 {
   "artifact_type": "cascade-plugin-capability-catalog",
-  "catalog_digest": "e477ccf631e6eaca52af6e913e97b73c06248204f34e09a489a590571d66db54",
+  "catalog_digest": "d7e537b7dae2b10ee59101bbd9cbea2472f40c936b2d7167cfa84913720d48e9",
   "marketplace": ".agents/plugins/marketplace.json",
   "plugins": [
     {
@@ -1011,7 +1011,7 @@
     },
     {
       "descriptor_path": ".codex/plugins/cascade-coding-agent/capabilities.yaml",
-      "descriptor_sha256": "e1d6824cc0121d4613532f17aa82ab501ac87b7c3ae7acb71126c7e8fcfa5b19",
+      "descriptor_sha256": "59962616b8bb5c5402789d84bf40d8b6317a1db736c2f27862f1d77abad9d375",
       "manifest_path": ".codex/plugins/cascade-coding-agent/.codex-plugin/plugin.json",
       "manifest_sha256": "ca9149f8b0a8b6bf97c6da6cada5ba58ceb91009806dc820c086bbd611d2aac0",
       "model_policy": {
@@ -1102,7 +1102,10 @@
           "optional_dependencies": [
             "cascade-ai-architect:architect-ai-system",
             "cascade-prompt:prompt",
-            "cascade-evals:harness-evaluation"
+            "cascade-evals:evaluate",
+            "cascade-evals:build-judge",
+            "cascade-evals:harness-evaluation",
+            "cascade-evals:agent-evaluation"
           ],
           "policy_tags": [
             "coding-agent",
@@ -1135,7 +1138,10 @@
           "optional_dependencies": [
             "cascade-ai-architect:architect-ai-system",
             "cascade-prompt:prompt",
-            "cascade-evals:harness-evaluation"
+            "cascade-evals:evaluate",
+            "cascade-evals:build-judge",
+            "cascade-evals:harness-evaluation",
+            "cascade-evals:agent-evaluation"
           ],
           "policy_tags": [
             "coding-agent",
@@ -1536,9 +1542,9 @@
     },
     {
       "descriptor_path": ".codex/plugins/cascade-design/capabilities.yaml",
-      "descriptor_sha256": "b0b69271fa41b26089376bc7b8925946550b43cb0848a410b96242bccbfa282c",
+      "descriptor_sha256": "fb8aebc2b757d9cffaae373786818af510590bc45b11ed2c3b552575e72e135d",
       "manifest_path": ".codex/plugins/cascade-design/.codex-plugin/plugin.json",
-      "manifest_sha256": "65b14e49cafdd93f5de475e4122254b9d08f4b3bfce0725a133b0ea6d2cec393",
+      "manifest_sha256": "23b991c412988f419b134dffd1d06027b4ec060f52e6ccadbb3141eae128736c",
       "model_policy": {
         "evaluation_reasoning_effort": "max",
         "model": "gpt-5.6-sol",
@@ -1677,6 +1683,43 @@
           "route": "cascade-design:visual-qa",
           "triggers": [
             "runnable UI or screenshots need visual validation"
+          ]
+        },
+        {
+          "anti_triggers": [
+            "review-only request",
+            "production frontend implementation"
+          ],
+          "authority": "READ_ONLY",
+          "consumes": [
+            "product-contract",
+            "design-evidence"
+          ],
+          "description": "Create editable product mockups, inspected previews and a version-bound frontend handoff from grounded requirements.",
+          "effect": "CANDIDATE_WRITE",
+          "evaluation_cases": [
+            "candidate-handoff",
+            "missing-design-inputs",
+            "required-tool-unavailable"
+          ],
+          "optional_dependencies": [
+            "cascade-product:define-product",
+            "cascade-design:design-system",
+            "cascade-design:accessibility-review",
+            "cascade-design:visual-qa"
+          ],
+          "policy_tags": [
+            "design",
+            "design-authoring"
+          ],
+          "produces": [
+            "design-candidate",
+            "frontend-design-handoff"
+          ],
+          "required_dependencies": [],
+          "route": "cascade-design:create-design",
+          "triggers": [
+            "create or revise concrete mockups or a design prototype"
           ]
         }
       ],

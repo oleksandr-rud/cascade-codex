@@ -1,4 +1,7 @@
 /** Offline transport reference, not policy admission or a provider adapter.
+ * Caller supplies semantic views from a role/task policy-state slice issued by
+ * Policy Engine and admission. Formatting never proves issuance or grants access;
+ * production issuance, task-scope checks and revalidation belong to the target.
  * Uses the host's existing yaml package; portable targets must bind that dependency.
  */
 import { parseDocument, visit, isAlias, isScalar } from 'yaml';
@@ -11,18 +14,31 @@ const MAX_DEPTH = 32;
 const MAX_NODES = 50000;
 const keyText = key => /^[A-Za-z_][\w.-]*$/.test(key) ? key : JSON.stringify(key);
 
-function checkTree(value, depth = 0, count = { n: 0 }) {
+export function checkTree(value, depth = 0, count = { n: 0, bytes: 0 }) {
   if (depth > MAX_DEPTH || ++count.n > MAX_NODES) throw Error('structure limit');
+  if (typeof value === 'string') count.bytes += Buffer.byteLength(value);
+  if (count.bytes > MAX_BYTES) throw Error('byte limit');
   if (typeof value === 'number' && (!Number.isFinite(value) ||
       (Number.isInteger(value) && !Number.isSafeInteger(value)))) throw Error('unsafe number');
   if (value === null || ['string', 'number', 'boolean'].includes(typeof value)) return;
   if (!value || typeof value !== 'object' ||
       (!Array.isArray(value) && Object.getPrototypeOf(value) !== Object.prototype)) throw Error('non-JSON value');
-  for (const child of Object.values(value)) checkTree(child, depth + 1, count);
+  for (const [key, child] of Object.entries(value)) {
+    count.bytes += Buffer.byteLength(key);
+    checkTree(child, depth + 1, count);
+  }
 }
 
-export function parseAnalyzerYaml(text) {
+function boundedText(text) {
   if (Buffer.byteLength(text) > MAX_BYTES) throw Error('byte limit');
+  return text;
+}
+
+export function decodeStructured(text, format = 'json') {
+  if (typeof text !== 'string') throw Error('structured text required');
+  if (!['json', 'yaml'].includes(format)) throw Error('unsupported structured format');
+  if (Buffer.byteLength(text) > MAX_BYTES) throw Error('byte limit');
+  if (format === 'json') JSON.parse(text); // Enforce JSON grammar before duplicate-key checks.
   // Optional YAML transport; one document, YAML 1.2 core scalar resolution.
   const doc = parseDocument(text, { version: '1.2', schema: 'core', uniqueKeys: true, strict: true });
   if (doc.directives.yaml.version !== '1.2') throw Error('YAML 1.2 required');
@@ -35,20 +51,22 @@ export function parseAnalyzerYaml(text) {
   });
   const value = doc.toJS({ maxAliasCount: 0 });
   checkTree(value);
-  if (!value || Array.isArray(value) || typeof value !== 'object' || value.schema_version !== 'state-delta.v3') throw Error('expected StateDelta mapping');
-  return value; // Caller MUST run StateDelta schema and invocation/reference gates.
+  return value; // Source-specific schema and authority checks remain mandatory.
 }
 
-export function parseAnalyzer(text, format = 'json') {
-  if (Buffer.byteLength(text) > MAX_BYTES) throw Error('byte limit');
-  if (format === 'yaml') return parseAnalyzerYaml(text);
-  if (format !== 'json') throw Error('unsupported Analyzer format');
-  // JSON.parse enforces JSON grammar; YAML's node parser checks duplicate keys
-  // before conversion, including differently escaped spellings of the same key.
-  const value = JSON.parse(text);
-  checkTree(value);
-  parseAnalyzerYaml(text);
+function requireDelta(value) {
+  if (!value || Array.isArray(value) || typeof value !== 'object' || value.schema_version !== 'state-delta.v3') throw Error('expected StateDelta mapping');
   return value;
+}
+
+export function parseAnalyzerYaml(text) {
+  return requireDelta(decodeStructured(text, 'yaml'));
+}
+
+// Already-bound runtime delta decoder. The advertised model proposal schema and
+// hidden-envelope restoration belong to the target adapter, before this boundary.
+export function parseAnalyzer(text, format = 'json') {
+  return requireDelta(decodeStructured(text, format));
 }
 
 // Canonical ordering for this offline reference only. Production canonicalization
@@ -128,7 +146,7 @@ export function parseBlocks(text, root = 'context') {
   checkTree(result); return result;
 }
 
-const runtimeKeys = /^(?:schema_version|context_id|identity_context_id|policy_context_id|invocation_id|checkpoint_id|checkpoint_ref|base_revision|state_revision|field_revision|plan_revision|processing_revision|source_dependencies|definition_bindings|evaluation_bindings|projection_binding|binding|digest|canonical_digest|idempotency_key|dedupe_key|issued_at|expires_at|delivery_epoch|authenticated_scope_ref|session_ref|turn_ref|authorization_binding|acl_filter_ref)$/;
+const runtimeKeys = /^(?:schema_version|context_id|identity_context_id|policy_context_id|invocation_id|checkpoint_id|checkpoint_ref|base_revision|state_revision|field_revision|plan_revision|processing_revision|source_dependencies|definition_bindings|evaluation_bindings|projection_binding|binding|digest|canonical_digest|prefix_digest|cache_candidates|after_message_index|idempotency_key|dedupe_key|issued_at|expires_at|delivery_epoch|authenticated_scope_ref|session_ref|turn_ref|authorization_binding|acl_filter_ref)$/;
 
 /** Model-facing prose blocks from an explicit Policy Engine prompt view.
  * compileBlocks remains a diagnostic codec, never the model request renderer.
@@ -155,27 +173,55 @@ export function renderPromptView(view) {
     return [indent+scalar(value)];
   }
   const titles = new Set();
-  return view.sections.map(section => {
+  return boundedText(view.sections.map(section => {
     if (!section || Object.keys(section).some(k => !['title','content'].includes(k)) || !Object.hasOwn(section,'content') ||
         typeof section.title !== 'string' || !section.title || /[\r\n\[\]]/.test(section.title) || titles.has(section.title)) throw Error('invalid prompt section');
     titles.add(section.title); rejectMetadata(section.content);
     return '['+section.title+']\n'+body(section.content).join('\n');
-  }).join('\n\n')+'\n';
+  }).join('\n\n')+'\n');
 }
 
-export function assembleContext({ systemPrompt, instructions, catalogView, modelView, runtimeManifest }) {
+export function assembleContext({ systemPrompt, instructions, catalogView, modelView, runtimeManifest, historyViews = [] }) {
+  if (!Array.isArray(historyViews)) throw Error('history views must be an ordered array');
+  checkTree(historyViews);
+  return assembleRenderedContext({ systemPrompt, instructions, runtimeManifest,
+    catalogText: renderPromptView(catalogView), dataText: renderPromptView(modelView),
+    historyTexts: historyViews.map(renderPromptView) });
+}
+
+// Low-level formatting only. Production callers use the admission-bound engine
+// in projection_blocks.mjs; strings supplied here do not prove authorized issuance.
+export function assembleRenderedContext({ systemPrompt, instructions, catalogText, dataText, runtimeManifest, historyTexts = [] }) {
   if (!systemPrompt || typeof systemPrompt !== 'string') throw Error('system prompt required');
   if (!instructions || typeof instructions !== 'string') throw Error('instructions required');
-  if (!runtimeManifest || typeof runtimeManifest !== 'object') throw Error('runtime manifest required');
-  // Policy Engine supplies approved semantic views; renderer does not select data.
-  const developer = '[Role instructions]\n'+instructions+'\n\n'+renderPromptView(catalogView);
-  const data = renderPromptView(modelView);
+  if (!runtimeManifest || Array.isArray(runtimeManifest) || typeof runtimeManifest !== 'object') throw Error('runtime manifest required');
+  boundedText(systemPrompt); boundedText(instructions);
+  if (!Array.isArray(historyTexts) || [catalogText, dataText, ...historyTexts].some(text => typeof text !== 'string')) throw Error('rendered text required');
+  [catalogText, dataText, ...historyTexts].forEach(boundedText);
+  const developer = '[Role instructions]\n'+instructions+'\n\n'+catalogText;
+  const data = dataText;
   const prefix = systemPrompt+'\n\n'+developer;
+  // Completed transcript/summary projections remain data, including past answers.
+  // Their admission, freshness and window selection belong to the Policy Engine.
+  const messages = [{ role: 'system', content: systemPrompt },
+    { role: 'developer', content: developer },
+    ...historyTexts.map(content => ({ role: 'user', content }))];
+  messages.push({ role: 'user', content: data });
+  boundedText(JSON.stringify(messages));
+  // Hash each message once; preserve the existing JSON-array prefix digest bytes.
+  const cumulative = createHash('sha256').update('[');
+  const cacheCandidates = [];
+  messages.slice(0, -1).forEach((message, index) => {
+    if (index) cumulative.update(',');
+    cumulative.update(JSON.stringify(message));
+    if (index) cacheCandidates.push({ after_message_index: index,
+      prefix_digest: 'sha256:'+cumulative.copy().update(']').digest('hex') });
+  });
   return {
     prefix,
-    messages: [{ role: 'system', content: systemPrompt },
-      { role: 'developer', content: developer }, { role: 'user', content: data }],
-    manifest: { ...runtimeManifest, prefix_digest: 'sha256:'+createHash('sha256').update(prefix).digest('hex') },
+    messages,
+    manifest: { ...runtimeManifest, prefix_digest: 'sha256:'+createHash('sha256').update(prefix).digest('hex'),
+      cache_candidates: cacheCandidates },
     data,
     cache_boundary: 'after-prefix', // Adapter must translate into supported provider API.
   };

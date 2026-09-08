@@ -30,6 +30,30 @@ boundary, explicit domain modules, and direct in-process calls through their
 public contracts. Do not add internal HTTP, RPC, or a broker merely to connect
 modules. Keep module dependencies acyclic and assign cross-module workflows to
 a named domain use case, not a generic coordinator or service bucket.
+Within modules, prefer vertical use-case slices with colocated validation,
+orchestration, mapping and tests. Start with one file for a small operation; split
+handler/processor/contract/context only when size or responsibility justifies it.
+A named service owns a real reusable domain operation, not a mandatory forwarding
+layer. Emitters are optional local notifications; publishers need a real outbound
+consumer/delivery contract. Required state changes use direct calls/transactions.
+For the supplied modular-agent profile, place controllers/handlers at the module
+root, operations/DTOs and admission/policy orchestration in `application/`, and
+shared conversation invariants and policy rules in `domain/`. Shared conversation
+persistence stays in `data/`; agent-owned state/store, roles, schemas, prompts and
+projections stay under `agents/assistant-agent/` and reference domain policies.
+Projection means a role/task-specific policy-state slice issued by application
+Policy Engine and admission using domain rules. Agent-local projection files are
+trusted definitions/helpers for that issuer; context compilation only formats
+issued inputs. Colocation does not grant models read/write authority. Keep one owner per record and let
+the application coordinate atomic writes across stores. Use a base-agent only for
+proven shared behavior, not speculative inheritance. Use either
+use-case or application-service naming consistently; no duplicate forwarding pair
+or transport folder is required. These are local layers inside a capability module.
+For the supplied `schema-values-text@1` implementation profile, use ordered
+object/schema/value blocks and direct issuance/assembly functions. Place trusted
+profiles with the agent definition and host admission/token accounting in
+application. Share approved rendered blocks only within their disclosure scope;
+do not introduce a generic projection service or another state owner.
 
 Allow one shared database while each module owns its tables, models, migrations,
 and writes. Other modules use the owner's public contract, not its storage.
@@ -47,3 +71,11 @@ target repository. Do not scaffold source, select dependencies, mutate a target,
 or accept the candidate. Return sources, assumptions, boundaries, alternatives,
 chosen structure, consumer impacts, risks, validation gates, and unresolved
 gaps.
+
+For a supplied stateful-agent architecture, consume its versioned role, policy,
+projection and release contracts. Map them to the existing application boundary;
+do not infer one service per role. Distinguish semantic proposals, atomic commits,
+direct context projections, model requests and actual delivery. Default to current
+records and ordinary query functions; explicitly justify CQRS/persisted read models
+or full event sourcing. Context projection alone requires neither. Bind recovery, revocation, token/task budgets and
+output-release gates; a reference codec or cache digest is not runtime proof.

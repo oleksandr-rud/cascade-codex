@@ -1,13 +1,15 @@
 # Cascade Design
 
-Cascade Design packages four reusable design workflows:
+Cascade Design packages five reusable design workflows:
+
+- `cascade-design:create-design`
 
 - `cascade-design:ux-flow-review`
 - `cascade-design:accessibility-review`
 - `cascade-design:visual-qa`
 - `cascade-design:design-system`
 
-The package is review-first and evidence-bound. It does not require a dedicated
+Design authoring produces editable candidates and previews; review workflows remain evidence-bound. It does not require a dedicated
 host role or ship browser/Figma runtime, product authority, implementation,
 functional acceptance, release approval, or evaluation runtime. Those remain
 requesting-host or peer-plugin responsibilities.

@@ -1,6 +1,6 @@
 # Agent architecture: <target>
 
-Pattern: `analyzer-policy-composer@2.3`
+Pattern: `analyzer-policy-composer@2.4`
 Contract: [Analyzer, Policy Engine, and Composer](../references/analyzer-policy-composer.md)\
 Disposition: `<ADOPTED | ADAPTED | REJECTED | GAP>`\
 Target status: `CANDIDATE`\
@@ -13,7 +13,7 @@ do not treat example fields as a registered runtime schema or deployment.
 
 ## Selected variant
 
-- Text: Analyzer → JSON delta → admission/selection → atomic state/event commit → read projections → Context Compiler → Main Composer → validated canonical answer.
+- Text: Analyzer → JSON delta → admission/selection → current-state transaction → direct context builder → Main Composer → validated canonical answer.
 - Machine packet topology: `model_pipeline`; policy/runtime functions are workflows.
 - Voice: `<disabled | add Voice Composer after canonical-answer validation>`.
 - Research: `<disabled | optional policy-admitted web/KB requests>`.
@@ -24,14 +24,20 @@ do not treat example fields as a registered runtime schema or deployment.
 
 ## Contract bindings
 
+Apply the [architecture authoring checklist](../references/architecture-best-practices.md)
+and record each applicable target binding and its evidence state. Optional
+features need an explicit activation decision; a filled template is not a runtime.
+
 | Contract | Required binding |
 |---|---|
 | Accepted event | Schema, authenticated scope, ID, sequence, finalized transcript/source references |
 | StateDelta | Logical v3 schema via analyzer-json@1 (optional analyzer-yaml@1), checkpoint/base revision, direct multi-policy groups, blocks/parts/candidates, typed refs and evidence |
 | Checkpoint group | Root/child input lineage, attempts, delta/receipt refs, state revision bindings and immutable role context refs; no duplicate TurnState |
-| CommittedEventBatch | Accepted payloads, stream/batch ordering, policy bindings and local-to-canonical ID map sufficient for declared replay |
-| ProjectionCheckpoint | Read-view version, processed complete transaction, source positions/dependencies and freshness status |
-| Model text/cache | role-text@1 semantic renderer with runtime-only metadata manifest, approved stable prompt/catalog prefix, cache boundary, changing state suffix and provider evidence |
+| Implementation profile | [Simple modular vertical slices](../references/simple-modular-agent.md); current state is authoritative, context is built directly; record reasons for optional extensions |
+| CommittedEventBatch (optional) | Only for a selected journal/event-sourced profile: accepted payloads, stream ordering, policy bindings and local-to-canonical mapping |
+| ProjectionCheckpoint (optional) | Only for a persisted read model: view version, processed transaction, source positions/dependencies and freshness status |
+| Model text/cache | role-text@1 semantic renderer; system then role instructions then policy catalog; optional immutable history before current state; private cache candidates, compaction/invalidation rules and provider evidence; see [iterative caching](../references/iterative-context-caching.md) |
+| Interim response (optional) | Existing status-update purpose, approved phrases, Composer/fixed-text path, channels, delay/expiry/count budget, main-answer priority, checkpoint dedupe and delivery receipts; see [interim responses](../references/interim-responses.md) |
 | AnalyzerContext | Event/purpose, trusted identity and policy blocks, Analyzer background, writable targets, output limits and expiry |
 | IdentityContext | Host-bound actor/session/tenant/channel and role refs plus policy-approved profile projection |
 | PolicyContext | Bound definitions/evaluations/projection, selected policy data, obligations, acts, confirmations, restrictions and expiry |
@@ -83,7 +89,7 @@ field IDs and record instance resolution; never use display names as write keys.
 | Policy definitions | Configuration owner, registry path/store, version/digest and activation authority |
 | Policy data | Instance-key derivation, field schemas, persistence owner, indexes and retention |
 | Policy evaluations | Deterministic evaluator, dependency graph, receipts and invalidation |
-| Projection policies | Role/purpose registry, selectors, transforms, redaction, budgets and precedence |
+| Projection policies | Role/task/step/purpose registry, selectors, transforms, redaction, budgets and precedence; Policy Engine/admission owns issuance |
 | AnalyzerContext | Builder, separate identity/background/continuity/next-step blocks, writable targets and StateDelta limits |
 | ComposerContext | Builder, separate identity/policy/background/continuity/next-step/knowledge projection and expiry |
 | ResponseContract | Answer modes, channel/language, format/style enums, hard constraints and validator |
@@ -99,6 +105,13 @@ field IDs and record instance resolution; never use display names as write keys.
 | Output, voice delivery, and cancellation | `<GAP>` | `<GAP>` |
 | Budgets, retries, and recovery | `<GAP>` | `<GAP>` |
 
+- Slice issuance contract: Policy Engine/admission owner, role/task/step scope, committed source dependencies, approved policy/state fields, expiry and token ceiling:
+- Context Compiler boundary: issued slice plus approved prompt assets only; no store access, reference expansion or independent selection:
+- Block representation: selected object/schema/values, configured YAML/JSON source decoder, deterministic field order, object/list boundaries and literal preservation:
+- Executable profile: `schema-values-text@1`; trusted profile/source bindings, host admission callback, tokenizer, issue/assemble call sites and focused adoption tests:
+- Shared policy/catalog fragments: approved common blocks, role subsets, separate changing values, local rendered-block cache scope and provider-prefix eligibility:
+- Initial Analyzer slice admission before any delta; subsequent issuance after commit:
+- Separate client/task slice for frontend progress, controls and reconnect; gateway transports issued data only:
 - Analyzer projection and token ceiling:
 - Analyzer background, continuity/next-step blocks, writable target catalog, omitted-data limitations and expiry:
 - Registered Analyzer blocks/parts, selection policies, candidate schemas and per-envelope ceilings:

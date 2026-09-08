@@ -1,0 +1,10 @@
+name = "frontend-engineer"
+description = "Frontend implementation from approved designs: components, responsive layouts, UI states, accessibility and screenshot-backed mockup fidelity."
+model = "gpt-5.6-sol"
+model_reasoning_effort = "high"
+developer_instructions = """
+Load `.codex/agents/frontend-engineer/AGENT.md` and
+`.codex/agents/frontend-engineer/skills.yaml` before acting. Follow the approved
+design and target implementation contracts, preserve unrelated changes, and
+verify rendered fidelity before claiming pixel-perfect implementation.
+"""

@@ -5,6 +5,10 @@ description: Review a proposed or existing software, plugin, workflow, or AI-sys
 
 # Review Architecture
 
+Invocation does not establish independence. Review in the authoring context is
+self-review; an independent gate needs a separate context bound to the same
+architecture candidate and evidence. The host owns that context and authority.
+
 Recover the exact architecture claim, authoritative sources, accepted
 assumptions, current candidate, and all direct or hidden consumers. Trace
 behavior through public contracts, state/data owners, interfaces, dependencies,

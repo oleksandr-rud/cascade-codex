@@ -37,7 +37,11 @@ Evaluate a coding-agent harness through `$evaluate`; do not repair it.
    mutation attempts, and terminal state.
 4. Apply deterministic schema, route, permission, trace, and required-load
    gates before judging.
-5. Run required outcome and trajectory judges independently through
+5. Load [references/judge-profile.md](references/judge-profile.md) as the
+   harness subject instructions in an ephemeral read-only judge context. This
+   needs no dedicated host role. Preserve the legacy `harness-evaluator` wire
+   principal where existing receipts require it.
+   Run required outcome and trajectory judges independently through
    `$evaluate`; distinguish harness defect, target behavior, model variance,
    scenario defect, and environment blocker.
 6. Return a version-bound diagnostic with exact limitations. Route a confirmed

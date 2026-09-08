@@ -1,0 +1,6 @@
+interface:
+  display_name: "Create Design"
+  short_description: "Create mockups and precise frontend handoffs."
+  default_prompt: "Use $create-design to produce concrete editable mockups, inspected previews, responsive and interaction states, and a version-bound frontend handoff from the supplied requirements."
+policy:
+  allow_implicit_invocation: true

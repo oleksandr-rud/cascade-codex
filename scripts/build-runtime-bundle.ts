@@ -27,6 +27,10 @@ const COPY_FILES = [
   ".codex/artifact-destinations.json",
   ".codex/plugin-capabilities.generated.json",
   ".codex/agents/agent-engineer.toml",
+  ".codex/agents/frontend-engineer.toml",
+  ".codex/agents/product-designer.toml",
+  ".codex/agents/software-engineer.toml",
+  ".codex/agents/code-reviewer.toml",
   ".codex/agents/orchestrator.toml",
   ".codex/agents/security.toml",
   "docs/product/catalog.schema.json",
@@ -36,6 +40,10 @@ const COPY_FILES = [
 
 const COPY_TREES = [
   ".codex/agents/agent-engineer",
+  ".codex/agents/frontend-engineer",
+  ".codex/agents/product-designer",
+  ".codex/agents/software-engineer",
+  ".codex/agents/code-reviewer",
   ".codex/agents/orchestrator",
   ".codex/agents/security",
   ".codex/skills",
@@ -63,7 +71,7 @@ const COORDINATOR_CONTRACTS = [
 ] as const;
 
 const GENERATED_TEXT_FILES: Record<string, string> = {
-  ".codex/README.md": `# Cascade core runtime\n\nThis target profile contains Orchestrator, Agent Engineer, Security, the nine\nrepository-bound effect skills, admission, Coordinator validation, and\nWorkspace MCP. Portable methods resolve from the enabled installed Cascade\nplugins. Plugin source, evaluator/operator lab roles, harness-eval corpora,\nsimulation campaigns, browser tooling, and historical work reports remain in\nthe Cascade source checkout and are not target-runtime dependencies.\n`,
+  ".codex/README.md": `# Cascade core runtime\n\nThis target profile contains Orchestrator, Agent Engineer, Security, Product Designer,\nSoftware Engineer, Frontend Engineer, Code Reviewer, the nine\nrepository-bound effect skills, admission, Coordinator validation, and\nWorkspace MCP. Portable methods resolve from the enabled installed Cascade\nplugins. Plugin source, evaluator/operator lab roles, harness-eval corpora,\nsimulation campaigns, browser tooling, and historical work reports remain in\nthe Cascade source checkout and are not target-runtime dependencies.\n`,
   "CASCADE_RUNTIME.md": `# Cascade core target runtime\n\nThis is a generated target bundle, not the Cascade plugin-development tree.\nIt intentionally excludes \`.codex/plugins/\`, \`harness-evals/\`,\n\`product-evals/\`, source tests, browser tooling, and historical reports.\nInstall the exact plugin versions recorded in \`.codex/plugins.lock.json\` from\nthe Cascade marketplace, copy this bundle into the target repository with\ncollision review, adapt \`AGENTS.md\`, \`CODEX.md\`, and\n\`harness.config.example.yaml\`, then run:\n\n\`\`\`bash\ncp harness.config.example.yaml harness.config.yaml\nnpx --offline --yes bun@1.3.3 .codex/runtime/cascade.js target validate --root .\n\`\`\`\n\nHarness evals and simulation campaigns are opt-in development or lab packs;\nthey are not required for normal planning, implementation, target validation,\nor plugin routing.\n`,
   "docs/_index.md": `# Project context\n\nKeep only current product, design, specification, pattern, and work context\nneeded by this target repository. Portable methods belong to installed Cascade\nplugins.\n`,
   "docs/structure.md": `# Repository structure\n\nAdapt this file to the target repository. Record current source roots, public\ncontracts, test roots, generated artifacts, and narrow documentation owners.\nDo not copy Cascade source-checkout eval labs or historical work reports here.\n`,
@@ -182,8 +190,8 @@ function runtimeCodex(source: string): string {
       `The core target runtime contains a digest-bound capability catalog, not\nplugin source. Resolve every selected namespaced skill from the enabled\ninstalled inventory and require its version to match\n\`.codex/plugins.lock.json\`. Plugin source remains in the Cascade source\ncheckout; do not search caches or copy a hidden fallback into the target.\n`,
     )
     .replace(
-      /- `harness-evaluator`:[\s\S]*?(?=Use role contracts locally\.)/,
-      `Harness Judge, Simulation Operator, and Simulation Evaluator are lab\nroles and are not installed by the core target profile. Add them only with the\nmatching explicit eval or campaign pack.\n\n`,
+      /- `simulation-operator`:[\s\S]*?(?=Use role contracts locally\.)/,
+      `Simulation Operator and Simulation Evaluator are lab\nroles and are not installed by the core target profile. Add them only with the\nmatching explicit eval or campaign pack.\n\n`,
     )
     .replace(
       /Useful deterministic checks:\n\n```bash[\s\S]*?```\n/,
@@ -215,6 +223,7 @@ async function transformCopiedConfiguration(): Promise<void> {
     for (const group of groups) {
       for (const hook of group.hooks ?? []) {
         if (typeof hook.command === "string") {
+          hook.command = hook.command.replaceAll("scripts/cascade/closeout-hook.ts", ".codex/runtime/closeout-hook.js");
           hook.command = hook.command.replaceAll(
             "scripts/cascade/task-admission-hook.ts",
             ".codex/runtime/task-admission-hook.js",
@@ -281,6 +290,7 @@ export async function buildRuntimeBundle(
   for (const [entrypoint, outfile] of [
     ["scripts/cascade-runtime.ts", "cascade.js"],
     ["scripts/cascade/task-admission-hook.ts", "task-admission-hook.js"],
+    ["scripts/cascade/closeout-hook.ts", "closeout-hook.js"],
     ["scripts/cascade/workspace-mcp.ts", "workspace-mcp.js"],
   ] as const) {
     await run([

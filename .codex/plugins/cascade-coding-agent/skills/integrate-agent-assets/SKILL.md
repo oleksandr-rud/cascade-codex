@@ -38,6 +38,23 @@ architecture inside this skill.
 5. Keep deterministic routing outside prompts where the target supports it.
    Preserve typed inputs/outputs, tool permissions, confirmation, state,
    budgets, recovery, observability, and done conditions.
+   For a supplied stateful-agent packet, bind the advertised model schema and
+   private envelope adapter separately, then policy admission, committed state,
+   role/task policy-state slice issuance by Policy Engine/admission, a compiler
+   limited to issued inputs, and release/delivery gates. Keep prompt metadata
+   private and revalidate projected/cache content before reuse. Optional interim
+   status or voice assets cannot acquire completion or playback authority. Mark
+   missing target adapters as gaps; never activate a reference fixture as runtime.
+   For `schema-values-text@1`, bind reviewed profile YAML/JSON, source snapshots,
+   the issuer's current admission callback, target tokenizer and bounded block
+   cache. Route production context through issue/assemble, not the low-level
+   formatter. Keep profiles/prompts/roles/state/store under `assistant-agent`,
+   policies in domain, and admission/transactions in application. Reuse the
+   supplied implementation only after resolving its package/version and target
+   dependencies; fixture callbacks are not target permission checks.
+   Map the simple profile to existing vertical use-case slices and current-state
+   storage. Do not scaffold event journals, CQRS models, emitters, publishers or
+   handler/processor/service chains unless a selected requirement needs them.
 6. Bind each executable step to `root`, `internal-subagent`,
    `user-visible-task`, or the target's equivalent surface. Record dispatch
    state, authorization evidence, allowed and forbidden writes, dependency
@@ -48,8 +65,11 @@ architecture inside this skill.
    required. Bind the returned prompt identity and digest; do not copy Cascade
    Prompt policy.
 8. Keep repository-specific evaluation cases and assertions in the target.
-   Bind them to `cascade-evals:harness-evaluation` for generic evaluation
-   phases and judges. Use Cascade Simulations only for approved dynamic runs.
+   Bind coding-agent route/trace subjects to `cascade-evals:harness-evaluation`
+   and other agent/role/skill subjects to `cascade-evals:agent-evaluation`.
+   Generic phases belong to `cascade-evals:evaluate`, and judge construction
+   to `cascade-evals:build-judge`. Use Cascade Simulations only for approved
+   dynamic runs.
 9. Implement in dependency order, serialize conflicting writes, name one
    deterministic merge owner for parallel branches, update validators and generated catalogs,
    then validate source, references, routing, and discovery.

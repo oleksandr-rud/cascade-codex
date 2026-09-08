@@ -70,6 +70,31 @@ abstractions, state-machine changes, or major refactors.
 - [ ] Stale, duplicate, replaced, or legacy paths use direct migration,
       replacement, deletion, and validation before flags, shims, or dual paths.
 
+## Stateful Agent Contract Pass (when applicable)
+
+- [ ] The supplied source-bound agent contract distinguishes model proposals,
+      runtime writes, policy definitions/data/evaluations and role projections.
+- [ ] Advertised model schemas and private runtime bindings are not conflated.
+- [ ] For `schema-values-text@1`, trusted profiles and selected values enter the
+      issuer separately; opaque role/task slices are re-admitted before assembly.
+      Check decoder limits, type/required-field enforcement, stable field order,
+      token budgets and revocation on cache reuse. Local cache hits do not prove
+      provider hits; fixture admission is not live ACL enforcement.
+- [ ] Current state/receipts/pending work commit before context consumption; a
+      projection failure has recovery without undoing committed effects.
+- [ ] Vertical slices have no empty handler/processor/service forwarding chain.
+      Required work does not depend on best-effort emitters. Publishers have a
+      named consumer and delivery guarantee; current-state projection is default.
+- [ ] If event/read-model profiles are selected, rebuild/replay invokes no
+      model/tool; outbox recovery and external unknown outcomes are explicit.
+      CQRS and full event sourcing are justified separate choices.
+- [ ] History, summary and cache reuse preserve access/freshness/deletion rules;
+      request/task budgets and queue limits include optional branches and retries.
+- [ ] Canonical output passes its release gate; streaming, interim status and
+      voice cannot bypass it, close the wrong task or self-certify delivery.
+- [ ] Evidence separates reference fixtures, integrated runtime, semantic quality,
+      provider behavior and physical delivery; installed activation is explicit.
+
 ## Recommendation Quality
 
 - [ ] Recommendation names a concrete module to deepen, split, merge, or leave.

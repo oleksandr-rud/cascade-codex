@@ -11,7 +11,7 @@
   "dimensions": [
     {
       "dimension_id": "route-and-scope",
-      "description": "Correct skill selection and strict separation among feature UX, accessibility, visual evidence, reusable design rules, product intent, and host implementation/acceptance.",
+      "description": "Correct skill selection and strict separation among mockup authoring, feature UX, accessibility, visual evidence, reusable design rules, product intent, and host implementation/acceptance.",
       "weight": 0.25,
       "anchors": {
         "0": "Most cases use the wrong owner or cross authority boundaries.",
@@ -35,7 +35,7 @@
     },
     {
       "dimension_id": "design-completeness",
-      "description": "The chosen skill's artifact covers the applicable design concerns, findings, evidence plan, recovery, and actionable next step.",
+      "description": "The chosen skill covers applicable design concerns and actionable handoffs. Authoring binds real editable frames, inspected previews and capture conditions when available; read-only planning exposes missing artifacts without fabricating them. Candidate readiness never implies approval or implemented fidelity.",
       "weight": 0.30,
       "anchors": {
         "0": "Artifacts are unusable or omit the core design problem.",

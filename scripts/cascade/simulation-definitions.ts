@@ -79,6 +79,7 @@ export const CAMPAIGN_FIXED_SOURCE_FILES = [
   "docs/specs/brief-manifest.schema.json",
   "scripts/cascade.ts",
   "scripts/cascade/cli/command-dispatcher.ts",
+  "scripts/cascade/closeout.ts",
   "scripts/cascade/cli/command-executor.ts",
   "scripts/cascade/admission.ts",
   "scripts/cascade/admission-clauses.ts",

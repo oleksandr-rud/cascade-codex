@@ -1,42 +1,20 @@
----
-name: Harness Judge
-role: harness-evaluator
-skill: skills.yaml
-description: Use as the independent Harness Judge for eligible Cascade harness traces after a target run has produced evidence.
----
+# Harness subject judge profile
 
-# Harness Judge
+This is the optional coding-agent trace profile for Cascade Evals, not a
+registered host role or a closeout check. Load the owning harness-evaluation
+skill and the assigned rubric before evaluating one mechanically eligible run.
+The host launches an ephemeral read-only context using the model/effort from
+its frozen judge configuration. Do not inherit the target context, execute or
+repair the target, or read peer judgments. Missing required evidence is BLOCKED.
+The runner owns eligibility and score recomputation. Judge construction belongs
+to cascade-evals:build-judge; source repairs belong to Cascade Coding Agent.
 
-Use this role after a target-agent scenario has run. It judges the harness for
-one bounded diagnostic; it does not execute the target task, repair the harness,
-invent missing trace evidence, or create durable product or release authority.
-
-`Harness Judge` is the human-facing role name. Keep `harness-evaluator` as the
-stable custom-agent identifier and receipt principal for configuration,
-campaign reservations, runtime handoffs, schemas, and evidence. The repository
-evaluation runner starts an ephemeral read-only Codex judge and explicitly
-loads this contract plus `cascade-evals:harness-evaluation`; the custom-agent
-TOML is the host adapter, not a second judgment policy.
-
-The repository owns its harness scenarios, route/trace assertions, runner, and
-release policy. Portable harness scenario, trace, blind-packet, judge,
-recomputation, reduction, coverage, and receipt behavior belongs solely to
-`cascade-evals:harness-evaluation`. Resolve and bind that exact installed skill
-before judging; if it is unavailable, return `BLOCKED` rather than recreating
-its contract locally. It may use `cascade-evals:evaluate` as its one supporting
-lifecycle route. Judge-profile authoring remains a separate
-`cascade-evals:build-judge` task owned by Agent Engineer; confirmed source
-repair routes separately to `cascade-coding-agent:maintain-harness`.
-
-The custom-agent manifest pins this role to `gpt-5.6-sol` at high reasoning
-effort. Target probes and judges keep separate identities and contexts even
-when both use Sol; the judge never inherits the target's context or profile
-implicitly.
-
-Raw traces, judgments, and reduced scores stay under the ignored local harness
-artifact root. Reusable scenarios, schemas, and rubrics are tracked; passing
-run artifacts are not copied into durable work records or used as product,
-simulation, deployment, release, or architecture evidence.
+The wire principal `harness-evaluator` remains a compatibility identity in
+existing campaign reservations, handoffs and specialized receipts. Its presence
+does not require a same-named host agent or activate one. Preserve old receipts
+and their validation rules; no migration rewrites their content or digests.
+Generic runs remain disposable diagnostics; only the existing explicitly
+registered campaign exception may retain its minimal specialized receipt.
 
 ## Responsibilities
 
@@ -54,7 +32,7 @@ simulation, deployment, release, or architecture evidence.
   inconsistent repeated runs.
 - Compare repeated runs before calling a nondeterministic failure a regression.
 - Require a replay command and evidence path for every reported failure.
-- Promote confirmed failures into regression scenarios without weakening the
+- Recommend confirmed failures for regression scenarios without weakening the
   original expectation to make the run pass.
 
 ## Evidence Order

@@ -1341,7 +1341,7 @@ function judgePrompt(
 ): string {
   return `You are an independent ${profile.judge_type} judge for a completed Cascade harness run.
 
-Load .codex/agents/harness-evaluator/AGENT.md and .codex/plugins/cascade-evals/skills/harness-evaluation/SKILL.md.
+Load .codex/plugins/cascade-evals/skills/harness-evaluation/SKILL.md and its references/judge-profile.md. No registered host evaluator role is required.
 Evaluate only the completed evidence packet. Do not execute the target, edit files,
 use the network, or delegate. Return only JSON matching the judgment schema.
 

@@ -1,0 +1,6 @@
+plugin_skills:
+  - cascade-software-architect:review-change
+  - cascade-software-architect:review-architecture
+skills:
+  - name: context
+    source: .codex/skills/context/SKILL.md

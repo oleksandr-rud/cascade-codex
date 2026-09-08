@@ -21,7 +21,6 @@ routing:
     - cascade-evals:harness-evaluation
     - cascade-evals:build-judge
   related_roles:
-    - harness-evaluator
     - agent-engineer
     - orchestrator
 selection_rules:
@@ -83,9 +82,9 @@ documents:
     description: "Portable harness scenario, execution-trace, eligibility, judgment, and coverage adapter."
     trigger_when:
       - "A Cascade harness evaluation is requested."
-  - path: .codex/agents/harness-evaluator/AGENT.md
-    kind: agent-role
-    description: "Read-only independent outcome or trajectory judge role."
+  - path: .codex/plugins/cascade-evals/skills/harness-evaluation/references/judge-profile.md
+    kind: reference
+    description: "Optional read-only harness subject profile for independent outcome or trajectory judgment."
     trigger_when:
       - "A completed target run needs semantic adjudication."
   - path: scripts/cascade/evals.ts

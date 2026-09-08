@@ -4,12 +4,13 @@ Version: 0.1.0+codex.20260827163437
 
 `specs/extraction-manifest.json` freezes the pre-cutover Designer role and four
 repository skill packages as historical extraction evidence. The plugin owns
-reusable design semantics and read-only artifact authority; the requesting
+reusable design semantics and candidate artifact authority; the requesting
 host owns target paths, product authority, implementation, functional
 acceptance, optional sandboxing, and release decisions.
 
 | Capability | Development source | Plugin owner | Explicit boundary |
 | --- | --- | --- | --- |
+| Editable mockups, inspected previews, responsive/interaction states and frontend handoff | New plugin-native authoring contract | `create-design` | Host persists candidates; no production integration or self-approval |
 | Actor/job flow, hierarchy, carried state, interruption, recovery, and feature state coverage | `.codex/skills/ux-flow-review` | `ux-flow-review` | Feature-specific UX only; no product invention, reusable-rule ownership, or implementation |
 | Semantics, accessible names, keyboard/focus, contrast, target size, forms, status, motion, and mobile accessibility evidence | `.codex/skills/accessibility-review` | `accessibility-review` | Review and test planning only; no legal certification or code patching |
 | Viewport/state visual evidence, layout, hierarchy, overflow, tokens, responsive behavior, and visual regression classification | `.codex/skills/visual-qa` | `visual-qa` | Visual evidence only; no functional acceptance or blind snapshot update |

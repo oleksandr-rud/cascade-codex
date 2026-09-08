@@ -31,6 +31,7 @@ class CaseAssertionTests(unittest.TestCase):
             "accessibility-review": FIXTURES.accessibility_artifact,
             "visual-qa": FIXTURES.visual_artifact,
             "design-system": FIXTURES.design_system_artifact,
+            "create-design": FIXTURES.design_creation_artifact,
         }
         cases = []
         for case in self.suite["cases"]:
@@ -69,7 +70,7 @@ class CaseAssertionTests(unittest.TestCase):
         receipt = ADAPTER.evaluate(self.suite, self.target)
         self.assertEqual(receipt["status"], "PASS")
         self.assertEqual(receipt["semantic_status"], "NOT_RUN")
-        self.assertEqual(receipt["case_count"], 12)
+        self.assertEqual(receipt["case_count"], 19)
 
     def test_route_mismatch_is_invalid(self) -> None:
         self.target["cases"][0]["selected_skill"] = "visual-qa"

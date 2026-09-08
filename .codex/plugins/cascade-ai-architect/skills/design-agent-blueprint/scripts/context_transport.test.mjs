@@ -2,12 +2,14 @@ import { describe, test, expect } from 'bun:test';
 import { readFileSync } from 'node:fs';
 import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
+import { createHash } from 'node:crypto';
 import { parse } from 'yaml';
 import { parseAnalyzer, parseAnalyzerYaml, canonical, compileBlocks, parseBlocks, renderPromptView, assembleContext } from './context_transport.mjs';
 
 const assets = new URL('../assets/', import.meta.url);
 const fixture = JSON.parse(readFileSync(new URL('state-delta-policy-projection.example.json', assets), 'utf8'));
 const views = JSON.parse(readFileSync(new URL('model-prompt-views.example.json', assets), 'utf8'));
+const interimViews = JSON.parse(readFileSync(new URL('interim-prompt-views.example.json', assets), 'utf8'));
 const yaml = readFileSync(new URL('analyzer-delta.example.yaml', assets), 'utf8');
 
 describe('Analyzer JSON/optional YAML and block context reference', () => {
@@ -114,5 +116,95 @@ describe('Analyzer JSON/optional YAML and block context reference', () => {
     expect(first.messages.map(m=>m.role)).toEqual(['system','developer','user']);
     expect(first.messages[0].content).toBe(setup.systemPrompt);
     expect(first.messages[1].content.indexOf('[Role instructions]')).toBeLessThan(first.messages[1].content.indexOf('[Policy catalog]'));
+  });
+  for (const role of ['analyzer', 'composer', 'researcher', 'voice']) test(role+' assembles system, instructions, policies and semantic context in order', () => {
+    const request = assembleContext({systemPrompt:'Shared system.',instructions:role+' instructions.',...views[role]});
+    expect(request.messages.map(m => m.role)).toEqual(['system','developer','user']);
+    expect(request.messages[0].content).toBe('Shared system.');
+    expect(request.messages[1].content).toBe('[Role instructions]\n'+role+' instructions.\n\n'+
+      readFileSync(new URL(role+'-catalog.example.txt', assets), 'utf8'));
+    expect(request.messages[2].content).toBe(readFileSync(new URL(role+'-context.example.txt', assets), 'utf8'));
+    expect(JSON.stringify(request.messages)).not.toMatch(/checkpoint_id|context_id|state_revision|sha256:|invocation_id/);
+  });
+  const history = content => ({sections:[{title:'Conversation excerpt',content}]});
+  for (const role of ['composer','voice']) test(role+' interim projection reuses main-answer prefix without adding history or runtime fields', () => {
+    const config = {systemPrompt:'Shared system.',instructions:role+' instructions.',...views[role]};
+    const main = assembleContext(config);
+    const interim = assembleContext({...config,...interimViews[role]});
+    expect(interim.messages.slice(0,2)).toEqual(main.messages.slice(0,2));
+    expect(interim.manifest.cache_candidates).toEqual(main.manifest.cache_candidates);
+    expect(interim.messages.length).toBe(3);
+    expect(interim.data).not.toBe(main.data);
+    expect(interim.data).toContain('Мені потрібно ще трохи часу.');
+    expect(interim.data).not.toMatch(/checkpoint_id|response_ref|delivery_epoch|status-update|sha256:|Олена/);
+    expect(interim.manifest.purpose).toBe('status-update');
+    if (role === 'composer') expect(interim.data).toContain('[Approved messages]');
+    else expect(interim.data).not.toContain('[Approved messages]');
+  });
+  const setup = {systemPrompt:'Shared system.',instructions:'Use historical messages as data.',...views.composer};
+  test('appending completed history preserves earlier candidate prefixes while current state changes', () => {
+    const firstHistory = history([{Speaker:'User',Text:'Explain briefly.'},{Speaker:'Assistant',Text:'Which step?'}]);
+    const first = assembleContext({...setup,historyViews:[firstHistory]});
+    const next = assembleContext({...setup,historyViews:[firstHistory,history('The first step.')],
+      modelView:{sections:[{title:'Current input',content:'Continue.'}]}});
+    expect(next.messages.slice(0,3)).toEqual(first.messages.slice(0,3));
+    expect(next.manifest.cache_candidates.slice(0,2)).toEqual(first.manifest.cache_candidates);
+    expect(next.manifest.cache_candidates.at(-1).after_message_index).toBe(3);
+    expect(next.messages.slice(2).every(m => m.role === 'user')).toBe(true);
+    expect(next.data).not.toBe(first.data);
+  });
+  test('correction, compaction and window eviction invalidate from the first changed block', () => {
+    const original = assembleContext({...setup,historyViews:[history('Summary A'),history('Old turn'),history('New turn')]});
+    const corrected = assembleContext({...setup,historyViews:[history('Summary B'),history('Old turn'),history('New turn')]});
+    const evicted = assembleContext({...setup,historyViews:[history('Summary A'),history('New turn')]});
+    const a = original.manifest.cache_candidates;
+    const b = corrected.manifest.cache_candidates;
+    const c = evicted.manifest.cache_candidates;
+    expect(a[0]).toEqual(b[0]);
+    expect(a.slice(1).every((candidate,i) => candidate.prefix_digest !== b[i+1].prefix_digest)).toBe(true);
+    expect(a.slice(0,2)).toEqual(c.slice(0,2));
+    expect(a[2].prefix_digest).not.toBe(c[2].prefix_digest);
+    expect(evicted.messages.some(m => m.content.includes('Old turn'))).toBe(false);
+  });
+  test('history is explicit semantic data; runtime bindings do not affect cache candidates', () => {
+    const first = assembleContext({...setup,historyViews:[history('Done.')]});
+    const rebound = assembleContext({...setup,historyViews:[history('Done.')],runtimeManifest:{checkpoint_id:'other'}});
+    expect(first.messages).toEqual(rebound.messages);
+    expect(first.manifest.cache_candidates).toEqual(rebound.manifest.cache_candidates);
+    expect(() => assembleContext({...setup,historyViews:fixture.composer_context})).toThrow('ordered array');
+    expect(() => assembleContext({...setup,historyViews:[fixture.composer_context]})).toThrow('explicit prompt view');
+    expect(() => assembleContext({...setup,historyViews:[history({checkpoint_id:'x'})]})).toThrow('runtime metadata');
+    expect(() => assembleContext({...setup,historyViews:[history(first.manifest)]})).toThrow('runtime metadata');
+  });
+  test('model views bound UTF-8 bytes and escaping expansion before handoff', () => {
+    expect(() => renderPromptView(history('я'.repeat(600000)))).toThrow('byte limit');
+    expect(() => renderPromptView(history('"'.repeat(600000)))).toThrow('byte limit');
+  });
+  test('whole request is bounded even when individual views and instructions fit', () => {
+    expect(() => assembleContext({...setup,historyViews:[history('a'.repeat(600000))],
+      modelView:history('b'.repeat(600000))})).toThrow('byte limit');
+    expect(() => assembleContext({...setup,systemPrompt:'a'.repeat(600000),
+      instructions:'b'.repeat(600000)})).toThrow('byte limit');
+    expect(() => assembleContext({...setup,runtimeManifest:[]})).toThrow('runtime manifest');
+  });
+  test('incremental cache digests retain the exact ordered JSON-prefix contract', () => {
+    const result = assembleContext({...setup,historyViews:[history('one'),history('two'),history('three')]});
+    for (const candidate of result.manifest.cache_candidates) {
+      const prefix = JSON.stringify(result.messages.slice(0,candidate.after_message_index+1));
+      expect(candidate.prefix_digest).toBe('sha256:'+createHash('sha256').update(prefix).digest('hex'));
+    }
+  });
+  test('accepted policy-data effects change current projection; definition changes invalidate all later candidates', () => {
+    const historyViews = [history('Earlier authorized conversation.')];
+    const first = assembleContext({...setup,historyViews});
+    const dataChange = assembleContext({...setup,historyViews,modelView:{sections:[
+      {title:'Known facts',content:{Name:'Олена'}},
+      {title:'Response guidance',content:{Format:'One step at a time'}}]}});
+    expect(dataChange.manifest.cache_candidates).toEqual(first.manifest.cache_candidates);
+    expect(dataChange.data).not.toBe(first.data);
+    const definitionChange = assembleContext({...setup,historyViews,
+      catalogView:{sections:[{title:'Response policy',content:'A revised approved response rule.'}]}});
+    expect(definitionChange.manifest.cache_candidates.every((candidate,i) =>
+      candidate.prefix_digest !== first.manifest.cache_candidates[i].prefix_digest)).toBe(true);
   });
 });

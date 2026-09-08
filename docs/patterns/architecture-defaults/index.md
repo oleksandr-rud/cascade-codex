@@ -130,6 +130,9 @@ For stateful conversational agents, select `analyzer-policy-composer` after
 `architecture-selection`. Load its graph/spec and the linked versioned
 `cascade-ai-architect` contract together. Voice and research are optional
 variants; AI roles are logical boundaries within the selected application.
+Default implementation uses a modular monolith with vertical use-case slices,
+current-state transactions and direct context builders. Persisted read models,
+CQRS/event sourcing, emitters and publishers require a concrete selected need.
 The plugin owns the behavior and reusable template; this catalog owns selection
 and deployment fit. A deterministic or stateless task may record a simpler
 exception. No universal quality or latency advantage is implied.

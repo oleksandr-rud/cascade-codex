@@ -313,6 +313,9 @@ def read_path(value, path):
 
 
 def validate_projection(policy, context):
+    # Logical fixture shape/relations only. Issuance and live access require the
+    # schema-values-text@1 engine plus authoritative host callbacks; this helper
+    # does not execute selector strings, count model tokens or authorize a task.
     errors = validate_contract('ProjectionPolicy', policy)
     if errors: return errors
     if ROLE_CONTRACTS.get(policy['role_id']) != policy['target_contract']:

@@ -65,7 +65,7 @@ prints the run directory and
 writes raw traces, normalized traces, per-case mechanical eligibility, a source
 manifest, and summary reports. The `judge` command selects every eligible case,
 runs required outcome and trajectory profiles independently through the
-read-only `harness-evaluator`, and writes one judgment trace per case/profile.
+read-only Cascade Evals harness subject profile (no registered host role), and writes one judgment trace per case/profile.
 
 The `coverage` command exact-matches each run's complete scenario object to the
 current catalog and exact harness source digest. It verifies raw, normalized,

@@ -19,6 +19,22 @@ Before delegation, map each material architecture decision into exactly one of:
 Preserve semantic slugs only for traceability. Convert no unresolved field into
 an invented instruction. Keep application state in the harness and pass only
 the state representation the target prompt is authorized to observe or update.
+For proposal-only roles, observe does not mean mutate: bind the advertised semantic
+output separately from runtime metadata restoration and the internal schema.
+For role text assembly, distinguish trusted system/role/policy definitions from
+current state, policy data and history. Include optional status/streaming profiles
+only when the source architecture defines their release and completion gates.
+For the supplied stateful-agent profile, projection means a role- and task-specific
+policy/state slice issued by Policy Engine and admission. Bind its task/step and
+purpose outside model text. Prompt/context builders format only that issued input
+and approved prompt assets; missing content returns to the issuer rather than
+triggering a store read or broader selection. Cached history obeys the same scope.
+
+Carry the `schema-values-text@1` binding when selected: trusted profile, ordered
+object/schema/value blocks, schema-versus-data placement, required literals and
+omission behavior. Prompt generation cannot bypass the issuer by calling the
+low-level formatter. Shared approved policy blocks preserve exact text; local
+render-cache evidence and provider-prefix evidence remain distinct.
 
 ## Delegation request
 

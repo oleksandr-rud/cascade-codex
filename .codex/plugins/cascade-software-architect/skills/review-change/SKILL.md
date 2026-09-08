@@ -5,6 +5,10 @@ description: Review a current code, configuration, schema, documentation, or har
 
 # Review Change
 
+Invocation does not establish independence. Review in the implementation
+context is self-review; an independent gate needs a separate context bound to
+the same request, diff and evidence. The host owns that context and its authority.
+
 Recover the exact request, accepted assumptions, architecture and policy
 constraints, current diff, nearby dirty work, and relevant consumers. Trace each
 changed behavior through public interfaces, state or persistence, tools,

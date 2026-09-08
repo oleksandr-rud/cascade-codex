@@ -28,8 +28,23 @@ contracts and synthetic receipts; target policy execution and provider behavior
 remain separately implemented and evaluated.
 
 The [event/projection/text extension](../skills/design-agent-blueprint/references/event-projections-and-context-format.md)
-owns checkpoint grouping, accepted-event/read-view contracts, JSON transport (optional YAML),
+owns checkpoint grouping, optional accepted-event/read-view contracts, JSON transport (optional YAML),
 compact context serialization and authoring rules. Cascade Prompt consumes those
 rules through the frozen architecture brief; prompt wording remains its ownership.
 The host `yaml` package supports the offline reference codec and does not create
 a provider or event-store runtime dependency for this architecture package.
+The [stateful-agent authoring checklist](../skills/design-agent-blueprint/references/architecture-best-practices.md)
+connects those contracts to role/workflow/prompt/evaluation consumers, optional
+interim and iterative-cache profiles, and explicit target adoption gates. Source
+conformance and offline fixture passes do not establish installed activation.
+The [simple modular profile](../skills/design-agent-blueprint/references/simple-modular-agent.md)
+is the implementation default: current state, vertical use-case slices and direct
+context builders. Event sourcing/CQRS and emitter/publisher infrastructure remain
+explicit optional choices rather than generated requirements.
+
+The [executable projection profile](../skills/design-agent-blueprint/references/executable-projections.md)
+binds `schema-values-text@1` to strict source decoding, schema-ordered field
+selection, admission-bound role/task slices, compact text assembly and a bounded
+local rendered-block cache. Its four-role example is wired through the same
+implementation. Skills, role templates and agent entrypoints consume this
+contract; the host supplies real admission, token accounting and dispatch.

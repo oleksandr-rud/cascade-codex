@@ -339,7 +339,7 @@ export function verifySpecializedEvaluationReceipt(
     }
   }
   if (expected.specialized_evaluator.role !== "harness-evaluator") {
-    throw new CascadeError("specialized evaluation receipt principal must use harness-evaluator role");
+    throw new CascadeError("specialized evaluation receipt principal must use the legacy harness-evaluator profile identity");
   }
   if (
     expected.other_principals.some(

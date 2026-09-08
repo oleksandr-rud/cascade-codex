@@ -1,0 +1,22 @@
+plugin_skills:
+  - cascade-software-architect:review-change
+  - cascade-software-architect:review-architecture
+  - cascade-qa:triage-defects
+skills:
+  - name: context
+    source: .codex/skills/context/SKILL.md
+  - name: plan-change
+    source: .codex/skills/plan-change/SKILL.md
+  - name: implement-change
+    source: .codex/skills/implement-change/SKILL.md
+  - name: validate-change
+    source: .codex/skills/validate-change/SKILL.md
+  - name: run-qa-plan
+    source: .codex/skills/run-qa-plan/SKILL.md
+    delegates:
+      - cascade-qa:design-tests
+      - cascade-qa:assess-quality
+      - cascade-qa:triage-defects
+  - name: closeout
+    source: .codex/skills/closeout/SKILL.md
+    delegate: cascade-project-management:close-project

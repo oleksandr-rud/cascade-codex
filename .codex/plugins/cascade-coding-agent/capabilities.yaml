@@ -38,7 +38,7 @@ skills:
     consumes: [harness-audit, harness-change-contract]
     produces: [harness-change-candidate]
     required_dependencies: []
-    optional_dependencies: [cascade-ai-architect:architect-ai-system, cascade-prompt:prompt, cascade-evals:harness-evaluation]
+    optional_dependencies: [cascade-ai-architect:architect-ai-system, cascade-prompt:prompt, cascade-evals:evaluate, cascade-evals:build-judge, cascade-evals:harness-evaluation, cascade-evals:agent-evaluation]
     policy_tags: [coding-agent, maintenance]
     effect: CANDIDATE_WRITE
     authority: READ_ONLY
@@ -50,7 +50,7 @@ skills:
     consumes: [agent-architecture-packet, agent-assets]
     produces: [harness-integration-map, workflow-host-binding]
     required_dependencies: []
-    optional_dependencies: [cascade-ai-architect:architect-ai-system, cascade-prompt:prompt, cascade-evals:harness-evaluation]
+    optional_dependencies: [cascade-ai-architect:architect-ai-system, cascade-prompt:prompt, cascade-evals:evaluate, cascade-evals:build-judge, cascade-evals:harness-evaluation, cascade-evals:agent-evaluation]
     policy_tags: [coding-agent, asset-integration]
     effect: CANDIDATE_WRITE
     authority: READ_ONLY

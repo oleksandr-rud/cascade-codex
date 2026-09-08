@@ -1,7 +1,7 @@
 # StateDelta, policy data, and role projections
 
 Contract ID: `state-delta-policy-projection`\
-Version: `2.3`
+Version: `2.4`
 Status: `reference-design`\
 Parent: [Analyzer–Policy Engine–Composer](analyzer-policy-composer.md)
 
@@ -13,7 +13,7 @@ the field identities and before/delta/after/context relationship.
 ## Wire authority and validation
 
 [agent-contracts.schema.json](agent-contracts.schema.json) owns the versioned
-logical shapes. This document owns lifecycle and enforcement semantics. Pattern 2.3
+logical shapes. This document owns lifecycle and enforcement semantics. Pattern 2.4
 uses `state-delta.v3`, `analyzer-context.v2` and `composer-context.v2`; all other
 wire IDs are declared by their definitions. Unknown versions and fields fail
 closed. Do not reinterpret old payloads as the new version; rebuild contexts from
@@ -22,7 +22,7 @@ Policy, projection, identity, memory, plan, delivery and authorization bindings
 are independent context dependencies, including their digests.
 
 Use [event projections and context format](event-projections-and-context-format.md)
-for checkpoint grouping, committed events, read-view cursors, multi-policy
+for checkpoint grouping, optional committed-event/read-view profiles, multi-policy
 references and state-machine coordination. Analyzer transport defaults to `analyzer-json@1`; `analyzer-yaml@1` is optional;
 role inputs are `role-text@1` semantic text sections selected under policy. The
 typed envelopes below are runtime contracts; their metadata stays in a private
@@ -64,7 +64,7 @@ cannot author or activate definitions.
 | `ProjectionPolicy` | Allowed selectors, destinations, transforms, history/memory selection, relevance and budget rules per role | Authorized application configuration owner |
 | `StateDelta` | New semantic observations and typed proposed edits for this input | Analyzer; proposal authority only |
 | `AppliedChangeSet` | Exact committed changes, rejections, no-ops, invalidations and eligible next-role invocations | Runtime |
-| `RoleContext` | Immutable, purpose-specific projection for one invocation | Runtime Context Projector under ProjectionPolicy |
+| `RoleContext` | Immutable role- and task-specific policy/state slice for one invocation | Policy Engine with admission, using trusted ProjectionPolicy rules |
 
 Definitions and projection rules may physically be stored alongside state, but
 their namespace is configuration-owned and not Analyzer-writable. Session state
@@ -399,6 +399,10 @@ substantive canonical answer until its result is admitted or its deadline select
 a fallback. A bounded acknowledgement can precede it under a separate response
 purpose. Nonblocking research cannot silently replace an already published answer;
 an authorized follow-up receives a new response revision and purpose.
+The optional [interim response profile](interim-responses.md) uses the existing
+`status-update` purpose, bounded Composer/fixed-text paths, role text projections
+and independent delivery receipts. Status publication does not close the turn
+or satisfy its substantive response dependency.
 
 Serialize semantic state commits per session through CAS; route and validate
 against one accepted snapshot. A new relevant user input invalidates stale work,
@@ -418,9 +422,35 @@ a schema-valid model output still needs grounding checks and a bounded fallback.
 
 ## ProjectionPolicy and RoleContext
 
-The Policy Engine decides what is permitted and which next work is eligible.
-The deterministic Context Projector compiles that accepted state under a
-versioned `ProjectionPolicy` and validates the destination role's input contract:
+The basic representation contract is **object boundary + selected schema +
+selected values + deterministic text rendering**. See the
+[schema/value block contract](event-projections-and-context-format.md#schema-and-value-blocks)
+for YAML/JSON decoding and compact text output. Admission and Policy Engine own
+which blocks/fields may be issued; the renderer needs no policy interpreter.
+Common approved policy/catalog blocks can reuse one rendered representation
+under the [shared block cache rules](iterative-context-caching.md#shared-policy-and-catalog-blocks).
+
+In this architecture, a **projection is a role- and task-specific slice of policy
+and state, issued by the Policy Engine with admission**. It contains the selected
+policy descriptions/effects and accepted state needed for that role's current
+task, step and purpose. History, memory, identity, evidence and next steps are
+included only through these same rules. It is not an independently selected view
+owned by the recipient, nor a requirement for a persisted read model.
+
+Admission validates the requested role, task/step, authenticated scope, current
+dependencies and permitted purpose. The Policy Engine evaluates trusted domain
+projection rules, resolves references, selects/redacts/budgets the slice and
+validates the destination input contract. A projector is an internal deterministic
+helper of this issuing boundary, with no independent disclosure authority.
+The Context Compiler receives only the issued slice and approved prompt assets;
+it formats/assembles them without querying the store, broadening selection,
+following new references or deciding permissions. A formatting/token mismatch
+returns a gap for reissuance, not silent removal of required content.
+
+Initial Analyzer input also requires issuance from the accepted input and current
+state before any Analyzer delta exists. After an admitted delta or role result,
+issue subsequent slices from the committed snapshot. Slice issuance permits the
+scoped read; execution still requires the corresponding admitted work request.
 
 The reference registry binds Analyzer to `AnalyzerContext`, Main Composer to
 `ComposerContext`, Researcher to `ResearchRequest`, and Voice Composer to
@@ -432,20 +462,20 @@ either role history or memory requires an explicit input-contract extension and
 projection rules, rather than copying the Composer envelope.
 
 ```text
-RoleContext = project(
+RoleContext = policyEngine.issueSlice(
   accepted state revision,
   admitted policy evaluations,
   projection policy version,
-  destination role + purpose + invocation,
+  admitted destination role + task + step + purpose + invocation,
   current authorization + channel + budget
 )
 ```
 
-The full state may be available internally to the projector; it is not its
+The full state may be available internally to the issuing boundary; it is not its
 default output. Neither the Analyzer nor policy data supplies executable
 selectors. Every projection rule declares:
 
-- Stable rule identity, destination role, purpose and activation predicate.
+- Stable rule identity, destination role, task/step scope, purpose and activation predicate.
 - Registered source selectors (state, policy data/evaluation, claims, messages,
   summary, pending work or receipts) and dependency identities.
 - Destination field and input schema; one owner or explicit conflict rule.
@@ -460,7 +490,7 @@ retrieval need. Include mandatory safety/permission obligations even when they
 do not change answer wording. A model may suggest relevance as policy data;
 the selector and disclosure authority remain deterministic.
 
-Select and validate role/purpose → evaluate activation → resolve source values
+Admit role/task/step/purpose → evaluate activation → resolve source values
 from the same revision → apply access/freshness/support checks → map and merge
 fields → redact/dedupe → pack under budget → validate role input → freeze a
 manifest. If required content cannot fit or a required value is missing, return
@@ -473,7 +503,17 @@ expiry, selected payload and output contract. The audit manifest records which
 rules included/transformed/omitted which references and why. Keep hidden data
 and denied-value metadata out of the role payload; an audit manifest need not
 be sent to the model. Revalidate dependencies/authority before dispatch and
-publication. Never mix fields from different state revisions unintentionally.
+publication. Bind task/step scope in the existing invocation/plan references;
+do not create another mutable turn object or put these audit bindings in model
+text. Never reuse a slice for a different task merely because the role matches.
+Never mix fields from different state revisions unintentionally.
+
+A frontend progress view is a separate client/task-specific slice issued through
+the same admission boundary. It can expose permitted step status, controls and
+source summaries, but does not inherit a model role's context, private policy
+evaluations or raw deltas. The WebSocket gateway transports the issued client
+view after commit; it does not select state. Reconnect requests a current slice,
+and playback/result observations return through application admission.
 
 | Role | Typical projection | Excluded by default |
 |---|---|---|
@@ -752,6 +792,9 @@ must not claim the user heard an interrupted response.
 | Deleted or corrected message under a summary | Summary and dependent contexts invalidated; no resurrection |
 | Required context too large or unauthorized | Explicit gap; no full-state fallback or required-field loss |
 | New role with no projection contract | No dispatch/context disclosure |
+| Same role receives another task's slice, including from cache | Admission denies reuse outside the bound task/step/purpose; request a newly issued slice |
+| Context Compiler tries to read state or expand references | Compiler has only issued input; unresolved required content returns a gap to the issuer |
+| Initial Analyzer call or frontend progress has no admitted slice | No context disclosure; frontend cannot inherit model-role policy/state data |
 | Policy/source/state changes before dispatch | Revalidate/recompile the affected invocation |
 
 These are target acceptance obligations. Example consistency and document/schema

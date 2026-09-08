@@ -11,11 +11,23 @@ documentation. It is not a mandatory final phase for every bounded change.
 
 ## Close
 
+For executable closure, use the shared `cascade closeout check` implementation
+and [runtime contract](references/runtime-check.md). This is a deterministic
+file/evidence check, not an independent evaluator. The host prompt hook provides
+the task/turn identity and optional contract path; the Stop hook reads that exact
+contract and only surfaces gaps. It neither executes checks nor restarts work.
+No separate check-closeout skill, task journal or mandatory report is needed.
+
 1. Confirm the requested outcome and required validation against the current
    revision.
 2. Inspect the final diff and preserve unrelated dirty work.
 3. Record exact PASS, FAIL, BLOCKED, NOT_RUN, and NOT_APPLICABLE evidence without
    broadening claims.
+   If the accepted task contract requires independent review or evaluation,
+   require its separate-context result for the current subject and required
+   scope. Missing or stale results leave that gate open. A closeout summary,
+   self-review or structural PASS cannot substitute for it. Do not introduce
+   an independent-judge gate for an ordinary task that does not require one.
 4. If durable documentation changed, verify that the authoritative owner and
    every true consumer were updated or explicitly left unchanged; preserve
    references and historical records, and use `create-spec` for unresolved

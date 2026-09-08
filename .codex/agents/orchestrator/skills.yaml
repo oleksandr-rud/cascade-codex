@@ -6,6 +6,7 @@ plugin_skills:
   - cascade-software-architect:select-architecture-patterns
   - cascade-software-architect:review-architecture
   - cascade-software-architect:review-change
+  - cascade-design:create-design
   - cascade-design:ux-flow-review
   - cascade-design:accessibility-review
   - cascade-design:visual-qa

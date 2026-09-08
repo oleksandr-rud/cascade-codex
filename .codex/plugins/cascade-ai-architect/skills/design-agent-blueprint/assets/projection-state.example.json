@@ -1,0 +1,10 @@
+{
+  "revision": 1,
+  "values": {
+    "response-style": {"tone": "calm", "format": "one_step", "internal_note": "Private inference; exclude from role text."},
+    "current-input": "How should I check the pump?",
+    "accepted-facts": [{"claim": "The user reports a pump inspection task.", "support": "reported"}],
+    "research-request": {"query": "Pump inspection instructions for model 001-AB", "sources": ["approved-maintenance-kb"]},
+    "speech": {"text": "First, identify the pump model.", "language": "en", "pace": "normal"}
+  }
+}

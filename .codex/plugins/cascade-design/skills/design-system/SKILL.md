@@ -24,6 +24,11 @@ UI code.
 Current implementation is the strongest evidence of current behavior; an
 accepted design or product authority still governs intended behavior. Preserve
 and report conflict rather than overwriting either silently.
+For an approved mockup, apply the
+[mockup fidelity contract](references/design-system-contract.md#approved-mockup-fidelity):
+faithful implementation is the default, with exact reference/viewport/state
+bindings and a rendered comparison loop. Specify evidence and deviations in the
+handoff; this skill defines the rule while the host implements it.
 
 ## Workflow
 

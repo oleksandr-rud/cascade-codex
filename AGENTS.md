@@ -97,15 +97,13 @@ The default test command runs only the retained runtime safety smoke suite.
 Use the targeted commands in `harness.config.yaml` only for affected contracts;
 plugin package tests and lab corpora are not default repository checks.
 
-Harness evaluation is conditional, not a default validation phase. The
-`PostToolUse` harness-impact hook examines completed `apply_patch` edits and
-adds bounded guidance only when actual `cascade-evals:harness-evaluation` implementation,
-assertions, or judge contracts changed. Run `eval catalog --check` and
-`eval self-test` only when that hook reports them. Run a focused live scenario
-and independent judge only after reviewing a changed semantic assertion that
-cannot be decided mechanically; otherwise record the live review as
-`NOT_APPLICABLE`. Hook output is advisory and must not be treated as authority
-or proof.
+Closeout uses the existing skill and the shared `cascade closeout check`
+command. The thin Stop hook checks only a contract registered for the current
+task/turn; it grants no authority, executes no checks and does not restart work.
+Use current file/index digests and required evidence, preserving unrelated work.
+Harness evaluation remains optional through Cascade Evals' harness subject
+profile. Run catalog/self-tests when changing its runtime or assertions, and
+focused independent semantic evaluation only when the accepted claim needs it.
 
 Install harness tooling with
 `bun install --cwd .codex/harness-tooling --frozen-lockfile`. Playwright

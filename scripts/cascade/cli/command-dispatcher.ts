@@ -1,4 +1,5 @@
 export type CascadeCommandName =
+  | "closeout"
   | "validate"
   | "eval"
   | "patterns"
@@ -32,6 +33,7 @@ export interface CascadeCommandDispatcherOptions {
 }
 
 const DEFAULT_LOADERS: CascadeCommandLoaders = {
+  closeout: () => import("../closeout"),
   validate: () => import("../validate"),
   eval: () => import("../evals"),
   patterns: () => import("../patterns"),
@@ -53,6 +55,7 @@ export function cascadeHelpText(): string {
   return `Cascade Bun tooling
 
 Usage:
+  cascade closeout <snapshot|check|path>
   cascade validate
   cascade eval <catalog|audit|run|evaluate|judge|coverage|self-test>
   cascade patterns <options>

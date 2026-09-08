@@ -3,7 +3,14 @@
   "plugin_id": "cascade-design",
   "subject_kind": "agent",
   "version": "0.1.0+codex.20260827163437",
-  "expected_case_count": 12,
+  "expected_case_count": 19,
+  "expected_cases_per_skill": {
+    "ux-flow-review": 3,
+    "accessibility-review": 3,
+    "visual-qa": 3,
+    "design-system": 3,
+    "create-design": 7
+  },
   "acceptance_threshold": 0.95,
   "minimum_dimension": 3,
   "evaluation_manifest": "evals/manifest.json",
@@ -18,7 +25,8 @@
     "ux-flow-review",
     "accessibility-review",
     "visual-qa",
-    "design-system"
+    "design-system",
+    "create-design"
   ],
   "required_schemas": ["design-review.schema.json"],
   "required_runtime_phrases": [
@@ -65,6 +73,8 @@
   ],
   "required_subject_assets": [
     ".codex-plugin/plugin.json",
+    "skills/create-design/SKILL.md",
+    "skills/create-design/agents/openai.yaml",
     "skills/ux-flow-review/SKILL.md",
     "skills/ux-flow-review/agents/openai.yaml",
     "skills/ux-flow-review/checklists/ux-flow-review.md",

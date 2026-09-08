@@ -2,6 +2,11 @@
 
 Status: `<READY | GAP | BLOCKED>`
 Expected source: `<identity>`
+Reference version/frame: `<identity>`
+Capture conditions: `<viewport, state, theme, content, fonts/assets, browser/DPR where relevant>`
+Comparison method and predefined tolerance/masks: `<side-by-side | overlay | diff; scope and rationale>`
+Approved deviations: `<references or none>`
+Fidelity verdict: `<PASS | FAIL | NOT_RUN | GAP | BLOCKED; inspected rows only>`
 
 ## Evidence matrix
 
