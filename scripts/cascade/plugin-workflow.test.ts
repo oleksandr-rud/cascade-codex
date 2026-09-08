@@ -48,7 +48,7 @@ function planFor(
       reasoning_effort: "high",
       prompt_sha256: null,
     },
-    input_artifacts: node.consumes,
+    input_artifacts: [...node.consumes],
     selected_nodes: [node],
     edges: [],
     parallel_groups: [],
@@ -88,6 +88,43 @@ describe("plugin workflow catalog", () => {
 });
 
 describe("plugin plan validation", () => {
+  test("passes growth feedback into Product without granting execution", async () => {
+    const envelope = await compileTaskEnvelope({
+      request: "Plan growth and turn the resulting evidence into a feature proposal.",
+      task_id: "growth-product-plan-test",
+      produced_at: "2026-09-08T00:00:00+00:00",
+    });
+    const catalog = await buildPluginCapabilityCatalog();
+    const claimIds = [envelope.claims[0]!.claim_id];
+    const growth = nodeFrom(catalogSkill(catalog, "cascade-market:plan-growth"), claimIds, "growth");
+    const product = nodeFrom(catalogSkill(catalog, "cascade-product:define-product"), claimIds, "product");
+    product.optional_consumes = ["growth-strategy"];
+    const plan = planFor(envelope, catalog, growth);
+    plan.input_artifacts = [...new Set([...growth.consumes, ...product.consumes])]
+      .filter((artifact) => artifact !== "growth-strategy");
+    plan.selected_nodes.push(product);
+    plan.edges.push({ from: "growth", to: "product", artifact: "growth-strategy" });
+    expect(() => validatePluginPlan(plan, envelope, catalog)).not.toThrow();
+    plan.selected_nodes.reverse();
+    expect(() => validatePluginPlan(plan, envelope, catalog)).toThrow("consumes unavailable artifact");
+  });
+
+  test("ordinary Product plans omit growth and reject undeclared optional inputs", async () => {
+    const envelope = await compileTaskEnvelope({
+      request: "Define this feature from the accepted product decision.",
+      task_id: "product-without-growth-test",
+      produced_at: "2026-09-08T00:00:00+00:00",
+    });
+    const catalog = await buildPluginCapabilityCatalog();
+    const product = nodeFrom(catalogSkill(catalog, "cascade-product:define-product"), [envelope.claims[0]!.claim_id]);
+    const plan = planFor(envelope, catalog, product);
+    expect(plan.input_artifacts).not.toContain("growth-strategy");
+    expect(() => validatePluginPlan(plan, envelope, catalog)).not.toThrow();
+    product.optional_consumes = ["undeclared-source"];
+    plan.input_artifacts.push("undeclared-source");
+    expect(() => validatePluginPlan(plan, envelope, catalog)).toThrow("undeclared optional input");
+  });
+
   test("accepts a digest-bound non-dispatching Sol plan", async () => {
     const envelope = await compileTaskEnvelope({
       request: "Create evidence-backed brand positioning for this product.",

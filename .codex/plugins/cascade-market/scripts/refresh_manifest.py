@@ -137,7 +137,7 @@ def main(argv: list[str] | None = None) -> int:
             return 0 if not errors else 2
         manifest = build(args.root)
         output.parent.mkdir(parents=True, exist_ok=True)
-        output.write_text(json.dumps(manifest, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+        output.write_text(json.dumps(manifest, indent=2, sort_keys=True) + "\n", encoding="utf-8", newline="\n")
         print(json.dumps({"status": "PASS", "subject_digest": manifest["subject_digest"], "output": str(output)}, indent=2))
         return 0
     except (OSError, ValueError, subprocess.CalledProcessError, json.JSONDecodeError) as error:

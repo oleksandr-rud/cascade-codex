@@ -1,9 +1,19 @@
 ---
 name: manage-product-lifecycle
-description: Manage state, routing, prioritization, and owner-held gates across a product initiative lifecycle. Use for product strategy, roadmap or MVP decisions, cross-plugin coordination, learning loops, or a stalled gate; use define-product to author the product contract and validate-product to design or assess evidence, and do not use for implementation-only work or fresh market claims.
+description: Manage product strategy, portfolio allocation, priorities, owner-held lifecycle gates and evidence-driven learning. Use for investment and re-entry decisions; Product definition and validation remain separate skills, and project scheduling belongs to Project Management.
 ---
 
 # Manage Product Lifecycle
+
+## Value strategy and learning
+
+For cross-stage strategy, portfolio allocation or evidence that changes a prior
+bet, read [references/value-strategy.md](references/value-strategy.md). It extends
+the existing decision ledger and owner-held gates; it adds no agent role or
+parallel state store. Use cascade-market:plan-growth for channel and growth
+hypotheses and cascade-project-management:plan-project for delivery coordination.
+A growth recommendation remains proposed until the owning product decision
+accepts its affected requirements and proof conditions.
 
 Own product analysis, routing, ledgers, and proposals—not approval authority or every contributing capability. A named decision_owner chooses which problems, outcomes, requirements, experiments, lifecycle transitions, and delivery slices to accept. Without an explicitly delegated owner, recommendations remain PROPOSED or PENDING_APPROVAL and gate advancement is BLOCKED. Evidence providers and evaluators retain their own authority.
 

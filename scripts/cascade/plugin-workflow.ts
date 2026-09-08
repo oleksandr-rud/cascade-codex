@@ -181,6 +181,9 @@ export async function buildPluginCapabilityCatalog(): Promise<PluginCapabilityCa
       if (!route.startsWith(`${name}:`)) {
         throw new CascadeError(`${name} descriptor contains foreign route: ${route}`);
       }
+      if (sortedStrings(skill.optional_consumes).some((artifact) => skill.consumes.includes(artifact))) {
+        throw new CascadeError(`${route} declares the same artifact as required and optional`);
+      }
       declared.set(route, skill);
       allSkills.set(route, skill);
     }
@@ -188,7 +191,7 @@ export async function buildPluginCapabilityCatalog(): Promise<PluginCapabilityCa
     const sourceRoutes = new Set<string>();
     const sourceBodies = new Map<string, string>();
     for (const path of await walkFiles(resolve(pluginRoot, "skills"), {
-      include: (candidate) => candidate.endsWith("/SKILL.md"),
+      include: (candidate) => basename(candidate) === "SKILL.md",
     })) {
       const body = await readText(path);
       const frontmatterName = /^name:\s*([^\n]+)$/m.exec(body)?.[1]?.trim();
@@ -315,6 +318,11 @@ export function validatePluginPlan(
         throw new CascadeError(`${node.route} ${field} differs from its capability descriptor`);
       }
     }
+    const selectedOptional = sortedStrings(node.optional_consumes);
+    const declaredOptional = new Set(sortedStrings(descriptor.optional_consumes));
+    if (selectedOptional.some((artifact) => !declaredOptional.has(artifact))) {
+      throw new CascadeError(`${node.route} selects an undeclared optional input`);
+    }
     if (node.effect !== descriptor.effect || node.authority !== descriptor.authority) {
       throw new CascadeError(`${node.route} effect or authority differs from its capability descriptor`);
     }
@@ -330,7 +338,7 @@ export function validatePluginPlan(
         throw new CascadeError(`${node.route} required dependency must appear earlier: ${dependency}`);
       }
     }
-    for (const artifact of node.consumes as string[]) {
+    for (const artifact of [...node.consumes, ...selectedOptional] as string[]) {
       if (!availableArtifacts.has(artifact)) {
         throw new CascadeError(`${node.route} consumes unavailable artifact: ${artifact}`);
       }
@@ -348,7 +356,8 @@ export function validatePluginPlan(
     if ((routeIndex.get(from.route) ?? -1) >= (routeIndex.get(to.route) ?? -1)) {
       throw new CascadeError(`plugin plan edge is cyclic or out of order: ${edge.from} -> ${edge.to}`);
     }
-    if (!from.produces.includes(edge.artifact) || !to.consumes.includes(edge.artifact)) {
+    const consumed = [...to.consumes, ...sortedStrings(to.optional_consumes)];
+    if (!from.produces.includes(edge.artifact) || !consumed.includes(edge.artifact)) {
       throw new CascadeError(`plugin plan edge artifact contract is invalid: ${edge.artifact}`);
     }
     const key = `${edge.from}\0${edge.to}`;

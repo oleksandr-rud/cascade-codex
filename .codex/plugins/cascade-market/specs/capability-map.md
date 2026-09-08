@@ -1,6 +1,6 @@
 # Cascade Market capability map
 
-Version: 0.2.0+codex.20260827163437
+Version: 0.2.0+codex.20260908123549
 
 This plugin consolidates the former repository Business Analyst, market
 research skills, and Marketing positioning skill into four standalone
@@ -23,3 +23,11 @@ remain provenance rather than runtime dependencies.
 The former Business Analyst role and host market/marketing method skills are
 retired. Host skills may resolve these plugin routes but do not copy their
 methods.
+
+## Value and growth methods
+
+Market selection adds comparable jobs, entrant reachability and evidence coverage.
+Opportunity assessment adds falsifiable entry strategies matched to the business
+objective. plan-growth owns channel choice, acquisition-to-outcome continuity,
+cohort economics and product feedback through growth-strategy.schema.json.
+These methods adapt Desire to Value v0.5.0; the aggregate plugin is not a dependency.

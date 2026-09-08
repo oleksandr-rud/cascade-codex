@@ -22,6 +22,15 @@ plan. Planning is a decision aid, not a prerequisite-document factory.
 
 ## Plan the slice
 
+When a Product definition or growth-derived feature is supplied, carry its
+current decision, requirement IDs, outcome, acceptance behavior, non-goals and
+measurement limits into the slice. Resolve an undecided value/offer/feature
+through `cascade-product:define-product`; use
+`cascade-product:manage-product-lifecycle` for investment or gate decisions.
+A growth recommendation supplies a hypothesis, not accepted product scope.
+Use accepted current requirements directly for ordinary fixes; do not rerun
+market or growth strategy unless the change challenges those decisions.
+
 1. Restate the intended behavior, explicit non-goals, and success criteria.
 2. Inspect the current path through source, tests, persistence, interfaces, and
    rendered or observable outcomes as applicable.

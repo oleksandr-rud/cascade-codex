@@ -61,3 +61,11 @@ digests before semantic judgment.
 Acceptance policy remains controller-only and is never copied into
 target-visible subject assets. An explicit Sol Max campaign binds
 `gpt-5.6-sol` and `max` separately for builder, target, and judges.
+
+## Feature formation and growth feedback
+
+Value/offer models and feature rationale use existing Product sections; accepted
+features use requirements and traceability. No second strategy store is created.
+cascade-market:plan-growth supplies versioned growth hypotheses and feedback.
+Product accepts or revises the scope before host planning and implementation.
+Functional success and observed user outcomes remain distinct evidence.

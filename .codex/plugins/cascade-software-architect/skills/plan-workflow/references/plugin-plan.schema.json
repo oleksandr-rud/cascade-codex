@@ -125,6 +125,7 @@
         },
         "policy_tags": { "$ref": "#/$defs/slugList" },
         "consumes": { "$ref": "#/$defs/slugList" },
+        "optional_consumes": { "$ref": "#/$defs/slugList" },
         "produces": { "$ref": "#/$defs/slugList" },
         "effect": { "enum": ["READ_ONLY", "CANDIDATE_WRITE", "HOST_EFFECT"] },
         "authority": { "enum": ["READ_ONLY", "LOCAL_WRITE", "EXTERNAL_WRITE", "PRIVILEGED", "DESTRUCTIVE"] },

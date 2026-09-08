@@ -11,3 +11,9 @@ structures or read-only findings.
 
 `capabilities.yaml` is the machine-readable route and dependency contract.
 Every skill produces an artifact type with one repository-wide semantic owner.
+
+Capability descriptors may declare `optional_consumes` in addition to required
+`consumes`. Plan nodes select only a declared, relevant subset. The host checks
+availability, ownership and order for selected optional inputs; absent optional
+inputs do not create prerequisites. Existing descriptors and plans remain valid
+without the optional field.

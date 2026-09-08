@@ -1,6 +1,6 @@
 # Cascade Design capability map
 
-Version: 0.1.0+codex.20260827163437
+Version: 0.1.0+codex.20260908123548
 
 `specs/extraction-manifest.json` freezes the pre-cutover Designer role and four
 repository skill packages as historical extraction evidence. The plugin owns

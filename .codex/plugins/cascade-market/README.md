@@ -1,11 +1,11 @@
-# Cascade Market
+# Cascade Marketing
 
-Cascade Market owns market research, opportunity assessment, market experiment
-design, and approved market-facing language. Its four skills produce
-attributable evidence, bounded decisions, non-executing experiment contracts,
-and positioning candidates without turning synthetic evidence into market
-proof or taking Product, Design, execution, publication, or spend authority.
+Cascade Marketing keeps the internal plugin ID cascade-market. Its five skills
+research and select markets, assess differentiation, design experiments, shape
+positioning, and plan growth through useful outcomes and cohort economics.
+Growth recommendations feed proposed feature and offer changes into Cascade
+Product. Product retains accepted behavior and lifecycle authority.
 
-The repository host may project an accepted candidate into its own durable
-brand documentation through a separate authorized adapter. Plugin runtime is
-portable and does not write host-specific paths directly.
+The plugin prepares evidence-bound artifacts. Outreach, publication, spend and
+feature implementation remain with the authorized host. Desire to Value v0.5.0
+methods are integrated here; the standalone aggregate is not required.

@@ -1,7 +1,7 @@
 {
   "name": "cascade-product",
-  "version": "0.1.24+codex.20260827162112",
-  "description": "Manage evidence-bound product discovery, definition, validation, delivery handoff, and learning while delegating persona, market, prompt, simulation, and evaluation mechanics to their owning Cascade plugins.",
+  "version": "0.1.24+codex.20260908123546",
+  "description": "Model product value and offers, form evidence-linked features, manage investment gates, and connect accepted behavior to delivery and outcome learning.",
   "author": {
     "name": "Cascade"
   },
@@ -16,8 +16,8 @@
   "skills": "./skills/",
   "interface": {
     "displayName": "Cascade Product",
-    "shortDescription": "Manage an evidence-bound product lifecycle.",
-    "longDescription": "Turn product opportunities into traceable decisions, product definitions, journeys, requirements, priorities, experiments, delivery handoffs, and learning loops while preserving market evidence, persona provenance, simulation limits, and independent evaluation.",
+    "shortDescription": "Shape product value, features and learning.",
+    "longDescription": "Turn market and growth evidence into value models, offers, feature decisions, requirements, measurable outcomes and delivery handoffs under existing product approval gates.",
     "developerName": "Cascade",
     "category": "Productivity",
     "capabilities": [
@@ -25,9 +25,9 @@
       "Write"
     ],
     "defaultPrompt": [
-      "Find this product initiative's current state and next gate.",
-      "Turn this evidence into a traceable product definition.",
-      "Validate this product hypothesis with the right evidence."
+      "Model the value and offer for this product.",
+      "Compare these feature ideas and define the smallest useful slice.",
+      "Review outcomes and update product priorities."
     ]
   }
 }

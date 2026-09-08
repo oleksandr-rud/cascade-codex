@@ -328,6 +328,7 @@ def validate_v2(root: Path) -> list[str]:
             "research-market",
             "evaluate-market-opportunity",
             "design-market-experiments",
+            "plan-growth",
         }
         if requires_typed_artifact:
             expected_assertions.append("market_artifact_valid")
@@ -351,6 +352,7 @@ def validate_v2(root: Path) -> list[str]:
                 "research-market": ("EVIDENCE_LEDGER", "schemas/evidence-ledger.schema.json", {"READY", "GAP", "BLOCKED", "INVALID"}),
                 "evaluate-market-opportunity": ("OPPORTUNITY_ASSESSMENT", "schemas/opportunity-assessment.schema.json", {"READY", "ABSTAIN", "BLOCKED", "INVALID"}),
                 "design-market-experiments": ("EXPERIMENT_CONTRACT", "schemas/experiment-contract.schema.json", {"NOT_RUN", "RECEIPT_SUPPLIED", "INVALID"}),
+                "plan-growth": ("GROWTH_STRATEGY", "schemas/growth-strategy.schema.json", {"READY", "GAP", "BLOCKED"}),
             }.get(skill)
             if (
                 not isinstance(output_contract, dict)

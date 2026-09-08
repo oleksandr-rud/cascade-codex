@@ -71,3 +71,12 @@ finish, and no model result turns synthetic evidence into market proof.
 Acceptance policy remains controller-only and is never copied into
 target-visible subject assets. An explicit Sol Max campaign binds
 `gpt-5.6-sol` with `max` separately for builder, target, and both judges.
+
+## Growth strategy
+
+plan-growth owns channel and lifecycle growth recommendations. Its v4
+growth-strategy schema binds source evidence, stages, economics, a bounded next
+test and product-feedback owners. validate_artifact.py growth checks reference
+integrity, evidence classes, job cadence, scale prerequisites and non-execution.
+Product receives proposed feature or offer implications through the existing
+handoff envelope; it retains acceptance and lifecycle authority.

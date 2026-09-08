@@ -18,6 +18,7 @@ from validate_artifact import (
     strict_json_file,
     strict_json_loads,
     validate_experiment,
+    validate_growth,
     validate_handoff,
     validate_ledger,
     validate_opportunity,
@@ -29,6 +30,7 @@ PLUGIN_ROOT = Path(__file__).resolve().parent.parent
 LEDGER_SCHEMA = PLUGIN_ROOT / "schemas" / "evidence-ledger.schema.json"
 OPPORTUNITY_SCHEMA = PLUGIN_ROOT / "schemas" / "opportunity-assessment.schema.json"
 EXPERIMENT_SCHEMA = PLUGIN_ROOT / "schemas" / "experiment-contract.schema.json"
+GROWTH_SCHEMA = PLUGIN_ROOT / "schemas" / "growth-strategy.schema.json"
 HANDOFF_SCHEMA = PLUGIN_ROOT / "schemas" / "handoff-envelope.schema.json"
 SUPPORTED_ASSERTIONS = {
     "status_matches_expected",
@@ -42,6 +44,7 @@ ARTIFACT_CONTRACTS = {
     "research-market": ("EVIDENCE_LEDGER", LEDGER_SCHEMA),
     "evaluate-market-opportunity": ("OPPORTUNITY_ASSESSMENT", OPPORTUNITY_SCHEMA),
     "design-market-experiments": ("EXPERIMENT_CONTRACT", EXPERIMENT_SCHEMA),
+    "plan-growth": ("GROWTH_STRATEGY", GROWTH_SCHEMA),
 }
 
 BRAND_TOP_LEVEL_FIELDS = {
@@ -77,6 +80,7 @@ def _artifact_identity(skill: str | None, artifact: dict[str, Any]) -> tuple[Any
         "research-market": ("ledger_id", "version"),
         "evaluate-market-opportunity": ("assessment_id", "version"),
         "design-market-experiments": ("experiment_id", "version"),
+        "plan-growth": ("strategy_id", "version"),
     }.get(skill)
     if fields is None:
         return None, None
@@ -229,7 +233,7 @@ def market_artifact_errors(case: dict[str, Any], actual: dict[str, Any]) -> list
     contract = case.get("fixture", {}).get("output_contract", {})
     expected_kind, schema_path = ARTIFACT_CONTRACTS.get(case.get("skill"), (None, None))
     errors: list[str] = []
-    if contract.get("artifact_kind") != expected_kind or contract.get("artifact_schema") != str(schema_path.relative_to(PLUGIN_ROOT)):
+    if contract.get("artifact_kind") != expected_kind or schema_path is None or contract.get("artifact_schema") != schema_path.relative_to(PLUGIN_ROOT).as_posix():
         errors.append("case output contract does not match the selected Market skill")
     if schema_path is None:
         errors.append("selected skill has no typed Market artifact contract")
@@ -268,6 +272,9 @@ def market_artifact_errors(case: dict[str, Any], actual: dict[str, Any]) -> list
             errors.append(f"supporting artifact does not exactly match frozen input: {expected['kind']}")
     if expected_kind == "EVIDENCE_LEDGER":
         errors.extend(validate_ledger(artifact))
+    elif expected_kind == "GROWTH_STRATEGY":
+        if not validate_schema(artifact, GROWTH_SCHEMA):
+            errors.extend(validate_growth(artifact))
     elif expected_kind == "OPPORTUNITY_ASSESSMENT":
         ledger_wrapper = dependency_by_kind.get("EVIDENCE_LEDGER")
         if ledger_wrapper is None:
@@ -333,6 +340,7 @@ def market_artifact_errors(case: dict[str, Any], actual: dict[str, Any]) -> list
         "EVIDENCE_LEDGER": "status",
         "OPPORTUNITY_ASSESSMENT": "decision_status",
         "EXPERIMENT_CONTRACT": "execution_state",
+        "GROWTH_STRATEGY": "status",
     }
     status_field = status_fields.get(expected_kind)
     expected_artifact_status = contract.get("expected_artifact_status")

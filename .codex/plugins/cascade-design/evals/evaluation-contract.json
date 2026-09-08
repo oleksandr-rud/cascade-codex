@@ -2,7 +2,7 @@
   "schema_version": 2,
   "plugin_id": "cascade-design",
   "subject_kind": "agent",
-  "version": "0.1.0+codex.20260827163437",
+  "version": "0.1.0+codex.20260908123548",
   "expected_case_count": 12,
   "acceptance_threshold": 0.95,
   "minimum_dimension": 3,
@@ -91,7 +91,8 @@
     "scripts/validate_artifact.py",
     "specs/architecture.md",
     "specs/capability-map.md",
-    "specs/extraction-manifest.json"
+    "specs/extraction-manifest.json",
+    "skills/ux-flow-review/references/value-experience.md"
   ],
   "required_evaluation_assets": [
     "evals/evaluation-contract.json",

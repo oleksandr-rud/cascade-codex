@@ -5,6 +5,10 @@ description: Use when a product-visible screen, flow, wizard, dashboard, modal, 
 
 # UX Flow Review
 
+For a journey's useful outcome, onboarding burden, support cadence, or
+completion, read [references/value-experience.md](references/value-experience.md).
+Apply it to current or proposed flows within the supplied product intent.
+
 Own feature-specific UX analysis. Review how a named actor completes a named
 job through observable product states. Do not implement UI code, invent product
 intent, promote a feature choice into a reusable design rule, or self-certify

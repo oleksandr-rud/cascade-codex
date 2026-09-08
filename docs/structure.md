@@ -34,8 +34,11 @@ config; keep reusable workflow rules in skills, agents, and patterns.
 The repository marketplace at `.agents/plugins/marketplace.json` catalogs all
 13 Cascade plugin source packages under `.codex/plugins/<plugin-name>/`:
 Prompt, Simulations, Evals, AI Architect, Software Architect, Coding Agent,
-Personas, Product, Market, Design, Security, Project Management, and QA. Cascade Market
-owns both evidence production and evidence-backed positioning/messaging.
+Personas, Product, Marketing, Design, Security, Project Management, and QA.
+Cascade Marketing retains the internal ID `cascade-market` and owns evidence,
+market selection, positioning and growth planning. Cascade Product owns value
+and offer models, feature formation, accepted behavior and outcome learning.
+See [Value decisions through feature delivery](patterns/workflow/value-to-delivery.md).
 Keeping catalog and source in the repository makes the packages portable; it
 does not by itself mean a plugin is installed, active, or published.
 

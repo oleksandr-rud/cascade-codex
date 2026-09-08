@@ -1,0 +1,4 @@
+interface:
+  display_name: "Plan Growth"
+  short_description: "Connect channels, product value and growth."
+  default_prompt: "Use $plan-growth to choose the next evidence-backed growth move and its product implications."

@@ -13,6 +13,8 @@ import subprocess
 import sys
 from typing import Any
 
+from validate_growth import validate_growth
+
 
 PLUGIN_ALIAS = re.compile(r"^cascade-[a-z0-9-]+:[a-z0-9-]+$")
 REAL_EVIDENCE_KINDS = {"OBSERVED_BEHAVIOR", "TRANSACTION", "RETENTION", "INTERVIEW", "SURVEY", "PUBLIC_FACT"}
@@ -828,7 +830,7 @@ def validate_schema(value: Any, schema_path: Path) -> list[str]:
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser()
-    parser.add_argument("kind", choices=("ledger", "opportunity", "experiment", "handoff"))
+    parser.add_argument("kind", choices=("ledger", "opportunity", "experiment", "growth", "handoff"))
     parser.add_argument("artifact", type=Path)
     parser.add_argument("--schema", type=Path, required=True)
     parser.add_argument("--ledger", type=Path)
@@ -848,6 +850,8 @@ def main(argv: list[str] | None = None) -> int:
                     errors = validate_opportunity(value, ledger=ledger, ledger_digest=args.ledger_digest)
             elif args.kind == "experiment":
                 errors = validate_experiment(value)
+            elif args.kind == "growth":
+                errors = validate_growth(value)
             else:
                 errors = validate_handoff(value)
         result = {

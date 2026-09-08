@@ -1,7 +1,7 @@
 schema_version: 1
 plugin:
   name: cascade-ai-architect
-  version: 0.1.0+codex.20260827161121
+  version: 0.1.0+codex.20260908122825
 model_policy:
   model: gpt-5.6-sol
   planning_reasoning_effort: high
@@ -32,7 +32,7 @@ skills:
     authority: READ_ONLY
     evaluation_cases: [capability-grounding, no-opaque-claims]
   - route: cascade-ai-architect:design-agent-blueprint
-    description: Turn a grounded capability map into a complete AI-agent behavior blueprint with exclusive ownership and bounded operation.
+    description: Design a bounded agent blueprint with incremental product value, outcome closure, claims, memory, authorized actions, recovery and the smallest justified topology.
     triggers: [an agent capability map needs a behavior blueprint]
     anti_triggers: [the topology or capability map is still unresolved]
     consumes: [agent-capability-map]

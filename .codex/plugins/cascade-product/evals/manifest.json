@@ -161,11 +161,11 @@
   "evaluation_assets": [
     {
       "path": "evals/evaluation-contract.json",
-      "sha256": "a13c6d8142bc8511c4fca90ecb817812cf5f7711f80bafc27b76f0b6e46f1a23"
+      "sha256": "3878b7f798a7ef7d128cc4b8ca2558af5b16c557967a15f781b02a227e9e57e1"
     },
     {
       "path": "evals/cases.json",
-      "sha256": "f5529d857613925b68d0ad024dbf8d3ca075a2c78df86ff0595e700c309fb755"
+      "sha256": "8ab1f4c1ed0c1a21a97235d08b9594f87787dc092811ba4f2300e0d8ab3e5b06"
     },
     {
       "path": "evals/judge-outcome.json",
@@ -182,16 +182,16 @@
   ],
   "manifest_id": "cascade-product-evaluation-assets-v2",
   "plugin_id": "cascade-product",
-  "plugin_version": "0.1.24+codex.20260827162112",
+  "plugin_version": "0.1.24+codex.20260908123546",
   "schema_version": 2,
   "subject_assets": [
     {
       "path": ".codex-plugin/plugin.json",
-      "sha256": "a49ba704faf1ec2912262205887163276e5f36b2b75ce3f97e850fdc5463812a"
+      "sha256": "82003684402eda3bb972954783c7ac5967cd95ee7126f2262e99bcc64e59ee51"
     },
     {
       "path": "skills/manage-product-lifecycle/SKILL.md",
-      "sha256": "f8b04176b089d3b5231a52ac3ac9e0589f78e7af73608138301361c325adc14d"
+      "sha256": "0987121087614f696d58c0e67b8d8244218f2be21555ca1db16812200fa52877"
     },
     {
       "path": "skills/manage-product-lifecycle/agents/openai.yaml",
@@ -199,7 +199,7 @@
     },
     {
       "path": "skills/define-product/SKILL.md",
-      "sha256": "3991b62242ca9ccdbb37dd457b19457a123b9c379f4579c817de2aa1c15a7da0"
+      "sha256": "f2cf91f94a94b5e383c726f52eac5b6ee46090f6f1f709f161f39e30889b30ff"
     },
     {
       "path": "skills/define-product/agents/openai.yaml",
@@ -207,7 +207,7 @@
     },
     {
       "path": "skills/validate-product/SKILL.md",
-      "sha256": "4668565da0c77b961ebdbbb0347aae6da15cd1b93569b11db87682d5a73dbca1"
+      "sha256": "b933d5e8b4b752d904fbd97e7e246dfb5e4efa9375fe16bc9e497070ff974860"
     },
     {
       "path": "skills/validate-product/agents/openai.yaml",
@@ -235,17 +235,33 @@
     },
     {
       "path": "specs/architecture.md",
-      "sha256": "a044bdb3058d75c7c96e2e743ec35698c2cfc1e73cb3b814bbc0735fe10bf23c"
+      "sha256": "d8783f0a4e1c001ad91a19bb527e3150520625604201084a9e2aafd3365eea02"
     },
     {
       "path": "specs/capability-map.md",
-      "sha256": "fc1296181b3e0215aea8b557cc5b5f564fa078c0ebec825f9b6005e1e3b0d2f6"
+      "sha256": "0c091a445ad8021b450f2cfe7a210598bfe92a4b5dd4239f3ad952f497337232"
     },
     {
       "path": "specs/extraction-manifest.json",
       "sha256": "2b067cd2abd5c49bbf87964abe62b86e2bdef7a9f145eab133b9ec2bc308eddf"
+    },
+    {
+      "path": "skills/define-product/references/feature-investment.md",
+      "sha256": "945871b0b7ec9b6c2f9b726f4840aba619148e5a8a12ece448e55aa98c865469"
+    },
+    {
+      "path": "skills/define-product/references/value-model.md",
+      "sha256": "58d10f202ac6ebe984fd0a9eef7303ec4fd00f4bd0e2356c9ca999b66266f4e4"
+    },
+    {
+      "path": "skills/manage-product-lifecycle/references/value-strategy.md",
+      "sha256": "25a475cf631eb9a1098c8dbf14d1364719305d94e32f3186a0b3aed1e60aa7d5"
+    },
+    {
+      "path": "skills/validate-product/references/outcome-evidence.md",
+      "sha256": "5c5e75f583d7060f664eb5d2b8d4e9a4c2b9164536832f30d97eb035e903065d"
     }
   ],
-  "subject_digest": "65fdc625eb5d7e397ca73d7540b9f667d77e4fa194c438b0bbda33f5da8e198c",
+  "subject_digest": "f26ce4f931e5ce48b172b5c1e95b88ab777fb113237c04d7b5b017193b21e7b0",
   "subject_digest_algorithm": "sha256-path-digest-list-v1"
 }

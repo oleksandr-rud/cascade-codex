@@ -1,32 +1,32 @@
 schema_version: 1
 plugin:
   name: cascade-market
-  version: 0.2.0+codex.20260827163437
+  version: 0.2.0+codex.20260908123549
 model_policy:
   model: gpt-5.6-sol
   planning_reasoning_effort: high
   evaluation_reasoning_effort: max
 skills:
   - route: cascade-market:research-market
-    description: Research a market, segment, pain cluster, competitors, pricing, alternatives, buying process, or external constraint.
-    triggers: [current attributable market evidence is required]
+    description: Explore and compare market niches using current evidence of jobs, demand, alternatives, pricing, buying behavior and entrant reachability.
+    triggers: [current attributable market evidence is required, open market discovery or comparable niche research is requested]
     anti_triggers: [accepted market evidence already exists and only positioning is requested]
     consumes: [market-research-brief, external-sources]
     produces: [market-evidence-ledger]
     required_dependencies: []
-    optional_dependencies: [cascade-personas:compile-persona]
+    optional_dependencies: [cascade-personas:compile-persona, cascade-market:evaluate-market-opportunity, cascade-market:plan-growth]
     policy_tags: [market-intelligence, research]
     effect: CANDIDATE_WRITE
     authority: READ_ONLY
     evaluation_cases: [source-attribution, no-synthetic-proof]
   - route: cascade-market:evaluate-market-opportunity
-    description: Score or stress-test a market opportunity or product-market-fit hypothesis from a frozen market evidence ledger.
+    description: Compare markets and entrant opportunities, stress-test differentiation and PMF hypotheses against a frozen evidence ledger.
     triggers: [market opportunity or segment attractiveness needs assessment]
     anti_triggers: [fresh research or product approval is the requested outcome]
     consumes: [market-evidence-ledger]
     produces: [market-opportunity-assessment]
     required_dependencies: []
-    optional_dependencies: [cascade-evals:evaluate, cascade-evals:build-judge]
+    optional_dependencies: [cascade-evals:evaluate, cascade-evals:build-judge, cascade-market:brand-positioning, cascade-product:define-product, cascade-market:plan-growth]
     policy_tags: [market-intelligence, opportunity-assessment]
     effect: READ_ONLY
     authority: READ_ONLY
@@ -36,9 +36,10 @@ skills:
     triggers: [a market hypothesis needs a bounded real-participant experiment]
     anti_triggers: [a synthetic simulation is being presented as market proof]
     consumes: [market-evidence-ledger, market-hypothesis]
+    optional_consumes: [growth-strategy]
     produces: [market-experiment-plan]
     required_dependencies: []
-    optional_dependencies: [cascade-prompt:prompt, cascade-product:manage-product-lifecycle, cascade-simulations:simulate, cascade-evals:evaluate]
+    optional_dependencies: [cascade-prompt:prompt, cascade-product:manage-product-lifecycle, cascade-market:plan-growth, cascade-simulations:simulate, cascade-evals:evaluate]
     policy_tags: [market-intelligence, experiment-design]
     effect: CANDIDATE_WRITE
     authority: READ_ONLY
@@ -50,8 +51,21 @@ skills:
     consumes: [market-evidence-ledger, market-opportunity-assessment, product-contract, persona-projection]
     produces: [marketing-positioning]
     required_dependencies: []
-    optional_dependencies: [cascade-market:research-market, cascade-market:evaluate-market-opportunity, cascade-product:define-product, cascade-personas:compile-persona, cascade-design:design-system, cascade-prompt:prompt]
+    optional_dependencies: [cascade-market:research-market, cascade-market:evaluate-market-opportunity, cascade-market:plan-growth, cascade-product:define-product, cascade-personas:compile-persona, cascade-design:design-system, cascade-prompt:prompt]
     policy_tags: [market, brand-positioning]
     effect: CANDIDATE_WRITE
     authority: READ_ONLY
     evaluation_cases: [source-bound-proof, unsupported-claim-hypothesis, product-boundary]
+  - route: cascade-market:plan-growth
+    description: Choose channels and plan growth from acquisition through product value, payment, completion or retention, cohort economics and product feedback.
+    triggers: [growth strategy or channel selection is requested, funnel or lifecycle growth needs diagnosis]
+    anti_triggers: [copy-only execution of an accepted brief is requested, an individual experiment protocol is the work product]
+    consumes: [market-evidence-ledger, market-opportunity-assessment]
+    optional_consumes: [product-contract, product-evidence]
+    produces: [growth-strategy]
+    required_dependencies: []
+    optional_dependencies: [cascade-market:research-market, cascade-market:evaluate-market-opportunity, cascade-market:brand-positioning, cascade-market:design-market-experiments, cascade-product:define-product, cascade-product:validate-product, cascade-product:manage-product-lifecycle]
+    policy_tags: [market, growth-strategy, value-economics]
+    effect: CANDIDATE_WRITE
+    authority: READ_ONLY
+    evaluation_cases: [finite-job-growth, unknown-economics-no-scale, growth-product-feedback]

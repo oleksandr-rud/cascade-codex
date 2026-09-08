@@ -5,6 +5,13 @@ description: Score, compare, stress-test, or audit a market opportunity or produ
 
 # Evaluate Market Opportunity
 
+For market selection and a differentiated entry strategy, read
+[references/entry-strategy.md](references/entry-strategy.md). Apply it inside
+the existing evidence and scoring contract; preserve hard gates and uncertainty.
+Route positioning expression to cascade-market:brand-positioning and product
+consequences to cascade-product:define-product. For channel strategy after
+selection use cascade-market:plan-growth.
+
 Assess a named opportunity against predeclared criteria. The score organizes a decision; it is not truth and does not replace source evidence or the Product owner's decision.
 
 ## Required inputs

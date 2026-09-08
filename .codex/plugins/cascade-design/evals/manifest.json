@@ -111,13 +111,13 @@
     {
       "alias": "cascade-ai-architect:map-agent-capabilities",
       "path": "skills/map-agent-capabilities/SKILL.md",
-      "plugin_version": "0.1.0+codex.20260827161121",
+      "plugin_version": "0.1.0+codex.20260908122825",
       "sha256": "e7bc10bfdced7594b0b895c242ccf06d4a5dd5c3ec0f24aa0ba1179db07e9100"
     },
     {
       "alias": "cascade-ai-architect:build-agent-skills",
       "path": "skills/build-agent-skills/SKILL.md",
-      "plugin_version": "0.1.0+codex.20260827161121",
+      "plugin_version": "0.1.0+codex.20260908122825",
       "sha256": "db8387d6c2db578a2585a335e3d30f3fa77a3c64bd6271f0da99087f2b16660e"
     },
     {
@@ -135,8 +135,8 @@
     {
       "alias": "cascade-product:define-product",
       "path": "skills/define-product/SKILL.md",
-      "plugin_version": "0.1.24+codex.20260827162112",
-      "sha256": "3991b62242ca9ccdbb37dd457b19457a123b9c379f4579c817de2aa1c15a7da0"
+      "plugin_version": "0.1.24+codex.20260908123546",
+      "sha256": "f2cf91f94a94b5e383c726f52eac5b6ee46090f6f1f709f161f39e30889b30ff"
     },
     {
       "alias": "cascade-personas:compile-persona",
@@ -155,7 +155,7 @@
   "evaluation_assets": [
     {
       "path": "evals/evaluation-contract.json",
-      "sha256": "d45e7db1114004769beaa7ba5fb55b992f585c71b126b11b8977be67bff0360b"
+      "sha256": "7f8f655da17b2bd7db70c3b88367bbd786b9157393bd5693e5b97ab114ec2c46"
     },
     {
       "path": "evals/cases.json",
@@ -176,16 +176,16 @@
   ],
   "manifest_id": "cascade-design-evaluation-assets-v2",
   "plugin_id": "cascade-design",
-  "plugin_version": "0.1.0+codex.20260827163437",
+  "plugin_version": "0.1.0+codex.20260908123548",
   "schema_version": 2,
   "subject_assets": [
     {
       "path": ".codex-plugin/plugin.json",
-      "sha256": "65b14e49cafdd93f5de475e4122254b9d08f4b3bfce0725a133b0ea6d2cec393"
+      "sha256": "c1c3c70d5935d5729c3acbccb3402d9cd90b4ec0583a5d655d595385b51a915a"
     },
     {
       "path": "skills/ux-flow-review/SKILL.md",
-      "sha256": "475a960dd8b42231903c5a55f15966796ce20930b9d10045c762e46ab3c16caa"
+      "sha256": "29628c4ea999d966a5499e5603a404f3822406b516d5fefa578570b70c27136b"
     },
     {
       "path": "skills/ux-flow-review/agents/openai.yaml",
@@ -285,13 +285,17 @@
     },
     {
       "path": "specs/capability-map.md",
-      "sha256": "113585c055a8055f6fd9154db5c93be5c3842f61096254bf6abdfee597eb043a"
+      "sha256": "7432ee0ad369418e3c8291aa01577ab2f827f527c41a3acfdcab4367a40ce167"
     },
     {
       "path": "specs/extraction-manifest.json",
       "sha256": "f6e845aa1ae3aba04f06f3df8eb2aab12d04980690fa8b2b30893fed30fb9647"
+    },
+    {
+      "path": "skills/ux-flow-review/references/value-experience.md",
+      "sha256": "d670d7a82008e941a8be9f77aec7eeca2c7c81504483e9fd5854e16c0b1db20e"
     }
   ],
-  "subject_digest": "695b669bcfdb52393cf9a2fd866222fb831544c7511b88ad70895c325c0ff5f5",
+  "subject_digest": "5db81bcef2ee35948e30a7b1a471fa1d432a321577da36ee16b97903d799ee23",
   "subject_digest_algorithm": "sha256-path-digest-list-v1"
 }
