@@ -63,10 +63,13 @@ non-atomic.
   multiple nodes, dependencies, artifact handoffs, parallel branches, or a
   join, compile it through `cascade-coordinator:plan-workflow`. Coordinator
   artifacts never grant dispatch or repository authority.
-- Route market research, opportunity assessment, experiments, positioning,
-  and messaging directly through Cascade Market.
-- Route product definition, prioritization, lifecycle, and validation through
-  Cascade Product.
+- Route market research, selection, experiments, positioning and messaging
+  through Cascade Marketing (`cascade-market`); use `cascade-market:plan-growth`
+  for channels, growth strategy, economics and proposed product feedback.
+- Route value/offer models, feature formation, accepted product behavior,
+  prioritization, lifecycle and outcome validation through Cascade Product.
+  Carry accepted requirement IDs, outcomes and proof into implementation;
+  a growth recommendation does not itself approve a feature.
 - Route tracker-ready work-item definition, project sequencing, Agile MVP
   decomposition, coordination, reconciliation, and closeout assessment through
   Cascade Project Management. A candidate never files or dispatches work.

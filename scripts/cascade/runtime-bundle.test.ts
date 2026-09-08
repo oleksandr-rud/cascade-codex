@@ -151,6 +151,91 @@ describe("Cascade lean target runtime bundle", () => {
       "capability_selection_status=PASS",
     );
 
+    // Exercise the real bundled planner boundary with and without growth feedback.
+    const featureEnvelope = await compileTaskEnvelope({
+      request: "Plan growth and use the evidence to define a product feature.",
+      task_id: "lean-runtime-growth-product",
+      produced_at: "2026-09-08T00:00:00+00:00",
+    });
+    await writeFile(resolve(artifacts, "envelope.json"), JSON.stringify(featureEnvelope));
+    for (const includeGrowth of [true, false]) {
+      const routes = [
+        ...(includeGrowth ? ["cascade-market:plan-growth"] : []),
+        "cascade-product:define-product",
+      ];
+      const descriptors = routes.map((route) => {
+        const owner = catalog.plugins.find((item) =>
+          item.skills.some((entry: Record<string, any>) => entry.route === route),
+        )!;
+        return { ...owner.skills.find((entry: Record<string, any>) => entry.route === route), plugin_version: owner.version };
+      });
+      const featureSelection = {
+        ...selection,
+        task_envelope_id: featureEnvelope.envelope_id,
+        request_digest: featureEnvelope.request_digest,
+        input_artifacts: [...new Set(["task-envelope", "plugin-capability-catalog", ...descriptors.flatMap((item) => item.consumes)])],
+        selected_candidates: descriptors.map((item) => ({
+          ...selection.selected_candidates[0],
+          route: item.route,
+          plugin_version: item.plugin_version,
+          claim_ids: [featureEnvelope.claims[0]!.claim_id],
+          trigger_evidence: ["The requested growth evidence informs a product feature."],
+          required_dependencies: item.required_dependencies,
+          effect: item.effect,
+          authority: item.authority,
+        })),
+      } as CapabilitySelection;
+      featureSelection.selection_digest = capabilitySelectionDigest(featureSelection);
+      const nodes = descriptors.map((item) => ({
+        node_id: item.route === "cascade-market:plan-growth" ? "growth" : "product",
+        route: item.route,
+        plugin_version: item.plugin_version,
+        claim_ids: [featureEnvelope.claims[0]!.claim_id],
+        policy_tags: item.policy_tags,
+        consumes: item.consumes,
+        produces: item.produces,
+        ...(includeGrowth && item.route === "cascade-product:define-product" ? { optional_consumes: ["growth-strategy"] } : {}),
+        effect: item.effect,
+        authority: item.authority,
+        model: { id: "gpt-5.6-sol", reasoning_effort: "high" },
+        reason: "Use available evidence to form an accountable feature proposal.",
+      }));
+      const plan = {
+        schema_version: 1,
+        artifact_type: "cascade-plugin-plan",
+        status: "CANDIDATE",
+        task_envelope_id: featureEnvelope.envelope_id,
+        request_digest: featureEnvelope.request_digest,
+        capability_catalog_digest: catalog.catalog_digest,
+        capability_selection_digest: featureSelection.selection_digest,
+        planner: { route: "cascade-coordinator:plan-workflow", model: "gpt-5.6-sol", reasoning_effort: "high", prompt_sha256: "b".repeat(64) },
+        input_artifacts: featureSelection.input_artifacts,
+        selected_nodes: nodes,
+        edges: includeGrowth ? [{ from: "growth", to: "product", artifact: "growth-strategy" }] : [],
+        parallel_groups: [],
+        rejected_candidates: [],
+        validation_gates: ["Validate source identities and artifact handoffs."],
+        stop_conditions: ["Stop before dispatch or target mutation."],
+        blockers: [],
+        dispatch_authorized: false,
+      };
+      await writeFile(resolve(artifacts, "selection.json"), JSON.stringify(featureSelection));
+      async function checkPlan(candidate: unknown) {
+        await writeFile(resolve(artifacts, "plan.json"), JSON.stringify(candidate));
+        return runBundle(output, ["workflow", "validate-plan", "--plan", ".artifacts/runtime-bundle-test/plan.json", "--selection", ".artifacts/runtime-bundle-test/selection.json", "--envelope", ".artifacts/runtime-bundle-test/envelope.json"]);
+      }
+      const accepted = await checkPlan(plan);
+      expect(accepted.exitCode).toBe(0);
+      expect(accepted.stdout.toString()).toContain("plugin_plan_status=PASS");
+      if (includeGrowth) {
+        expect((await checkPlan({ ...plan, edges: [] })).stderr.toString()).toContain("required artifact edge is missing");
+        expect((await checkPlan({ ...plan, selected_nodes: [...nodes].reverse() })).stderr.toString()).toContain("consumes unavailable artifact");
+      } else {
+        expect((await checkPlan({ ...plan, selected_nodes: [{ ...nodes[0], optional_consumes: ["growth-strategy"] }] })).stderr.toString()).toContain("consumes unavailable artifact");
+        expect((await checkPlan({ ...plan, selected_nodes: [{ ...nodes[0], optional_consumes: ["undeclared-input"] }] })).stderr.toString()).toContain("undeclared optional input");
+      }
+    }
+
     const hooks = JSON.parse(
       await readFile(resolve(output, ".codex/hooks.json"), "utf8"),
     );

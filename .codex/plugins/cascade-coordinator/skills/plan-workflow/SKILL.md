@@ -43,6 +43,12 @@ and catalog descriptors are sufficient planning inputs.
 2. Confirm required-dependency closure, then connect nodes through declared
    `consumes` and `produces` artifact types. Optional dependencies remain
    absent unless the selection records why they materially improve the outcome.
+   `consumes` are required inputs. A descriptor's `optional_consumes` lists
+   additional permitted inputs; put only the relevant, available subset in a
+   plan node's `optional_consumes`. Omission means none. Selected optional
+   inputs need the same source availability and explicit ordered artifact edges
+   as required inputs. Do not run growth planning to satisfy an ordinary Product
+   definition, or invent a product contract for a pre-product growth test.
 3. Topologically order the graph. Represent every selected producer-to-consumer
    artifact handoff with an explicit edge.
 4. Parallelize only `READ_ONLY` nodes with no direct or transitive dependency,

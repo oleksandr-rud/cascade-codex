@@ -1,8 +1,8 @@
 {
   "schema_version": 2,
-  "suite_id": "cascade-product-v5",
-  "corpus_version": "5",
-  "split_id": "qualification-v5",
+  "suite_id": "cascade-product-v6",
+  "corpus_version": "6",
+  "split_id": "qualification-v6",
   "split_membership": [
     "PRO-001",
     "PRO-002",
@@ -17,7 +17,9 @@
     "PRO-011",
     "PRO-012",
     "PRO-013",
-    "PRO-014"
+    "PRO-014",
+    "PRO-015",
+    "PRO-016"
   ],
   "subject_adapter": "cascade-evals:agent-evaluation",
   "execution_adapter": {
@@ -29,7 +31,7 @@
     "deterministic_finalization": "digest-only-json-response-v1",
     "target_invocations": 7,
     "target_batching": "contiguous-balanced-parallel-v1",
-    "case_count": 14
+    "case_count": 16
   },
   "packet_contract": {
     "target_fields": [
@@ -605,6 +607,146 @@
           "stale evaluator receipt",
           "current product criteria"
         ],
+        "absent": [],
+        "permissions": {
+          "model_calls": false,
+          "tools": false,
+          "external_write": false
+        },
+        "data": {
+          "classification": "INTERNAL",
+          "destination": "local-codex",
+          "transfer_authorized": true
+        }
+      }
+    },
+    {
+      "case_id": "PRO-015",
+      "skill": "define-product",
+      "category": "happy",
+      "expected_status": "READY",
+      "request": "Define the value model, offer and minimum feature slice for a one-time application service. Accepted owner intent is one accurate submitted application with a review step. Compare a deterministic checklist with an AI conversation. Keep payment and efficacy hypotheses distinct from proof.",
+      "oracle": "Models the finite job and buyer/beneficiary, compares the same outcome and burden across delivery mechanisms, preserves necessary review, avoids invented recurrence, and binds accepted behavior and unknown measures in the existing Product contract.",
+      "mechanical_assertions": [
+        "status_matches_expected",
+        "selected_skill_matches_expected",
+        "product_artifacts_validate"
+      ],
+      "fixture": {
+        "output_contract": {
+          "response_encoding": "json",
+          "required_response_fields": [
+            "product_artifact",
+            "product_artifact_sha256",
+            "decision",
+            "decision_sha256",
+            "handoffs"
+          ],
+          "handoff_wrapper_fields": [
+            "artifact",
+            "sha256"
+          ],
+          "product_artifact_schema": "schemas/product-work-product.schema.json",
+          "expected_artifact_kind": "PRODUCT_DEFINITION",
+          "decision_schema": "schemas/product-decision.schema.json",
+          "handoff_schema": "schemas/handoff-envelope.schema.json",
+          "require_handoff": true
+        },
+        "supplied": [
+          "Accepted owner intent: complete one accurate application; current baseline is manual preparation.",
+          "Accepted constraint: retain human review before submission; no automatic sending.",
+          "Accepted growth evidence is reported difficulty starting, not observed product efficacy or payment.",
+          "The authorized artifact is a proposed Product definition with traceable qualitative acceptance behavior; implementation and release remain NOT_RUN."
+        ],
+        "input_bindings": [
+          {
+            "artifact_id": "application-brief",
+            "version": "1",
+            "sha256": "4444444444444444444444444444444444444444444444444444444444444444",
+            "status": "ACCEPTED",
+            "freshness": "CURRENT",
+            "accepted_by": "product-owner"
+          },
+          {
+            "artifact_id": "growth-feedback",
+            "version": "1",
+            "sha256": "5555555555555555555555555555555555555555555555555555555555555555",
+            "status": "ACCEPTED",
+            "freshness": "CURRENT",
+            "accepted_by": "product-owner"
+          }
+        ],
+        "decision_owner": "product-owner",
+        "absent": [],
+        "permissions": {
+          "model_calls": false,
+          "tools": false,
+          "external_write": false
+        },
+        "data": {
+          "classification": "INTERNAL",
+          "destination": "local-codex",
+          "transfer_authorized": true
+        }
+      }
+    },
+    {
+      "case_id": "PRO-016",
+      "skill": "define-product",
+      "category": "happy",
+      "expected_status": "READY",
+      "request": "Revise the proposed application onboarding using supplied growth feedback: REQ-1 collects a long profile before any useful action, and users report difficulty starting. Compare feature alternatives and produce a delivery-ready definition only to the extent the accepted inputs justify it.",
+      "oracle": "Links feature candidates to an outcome and source evidence, compares a simpler first action with adding features, preserves acceptance, failure/recovery, non-goals, measurement limits and the Product owner gate; does not turn growth feedback into execution authority.",
+      "mechanical_assertions": [
+        "status_matches_expected",
+        "selected_skill_matches_expected",
+        "product_artifacts_validate"
+      ],
+      "fixture": {
+        "output_contract": {
+          "response_encoding": "json",
+          "required_response_fields": [
+            "product_artifact",
+            "product_artifact_sha256",
+            "decision",
+            "decision_sha256",
+            "handoffs"
+          ],
+          "handoff_wrapper_fields": [
+            "artifact",
+            "sha256"
+          ],
+          "product_artifact_schema": "schemas/product-work-product.schema.json",
+          "expected_artifact_kind": "PRODUCT_DEFINITION",
+          "decision_schema": "schemas/product-decision.schema.json",
+          "handoff_schema": "schemas/handoff-envelope.schema.json",
+          "require_handoff": true
+        },
+        "supplied": [
+          "Accepted owner intent: complete one accurate application; current baseline is manual preparation.",
+          "Accepted constraint: retain human review before submission; no automatic sending.",
+          "Accepted growth evidence is reported difficulty starting, not observed product efficacy or payment.",
+          "The authorized artifact is a proposed Product definition with traceable qualitative acceptance behavior; implementation and release remain NOT_RUN."
+        ],
+        "input_bindings": [
+          {
+            "artifact_id": "application-brief",
+            "version": "1",
+            "sha256": "4444444444444444444444444444444444444444444444444444444444444444",
+            "status": "ACCEPTED",
+            "freshness": "CURRENT",
+            "accepted_by": "product-owner"
+          },
+          {
+            "artifact_id": "growth-feedback",
+            "version": "1",
+            "sha256": "5555555555555555555555555555555555555555555555555555555555555555",
+            "status": "ACCEPTED",
+            "freshness": "CURRENT",
+            "accepted_by": "product-owner"
+          }
+        ],
+        "decision_owner": "product-owner",
         "absent": [],
         "permissions": {
           "model_calls": false,

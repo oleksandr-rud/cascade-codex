@@ -4,6 +4,10 @@ Cascade plugins own portable domain reasoning. The repository harness owns
 current context, authority, target execution, validation receipts, and durable
 host projections. No plugin is a universal hub.
 
+For market selection, product value, feature formation, growth strategy and
+feedback into delivery, see [Value decisions through feature delivery](value-to-delivery.md).
+Cascade Marketing uses the stable internal plugin ID `cascade-market`.
+
 ```mermaid
 flowchart TB
     TE[Validated Task Envelope<br/>claims, policies, authority]
@@ -20,7 +24,7 @@ flowchart TB
     PW --> DAG
 
     subgraph Domain[Portable domain plugins]
-        M[Cascade Market<br/>research, opportunity, experiments, positioning]
+        M[Cascade Marketing<br/>research, opportunity, growth, experiments, positioning]
         P[Cascade Product]
         PE[Cascade Personas]
         D[Cascade Design]

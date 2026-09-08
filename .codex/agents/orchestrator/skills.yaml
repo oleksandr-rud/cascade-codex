@@ -15,6 +15,7 @@ plugin_skills:
   - cascade-market:evaluate-market-opportunity
   - cascade-market:design-market-experiments
   - cascade-market:brand-positioning
+  - cascade-market:plan-growth
   - cascade-personas:build-persona
   - cascade-personas:compile-persona
   - cascade-personas:evaluate-persona

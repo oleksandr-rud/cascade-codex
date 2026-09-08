@@ -2,8 +2,8 @@
   "schema_version": 2,
   "plugin_id": "cascade-product",
   "subject_kind": "agent",
-  "version": "0.1.24+codex.20260827162112",
-  "expected_case_count": 14,
+  "version": "0.1.24+codex.20260908124959",
+  "expected_case_count": 16,
   "acceptance_threshold": 0.95,
   "minimum_dimension": 3,
   "evaluation_manifest": "evals/manifest.json",
@@ -66,7 +66,11 @@
     "scripts/validate_artifact.py",
     "specs/architecture.md",
     "specs/capability-map.md",
-    "specs/extraction-manifest.json"
+    "specs/extraction-manifest.json",
+    "skills/define-product/references/feature-investment.md",
+    "skills/define-product/references/value-model.md",
+    "skills/manage-product-lifecycle/references/value-strategy.md",
+    "skills/validate-product/references/outcome-evidence.md"
   ],
   "required_evaluation_assets": [
     "evals/evaluation-contract.json",

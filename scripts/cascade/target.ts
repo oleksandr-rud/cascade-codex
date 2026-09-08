@@ -1,5 +1,5 @@
 import { cp, mkdir, mkdtemp, readFile, readdir, rm, writeFile } from "node:fs/promises";
-import { basename, dirname, extname, resolve } from "node:path";
+import { basename, dirname, extname, resolve, sep } from "node:path";
 import { tmpdir } from "node:os";
 
 import {
@@ -140,7 +140,7 @@ function isHarnessOwned(relative: string): boolean {
 function inside(root: string, value: string): string | undefined {
   if (/[<>{}*?]/.test(value)) return undefined;
   const path = resolve(root, value);
-  const prefix = `${resolve(root)}/`;
+  const prefix = `${resolve(root)}${sep}`;
   if (path !== resolve(root) && !path.startsWith(prefix)) return undefined;
   return path;
 }

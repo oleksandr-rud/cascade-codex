@@ -654,7 +654,7 @@ export function validateWorkGraphDocuments(
 async function discoverSkills(): Promise<Map<string, string>> {
   const result = new Map<string, string>();
   for (const path of await walkFiles(rootPath(".codex/skills"), {
-    include: (item) => item.endsWith("/SKILL.md"),
+    include: (item) => basename(item) === "SKILL.md",
   })) {
     result.set(basename(dirname(path)), path);
   }
@@ -832,7 +832,7 @@ async function validateRepoPlugins(errors: string[]): Promise<void> {
       errors.push(`${pluginName} skills path must stay inside the plugin and exist`);
     } else {
       const skillFiles = await walkFiles(skillsRoot, {
-        include: (path) => path.endsWith("/SKILL.md"),
+        include: (path) => basename(path) === "SKILL.md",
       });
       if (!skillFiles.length) errors.push(`${pluginName} contains no skills`);
       for (const path of skillFiles) {

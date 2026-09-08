@@ -1,9 +1,30 @@
 ---
 name: define-product
-description: Create, revise, or audit the traceable product contract—opportunity brief, PRD, requirements, journeys, scenarios, metrics, MVP boundary, or delivery handoff—from accepted evidence. Use when the definition itself is the requested work product; use manage-product-lifecycle for gate/state routing and validate-product for evidence plans or qualification.
+description: Form or revise product value models, offers and feature candidates, then define traceable requirements, journeys, metrics and MVP boundaries. Use for product formation or definition; exclude implementation of an already accepted mechanical change.
 ---
 
 # Define Product
+
+## Value model and feature formation
+
+Use this skill to form value, offer and feature proposals as well as to define
+accepted behavior. For an undecided outcome, delivery mechanism, pricing,
+packaging or adoption model, read [references/value-model.md](references/value-model.md).
+For generating, comparing, splitting or retiring features, read
+[references/feature-investment.md](references/feature-investment.md). Apply only
+the relevant mode; an already specified mechanical change goes to the host.
+
+Bind proposals to supplied intent, constraints and evidence. Preserve the
+distinction between a hypothesis, an accepted requirement and a verified outcome.
+A growth proposal from cascade-market:plan-growth can inform a feature candidate;
+it cannot approve product behavior. Keep candidates, alternatives and value
+models in the existing typed sections and connect accepted requirements through
+traceability, without adding undeclared schema fields.
+
+Use cascade-design:ux-flow-review for interaction burden and
+cascade-ai-architect:design-agent-blueprint for a selected agent mechanism.
+Use cascade-product:manage-product-lifecycle for investment/gate decisions and
+cascade-product:validate-product for uncertain outcome measures.
 
 The portable product capability extraction is frozen in
 `specs/extraction-manifest.json`; those repository paths and digests are

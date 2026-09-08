@@ -93,7 +93,7 @@ export interface CascadeHarnessTraceResult {
 async function skillPaths(): Promise<Map<string, string>> {
   const result = new Map<string, string>();
   for (const path of await walkFiles(rootPath(".codex/skills"), {
-    include: (item) => item.endsWith("/SKILL.md"),
+    include: (item) => basename(item) === "SKILL.md",
   })) {
     result.set(basename(dirname(path)), path);
   }

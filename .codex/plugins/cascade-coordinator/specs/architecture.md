@@ -66,3 +66,9 @@ boilerplate. Ordinary implementation readiness belongs to the host's concise
 `cascade-software-architect:select-architecture-patterns` with a host-supplied
 versioned catalog; reusable context retrieval remains the host
 `pattern-context` adapter.
+
+Capability descriptors may declare `optional_consumes` in addition to required
+`consumes`. Plan nodes select only a declared, relevant subset. The host checks
+availability, ownership and order for selected optional inputs; absent optional
+inputs do not create prerequisites. Existing descriptors and plans remain valid
+without the optional field.

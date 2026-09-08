@@ -1,38 +1,40 @@
 schema_version: 1
 plugin:
   name: cascade-product
-  version: 0.1.24+codex.20260827162112
+  version: 0.1.24+codex.20260908124959
 model_policy:
   model: gpt-5.6-sol
   planning_reasoning_effort: high
   evaluation_reasoning_effort: max
 skills:
   - route: cascade-product:manage-product-lifecycle
-    description: Manage product initiative state, prioritization, owner-held gates, and learning loops without executing implementation.
-    triggers: [product strategy, lifecycle state, priority, or gate routing is requested]
+    description: Manage value strategy, portfolio allocation, product priorities, owner-held gates and evidence-driven re-entry without implementation.
+    triggers: [product strategy or investment allocation is requested, product lifecycle or evidence-driven gate routing is requested]
     anti_triggers: [ordinary implementation or project scheduling is the task]
     consumes: [market-opportunity-assessment, persona-projection, product-evidence]
+    optional_consumes: [growth-strategy]
     produces: [product-lifecycle-decision]
     required_dependencies: []
-    optional_dependencies: [cascade-market:research-market, cascade-market:evaluate-market-opportunity, cascade-personas:compile-persona]
+    optional_dependencies: [cascade-market:research-market, cascade-market:evaluate-market-opportunity, cascade-market:plan-growth, cascade-personas:compile-persona, cascade-project-management:plan-project]
     policy_tags: [product, lifecycle]
     effect: CANDIDATE_WRITE
     authority: READ_ONLY
     evaluation_cases: [owner-held-gate, no-project-status]
   - route: cascade-product:define-product
-    description: Create, revise, or audit a traceable product contract including opportunity, requirements, journeys, scenarios, metrics, and MVP boundary.
-    triggers: [the product definition or accepted behavior is the work product]
-    anti_triggers: [fresh market claims or implementation details are requested]
+    description: Model product value and offers, form and compare feature candidates, and define traceable requirements, acceptance behavior and the MVP.
+    triggers: [a product value or offer model needs definition, features must be generated or compared, the product definition or accepted behavior is the work product]
+    anti_triggers: [fresh market evidence is required, implementation of an already specified change is the task]
     consumes: [product-lifecycle-decision, market-opportunity-assessment, persona-projection]
+    optional_consumes: [growth-strategy]
     produces: [product-contract]
     required_dependencies: []
-    optional_dependencies: [cascade-prompt:prompt]
+    optional_dependencies: [cascade-prompt:prompt, cascade-market:plan-growth, cascade-design:ux-flow-review, cascade-ai-architect:design-agent-blueprint]
     policy_tags: [product, definition]
     effect: CANDIDATE_WRITE
     authority: READ_ONLY
-    evaluation_cases: [traceable-requirements, mvp-boundary]
+    evaluation_cases: [traceable-requirements, mvp-boundary, feature-value-handoff, finite-job-offer]
   - route: cascade-product:validate-product
-    description: Design or assess product validation across research, experiments, simulations, functional evidence, metrics, and independent evaluation.
+    description: Design or assess product validation, outcome measures, sustained progress, transfer and causal evidence alongside functional and independent evaluation.
     triggers: [a product hypothesis or behavior needs a validation plan or evidence assessment]
     anti_triggers: [market demand is being inferred only from synthetic actors]
     consumes: [product-contract, product-evidence]
@@ -42,4 +44,4 @@ skills:
     policy_tags: [product, validation]
     effect: CANDIDATE_WRITE
     authority: READ_ONLY
-    evaluation_cases: [evidence-class-separation, synthetic-boundary]
+    evaluation_cases: [evidence-class-separation, synthetic-boundary, progress-is-not-transfer]

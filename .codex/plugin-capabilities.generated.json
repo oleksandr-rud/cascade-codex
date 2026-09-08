@@ -1,6 +1,6 @@
 {
   "artifact_type": "cascade-plugin-capability-catalog",
-  "catalog_digest": "1a429e7b55b897014920c97c888dc8223d29c0c673ba77d78292250023aca169",
+  "catalog_digest": "a7a49338a1ef86c519ddf7e31d495098b7760facd544d60acbb5d89f5a8f5bbb",
   "marketplace": ".agents/plugins/marketplace.json",
   "plugins": [
     {
@@ -545,9 +545,9 @@
     },
     {
       "descriptor_path": ".codex/plugins/cascade-ai-architect/capabilities.yaml",
-      "descriptor_sha256": "7f819d59177d08770f60c64976303164d491c62c49c9efbb693192bc59010aad",
+      "descriptor_sha256": "072a654dfcef61cf470720ed40a4f5b6faed140a35634aaf21d2e0e18f4472a2",
       "manifest_path": ".codex/plugins/cascade-ai-architect/.codex-plugin/plugin.json",
-      "manifest_sha256": "35ab7b666f1cd5d2007b5e543c06c1b4fcb993403f392e9a845c7c23bcb873af",
+      "manifest_sha256": "80569a905d029a4cb9513d73ff3122bfdffcd7ac6e130d6238a1dbd583e2b888",
       "model_policy": {
         "evaluation_reasoning_effort": "max",
         "model": "gpt-5.6-sol",
@@ -626,7 +626,7 @@
           "consumes": [
             "agent-capability-map"
           ],
-          "description": "Turn a grounded capability map into a complete AI-agent behavior blueprint with exclusive ownership and bounded operation.",
+          "description": "Design a bounded agent blueprint with incremental product value, outcome closure, claims, memory, authorized actions, recovery and the smallest justified topology.",
           "effect": "CANDIDATE_WRITE",
           "evaluation_cases": [
             "behavior-block-coverage"
@@ -871,7 +871,7 @@
           ]
         }
       ],
-      "version": "0.1.1+codex.20260908133706"
+      "version": "0.1.2+codex.20260908134828"
     },
     {
       "descriptor_path": ".codex/plugins/cascade-software-architect/capabilities.yaml",
@@ -1275,9 +1275,9 @@
     },
     {
       "descriptor_path": ".codex/plugins/cascade-product/capabilities.yaml",
-      "descriptor_sha256": "7ede0792a9039b014802cc779d3a7031fb4847ea4b25a18bb4fd2a657a86540d",
+      "descriptor_sha256": "2f3069cf31a6b9ed88f40fed26a01d16907183e00697e0b42887a406dd3dcdd2",
       "manifest_path": ".codex/plugins/cascade-product/.codex-plugin/plugin.json",
-      "manifest_sha256": "a49ba704faf1ec2912262205887163276e5f36b2b75ce3f97e850fdc5463812a",
+      "manifest_sha256": "6a7917210afe74dfb91e9c94a61cdd0d88bc4ff0fef10e5fcdc26aa74b52be2a",
       "model_policy": {
         "evaluation_reasoning_effort": "max",
         "model": "gpt-5.6-sol",
@@ -1295,16 +1295,21 @@
             "persona-projection",
             "product-evidence"
           ],
-          "description": "Manage product initiative state, prioritization, owner-held gates, and learning loops without executing implementation.",
+          "description": "Manage value strategy, portfolio allocation, product priorities, owner-held gates and evidence-driven re-entry without implementation.",
           "effect": "CANDIDATE_WRITE",
           "evaluation_cases": [
             "owner-held-gate",
             "no-project-status"
           ],
+          "optional_consumes": [
+            "growth-strategy"
+          ],
           "optional_dependencies": [
             "cascade-market:research-market",
             "cascade-market:evaluate-market-opportunity",
-            "cascade-personas:compile-persona"
+            "cascade-market:plan-growth",
+            "cascade-personas:compile-persona",
+            "cascade-project-management:plan-project"
           ],
           "policy_tags": [
             "product",
@@ -1316,15 +1321,14 @@
           "required_dependencies": [],
           "route": "cascade-product:manage-product-lifecycle",
           "triggers": [
-            "product strategy",
-            "lifecycle state",
-            "priority",
-            "or gate routing is requested"
+            "product strategy or investment allocation is requested",
+            "product lifecycle or evidence-driven gate routing is requested"
           ]
         },
         {
           "anti_triggers": [
-            "fresh market claims or implementation details are requested"
+            "fresh market evidence is required",
+            "implementation of an already specified change is the task"
           ],
           "authority": "READ_ONLY",
           "consumes": [
@@ -1332,14 +1336,22 @@
             "market-opportunity-assessment",
             "persona-projection"
           ],
-          "description": "Create, revise, or audit a traceable product contract including opportunity, requirements, journeys, scenarios, metrics, and MVP boundary.",
+          "description": "Model product value and offers, form and compare feature candidates, and define traceable requirements, acceptance behavior and the MVP.",
           "effect": "CANDIDATE_WRITE",
           "evaluation_cases": [
             "traceable-requirements",
-            "mvp-boundary"
+            "mvp-boundary",
+            "feature-value-handoff",
+            "finite-job-offer"
+          ],
+          "optional_consumes": [
+            "growth-strategy"
           ],
           "optional_dependencies": [
-            "cascade-prompt:prompt"
+            "cascade-prompt:prompt",
+            "cascade-market:plan-growth",
+            "cascade-design:ux-flow-review",
+            "cascade-ai-architect:design-agent-blueprint"
           ],
           "policy_tags": [
             "product",
@@ -1351,6 +1363,8 @@
           "required_dependencies": [],
           "route": "cascade-product:define-product",
           "triggers": [
+            "a product value or offer model needs definition",
+            "features must be generated or compared",
             "the product definition or accepted behavior is the work product"
           ]
         },
@@ -1363,11 +1377,12 @@
             "product-contract",
             "product-evidence"
           ],
-          "description": "Design or assess product validation across research, experiments, simulations, functional evidence, metrics, and independent evaluation.",
+          "description": "Design or assess product validation, outcome measures, sustained progress, transfer and causal evidence alongside functional and independent evaluation.",
           "effect": "CANDIDATE_WRITE",
           "evaluation_cases": [
             "evidence-class-separation",
-            "synthetic-boundary"
+            "synthetic-boundary",
+            "progress-is-not-transfer"
           ],
           "optional_dependencies": [
             "cascade-market:design-market-experiments",
@@ -1388,13 +1403,13 @@
           ]
         }
       ],
-      "version": "0.1.24+codex.20260827162112"
+      "version": "0.1.24+codex.20260908124959"
     },
     {
       "descriptor_path": ".codex/plugins/cascade-market/capabilities.yaml",
-      "descriptor_sha256": "077333af1ab980419fba610c6d5cb6568d7ef99720e10898c36c4003f15f5714",
+      "descriptor_sha256": "1440b0980a5457d328057a3cd59a659800a488ae730e786fa4317ebf0df40653",
       "manifest_path": ".codex/plugins/cascade-market/.codex-plugin/plugin.json",
-      "manifest_sha256": "e98519e25a0af498fea07643543a7f08dfb88a3832ace242e9ab546f738355df",
+      "manifest_sha256": "a2e44b056c2867bceb87ade922ead5c78c30f10b9200af21886885af65baa90e",
       "model_policy": {
         "evaluation_reasoning_effort": "max",
         "model": "gpt-5.6-sol",
@@ -1411,14 +1426,16 @@
             "market-research-brief",
             "external-sources"
           ],
-          "description": "Research a market, segment, pain cluster, competitors, pricing, alternatives, buying process, or external constraint.",
+          "description": "Explore and compare market niches using current evidence of jobs, demand, alternatives, pricing, buying behavior and entrant reachability.",
           "effect": "CANDIDATE_WRITE",
           "evaluation_cases": [
             "source-attribution",
             "no-synthetic-proof"
           ],
           "optional_dependencies": [
-            "cascade-personas:compile-persona"
+            "cascade-personas:compile-persona",
+            "cascade-market:evaluate-market-opportunity",
+            "cascade-market:plan-growth"
           ],
           "policy_tags": [
             "market-intelligence",
@@ -1430,7 +1447,8 @@
           "required_dependencies": [],
           "route": "cascade-market:research-market",
           "triggers": [
-            "current attributable market evidence is required"
+            "current attributable market evidence is required",
+            "open market discovery or comparable niche research is requested"
           ]
         },
         {
@@ -1441,7 +1459,7 @@
           "consumes": [
             "market-evidence-ledger"
           ],
-          "description": "Score or stress-test a market opportunity or product-market-fit hypothesis from a frozen market evidence ledger.",
+          "description": "Compare markets and entrant opportunities, stress-test differentiation and PMF hypotheses against a frozen evidence ledger.",
           "effect": "READ_ONLY",
           "evaluation_cases": [
             "uncertainty-preservation",
@@ -1449,7 +1467,10 @@
           ],
           "optional_dependencies": [
             "cascade-evals:evaluate",
-            "cascade-evals:build-judge"
+            "cascade-evals:build-judge",
+            "cascade-market:brand-positioning",
+            "cascade-product:define-product",
+            "cascade-market:plan-growth"
           ],
           "policy_tags": [
             "market-intelligence",
@@ -1479,9 +1500,13 @@
             "kill-criteria",
             "synthetic-evidence-boundary"
           ],
+          "optional_consumes": [
+            "growth-strategy"
+          ],
           "optional_dependencies": [
             "cascade-prompt:prompt",
             "cascade-product:manage-product-lifecycle",
+            "cascade-market:plan-growth",
             "cascade-simulations:simulate",
             "cascade-evals:evaluate"
           ],
@@ -1519,6 +1544,7 @@
           "optional_dependencies": [
             "cascade-market:research-market",
             "cascade-market:evaluate-market-opportunity",
+            "cascade-market:plan-growth",
             "cascade-product:define-product",
             "cascade-personas:compile-persona",
             "cascade-design:design-system",
@@ -1536,15 +1562,60 @@
           "triggers": [
             "brand positioning or marketing language must be created or revised"
           ]
+        },
+        {
+          "anti_triggers": [
+            "copy-only execution of an accepted brief is requested",
+            "an individual experiment protocol is the work product"
+          ],
+          "authority": "READ_ONLY",
+          "consumes": [
+            "market-evidence-ledger",
+            "market-opportunity-assessment"
+          ],
+          "description": "Choose channels and plan growth from acquisition through product value, payment, completion or retention, cohort economics and product feedback.",
+          "effect": "CANDIDATE_WRITE",
+          "evaluation_cases": [
+            "finite-job-growth",
+            "unknown-economics-no-scale",
+            "growth-product-feedback"
+          ],
+          "optional_consumes": [
+            "product-contract",
+            "product-evidence"
+          ],
+          "optional_dependencies": [
+            "cascade-market:research-market",
+            "cascade-market:evaluate-market-opportunity",
+            "cascade-market:brand-positioning",
+            "cascade-market:design-market-experiments",
+            "cascade-product:define-product",
+            "cascade-product:validate-product",
+            "cascade-product:manage-product-lifecycle"
+          ],
+          "policy_tags": [
+            "market",
+            "growth-strategy",
+            "value-economics"
+          ],
+          "produces": [
+            "growth-strategy"
+          ],
+          "required_dependencies": [],
+          "route": "cascade-market:plan-growth",
+          "triggers": [
+            "growth strategy or channel selection is requested",
+            "funnel or lifecycle growth needs diagnosis"
+          ]
         }
       ],
-      "version": "0.2.0+codex.20260827163437"
+      "version": "0.2.0+codex.20260908124959"
     },
     {
       "descriptor_path": ".codex/plugins/cascade-design/capabilities.yaml",
-      "descriptor_sha256": "fb8aebc2b757d9cffaae373786818af510590bc45b11ed2c3b552575e72e135d",
+      "descriptor_sha256": "a3fa75e085595677a5207bb61c4f4dca3bad19d4c7ea4499c0f9a08db7f36bd5",
       "manifest_path": ".codex/plugins/cascade-design/.codex-plugin/plugin.json",
-      "manifest_sha256": "23b991c412988f419b134dffd1d06027b4ec060f52e6ccadbb3141eae128736c",
+      "manifest_sha256": "88e182ceca0490622b1eab4ee67f2e26c90803ed3c61c5cc196577c6fc053640",
       "model_policy": {
         "evaluation_reasoning_effort": "max",
         "model": "gpt-5.6-sol",
@@ -1564,7 +1635,7 @@
             "persona-projection",
             "design-evidence"
           ],
-          "description": "Review a product-visible flow for actor goals, hierarchy, state continuity, interruption, recovery, density, and responsiveness.",
+          "description": "Review product journeys, onboarding burden, useful outcomes, completion, recovery and observable UX states within supplied product intent.",
           "effect": "READ_ONLY",
           "evaluation_cases": [
             "state-coverage",
@@ -1723,7 +1794,7 @@
           ]
         }
       ],
-      "version": "0.1.0+codex.20260827163437"
+      "version": "0.1.0+codex.20260908124959"
     },
     {
       "descriptor_path": ".codex/plugins/cascade-security/capabilities.yaml",
@@ -2132,9 +2203,9 @@
     },
     {
       "descriptor_path": ".codex/plugins/cascade-coordinator/capabilities.yaml",
-      "descriptor_sha256": "73d36e0408d829c0a1a3112fe594038fcf7ea562950528b2c24afc355db241de",
+      "descriptor_sha256": "4a3ef17eb7f10926849c7966e7abcb53081058fe9f1042f82a3a778b3331976b",
       "manifest_path": ".codex/plugins/cascade-coordinator/.codex-plugin/plugin.json",
-      "manifest_sha256": "8b8b6e50fa72cd46fd75c142080514e754644cb6626c58279c2bd3aba3ed1a14",
+      "manifest_sha256": "d8a7695a719c67aabe2fed193c0994ac0934eb1e636309922f924c7ae0e09d0e",
       "model_policy": {
         "evaluation_reasoning_effort": "max",
         "model": "gpt-5.6-sol",
@@ -2220,7 +2291,7 @@
           ]
         }
       ],
-      "version": "0.1.0+codex.20260901204823"
+      "version": "0.1.0+codex.20260908124959"
     }
   ],
   "schema_version": 1

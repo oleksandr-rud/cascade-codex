@@ -19,6 +19,13 @@ the user's authority and the plan's mutation boundary.
 
 ## Implement
 
+For a Product-backed slice, preserve the accepted requirement IDs and outcome
+links through changed behavior and relevant instrumentation. Implement the
+specified acceptance and failure/recovery paths. If technical evidence changes
+the value mechanism, offer or scope, return that concrete contradiction to the
+Product owner before substituting a different feature. A functional check proves
+its tested behavior; it does not establish market demand or realized user value.
+
 1. Trace the current behavior through the relevant source and consumer boundary.
 2. Make the smallest structurally sound change that proves the requested
    behavior.

@@ -1,7 +1,7 @@
 {
   "agent_count": 9,
   "agent_scenario_count": 9,
-  "catalog_digest": "15442530b1a2076295538027022aa1355dc71e69d38685e32d59377d640ac9d6",
+  "catalog_digest": "0778c3585dbb7efd583a7f6191c998655f632a74df32368c6b506cbcb410ff57",
   "generated_by": "scripts/cascade/evals.ts",
   "scenario_count": 142,
   "scenarios": [
@@ -3951,7 +3951,7 @@
         },
         {
           "path": "CODEX.md",
-          "sha256": "10a312367e97e284eac73f68af326fab351558a502f63631cbdb67553d6e80ac"
+          "sha256": "8ebdff26900b98a99f6eb710a41b63ccddd443718a5a0a1113198dec474de9d7"
         }
       ],
       "execution": {
@@ -4067,7 +4067,7 @@
         },
         {
           "path": ".codex/skills/plan-change/SKILL.md",
-          "sha256": "f242f0d2e5583851d5f434bdcea2fdb91786ae8e821dda974c61b35b124f5d64"
+          "sha256": "b74b8c6f76ba0cc75631f2227b288d1cb267ebdf897ccc74e362ae9e80527b78"
         }
       ],
       "execution": {
@@ -4414,7 +4414,7 @@
         },
         {
           "path": ".codex/skills/plan-change/SKILL.md",
-          "sha256": "f242f0d2e5583851d5f434bdcea2fdb91786ae8e821dda974c61b35b124f5d64"
+          "sha256": "b74b8c6f76ba0cc75631f2227b288d1cb267ebdf897ccc74e362ae9e80527b78"
         }
       ],
       "execution": {

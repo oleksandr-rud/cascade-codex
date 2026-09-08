@@ -5,6 +5,13 @@ description: Create, revise, or audit source-grounded brand positioning, message
 
 # Brand Positioning
 
+When the reason to choose is undecided, use the entry-strategy method through
+cascade-market:evaluate-market-opportunity before turning it into a promise.
+Keep a claim-to-proof map by audience, product version, population, measure and
+horizon. Demonstrations support demonstrated capability, not unmeasured efficacy.
+For creative concepts, acquisition-to-outcome continuity or channel/lifecycle
+strategy, use cascade-market:plan-growth; retain message wording here.
+
 Create one reviewable marketing candidate. This skill owns positioning and
 marketing-language semantics. Cascade Market research and opportunity methods
 own external market facts,

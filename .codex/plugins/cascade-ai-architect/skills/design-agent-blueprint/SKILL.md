@@ -5,6 +5,11 @@ description: Turn a grounded capability map into a complete AI agent or agentic-
 
 # Design Agent Blueprint
 
+For the incremental value of AI/voice, claims and events, memory, follow-ups,
+or outcome closure, read [references/agentic-value.md](references/agentic-value.md).
+Bind the result to the accepted Product requirements and existing behavior
+blocks; do not introduce a separate product model or role hierarchy.
+
 Design the smallest system that can satisfy the capability map. Keep semantic behavior contracts provider-neutral and separate from target-harness implementation.
 
 When a versioned host pattern catalog materially constrains topology, consume

@@ -5,6 +5,12 @@ description: Research or audit a market, segment, pain cluster, competitor set, 
 
 # Research Market
 
+For open market discovery, shortlist comparison or changed selection scope,
+read [references/market-selection.md](references/market-selection.md). Research
+comparable jobs and entrant reachability before recommending a market. Use
+cascade-market:evaluate-market-opportunity for the frozen comparison and
+cascade-market:plan-growth for a chosen audience's channel or growth strategy.
+
 Produce a current, contradiction-aware market evidence ledger. This skill gathers and classifies evidence; it does not choose product scope or claim product-market fit.
 
 Its portable capability provenance is frozen in

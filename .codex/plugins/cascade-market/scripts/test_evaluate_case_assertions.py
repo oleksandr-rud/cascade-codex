@@ -14,6 +14,7 @@ sys.path.insert(0, str(SCRIPT_ROOT))
 
 from evaluate_case_assertions import evaluate, finalize_target
 from test_artifact_contracts import executed_experiment, experiment, handoff, ledger, opportunity
+from test_growth_contract import strategy
 from validate_artifact import canonical_digest
 
 
@@ -96,6 +97,9 @@ class MarketAssertionAdapterTests(unittest.TestCase):
                         "artifact": source,
                         "sha256": canonical_digest(source),
                     }]
+                elif case["skill"] == "plan-growth":
+                    artifact = strategy()
+                    artifact["status"] = expected_state
                 else:
                     frozen_experiment = case["fixture"].get("frozen_experiment")
                     if expected_state == "RECEIPT_SUPPLIED" and isinstance(frozen_experiment, dict):

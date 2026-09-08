@@ -1,8 +1,8 @@
 {
   "schema_version": 2,
-  "suite_id": "cascade-market-v9",
-  "corpus_version": "9",
-  "split_id": "qualification-v9",
+  "suite_id": "cascade-market-v10",
+  "corpus_version": "10",
+  "split_id": "qualification-v10",
   "split_membership": [
     "MKT-001",
     "MKT-002",
@@ -20,7 +20,10 @@
     "MKT-014",
     "MKT-015",
     "MKT-016",
-    "MKT-017"
+    "MKT-017",
+    "MKT-018",
+    "MKT-019",
+    "MKT-020"
   ],
   "subject_adapter": "cascade-evals:agent-evaluation",
   "execution_adapter": {
@@ -32,7 +35,7 @@
     "deterministic_finalization": "digest-only-json-response-v1",
     "target_invocations": 7,
     "target_batching": "contiguous-balanced-parallel-v1",
-    "case_count": 17
+    "case_count": 20
   },
   "packet_contract": {
     "target_fields": [
@@ -825,6 +828,141 @@
           "implementation authority",
           "publication authority",
           "spend authority"
+        ],
+        "permissions": {
+          "model_calls": false,
+          "tools": false,
+          "external_write": false
+        },
+        "data": {
+          "classification": "INTERNAL",
+          "destination": "local-codex",
+          "transfer_authorized": true
+        }
+      }
+    },
+    {
+      "case_id": "MKT-018",
+      "skill": "plan-growth",
+      "category": "happy",
+      "expected_status": "READY",
+      "request": "Plan growth for a service that helps applicants submit one accurate application. The customer normally finishes and leaves. We have a stated search-channel hypothesis and no observed acquisition or delivery economics. Choose the next bounded move.",
+      "oracle": "Keeps completion distinct from abandonment, proposes a bounded channel test with unknown economics, does not manufacture subscription retention or claim market proof.",
+      "mechanical_assertions": [
+        "status_matches_expected",
+        "selected_skill_matches_expected",
+        "market_artifact_valid"
+      ],
+      "fixture": {
+        "output_contract": {
+          "response_encoding": "json",
+          "required_response_fields": [
+            "artifact",
+            "artifact_sha256",
+            "supporting_artifacts",
+            "handoffs"
+          ],
+          "artifact_kind": "GROWTH_STRATEGY",
+          "artifact_schema": "schemas/growth-strategy.schema.json",
+          "expected_artifact_status": "READY",
+          "require_handoff": false
+        },
+        "supplied": [
+          "Owner requests a proposal only; no campaign or feature execution is authorized.",
+          "The facts in the request are the complete supplied qualitative context. Preserve unsupported quantities as unknown."
+        ],
+        "absent": [
+          "Live experiment receipts and scale evidence"
+        ],
+        "permissions": {
+          "model_calls": false,
+          "tools": false,
+          "external_write": false
+        },
+        "data": {
+          "classification": "INTERNAL",
+          "destination": "local-codex",
+          "transfer_authorized": true
+        }
+      }
+    },
+    {
+      "case_id": "MKT-019",
+      "skill": "plan-growth",
+      "category": "boundary",
+      "expected_status": "READY",
+      "request": "We have many clicks and inexpensive signups, but do not know refunds, delivery cost, completed user outcomes or marginal acquisition cost. Make a growth strategy for deciding whether to scale.",
+      "oracle": "Distinguishes attention from outcomes and gross revenue from contribution; withholds SCALE, identifies the decisive missing evidence and a bounded next test.",
+      "mechanical_assertions": [
+        "status_matches_expected",
+        "selected_skill_matches_expected",
+        "market_artifact_valid"
+      ],
+      "fixture": {
+        "output_contract": {
+          "response_encoding": "json",
+          "required_response_fields": [
+            "artifact",
+            "artifact_sha256",
+            "supporting_artifacts",
+            "handoffs"
+          ],
+          "artifact_kind": "GROWTH_STRATEGY",
+          "artifact_schema": "schemas/growth-strategy.schema.json",
+          "expected_artifact_status": "READY",
+          "require_handoff": false
+        },
+        "supplied": [
+          "Owner requests a proposal only; no campaign or feature execution is authorized.",
+          "The facts in the request are the complete supplied qualitative context. Preserve unsupported quantities as unknown."
+        ],
+        "absent": [
+          "Live experiment receipts and scale evidence"
+        ],
+        "permissions": {
+          "model_calls": false,
+          "tools": false,
+          "external_write": false
+        },
+        "data": {
+          "classification": "INTERNAL",
+          "destination": "local-codex",
+          "transfer_authorized": true
+        }
+      }
+    },
+    {
+      "case_id": "MKT-020",
+      "skill": "plan-growth",
+      "category": "handoff",
+      "expected_status": "READY",
+      "request": "The supplied product review says users reach onboarding but cannot find the first useful action. Current requirement REQ-1 asks them to fill a long profile before preparing an application. Form a growth recommendation and pass its product implications to the appropriate owner.",
+      "oracle": "Diagnoses the activation hypothesis, compares a message/offer change with reducing interaction burden, supplies evidence-linked feedback for REQ-1 to Product, and does not claim accepted scope, implementation or publication.",
+      "mechanical_assertions": [
+        "status_matches_expected",
+        "selected_skill_matches_expected",
+        "market_artifact_valid"
+      ],
+      "fixture": {
+        "output_contract": {
+          "response_encoding": "json",
+          "required_response_fields": [
+            "artifact",
+            "artifact_sha256",
+            "supporting_artifacts",
+            "handoffs"
+          ],
+          "artifact_kind": "GROWTH_STRATEGY",
+          "artifact_schema": "schemas/growth-strategy.schema.json",
+          "expected_artifact_status": "READY",
+          "require_handoff": false
+        },
+        "supplied": [
+          "Owner requests a proposal only; no campaign or feature execution is authorized.",
+          "The facts in the request are the complete supplied qualitative context. Preserve unsupported quantities as unknown."
+        ],
+        "absent": [
+          "Live experiment receipts and scale evidence"
         ],
         "permissions": {
           "model_calls": false,

@@ -48,9 +48,10 @@ durable paths, target commands, campaign state, and acceptance.
 | Software, plugin, and workflow architecture, patterns, and independent review | `cascade-software-architect:<skill>` | Requesting role; Agent Engineer for host integration |
 | AI-agent topology, behavior, roles, skills, prompt briefs, persona requirements, and evaluation briefs | `cascade-ai-architect:<skill>` | Requesting role; Agent Engineer for host integration |
 | Harness audit, maintenance, and asset integration | `cascade-coding-agent:<skill>` | Agent Engineer |
-| Market research, opportunity scoring, experiments | `cascade-market:<skill>` | Orchestrator |
+| Market research, selection, differentiation and experiments | `cascade-market:<skill>` | Orchestrator |
+| Channel selection, growth strategy, cohort economics and product feedback | `cascade-market:plan-growth` | Orchestrator |
 | Positioning, messaging, naming, tone, proof, and trust language | `cascade-market:brand-positioning` | Orchestrator |
-| Product definition, lifecycle, and validation | `cascade-product:<skill>` | Orchestrator |
+| Product value and offers, feature formation, lifecycle and outcome validation | `cascade-product:<skill>` | Orchestrator |
 | Canonical personas and compiled projections | `cascade-personas:<skill>` | Orchestrator |
 | UX, accessibility, visual, and design-system review | `cascade-design:<skill>` | Requesting role or Orchestrator |
 | Design authoring and mockup handoff | `cascade-design:create-design`; host artifact persistence | Product Designer |
