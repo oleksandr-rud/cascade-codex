@@ -1,13 +1,13 @@
 {
   "artifact_type": "cascade-plugin-capability-catalog",
-  "catalog_digest": "d7e537b7dae2b10ee59101bbd9cbea2472f40c936b2d7167cfa84913720d48e9",
+  "catalog_digest": "1a429e7b55b897014920c97c888dc8223d29c0c673ba77d78292250023aca169",
   "marketplace": ".agents/plugins/marketplace.json",
   "plugins": [
     {
       "descriptor_path": ".codex/plugins/cascade-prompt/capabilities.yaml",
-      "descriptor_sha256": "3760b2dbca6529bf7eb468d5075abc77d1182fbd7007ffeff2f422e80b6a0229",
+      "descriptor_sha256": "c7921de915e8cbbbcc11f663ffb68d45727b3509496439b710442fa1723f3dd0",
       "manifest_path": ".codex/plugins/cascade-prompt/.codex-plugin/plugin.json",
-      "manifest_sha256": "3c4f8f2be4a39236d46d40b29d93758bbf0dbf83ba958e17e49949b76738d71a",
+      "manifest_sha256": "f577d1a9a4f493f369c874815ca7e589a26cd3a4c1965d798e38d4a9e24e0c49",
       "model_policy": {
         "evaluation_reasoning_effort": "max",
         "model": "gpt-5.6-sol",
@@ -49,7 +49,7 @@
           ]
         }
       ],
-      "version": "0.6.0+codex.20260826233510"
+      "version": "0.6.1+codex.20260908133706"
     },
     {
       "descriptor_path": ".codex/plugins/cascade-simulations/capabilities.yaml",
@@ -343,9 +343,9 @@
     },
     {
       "descriptor_path": ".codex/plugins/cascade-evals/capabilities.yaml",
-      "descriptor_sha256": "3f231df4fca0acc7be4ee583fd77416e0d7027cc83503a5c9ef6edb9f5d762d0",
+      "descriptor_sha256": "14f2861251145eac6fe2d7731fc948ceb7ad12506b5ff7c7d56fa02b16e759c5",
       "manifest_path": ".codex/plugins/cascade-evals/.codex-plugin/plugin.json",
-      "manifest_sha256": "7c964105bddddd43602eba65f5e87886f7117be06db603c9019cac3f818d5c78",
+      "manifest_sha256": "77ed4f57ec51c9797d234df57e9b8e93ee43f0ec20be45da7918a23a4fc61a2f",
       "model_policy": {
         "evaluation_reasoning_effort": "max",
         "model": "gpt-5.6-sol",
@@ -541,13 +541,13 @@
           ]
         }
       ],
-      "version": "0.2.0+codex.20260901194651"
+      "version": "0.2.1+codex.20260908133706"
     },
     {
       "descriptor_path": ".codex/plugins/cascade-ai-architect/capabilities.yaml",
-      "descriptor_sha256": "c84d353207e94c6e7260a84f44dab3bb699080426f97a95431adb374fe42360e",
+      "descriptor_sha256": "7f819d59177d08770f60c64976303164d491c62c49c9efbb693192bc59010aad",
       "manifest_path": ".codex/plugins/cascade-ai-architect/.codex-plugin/plugin.json",
-      "manifest_sha256": "f1c0ebf9a795fb6a62ae186518ec3ad69bf5f12ac0720c0901061c3c08870ec2",
+      "manifest_sha256": "35ab7b666f1cd5d2007b5e543c06c1b4fcb993403f392e9a845c7c23bcb873af",
       "model_policy": {
         "evaluation_reasoning_effort": "max",
         "model": "gpt-5.6-sol",
@@ -620,7 +620,7 @@
         },
         {
           "anti_triggers": [
-            "the topology or capability map is still unresolved"
+            "the capability map is still unresolved"
           ],
           "authority": "READ_ONLY",
           "consumes": [
@@ -871,13 +871,13 @@
           ]
         }
       ],
-      "version": "0.1.0+codex.20260827161121"
+      "version": "0.1.1+codex.20260908133706"
     },
     {
       "descriptor_path": ".codex/plugins/cascade-software-architect/capabilities.yaml",
-      "descriptor_sha256": "2bac11a74ed0fef1c5219aef1e77d01b063288012701dbf6e753d7038772e2c5",
+      "descriptor_sha256": "c1c3f59391696cda997cb9bdd2982467946f0d755041bda321be38da22fa0426",
       "manifest_path": ".codex/plugins/cascade-software-architect/.codex-plugin/plugin.json",
-      "manifest_sha256": "5681cd7d4dd2dc00b6126f8f64696e12a3092e65151d58003fef46b34b67d7af",
+      "manifest_sha256": "8061df21c1155ccfacf3a7a1f67b5c774dc341ff1c0f8c4ecea150043528838f",
       "model_policy": {
         "evaluation_reasoning_effort": "max",
         "model": "gpt-5.6-sol",
@@ -1007,13 +1007,13 @@
           ]
         }
       ],
-      "version": "0.1.2+codex.20260904164520"
+      "version": "0.1.3+codex.20260908133706"
     },
     {
       "descriptor_path": ".codex/plugins/cascade-coding-agent/capabilities.yaml",
-      "descriptor_sha256": "59962616b8bb5c5402789d84bf40d8b6317a1db736c2f27862f1d77abad9d375",
+      "descriptor_sha256": "b8a3171be880c4659ce304246d480360b25a03454edbfeddcd863a8a5d97e338",
       "manifest_path": ".codex/plugins/cascade-coding-agent/.codex-plugin/plugin.json",
-      "manifest_sha256": "ca9149f8b0a8b6bf97c6da6cada5ba58ceb91009806dc820c086bbd611d2aac0",
+      "manifest_sha256": "94bbe6bd8602d0446d1c2d8f7af87f27490fad5b28f3d2f3085379445030ce09",
       "model_policy": {
         "evaluation_reasoning_effort": "max",
         "model": "gpt-5.6-sol",
@@ -1158,7 +1158,7 @@
           ]
         }
       ],
-      "version": "0.2.0+codex.20260827161121"
+      "version": "0.2.1+codex.20260908133706"
     },
     {
       "descriptor_path": ".codex/plugins/cascade-personas/capabilities.yaml",

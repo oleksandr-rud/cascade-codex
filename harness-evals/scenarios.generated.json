@@ -1,7 +1,7 @@
 {
   "agent_count": 9,
   "agent_scenario_count": 9,
-  "catalog_digest": "6f52a1b93930d4f4e2214f9df090951dc07e1971ca65f92a06058c6269b8d133",
+  "catalog_digest": "15442530b1a2076295538027022aa1355dc71e69d38685e32d59377d640ac9d6",
   "generated_by": "scripts/cascade/evals.ts",
   "scenario_count": 142,
   "scenarios": [
@@ -3935,7 +3935,7 @@
       "context_bindings": [
         {
           "path": ".codex/agents/agent-engineer/AGENT.md",
-          "sha256": "f898d586cc65e496bcfd981727c189aa356bc8dc9e3ea02964066b464b43a19e"
+          "sha256": "fa0e59e00e4675e003813e9caed3ba113370d1c7bd83985d33e9c4bb70f10ad0"
         },
         {
           "path": ".codex/agents/agent-engineer/skills.yaml",
@@ -3947,11 +3947,11 @@
         },
         {
           "path": "AGENTS.md",
-          "sha256": "916b37688a9445160f23aec531814ee69eeec0a27221f10f6218f2ce50278bfc"
+          "sha256": "d4bc1bde21452431ac4873caeebc4cdbc4fdb4601c790a389fd22852d126fbd6"
         },
         {
           "path": "CODEX.md",
-          "sha256": "8b4e281f9942f2dabd0d14923cf6d9101a85ae879229f32d0e52da199334006d"
+          "sha256": "10a312367e97e284eac73f68af326fab351558a502f63631cbdb67553d6e80ac"
         }
       ],
       "execution": {

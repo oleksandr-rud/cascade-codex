@@ -3,6 +3,7 @@
 # fixtures, and source tests; a normal target runtime does not copy them.
 
 project:
+  harness_profile: "target-project"
   name: "<PROJECT_NAME>"
   kind: "<PROJECT_KIND>"
   primary_users:

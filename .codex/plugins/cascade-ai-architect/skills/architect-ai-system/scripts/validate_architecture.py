@@ -283,6 +283,8 @@ def validate_packet(packet: dict[str, Any], schema: dict[str, Any] | None = None
 
     topology = packet.get("topology") if isinstance(packet.get("topology"), dict) else {}
     topology_kind = topology.get("kind")
+    if topology_kind == "single_agent_with_skills" and not any(agent.get("skills") for agent in agents.values()):
+        errors.append("topology single_agent_with_skills requires an agent with at least one skill")
     agent_count = len(agents)
     if topology_kind == "deterministic_workflow" and agent_count != 0:
         errors.append("topology deterministic_workflow requires exactly zero agents")

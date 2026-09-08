@@ -5,6 +5,17 @@ repo-local host skills and roles, installed Cascade plugins, current source, and
 validation tooling. Detailed reusable procedures belong in their owning skill,
 plugin, pattern, or schema—not here.
 
+## Workspace Identity
+
+`harness.config.yaml` owns the current project's identity, architecture roots,
+commands and context. `project.harness_profile: cascade-source` means the host
+is developing Cascade itself; `target-project` (also the legacy default) means
+Cascade is tooling for the named target. Plugin names never change that identity.
+Onboarding preserves existing target instructions and uses target code as evidence.
+Do not import source-checkout history, product facts or architecture defaults.
+Load specialized architecture knowledge only when requested or already adopted
+by this target; a generic agent/context task does not select a stateful profile.
+
 ## Load Order
 
 1. `AGENTS.md`

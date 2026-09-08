@@ -1,4 +1,4 @@
 interface:
   display_name: "Integrate Agent Assets"
   short_description: "Map architecture packets into target harnesses"
-  default_prompt: "Use $integrate-agent-assets to integrate this reviewed agent architecture packet into the target harness with provenance and validation. Bind schema-values-text@1 profiles and issuance to real host admission and token accounting when selected; preserve module ownership and compact context blocks."
+  default_prompt: "Use $integrate-agent-assets to integrate this reviewed agent architecture packet into the target harness with provenance and validation. Bind schema-values-text@1 profiles and issuance to real host admission and token accounting when selected; preserve module ownership and compact context blocks.."

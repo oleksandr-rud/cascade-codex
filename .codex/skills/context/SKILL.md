@@ -27,6 +27,10 @@ sources explicitly point there.
 ## Build the snapshot
 
 1. Read the latest user request and applicable repository instructions.
+   Bind project identity and the workspace profile from `harness.config.yaml`
+   when present. Cascade is tooling in a `target-project`; only `cascade-source`
+   identifies this source-development workspace. Load target-owned architecture
+   context only for the relevant request, not because a plugin packages it.
 2. Inspect the current branch, revision, and dirty files before proposing writes.
 3. Locate the smallest set of current source and tests that govern the request.
 4. If resuming durable work, compare the active record with current source and

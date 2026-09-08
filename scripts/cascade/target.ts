@@ -189,6 +189,23 @@ export async function validateConfig(
   if (!options.allowPlaceholders && containsPlaceholder(config)) {
     errors.push("PLACEHOLDER values remain in harness.config.yaml");
   }
+  const project = config.project ?? {};
+  for (const key of ["name", "kind"]) {
+    if (typeof project[key] !== "string" || !project[key].trim()) {
+      errors.push(`config.project.${key} must describe the current target`);
+    }
+  }
+  const profile = project.harness_profile ?? "target-project";
+  if (!["target-project", "cascade-source"].includes(profile)) {
+    errors.push("config.project.harness_profile must be target-project or cascade-source");
+  }
+  const bundleManifestPath = resolve(root, ".codex/runtime/manifest.json");
+  if (profile === "cascade-source" && await isFile(bundleManifestPath)) {
+    const bundle = await readJson<Record<string, any>>(bundleManifestPath);
+    if (bundle.artifact_type === "cascade-runtime-bundle-manifest" && bundle.profile === "core") {
+      errors.push("core target bundle requires target-project identity; do not copy Cascade source configuration");
+    }
+  }
   const models = config.models ?? {};
   for (const key of [
     "default",

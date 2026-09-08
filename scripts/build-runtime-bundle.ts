@@ -17,7 +17,6 @@ const DIST_ROOT = resolve(SOURCE_ROOT, "dist");
 const DEFAULT_OUTPUT = resolve(DIST_ROOT, "cascade-runtime");
 
 const COPY_FILES = [
-  "AGENTS.md",
   "CODEX.md",
   "harness.config.example.yaml",
   ".github/copilot-instructions.md",
@@ -72,7 +71,7 @@ const COORDINATOR_CONTRACTS = [
 
 const GENERATED_TEXT_FILES: Record<string, string> = {
   ".codex/README.md": `# Cascade core runtime\n\nThis target profile contains Orchestrator, Agent Engineer, Security, Product Designer,\nSoftware Engineer, Frontend Engineer, Code Reviewer, the nine\nrepository-bound effect skills, admission, Coordinator validation, and\nWorkspace MCP. Portable methods resolve from the enabled installed Cascade\nplugins. Plugin source, evaluator/operator lab roles, harness-eval corpora,\nsimulation campaigns, browser tooling, and historical work reports remain in\nthe Cascade source checkout and are not target-runtime dependencies.\n`,
-  "CASCADE_RUNTIME.md": `# Cascade core target runtime\n\nThis is a generated target bundle, not the Cascade plugin-development tree.\nIt intentionally excludes \`.codex/plugins/\`, \`harness-evals/\`,\n\`product-evals/\`, source tests, browser tooling, and historical reports.\nInstall the exact plugin versions recorded in \`.codex/plugins.lock.json\` from\nthe Cascade marketplace, copy this bundle into the target repository with\ncollision review, adapt \`AGENTS.md\`, \`CODEX.md\`, and\n\`harness.config.example.yaml\`, then run:\n\n\`\`\`bash\ncp harness.config.example.yaml harness.config.yaml\nnpx --offline --yes bun@1.3.3 .codex/runtime/cascade.js target validate --root .\n\`\`\`\n\nHarness evals and simulation campaigns are opt-in development or lab packs;\nthey are not required for normal planning, implementation, target validation,\nor plugin routing.\n`,
+  "CASCADE_RUNTIME.md": `# Cascade core target runtime\n\nThis is a generated target bundle, not the Cascade plugin-development tree.\nIt intentionally excludes \`.codex/plugins/\`, \`harness-evals/\`,\n\`product-evals/\`, source tests, browser tooling, and historical reports.\nInstall the exact plugin versions recorded in \`.codex/plugins.lock.json\` from\nthe Cascade marketplace, merge this bundle into the target repository with\ncollision review; preserve existing instructions, configuration and documents.\nAdapt \`AGENTS.md\`, \`CODEX.md\`, and\n\`harness.config.example.yaml\`, create \`harness.config.yaml\` from the template only when absent,\nfill it from the real target source, set \`project.harness_profile: target-project\`,\nand then run:\n\n\`\`\`bash\nnpx --offline --yes bun@1.3.3 .codex/runtime/cascade.js target validate --root .\n\`\`\`\n\nHarness evals and simulation campaigns are opt-in development or lab packs;\nthey are not required for normal planning, implementation, target validation,\nor plugin routing.\n`,
   "docs/_index.md": `# Project context\n\nKeep only current product, design, specification, pattern, and work context\nneeded by this target repository. Portable methods belong to installed Cascade\nplugins.\n`,
   "docs/structure.md": `# Repository structure\n\nAdapt this file to the target repository. Record current source roots, public\ncontracts, test roots, generated artifacts, and narrow documentation owners.\nDo not copy Cascade source-checkout eval labs or historical work reports here.\n`,
   "docs/glossary.md": `# Glossary\n\nAdd only target-repository terms whose meaning affects implementation, routing,\nor validation.\n`,
@@ -165,24 +164,6 @@ function runtimeConfigToml(source: string): string {
   return value;
 }
 
-function runtimeAgents(source: string): string {
-  return source
-    .replace("- Project name: `Cascade`", "- Project name: `<TARGET_PROJECT>`")
-    .replace(
-      "- Product or system type: standalone coding-agent workflow harness.",
-      "- Product or system type: target repository using the Cascade core runtime.",
-    )
-    .replace(
-      /- Primary runtime stack summary:[\s\S]*?- Source of truth when docs conflict with code:/,
-      "- Primary runtime stack summary: adapt `harness.config.yaml` from the current target source.\n- Source of truth when docs conflict with code:",
-    )
-    .replace(
-      /## Validation Commands[\s\S]*?(?=## Codebase Vocabulary)/,
-      `## Validation Commands\n\nRun target-project checks from \`harness.config.yaml\`. Validate the adapted\nharness configuration with:\n\n\`\`\`bash\nnpx --offline --yes bun@1.3.3 .codex/runtime/cascade.js target validate --root .\n\`\`\`\n\nHarness evaluation and simulation campaigns are optional source/lab packs, not\ndefault target validation phases.\n\n`,
-    )
-    .replaceAll("scripts/cascade.ts", ".codex/runtime/cascade.js");
-}
-
 function runtimeCodex(source: string): string {
   return source
     .replace(
@@ -237,7 +218,7 @@ async function transformCopiedConfiguration(): Promise<void> {
   const agentsPath = resolve(activeOutput, "AGENTS.md");
   await writeFile(
     agentsPath,
-    runtimeAgents(await readFile(agentsPath, "utf8")),
+    await readFile(resolve(SOURCE_ROOT, "scripts/runtime-templates/AGENTS.md"), "utf8"),
     "utf8",
   );
   const codexPath = resolve(activeOutput, "CODEX.md");
@@ -354,6 +335,7 @@ export async function buildRuntimeBundle(
     schema_version: 1,
     artifact_type: "cascade-runtime-bundle-manifest",
     profile: "core",
+    harness_profile: "target-project",
     source_checkout_layers_excluded: [
       "plugin-source",
       "harness-eval-lab",

@@ -1,7 +1,8 @@
-# Cascade adapter variables.
-# Copy to harness.config.yaml after installing the harness in a target project.
+# Configuration of the Cascade source checkout, not an onboarding template.
+# Other projects start from harness.config.example.yaml and their own source facts.
 
 project:
+  harness_profile: "cascade-source"
   name: "Cascade"
   kind: "standalone coding-agent workflow harness"
   primary_users:

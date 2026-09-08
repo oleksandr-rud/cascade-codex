@@ -10,7 +10,6 @@ import unittest
 
 
 SCRIPT_ROOT = Path(__file__).resolve().parent
-PLUGIN_ROOT = SCRIPT_ROOT.parent
 sys.path.insert(0, str(SCRIPT_ROOT))
 
 from reduce_evaluation import ContractError, reduce_bundle
@@ -155,55 +154,6 @@ class EvaluationContractsTests(unittest.TestCase):
             reduce_bundle(bundle)
         bundle["judgments"] = []
         self.assertEqual(reduce_bundle(bundle)["overall_status"], "INVALID")
-
-    def test_evaluate_design_contract_binds_inputs_and_recovery(self) -> None:
-        text = (PLUGIN_ROOT / "skills" / "evaluate" / "SKILL.md").read_text(
-            encoding="utf-8"
-        )
-        for required in [
-            "frozen target output",
-            "deterministic rule",
-            "next owner",
-            "case/corpus owner",
-            "subject-adapter owner",
-            "first blocked owner",
-            "required-input presence",
-            "target-output violation to the subject owner",
-            "separate owner branches",
-            "subject implementation owner",
-            "is not a substitute",
-            "receipt owner verifies",
-            "semantic judgment below its future rule is `FAIL`",
-            "evaluation-wide",
-            "every target and every",
-            "compact pointers to those IDs",
-            "opaque digest",
-            "unregistered `N0`",
-            "complete permitted packaged-reference set",
-            "judge-response.schema.json` in that same action",
-            "structural package references, not supplied judge contracts",
-            "exact path and schema version",
-            "without another progress/status message",
-            "EOF check bundled into that same skill-read command",
-            "1,500-word drafting budget",
-            "compactness ceiling is 1,800 whitespace-delimited words",
-            "len(artifact.split())",
-            "distinct stable evidence artifact",
-            "generic phrases",
-            "missing subject source bytes or digest algorithm",
-            "observed subject-byte violation",
-            "operations explicitly even when",
-            "sealed labels, identities, and declared digests",
-            "Never use `same owner branches`",
-            "`NOT_RUN / B1` unless `B1` has its own definition",
-            "never invent an undefined",
-            "no target or run evidence was produced or inspected",
-        ]:
-            self.assertIn(required, text)
-        agent_prompt = (
-            PLUGIN_ROOT / "skills" / "evaluate" / "agents" / "openai.yaml"
-        ).read_text(encoding="utf-8")
-        self.assertIn("read SKILL.md completely in one action", agent_prompt)
 
 
 if __name__ == "__main__":

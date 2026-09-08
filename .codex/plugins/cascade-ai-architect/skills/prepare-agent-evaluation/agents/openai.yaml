@@ -1,4 +1,4 @@
 interface:
   display_name: "Prepare Agent Evaluation"
   short_description: "Prepare an agent evaluation request"
-  default_prompt: "Use $prepare-agent-evaluation to compile a frozen evaluation request for this agent architecture. For schema-values-text@1, cover scope/issuance, block fidelity, revocation, budgets and cache boundaries; separate fixture evidence from target runtime proof."
+  default_prompt: "Use $prepare-agent-evaluation to compile a frozen evaluation request for this agent architecture."

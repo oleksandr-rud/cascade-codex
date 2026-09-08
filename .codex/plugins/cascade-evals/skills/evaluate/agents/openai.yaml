@@ -1,4 +1,4 @@
 interface:
   display_name: "Evaluate"
   short_description: "Plan and reduce versioned AI evaluations"
-  default_prompt: "Use $evaluate to design or reduce a versioned evaluation with independent evidence; read SKILL.md completely in one action, then batch permitted references."
+  default_prompt: "Use $evaluate to design or reduce a versioned evaluation with independent evidence and only the references relevant to the requested operation."

@@ -26,7 +26,7 @@ runs remain the dominant latency in live evaluations.
 - Harness name: `cascade`
 - Runtime bridge: `CODEX.md`
 - Adapter template: `harness.config.example.yaml`
-- Local role contracts: 6
+- Core target role contracts: 7; simulation lab roles are optional
 - Registered host skills: 9
 - Canonical skill and role source: `.codex/skills/` and `.codex/agents/`
 - Repo-local Cascade plugin sources: 14
@@ -34,8 +34,7 @@ runs remain the dominant latency in live evaluations.
 - Execution, prompt-builder, and judge model: `gpt-5.6-sol`
 - Tooling runtime: Bun `1.3.3`
 - Validator: `bun scripts/cascade.ts validate`
-- Lean target runtime: `bun run build:runtime` (currently 91 generated files;
-  the build enforces a 120-file ceiling)
+- Lean target runtime: `bun run build:runtime` (the build enforces a 120-file ceiling)
 
 ## Source Checkout And Target Runtime
 
@@ -52,10 +51,25 @@ and Workspace MCP. It excludes plugin source, harness evals, product evals,
 browser tooling, source tests, and historical work records. Plugins stay
 standalone and resolve from Codex's installed plugin inventory.
 
-The core profile keeps only Orchestrator, Agent Engineer, and Security. Harness
-Judge, Simulation Operator, and Simulation Evaluator remain opt-in lab roles in
-the source checkout because their traces, campaigns, and frozen run packages
-are not baseline target context.
+The core profile includes Orchestrator, Agent Engineer, Security, Product
+Designer, Software Engineer, Frontend Engineer and Code Reviewer. Simulation
+Operator and Simulation Evaluator are optional lab roles; harness judging uses
+the optional Evals subject profile, not a dedicated host role.
+
+Project identity belongs to `harness.config.yaml`. This checkout explicitly uses
+`project.harness_profile: cascade-source` and the project name `Cascade`.
+Distributed bundles use `target-project`: the actual destination's name, users,
+stack, architecture and commands remain authoritative. The builder uses a
+dedicated target boot template, never the source checkout's `AGENTS.md`.
+During onboarding, merge existing instructions/docs and resolve the adapter
+template from current target evidence; do not overwrite target-owned files or
+copy this checkout's `harness.config.yaml`. The target validator rejects a
+source profile in a core bundle. Older configs without a profile remain targets.
+
+The full Analyzer–Policy Engine–Composer architecture and its executable
+contracts remain in AI Architect. Its entrypoints, Prompt and integration
+skills load those references only when explicitly requested or already adopted
+by the target; a generic agent or prompt request does not select that topology.
 
 ## What The Source Checkout Contains
 

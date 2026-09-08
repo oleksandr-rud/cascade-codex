@@ -43,6 +43,7 @@ config; keep reusable workflow rules in skills, agents, and patterns.
 | `scripts/cascade/campaign/adapters/` | One module per execution contour plus the built-in adapter registry and shared transport resolution | Campaign infrastructure adapters |
 | `scripts/cascade/campaign/artifacts/` | Application-facing artifact repository ports; filesystem persistence remains in `campaign-artifacts.ts` | Campaign application and infrastructure boundary |
 | `scripts/cascade-runtime.ts`, `scripts/build-runtime-bundle.ts` | Six-command core target entrypoint and deterministic lean-bundle builder | Agent Engineer and source validation |
+| `scripts/runtime-templates/AGENTS.md` | Target-project boot contract; never copies the Cascade source identity | Bundle builder and target onboarding |
 | `dist/cascade-runtime/` | Ignored generated target profile: host adapters, frozen plugin catalog, Coordinator contracts, admission, closeout, and Workspace MCP | Runtime bundle builder |
 
 The source checkout and target runtime are intentionally different products.
@@ -54,6 +55,14 @@ tests, browser tooling, source scripts, and the two simulation lab roles.
 Harness judging is an optional Evals profile, with no dedicated host role.
 Installed plugins provide portable methods; the target retains the host roles
 and repository-bound adapters/effects selected by the runtime bundle manifest.
+
+`harness.config.yaml` is the project-identity owner. This checkout selects
+`project.harness_profile: cascade-source`; the distributed template selects
+`target-project` and must be adapted to the destination's actual source and
+product. Existing target instructions and docs are merged, not overwritten.
+The context skill reads that identity and only relevant target architecture.
+Specialized stateful-agent knowledge remains in plugin references, loaded
+only for explicit requests or an adopted target architecture.
 
 The repository's default `bun run test` command retains only six runtime
 safety smoke files under `scripts/cascade/`: admission authority, filesystem

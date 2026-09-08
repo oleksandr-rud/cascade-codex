@@ -5,11 +5,33 @@ catalog_labels:
   - best-observed-for-workload
   - pinned-baseline
 checked_at: 2026-08-05
+# Undated entries retain this review date; adding Astra does not reverify other providers.
 evidence_statuses:
   - provider_claim
   - inferred_requires_eval
   - measured
 models:
+  - id: gpt-6-astra
+    checked_at: 2026-09-08
+    provider: OpenAI
+    capabilities: [text, tools, reasoning-controls]
+    catalog_labels: [tier-candidate]
+    status: current-candidate
+    runtime_controls: [reasoning effort, tool availability, context selection]
+    sources:
+      - https://developers.openai.com/api/docs/guides/latest-model#gpt-6-astra-behavior
+      - https://developers.openai.com/tracks/building-agents#how-to-choose
+    specialties: [complex-reasoning, agentic-work, instruction-following]
+    prompting_notes:
+      - Audit accessible skills and instructions for accidental constraints.
+      - State desired brevity, initiative, delegation authority, and proportional validation.
+    tier_candidates:
+      - tier: frontier-generalist
+        conditions: Complex source-grounded work with explicit success criteria.
+        evidence_status: inferred_requires_eval
+      - tier: frontier-autonomous
+        conditions: Long-horizon tool work with authorized actions, bounded recovery, and verification.
+        evidence_status: inferred_requires_eval
   - capabilities:
       - text
       - vision

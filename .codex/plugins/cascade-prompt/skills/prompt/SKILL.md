@@ -27,12 +27,19 @@ Load only the smallest conditional material:
 - `runtime/task-overlays.md` when extraction, classification, research, coding,
   orchestration, comparison, creative, long-context, multimodal, or realtime
   specialization changes obligations.
+- `runtime/stateful-agent.md` only when the user explicitly requests the
+  Analyzer–Policy Engine–Composer family (including `schema-values-text@1`) or
+  the supplied target architecture adopts it. Ordinary prompts, context plans,
+  or tool use do not select that architecture or load its policies.
 - Exactly one material tier pack: `runtime/tier-efficient-structured.md`,
   `runtime/tier-balanced-production.md`, `runtime/tier-frontier-generalist.md`,
   or `runtime/tier-frontier-autonomous.md`.
 - `runtime/model-index.yaml` when a named model's tier/capability is unresolved.
   Preserve an explicit capable model/tier. Use the detailed registry only for
   current research, provenance, or multi-candidate comparison.
+  Entry-level `checked_at` overrides the catalog date; undated entries retain
+  the older catalog date. Verify current availability before recommending a
+  purchase or changing a provider configuration; a candidate is not a measured winner.
 - `runtime/evaluation.md` for audit, comparison, or effectiveness claims.
   This skill designs evaluation cases but owns no campaign runtime or state.
   When `cascade-evals:prompt-evaluation` is separately installed, offer it as

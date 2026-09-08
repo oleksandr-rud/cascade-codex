@@ -12,13 +12,14 @@ Compile one reviewable architecture candidate from the request and its authorita
 1. **Freeze the design claim.** State the requested outcome, represented users, non-goals, autonomy, risk, target environment, and observable completion condition. Record each source by an exact locator. Mark inferences and assumptions.
 2. **Draft before interviewing.** Sketch the likely capabilities and identify only material gaps. Ask a question only when its answer could change safety, permissions, topology, source authority, success criteria, or feasibility. Batch at most three decision-ready questions; otherwise continue with an explicit assumption or return `GAP`/`BLOCKED`.
 3. **Map capabilities.** Invoke `$map-agent-capabilities`. Require atomic, outcome-oriented capability records, semantic slugs, source locators, evidence status, success oracles, recovery routes, and responsibility clusters.
-4. **Choose the boundary.** For stateful conversational agents, start with the
-   [Analyzer–Policy Engine–Composer default](../design-agent-blueprint/references/analyzer-policy-composer.md)
-   and its text, voice, and optional-research variants. Preserve proposal,
-   state/policy, and output authority even when calls share a process or model.
-   For other scopes, prefer deterministic code, then one agent, then skills.
-   Record an evidence-backed exception when a simpler design suffices. Add
-   specialists only for an exclusive boundary, done condition, and evaluation.
+4. **Choose the boundary.** Prefer deterministic code, then one agent with a
+   focused prompt, then justified skills or specialists. A simple agent does
+   not require a separate skill. Read the
+   [stateful-agent profile](../design-agent-blueprint/references/stateful-agent-profile.md)
+   only when explicitly requested or already adopted by the target architecture;
+   state, memory, tools, or conversation alone do not select it. Preserve its
+   complete authority contracts when selected. Add specialists only for an
+   exclusive boundary, done condition, and evaluation.
 5. **Design behavior.** Invoke `$design-agent-blueprint`, then the relevant workflow, role, skill, and persona design skills. Cover every complete behavior block; do not substitute prompt prose for tools, state, permissions, recovery, or observability.
    Use `cascade-software-architect:select-architecture-patterns` only with a
    versioned pattern catalog, and send the completed candidate to

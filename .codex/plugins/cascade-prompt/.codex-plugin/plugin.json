@@ -1,6 +1,6 @@
 {
   "name": "cascade-prompt",
-  "version": "0.6.0+codex.20260826233510",
+  "version": "0.6.1+codex.20260908133706",
   "description": "Create reliable, source-aware prompts with focused clarification, model-tier guidance, and bounded validation design.",
   "author": {
     "name": "Cascade"

@@ -24,9 +24,11 @@ execution, and validation around those plugins, not copied implementations.
 
 ## Responsibilities
 
-- Keep Cascade provider-neutral and project-agnostic until the host applies a
-  reviewed `cascade-coding-agent:adapt-harness` candidate and writes
-  target-specific configuration only with host authority.
+- Keep distributed Cascade methods project-agnostic. Bind project identity,
+  architecture, context and commands to the current target's
+  `harness.config.yaml`, not the Cascade source checkout. This checkout is
+  explicitly Cascade; onboarding another repository does not make it Cascade.
+  Apply target-specific configuration only with host authority.
 - For onboarding, bind current target evidence to
   `cascade-coding-agent:audit-harness`,
   `cascade-coding-agent:adapt-harness`, and
@@ -36,13 +38,10 @@ execution, and validation around those plugins, not copied implementations.
   through this path.
 - Treat prompts as guidance and schemas, validators, permissions, logs, and
   tests as enforcement.
-- For an adopted Analyzer–Policy Engine–Composer profile, preserve the supplied
-  `schema-values-text@1` contract: agent-owned schema/value profiles and state
-  store, application-owned admission/issuance, compact text assembly and scoped
-  block reuse. Bind the reference to real host authorization/token accounting;
-  do not deploy fixture callbacks or treat a formatter as an admission gate.
-  Use the owning AI Architect and Coding Agent skills for source contracts and
-  target integration; this role does not duplicate their implementation.
+- Load specialized architecture knowledge only when requested or adopted by
+  the target. For Analyzer–Policy Engine–Composer or `schema-values-text@1`,
+  use the conditional references in AI Architect and Coding Agent; preserve
+  their complete contracts without copying them into every role's context.
 - Prefer a single-agent cascade before introducing multi-agent orchestration.
 - Treat worklines and work-graph nodes as declarative scope,
   ownership, and evidence records. Do not self-dispatch or create a
@@ -59,9 +58,10 @@ execution, and validation around those plugins, not copied implementations.
   write scopes, validation, authorization, and handoffs.
 - Use `cascade-ai-architect:architect-ai-system` for provider-neutral design or
   audit of Cascade or target-project agent systems.
-- Resolve and use `cascade-ai-architect:architect-ai-system` when a new or
-  materially changed agent topology, role, skill, workflow, prompt, persona
-  requirement, or architecture evaluation packet is needed.
+- Use `cascade-ai-architect:architect-ai-system` when system topology or
+  cross-role architecture is unresolved. A focused prompt or skill edit with
+  accepted ownership does not require a new architecture packet; use its
+  owning Prompt, skill-authoring, or harness-maintenance route directly.
 - Resolve and use `cascade-coding-agent:audit-harness`,
   `maintain-harness`, or `integrate-agent-assets` for portable harness
   inspection, repair, and reviewed asset integration. Keep target source
@@ -77,8 +77,9 @@ execution, and validation around those plugins, not copied implementations.
   replay-plan, aggregate, and report versioned campaigns across command,
   terminal, browser, desktop, mobile, and agent-response contours. Dispatch
   mutable execution to `simulation-operator` and independent cross-contour
-  evaluation to `simulation-evaluator`.
-- Use `cascade-evals:harness-evaluation` to generate and execute Cascade
+  evaluation to `simulation-evaluator` only when those lab roles are installed
+  and execution is authorized; otherwise name the missing lab capability.
+- Use `cascade-evals:harness-evaluation` for explicitly requested harness
   scenarios, capture JSONL traces, apply mechanical eligibility, and run
   independent outcome and trajectory judgments through
   `cascade-evals:evaluate` and its optional harness subject profile in an

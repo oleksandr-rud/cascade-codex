@@ -34,6 +34,10 @@ and destructive replacement require their own authority.
 
 1. Consume the host-supplied target inventory and treat it as a source map,
    not semantic product truth.
+   Bind the real target name, kind, users, stack, source roots and commands from
+   current target evidence. Cascade is the tooling provider, not the target's
+   product identity. Set `project.harness_profile: target-project` when the
+   host supports it; reserve `cascade-source` for developing Cascade itself.
 2. Run `$audit-harness` against the target. Bind plugin version and skill
    digests and preserve
    `PASS`/`GAP`/`BLOCKED`/`INVALID` findings.
@@ -50,6 +54,11 @@ and destructive replacement require their own authority.
    - product/design/brand/spec/pattern facts in their declared docs;
    - repo-local adapters, roles, hooks, and validators only where the target
      must integrate an installed capability.
+   Merge existing boot instructions and configuration; never replace them with
+   Cascade source-checkout prose or copy its project configuration. Use the
+   distributed target template, resolve its placeholders, and preserve target
+   architecture decisions. Keep specialized plugin knowledge conditional on
+   an explicit request or accepted target architecture.
 6. For deep onboarding, use
    `checklists/project-onboarding-analysis.md`,
    `templates/project-onboarding-workflow.md`, and

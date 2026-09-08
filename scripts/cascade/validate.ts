@@ -917,6 +917,11 @@ async function validateRepoPlugins(errors: string[]): Promise<void> {
         }
         if (ids.has(model.id)) errors.push(`Cascade Prompt model ${label} duplicates ${model.id}`);
         ids.add(model.id);
+        if (model.checked_at !== undefined) {
+          errors.push(...modelRegistryFreshnessErrors(model.checked_at).map(
+            (error) => `${model.id}: ${error}`,
+          ));
+        }
         if (model.status !== "current-candidate") {
           errors.push(`Cascade Prompt active model ${label} contains non-current entry: ${model.id}`);
         }
@@ -927,6 +932,12 @@ async function validateRepoPlugins(errors: string[]): Promise<void> {
     }
     for (const id of indexIds) {
       if (!registryIds.has(id)) errors.push(`Cascade Prompt model registry is missing ${id}`);
+    }
+    for (const model of index.models ?? []) {
+      const source = registry.models?.find((entry: Record<string, any>) => entry.id === model.id);
+      if (source && (model.checked_at ?? index.checked_at) !== (source.checked_at ?? registry.checked_at)) {
+        errors.push(`Cascade Prompt model review date differs for ${model.id}`);
+      }
     }
   } catch (error) {
     errors.push(`invalid ${CASCADE_PROMPT_PLUGIN_NAME} model registry: ${errorMessage(error)}`);

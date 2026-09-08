@@ -135,7 +135,6 @@ class ArchitectureValidationTests(unittest.TestCase):
             "capabilities",
             "inputs",
             "outputs",
-            "skills",
             "workflows",
             "prompts",
             "evaluations",
@@ -168,6 +167,19 @@ class ArchitectureValidationTests(unittest.TestCase):
         self.assertEqual(validate_packet(packet), [])
         del packet["components"]["agents"][0]["tools"]
         self.assert_has(packet, "missing required field 'tools'")
+
+    def test_accepts_single_agent_without_separate_skills(self):
+        packet = self.packet()
+        packet["topology"]["kind"] = "single_agent"
+        packet["components"]["agents"][0]["skills"] = []
+        packet["components"]["skills"] = []
+        packet["behavior_blocks"]["skills"]["references"] = []
+        self.assertEqual(validate_packet(packet), [])
+        packet["topology"]["kind"] = "single_agent_with_skills"
+        self.assert_has(packet, "requires an agent with at least one skill")
+        packet["topology"]["kind"] = "single_agent"
+        del packet["components"]["agents"][0]["skills"]
+        self.assert_has(packet, "missing required field 'skills'")
 
     def test_accepts_model_pipeline_with_distinct_tool_free_owners(self):
         packet = self.packet()

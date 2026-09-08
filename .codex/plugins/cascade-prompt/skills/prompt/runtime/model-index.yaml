@@ -1,5 +1,11 @@
 checked_at: 2026-08-05
+# Undated entries retain the catalog review date; entry dates override it.
 models:
+  - id: gpt-6-astra
+    checked_at: 2026-09-08
+    capabilities: [text, tools, reasoning-controls]
+    status: current-candidate
+    tiers: [frontier-generalist, frontier-autonomous]
   - capabilities:
       - text
       - vision

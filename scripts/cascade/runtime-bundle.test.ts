@@ -1,13 +1,16 @@
 import { afterEach, describe, expect, test } from "bun:test";
 import { randomUUID } from "node:crypto";
 import {
+  cp,
   mkdir,
+  mkdtemp,
   readFile,
   rm,
   stat,
   writeFile,
 } from "node:fs/promises";
 import { resolve } from "node:path";
+import { tmpdir } from "node:os";
 
 import { buildRuntimeBundle } from "../build-runtime-bundle";
 import { compileTaskEnvelope } from "./admission";
@@ -17,6 +20,8 @@ import {
   type CapabilitySelection,
 } from "./plugin-workflow";
 import { rootPath } from "./common";
+import { parseStrictYaml, stringifyYaml } from "./structured-data";
+import { validateConfig } from "./target";
 
 const outputs: string[] = [];
 
@@ -198,6 +203,65 @@ describe("Cascade lean target runtime bundle", () => {
     expect(bridge).not.toContain(".codex/agents/harness-evaluator/AGENT.md");
     expect(bridge).toContain("Optional Evaluation And Simulation Labs");
 
+    // Exercise the shipped adapter against another project's identity and files.
+    const target = await mkdtemp(resolve(tmpdir(), "cascade-runtime-target-"));
+    outputs.push(target);
+    await cp(output, target, { recursive: true });
+    const boot = await readFile(resolve(target, "AGENTS.md"), "utf8");
+    expect(boot).not.toContain("harness runtime and plugin source checkout");
+    expect(boot).not.toContain("- Project name: `Cascade`");
+    const ownBoot = "# Orchard Service\n\nKeep customer data private.\n\n" + boot;
+    const product = "# Orchard Service\n\nThe product manages orchard inventory.\n";
+    const app = 'export const product = "Orchard Service";\n';
+    await writeFile(resolve(target, "AGENTS.md"), ownBoot);
+    await writeFile(resolve(target, "docs/product/_index.md"), product);
+    await mkdir(resolve(target, "src"));
+    await mkdir(resolve(target, "tests"));
+    await writeFile(resolve(target, "src/index.ts"), app);
+    const template = await readFile(resolve(target, "harness.config.example.yaml"), "utf8");
+    const adapted = parseStrictYaml<Record<string, any>>(
+      template.replace(/<[^>]+>/g, "none"), "target fixture",
+    );
+    adapted.project.name = "Orchard Service";
+    adapted.project.kind = "orchard inventory application";
+    adapted.project.primary_users = ["Orchard operators"];
+    adapted.project.stack.backend.language = "TypeScript";
+    adapted.paths.source_roots = ["src"];
+    adapted.paths.test_roots = ["tests"];
+    adapted.paths.app_entrypoints = ["src/index.ts"];
+    adapted.paths.public_contracts[0] = "src/index.ts";
+    for (const key of Object.keys(adapted.validation_commands)) {
+      adapted.validation_commands[key] = key === "targeted"
+        ? ["bun .codex/runtime/cascade.js target validate --root ."] : [];
+    }
+    const adaptedPath = resolve(target, "harness.config.yaml");
+    await writeFile(adaptedPath, stringifyYaml(adapted));
+    const targetValidation = runBundle(target, ["target", "validate", "--root", "."]);
+    expect(targetValidation.exitCode).toBe(0);
+    expect(targetValidation.stdout.toString()).toContain("target_project_status=PASS");
+    const inventory = runBundle(target, ["target", "inventory", "--config", "harness.config.yaml"]);
+    expect(inventory.exitCode).toBe(0);
+    expect(JSON.parse(inventory.stdout.toString()).roots.source).toEqual(["src"]);
+    for (const [field, value, error] of [
+      ["harness_profile", "cascade-source", "requires target-project identity"],
+      ["harness_profile", "unknown-profile", "must be target-project or cascade-source"],
+      ["name", "", "must describe the current target"],
+    ]) {
+      const invalid = structuredClone(adapted);
+      invalid.project[field!] = value;
+      await writeFile(adaptedPath, stringifyYaml(invalid));
+      const rejected = runBundle(target, ["target", "validate"]);
+      expect(rejected.exitCode).toBe(1);
+      expect(rejected.stderr.toString()).toContain(error!);
+    }
+    await writeFile(adaptedPath, stringifyYaml(adapted));
+    expect(await readFile(resolve(target, "AGENTS.md"), "utf8")).toBe(ownBoot);
+    expect(await readFile(resolve(target, "docs/product/_index.md"), "utf8")).toBe(product);
+    expect(await readFile(resolve(target, "src/index.ts"), "utf8")).toBe(app);
+    const sourceValidation = await validateConfig(rootPath("."), "harness.config.yaml");
+    expect(sourceValidation.config.project.harness_profile).toBe("cascade-source");
+    expect(sourceValidation.errors).toEqual([]);
+
     const mcpInput = `${JSON.stringify({
       jsonrpc: "2.0",
       id: 1,
@@ -207,17 +271,27 @@ describe("Cascade lean target runtime bundle", () => {
         capabilities: {},
         clientInfo: { name: "runtime-bundle-test", version: "1" },
       },
+    })}\n${JSON.stringify({
+      jsonrpc: "2.0", id: 2, method: "tools/call",
+      params: { name: "get_workspace_context", arguments: { paths: ["harness.config.yaml", "docs/product/_index.md"] } },
     })}\n`;
     const mcp = Bun.spawnSync({
-      cmd: [process.execPath, resolve(output, ".codex/runtime/workspace-mcp.js")],
-      cwd: output,
+      cmd: [process.execPath, resolve(target, ".codex/runtime/workspace-mcp.js")],
+      cwd: target,
       stdin: new Blob([mcpInput]),
       stdout: "pipe",
       stderr: "pipe",
     });
     expect(mcp.exitCode).toBe(0);
-    expect(JSON.parse(mcp.stdout.toString()).result.serverInfo.name).toBe(
+    const messages = mcp.stdout.toString().trim().split("\n").map((line) => JSON.parse(line));
+    expect(messages.find((message) => message.id === 1).result.serverInfo.name).toBe(
       "Cascade Workspace",
     );
+    const context = messages.find((message) => message.id === 2);
+    expect(context.error).toBeUndefined();
+    expect(context.result.isError).not.toBe(true);
+    expect(JSON.stringify(context.result)).toContain("Orchard Service");
+    expect(JSON.stringify(context.result)).toContain("orchard inventory");
+    expect(JSON.stringify(context.result)).not.toContain("standalone coding-agent workflow harness");
   }, 30_000);
 });

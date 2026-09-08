@@ -8,6 +8,8 @@ This file is the thin repository boot contract for coding agents. Detailed stack
 ## Project Identity
 
 - Project name: `Cascade`
+- Workspace profile: `cascade-source` in `harness.config.yaml`. This identity
+  applies only to this source checkout; distributed bundles use the target project's identity.
 - Product or system type: standalone coding-agent workflow harness.
 - Primary users: project maintainers and coding agents working in this
   repository.
