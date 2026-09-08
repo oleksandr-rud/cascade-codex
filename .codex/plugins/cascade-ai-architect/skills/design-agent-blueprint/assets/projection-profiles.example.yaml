@@ -1,0 +1,117 @@
+# Trusted illustrative configuration. No aliases; shared blocks have identical bytes.
+analyzer:
+  role: analyzer
+  purpose: analyze-input
+  systemPrompt: "Help the user within the supplied role and authority."
+  instructions: "Return JSON delta proposals only for admitted writable slots."
+  maxTokens: 6000
+  blocks:
+    - id: evidence-policy
+      object: Evidence policy
+      placement: catalog
+      schema: {type: string}
+      values: "Preserve uncertainty. Claims require supporting evidence."
+    - id: response-style
+      object: Response style
+      placement: data
+      source: response-style
+      includeSchema: true
+      schema:
+        type: object
+        order: [tone, format]
+        required: [tone, format]
+        properties:
+          tone: {type: string, enum: [calm, neutral]}
+          format: {type: string, enum: [one_step, concise]}
+    - id: current-input
+      object: Current input
+      placement: data
+      source: current-input
+      schema: {type: string}
+composer:
+  role: main-composer
+  purpose: reply
+  systemPrompt: "Help the user within the supplied role and authority."
+  instructions: "Compose the canonical answer using admitted facts and constraints."
+  maxTokens: 6000
+  blocks:
+    - id: evidence-policy
+      object: Evidence policy
+      placement: catalog
+      schema: {type: string}
+      values: "Preserve uncertainty. Claims require supporting evidence."
+    - id: response-style
+      object: Response style
+      placement: data
+      source: response-style
+      schema:
+        type: object
+        order: [tone, format]
+        required: [tone, format]
+        properties:
+          tone: {type: string, enum: [calm, neutral]}
+          format: {type: string, enum: [one_step, concise]}
+    - id: accepted-facts
+      object: Accepted facts
+      placement: data
+      source: accepted-facts
+      schema:
+        type: array
+        maxItems: 8
+        items:
+          type: object
+          order: [claim, support]
+          required: [claim, support]
+          properties:
+            claim: {type: string}
+            support: {type: string, enum: [reported, verified, uncertain]}
+researcher:
+  role: researcher
+  purpose: retrieve-evidence
+  systemPrompt: "Help the user within the supplied role and authority."
+  instructions: "Retrieve evidence only for the admitted request; do not publish an answer."
+  maxTokens: 3000
+  blocks:
+    - id: evidence-policy
+      object: Evidence policy
+      placement: catalog
+      schema: {type: string}
+      values: "Preserve uncertainty. Claims require supporting evidence."
+    - id: query
+      object: Research request
+      placement: data
+      source: research-request
+      schema:
+        type: object
+        order: [query, sources]
+        required: [query, sources]
+        properties:
+          query: {type: string}
+          sources:
+            type: array
+            maxItems: 8
+            items: {type: string}
+voice:
+  role: voice-composer
+  purpose: present-canonical-response
+  systemPrompt: "Help the user within the supplied role and authority."
+  instructions: "Present approved speech without adding meaning or claiming playback."
+  maxTokens: 3000
+  blocks:
+    - id: voice-policy
+      object: Voice policy
+      placement: catalog
+      schema: {type: string}
+      values: "Preserve canonical meaning. Playback completion requires a client receipt."
+    - id: speech
+      object: Approved speech
+      placement: data
+      source: speech
+      schema:
+        type: object
+        order: [text, language, pace]
+        required: [text, language, pace]
+        properties:
+          text: {type: string}
+          language: {type: string}
+          pace: {type: string, enum: [normal, slow]}

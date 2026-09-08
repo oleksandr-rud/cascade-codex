@@ -1,4 +1,8 @@
 interactions:
+  - expected_primary: cascade-evals:harness-evaluation
+    forbidden_primary: [closeout]
+    id: HX-071
+    prompt: Determine whether a claimed successful coding-agent outcome can be independently judged when only the scenario description exists and raw output, normalized trace and immutable run packet are missing. Use the optional Cascade Evals harness subject profile; stay read-only, report missing evidence and do not infer a pass, execute a target or require a registered evaluator role.
   - expected_primary: cascade-project-management:define-work-item
     forbidden_primary:
       - run-qa-plan
@@ -382,4 +386,37 @@ interactions:
       - cascade-project-management:manage-project
     id: HX-065
     prompt: A canonical product state name changed and is duplicated in requirements, journeys, one generated brief, and a dated historical report. Map the owner and true consumers, preserve history, and avoid creating active work state.
+  - expected_primary: cascade-market:research-market
+    forbidden_primary:
+      - cascade-coordinator:select-capabilities
+      - cascade-coordinator:plan-workflow
+    id: HX-066
+    prompt: Use cascade-market:research-market to investigate the stated segment, pain, alternatives, pricing, and buying process. No other plugin capability or workflow graph is requested.
+  - allowed_supporting:
+      - context
+    expected_primary: cascade-coordinator:select-capabilities
+    forbidden_primary:
+      - cascade-coordinator:plan-workflow
+      - cascade-project-management:manage-project
+    id: HX-067
+    prompt: Determine the smallest exact Cascade capability set for a request that may need market evidence, a canonical persona, an MVP contract, a bounded synthetic-user simulation, independent evaluation, and approved repository persistence. Return selected and rejected routes with claim, trigger, input, dependency, and authority reasoning; do not order, execute, persist, or dispatch them yet.
+  - expected_primary: cascade-coordinator:plan-workflow
+    forbidden_primary:
+      - cascade-coordinator:select-capabilities
+      - cascade-software-architect:architect-software-system
+      - cascade-project-management:manage-project
+    id: HX-068
+    prompt: A current validated Cascade Coordinator selection already contains market research, persona compilation, product definition, simulation construction and execution, and independent evaluation. Compile only its dependency-safe artifact DAG with explicit edges, read-safe parallel groups, joins, stop conditions, and dispatch_authorized false; do not add or execute routes.
+  - expected_primary: cascade-project-management:plan-project
+    forbidden_primary:
+      - cascade-coordinator:select-capabilities
+      - cascade-coordinator:plan-workflow
+    id: HX-069
+    prompt: The exact domain capabilities and artifacts are already accepted. Split delivery into FIRST, NEXT, and LATER MVP iterations with dependencies and promotion evidence; do not reselect plugins or execute work.
+  - expected_primary: cascade-simulations:simulation-actor
+    forbidden_primary:
+      - cascade-coordinator:select-capabilities
+      - cascade-simulations:simulate
+    id: HX-070
+    prompt: Use cascade-simulations:simulation-actor to derive one bounded actor contract from the supplied frozen persona projection and actor brief. Do not run the actor or plan a multi-plugin workflow.
 schema_version: 1

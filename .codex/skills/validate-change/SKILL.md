@@ -29,6 +29,12 @@ results into a pass.
 
 ## Evidence states
 
+For UI work governed by an approved mockup, include matched reference/current
+screenshots and the Visual QA fidelity disposition for affected viewports/states.
+Build and functional passes do not establish visual parity. Unresolved visible
+differences remain failures unless a governing authorized design change covers
+them; absent rendered comparison remains unverified, never pixel-perfect.
+
 For every required check, record one of:
 
 - **PASS**: current evidence supports the scoped claim,

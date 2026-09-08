@@ -390,8 +390,10 @@ export async function harnessSourceManifest(): Promise<JsonObject> {
     "AGENTS.md",
     "CODEX.md",
     "harness.config.yaml",
+    ".agents/plugins/marketplace.json",
     ".codex/config.toml",
     ".codex/hooks.json",
+    ".codex/plugin-capabilities.generated.json",
     ".codex/task-admission/task-envelope.schema.json",
     ".codex/task-admission/policy.schema.json",
     ".codex/task-admission/policy-source.schema.json",
@@ -412,10 +414,12 @@ export async function harnessSourceManifest(): Promise<JsonObject> {
   ].map((path) => rootPath(path));
   const dynamic = [
     ...(await walkFiles(rootPath("scripts/cascade"))),
+    ...(await walkFiles(rootPath(".codex/plugins"))),
     ...(await walkFiles(rootPath(".codex/skills"))),
     ...(await walkFiles(rootPath(".codex/agents"))),
     ...(await walkFiles(resolve(EVAL_ROOT, "rubrics"))),
-  ].filter((path) => !path.endsWith(".pyc"));
+  ].filter((path) => !path.endsWith(".pyc") &&
+    !path.split(/[\\/]/).some((part) => part === ".pytest_cache" || part === "__pycache__"));
   const records = [];
   for (const path of [...new Set([...fixed, ...dynamic])].sort()) {
     if (await isFile(path)) records.push({ path: rel(path), sha256: await sha256File(path) });
@@ -1337,7 +1341,7 @@ function judgePrompt(
 ): string {
   return `You are an independent ${profile.judge_type} judge for a completed Cascade harness run.
 
-Load .codex/agents/harness-evaluator/AGENT.md and .codex/plugins/cascade-evals/skills/harness-evaluation/SKILL.md.
+Load .codex/plugins/cascade-evals/skills/harness-evaluation/SKILL.md and its references/judge-profile.md. No registered host evaluator role is required.
 Evaluate only the completed evidence packet. Do not execute the target, edit files,
 use the network, or delegate. Return only JSON matching the judgment schema.
 

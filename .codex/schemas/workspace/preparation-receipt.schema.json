@@ -1,0 +1,58 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://cascade.local/workspace/preparation-receipt.v1.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "artifact_type",
+    "receipt_id",
+    "status",
+    "artifact_kind",
+    "target_path",
+    "format",
+    "candidate_sha256",
+    "current_sha256",
+    "bytes",
+    "schema_path",
+    "schema_sha256",
+    "validation_scope",
+    "prepare_token",
+    "prepared_at",
+    "expires_at"
+  ],
+  "properties": {
+    "schema_version": { "const": 1 },
+    "artifact_type": { "const": "cascade-workspace-preparation-receipt" },
+    "receipt_id": { "type": "string", "pattern": "^WPREP-[a-f0-9]{16}$" },
+    "status": { "enum": ["READY", "UNCHANGED"] },
+    "artifact_kind": { "$ref": "#/$defs/slug" },
+    "target_path": { "$ref": "#/$defs/path" },
+    "format": { "enum": ["json", "yaml", "markdown", "text"] },
+    "candidate_sha256": { "$ref": "#/$defs/digest" },
+    "current_sha256": {
+      "oneOf": [{ "$ref": "#/$defs/digest" }, { "type": "null" }]
+    },
+    "bytes": { "type": "integer", "minimum": 1, "maximum": 1048576 },
+    "schema_path": {
+      "oneOf": [{ "$ref": "#/$defs/path" }, { "type": "null" }]
+    },
+    "schema_sha256": {
+      "oneOf": [{ "$ref": "#/$defs/digest" }, { "type": "null" }]
+    },
+    "validation_scope": {
+      "type": "array",
+      "minItems": 2,
+      "uniqueItems": true,
+      "items": { "enum": ["PATH", "FORMAT", "SCHEMA"] }
+    },
+    "prepare_token": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "prepared_at": { "type": "string", "format": "date-time" },
+    "expires_at": { "type": "string", "format": "date-time" }
+  },
+  "$defs": {
+    "slug": { "type": "string", "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$" },
+    "path": { "type": "string", "minLength": 1, "maxLength": 512 },
+    "digest": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+  }
+}

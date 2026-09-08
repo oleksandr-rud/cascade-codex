@@ -1,7 +1,7 @@
 {
   "name": "cascade-design",
-  "version": "0.1.0+codex.20260908123548",
-  "description": "Review product UX flows, accessibility, reusable design systems, and screenshot-backed visual quality through evidence-bound, non-implementing workflows.",
+  "version": "0.1.0+codex.20260908124959",
+  "description": "Create product mockups and review UX, accessibility, design systems and visual quality with explicit host implementation boundaries.",
   "author": {
     "name": "Cascade"
   },
@@ -15,8 +15,8 @@
   "skills": "./skills/",
   "interface": {
     "displayName": "Cascade Design",
-    "shortDescription": "Review UX, accessibility, and visual design.",
-    "longDescription": "Run evidence-bound UX-flow, accessibility, design-system, and visual-quality reviews while preserving product authority, implementation boundaries, and explicit validation handoffs.",
+    "shortDescription": "Create mockups and review UX and visual design.",
+    "longDescription": "Create editable design candidates and precise frontend handoffs; review UX, accessibility, design-system rules and rendered visual evidence while preserving product and implementation authority.",
     "developerName": "Cascade",
     "category": "Productivity",
     "capabilities": [
@@ -24,7 +24,7 @@
       "Write"
     ],
     "defaultPrompt": [
-      "Review this product flow and its missing states.",
+      "Create responsive mockups and a frontend handoff for this product flow.",
       "Audit this interface for accessibility risks.",
       "Validate this UI visually across relevant viewports."
     ]

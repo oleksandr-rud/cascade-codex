@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://cascade.local/cascade-design/design-review.schema.json",
-  "title": "Cascade Design review artifact",
+  "title": "Cascade Design review or candidate artifact",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -22,7 +22,7 @@
     "schema_version": {"const": 1},
     "artifact_id": {"type": "string", "pattern": "^DES-[A-Z0-9][A-Z0-9-]{2,63}$"},
     "selected_skill": {
-      "enum": ["ux-flow-review", "accessibility-review", "visual-qa", "design-system"]
+      "enum": ["ux-flow-review", "accessibility-review", "visual-qa", "design-system", "create-design"]
     },
     "status": {
       "description": "Readiness of the review artifact, not a claim that the inspected UI passed. READY may contain planned or non-passing evidence rows; GAP means missing or conflicting foundations prevent a coherent artifact; BLOCKED means a valid defined check cannot run because its environment, tool, or required plugin is unavailable.",
@@ -40,12 +40,13 @@
         {"$ref": "#/$defs/uxCoverage"},
         {"$ref": "#/$defs/accessibilityCoverage"},
         {"$ref": "#/$defs/visualCoverage"},
-        {"$ref": "#/$defs/designSystemCoverage"}
+        {"$ref": "#/$defs/designSystemCoverage"},
+        {"$ref": "#/$defs/designCreationCoverage"}
       ]
     },
     "findings": {
       "type": "array",
-      "minItems": 1,
+      "minItems": 0,
       "items": {"$ref": "#/$defs/finding"}
     },
     "evidence_plan": {
@@ -195,6 +196,126 @@
           }
         },
         "residual_risk": {"type": "string", "minLength": 1}
+      }
+    },
+    "designCreationCoverage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "source_of_truth_ids",
+        "required_views",
+        "frames",
+        "interaction_rules",
+        "responsive_rules",
+        "assets_and_tokens",
+        "unresolved_gaps"
+      ],
+      "properties": {
+        "kind": {
+          "const": "design-creation"
+        },
+        "source_of_truth_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "frames": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "frame_id",
+              "editable_locator",
+              "preview_locator",
+              "revision",
+              "viewport",
+              "state",
+              "capture_conditions",
+              "inspection"
+            ],
+            "properties": {
+              "frame_id": {
+                "type": "string",
+                "minLength": 1
+              },
+              "editable_locator": {
+                "type": "string",
+                "minLength": 1
+              },
+              "preview_locator": {
+                "type": "string",
+                "minLength": 1
+              },
+              "revision": {
+                "type": "string",
+                "minLength": 1
+              },
+              "viewport": {
+                "type": "string",
+                "minLength": 1
+              },
+              "state": {
+                "type": "string",
+                "minLength": 1
+              },
+              "capture_conditions": {
+                "type": "string",
+                "minLength": 1
+              },
+              "inspection": {
+                "enum": [
+                  "PASS",
+                  "GAP",
+                  "BLOCKED"
+                ]
+              }
+            }
+          }
+        },
+        "interaction_rules": {
+          "type": "string",
+          "minLength": 1
+        },
+        "responsive_rules": {
+          "type": "string",
+          "minLength": 1
+        },
+        "assets_and_tokens": {
+          "type": "string",
+          "minLength": 1
+        },
+        "unresolved_gaps": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "required_views": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "viewport",
+              "state"
+            ],
+            "properties": {
+              "viewport": {
+                "type": "string",
+                "minLength": 1
+              },
+              "state": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          }
+        }
       }
     },
     "designSystemCoverage": {

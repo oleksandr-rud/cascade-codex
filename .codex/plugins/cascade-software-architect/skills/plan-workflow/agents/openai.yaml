@@ -1,4 +1,0 @@
-interface:
-  display_name: "Plan Workflow"
-  short_description: "Plan ordered, policy-safe plugin workflows"
-  default_prompt: "Use $plan-workflow to select and order the required Cascade plugin capabilities for this request."

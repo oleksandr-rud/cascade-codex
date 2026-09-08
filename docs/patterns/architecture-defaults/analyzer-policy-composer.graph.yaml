@@ -1,0 +1,98 @@
+schema_id: architecture-default-graph-v1
+graph_id: analyzer-policy-composer
+pair_kind: extension
+title: Stateful Agent Analyzer Policy Composer
+status: reference-default
+spec_path: docs/patterns/architecture-defaults/analyzer-policy-composer.spec.md
+extends:
+  - architecture-selection
+compatible_with:
+  - service-api-worker
+  - interface-strategy
+  - tenancy-strategy
+  - frontend-realtime
+preserves:
+  - "architecture-selection:simplest-sufficient-topology"
+  - "architecture-selection:ownership-before-technology"
+default_when:
+  - "A stateful conversational agent needs separate analysis, policy/state authority, and response composition."
+  - "An agent needs voice composition or optional web/KB research under the same state and policy authority."
+do_not_use_when:
+  - "A deterministic task or stateless single-call transform has no relevant state or policy boundary."
+  - "An existing coherent architecture is unchanged and no adaptation was requested."
+nodes:
+  - id: analyzer
+    kind: model-boundary
+    owns: "Checkpoint-bound JSON StateDelta proposals from scoped compact block-text input."
+  - id: policy-runtime
+    kind: application-policy
+    owns: "Deterministic admission/selection, current-state transactions, lifecycle guards, role/task policy-state slice issuance, and eligible direct work calls."
+  - id: state-memory
+    kind: data-boundary
+    owns: "Claims/state/memory and checkpoint-owned delta, state/context bindings and receipts; derived turn views."
+  - id: context-compiler
+    kind: application-policy
+    owns: "Format only Policy Engine/admission-issued role/task slices and approved prompt assets as compact text; no independent state selection or access."
+  - id: main-composer
+    kind: model-boundary
+    owns: "Canonical response candidates from compiled ComposerContext."
+  - id: response-gate
+    kind: application-policy
+    owns: "Candidate validation and one canonical response commit before publication."
+  - id: voice-composer
+    kind: optional-adapter
+    owns: "Canonical-text speech and ordered interruptible delivery without semantic authority."
+  - id: researcher
+    kind: optional-model-boundary
+    owns: "Bounded web/KB evidence retrieval for one authorized request; no state writes."
+edges:
+  - from: context-compiler
+    to: analyzer
+    relation: supplies_scoped_context
+  - from: analyzer
+    to: policy-runtime
+    relation: proposes_delta
+  - from: policy-runtime
+    to: state-memory
+    relation: atomically_commits_current_state_receipts_pending_work
+  - from: state-memory
+    to: policy-runtime
+    relation: supplies_committed_current_state
+  - from: policy-runtime
+    to: context-compiler
+    relation: issues_admitted_role_task_policy_state_slice
+  - from: context-compiler
+    to: main-composer
+    relation: supplies_compiled_context
+  - from: main-composer
+    to: response-gate
+    relation: proposes_response
+  - from: response-gate
+    to: policy-runtime
+    relation: binds_canonical_text_for_voice_if_enabled
+  - from: context-compiler
+    to: voice-composer
+    relation: supplies_canonical_delivery_context
+  - from: context-compiler
+    to: researcher
+    relation: supplies_bounded_research_context
+  - from: policy-runtime
+    to: researcher
+    relation: dispatches_only_accepted_request
+  - from: researcher
+    to: policy-runtime
+    relation: returns_evidence_for_scoped_reanalysis
+decisions:
+  - id: behavior-owner
+    default: "Consume the versioned Cascade AI Architect analyzer-policy-composer contract and template."
+    exception_when: "The selected plugin contract is unavailable; record GAP instead of inventing a local replacement."
+  - id: logical-boundaries
+    default: "One modular monolith with vertical use-case slices, current state and direct context functions; no required CQRS/event journal/read-model store."
+    exception_when: "Measured isolation, scaling, or recovery requirements justify separate processes or services."
+  - id: optional-variants
+    default: "Enable Voice Composer only for voice; create research work only for an accepted Analyzer delta request."
+    exception_when: "The target has no voice or research requirement; omit that component entirely."
+validation:
+  - "Bind the owning plugin version/digest and preserve proposal-only Analyzer and deterministic state authority."
+  - "Compile and review the target blueprint against the plugin acceptance table."
+  - "Prove no-request/no-research, state/context isolation, stale-result handling, and voice interruption when enabled."

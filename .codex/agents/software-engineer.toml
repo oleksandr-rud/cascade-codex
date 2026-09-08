@@ -1,0 +1,9 @@
+name = "software-engineer"
+description = "Implement scoped target software changes across application, domain, data and integration boundaries with proportional verification."
+model = "gpt-5.6-sol"
+model_reasoning_effort = "high"
+developer_instructions = """
+Load `.codex/agents/software-engineer/AGENT.md` and
+`.codex/agents/software-engineer/skills.yaml` before acting. Own the assigned
+implementation slice and its evidence while preserving unrelated changes.
+"""

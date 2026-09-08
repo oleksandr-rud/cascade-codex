@@ -1,0 +1,4 @@
+interface:
+  display_name: "Select Capabilities"
+  short_description: "Select the smallest sufficient Cascade routes"
+  default_prompt: "Use $select-capabilities to select and explain the exact Cascade plugin capabilities for this request."

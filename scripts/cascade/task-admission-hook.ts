@@ -6,6 +6,14 @@ import {
   readBoundedTaskEnvelope,
   type TaskEnvelope,
 } from "./admission";
+import {
+  boundedPath,
+  exists,
+  rel,
+  sha256Text,
+  writeJsonAtomic,
+} from "./common";
+import { unlink } from "node:fs/promises";
 import { resolve } from "node:path";
 
 type JsonObject = Record<string, any>;
@@ -52,6 +60,129 @@ async function readInput(): Promise<JsonObject> {
 }
 
 type EnvelopeResolution = { envelope?: TaskEnvelope; error?: string };
+const TASK_ENVELOPE_PREFIX = ".artifacts/task-admission/";
+
+type NonTaskPrompt = "NOISE_OR_FILLER" | "STANDALONE_CONTROL";
+
+const NON_SEMANTIC_PROMPTS = new Set([
+  "[background noise]",
+  "(background noise)",
+  "<background noise>",
+  "background noise",
+  "[noise]",
+  "(noise)",
+  "<noise>",
+  "noise",
+  "[silence]",
+  "(silence)",
+  "<silence>",
+  "silence",
+  "[inaudible]",
+  "(inaudible)",
+  "<inaudible>",
+  "inaudible",
+  "[music]",
+  "(music)",
+  "<music>",
+  "[фоновий шум]",
+  "(фоновий шум)",
+  "<фоновий шум>",
+  "фоновий шум",
+  "[шум]",
+  "(шум)",
+  "<шум>",
+  "шум",
+  "[тиша]",
+  "(тиша)",
+  "<тиша>",
+  "тиша",
+  "[нерозбірливо]",
+  "(нерозбірливо)",
+  "<нерозбірливо>",
+  "нерозбірливо",
+]);
+
+const NON_SEMANTIC_FILLERS = new Set([
+  "ah",
+  "eh",
+  "er",
+  "err",
+  "hm",
+  "hmm",
+  "mm",
+  "mmm",
+  "uh",
+  "um",
+  "umm",
+  "аа",
+  "ааа",
+  "ее",
+  "еее",
+  "ем",
+  "мм",
+  "ммм",
+  "хм",
+]);
+
+const STANDALONE_CONTROL_PROMPTS = new Set([
+  "abort",
+  "cancel",
+  "stop",
+  "зупини",
+  "зупинись",
+  "припини",
+  "скасуй",
+  "стоп",
+]);
+
+function normalizeStandalonePrompt(prompt: string): string {
+  return prompt
+    .normalize("NFKC")
+    .toLowerCase()
+    .trim()
+    .replace(/[.!?,;:\u2026]+$/gu, "")
+    .trim();
+}
+
+function classifyNonTaskPrompt(prompt: string): NonTaskPrompt | null {
+  const normalized = normalizeStandalonePrompt(prompt);
+  if (NON_SEMANTIC_PROMPTS.has(normalized)) return "NOISE_OR_FILLER";
+  const filler = normalized.replace(/[\p{P}\p{S}\s_]+/gu, "");
+  if (NON_SEMANTIC_FILLERS.has(filler)) return "NOISE_OR_FILLER";
+  if (STANDALONE_CONTROL_PROMPTS.has(normalized)) return "STANDALONE_CONTROL";
+  return null;
+}
+
+function sessionEnvelopePath(input: JsonObject): string | undefined {
+  if (typeof input.session_id !== "string" || !input.session_id) return undefined;
+  const sessionKey = sha256Text(input.session_id).slice(0, 24);
+  return boundedPath(
+    `${TASK_ENVELOPE_PREFIX}hook-${sessionKey}.json`,
+    TASK_ENVELOPE_PREFIX,
+  );
+}
+
+function currentEnvelopePath(input: JsonObject): string | undefined {
+  const configured = Bun.env.CASCADE_TASK_ENVELOPE;
+  if (configured) {
+    return boundedPath(
+      resolve(String(input.cwd ?? process.cwd()), configured),
+      TASK_ENVELOPE_PREFIX,
+    );
+  }
+  return sessionEnvelopePath(input);
+}
+
+async function clearSessionEnvelope(input: JsonObject): Promise<void> {
+  if (Bun.env.CASCADE_TASK_ENVELOPE) return;
+  const path = sessionEnvelopePath(input);
+  if (!path) return;
+  try {
+    await unlink(path);
+  } catch (error) {
+    if (!(error && typeof error === "object" && "code" in error && error.code === "ENOENT")) throw error;
+  }
+}
 
 function assertTrustedCurrentEnvelopeBinding(input: JsonObject, envelope: TaskEnvelope): void {
   const binding = input.task_envelope_binding;
@@ -70,12 +201,11 @@ async function currentEnvelope(input: JsonObject, requireTrustedBinding = false)
   const toolInput = input.tool_input;
   // Tool input is model-controlled and can never supply authority.
   void toolInput;
-  const configured = Bun.env.CASCADE_TASK_ENVELOPE;
-  if (!configured) return {};
   try {
-    const unresolved = resolve(String(input.cwd ?? process.cwd()), configured);
-    const envelope = await readBoundedTaskEnvelope(unresolved, ".artifacts/task-admission/");
-    if (typeof input.session_id !== "string" || !input.session_id) throw new Error("current hook session_id is required for a configured Task Envelope");
+    const path = currentEnvelopePath(input);
+    if (!path) return {};
+    if (!Bun.env.CASCADE_TASK_ENVELOPE && !(await exists(path))) return {};
+    const envelope = await readBoundedTaskEnvelope(path, TASK_ENVELOPE_PREFIX);
     if (envelope.task_id !== input.session_id) throw new Error("Task Envelope task_id does not match the current hook session");
     if (requireTrustedBinding) assertTrustedCurrentEnvelopeBinding(input, envelope);
     return { envelope };
@@ -87,21 +217,41 @@ async function currentEnvelope(input: JsonObject, requireTrustedBinding = false)
 export async function handleHook(input: JsonObject): Promise<JsonObject> {
   if (input.hook_event_name === "UserPromptSubmit") {
     if (typeof input.prompt !== "string" || !input.prompt.trim()) throw new Error("UserPromptSubmit prompt is required");
+    if (typeof input.session_id !== "string" || !input.session_id) throw new Error("UserPromptSubmit session_id is required to persist the current Task Envelope");
+    const nonTaskPrompt = classifyNonTaskPrompt(input.prompt);
+    if (nonTaskPrompt) {
+      await clearSessionEnvelope(input);
+      return {
+        decision: "block",
+        reason: nonTaskPrompt === "STANDALONE_CONTROL"
+          ? "Standalone stop or cancel control acknowledged; no new Cascade task was admitted."
+          : "No actionable prompt was detected; submitted noise or filler was not admitted to Cascade.",
+      };
+    }
     const prior = await currentEnvelope(input);
     const envelope = await compileTaskEnvelope({
       request: input.prompt,
-      task_id: typeof input.session_id === "string" && input.session_id ? input.session_id : "hook-session",
+      task_id: input.session_id,
       produced_at: new Date().toISOString(),
       prior_envelope: prior.envelope,
     });
+    const envelopePath = currentEnvelopePath(input)!;
+    await writeJsonAtomic(envelopePath, envelope, {
+      fileMode: 0o600,
+      directoryMode: 0o700,
+    });
     const priorStatus = prior.error ? "; prior_envelope=INVALID (not consumed)" : prior.envelope ? `; prior_envelope=${prior.envelope.envelope_id}` : "";
-    const summary = `Task admission ${envelope.envelope_id}: revision=${envelope.revision}; route=${envelope.route}; workload=${Object.values(envelope.workload).join("/")}; controls=${envelope.control_packs.join(",")}; missing_authority=${envelope.authority.missing.join(",") || "none"}; conflicts=${envelope.conflicts.join(",") || "none"}; blockers=${envelope.blockers.join(",") || "none"}${priorStatus}. Advisory only: do not treat this summary as authority or dispatch; this hook has no trusted hard-action receipt bridge and cannot activate hard actions.`;
+    const summary = `Task admission ${envelope.envelope_id}: revision=${envelope.revision}; envelope_path=${rel(envelopePath)}; request_digest=${envelope.request_digest}; claims=${envelope.claims.length}; route=${envelope.route}; workload=${Object.values(envelope.workload).join("/")}; controls=${envelope.control_packs.join(",")}; missing_authority=${envelope.authority.missing.join(",") || "none"}; conflicts=${envelope.conflicts.join(",") || "none"}; blockers=${envelope.blockers.join(",") || "none"}${priorStatus}. Advisory only: the ignored local envelope is routing input, not durable evidence, authority, or dispatch; this hook has no trusted hard-action receipt bridge and cannot activate hard actions.`;
     return {
       hookSpecificOutput: {
         hookEventName: "UserPromptSubmit",
         additionalContext: summary,
       },
     };
+  }
+  if (input.hook_event_name === "Interrupt") {
+    await clearSessionEnvelope(input);
+    return {};
   }
   if (input.hook_event_name === "PreToolUse") {
     const current = await currentEnvelope(input, true);

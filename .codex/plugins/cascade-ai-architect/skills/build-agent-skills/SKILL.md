@@ -35,12 +35,19 @@ Scaffold or edit a package only when the user explicitly asks to create or updat
 
 1. Resolve `skill-creator` from the current native Skills catalog. Do not search caches, copy its instructions, or substitute an unverified generator.
 2. If it is unavailable, return the completed design brief and `BLOCKED` for package creation.
-3. Invoke `skill-creator` with the design brief, target path, concrete examples, and required resources. For a new skill, require its native initializer; for an existing skill, preserve user files and update surgically.
-4. Generate or refresh `agents/openai.yaml` from the finished skill. The default prompt must explicitly mention `$<skill-name>`.
-5. Run the native skill validator and any owned scripts or fixture tests. Record structural validation separately from forward evaluation.
-6. Return the package as `CANDIDATE` with changed files, validation evidence, unresolved gaps, and activation instructions.
+3. Invoke the current native `skill-creator` with the design brief, target path,
+   examples and required resources. Let it own scaffolding, UI metadata and
+   packaging validation; do not impose a second initializer or metadata policy.
+4. Check that the resulting package preserves the architecture brief's trigger,
+   responsibilities and output contract. Record native structural validation
+   separately from behavioral evaluation.
+5. Return the package as `CANDIDATE` with changed files, validation evidence,
+   unresolved gaps and activation requirements.
 
-Package creation does not authorize installation, marketplace edits, plugin activation, registry changes, runtime dispatch, or production promotion. Perform those only under a separate explicit request.
+Package creation alone does not authorize installation, marketplace edits,
+plugin activation, registry changes, runtime dispatch or production promotion.
+Use explicit authorization already present in the session when it covers those
+actions; ask only for genuinely missing authority, not a repeated request.
 
 ## Review gates
 

@@ -4,6 +4,7 @@
 - [ ] One isolated preference is not promoted into a reusable rule.
 - [ ] The rule is observable and names user-visible effect, non-goals, states, responsive constraints, accessibility, and evidence.
 - [ ] Tokens define semantic purpose, values, modes/themes, consumers, constraints, and migration impact.
+- [ ] An approved-mockup handoff binds the fidelity target, capture conditions, authorized deviations and implement/render/compare/repair loop; exact-match claims require visual evidence.
 - [ ] Components define anatomy, variants, content, loading/empty/error/disabled and interaction states, responsive behavior, accessibility, tokens, and checks.
 - [ ] Product, persona, feature UX, accessibility, visual, prompt, evaluation, and implementation ownership remain distinct.
 - [ ] Every handoff input is current evidence for the next owner, never the missing artifact that owner must produce; missing artifacts are excluded from source-of-truth IDs.

@@ -13,5 +13,6 @@ Decision owner: `<owner>`
 - Accessibility/motion/content constraints:
 - Consumers:
 - Visual, functional, and accessibility evidence:
+- Approved-mockup fidelity, reference frames/viewports, comparison conditions and authorized deviations (when applicable):
 - Migration and invalidation:
 - Sibling-impact and handoff routes:

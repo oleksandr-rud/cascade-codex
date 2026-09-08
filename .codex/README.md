@@ -2,6 +2,13 @@
 
 This directory contains reusable workflow skills and role contracts.
 
+This source checkout also contains plugin packages and lab tooling. A normal
+target does not copy this tree wholesale: `bun run build:runtime` emits a core
+profile with 9 host skills, 3 roles, the frozen capability catalog, admission,
+Coordinator validation, and Workspace MCP. Plugin source and eval/simulation
+labs stay here and resolve separately through installed plugins or explicit
+lab packs.
+
 ## Harness Tooling
 
 `.codex/harness-tooling/` is the isolated dependency boundary for browser
@@ -13,9 +20,9 @@ merge a target application's root package manifest or lockfile.
 
 `.codex/plugins/` contains repo-local plugin source packages. Their catalog is
 `.agents/plugins/marketplace.json`; local source paths in that catalog resolve
-from the repository root. The catalog owns 13 sources: Cascade Prompt,
-Simulations, Evals, AI Architect, Software Architect, Coding Agent, Personas,
-Product, Market, Design, Security, Project Management, and QA under
+from the repository root. The catalog owns 14 sources: Cascade Prompt,
+Coordinator, Simulations, Evals, AI Architect, Software Architect, Coding
+Agent, Personas, Product, Market, Design, Security, Project Management, and QA under
 `.codex/plugins/<plugin-name>/`. Source presence is distinct from installed,
 active, or published state.
 
@@ -29,8 +36,9 @@ exact namespaced plugin skill and fail closed; it cannot embed a fallback copy.
 | Plugin | Reusable owner |
 |---|---|
 | Cascade Prompt | Prompt and context-plan construction or audit |
+| Cascade Coordinator | Claim-bound capability selection and non-dispatching cross-plugin workflow planning |
 | Cascade AI Architect | AI-agent capability maps, behavior blueprints, workflows, roles, skills, prompt briefs, persona requirements, evaluation requests, and bounded improvement |
-| Cascade Software Architect | Cross-plugin Plan Workflow, software boundaries, pattern selection, and independent architecture/change review |
+| Cascade Software Architect | Software boundaries, pattern selection, and independent architecture/change review |
 | Cascade Coding Agent | Coding-agent harness audit, target adaptation, maintenance, asset integration, and evaluation coordination |
 | Cascade Personas | Canonical human models, purpose-limited projections, and persona evaluation |
 | Cascade Simulations | Runtime actors, persona consumption, briefs, outcomes, adapters, campaign governance/execution, bounded actor loops, and frozen-run review |
@@ -42,10 +50,13 @@ exact namespaced plugin skill and fail closed; it cannot embed a fallback copy.
 | Cascade Project Management | Tracker-ready work-item definition, project planning, coordination, reconciliation, lifecycle state, and closeout assessment |
 | Cascade QA | Quality planning, test design, evidence assessment, and defect triage |
 
-The route registry is `[cascade.plugin_skills]` in `.codex/config.toml`. Every
-repo-local plugin exposes a typed `capabilities.yaml`; the deterministic
-compiler writes `.codex/plugin-capabilities.generated.json`, and Plan Workflow
-plans validate through `scripts/cascade.ts workflow validate` before dispatch.
+Every repo-local plugin exposes a typed `capabilities.yaml`; the deterministic
+compiler writes the canonical route registry to
+`.codex/plugin-capabilities.generated.json`. The `[cascade.plugin_skills]`
+table in `.codex/config.toml` is a validator-checked alias projection, not a
+second route authority. Cascade Coordinator selections and workflow plans
+validate through `scripts/cascade.ts workflow validate-selection` and
+`scripts/cascade.ts workflow validate-plan` before the host may dispatch.
 Project Management, QA, Design, and focused Market capabilities use namespaced
 plugin skills directly.
 Security methods route directly to installed namespaced skills; the Security
@@ -55,6 +66,16 @@ context, mutation, execution, or persistence adds behavior. Campaign methods
 live in Simulations and Evals; this repository still owns its `product-evals/`
 registries, runners, artifact policy, and actual runtime authority.
 
+## Workspace MCP
+
+The project registers one `cascade_workspace` MCP server in
+`.codex/config.toml`. It exposes bounded context/resource reads and two-phase
+artifact preparation/persistence from `scripts/cascade/workspace-mcp.ts`.
+Coordinator remains a non-dispatching planner: the active Codex host selects
+skills, calls tools, and retains authority. Durable plugin candidates route
+through `closeout` and `.codex/artifact-destinations.json`; standalone plugins
+do not embed repository writes or require the server to produce an artifact.
+
 ## Task Admission And Skills
 
 Every request first runs the bounded task-admission microkernel through
@@ -63,6 +84,11 @@ selects proportional controls but cannot grant authority, dispatch work, or
 auto-approve a tool. Project hooks in `.codex/hooks.json` require normal Codex
 trust review; the full chain below is a conditional non-atomic fallback, not
 the default for direct answers or atomic edits.
+
+The runtime compiler loads only its policy, control catalog, and envelope
+schema. `harness-evals/task-admission/cases.yaml` is a 981-case source
+regression corpus and is never read during normal request admission. The core
+target profile blocks the corpus command as source-only.
 
 Core non-atomic fallback:
 
@@ -117,16 +143,21 @@ the host skill tree.
 
 ## Agents
 
+Harness judgment is an optional Cascade Evals subject profile, not a registered
+host role. The legacy receipt principal remains compatible. Completion checks
+use the existing closeout skill and shared CLI/Stop-hook implementation.
+
 - `orchestrator`: orchestrates the cascade.
+- `product-designer`: creates mockups and implementation handoffs through Cascade Design.
+- `software-engineer`: owns scoped software implementation and verification.
+- `frontend-engineer`: implements approved UI designs with rendered evidence.
+- `code-reviewer`: reviews a fixed diff without edits; independence requires a separate context.
 - `agent-engineer`: owns Cascade maintenance, target-project onboarding and
   adaptation, and host integration of reviewed AI-agent and harness assets
   across Codex surfaces, source context, tools, observability, and eval wiring.
 - `security`: read-only host role that selects installed
   `cascade-security:<skill>` methods, supplies redacted current target evidence,
   and owns repository-specific validation and implementation handoff only.
-- `harness-evaluator`: exposes the human-facing Harness Judge and owns
-  read-only independent outcome or trajectory judgment of eligible harness
-  scenario outputs and JSONL traces.
 - `simulation-operator`: owns bounded mutable execution of one approved
   campaign, immutable evidence freezing, cleanup, and execution handoff.
 - `simulation-evaluator`: owns independent read-only cross-contour evidence,

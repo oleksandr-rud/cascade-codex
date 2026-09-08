@@ -16,7 +16,7 @@ from refresh_manifest import verify as verify_manifest
 
 SEMVER = re.compile(r"^\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?(?:\+[0-9A-Za-z.-]+)?$")
 FRONTMATTER = re.compile(r"\A---\n(.*?)\n---\n", re.DOTALL)
-EXPECTED_SKILLS = {"ux-flow-review", "accessibility-review", "visual-qa", "design-system"}
+EXPECTED_SKILLS = {"ux-flow-review", "accessibility-review", "visual-qa", "design-system", "create-design"}
 ASSERTIONS = {"status_matches_expected", "selected_skill_matches_expected", "design_artifact_validates"}
 
 
@@ -50,6 +50,9 @@ def validate(root: Path) -> list[str]:
     runtime_texts: list[str] = []
     for skill in sorted(EXPECTED_SKILLS):
         skill_root = root / "skills" / skill
+        for asset in (f"skills/{skill}/SKILL.md", f"skills/{skill}/agents/openai.yaml"):
+            if asset not in contract.get("required_subject_assets", []):
+                errors.append(f"{skill}: evaluation subject does not bind {asset}")
         skill_path = skill_root / "SKILL.md"
         agent_path = skill_root / "agents" / "openai.yaml"
         if not skill_path.is_file() or not agent_path.is_file():
@@ -139,8 +142,8 @@ def validate(root: Path) -> list[str]:
         or adapter.get("model") != "gpt-5.6-sol"
         or adapter.get("reasoning_effort") != "max"
         or adapter.get("target_batching") != "contiguous-balanced-parallel-v1"
-        or adapter.get("target_invocations") != 4
-        or adapter.get("case_count") != 12
+        or adapter.get("target_invocations") != 5
+        or adapter.get("case_count") != contract.get("expected_case_count")
     ):
         errors.append("execution adapter binding is invalid")
     packet = suite.get("packet_contract", {})
@@ -175,9 +178,12 @@ def validate(root: Path) -> list[str]:
             errors.append(f"{case_id}: typed output contract is invalid")
         if not isinstance(case.get("request"), str) or not isinstance(case.get("oracle"), str):
             errors.append(f"{case_id}: request and oracle are required")
+    expected_counts = contract.get("expected_cases_per_skill", {})
+    if set(expected_counts) != EXPECTED_SKILLS or any(type(value) is not int or value < 3 for value in expected_counts.values()):
+        errors.append("every skill requires an explicit qualification count of at least three")
     for skill, count in counts.items():
-        if count != 3:
-            errors.append(f"{skill}: exactly three qualification cases are required")
+        if count != expected_counts.get(skill):
+            errors.append(f"{skill}: qualification count does not match its contract")
     missing_categories = set(contract.get("required_case_categories", [])) - categories
     if missing_categories:
         errors.append(f"missing case categories: {sorted(missing_categories)}")

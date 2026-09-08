@@ -265,5 +265,80 @@ class ArtifactContractTests(unittest.TestCase):
         self.assertEqual(MODULE.validate_artifact(SCHEMA, artifact), [])
 
 
+
+
+def design_creation_artifact() -> dict:
+    artifact = base("create-design")
+    artifact["coverage"] = {
+        "kind": "design-creation", "source_of_truth_ids": ["SRC-REQUEST"],
+        "required_views": [{"viewport": "1280x800", "state": "default"}],
+        "frames": [{"frame_id": "saved-default", "editable_locator": "fixture/mockup.svg",
+                    "preview_locator": "fixture/preview.png", "revision": "fixture-v1",
+                    "viewport": "1280x800", "state": "default",
+                    "capture_conditions": "fixture metadata only; no live visual proof", "inspection": "PASS"}],
+        "interaction_rules": "Filter updates the visible saved items.",
+        "responsive_rules": "Use the accepted single-column layout at narrow widths.",
+        "assets_and_tokens": "Existing host type and spacing tokens.", "unresolved_gaps": [],
+    }
+    artifact["handoffs"] = [{"route": "host:frontend-implementation", "reason": "Implement accepted design version.",
+                              "status": "REQUIRED", "required_input": "Candidate frame, preview and current acceptance status.",
+                              "expected_output": "Working UI and matched screenshot evidence."}]
+    return artifact
+
+
+class DesignCreationContractTests(unittest.TestCase):
+    def test_candidate_index_is_structurally_valid_without_claiming_live_evidence(self):
+        self.assertEqual(MODULE.validate_artifact(SCHEMA, design_creation_artifact()), [])
+
+    def test_ready_rejects_absent_frames_uninspected_previews_and_missing_handoff(self):
+        for mutation in (lambda a: a["coverage"].update(frames=[]),
+                         lambda a: a["coverage"]["frames"][0].update(inspection="GAP"),
+                         lambda a: a.update(handoffs=[]),
+                         lambda a: a["coverage"].update(unresolved_gaps=["Missing empty state"]),
+                         lambda a: a["scope"].update(viewports=["390x844"]),
+                         lambda a: a["coverage"].update(source_of_truth_ids=["SRC-UNKNOWN"])):
+            artifact = design_creation_artifact()
+            mutation(artifact)
+            self.assertTrue(MODULE.validate_artifact(SCHEMA, artifact))
+
+    def test_duplicate_frames_and_malformed_types_rejected(self):
+        artifact = design_creation_artifact()
+        artifact["coverage"]["frames"] *= 2
+        self.assertTrue(MODULE.validate_artifact(SCHEMA, artifact))
+        artifact["coverage"]["frames"] = [None]
+        self.assertTrue(MODULE.validate_artifact(SCHEMA, artifact))
+
+    def test_ready_checks_viewport_state_pairs_not_just_separate_dimensions(self):
+        import copy
+        artifact = design_creation_artifact()
+        artifact["scope"].update(states=["default", "empty"], viewports=["1280x800", "390x844"])
+        artifact["coverage"]["required_views"] = [
+            {"viewport": viewport, "state": state}
+            for viewport in artifact["scope"]["viewports"] for state in artifact["scope"]["states"]
+        ]
+        second = copy.deepcopy(artifact["coverage"]["frames"][0])
+        second.update(frame_id="mobile-empty", viewport="390x844", state="empty")
+        artifact["coverage"]["frames"].append(second)
+        self.assertTrue(MODULE.validate_artifact(SCHEMA, artifact))
+        artifact["coverage"]["required_views"] = [
+            {"viewport": frame["viewport"], "state": frame["state"]}
+            for frame in artifact["coverage"]["frames"]
+        ]
+        self.assertEqual(MODULE.validate_artifact(SCHEMA, artifact), [])
+
+    def test_clean_design_needs_no_invented_finding_but_gap_still_needs_explanation(self):
+        artifact = design_creation_artifact()
+        artifact["findings"] = []
+        self.assertEqual(MODULE.validate_artifact(SCHEMA, artifact), [])
+        artifact["status"] = "GAP"
+        self.assertTrue(MODULE.validate_artifact(SCHEMA, artifact))
+
+    def test_gap_can_report_missing_artifacts_without_fake_locators(self):
+        artifact = design_creation_artifact()
+        artifact["status"] = "GAP"
+        artifact["coverage"]["frames"] = []
+        artifact["findings"][0]["classification"] = "gap"
+        self.assertEqual(MODULE.validate_artifact(SCHEMA, artifact), [])
+
 if __name__ == "__main__":
     unittest.main()

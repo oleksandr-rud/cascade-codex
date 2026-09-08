@@ -1,4 +1,28 @@
 agents:
+  - agent: frontend-engineer
+    allowed_supporting:
+      - cascade-design:visual-qa
+    context_sources:
+      - .codex/agents/frontend-engineer/AGENT.md
+      - .codex/agents/frontend-engineer/skills.yaml
+      - .codex/skills/plan-change/SKILL.md
+      - .codex/plugins/cascade-design/skills/design-system/references/design-system-contract.md
+    max_commands: 8
+    max_loaded_roles: 1
+    max_loaded_skills: 2
+    max_output_chars: 6000
+    model: gpt-5.6-sol
+    next_route: ""
+    primary_skill: plan-change
+    product_context_required: false
+    prompt: Plan a scoped frontend implementation from an approved mockup using the Frontend Engineer role and the supplied fidelity contract. No actual target UI, mockup frame or screenshot is provided. Identify the missing target sources and the implement-render-compare-repair path, distinguish design ownership from implementation, and state which evidence is required before a pixel-perfect claim. Stay read-only, do not invent a design or claim rendered parity, and do not spawn an agent.
+    reasoning_effort: high
+    required_evidence_paths:
+      - .codex/agents/frontend-engineer/AGENT.md
+      - .codex/plugins/cascade-design/skills/design-system/references/design-system-contract.md
+    sandbox_mode: default
+    status_any:
+      - GAP
   - agent: orchestrator
     allowed_supporting:
       - context
@@ -72,29 +96,6 @@ agents:
     status_any:
       - PASS
       - GAP
-  - agent: harness-evaluator
-    allowed_supporting:
-      - cascade-evals:evaluate
-    context_sources:
-      - .codex/agents/harness-evaluator/AGENT.md
-      - .codex/plugins/cascade-evals/skills/harness-evaluation/SKILL.md
-    max_commands: 8
-    max_loaded_roles: 1
-    max_loaded_skills: 2
-    max_output_chars: 5000
-    model: gpt-5.6-sol
-    next_route: ""
-    primary_skill: cascade-evals:harness-evaluation
-    product_context_required: false
-    prompt: Determine whether a claimed successful agent outcome is eligible for independent harness judgment when only the scenario description is available and the raw output, normalized trace, and immutable run packet are missing. Remain read-only and do not execute or repair the target.
-    reasoning_effort: high
-    required_evidence_paths:
-      - .codex/agents/harness-evaluator/AGENT.md
-      - .codex/plugins/cascade-evals/skills/harness-evaluation/SKILL.md
-    sandbox_mode: read-only
-    status_any:
-      - BLOCKED
-      - GAP
   - agent: simulation-operator
     allowed_supporting: []
     context_sources:
@@ -144,4 +145,67 @@ agents:
     status_any:
       - BLOCKED
       - GAP
+  - agent: product-designer
+    allowed_supporting: [plan-change]
+    context_sources:
+      - .codex/agents/product-designer/AGENT.md
+      - .codex/agents/product-designer/skills.yaml
+      - .codex/plugins/cascade-design/skills/create-design/SKILL.md
+    max_commands: 8
+    max_loaded_roles: 1
+    max_loaded_skills: 2
+    max_output_chars: 6000
+    model: gpt-5.6-sol
+    next_route: ""
+    primary_skill: cascade-design:create-design
+    product_context_required: false
+    prompt: Plan mockup creation and a frontend handoff for a saved-items screen using the Product Designer role. The request establishes a reader filtering saved items, desktop/mobile layouts, default and empty states. No target design files or preview tools are supplied and this run is read-only. Bind the useful input, expose missing visual artifacts, distinguish candidate readiness from approval, and do not invent frame paths or spawn agents.
+    reasoning_effort: high
+    required_evidence_paths:
+      - .codex/agents/product-designer/AGENT.md
+      - .codex/plugins/cascade-design/skills/create-design/SKILL.md
+    sandbox_mode: default
+    status_any: [GAP]
+  - agent: software-engineer
+    allowed_supporting: [context]
+    context_sources:
+      - .codex/agents/software-engineer/AGENT.md
+      - .codex/agents/software-engineer/skills.yaml
+      - .codex/skills/plan-change/SKILL.md
+    max_commands: 8
+    max_loaded_roles: 1
+    max_loaded_skills: 2
+    max_output_chars: 6000
+    model: gpt-5.6-sol
+    next_route: ""
+    primary_skill: plan-change
+    product_context_required: false
+    prompt: Use Software Engineer to plan a retry-safe application use case in a target project. No target repository, API contract or persistence implementation is supplied. Explain the required source inspection and proportional behavior verification, preserve frontend and harness ownership boundaries, and return missing inputs instead of inventing a stack, editing files or spawning agents.
+    reasoning_effort: high
+    required_evidence_paths:
+      - .codex/agents/software-engineer/AGENT.md
+      - .codex/skills/plan-change/SKILL.md
+    sandbox_mode: default
+    status_any: [GAP]
+  - agent: code-reviewer
+    allowed_supporting: [context]
+    context_sources:
+      - .codex/agents/code-reviewer/AGENT.md
+      - .codex/agents/code-reviewer/skills.yaml
+      - .codex/plugins/cascade-software-architect/skills/review-change/SKILL.md
+    max_commands: 8
+    max_loaded_roles: 1
+    max_loaded_skills: 2
+    max_output_chars: 6000
+    model: gpt-5.6-sol
+    next_route: ""
+    primary_skill: cascade-software-architect:review-change
+    product_context_required: false
+    prompt: Use Code Reviewer to assess a claimed bug fix when only a success summary is supplied and the actual request, base/head diff and verification evidence are absent. Stay read-only, identify the review gaps, do not fabricate findings or a clean verdict, and do not confuse code review with harness trace judgment or independent context creation.
+    reasoning_effort: high
+    required_evidence_paths:
+      - .codex/agents/code-reviewer/AGENT.md
+      - .codex/plugins/cascade-software-architect/skills/review-change/SKILL.md
+    sandbox_mode: read-only
+    status_any: [GAP]
 schema_version: 1

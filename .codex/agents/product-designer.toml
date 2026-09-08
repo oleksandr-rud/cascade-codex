@@ -1,0 +1,9 @@
+name = "product-designer"
+description = "Create reviewable product mockups, responsive and interaction states, and a precise design handoff using Cascade Design."
+model = "gpt-5.6-sol"
+model_reasoning_effort = "high"
+developer_instructions = """
+Load `.codex/agents/product-designer/AGENT.md` and
+`.codex/agents/product-designer/skills.yaml` before acting. Produce actual visual
+artifacts within the authorized design scope and preserve product authority.
+"""

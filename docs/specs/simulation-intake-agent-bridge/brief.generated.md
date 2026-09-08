@@ -6,9 +6,9 @@
 - Brief: `PB-002` revision `1`
 - Status: `reviewed`
 - Coverage: `complete`
-- Catalog digest: `2d24c923fe55562ab079de54e428788f4429c2051442bbceac75852340af1160`
-- Manifest digest: `1a69b88467c4f3dae37439902a2ce6f62b47e5c0b3b111f874af0264ca808e44`
-- Selected-source digest: `7132c1ba9bd6f9451ce1e2bec3bc0e97bc7719e13bb49dba21480c14c2a58b0f`
+- Catalog digest: `df37463e28d651950ec6e9146a1a1643cfa328ce44643baaf8d8ae608c09b110`
+- Manifest digest: `c2b59a1ce6e0fa15e2bb716fcc5ae2c89c84515a43facda9787d25a687994efc`
+- Selected-source digest: `c8da8bdf2a1d4d0259bcc1f18c8d41e474a5d7fa602861f016956de163e04d84`
 - Compiler-contract digest: `4cfeada5833d864235315bb41aa63acf157b08f15c247f2914c23fc84fd9acd1`
 
 ## Purpose And Audience
@@ -72,17 +72,17 @@ _No reviewed non-fixture product persona is selected._
 
 | Path | Scope / authority | Status | Purpose | SHA-256 |
 |---|---|---|---|---|
-| `scripts/cascade/simulation-intake.test.ts` | `contract-test` / `implementation` | `authored` | Exercises the intake schema, draft starter, and normalized action boundary without claiming product behavior. | `a1a0036c2f6417f886f5cf2b51e39a0537ef6351dbdd43640e2723253c30fadb` |
 | `product-evals/simulations/harness/simulation-correctness-fixture/manifest.yaml` | `harness-simulation` / `mechanics-only` | `authored` | Exercises framework mechanics only and cannot establish target-product behavior or persona truth. | `23776ad788f0b35381eea1727573ac5bb5d1d7e8a74eceda6198fd461254a9bb` |
 
 ## Capability Evaluation References
 
 | Path | Kind / authority | Status | SHA-256 |
 |---|---|---|---|
-| `scripts/cascade/simulation-intake.test.ts` | `contract-test` / `implementation` | `authored` | `a1a0036c2f6417f886f5cf2b51e39a0537ef6351dbdd43640e2723253c30fadb` |
+| _none_ | | | |
 
 ## Gaps
 
+- Module-level contract tests were retired on 2026-09-08; the retained runtime safety smoke suite does not provide equivalent intake coverage.
 - No target-product campaign has yet compiled a READY intake from PB-002.
 - No authorized product execution or independent product evaluation receipt exists.
 - No reviewed target-user evidence exists for a non-fixture persona refinement.

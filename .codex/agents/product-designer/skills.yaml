@@ -1,0 +1,18 @@
+plugin_skills:
+  - cascade-design:create-design
+  - cascade-design:ux-flow-review
+  - cascade-design:design-system
+  - cascade-design:accessibility-review
+  - cascade-design:visual-qa
+skills:
+  - name: context
+    source: .codex/skills/context/SKILL.md
+  - name: plan-change
+    source: .codex/skills/plan-change/SKILL.md
+  - name: implement-change
+    source: .codex/skills/implement-change/SKILL.md
+  - name: validate-change
+    source: .codex/skills/validate-change/SKILL.md
+  - name: closeout
+    source: .codex/skills/closeout/SKILL.md
+    delegate: cascade-project-management:close-project

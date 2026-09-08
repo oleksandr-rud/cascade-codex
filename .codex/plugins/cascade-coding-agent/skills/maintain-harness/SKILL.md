@@ -52,8 +52,10 @@ whose answer materially changes the authorized result.
 - Use `cascade-ai-architect:architect-ai-system` for new or materially
   redesigned agent architecture.
 - Use `cascade-prompt:prompt` for prompt-specific authoring or diagnosis.
-- Use `cascade-evals:harness-evaluation` for generic evaluation lifecycle and
-  judge contracts.
+- Use `cascade-evals:evaluate` for generic evaluation lifecycle and
+  `cascade-evals:build-judge` for judge contracts. Use
+  `cascade-evals:harness-evaluation` only for coding-agent route/trace subjects;
+  other agent or skill subjects use `cascade-evals:agent-evaluation`.
 - Use `cascade-personas:build-persona` and `compile-persona` for canonical
   human models and purpose-limited projections; never recreate persona
   authoring in the target.

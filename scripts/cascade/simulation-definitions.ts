@@ -78,14 +78,32 @@ export const CAMPAIGN_FIXED_SOURCE_FILES = [
   "docs/product/scenarios.md",
   "docs/specs/brief-manifest.schema.json",
   "scripts/cascade.ts",
+  "scripts/cascade/cli/command-dispatcher.ts",
+  "scripts/cascade/closeout.ts",
+  "scripts/cascade/cli/command-executor.ts",
   "scripts/cascade/admission.ts",
   "scripts/cascade/admission-clauses.ts",
   "scripts/cascade/briefs.ts",
   "scripts/cascade/common.ts",
   "scripts/cascade/structured-data.ts",
   "scripts/cascade/campaign-artifacts.ts",
+  "scripts/cascade/campaign/task-adapter.ts",
+  "scripts/cascade/campaign/adapters/builtins.ts",
+  "scripts/cascade/campaign/adapters/agent.ts",
+  "scripts/cascade/campaign/adapters/browser.ts",
+  "scripts/cascade/campaign/adapters/fake.ts",
+  "scripts/cascade/campaign/adapters/http.ts",
+  "scripts/cascade/campaign/adapters/platform.ts",
+  "scripts/cascade/campaign/adapters/process.ts",
+  "scripts/cascade/campaign/adapters/registry.ts",
+  "scripts/cascade/campaign/adapters/terminal.ts",
+  "scripts/cascade/campaign/adapters/transport-support.ts",
+  "scripts/cascade/campaign/artifacts/task-artifact-repository.ts",
+  "scripts/cascade/campaign/artifacts/artifact-types.ts",
+  "scripts/cascade/campaign/oracle-evaluator.ts",
   "scripts/cascade/campaign-policies.ts",
   "scripts/cascade/campaigns.ts",
+  "scripts/cascade/campaign-report.ts",
   "scripts/cascade/evaluations.ts",
   "scripts/cascade/evals.ts",
   "scripts/cascade/evaluation-reducer.ts",
@@ -106,10 +124,12 @@ export const CAMPAIGN_FIXED_SOURCE_FILES = [
   "scripts/cascade/target.ts",
   "scripts/cascade/validate.ts",
   "scripts/cascade/work-audit.ts",
-  ".codex/plugins/cascade-software-architect/skills/plan-workflow/references/capability-descriptor.schema.json",
-  ".codex/plugins/cascade-software-architect/skills/plan-workflow/references/capability-catalog.schema.json",
-  ".codex/plugins/cascade-software-architect/skills/plan-workflow/references/plugin-plan.schema.json",
+  ".codex/plugins/cascade-coordinator/skills/select-capabilities/references/capability-selection.schema.json",
+  ".codex/plugins/cascade-coordinator/skills/plan-workflow/references/capability-descriptor.schema.json",
+  ".codex/plugins/cascade-coordinator/skills/plan-workflow/references/capability-catalog.schema.json",
+  ".codex/plugins/cascade-coordinator/skills/plan-workflow/references/plugin-plan.schema.json",
   ".codex/harness-tooling/browser-adapter-runner.ts",
+  ".codex/harness-tooling/report-pdf-runner.ts",
   ".codex/harness-tooling/package.json",
   ".codex/harness-tooling/bun.lock",
   ".codex/plugins/cascade-simulations/skills/manage-simulation-campaign/templates/starter/package.template.yaml",
@@ -1403,6 +1423,13 @@ export interface SimulationArtifactPolicy {
   };
   remote_storage: "disabled";
   export: "disabled";
+  local_reports?: {
+    enabled: boolean;
+    artifact_root: ".artifacts/product-eval-reports";
+    formats: ["html", "json", "pdf"];
+    source_mode: "verified-frozen-run";
+    remote_access: "disabled";
+  };
 }
 
 export interface PolicyDefinition {
@@ -3506,7 +3533,7 @@ export function validateSimulationArtifactPolicy(
   assertExactKeys(value, [
     "schema_version", "artifact_root", "storage_mode", "source_material_mode",
     "raw_sensitive_material_allowed", "encryption_at_rest", "access_scope",
-    "operator_attestation", "retention", "remote_storage", "export",
+    "operator_attestation", "retention", "remote_storage", "export", "local_reports",
   ], label);
   if (value.schema_version !== 1) throw new CascadeError(`${label}.schema_version must be 1`);
   const constants: Array<[string, string]> = [
@@ -3532,6 +3559,15 @@ export function validateSimulationArtifactPolicy(
     throw new CascadeError(`${label}.retention.review_after_days must be a positive integer`);
   }
   requireString(retention, "deletion_owner", `${label}.retention`);
+  if (value.local_reports !== undefined) {
+    const reports = objectValue(value.local_reports, `${label}.local_reports`);
+    assertExactKeys(reports, ["enabled", "artifact_root", "formats", "source_mode", "remote_access"], `${label}.local_reports`);
+    if (typeof reports.enabled !== "boolean" || reports.artifact_root !== ".artifacts/product-eval-reports" ||
+        JSON.stringify(reports.formats) !== JSON.stringify(["html", "json", "pdf"]) ||
+        reports.source_mode !== "verified-frozen-run" || reports.remote_access !== "disabled") {
+      throw new CascadeError(`${label}.local_reports must remain a local frozen-evidence projection`);
+    }
+  }
 }
 
 export function validatePolicy(value: Record<string, unknown>, label: string): void {

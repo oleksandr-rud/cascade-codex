@@ -31,14 +31,33 @@ EXPECTED_PROFILES = {
 BACKEND_MARKERS = (
     "startup/",
     "modules/",
-    "application/events/emitters",
-    "application/events/subscribers",
-    "src/libs/database/",
-    "src/libs/cache/",
-    "src/libs/messaging/",
-    "src/libs/thirdparty/",
 )
-FRONTEND_MARKERS = ("src/app/", "src/features/", "src/shared/")
+FRONTEND_MARKERS = ("src/app/", "src/features/")
+ABSTRACT_MODULE_NAMES = {
+    "application",
+    "base",
+    "business",
+    "common",
+    "core",
+    "domain",
+    "general",
+    "helpers",
+    "infrastructure",
+    "managers",
+    "misc",
+    "processors",
+    "service",
+    "services",
+    "shared",
+    "utils",
+}
+SPECULATIVE_DOMAIN_MARKERS = (
+    "Record {",
+    "records =",
+    "routes.get(",
+    "@router.get",
+    "func (module *Module) List",
+)
 
 
 class ScaffoldError(RuntimeError):
@@ -147,6 +166,20 @@ def validate_manifest(data: Any) -> None:
                 )
             validate_relative_template_path(template_path, profile_id)
 
+        if profile_id.startswith("backend-"):
+            joined_content = "\n".join(files.values())
+            speculative = [
+                marker
+                for marker in SPECULATIVE_DOMAIN_MARKERS
+                if marker in joined_content
+            ]
+            if speculative:
+                raise ScaffoldError(
+                    f"{profile_id} invents domain behavior instead of only "
+                    "scaffolding the selected module boundary: "
+                    + ", ".join(speculative)
+                )
+
         structure_markers = profile.get("structure_markers")
         if not isinstance(structure_markers, list) or not all(
             isinstance(marker, str) and marker for marker in structure_markers
@@ -201,6 +234,11 @@ def identifier_replacements(app_name: str, module_name: str) -> dict[str, str]:
                 f"{field} must match {PORTABLE_IDENTIFIER.pattern}; "
                 "use a portable lowercase identifier"
             )
+    if module_name in ABSTRACT_MODULE_NAMES:
+        raise ScaffoldError(
+            "module-name must identify a concrete domain entity, aggregate, "
+            f"or capability; generic category {module_name!r} is not allowed"
+        )
     words = module_name.split("_")
     pascal = "".join(word[:1].upper() + word[1:] for word in words)
     camel = pascal[:1].lower() + pascal[1:]
@@ -369,6 +407,12 @@ def self_test(manifest: dict[str, Any]) -> None:
         pass
     else:
         raise ScaffoldError("self-test identifier guard did not fail")
+    try:
+        render_profile(manifest, "backend-bun", "sample", "services")
+    except ScaffoldError:
+        pass
+    else:
+        raise ScaffoldError("self-test abstract module-name guard did not fail")
     with tempfile.TemporaryDirectory(prefix="cascade-architecture-scaffold-") as temp:
         root = Path(temp)
         for profile_id in sorted(profile_map(manifest)):

@@ -37,6 +37,9 @@ market or growth strategy unless the change challenges those decisions.
 3. Identify public contracts and likely consumers of the change.
 4. Choose the smallest vertical slice that can prove the outcome.
 5. Record assumptions and only the tradeoffs that affect the choice.
+   For UI work against approved mockups, bind exact reference frames, relevant
+   viewport/states, available assets/fonts and authorized deviations. Plan a
+   rendered comparison against those references; do not silently redesign them.
 6. Define validation before editing: focused checks first, broader checks only
    when the touched boundary warrants them.
 7. Use `cascade-software-architect:review-architecture` only for a genuine cross-boundary or public

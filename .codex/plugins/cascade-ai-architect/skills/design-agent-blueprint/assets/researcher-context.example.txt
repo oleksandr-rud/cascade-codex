@@ -1,0 +1,6 @@
+[Research question]
+"Знайти відповідну процедуру в дозволеній базі знань."
+
+[Search constraints]
+Sources — "Knowledge base"
+Calls — "Не більше двох пошукових викликів"

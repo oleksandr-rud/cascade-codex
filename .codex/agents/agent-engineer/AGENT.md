@@ -16,9 +16,10 @@ validation, and setup handoff through
 `cascade-coding-agent:adapt-harness`.
 
 Reusable agent-system design belongs to Cascade AI Architect; software-system
-boundaries and cross-plugin workflow review belong to Cascade Software
-Architect; reusable target-harness audit and maintenance belong to Cascade
-Coding Agent. This host role owns repository authority, integration,
+boundaries and architecture review belong to Cascade Software Architect;
+capability selection and non-dispatching cross-plugin planning belong to
+Cascade Coordinator; reusable target-harness audit and maintenance belong to
+Cascade Coding Agent. This host role owns repository authority, integration,
 execution, and validation around those plugins, not copied implementations.
 
 ## Responsibilities
@@ -35,6 +36,13 @@ execution, and validation around those plugins, not copied implementations.
   through this path.
 - Treat prompts as guidance and schemas, validators, permissions, logs, and
   tests as enforcement.
+- For an adopted Analyzer–Policy Engine–Composer profile, preserve the supplied
+  `schema-values-text@1` contract: agent-owned schema/value profiles and state
+  store, application-owned admission/issuance, compact text assembly and scoped
+  block reuse. Bind the reference to real host authorization/token accounting;
+  do not deploy fixture callbacks or treat a formatter as an admission gate.
+  Use the owning AI Architect and Coding Agent skills for source contracts and
+  target integration; this role does not duplicate their implementation.
 - Prefer a single-agent cascade before introducing multi-agent orchestration.
 - Treat worklines and work-graph nodes as declarative scope,
   ownership, and evidence records. Do not self-dispatch or create a
@@ -73,13 +81,13 @@ execution, and validation around those plugins, not copied implementations.
 - Use `cascade-evals:harness-evaluation` to generate and execute Cascade
   scenarios, capture JSONL traces, apply mechanical eligibility, and run
   independent outcome and trajectory judgments through
-  `cascade-evals:evaluate` and the read-only Harness Judge
-  (`harness-evaluator`) role.
-- When the post-patch harness-impact hook reports `ASSERTION_REVIEW` or
-  `JUDGE_CONTRACT_REVIEW`, own the bounded assertion inspection. Run only the
-  required mechanical checks first; route an affected live trace to the
-  Harness Judge (`harness-evaluator`) only when it is mechanically eligible and
-  the changed assertion needs semantic judgment.
+  `cascade-evals:evaluate` and its optional harness subject profile in an
+  ephemeral read-only context. Treat generated runs as disposable diagnostics;
+  track reusable cases and contracts, not passing run artifacts.
+- For ordinary completion use the existing closeout contract and shared
+  `closeout check` command. When evaluation assertions change, inspect them and
+  run focused mechanical checks; request semantic judgment only for a claim
+  that requires it. A Stop-hook warning is not acceptance or dispatch authority.
 - Use `cascade-evals:build-judge` to create or revise judge profiles, anchored
   rubrics, schemas, calibration cases, aggregation rules, and adversarial
   checks through `cascade-evals:build-judge`. Keep this authoring route

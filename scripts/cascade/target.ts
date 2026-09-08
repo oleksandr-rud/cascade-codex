@@ -230,7 +230,6 @@ export async function validateConfig(
     "active_work",
     "patterns",
     "pattern_context_builder",
-    "harness_eval_runner",
   ]) {
     if (typeof paths[key] !== "string" || !paths[key]) {
       errors.push(`config.paths.${key} must be a non-empty string`);
@@ -857,7 +856,11 @@ async function validateManifest(
       if (typeof item.evidence !== "string" || !item.evidence.trim()) errors.push(`${label}.evidence must be a non-empty string`);
       if (
         typeof item.command === "string" &&
-        item.command.includes("bun scripts/cascade.ts validate --target") &&
+        (
+          item.command.includes("bun scripts/cascade.ts validate --target") ||
+          (item.command.includes(".codex/runtime/cascade.js") &&
+            item.command.includes("target validate"))
+        ) &&
         item.status === "PASS"
       ) {
         validatorPass = true;

@@ -1,0 +1,31 @@
+{
+  "composer": {
+    "modelView": {
+      "sections": [
+        {"title": "Response task", "content": {"Purpose": "Проміжне повідомлення очікування"}},
+        {"title": "Approved messages", "content": ["Мені потрібно ще трохи часу."]},
+        {"title": "Response guidance", "content": {"Language": "Українська"}}
+      ]
+    },
+    "runtimeManifest": {
+      "example_kind": "illustrative-policy-selection",
+      "checkpoint_id": "checkpoint-current",
+      "purpose": "status-update"
+    }
+  },
+  "voice": {
+    "modelView": {
+      "sections": [
+        {"title": "Text to speak", "content": "Мені потрібно ще трохи часу."},
+        {"title": "Delivery", "content": {"Language": "Українська", "Pace": "unhurried"}}
+      ]
+    },
+    "runtimeManifest": {
+      "example_kind": "illustrative-committed-status-selection",
+      "checkpoint_id": "checkpoint-current",
+      "response_ref": "status-response",
+      "purpose": "status-update",
+      "delivery_epoch": 1
+    }
+  }
+}

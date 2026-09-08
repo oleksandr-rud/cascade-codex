@@ -135,7 +135,6 @@ class ArchitectureValidationTests(unittest.TestCase):
             "capabilities",
             "inputs",
             "outputs",
-            "tools",
             "skills",
             "workflows",
             "prompts",
@@ -162,6 +161,46 @@ class ArchitectureValidationTests(unittest.TestCase):
         packet = self.packet()
         packet["topology"]["kind"] = "manager_with_specialists"
         self.assert_has(packet, "requires at least two role-backed agents; found 1")
+
+    def test_accepts_tool_free_agent_but_requires_explicit_tool_contract(self):
+        packet = self.packet()
+        packet["components"]["agents"][0]["tools"] = []
+        self.assertEqual(validate_packet(packet), [])
+        del packet["components"]["agents"][0]["tools"]
+        self.assert_has(packet, "missing required field 'tools'")
+
+    def test_accepts_model_pipeline_with_distinct_tool_free_owners(self):
+        packet = self.packet()
+        packet["topology"]["kind"] = "model_pipeline"
+        packet["topology"]["rationale"] = "Runtime routes analysis and composition through explicit contracts."
+        packet["components"]["agents"][0]["tools"] = []
+        composer = copy.deepcopy(packet["components"]["agents"][0])
+        composer.update(slug="main-composer", capabilities=["compose-response"],
+                        prompts=["compose-prompt"], tools=[])
+        packet["components"]["agents"].append(composer)
+        capability = copy.deepcopy(packet["capabilities"][0])
+        capability.update(slug="compose-response", primary_owner="main-composer", tool_families=[])
+        packet["capabilities"].append(capability)
+        packet["clusters"][0]["capabilities"].append("compose-response")
+        packet["components"]["roles"].append({
+            "slug": "composition-owner", "agent": "main-composer",
+            "responsibility": "Own canonical response meaning.",
+            "capabilities": ["compose-response"], "mutation_scope": [],
+        })
+        packet["components"]["prompts"].append({
+            "slug": "compose-prompt", "purpose": "Compose from the runtime projection.",
+            "owner": "main-composer", "digest": "NOT_RUN",
+        })
+        packet["behavior_blocks"]["output_contract"]["primary_owner"] = "main-composer"
+        packet["behavior_blocks"]["roles"]["primary_owner"] = "main-composer"
+        self.assertEqual(validate_packet(packet), [])
+        packet["components"]["agents"][1]["state_owner"] = "main-composer"
+        self.assert_has(packet, "unresolved workflow 'main-composer'")
+
+    def test_rejects_model_pipeline_without_multiple_roles(self):
+        packet = self.packet()
+        packet["topology"]["kind"] = "model_pipeline"
+        self.assert_has(packet, "model_pipeline requires at least two role-backed agents")
 
     def test_accepts_deterministic_workflow_with_zero_agents(self):
         packet = self.packet()

@@ -3,6 +3,12 @@
 Use this entry when evaluating Cascade skills, routes, agents, outputs, or
 execution traces.
 
+This is an optional Cascade Evals subject profile. Load the harness-evaluation
+skill and its `references/judge-profile.md` into a separate read-only context
+only when semantic judgment is required. No dedicated host evaluator role is
+registered. Ordinary completion uses `closeout check` for scoped integrity;
+that command and its advisory hook never launch or substitute for these judges.
+
 ## Evaluation Architecture
 
 Use an evaluator-optimizer loop with two distinct responsibilities:

@@ -72,15 +72,9 @@
         "task_admission_policy",
         "task_admission_hook",
         "task_admission_runner",
-        "task_admission_cases",
-        "harness_evals",
-        "harness_eval_runner",
-        "harness_eval_artifacts",
-        "simulation_campaigns",
-        "simulation_artifacts",
-        "simulation_artifact_policy",
-        "harness_simulations",
-        "product_simulations"
+        "plugin_capability_catalog",
+        "workspace_artifact_registry",
+        "workspace_mcp_runner"
       ],
       "properties": {
         "product_catalog": {
@@ -93,7 +87,7 @@
           "const": "docs/specs/brief-manifest.schema.json"
         },
         "product_brief_runner": {
-          "const": "scripts/cascade/briefs.ts"
+          "enum": ["scripts/cascade/briefs.ts", ".codex/runtime/cascade.js"]
         },
         "task_admission_schema": {
           "const": ".codex/task-admission/task-envelope.schema.json"
@@ -105,31 +99,16 @@
           "const": ".codex/hooks.json"
         },
         "task_admission_runner": {
-          "const": "scripts/cascade/admission.ts"
+          "enum": ["scripts/cascade/admission.ts", ".codex/runtime/cascade.js"]
         },
-        "task_admission_cases": {
-          "const": "harness-evals/task-admission/cases.yaml"
+        "plugin_capability_catalog": {
+          "const": ".codex/plugin-capabilities.generated.json"
         },
-        "harness_evals": {
-          "const": "harness-evals"
+        "workspace_artifact_registry": {
+          "const": ".codex/artifact-destinations.json"
         },
-        "harness_eval_artifacts": {
-          "const": ".artifacts/harness-evals"
-        },
-        "simulation_campaigns": {
-          "const": "product-evals/campaigns"
-        },
-        "simulation_artifacts": {
-          "const": ".artifacts/product-evals"
-        },
-        "simulation_artifact_policy": {
-          "const": "product-evals/artifact-policy.yaml"
-        },
-        "harness_simulations": {
-          "const": "product-evals/simulations/harness"
-        },
-        "product_simulations": {
-          "const": "product-evals/simulations/product"
+        "workspace_mcp_runner": {
+          "enum": ["scripts/cascade/workspace-mcp.ts", ".codex/runtime/workspace-mcp.js"]
         }
       }
     },

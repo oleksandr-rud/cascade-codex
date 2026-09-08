@@ -11,9 +11,9 @@ This file is the thin repository boot contract for coding agents. Detailed stack
 - Product or system type: standalone coding-agent workflow harness.
 - Primary users: project maintainers and coding agents working in this
   repository.
-- Primary runtime stack summary: no application runtime exists; the repository
-  contains Cascade documentation, role/skill contracts, Python validators, and
-  harness evaluation tooling.
+- Primary runtime stack summary: Bun/TypeScript harness runtime with CLI and
+  stdio MCP adapters, plugin and role/skill contracts, validators, and evaluation
+  tooling; no target-product backend or UI is implemented here.
 - Source of truth when docs conflict with code: current code, then this file,
   then `CODEX.md`, then repo-local skills and docs.
 
@@ -34,7 +34,8 @@ This file is the thin repository boot contract for coding agents. Detailed stack
 ## Architecture Guardrails
 
 Prefer the repository's current harness vocabulary over generic modeling
-labels. Until application source exists, treat this repository as a scaffold:
+labels. This repository is a harness runtime and plugin source checkout, not a
+target-product application:
 
 - Agent instructions -> `CODEX.md` runtime bridge -> `.codex/` role and skill
   contracts -> `docs/` memory targets -> `scripts/cascade.ts`.
@@ -89,25 +90,20 @@ cleanup, or single-line changes with no behavior or contract impact.
 
 ```bash
 bun scripts/cascade.ts validate
-bun scripts/cascade.ts admission validate
-bun scripts/cascade.ts admission corpus
-bun scripts/cascade.ts workflow catalog --check
-bun scripts/cascade.ts target self-test
-bun scripts/cascade.ts campaign catalog --check
-bun scripts/cascade.ts campaign self-test
-bun scripts/cascade.ts brief check
-bun test --max-concurrency 4 scripts/cascade
+bun run test
 ```
 
-Harness evaluation is conditional, not a default validation phase. The
-`PostToolUse` harness-impact hook examines completed `apply_patch` edits and
-adds bounded guidance only when actual `cascade-evals:harness-evaluation` implementation,
-assertions, or judge contracts changed. Run `eval catalog --check` and
-`eval self-test` only when that hook reports them. Run a focused live scenario
-and independent judge only after reviewing a changed semantic assertion that
-cannot be decided mechanically; otherwise record the live review as
-`NOT_APPLICABLE`. Hook output is advisory and must not be treated as authority
-or proof.
+The default test command runs only the retained runtime safety smoke suite.
+Use the targeted commands in `harness.config.yaml` only for affected contracts;
+plugin package tests and lab corpora are not default repository checks.
+
+Closeout uses the existing skill and the shared `cascade closeout check`
+command. The thin Stop hook checks only a contract registered for the current
+task/turn; it grants no authority, executes no checks and does not restart work.
+Use current file/index digests and required evidence, preserving unrelated work.
+Harness evaluation remains optional through Cascade Evals' harness subject
+profile. Run catalog/self-tests when changing its runtime or assertions, and
+focused independent semantic evaluation only when the accepted claim needs it.
 
 Install harness tooling with
 `bun install --cwd .codex/harness-tooling --frozen-lockfile`. Playwright

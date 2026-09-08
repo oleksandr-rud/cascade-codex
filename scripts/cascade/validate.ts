@@ -29,10 +29,19 @@ import {
   PLUGIN_CAPABILITY_CATALOG_RELATIVE,
 } from "./plugin-workflow";
 
+const WORKSPACE_ARTIFACT_REGISTRY = ".codex/artifact-destinations.json";
+const WORKSPACE_ARTIFACT_REGISTRY_SCHEMA =
+  ".codex/schemas/workspace/artifact-destinations.schema.json";
+const WORKSPACE_PREPARATION_RECEIPT_SCHEMA =
+  ".codex/schemas/workspace/preparation-receipt.schema.json";
+const WORKSPACE_PERSISTENCE_RECEIPT_SCHEMA =
+  ".codex/schemas/workspace/persistence-receipt.schema.json";
+
 const REPO_PLUGIN_NAMES = [
   "cascade-prompt",
   "cascade-simulations",
   "cascade-evals",
+  "cascade-coordinator",
   "cascade-ai-architect",
   "cascade-software-architect",
   "cascade-coding-agent",
@@ -46,82 +55,24 @@ const REPO_PLUGIN_NAMES = [
 ] as const;
 const REPO_PLUGIN_MARKETPLACE = ".agents/plugins/marketplace.json";
 const CASCADE_PROMPT_PLUGIN_NAME = "cascade-prompt";
-const PLUGIN_SKILL_ROUTES = {
-  prompt: "cascade-prompt:prompt",
-  workflow_plan: "cascade-software-architect:plan-workflow",
-  software_architecture: "cascade-software-architect:architect-software-system",
-  architecture_patterns: "cascade-software-architect:select-architecture-patterns",
-  architecture_review: "cascade-software-architect:review-architecture",
-  change_review: "cascade-software-architect:review-change",
-  agent_architecture: "cascade-ai-architect:architect-ai-system",
-  agent_capabilities: "cascade-ai-architect:map-agent-capabilities",
-  agent_blueprint: "cascade-ai-architect:design-agent-blueprint",
-  agent_workflow: "cascade-ai-architect:design-agent-workflow",
-  agent_roles: "cascade-ai-architect:build-agent-roles",
-  agent_skills: "cascade-ai-architect:build-agent-skills",
-  agent_prompt: "cascade-ai-architect:prepare-agent-prompt",
-  agent_persona_requirements: "cascade-ai-architect:derive-persona-requirements",
-  agent_system_evaluation: "cascade-ai-architect:prepare-agent-evaluation",
-  agent_improvement: "cascade-ai-architect:improve-agent-system",
-  harness_audit: "cascade-coding-agent:audit-harness",
-  harness_adaptation: "cascade-coding-agent:adapt-harness",
-  harness_maintenance: "cascade-coding-agent:maintain-harness",
-  harness_asset_integration: "cascade-coding-agent:integrate-agent-assets",
-  persona_build: "cascade-personas:build-persona",
-  persona_compile: "cascade-personas:compile-persona",
-  persona_evaluate: "cascade-personas:evaluate-persona",
-  market_research: "cascade-market:research-market",
-  market_opportunity: "cascade-market:evaluate-market-opportunity",
-  market_experiment: "cascade-market:design-market-experiments",
-  marketing_brand: "cascade-market:brand-positioning",
-  product_lifecycle: "cascade-product:manage-product-lifecycle",
-  product_definition: "cascade-product:define-product",
-  product_validation: "cascade-product:validate-product",
-  simulation_execute: "cascade-simulations:simulate",
-  simulation_campaign_manage: "cascade-simulations:manage-simulation-campaign",
-  simulation_campaign_execute: "cascade-simulations:execute-simulation-campaign",
-  simulation_review: "cascade-simulations:simulation-review",
-  simulation_actor: "cascade-simulations:simulation-actor",
-  evaluation: "cascade-evals:evaluate",
-  judge_builder: "cascade-evals:build-judge",
-  prompt_evaluation: "cascade-evals:prompt-evaluation",
-  agent_evaluation: "cascade-evals:agent-evaluation",
-  simulation_evaluation: "cascade-evals:simulation-evaluation",
-  harness_evaluation: "cascade-evals:harness-evaluation",
-  design_flow: "cascade-design:ux-flow-review",
-  design_accessibility: "cascade-design:accessibility-review",
-  design_visual: "cascade-design:visual-qa",
-  design_system: "cascade-design:design-system",
-  security_codebase: "cascade-security:codebase-audit",
-  security_auth: "cascade-security:auth-analysis",
-  security_design: "cascade-security:secure-design",
-  work_item_definition: "cascade-project-management:define-work-item",
-  project_plan: "cascade-project-management:plan-project",
-  project_manage: "cascade-project-management:manage-project",
-  project_close: "cascade-project-management:close-project",
-  qa_plan: "cascade-qa:plan-quality",
-  qa_design_tests: "cascade-qa:design-tests",
-  qa_assess: "cascade-qa:assess-quality",
-  qa_triage: "cascade-qa:triage-defects",
-} as const;
 const PLUGIN_ADAPTER_DELEGATES: Record<string, string[]> = {
   "create-spec": [
-    PLUGIN_SKILL_ROUTES.product_definition,
-    PLUGIN_SKILL_ROUTES.product_lifecycle,
-    PLUGIN_SKILL_ROUTES.persona_build,
-    PLUGIN_SKILL_ROUTES.persona_compile,
-    PLUGIN_SKILL_ROUTES.market_research,
+    "cascade-product:define-product",
+    "cascade-product:manage-product-lifecycle",
+    "cascade-personas:build-persona",
+    "cascade-personas:compile-persona",
+    "cascade-market:research-market",
   ],
   "run-qa-plan": [
-    PLUGIN_SKILL_ROUTES.qa_design_tests,
-    PLUGIN_SKILL_ROUTES.qa_assess,
-    PLUGIN_SKILL_ROUTES.qa_triage,
+    "cascade-qa:design-tests",
+    "cascade-qa:assess-quality",
+    "cascade-qa:triage-defects",
   ],
   "repair-tests": [
-    PLUGIN_SKILL_ROUTES.qa_triage,
-    PLUGIN_SKILL_ROUTES.qa_assess,
+    "cascade-qa:triage-defects",
+    "cascade-qa:assess-quality",
   ],
-  closeout: [PLUGIN_SKILL_ROUTES.project_close],
+  closeout: ["cascade-project-management:close-project"],
 };
 const PLUGIN_ONLY_HOST_ADAPTERS = new Set([
   "run-qa-plan",
@@ -135,6 +86,10 @@ const REQUIRED_FILES = [
   "harness.config.example.yaml",
   "harness.config.yaml",
   ".codex/config.toml",
+  WORKSPACE_ARTIFACT_REGISTRY,
+  WORKSPACE_ARTIFACT_REGISTRY_SCHEMA,
+  WORKSPACE_PREPARATION_RECEIPT_SCHEMA,
+  WORKSPACE_PERSISTENCE_RECEIPT_SCHEMA,
   ".codex/hooks.json",
   ".agents/plugins/marketplace.json",
   PLUGIN_CAPABILITY_CATALOG_RELATIVE,
@@ -193,21 +148,26 @@ const REQUIRED_FILES = [
   "docs/patterns/product-context/index.md",
   "docs/patterns/product-context/product-context.pack.yaml",
   "scripts/cascade.ts",
+  "scripts/cascade-runtime.ts",
+  "scripts/build-runtime-bundle.ts",
+  "scripts/cascade/runtime-bundle.test.ts",
   "scripts/cascade/admission.ts",
   "scripts/cascade/admission.test.ts",
   "scripts/cascade/task-admission-hook.ts",
-  "scripts/cascade/harness-impact-hook.ts",
+  "scripts/cascade/closeout.ts",
+  "scripts/cascade/closeout-hook.ts",
   "scripts/cascade/briefs.ts",
   "scripts/cascade/work-audit.ts",
-  "scripts/cascade/work-audit.test.ts",
   "scripts/cascade/persona-simulations.ts",
   "scripts/cascade/simulation-intake.ts",
-  "scripts/cascade/simulation-intake.test.ts",
   "scripts/cascade/common.ts",
+  "scripts/cascade/common.test.ts",
   "scripts/cascade/structured-data.ts",
-  "scripts/cascade/structured-data.test.ts",
+  "scripts/cascade/workspace-service.ts",
+  "scripts/cascade/workspace-service.test.ts",
+  "scripts/cascade/workspace-mcp.ts",
+  "scripts/cascade/workspace-mcp.test.ts",
   "scripts/cascade/policies.ts",
-  "scripts/cascade/policies.test.ts",
   "scripts/cascade/validate.ts",
   "scripts/cascade/evals.ts",
   "scripts/cascade/patterns.ts",
@@ -287,6 +247,7 @@ const REQUIRED_FOLDERS = [
   "docs/patterns",
   ".codex/task-admission",
   ".codex/task-admission/policies",
+  ".codex/schemas/workspace",
   "docs/patterns/product-context",
   "harness-evals",
   "harness-evals/task-admission",
@@ -727,6 +688,12 @@ function collectSources(value: unknown): string[] {
 }
 
 async function validateRuntimePackage(errors: string[]): Promise<void> {
+  const rootPackageJson = await readJson<Record<string, any>>(
+    rootPath("package.json"),
+  );
+  if (rootPackageJson.scripts?.["build:runtime"] !== "bun scripts/build-runtime-bundle.ts") {
+    errors.push("root package must expose the deterministic build:runtime command");
+  }
   const packageJson = await readJson<Record<string, any>>(
     rootPath(".codex/harness-tooling/package.json"),
   );
@@ -771,16 +738,59 @@ async function validateRoutingContracts(
   } else {
     errors.push(...routeOrderErrors(".codex/config.toml", configRoute.join(" -> "), CONFIG_NON_ATOMIC_ROUTE));
   }
-  if (config.cascade?.conditional_iteration_planning !== PLUGIN_SKILL_ROUTES.project_plan) {
+  if (config.cascade?.conditional_iteration_planning !== "cascade-project-management:plan-project") {
     errors.push(".codex/config.toml must route conditional iteration planning to Cascade Project Management");
   }
-  const configuredPluginSkills = config.cascade?.plugin_skills;
+  if (config.cascade?.conditional_capability_selection !== "cascade-coordinator:select-capabilities") {
+    errors.push(".codex/config.toml must route ambiguous capability selection to Cascade Coordinator");
+  }
+  if (config.cascade?.plugin_coordinator_validator !== "scripts/cascade/plugin-workflow.ts") {
+    errors.push(".codex/config.toml must use the Cascade Coordinator host validator");
+  }
+  const workspaceMcp = config.mcp_servers?.cascade_workspace;
   if (
-    !configuredPluginSkills
-    || typeof configuredPluginSkills !== "object"
-    || stableJson(configuredPluginSkills) !== stableJson(PLUGIN_SKILL_ROUTES)
+    workspaceMcp?.command !== "npx" ||
+    stableJson(workspaceMcp?.args) !== stableJson([
+      "--offline",
+      "--yes",
+      "bun@1.3.3",
+      "scripts/cascade/workspace-mcp.ts",
+    ]) ||
+    workspaceMcp?.cwd !== "." ||
+    workspaceMcp?.startup_timeout_sec !== 20
   ) {
-    errors.push(".codex/config.toml cascade.plugin_skills must match the plugin-first route contract");
+    errors.push(".codex/config.toml Cascade Workspace MCP wiring is invalid");
+  }
+  const configuredPluginSkills = config.cascade?.plugin_skills;
+  if (!configuredPluginSkills || typeof configuredPluginSkills !== "object") {
+    errors.push(".codex/config.toml cascade.plugin_skills must be an alias table");
+  } else {
+    try {
+      const catalog = await buildPluginCapabilityCatalog();
+      const catalogRoutes = catalog.plugins.flatMap((plugin) =>
+        plugin.skills.map((skill: Record<string, any>) => skill.route),
+      ).sort();
+      const configuredRoutes = Object.values(configuredPluginSkills)
+        .filter((route): route is string => typeof route === "string")
+        .sort();
+      if (configuredRoutes.length !== Object.keys(configuredPluginSkills).length) {
+        errors.push(".codex/config.toml cascade.plugin_skills contains a non-string route");
+      }
+      if (new Set(configuredRoutes).size !== configuredRoutes.length) {
+        errors.push(".codex/config.toml cascade.plugin_skills contains duplicate route aliases");
+      }
+      if (stableJson(configuredRoutes) !== stableJson(catalogRoutes)) {
+        errors.push(".codex/config.toml cascade.plugin_skills must project every generated capability route exactly once");
+      }
+      if (configuredPluginSkills.capability_selection !== "cascade-coordinator:select-capabilities") {
+        errors.push(".codex/config.toml capability_selection alias must use Cascade Coordinator");
+      }
+      if (configuredPluginSkills.workflow_plan !== "cascade-coordinator:plan-workflow") {
+        errors.push(".codex/config.toml workflow_plan alias must use Cascade Coordinator");
+      }
+    } catch (error) {
+      errors.push(`cannot validate plugin route aliases against the generated catalog: ${errorMessage(error)}`);
+    }
   }
 }
 
@@ -851,34 +861,6 @@ async function validateRepoPlugins(errors: string[]): Promise<void> {
       if (!assetPath.startsWith("./") || !isWithin(pluginRoot, resolvedAsset) || !(await isFile(resolvedAsset))) {
         errors.push(`${pluginName} asset path is invalid: ${assetPath}`);
       }
-    }
-  }
-
-  for (const alias of Object.values(PLUGIN_SKILL_ROUTES)) {
-    const match = /^([a-z0-9-]+):([a-z0-9-]+)$/.exec(alias);
-    if (!match) {
-      errors.push(`invalid plugin skill alias: ${alias}`);
-      continue;
-    }
-    const [, pluginName, skillName] = match;
-    const skillPath = rootPath(
-      ".codex/plugins",
-      pluginName!,
-      "skills",
-      skillName!,
-      "SKILL.md",
-    );
-    if (!(await isFile(skillPath))) {
-      errors.push(`plugin skill route is missing source: ${alias}`);
-      continue;
-    }
-    try {
-      const frontmatter = parseYamlFrontmatterRecord(await readText(skillPath));
-      if (frontmatter.name !== skillName) {
-        errors.push(`plugin skill route name mismatch: ${alias}`);
-      }
-    } catch (error) {
-      errors.push(`invalid plugin skill route: ${alias}: ${errorMessage(error)}`);
     }
   }
 
@@ -965,26 +947,34 @@ async function validateRepoPlugins(errors: string[]): Promise<void> {
 
 const TASK_ADMISSION_HOOK_PATH = ".codex/hooks.json";
 const TASK_ADMISSION_HOOK_COMMAND = "npx --offline --yes bun@1.3.3 \"$(git rev-parse --show-toplevel)/scripts/cascade/task-admission-hook.ts\"";
-const HARNESS_IMPACT_HOOK_COMMAND = "npx --offline --yes bun@1.3.3 \"$(git rev-parse --show-toplevel)/scripts/cascade/harness-impact-hook.ts\"";
+const CLOSEOUT_HOOK_COMMAND = "npx --offline --yes bun@1.3.3 \"$(git rev-parse --show-toplevel)/scripts/cascade/closeout-hook.ts\"";
 const TASK_ADMISSION_HOOK_MAX_TIMEOUT_SECONDS = 30;
+const INTERRUPT_HOOK_MAX_TIMEOUT_SECONDS = 3;
 const TASK_ADMISSION_HOOK_MIN_CONTEXT_CHARACTERS = 1200;
 const TASK_ADMISSION_HOOK_MAX_CONTEXT_CHARACTERS = 16_000;
 
 export function admissionHookWiringErrors(config: Record<string, any>, hooks: Record<string, any>): string[] {
   const errors: string[] = [];
   if (config.cascade?.admission_hook !== TASK_ADMISSION_HOOK_PATH) errors.push("Cascade admission hook path is invalid");
-  for (const event of ["UserPromptSubmit", "PreToolUse", "PermissionRequest"]) {
+  for (const event of ["UserPromptSubmit", "Interrupt", "PreToolUse", "PermissionRequest"]) {
     const groups = hooks.hooks?.[event];
-    if (!Array.isArray(groups) || groups.length !== 1 || !Array.isArray(groups[0]?.hooks) || groups[0].hooks.length !== 1) {
+    if (!Array.isArray(groups) || groups.length !== 1 || !Array.isArray(groups[0]?.hooks) || groups[0].hooks.length !== (event === "UserPromptSubmit" ? 2 : 1)) {
       errors.push(`Cascade admission hook wiring is invalid for ${event}`);
       continue;
     }
-    if (event === "UserPromptSubmit" ? groups[0].matcher !== undefined : groups[0].matcher !== "*") {
+    if (["UserPromptSubmit", "Interrupt"].includes(event) ? groups[0].matcher !== undefined : groups[0].matcher !== "*") {
       errors.push(`Cascade admission hook matcher is invalid for ${event}`);
+    }
+    if (event === "UserPromptSubmit") {
+      const binding = groups[0].hooks[1];
+      if (binding?.type !== "command" || binding.command !== CLOSEOUT_HOOK_COMMAND || binding.timeout !== 3 || binding.additionalContextLimit !== 1200) {
+        errors.push("Cascade closeout turn binding hook is invalid");
+      }
     }
     const hook = groups[0].hooks[0];
     if (hook?.type !== "command" || hook.command !== TASK_ADMISSION_HOOK_COMMAND) errors.push(`Cascade admission hook command is invalid for ${event}`);
-    if (!Number.isInteger(hook?.timeout) || hook.timeout < 1 || hook.timeout > TASK_ADMISSION_HOOK_MAX_TIMEOUT_SECONDS) {
+    const maxTimeout = event === "Interrupt" ? INTERRUPT_HOOK_MAX_TIMEOUT_SECONDS : TASK_ADMISSION_HOOK_MAX_TIMEOUT_SECONDS;
+    if (!Number.isInteger(hook?.timeout) || hook.timeout < 1 || hook.timeout > maxTimeout) {
       errors.push(`Cascade admission hook timeout is invalid for ${event}`);
     }
     if (event === "UserPromptSubmit" && (!Number.isInteger(hook?.additionalContextLimit)
@@ -993,30 +983,15 @@ export function admissionHookWiringErrors(config: Record<string, any>, hooks: Re
       errors.push("Cascade admission hook additional context limit is invalid for UserPromptSubmit");
     }
   }
-  const postToolGroups = hooks.hooks?.PostToolUse;
-  if (
-    !Array.isArray(postToolGroups)
-    || postToolGroups.length !== 1
-    || postToolGroups[0]?.matcher !== "apply_patch"
-    || !Array.isArray(postToolGroups[0]?.hooks)
-    || postToolGroups[0].hooks.length !== 1
-  ) {
-    errors.push("Cascade harness impact hook wiring is invalid for PostToolUse");
+  if (hooks.hooks?.PostToolUse !== undefined) errors.push("retired post-patch evaluation hook must be removed");
+  const groups = hooks.hooks?.Stop;
+  if (!Array.isArray(groups) || groups.length !== 1 || groups[0]?.matcher !== undefined
+    || !Array.isArray(groups[0]?.hooks) || groups[0].hooks.length !== 1) {
+    errors.push("Cascade closeout hook wiring is invalid for Stop");
   } else {
-    const hook = postToolGroups[0].hooks[0];
-    if (hook?.type !== "command" || hook.command !== HARNESS_IMPACT_HOOK_COMMAND) {
-      errors.push("Cascade harness impact hook command is invalid for PostToolUse");
-    }
-    if (!Number.isInteger(hook?.timeout) || hook.timeout < 1 || hook.timeout > TASK_ADMISSION_HOOK_MAX_TIMEOUT_SECONDS) {
-      errors.push("Cascade harness impact hook timeout is invalid for PostToolUse");
-    }
-    if (
-      !Number.isInteger(hook?.additionalContextLimit)
-      || hook.additionalContextLimit < TASK_ADMISSION_HOOK_MIN_CONTEXT_CHARACTERS
-      || hook.additionalContextLimit > TASK_ADMISSION_HOOK_MAX_CONTEXT_CHARACTERS
-    ) {
-      errors.push("Cascade harness impact hook additional context limit is invalid for PostToolUse");
-    }
+    const hook = groups[0].hooks[0];
+    if (hook?.type !== "command" || hook.command !== CLOSEOUT_HOOK_COMMAND) errors.push("Cascade closeout hook command is invalid");
+    if (!Number.isInteger(hook?.timeout) || hook.timeout < 1 || hook.timeout > 30) errors.push("Cascade closeout hook timeout is invalid");
   }
   return errors;
 }
@@ -1029,7 +1004,8 @@ async function validateConfigToml(
     string,
     any
   >;
-  if (config.model !== "gpt-5.6-sol") errors.push("default model must be gpt-5.6-sol");
+  if (config.model !== "gpt-6-astra") errors.push("default model must be gpt-6-astra");
+  if (config.model_reasoning_effort !== "max") errors.push("default reasoning effort must be max");
   const evals = config.harness_evals ?? {};
   if (evals.planning_model !== "gpt-5.6-sol") errors.push("planning model mismatch");
   if (evals.execution_model !== "gpt-5.6-sol") errors.push("execution model mismatch");
@@ -1072,6 +1048,17 @@ async function validateSkills(
   errors: string[],
 ): Promise<void> {
   const wired = new Set<string>();
+  let knownPluginSkills = new Set<string>();
+  try {
+    const catalog = await buildPluginCapabilityCatalog();
+    knownPluginSkills = new Set(
+      catalog.plugins.flatMap((plugin) =>
+        plugin.skills.map((skill: Record<string, any>) => skill.route),
+      ),
+    );
+  } catch (error) {
+    errors.push(`cannot validate agent plugin skill wiring: ${errorMessage(error)}`);
+  }
   for (const [agent, manifestPath] of agents) {
     let manifest: Record<string, any>;
     try {
@@ -1119,7 +1106,6 @@ async function validateSkills(
         errors.push(`${rel(mapPath)} ${entry.name} declares unexpected plugin delegates`);
       }
     }
-    const knownPluginSkills = new Set(Object.values(PLUGIN_SKILL_ROUTES));
     const pluginSkills = skillMap.plugin_skills === undefined
       ? []
       : Array.isArray(skillMap.plugin_skills)
@@ -1406,6 +1392,7 @@ export function isAllowedRepositoryJsonSource(path: string): boolean {
     || name === "package.json"
     || name === "plugin.json"
     || /^\.codex\/plugins\/[^/]+\/.+\.json$/.test(path)
+    || path === WORKSPACE_ARTIFACT_REGISTRY
     || path === ".codex/hooks.json"
     || path === ".agents/plugins/marketplace.json";
 }
@@ -1467,6 +1454,20 @@ async function validateHarness(errors: string[]): Promise<{
     await validateAdmissionRepository();
   } catch (error) {
     errors.push(`invalid task admission bundle: ${error instanceof Error ? error.message : String(error)}`);
+  }
+  try {
+    const [registry, registrySchema] = await Promise.all([
+      readJson<Record<string, any>>(rootPath(WORKSPACE_ARTIFACT_REGISTRY)),
+      readJson<Record<string, unknown>>(rootPath(WORKSPACE_ARTIFACT_REGISTRY_SCHEMA)),
+    ]);
+    assertJsonSchema(registry, registrySchema, "$workspaceArtifactRegistry");
+    if (!Array.isArray(registry.policies) || !registry.policies.every((policy: Record<string, unknown>) =>
+      policy.workflow_owner === "closeout" && policy.retention === "durable"
+    )) {
+      errors.push("Workspace artifact destinations must remain closeout-owned and durable");
+    }
+  } catch (error) {
+    errors.push(`invalid Workspace artifact destination registry: ${errorMessage(error)}`);
   }
   try {
     await Promise.all([loadProductArtifactPolicy(), loadProductPolicyRegistry()]);

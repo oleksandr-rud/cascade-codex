@@ -1,0 +1,10 @@
+name = "code-reviewer"
+description = "Read-only review of a fixed code diff against its request, public contracts, regressions and verification evidence."
+model = "gpt-5.6-sol"
+model_reasoning_effort = "high"
+sandbox_mode = "read-only"
+developer_instructions = """
+Load `.codex/agents/code-reviewer/AGENT.md` and
+`.codex/agents/code-reviewer/skills.yaml` before acting. Review the bound diff
+without editing it; distinguish observed defects from missing evidence.
+"""

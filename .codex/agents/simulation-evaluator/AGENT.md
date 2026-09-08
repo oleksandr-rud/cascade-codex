@@ -9,7 +9,8 @@ description: Use after a simulation run to independently evaluate frozen evidenc
 
 Use this role only after a simulation execution receipt and immutable run
 package exist. It evaluates cross-contour evidence. Cascade skill/route/trace
-judgment remains owned by the specialized `harness-evaluator`.
+judgment uses the optional Cascade Evals harness subject profile; the legacy
+`harness-evaluator` receipt principal remains compatible.
 
 For standalone actor-loop evidence, controller/run-integrity review belongs to
 `cascade-simulations:simulation-review`; generic independent judgment and
@@ -60,7 +61,7 @@ never permits a shared context, hidden labels, or prior judge output.
 - Do not execute, replay, or mutate the campaign.
 - Do not repair product, test, harness, adapter, or runtime defects.
 - Do not rewrite claims, policies, or expected oracles after seeing results.
-- Do not replace the `harness-evaluator` for Cascade scenario and trace
+- Do not replace the Cascade Evals harness subject profile for Cascade scenario and trace
   judgment.
 - Do not decide portfolio or release eligibility from one run.
 - Do not validate, accept, or directly mutate the product persona that seeded

@@ -1,4 +1,4 @@
-# Event-Driven Service Extension
+# Durable Event-Driven Extension
 
 - Pair ID: `event-driven`
 - Graph: `docs/patterns/architecture-defaults/event-driven.graph.yaml`
@@ -6,9 +6,10 @@
 
 ## When This Is The Default
 
-Extend `service-api-worker` when a module publishes facts to independent
-consumers or owns deferred work that must survive process failure. Do not add a
-broker merely to avoid an ordinary in-process or synchronous dependency.
+Extend `service-api-worker` when a module publishes durable facts to independent
+consumers or owns deferred work that must survive process failure. Ordinary
+in-process calls or best-effort local notifications do not need this extension.
+A broker does not require splitting the modular monolith into microservices.
 
 ## Default Architecture
 
@@ -25,10 +26,11 @@ module application transaction
   -> event operations and tracing
 ```
 
-This extension preserves app-owned vertical slices, startup composition,
-shared technical libraries, and module public entrypoints. Producers and
-subscribers live with their owning modules; broker clients, envelope codecs,
-outbox primitives, and telemetry may live in `src/libs`.
+This extension preserves domain ownership, startup composition, public module
+entrypoints, and the modular-monolith release boundary. Producers, subscribers,
+outbox state, and inbox state live with their owning modules. Extract a named
+broker adapter or envelope codec only when at least two current modules need
+the same stable mechanics; no shared library or repository base is mandatory.
 
 ## Reference File Structure
 
@@ -36,35 +38,21 @@ outbox primitives, and telemetry may live in `src/libs`.
 src/<app-name>/
   startup/
     messaging.*
-    subscribers.*
-  modules/<module>/
-    domain/events/
-    application/
-      handlers/
-      subscribers/
-    interface/
-      events/
-      jobs/
-    infrastructure/
-      outbox/
-      inbox/
-src/libs/
-  messaging/
-    broker-port.*
-    envelope.*
-    publisher.*
-    subscriber.*
-    retry-policy.*
-    dead-letter.*
-  database/
-    outbox-base.*
-    inbox-base.*
-contracts/events/
+  modules/orders/
+    index.*
+    order-placed.*
+    outbox.*
+  modules/billing/
+    index.*
+    on-order-placed.*
+    inbox.*
 tests/events/
 ```
 
-Do not create an `events` mega-module that owns other modules' facts. Shared
-libraries own transport mechanics; producing modules own meaning and schema.
+This is an example of two participating modules, not a required scaffold. Add only
+the files the accepted flow needs; a larger module may use internal folders.
+Do not create an `events` mega-module that owns other modules' facts. Optional
+shared adapters own transport mechanics, never event meaning or module data.
 
 ## Default Decisions
 

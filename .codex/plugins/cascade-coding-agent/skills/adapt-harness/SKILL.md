@@ -62,6 +62,12 @@ and destructive replacement require their own authority.
    source selection, persistence, execution authority, and handoff.
 9. Bind the exact host validation commands and source-drift checks. Mark them
    `NOT_RUN` until the host executes them.
+   When the target has approved UI mockups, bind its developer workflow to the
+   supplied Cascade Design fidelity contract: inspect reference frames, implement
+   matching details, capture at the intended viewport/state, compare and repair.
+   Preserve authorized deviations and require rendered evidence before a
+   pixel-perfect claim. Do not create a Designer/Frontend role solely for this
+   rule; the existing implementation owner can invoke Visual QA directly.
 10. Compare source and installed plugin identities when packaging changed.
     Missing/disabled dependencies return `BLOCKED`; do not search caches or
     restore copied fallback behavior.

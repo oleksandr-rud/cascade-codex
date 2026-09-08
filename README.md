@@ -11,7 +11,9 @@ tests only when behavior is still correct, and leave useful handoff memory.
 Use Cascade when a repository needs more than a single prompt file. The
 harness combines a thin boot contract, a runtime bridge, adapter
 configuration, role contracts, reusable skills, documentation write targets,
-work-lane tracking, and release validation into one reusable package.
+optional durable coordination, and release validation into one source package.
+Normal target repositories use the generated core runtime profile instead of
+copying the source, plugin-development, and evaluation layers wholesale.
 
 The harness tooling runtime is Bun, but the target repository is stack-neutral.
 Inventory, configured checks, and campaign tasks may describe Node, Bun,
@@ -24,16 +26,38 @@ runs remain the dominant latency in live evaluations.
 - Harness name: `cascade`
 - Runtime bridge: `CODEX.md`
 - Adapter template: `harness.config.example.yaml`
-- Local role contracts: 7
+- Local role contracts: 6
 - Registered host skills: 9
 - Canonical skill and role source: `.codex/skills/` and `.codex/agents/`
-- Repo-local Cascade plugin sources: 12
+- Repo-local Cascade plugin sources: 14
 - Planning model: `gpt-5.6-sol`
 - Execution, prompt-builder, and judge model: `gpt-5.6-sol`
 - Tooling runtime: Bun `1.3.3`
 - Validator: `bun scripts/cascade.ts validate`
+- Lean target runtime: `bun run build:runtime` (currently 91 generated files;
+  the build enforces a 120-file ceiling)
 
-## What It Ships
+## Source Checkout And Target Runtime
+
+This repository is the full source monorepo. It intentionally contains all 14
+plugin packages, source validators, 981 admission regression cases, 138
+generated harness scenarios, simulation campaigns, fixtures, and historical
+design/work evidence. Those are development and lab assets, not one runtime
+dependency graph.
+
+`bun run build:runtime` creates `dist/cascade-runtime/`, a lean target profile
+with the host roles and effect skills, a compact Bun command adapter, task
+admission policy, the frozen plugin capability catalog, Coordinator contracts,
+and Workspace MCP. It excludes plugin source, harness evals, product evals,
+browser tooling, source tests, and historical work records. Plugins stay
+standalone and resolve from Codex's installed plugin inventory.
+
+The core profile keeps only Orchestrator, Agent Engineer, and Security. Harness
+Judge, Simulation Operator, and Simulation Evaluator remain opt-in lab roles in
+the source checkout because their traces, campaigns, and frozen run packages
+are not baseline target context.
+
+## What The Source Checkout Contains
 
 | Path | Purpose |
 |---|---|
@@ -56,12 +80,41 @@ runs remain the dominant latency in live evaluations.
 | `docs/archive/work-reports/` | Compact archive capsules and relocated frozen completed-work artifacts. |
 | `docs/specs/`, `docs/product/`, `docs/design/`, `docs/brand/` | Durable owner docs for source material, per-slice spec packets and generated brief selections, product domain/capability intent, design constraints, and naming/content direction. |
 | `docs/backlog/`, `docs/glossary.md` | Follow-up candidates and shared codebase/product vocabulary. |
-| `scripts/cascade.ts` | Bun entrypoint for validation, target inventory, product briefs, pattern packs, harness evals, and campaigns. |
-| `scripts/cascade/` | Focused TypeScript modules for each harness-tooling responsibility. |
+| `scripts/cascade.ts` | Thin executable entrypoint for the asynchronous Cascade command dispatcher. |
+| `scripts/cascade/cli/` | Reusable CLI application boundary. `executeCascadeCommand` lazily loads one command and can also be called by a future local service or MCP adapter. |
+| `scripts/cascade/workspace-{service,mcp}.ts` | Bounded project-level MCP adapter for compiled context plus two-phase, closeout-owned durable artifact persistence. |
+| `scripts/cascade/campaign/` | Campaign component modules: task adapter contracts, contour-specific built-ins, adapter registry, oracle evaluation, and artifact repository ports. |
+| `scripts/cascade/` | Remaining command/application modules and filesystem-backed campaign infrastructure. |
 
 `CODEX.md`, `docs/structure.md`, `docs/patterns/`, and the validator also
 reserve `.codex/skills/` and `.codex/agents/` as the canonical locations for
 reusable workflow skills and role contracts in a complete release package.
+
+Cascade ships one CLI runtime and one narrow project-level MCP stdio adapter.
+The MCP adapter compiles allowlisted repository context and performs
+destination-registry-bound artifact preparation and persistence; it is not a
+generic command endpoint or another agent runtime. The async dispatcher remains
+the shared invocation seam for CLI commands and any future local HTTP, socket,
+or worker transport. Long-lived command callers submit work through
+`CascadeCommandExecutor`, which serializes commands so process-global state and
+repository writes do not interleave. Transports must call the same
+command/application services rather than duplicate campaign execution or
+evidence policy.
+
+A compiled executable resolves repository assets from `CASCADE_ROOT`, or from
+its current working directory when that variable is unset. This makes the code
+bundle relocatable while schemas, campaign definitions, plugins, and external
+runner assets remain explicit repository resources.
+
+Build the local executable with `bun run build:cli`. The resulting
+`dist/cascade` contains the CLI and all TypeScript command modules; run it from
+the Cascade repository root or set `CASCADE_ROOT` to that root. The build helper
+also applies the required ad-hoc signature on macOS.
+
+Build the target profile with `bun run build:runtime`. Its compact runtime
+surface exposes only `admission`, `workflow`, `target`, `patterns`, and `work`.
+Catalog generation, the 981-case admission corpus, harness evals, simulation
+campaign execution, and source self-tests remain source-checkout commands.
 
 ## Workload Admission And Workflow Model
 
@@ -168,11 +221,14 @@ coordination/materialization ownership, or validation scheduling. Use its
 reconciliation mode first when existing worklines need evidence-backed
 deduplication, stale-state reconciliation, or canonical graph cutover.
 
-Use `cascade-software-architect:plan-workflow` when two or more plugin capabilities must
-be selected and ordered. It compiles Task Envelope claims, applied policies,
-artifact contracts, and typed plugin dependencies into a validated DAG. It is
-a planning controller only: every plan preserves `dispatch_authorized: false`,
-and host admission and execution remain separate authority gates.
+Use `cascade-coordinator:select-capabilities` when the exact namespaced route is
+ambiguous or a request spans plugin domains. Use
+`cascade-coordinator:plan-workflow` only when the validated selection needs
+multiple nodes, ordering, an artifact handoff, parallel branches, or a join. It
+compiles Task Envelope claims, selected routes, artifact contracts, and typed
+dependencies into a validated DAG. Both are controllers only: their artifacts
+preserve `dispatch_authorized: false`, and host admission and execution remain
+separate authority gates.
 
 ## Roles And Skills
 
@@ -181,7 +237,7 @@ clear boundary:
 
 | Role | Model | Owns |
 |---|---|---|
-| `orchestrator` | `gpt-5.6-sol` | Proportional normal-task routing, plugin-backed market/product work, implementation, and evidence. |
+| `orchestrator` | `gpt-5.6-sol` | Proportional normal-task routing, Coordinator consumption, plugin-backed work, implementation, and evidence. |
 | `agent-engineer` | `gpt-5.6-sol` | Cascade maintenance, target onboarding/adaptation, and host integration of reviewed agent/LLM assets, including tools, memory, observability, eval wiring, and Codex surfaces. |
 | `security` | `gpt-5.6-sol` | Read-only host selection of Cascade Security methods, redacted target evidence, and repository-specific validation or implementation handoff. |
 | `harness-evaluator` | `gpt-5.6-sol` | Human-facing Harness Judge for read-only outcome or trajectory judgment of eligible Cascade scenario outputs and traces after deterministic hard gates. |
@@ -211,8 +267,9 @@ portable specialist methods are namespaced plugin skills. They cluster into:
   Cascade Design skills selected by the applicable host role.
 - Agent-system design and harness integration: Cascade AI Architect designs,
   Cascade Software Architect reviews affected software boundaries, Cascade
-  Coding Agent integrates or maintains, and host `pattern-context` persists
-  reusable repository context only when needed.
+  Coordinator selects and orders cross-plugin capabilities, Cascade Coding
+  Agent integrates or maintains, and host `pattern-context` persists reusable
+  repository context only when needed.
 
 `cascade-simulations:manage-simulation-campaign` owns versioned campaign definition, selection,
 coordination, replay planning, receipt aggregation, and reporting across all
@@ -310,7 +367,11 @@ python3 scripts/scaffold_architecture_default.py preview \
 
 Use the separate `write` command only after reviewing the preview. The
 generator preflights every path, never overwrites, does not install packages,
-and does not select versions.
+and does not select versions. `--module-name` must identify a concrete domain
+entity or capability such as `auth`, `users`, `crm`, or `orders`; generic names
+such as `core`, `common`, and `services` are rejected. The baseline emits no
+speculative shared libraries, cache, messaging, event, provider, or generic
+repository boilerplate.
 
 The write-target map is intentionally narrow. The validator rejects unexpected
 docs folders, stale active skill references, unwired skills, invalid custom
@@ -320,47 +381,36 @@ audit adds missing-resource, semantic leakage, route, runtime, and trace checks.
 
 ## Setup In A Target Repository
 
-Start from a clean Cascade checkout or release bundle, then copy the harness
-into the target repository root. Review collisions first if the target already
-has `AGENTS.md`, `CODEX.md`, `.github/`, `.codex/`, `docs/`, or `scripts/`.
-
-Prerequisites are Bun `1.3.3` and, only for browser-task campaigns, a
-Playwright browser installed with
-`bun run --cwd .codex/harness-tooling playwright install chromium`.
-
-Cascade's browser dependency is isolated under `.codex/harness-tooling/`.
-Never replace or merge the target application's root `package.json` or lockfile
-to install Cascade.
+Build the core target bundle from a clean Cascade checkout, then copy that
+generated profile into the target repository root. Review collisions first if
+the target already has `AGENTS.md`, `CODEX.md`, `.github/`, `.codex/`, or
+`docs/`. The core profile requires Bun `1.3.3`; browser dependencies belong to
+an explicitly added simulation lab, not the default installation.
 
 ```bash
 export CASCADE_SRC=/path/to/cascade
 export TARGET_REPO=/path/to/target-repo
 
+cd "$CASCADE_SRC"
+npx --offline --yes bun@1.3.3 run build:runtime
+
 rsync -a --backup --suffix=.pre-cascade \
-  --exclude '.git/' \
-  --exclude '.DS_Store' \
-  --exclude 'node_modules/' \
-  "$CASCADE_SRC"/AGENTS.md \
-  "$CASCADE_SRC"/CODEX.md \
-  "$CASCADE_SRC"/harness.config.example.yaml \
-  "$CASCADE_SRC"/.github \
-  "$CASCADE_SRC"/.codex \
-  "$CASCADE_SRC"/docs \
-  "$CASCADE_SRC"/harness-evals \
-  "$CASCADE_SRC"/product-evals \
-  "$CASCADE_SRC"/scripts \
+  "$CASCADE_SRC"/dist/cascade-runtime/ \
   "$TARGET_REPO"/
 
 cd "$TARGET_REPO"
 cp harness.config.example.yaml harness.config.yaml
-bun install --cwd .codex/harness-tooling --frozen-lockfile
-bun scripts/cascade.ts validate
-bun scripts/cascade.ts target inventory --root .
+npx --offline --yes bun@1.3.3 .codex/runtime/cascade.js target inventory --root .
+npx --offline --yes bun@1.3.3 .codex/runtime/cascade.js target validate --root .
 ```
 
-Keep the target project's existing `README.md` unless you intentionally want
-to replace it. This README is the Cascade package guide; the target project
-README should usually stay product-facing.
+Install the plugin versions recorded in `.codex/plugins.lock.json` from the
+Cascade marketplace before using their namespaced routes. At minimum,
+Coordinator is needed for ambiguous or multi-plugin routing; domain plugins
+remain on-demand. The bundle never contains a partial hidden copy of them.
+
+The generated bundle does not replace the target project's `README.md` or root
+package manifest. `CASCADE_RUNTIME.md` explains only the installed adapter.
 
 After copying, ask Codex to adapt the harness from the target repository root.
 For a normal setup pass:
@@ -374,7 +424,7 @@ Engineer with cascade-coding-agent:adapt-harness to fill AGENTS.md, CODEX.md,
 harness.config.yaml, docs/structure.md, docs/glossary.md, validation commands,
 and doc routing. Preserve user-authored instructions unless replacement is
 required. Keep AGENTS.md thin, route project facts to the narrowest owner docs,
-run bun scripts/cascade.ts validate --target, run available target
+run the core `target validate` command, run available target
 checks, and close with files changed, skipped, blockers, and next routes.
 ```
 
@@ -403,14 +453,13 @@ Manual setup still works when an agent is unavailable:
 1. Fill in the target project's stack, source roots, test roots, public
    contracts, validation commands, tracker settings, and memory paths in
    `harness.config.yaml`.
-2. Replace placeholders in `AGENTS.md`, `docs/glossary.md`,
-   `docs/patterns/boundaries/index.md`, and any product/design/spec docs that should
-   guide future work.
-3. Add the release-bundle `.codex/skills/` and `.codex/agents/` assets when the
-   target runtime should load reusable Cascade skills or role contracts.
-4. Run `bun scripts/cascade.ts validate --target` from the repository
-   root after configuration is adapted. For deep onboarding, initialize and
-   complete `docs/work/onboarding-manifest.yaml`, then add
+2. Replace placeholders in `AGENTS.md`, `docs/glossary.md`, and only the
+   product, design, spec, or pattern docs that current target evidence needs.
+3. Install the plugin versions in `.codex/plugins.lock.json`; do not copy their
+   source bodies into the target runtime.
+4. Run `npx --offline --yes bun@1.3.3 .codex/runtime/cascade.js target
+   validate --root .` after configuration is adapted. For deep onboarding,
+   initialize and complete `docs/work/onboarding-manifest.yaml`, then add
    `--require-onboarding-complete`.
 
 ## Validation
@@ -437,8 +486,8 @@ Expected output includes:
 
 ```text
 cascade_status=PASS
-agents=7
-skills=32
+agents=6
+skills=9
 project_specific_leakage=0
 ```
 
@@ -457,13 +506,13 @@ The target-project analysis CLI never executes configured install or test
 commands implicitly:
 
 ```bash
-bun scripts/cascade.ts target inventory --root .
-bun scripts/cascade.ts target init-manifest
-bun scripts/cascade.ts target probe-commands
-bun scripts/cascade.ts target refresh-manifest
-bun scripts/cascade.ts validate --target \
-  --require-onboarding-complete
-bun scripts/cascade.ts target drift
+npx --offline --yes bun@1.3.3 .codex/runtime/cascade.js target inventory --root .
+npx --offline --yes bun@1.3.3 .codex/runtime/cascade.js target init-manifest
+npx --offline --yes bun@1.3.3 .codex/runtime/cascade.js target probe-commands
+npx --offline --yes bun@1.3.3 .codex/runtime/cascade.js target refresh-manifest
+npx --offline --yes bun@1.3.3 .codex/runtime/cascade.js target validate \
+  --require-complete
+npx --offline --yes bun@1.3.3 .codex/runtime/cascade.js target drift
 ```
 
 ## Campaigns And Browser Simulations

@@ -67,6 +67,7 @@ const HARD_ACTION_NOUN = /\b(?:destruction|erasure|deletion|obliteration|purge)\
 const HARD_ACTION_START = /^(?:please\s+)?(?:delete|erase|destroy|wipe|purge|obliterate|eradicate|expunge|discard)\w*\b/i;
 const META_WORDING = /\b(?:parser|classifier|classification|detection|support|handling|tests?|docs?|documentation|wording|phrase|sentence|terms?)\b/i;
 const MUTATION_START = /^(?:please\s+)?(?:add|apply|adjust|alter|revise|rewrite|rework|rebuild|redesign|repair|overhaul|refresh|modernize|revamp|change|edit|modify|update|implement|build|create|document|remove|delete|erase|destroy|wipe|purge|refactor|write)\b/i;
+const UKRAINIAN_MUTATION_START = /^(?:(?:а|і|та)\s+)?(?:(?:тепер|зараз)\s+)?(?:(?:будь\s+ласка)\s+)?(?:(?:ми|ви)\s+)?(?:(?:можемо|можете|маємо|потрібно|треба)\s+)?(?:зробити|створити|реалізувати|додати|оновити|виправити|переробити|перебудувати|змінити|видалити|перейменувати|впровадити)(?=$|[\s,.;:!?])/iu;
 const OPERATION_START = /^(?:please\s+)?(?:run|execute(?:\s+(?:it|that|this))?|perform(?:\s+(?:it|that|that\s+action|the\s+requested\s+action))?|act\s+on\s+(?:it|that|this)|carry(?:\s+(?:it|that))?\s+out|do\s+(?:it|that)|take\s+(?:it|that|the\s+action|requested\s+action))\b/i;
 const VALIDATION_SUBJECT = /\b(?:checks?|tests?|validation|validators?|lint|typechecks?)\b/i;
 const NO_MUTATION_SUBJECT = /\b(?:repository(?:\s+(?:artifacts?|files?|contents?|changes?|edits?|writes?|modifications?|mutations?))?|repo(?:sitory)?\s+(?:files?|artifacts?|contents?|changes?|edits?|writes?)|files?|contents?|items?|artifacts?|changes?|edits?|writes?|modifications?|mutations?|generation|freezing)\b/i;
@@ -206,7 +207,7 @@ function retainClause(text: string, start: number, source: AdmissionClauseSource
     || /\b(?:all|every|each)\b[\s\S]*\b(?:files?|contents?|items?|artifacts?)\b[\s\S]*\b(?:unmodified|unchanged|untouched|intact|preserved|remain|stay|kept)\b/i.test(text);
   const hard = (HARD_ACTION.test(text) || HARD_ACTION_NOUN.test(text)) && !META_WORDING.test(text);
   const continuation = /^(?:CONTINUE\s+)?(continue|resume)\b/i.exec(text)?.[1]?.toUpperCase() as "CONTINUE" | "RESUME" | undefined;
-  const local = (MUTATION_START.test(semanticText) || Boolean(continuation && /^(?:continue|resume)\s+(?:add|apply|adjust|alter|revise|rewrite|rework|rebuild|redesign|repair|overhaul|refresh|modernize|revamp|change|edit|modify|update|implement|build|create|document|remove|refactor|write)(?:ing)?\b/i.test(text))) && !hard;
+  const local = (MUTATION_START.test(semanticText) || UKRAINIAN_MUTATION_START.test(semanticText) || Boolean(continuation && /^(?:continue|resume)\s+(?:add|apply|adjust|alter|revise|rewrite|rework|rebuild|redesign|repair|overhaul|refresh|modernize|revamp|change|edit|modify|update|implement|build|create|document|remove|refactor|write)(?:ing)?\b/i.test(text))) && !hard;
   const operation = OPERATION_START.test(semanticText)
     || /^(?:(?:could|would)\s+you\s+(?:please\s+)?)(?:run|execute|perform)\b/i.test(semanticText)
     || /^(?:with|while|provided|on\s+condition|so\s+that)\b[\s\S]*\b(?:run|execute|perform)\s+(?:checks?|tests?|validation|validators?)\b/i.test(semanticText);
@@ -393,6 +394,9 @@ export function deriveAdmissionClausePatches(request: string, spans: readonly Ad
   })) patches.relation = "NEW";
 
   const positiveWrites = userClauses.filter((clause) => clause.action_polarity === "POSITIVE" && clause.action_class === "LOCAL_MUTATION");
+  const directUkrainianWrite = positiveWrites.some((clause) =>
+    UKRAINIAN_MUTATION_START.test(clause.text)
+  );
   const validationOperations = userClauses.filter((clause) => clause.action_polarity === "POSITIVE" && clause.action_class === "OPERATION" && clause.operation_subject === "VALIDATION");
   const noMutationConstraints = userClauses.filter(isNoMutationConstraint);
   const assessments = userClauses.filter((clause) => clause.operator === "ASSESSMENT" || clause.operator === "ADVISORY");
@@ -408,7 +412,7 @@ export function deriveAdmissionClausePatches(request: string, spans: readonly Ad
     && clause.mutation_domain === "APPLICATION_SOURCE"
     && write.mutation_domain === "DOCUMENTATION"));
   const assessedLocalWrite = positiveWrites.some((write) => directAssessments.some((assessment) => assessment.index < write.index));
-  if (scopedValidationWrite || disjointScopedWrite || assessedLocalWrite) {
+  if (scopedValidationWrite || disjointScopedWrite || assessedLocalWrite || directUkrainianWrite) {
     patches.intent = "CHANGE";
   }
   else if (validationOperations.length && noMutationConstraints.length) {

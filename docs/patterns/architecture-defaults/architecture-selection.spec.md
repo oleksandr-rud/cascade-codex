@@ -24,11 +24,18 @@ constraints and quality attributes
 ```
 
 The default is the simplest sufficient topology. For server-side work, begin
-with one deployable modular application and explicit module boundaries. Split
-services only for demonstrated deployment, ownership, scaling, regulatory, or
-failure-isolation needs. A client, CLI, experiment, or independently released
-library remains its own archetype, but uses the same evidence and
-classification discipline.
+with a modular monolith and explicit modules named for real
+domain entities, aggregates, or cohesive capabilities. Do not use `core`,
+`common`, `services`, or another technical category as a domain boundary. Split
+services only for demonstrated deployment, ownership, scaling, regulatory,
+data/security, or failure-isolation needs. A client, CLI, experiment, or
+independently released library remains its own archetype, but uses the same
+evidence and classification discipline.
+
+Separate source ownership from deployment topology: several domain modules may
+share one database and release while retaining public in-process contracts,
+owned tables, and acyclic dependencies. Use the `service-api-worker` contract
+for that default; its stable pair ID does not mean one service per module.
 
 Evaluate these candidate shapes:
 
@@ -65,8 +72,8 @@ boundary document. Map the same information into its current owners.
 - Define product behavior, criticality, team ownership, data, interfaces,
   consistency, latency, security, compliance, scale, cost, and deployment
   constraints before comparing shapes.
-- Treat independently deployed, versioned, or distributed units, data
-  ownership, and public contracts as the primary architecture boundaries.
+- Define domain-module ownership and public contracts before deciding which
+  boundaries must also be independently deployed, versioned, or distributed.
 - Use `architecture-selection` first, then `tenancy-strategy` and
   `interface-strategy`, then `stack-selection`, then only applicable
   application-technology, infrastructure, event, or frontend policy

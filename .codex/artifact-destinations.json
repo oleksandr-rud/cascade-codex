@@ -1,0 +1,63 @@
+{
+  "$schema": "./schemas/workspace/artifact-destinations.schema.json",
+  "schema_version": 1,
+  "artifact_type": "cascade-workspace-artifact-destinations",
+  "policies": [
+    {
+      "kind": "specification",
+      "prefixes": ["docs/specs/"],
+      "formats": ["json", "yaml", "markdown", "text"],
+      "max_bytes": 1048576,
+      "workflow_owner": "closeout",
+      "retention": "durable"
+    },
+    {
+      "kind": "product",
+      "prefixes": ["docs/product/"],
+      "formats": ["json", "yaml", "markdown"],
+      "max_bytes": 1048576,
+      "workflow_owner": "closeout",
+      "retention": "durable"
+    },
+    {
+      "kind": "design",
+      "prefixes": ["docs/design/"],
+      "formats": ["json", "yaml", "markdown"],
+      "max_bytes": 1048576,
+      "workflow_owner": "closeout",
+      "retention": "durable"
+    },
+    {
+      "kind": "brand",
+      "prefixes": ["docs/brand/"],
+      "formats": ["json", "yaml", "markdown"],
+      "max_bytes": 1048576,
+      "workflow_owner": "closeout",
+      "retention": "durable"
+    },
+    {
+      "kind": "pattern",
+      "prefixes": ["docs/patterns/"],
+      "formats": ["json", "yaml", "markdown"],
+      "max_bytes": 1048576,
+      "workflow_owner": "closeout",
+      "retention": "durable"
+    },
+    {
+      "kind": "project-work",
+      "prefixes": ["docs/work/"],
+      "formats": ["json", "yaml", "markdown"],
+      "max_bytes": 1048576,
+      "workflow_owner": "closeout",
+      "retention": "durable"
+    },
+    {
+      "kind": "backlog",
+      "prefixes": ["docs/backlog/"],
+      "formats": ["json", "yaml", "markdown"],
+      "max_bytes": 1048576,
+      "workflow_owner": "closeout",
+      "retention": "durable"
+    }
+  ]
+}

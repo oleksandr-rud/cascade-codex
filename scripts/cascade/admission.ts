@@ -6,6 +6,7 @@ import {
   compareRfc3339Instants,
   flag,
   flags,
+  isFile,
   parseArgs,
   parseRfc3339ComparableInstant,
   parseRfc3339Instant,
@@ -351,13 +352,17 @@ export interface ToolAdmissionDecision {
   reason: string;
 }
 
-const [ENVELOPE_SCHEMA, POLICY_BUNDLE, CONTROL_CATALOG, CASE_SCHEMA, ASSESSMENT_SCHEMA] = await Promise.all([
+const [ENVELOPE_SCHEMA, POLICY_BUNDLE, CONTROL_CATALOG] = await Promise.all([
   readJson<JsonObject>(ENVELOPE_SCHEMA_PATH),
   loadAdmissionPolicyBundle(),
   loadAdmissionControlCatalog(),
-  readJson<JsonObject>(CASE_SCHEMA_PATH),
-  readJson<JsonObject>(ASSESSMENT_SCHEMA_PATH),
 ]);
+const CASE_SCHEMA = (await isFile(CASE_SCHEMA_PATH))
+  ? await readJson<JsonObject>(CASE_SCHEMA_PATH)
+  : null;
+const ASSESSMENT_SCHEMA = (await isFile(ASSESSMENT_SCHEMA_PATH))
+  ? await readJson<JsonObject>(ASSESSMENT_SCHEMA_PATH)
+  : null;
 const POLICY_BUNDLE_DIGEST = sha256Text(stableJson(POLICY_BUNDLE));
 const CONTROL_CATALOG_DIGEST = sha256Text(stableJson(CONTROL_CATALOG));
 
@@ -1686,6 +1691,11 @@ function expectedIds(prefix: string, count: number, digits: number): string[] {
 }
 
 export function validateAdmissionCaseBundle(source: unknown): asserts source is JsonObject {
+  if (!CASE_SCHEMA) {
+    throw new CascadeError(
+      "task admission corpus validation is available only in the source checkout",
+    );
+  }
   assertJsonSchema(source, CASE_SCHEMA, "$");
   const cases = (source as JsonObject).cases as JsonObject[];
   const caseIds = cases.map((item) => item.id);
@@ -1698,20 +1708,10 @@ export function validateAdmissionCaseBundle(source: unknown): asserts source is 
   }
 }
 
-export async function validateAdmissionRepository(): Promise<{ policy_count: number; control_count: number; case_count: number }> {
-  const [source, catalog, envelopeSchema, policySchema, policySourceSchema, controlSchema, cases, caseSchema, assessmentSchema] = await Promise.all([
-    readStructured<JsonObject>(POLICY_PATH, ADMISSION_POLICY_SOURCE_FILE), loadAdmissionControlCatalog(), readJson<JsonObject>(ENVELOPE_SCHEMA_PATH),
-    readJson<JsonObject>(POLICY_SCHEMA_PATH), readJson<JsonObject>(POLICY_SOURCE_SCHEMA_PATH), readJson<JsonObject>(CONTROL_SCHEMA_PATH), readStructured<JsonObject>(CORPUS_PATH, "harness-evals/task-admission/cases.yaml"), readJson<JsonObject>(CASE_SCHEMA_PATH),
-    readJson<JsonObject>(ASSESSMENT_SCHEMA_PATH),
-  ]);
-  if (envelopeSchema.$id !== "https://cascade.local/schemas/task-envelope.v41.schema.json" || policySchema.$id !== "https://cascade.local/schemas/task-admission-policy.v41.schema.json" || policySourceSchema.$id !== "https://cascade.local/schemas/task-admission-policy-source.v41.schema.json" || controlSchema.$id !== "https://cascade.local/schemas/task-admission-controls.v41.schema.json" || caseSchema.$id !== "https://cascade.local/schemas/task-admission-cases.v41.schema.json" || assessmentSchema.$id !== "https://cascade.local/schemas/task-admission-assessment.v41.schema.json") throw new CascadeError("task admission public schema identity is invalid");
-  const publicSchemaVersions = [envelopeSchema, policySchema, controlSchema, caseSchema, assessmentSchema].map((schema) => schema.properties?.schema_version?.const);
-  if (publicSchemaVersions.some((version) => version !== ADMISSION_SCHEMA_VERSION)) throw new CascadeError("task admission public schema versions must advance together");
-  assertJsonSchema(source, policySourceSchema, "$");
-  const bundle = normalizeAdmissionPolicyBundle(source);
-  assertJsonSchema(bundle, policySchema, "$");
-  assertJsonSchema(catalog, controlSchema, "$");
-  validateAdmissionCaseBundle(cases);
+function validateAdmissionRuntimeBundle(
+  bundle: JsonObject,
+  catalog: JsonObject,
+): { policy_count: number; control_count: number } {
   if (catalog.schema_version !== ADMISSION_SCHEMA_VERSION || catalog.catalog_id !== "cascade-task-controls" || catalog.catalog_version !== ADMISSION_SCHEMA_VERSION || !Array.isArray(catalog.controls)) throw new CascadeError("task admission control catalog is invalid");
   const controls = catalog.controls as ControlDefinition[];
   const controlIds = controls.map((item) => item.id);
@@ -1742,10 +1742,46 @@ export async function validateAdmissionRepository(): Promise<{ policy_count: num
     const overlap = policy.required_controls.filter((control) => policy.forbidden_controls.includes(control));
     if (overlap.length) throw new CascadeError(`policy ${policy.id} both requires and forbids ${overlap.join(", ")}`);
   }
+  if (`${bundle.bundle_id}@${bundle.bundle_version}` !== ADMISSION_POLICY_BUNDLE || bundle.schema_version !== ADMISSION_SCHEMA_VERSION) {
+    throw new CascadeError("task admission runtime policy version is invalid");
+  }
+  return { policy_count: policyIds.length, control_count: controlIds.length };
+}
+
+export function validateAdmissionRuntime(): {
+  policy_count: number;
+  control_count: number;
+} {
+  if (
+    ENVELOPE_SCHEMA.$id !==
+      "https://cascade.local/schemas/task-envelope.v41.schema.json" ||
+    ENVELOPE_SCHEMA.properties?.schema_version?.const !==
+      ADMISSION_SCHEMA_VERSION
+  ) {
+    throw new CascadeError("task admission runtime schema identity is invalid");
+  }
+  return validateAdmissionRuntimeBundle(POLICY_BUNDLE, CONTROL_CATALOG);
+}
+
+export async function validateAdmissionRepository(): Promise<{ policy_count: number; control_count: number; case_count: number }> {
+  const [source, catalog, envelopeSchema, policySchema, policySourceSchema, controlSchema, cases, caseSchema, assessmentSchema] = await Promise.all([
+    readStructured<JsonObject>(POLICY_PATH, ADMISSION_POLICY_SOURCE_FILE), loadAdmissionControlCatalog(), readJson<JsonObject>(ENVELOPE_SCHEMA_PATH),
+    readJson<JsonObject>(POLICY_SCHEMA_PATH), readJson<JsonObject>(POLICY_SOURCE_SCHEMA_PATH), readJson<JsonObject>(CONTROL_SCHEMA_PATH), readStructured<JsonObject>(CORPUS_PATH, "harness-evals/task-admission/cases.yaml"), readJson<JsonObject>(CASE_SCHEMA_PATH),
+    readJson<JsonObject>(ASSESSMENT_SCHEMA_PATH),
+  ]);
+  if (envelopeSchema.$id !== "https://cascade.local/schemas/task-envelope.v41.schema.json" || policySchema.$id !== "https://cascade.local/schemas/task-admission-policy.v41.schema.json" || policySourceSchema.$id !== "https://cascade.local/schemas/task-admission-policy-source.v41.schema.json" || controlSchema.$id !== "https://cascade.local/schemas/task-admission-controls.v41.schema.json" || caseSchema.$id !== "https://cascade.local/schemas/task-admission-cases.v41.schema.json" || assessmentSchema.$id !== "https://cascade.local/schemas/task-admission-assessment.v41.schema.json") throw new CascadeError("task admission public schema identity is invalid");
+  const publicSchemaVersions = [envelopeSchema, policySchema, controlSchema, caseSchema, assessmentSchema].map((schema) => schema.properties?.schema_version?.const);
+  if (publicSchemaVersions.some((version) => version !== ADMISSION_SCHEMA_VERSION)) throw new CascadeError("task admission public schema versions must advance together");
+  assertJsonSchema(source, policySourceSchema, "$");
+  const bundle = normalizeAdmissionPolicyBundle(source);
+  assertJsonSchema(bundle, policySchema, "$");
+  assertJsonSchema(catalog, controlSchema, "$");
+  validateAdmissionCaseBundle(cases);
+  const counts = validateAdmissionRuntimeBundle(bundle, catalog);
   const caseIds = (cases.cases as JsonObject[]).map((item) => item.id);
   if (`${bundle.bundle_id}@${bundle.bundle_version}` !== ADMISSION_POLICY_BUNDLE || bundle.schema_version !== ADMISSION_SCHEMA_VERSION || catalog.catalog_version !== ADMISSION_SCHEMA_VERSION || cases.schema_version !== ADMISSION_SCHEMA_VERSION || cases.policy_bundle_version !== ADMISSION_POLICY_BUNDLE || cases.case_set_version !== ADMISSION_SCHEMA_VERSION) throw new CascadeError("task admission bundle, corpus, and public version update must advance together");
   if (assessmentSchema.properties?.schema_version?.const !== ADMISSION_SCHEMA_VERSION || assessmentSchema.additionalProperties !== false) throw new CascadeError("task admission assessment schema is incomplete");
-  return { policy_count: policyIds.length, control_count: controlIds.length, case_count: caseIds.length };
+  return { ...counts, case_count: caseIds.length };
 }
 
 let admissionRepositoryValidation: Promise<{
@@ -2202,10 +2238,10 @@ function buildTaskDerivationInput(input: AdmissionRequest): TaskDerivationInput 
 
 export async function compileTaskEnvelope(input: AdmissionRequest): Promise<TaskEnvelope> {
   assertAdmissionRequestBound(input.request);
-  // The compiler policy/control objects are immutable module snapshots. Validate
-  // their repository bundle once instead of reparsing the full YAML corpus for
-  // every envelope compiled in the same process.
-  await validateAdmissionRepositoryOnce();
+  // Normal runtime compilation validates only the policy, control, and envelope
+  // contracts loaded by this process. The 981-case corpus is a source-checkout
+  // regression suite and must never become a per-request runtime dependency.
+  validateAdmissionRuntime();
   if (input.prior_envelope) validateTaskEnvelope(input.prior_envelope);
   const derivationInput = buildTaskDerivationInput(input);
   const envelope = sealEnvelope(deriveTaskEnvelopePayload(derivationInput));
@@ -3384,6 +3420,11 @@ export async function runAdmissionCorpus(): Promise<JsonObject> {
     },
     results,
   };
+  if (!ASSESSMENT_SCHEMA) {
+    throw new CascadeError(
+      "task admission corpus assessment is available only in the source checkout",
+    );
+  }
   assertJsonSchema(assessment, ASSESSMENT_SCHEMA, "$");
   return assessment;
 }

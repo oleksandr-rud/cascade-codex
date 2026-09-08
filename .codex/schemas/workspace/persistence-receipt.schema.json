@@ -1,0 +1,43 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://cascade.local/workspace/persistence-receipt.v1.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "artifact_type",
+    "receipt_id",
+    "status",
+    "operation",
+    "preparation_receipt_id",
+    "artifact_kind",
+    "target_path",
+    "format",
+    "sha256",
+    "previous_sha256",
+    "bytes",
+    "persisted_at",
+    "read_back_verified"
+  ],
+  "properties": {
+    "schema_version": { "const": 1 },
+    "artifact_type": { "const": "cascade-workspace-persistence-receipt" },
+    "receipt_id": { "type": "string", "pattern": "^WPERSIST-[a-f0-9]{16}$" },
+    "status": { "enum": ["WRITTEN", "UNCHANGED"] },
+    "operation": { "enum": ["CREATE", "REPLACE", "NOOP"] },
+    "preparation_receipt_id": { "type": "string", "pattern": "^WPREP-[a-f0-9]{16}$" },
+    "artifact_kind": { "type": "string", "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$" },
+    "target_path": { "type": "string", "minLength": 1, "maxLength": 512 },
+    "format": { "enum": ["json", "yaml", "markdown", "text"] },
+    "sha256": { "$ref": "#/$defs/digest" },
+    "previous_sha256": {
+      "oneOf": [{ "$ref": "#/$defs/digest" }, { "type": "null" }]
+    },
+    "bytes": { "type": "integer", "minimum": 1, "maximum": 1048576 },
+    "persisted_at": { "type": "string", "format": "date-time" },
+    "read_back_verified": { "const": true }
+  },
+  "$defs": {
+    "digest": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+  }
+}

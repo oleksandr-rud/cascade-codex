@@ -19,6 +19,10 @@ config; keep reusable workflow rules in skills, agents, and patterns.
 | `docs/patterns/` | Reusable workflow, boundary, testing, context rules, and selectable context packs | `pattern-context`, `closeout`, `cascade-coding-agent:adapt-harness` |
 | `.codex/skills/` | Repository context, persistence, mutation, validation, target execution/repair, and closeout effects | Agent Engineer and Orchestrator host integration |
 | `.codex/agents/` | Role contracts and skill maps | Agent Engineer skills |
+| `.codex/agents/product-designer/` and sibling `.toml` | Mockup creation and frontend design handoff | Agent Engineer integration; Product Designer owns scoped design artifacts |
+| `.codex/agents/software-engineer/` and sibling `.toml` | Application/domain/data/integration implementation | Agent Engineer integration; Software Engineer owns assigned target slice |
+| `.codex/agents/code-reviewer/` and sibling `.toml` | Read-only fixed-diff review | Agent Engineer integration; Code Reviewer owns scoped findings |
+| `.codex/agents/frontend-engineer/` and sibling `.toml` | Frontend implementation, responsive/state behavior and approved-mockup fidelity role | Agent Engineer integration; Frontend Engineer executes scoped target work |
 | `.codex/plugins/` | Repo-local plugin source packages referenced by the repository marketplace | `plugin-creator`, `cascade-coding-agent:maintain-harness` |
 | `.codex/harness-tooling/` | Isolated pinned browser-simulation dependencies and Playwright runner files | Harness maintainers |
 | `harness-evals/` | Canonical scenarios, generated catalog, target schema, judge profiles, anchored rubrics, and judgment schema | `cascade-evals:harness-evaluation`, `cascade-evals:build-judge`, and the host runner |
@@ -27,13 +31,41 @@ config; keep reusable workflow rules in skills, agents, and patterns.
 | `product-evals/intakes/harness/`, `product-evals/intakes/product/` | Scope-separated Task Envelope/product-context/action-policy bindings; product campaigns require a current READY intake before execution | Simulations plugin methods plus host runner; consumed by Simulation Operator and Simulation Evaluator |
 | `product-evals/claims/`, `product-evals/policies/`, `product-evals/oracles/`, `product-evals/metrics/`, `product-evals/treatments/`, `product-evals/calibrations/`, `product-evals/rubrics/` | Versioned claim, policy, oracle, metric, treatment, calibration, evaluator-profile, rubric, and evaluation-schema authorities | Simulations and Evals plugin methods plus host persistence |
 | `.artifacts/product-evals/` | Ignored append-only product-evaluation execution, evaluation, calibration, and aggregation receipts | `scripts/cascade/campaigns.ts`, Simulation Operator, and Simulation Evaluator |
+| `.artifacts/product-eval-reports/` | Private local HTML/JSON reports and optional PDF exports derived from a verified frozen run; never part of its evidence namespace | `scripts/cascade/campaign-report.ts` and the isolated print renderer |
 | `.codex/plugins/cascade-simulations/skills/manage-simulation-campaign/` | Campaign authoring, selection, replay planning, receipt aggregation, claim projection, and reporting contract | Cascade Simulations source |
 | `.codex/plugins/cascade-simulations/skills/execute-simulation-campaign/` | Bounded selected-run lifecycle and execution receipt contract | Cascade Simulations source and Simulation Operator |
 | `.codex/plugins/cascade-evals/skills/simulation-evaluation/` | Read-only frozen-evidence, policy, oracle, semantic, and claim-support contract | Cascade Evals source and Simulation Evaluator |
+| `scripts/cascade/cli/` | Async command dispatcher shared by the executable entrypoint and future transports | Cascade CLI application layer |
+| `scripts/cascade/closeout.ts`, `scripts/cascade/closeout-hook.ts` | Shared task/turn-scoped integrity checker and advisory prompt/Stop adapter | Host closeout; never launches tests or judges |
+| `.artifacts/closeout/` | Optional ignored current-turn contracts and evidence summaries | Active host after real scoped checks; no authority from file presence |
+| `scripts/cascade/workspace-service.ts`, `scripts/cascade/workspace-mcp.ts` | Project-level MCP context compilation and registry-bound artifact prepare/persist adapter | Active host for reads; `closeout` for durable writes |
+| `.codex/artifact-destinations.json`, `.codex/schemas/workspace/` | Durable artifact kind, path, format, and receipt contracts for Workspace MCP | Agent Engineer plus authorized host maintenance |
+| `scripts/cascade/campaign/adapters/` | One module per execution contour plus the built-in adapter registry and shared transport resolution | Campaign infrastructure adapters |
+| `scripts/cascade/campaign/artifacts/` | Application-facing artifact repository ports; filesystem persistence remains in `campaign-artifacts.ts` | Campaign application and infrastructure boundary |
+| `scripts/cascade-runtime.ts`, `scripts/build-runtime-bundle.ts` | Six-command core target entrypoint and deterministic lean-bundle builder | Agent Engineer and source validation |
+| `dist/cascade-runtime/` | Ignored generated target profile: host adapters, frozen plugin catalog, Coordinator contracts, admission, closeout, and Workspace MCP | Runtime bundle builder |
+
+The source checkout and target runtime are intentionally different products.
+The source checkout currently has 14 plugin packages plus harness-eval,
+simulation-campaign, fixture, source-test, and historical evidence layers. The
+generated core profile has a hard ceiling of 120 files and excludes
+`.codex/plugins/`, `harness-evals/`, `product-evals/`, `docs/archive/`, source
+tests, browser tooling, source scripts, and the two simulation lab roles.
+Harness judging is an optional Evals profile, with no dedicated host role.
+Installed plugins provide portable methods; the target retains the host roles
+and repository-bound adapters/effects selected by the runtime bundle manifest.
+
+The repository's default `bun run test` command retains only six runtime
+safety smoke files under `scripts/cascade/`: admission authority, filesystem
+and process boundaries, workspace artifact persistence, the real MCP adapter,
+closeout integrity, and the lean runtime bundle. This is deliberately reduced coverage, not an
+exhaustive unit suite. Plugin package tests, lab corpora, and built-in targeted
+self-tests remain separate and run only for an affected contract; do not
+recreate broad module-by-module test suites as a routine harness task.
 
 The repository marketplace at `.agents/plugins/marketplace.json` catalogs all
-13 Cascade plugin source packages under `.codex/plugins/<plugin-name>/`:
-Prompt, Simulations, Evals, AI Architect, Software Architect, Coding Agent,
+14 Cascade plugin source packages under `.codex/plugins/<plugin-name>/`:
+Prompt, Simulations, Evals, Coordinator, AI Architect, Software Architect, Coding Agent,
 Personas, Product, Marketing, Design, Security, Project Management, and QA.
 Cascade Marketing retains the internal ID `cascade-market` and owns evidence,
 market selection, positioning and growth planning. Cascade Product owns value
@@ -54,7 +86,8 @@ The host/plugin boundary is:
 ```text
 repository request
   -> Task Envelope claims and policies
-  -> Plan Workflow when multiple plugins are required
+  -> Coordinator capability selection when the exact route is ambiguous
+  -> Plan Workflow when the validated selection requires a graph
   -> validated capability DAG
   -> local role or discovery adapter
   -> exact namespaced plugin skill
@@ -67,6 +100,23 @@ Cascade Simulations owns a bounded dynamic actor loop. The local
 state, real host adapters, runtime authority, frozen artifacts, claims,
 policies, oracles, and aggregation. Cascade Evals owns generic semantic judge
 contracts and score reduction in both paths.
+
+Cascade evolves as a modular monolith: admission, plugin workflow, workspace
+artifacts, campaigns, evaluation, and target analysis remain concrete ownership
+areas within one runtime codebase and release. CLI, hooks, and Workspace MCP are
+host-facing adapters, not independently deployed domain services. Host-required
+process boundaries do not justify duplicating domain logic or adding internal
+HTTP/RPC. Extract large implementations incrementally behind existing public
+contracts; do not replace the runtime with generic service or manager modules.
+
+The runtime dependency direction is CLI or transport -> command/application
+service -> ports -> built-in adapters and filesystem infrastructure. A module
+boundary does not imply another process. The project-level Workspace MCP is a
+narrow stdio transport for allowlisted context reads and closeout-owned
+artifact persistence; it is not a daemon, plugin dispatcher, or generic CLI
+proxy. A future asynchronous command transport should call
+`executeCascadeCommand` or submit concurrent requests to the serialized
+`CascadeCommandExecutor`, while keeping the CLI as a peer adapter.
 
 ## Active Work Paths
 
@@ -359,6 +409,78 @@ Canonical deterministic runtime authority owned by W-004:
   `.artifacts/product-evals/refinement-reviews/<disposition-id>/`; these bind a
   frozen proposal and reviewed external-evidence manifests, and never mutate a
   persona source file.
+
+The campaign runtime is independent of the default Bun smoke suite. Removing
+module-level tests does not remove adapters, artifact storage, evaluation
+providers, reducers, or campaign definitions. Its current operational path is:
+
+1. Orchestrator selects `cascade-simulations:manage-simulation-campaign` for a
+   campaign, or `cascade-simulations:simulate` for one bounded actor loop.
+2. Simulation Operator follows `cascade-simulations:execute-simulation-campaign`;
+   `campaign run` owns policy checks, execution, source/evidence copies,
+   cleanup, and `execution/execution-receipt.json`.
+3. General campaign evaluation uses its declared fixture or Codex profile.
+   Simulation Evaluator owns the independent semantic boundary via
+   `cascade-evals:simulation-evaluation`; actor-loop evidence first needs
+   `cascade-simulations:simulation-review`. Cascade route/trace claims require
+   the specialized Harness Evaluator and `cascade-evals:harness-evaluation`.
+4. The runner reduces eligible receipts, writes `aggregations/` and
+   `summary.json`, then seals the complete run with `finalization.json`.
+   `campaign verify <run-id>` verifies that frozen package without rerunning it.
+5. After finalization, the runner attempts a separate local HTML/JSON report.
+   A presentation failure is reported as `campaign_report=BLOCKED`; it does not
+   change the sealed execution/evaluation result or conceal a failed scenario.
+
+The report shows scenario descriptions, actions, recorded PNGs, observations,
+and logs. Technical identities remain in downloadable JSON, outside the main
+view. The PDF button opens the browser print dialog; a headless export is also
+available through the isolated browser-tooling package:
+
+```bash
+bun scripts/cascade.ts campaign report <run-id> --pdf
+```
+
+Each export verifies the original freeze and creates a new private directory
+under `.artifacts/product-eval-reports/`. HTML includes its data and images and
+does not require a server, CDN, YAML parser, or network access. JSON remains
+machine-readable data; HTML/PDF are presentation copies, not new judgments.
+The current artifact policy explicitly permits these local derivatives while
+remote storage and external export remain disabled. Retention remains manual;
+source data must already satisfy the evidence redaction policy. A run whose
+freeze cannot be verified (including a missing authority-key binding) cannot
+be rendered. The renderer does not grant or recreate that authority.
+
+The opt-in report smoke check consumes a frozen `browser-simulation-smoke` run
+and covers responsive layout, actual PNG loading, JSON download, injection and
+network isolation, print visibility, and unchanged source finalization:
+
+```bash
+bun .codex/harness-tooling/report-smoke.ts <run-id>
+```
+
+This check is separate from the deliberately small default unit suite. It
+checks the real report path, not semantic judgment or target-product quality.
+
+Current limits must remain explicit:
+
+- The built-in browser adapter captures PNG screenshots and Playwright ZIP
+  traces, not video. `.codex/harness-tooling/browser-adapter-runner.ts` does not
+  configure recording, and its task evidence contract has no video field.
+- `summary.json` and typed receipts remain the authoritative results. The
+  automatic HTML/JSON report and optional PDF are separate presentation copies.
+  There is no video recorder or video report renderer.
+- `campaign run` currently combines execution, evaluation, aggregation, and
+  finalization. It freezes a separate Codex evaluator input before invoking
+  that provider, but seals the whole run only afterward. There is no separate
+  campaign CLI command to append a new evaluation to a finalized run; later
+  independent review must keep its output separate and reference the original
+  run identity and manifest digest. Do not reopen or overwrite that run.
+- A campaign requiring specialized harness judgment stops if its bound
+  receipt is missing; the general evaluator cannot substitute for that judge.
+- The core target bundle excludes these source/lab runners and specialist
+  roles. Installed plugins provide methods, not a target's browser runtime,
+  recording facility, artifact store, or permission grant. Bind those through
+  the target's declared adapters before claiming simulation readiness.
 
 The deterministic framework fixture proves definition resolution, stateful
 fake execution, policy/oracle reduction, evidence freezing, treatment

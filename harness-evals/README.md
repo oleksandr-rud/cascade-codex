@@ -1,8 +1,21 @@
 # Cascade Harness Evals
 
 This directory owns canonical harness scenarios and structured output schemas.
+It is a source-checkout evaluation lab, not part of the generated core target
+runtime. The 138 generated scenarios and 981 admission corpus rows are loaded
+only by explicit source eval/corpus commands; normal request admission and
+plugin routing do not read them.
 Live traces and reports are generated under `.artifacts/harness-evals/` and are
-not source files.
+ignored, disposable local diagnostics, not source files or durable evidence.
+Do not copy run directories, judge outputs, or aggregate reports into tracked
+work reports or archives merely to retain a passing score. Re-run a focused
+case from its current source-bound contract when the diagnostic is needed
+again.
+
+An explicitly registered simulation campaign may retain the minimal specialized
+route/trace receipt required by its frozen claim contract. That campaign-scoped
+receipt is not the generic run directory and cannot establish target-product
+behavior or widen the claim it was created to evaluate.
 
 ## Coverage Model
 
@@ -52,15 +65,17 @@ prints the run directory and
 writes raw traces, normalized traces, per-case mechanical eligibility, a source
 manifest, and summary reports. The `judge` command selects every eligible case,
 runs required outcome and trajectory profiles independently through the
-read-only `harness-evaluator`, and writes one judgment trace per case/profile.
+read-only Cascade Evals harness subject profile (no registered host role), and writes one judgment trace per case/profile.
 
 The `coverage` command exact-matches each run's complete scenario object to the
 current catalog and exact harness source digest. It verifies raw, normalized,
 and eligibility artifacts, then rejects stale sources, unsupported models,
 blocked or failed traces, missing judges, invalid ratings, and any required
 judge failure before claiming accepted coverage.
-It reports trace-complete execution separately from acceptance so confirmed
-regressions remain counted as executed without being converted into passes.
+It reports trace-complete execution separately from diagnostic acceptance so
+confirmed regressions remain counted as executed without being converted into
+passes. Accepted coverage is a property of that exact disposable run; it is not
+product, simulation, deployment, release, or architecture evidence.
 
 Agent outcome eligibility additionally requires the responsible role and
 primary skill to be loaded and all declared instruction sources to be cited.
@@ -90,6 +105,7 @@ Judges emit only 0–4 dimension ratings, rationale, evidence, and a semantic
 verdict. The runner recomputes weighted scores and requires threshold,
 minimum-dimension, and verdict agreement. Use `cascade-evals:build-judge` to
 change or calibrate these contracts; use
-`cascade-evals:harness-evaluation` to coordinate and reduce target evidence.
+`cascade-evals:harness-evaluation` to coordinate and reduce one bounded target
+diagnostic.
 The per-case `effectiveness_score` is the lower required-judge score, while the
 coverage ledger retains both profile scores and their distributions.

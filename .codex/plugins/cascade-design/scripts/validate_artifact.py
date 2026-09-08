@@ -17,6 +17,7 @@ SKILL_KIND = {
     "accessibility-review": "accessibility",
     "visual-qa": "visual",
     "design-system": "design-system",
+    "create-design": "design-creation",
 }
 
 
@@ -174,6 +175,36 @@ def cross_field_errors(artifact: dict[str, Any]) -> list[str]:
         if unavailable_truth:
             errors.append(f"design-system source_of_truth_ids include missing artifacts: {unavailable_truth}")
 
+    if selected == "create-design":
+        frames = coverage.get("frames", [])
+        ids = [frame.get("frame_id") for frame in frames]
+        if len(ids) != len(set(ids)):
+            errors.append("design frames must have unique frame IDs")
+        views = [(view["viewport"], view["state"]) for view in coverage["required_views"]]
+        if len(views) != len(set(views)):
+            errors.append("design required_views must contain unique viewport/state pairs")
+        truth = coverage.get("source_of_truth_ids", [])
+        for source_id in truth:
+            source = sources_by_id.get(source_id, {})
+            if source.get("status") != "AVAILABLE" or source.get("authority") != "GOVERNING":
+                errors.append("design source_of_truth_ids must identify available governing sources")
+        if status == "READY":
+            scope = artifact.get("scope", {})
+            if not truth or not frames or not scope.get("actor") or not scope.get("job"):
+                errors.append("READY design requires governing sources, actor/job and actual frames")
+            if coverage.get("unresolved_gaps") or any(frame.get("inspection") != "PASS" for frame in frames):
+                errors.append("READY design requires inspected previews without unresolved gaps")
+            observed_pairs = {(frame["viewport"], frame["state"]) for frame in frames}
+            if not views or not set(views).issubset(observed_pairs):
+                errors.append("READY design lacks required viewport/state pair coverage")
+            for key in ("state", "viewport"):
+                expected = set(scope.get(key + "s", []))
+                observed = {frame.get(key) for frame in frames}
+                if not expected or not expected.issubset(observed):
+                    errors.append(f"READY design lacks declared {key} coverage")
+            if not any(item.get("route") == "host:frontend-implementation" for item in artifact.get("handoffs", [])):
+                errors.append("READY design requires a frontend implementation handoff")
+
     for handoff in artifact.get("handoffs", []):
         if not isinstance(handoff, dict):
             continue
@@ -197,7 +228,8 @@ def validate_artifact(schema: dict[str, Any], artifact: dict[str, Any]) -> list[
         f"schema {'.'.join(str(item) for item in error.absolute_path) or '<root>'}: {error.message}"
         for error in validator.iter_errors(artifact)
     ]
-    errors.extend(cross_field_errors(artifact))
+    if not errors:
+        errors.extend(cross_field_errors(artifact))
     return sorted(set(errors))
 
 

@@ -1,0 +1,72 @@
+{
+  "schema_version": "state-delta.v3",
+  "input_context_id": "analyzer-input-1",
+  "event_id": "user-message-1",
+  "turn_id": "user-turn-1",
+  "checkpoint_id": "checkpoint-1",
+  "base_revision": 0,
+  "idempotency_key": "session-example/user-message-1/analysis-1",
+  "groups": [
+    {
+      "group_id": "update-conversation-identity",
+      "depends_on": [],
+      "operations": [
+        {
+          "op": "change_policy_data",
+          "op_id": "set-preferred-name",
+          "policy_id": "conversation-identity",
+          "instance_id": "identity-current-user",
+          "field_id": "preferred_name",
+          "expected_field_revision": 0,
+          "change": {
+            "kind": "set",
+            "value": "Олена"
+          },
+          "support": "reported",
+          "evidence_refs": [
+            "user-message-1/name"
+          ]
+        }
+      ]
+    },
+    {
+      "group_id": "update-current-response-style",
+      "depends_on": [],
+      "operations": [
+        {
+          "op": "change_policy_data",
+          "op_id": "record-current-concern",
+          "policy_id": "response-style",
+          "instance_id": "response-style-current-turn",
+          "field_id": "emotion_observation",
+          "expected_field_revision": 0,
+          "change": {
+            "kind": "set",
+            "value": "concern"
+          },
+          "support": "reported",
+          "evidence_refs": [
+            "user-message-1/concern"
+          ]
+        },
+        {
+          "op": "change_policy_data",
+          "op_id": "set-requested-format",
+          "policy_id": "response-style",
+          "instance_id": "response-style-current-turn",
+          "field_id": "requested_format",
+          "expected_field_revision": 0,
+          "change": {
+            "kind": "set",
+            "value": "one_step_at_a_time"
+          },
+          "support": "reported",
+          "evidence_refs": [
+            "user-message-1/format"
+          ]
+        }
+      ]
+    }
+  ],
+  "blocks": []
+}

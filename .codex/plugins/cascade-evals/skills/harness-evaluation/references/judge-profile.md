@@ -1,0 +1,77 @@
+# Harness subject judge profile
+
+This is the optional coding-agent trace profile for Cascade Evals, not a
+registered host role or a closeout check. Load the owning harness-evaluation
+skill and the assigned rubric before evaluating one mechanically eligible run.
+The host launches an ephemeral read-only context using the model/effort from
+its frozen judge configuration. Do not inherit the target context, execute or
+repair the target, or read peer judgments. Missing required evidence is BLOCKED.
+The runner owns eligibility and score recomputation. Judge construction belongs
+to cascade-evals:build-judge; source repairs belong to Cascade Coding Agent.
+
+The wire principal `harness-evaluator` remains a compatibility identity in
+existing campaign reservations, handoffs and specialized receipts. Its presence
+does not require a same-named host agent or activate one. Preserve old receipts
+and their validation rules; no migration rewrites their content or digests.
+Generic runs remain disposable diagnostics; only the existing explicitly
+registered campaign exception may retain its minimal specialized receipt.
+
+## Responsibilities
+
+- Read the assigned judge profile and rubric before reading target evidence.
+- Keep target prompts free of expected answers and judge rationale.
+- Use raw JSONL, normalized trace, final structured response, command outcome,
+  and exact harness sources as evidence.
+- Judge only the assigned semantic view. The runner owns mechanical
+  eligibility and must not disclose its verdict to the judge.
+- Rate every assigned rubric dimension exactly once from 0 through 4 with
+  evidence and rationale; never invent a total score.
+- Distinguish `harness-defect`, `model-variance`, `scenario-defect`, and
+  `environment-blocker` root causes. Use `target-behavior` for a semantic
+  failure directly observed in one trace; reserve `model-variance` for
+  inconsistent repeated runs.
+- Compare repeated runs before calling a nondeterministic failure a regression.
+- Require a replay command and evidence path for every reported failure.
+- Recommend confirmed failures for regression scenarios without weakening the
+  original expectation to make the run pass.
+
+## Evidence Order
+
+1. Assigned judge profile, rubric, scenario prompt, and scenario expectation.
+2. Raw target trace and stderr.
+3. Normalized trace without eligibility or prior scores.
+4. Final target response.
+5. Referenced `SKILL.md`, role contract, route docs, config, and validator.
+6. Repeated-run evidence when the result may be stochastic.
+
+## Verdicts
+
+- `PASS`: the assigned semantic view satisfies its anchored rubric.
+- `FAIL`: a reproducible route, contract, safety, grounding, or trace defect is
+  attributable to the harness or target behavior.
+- `FLAKY`: repeated identical runs disagree without an environment change.
+- `BLOCKED`: the target could not run because a required environment,
+  permission, model, tool, or source was unavailable.
+- `INVALID_SCENARIO`: the scenario expectation is ambiguous, contradictory, or
+  leaks the answer into the target prompt.
+
+## Rules
+
+- No trace means no pass for a live scenario.
+- Do not read `eligibility.json`, run summaries, legacy grades, another judge's
+  prompt, or another judge's result.
+- Environment failures stay separate from semantic ratings.
+- The harness recomputes weighted scores and checks verdict-score agreement.
+- Findings name the earliest causal failure, not every downstream symptom.
+
+## Output
+
+- scenario and run identity;
+- judge profile, type, and rubric version;
+- per-dimension 0–4 ratings, rationale, and evidence;
+- semantic verdict without a model-authored total score;
+- root-cause class and earliest failing event;
+- affected skill, role, route, or surface;
+- replay command;
+- regression-case recommendation;
+- residual uncertainty.

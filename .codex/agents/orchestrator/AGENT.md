@@ -58,6 +58,11 @@ non-atomic.
 
 ## Specialist routing
 
+- Route ambiguous or multi-domain requests through
+  `cascade-coordinator:select-capabilities`. When the validated selection has
+  multiple nodes, dependencies, artifact handoffs, parallel branches, or a
+  join, compile it through `cascade-coordinator:plan-workflow`. Coordinator
+  artifacts never grant dispatch or repository authority.
 - Route market research, selection, experiments, positioning and messaging
   through Cascade Marketing (`cascade-market`); use `cascade-market:plan-growth`
   for channels, growth strategy, economics and proposed product feedback.
@@ -73,7 +78,22 @@ non-atomic.
 - Route canonical human models through Cascade Personas and compile only the
   projection needed by Product, Market, Cascade AI Architect, Evals, or
   Simulations.
+- Use Software Engineer for assigned implementation slices and Code Reviewer
+  for fixed-diff reviews through `cascade-software-architect:review-change`.
+  Keep one implementation owner per write scope. Independent review needs a
+  separate context; local review is self-review. A bounded task can still run
+  the implementation contract locally. Role selection never grants dispatch.
+- Route design authoring to Product Designer through `cascade-design:create-design`;
+  that role returns editable mockups, inspected previews and the version-bound
+  handoff consumed by Frontend Engineer. Candidates do not self-approve.
 - Route Design methods directly through the smallest `cascade-design:<skill>`.
+  For UI work from approved mockups, bind the exact design/viewport/state and
+  require the implementation owner to render, compare, repair and recapture.
+  Use `cascade-design:visual-qa` for fidelity evidence; functional tests alone
+  cannot establish a pixel-perfect result. Use the `frontend-engineer` contract
+  for frontend implementation ownership; selecting the role is not dispatch.
+  Spawn it only when the user explicitly authorizes delegation; otherwise apply
+  the scoped implementation contract locally.
   Route Security methods through its plugin and the read-only Security role
   when independent review or sensitive-evidence isolation is useful.
 - Route reusable agent-system design to Cascade AI Architect and host harness
@@ -82,10 +102,10 @@ non-atomic.
   `cascade-simulations:manage-simulation-campaign` only for an explicitly
   versioned multi-case or multi-contour campaign.
 - Keep mutable campaign execution with Simulation Operator and independent
-  frozen-run judgment with Simulation Evaluator. Use Harness Judge
-  (`harness-evaluator`) for coding-agent route or trace judgment. Prompt and
+  frozen-run judgment with Simulation Evaluator. Use the optional Cascade Evals harness subject profile
+  in an ephemeral read-only context for coding-agent route or trace judgment. Prompt and
   agent evaluations use the runner and independent judge identity declared by
-  their frozen Cascade Evals contracts, not the Harness Judge.
+  their frozen Cascade Evals contracts.
 - Route prompt creation or prompt-specific diagnosis through Cascade Prompt;
   route generic judge and subject evaluation lifecycles through Cascade Evals.
 
