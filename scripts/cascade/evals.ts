@@ -418,7 +418,8 @@ export async function harnessSourceManifest(): Promise<JsonObject> {
     ...(await walkFiles(rootPath(".codex/skills"))),
     ...(await walkFiles(rootPath(".codex/agents"))),
     ...(await walkFiles(resolve(EVAL_ROOT, "rubrics"))),
-  ].filter((path) => !path.endsWith(".pyc"));
+  ].filter((path) => !path.endsWith(".pyc") &&
+    !path.split(/[\\/]/).some((part) => part === ".pytest_cache" || part === "__pycache__"));
   const records = [];
   for (const path of [...new Set([...fixed, ...dynamic])].sort()) {
     if (await isFile(path)) records.push({ path: rel(path), sha256: await sha256File(path) });
