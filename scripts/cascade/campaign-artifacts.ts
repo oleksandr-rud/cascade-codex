@@ -5879,9 +5879,22 @@ export class CampaignArtifactStore {
       }
     }
     const actualSources = definitions.map((item) => String(item.path)).sort();
+    // Presentation was added after earlier runs were sealed. Bind its two
+    // sources to the frozen runtime import, not to today's checkout version.
+    // Never execute frozen code or relax the original execution source closure.
+    const runtimeDefinition = definitions.find((item) => item.path === "scripts/cascade/campaigns.ts");
+    const runtimeSource = Array.isArray(input.sourceManifest.frozen_sources)
+      ? input.sourceManifest.frozen_sources.find((item: any) => item.sha256 === runtimeDefinition?.sha256)
+      : null;
+    if (!runtimeDefinition || !runtimeSource) throw new CascadeError("frozen campaign runtime is missing");
+    const runtimeBytes = await this.readArtifactBytes(runtimeSource.path, "frozen campaign report binding");
+    if (sha256Text(runtimeBytes.toString("utf8")) !== runtimeDefinition.sha256) throw new CascadeError("frozen campaign runtime digest differs");
+    const usesReports = new Bun.Transpiler({ loader: "ts" }).scanImports(runtimeBytes.toString("utf8"))
+      .some((entry) => entry.path === "./campaign-report");
+    const reportSources = new Set(["scripts/cascade/campaign-report.ts", ".codex/harness-tooling/report-pdf-runner.ts"]);
     const expectedSources = [
       ...new Set<string>([
-        ...CAMPAIGN_FIXED_SOURCE_FILES,
+        ...CAMPAIGN_FIXED_SOURCE_FILES.filter((path) => usesReports || !reportSources.has(path)),
         ...expectedDynamicSources,
       ]),
     ].sort();

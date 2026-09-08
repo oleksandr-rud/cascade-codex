@@ -12,3 +12,9 @@ retention:
   deletion_owner: target-project maintainer
 remote_storage: disabled
 export: disabled
+local_reports:
+  enabled: true
+  artifact_root: .artifacts/product-eval-reports
+  formats: [html, json, pdf]
+  source_mode: verified-frozen-run
+  remote_access: disabled

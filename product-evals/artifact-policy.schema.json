@@ -29,6 +29,18 @@
       }
     },
     "remote_storage": { "const": "disabled" },
-    "export": { "const": "disabled" }
+    "export": { "const": "disabled" },
+    "local_reports": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["enabled", "artifact_root", "formats", "source_mode", "remote_access"],
+      "properties": {
+        "enabled": { "type": "boolean" },
+        "artifact_root": { "const": ".artifacts/product-eval-reports" },
+        "formats": { "const": ["html", "json", "pdf"] },
+        "source_mode": { "const": "verified-frozen-run" },
+        "remote_access": { "const": "disabled" }
+      }
+    }
   }
 }

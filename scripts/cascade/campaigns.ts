@@ -29,6 +29,7 @@ import {
   writeTextExclusive,
 } from "./common";
 import { parseStrictYaml } from "./structured-data";
+import { emitCampaignReport, writeCampaignReport } from "./campaign-report";
 import {
   type OracleResult,
   type PolicyDecision,
@@ -3618,6 +3619,7 @@ async function commandRun(
       `campaign_status=UNKNOWN_OUTCOME campaign=${resolved.campaign.id} run=${runId} ` +
         `manifest=${finalization.manifest_digest} output=${rel(runRoot)}`,
     );
+    await emitCampaignReport(runId);
     return 0;
   }
   const taskResults = await Promise.all(
@@ -4126,6 +4128,7 @@ async function commandRun(
         `evaluation=BLOCKED provider=${resolved.evaluationProfile.provider} ` +
         `release_eligible=false output=${rel(runRoot)}`,
     );
+    await emitCampaignReport(runId);
     return 1;
   }
   const providerDigests = await assertGeneralEvaluationArtifactsFresh(
@@ -4279,6 +4282,7 @@ async function commandRun(
       `evaluation=${summary.evaluation_status}/${summary.evaluation_provider} ` +
       `release_eligible=${summary.release_eligible} output=${rel(runRoot)}`,
   );
+  await emitCampaignReport(runId);
   return persistedSummary.campaign_status === "PASS" ? 0 : 1;
 }
 
@@ -4414,6 +4418,12 @@ export async function main(
     return commandRun(value, rest, true, dependencies.now);
   }
   if (command === "verify" && value) return commandVerify(value, rest);
+  if (command === "report" && value) {
+    if (rest.some((argument) => argument !== "--pdf") || rest.length > 1) throw new CascadeError("campaign report accepts only --pdf");
+    const report = await writeCampaignReport(value, { pdf: rest.includes("--pdf") });
+    console.log(`campaign_report=${report.html}${report.pdf ? ` pdf=${report.pdf}` : ""}`);
+    return 0;
+  }
   if (command === "self-test") return commandSelfTest();
   console.log(`Usage:
   bun scripts/cascade.ts campaign list
@@ -4428,6 +4438,7 @@ export async function main(
     [--platform NAME] [--confirmation-receipt PATH]
   bun scripts/cascade.ts campaign verify <run-id>
     [--confirmation-key KEY_ID=ENV_VAR]
+  bun scripts/cascade.ts campaign report <run-id> [--pdf]
   bun scripts/cascade.ts campaign self-test
 `);
   return command ? 1 : 0;

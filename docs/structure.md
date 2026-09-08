@@ -27,6 +27,7 @@ config; keep reusable workflow rules in skills, agents, and patterns.
 | `product-evals/intakes/harness/`, `product-evals/intakes/product/` | Scope-separated Task Envelope/product-context/action-policy bindings; product campaigns require a current READY intake before execution | Simulations plugin methods plus host runner; consumed by Simulation Operator and Simulation Evaluator |
 | `product-evals/claims/`, `product-evals/policies/`, `product-evals/oracles/`, `product-evals/metrics/`, `product-evals/treatments/`, `product-evals/calibrations/`, `product-evals/rubrics/` | Versioned claim, policy, oracle, metric, treatment, calibration, evaluator-profile, rubric, and evaluation-schema authorities | Simulations and Evals plugin methods plus host persistence |
 | `.artifacts/product-evals/` | Ignored append-only product-evaluation execution, evaluation, calibration, and aggregation receipts | `scripts/cascade/campaigns.ts`, Simulation Operator, and Simulation Evaluator |
+| `.artifacts/product-eval-reports/` | Private local HTML/JSON reports and optional PDF exports derived from a verified frozen run; never part of its evidence namespace | `scripts/cascade/campaign-report.ts` and the isolated print renderer |
 | `.codex/plugins/cascade-simulations/skills/manage-simulation-campaign/` | Campaign authoring, selection, replay planning, receipt aggregation, claim projection, and reporting contract | Cascade Simulations source |
 | `.codex/plugins/cascade-simulations/skills/execute-simulation-campaign/` | Bounded selected-run lifecycle and execution receipt contract | Cascade Simulations source and Simulation Operator |
 | `.codex/plugins/cascade-evals/skills/simulation-evaluation/` | Read-only frozen-evidence, policy, oracle, semantic, and claim-support contract | Cascade Evals source and Simulation Evaluator |
@@ -416,14 +417,48 @@ providers, reducers, or campaign definitions. Its current operational path is:
 4. The runner reduces eligible receipts, writes `aggregations/` and
    `summary.json`, then seals the complete run with `finalization.json`.
    `campaign verify <run-id>` verifies that frozen package without rerunning it.
+5. After finalization, the runner attempts a separate local HTML/JSON report.
+   A presentation failure is reported as `campaign_report=BLOCKED`; it does not
+   change the sealed execution/evaluation result or conceal a failed scenario.
+
+The report shows scenario descriptions, actions, recorded PNGs, observations,
+and logs. Technical identities remain in downloadable JSON, outside the main
+view. The PDF button opens the browser print dialog; a headless export is also
+available through the isolated browser-tooling package:
+
+```bash
+bun scripts/cascade.ts campaign report <run-id> --pdf
+```
+
+Each export verifies the original freeze and creates a new private directory
+under `.artifacts/product-eval-reports/`. HTML includes its data and images and
+does not require a server, CDN, YAML parser, or network access. JSON remains
+machine-readable data; HTML/PDF are presentation copies, not new judgments.
+The current artifact policy explicitly permits these local derivatives while
+remote storage and external export remain disabled. Retention remains manual;
+source data must already satisfy the evidence redaction policy. A run whose
+freeze cannot be verified (including a missing authority-key binding) cannot
+be rendered. The renderer does not grant or recreate that authority.
+
+The opt-in report smoke check consumes a frozen `browser-simulation-smoke` run
+and covers responsive layout, actual PNG loading, JSON download, injection and
+network isolation, print visibility, and unchanged source finalization:
+
+```bash
+bun .codex/harness-tooling/report-smoke.ts <run-id>
+```
+
+This check is separate from the deliberately small default unit suite. It
+checks the real report path, not semantic judgment or target-product quality.
 
 Current limits must remain explicit:
 
 - The built-in browser adapter captures PNG screenshots and Playwright ZIP
   traces, not video. `.codex/harness-tooling/browser-adapter-runner.ts` does not
   configure recording, and its task evidence contract has no video field.
-- `summary.json` and typed receipts are the automatic reports. There is no
-  automatic campaign HTML/Markdown report or video report renderer.
+- `summary.json` and typed receipts remain the authoritative results. The
+  automatic HTML/JSON report and optional PDF are separate presentation copies.
+  There is no video recorder or video report renderer.
 - `campaign run` currently combines execution, evaluation, aggregation, and
   finalization. It freezes a separate Codex evaluator input before invoking
   that provider, but seals the whole run only afterward. There is no separate
