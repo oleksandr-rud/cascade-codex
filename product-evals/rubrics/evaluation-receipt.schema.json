@@ -75,7 +75,8 @@
       "type": "string",
       "enum": [
         "fixture",
-        "codex"
+        "codex",
+        "none"
       ]
     },
     "profile_id": {
@@ -390,6 +391,15 @@
         "properties": {
           "root_cause": { "not": { "const": "none" } },
           "earliest_failure": { "type": "string", "minLength": 1 }
+        }
+      }
+    },
+    {
+      "if": { "properties": { "provider": { "const": "none" } } },
+      "then": {
+        "properties": {
+          "claim_ledger": { "maxItems": 0 },
+          "status": { "const": "PASS" }
         }
       }
     }

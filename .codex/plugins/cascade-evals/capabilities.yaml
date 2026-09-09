@@ -1,7 +1,7 @@
 schema_version: 1
 plugin:
   name: cascade-evals
-  version: 0.2.1+codex.20260908133706
+  version: 0.2.1+codex.20260909083539
 model_policy:
   model: gpt-5.6-sol
   planning_reasoning_effort: high
@@ -59,10 +59,10 @@ skills:
     description: Independently evaluate semantic outcome, policy support, or claim support for one frozen simulation run.
     triggers: [a frozen simulation run needs independent semantic judgment]
     anti_triggers: [simulation execution or repair is requested]
-    consumes: [simulation-review, frozen-simulation-run]
+    consumes: [controller-verification, frozen-simulation-run]
     produces: [simulation-evaluation-receipt]
-    required_dependencies: [cascade-simulations:simulation-review]
-    optional_dependencies: []
+    required_dependencies: []
+    optional_dependencies: [cascade-simulations:simulation-review]
     policy_tags: [evaluation, simulation-evaluation]
     effect: READ_ONLY
     authority: READ_ONLY

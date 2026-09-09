@@ -4,9 +4,9 @@ import { createHash } from "node:crypto";
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
-import { DEFAULT_TIMEOUTS_MS, positiveTimeout, requireCompleted } from "./execution-adapters.mjs";
+import { DEFAULT_TIMEOUTS_MS, EXECUTION_RUNTIME_SHA256, positiveTimeout, processAbortSignal, requireCompleted, runModelPhase } from "./execution-adapters.mjs";
 import { resolveSubjectSkill } from "./subject-plugin.mjs";
-import { runAgentResponseSimulation } from "./agent-response-simulation.mjs";
+import { JUDGE_VALIDATOR_SHA256, parseJudgeResponse } from "./judge-results.mjs";
 
 const campaignSkillRoot = dirname(dirname(fileURLToPath(import.meta.url)));
 const evalRoot = join(campaignSkillRoot, "evals");
@@ -48,53 +48,6 @@ async function readJson(path) {
 
 async function writeJson(path, value) {
   await writeFile(path, `${JSON.stringify(value, null, 2)}\n`);
-}
-
-function usageRecord(usage) {
-  if (!usage) return null;
-  return {
-    input_tokens: usage.input_tokens ?? 0,
-    cached_input_tokens: usage.cached_input_tokens ?? 0,
-    noncached_input_tokens: Math.max(0, (usage.input_tokens ?? 0) - (usage.cached_input_tokens ?? 0)),
-    output_tokens: usage.output_tokens ?? 0,
-    reasoning_output_tokens: usage.reasoning_output_tokens ?? 0
-  };
-}
-
-function traceMetrics(jsonl) {
-  let commandExecutions = 0;
-  for (const line of jsonl.split(/\r?\n/)) {
-    try {
-      const event = JSON.parse(line);
-      if (event.type === "item.completed" && event.item?.type === "command_execution") commandExecutions += 1;
-    } catch {
-      // Diagnostic output is not part of trace metrics.
-    }
-  }
-  return { command_executions: commandExecutions };
-}
-
-function extractAgentMessage(jsonl) {
-  let finalText = "";
-  let usage = null;
-  for (const line of jsonl.split(/\r?\n/)) {
-    if (!line.trim()) continue;
-    try {
-      const event = JSON.parse(line);
-      if (event.type === "item.completed" && event.item?.type === "agent_message") finalText = event.item.text ?? "";
-      if (event.type === "turn.completed") usage = event.usage ?? null;
-    } catch {
-      // Ignore non-JSON diagnostics.
-    }
-  }
-  if (!finalText) fail("Codex JSONL did not contain a completed agent message");
-  return { finalText, usage };
-}
-
-function stripSingleFence(value) {
-  const trimmed = value.trim();
-  const match = trimmed.match(/^```(?:json)?\s*\r?\n([\s\S]*?)\r?\n```$/i);
-  return match ? match[1].trim() : trimmed;
 }
 
 function tryExtractFinalPrompt(response) {
@@ -150,7 +103,7 @@ function validateTurn(label, expected, response, intentPatterns) {
 }
 
 function phase(run, status = "EXECUTED") {
-  return { status, duration_ms: run?.duration_ms ?? 0, usage: run?.usage ?? null, trace_metrics: run?.trace_metrics ?? null, simulation: run?.simulation ?? null };
+  return { status, duration_ms: run?.duration_ms ?? 0, usage: run?.usage ?? null, trace_metrics: run?.trace_metrics ?? null, receipt: run?.execution_receipt ?? null };
 }
 
 function budgetResult(execution, budget) {
@@ -165,23 +118,6 @@ function budgetResult(execution, budget) {
 function judgePrompt(profile, fixture, runId, evidence) {
   const contract = { profile_id: profile.profile_id, rubric_version: 1, fixture_id: fixture.id, run_id: runId, ratings: [{ dimension_id: "profile dimension", rating: "integer 0-4", rationale: "concise", evidence: ["specific fragment"] }], verdict: "PASS | FAIL | BLOCKED", missing_evidence: [] };
   return `You are an independent adaptive-interview judge. Return exactly one JSON object and no Markdown. Apply the profile literally. Rate each dimension once from 0-4 with concise evidence. Do not compute a total.\n\n<judge_profile>\n${JSON.stringify(profile, null, 2)}\n</judge_profile>\n\n<response_contract>\n${JSON.stringify(contract, null, 2)}\n</response_contract>\n\n<evidence>\n${JSON.stringify(evidence, null, 2)}\n</evidence>`;
-}
-
-function parseJudge(text, profile, fixtureId, runId) {
-  let response;
-  try {
-    response = JSON.parse(stripSingleFence(text));
-  } catch (error) {
-    return { valid: false, error: `invalid judge JSON: ${error.message}` };
-  }
-  const ids = profile.dimensions.map((dimension) => dimension.id);
-  const ratings = response.ratings ?? [];
-  const valid = response.profile_id === profile.profile_id && response.rubric_version === 1 && response.fixture_id === fixtureId && response.run_id === runId && ["PASS", "FAIL", "BLOCKED"].includes(response.verdict) && Array.isArray(response.missing_evidence) && ratings.length === ids.length && new Set(ratings.map((rating) => rating.dimension_id)).size === ids.length && ids.every((id) => ratings.some((rating) => rating.dimension_id === id)) && ratings.every((rating) => Number.isInteger(rating.rating) && rating.rating >= 0 && rating.rating <= 4 && typeof rating.rationale === "string" && Array.isArray(rating.evidence));
-  if (!valid) return { valid: false, error: "judge response violates the profile contract", response };
-  const byId = new Map(ratings.map((rating) => [rating.dimension_id, rating.rating]));
-  const score = profile.dimensions.reduce((sum, dimension) => sum + dimension.weight * byId.get(dimension.id) / 4, 0) / 100;
-  const floorPassed = ratings.every((rating) => rating.rating >= profile.minimum_dimension_rating);
-  return { valid: true, score, floor_passed: floorPassed, harness_verdict: response.verdict !== "BLOCKED" && score >= profile.threshold && floorPassed ? "PASS" : "FAIL", response };
 }
 
 const args = parseArgs(process.argv.slice(2));
@@ -214,8 +150,9 @@ const timeouts = {
   target: positiveTimeout(args["target-timeout-ms"], DEFAULT_TIMEOUTS_MS[fixture.tier], "--target-timeout-ms"),
   judge: positiveTimeout(args["judge-timeout-ms"], DEFAULT_TIMEOUTS_MS.judge, "--judge-timeout-ms")
 };
+const executionSignal = processAbortSignal();
 async function executePhase({ phaseName, model, prompt, timeoutMs, adapter, adapterId }) {
-  return requireCompleted(await runAgentResponseSimulation({ phase: phaseName, runId, runRoot, model, reasoningEffort: args["reasoning-effort"], prompt, cwd: workspace, timeoutMs, adapter, adapterConfig: args["adapter-config"], adapterId }), { phase: phaseName, runRoot });
+  return requireCompleted(await runModelPhase({ phase: phaseName, runId, runRoot, model, reasoningEffort: args["reasoning-effort"], prompt, cwd: workspace, timeoutMs, adapter, adapterConfig: args["adapter-config"], adapterId, signal: executionSignal, installedPluginDiscovery: Boolean(args["installed-plugin"]) && ["first-turn", "second-turn"].includes(phaseName) }), { phase: phaseName, runRoot });
 }
 
 const skillInstruction = args["installed-plugin"]
@@ -228,8 +165,8 @@ if (args["first-response-file"]) firstResponse = await readFile(resolve(args["fi
 else {
   firstRun = await executePhase({ phaseName: "first-turn", model: args.model, prompt: firstPrompt, timeoutMs: timeouts.turn, adapter: args["model-adapter"] ?? "codex-cli", adapterId: args["model-adapter-id"] });
   firstResponse = firstRun.final_text;
-  await writeFile(join(runRoot, "first-turn.jsonl"), firstRun.stdout);
-  await writeFile(join(runRoot, "first-turn.stderr.log"), firstRun.stderr);
+
+
 }
 await writeFile(join(runRoot, "first-response.md"), firstResponse);
 const first = validateTurn("first", fixture.first_turn, firstResponse, catalog.intent_patterns);
@@ -243,8 +180,8 @@ if (fixture.second_user_message) {
   else {
     secondRun = await executePhase({ phaseName: "second-turn", model: args.model, prompt: secondPrompt, timeoutMs: timeouts.turn, adapter: args["model-adapter"] ?? "codex-cli", adapterId: args["model-adapter-id"] });
     secondResponse = secondRun.final_text;
-    await writeFile(join(runRoot, "second-turn.jsonl"), secondRun.stdout);
-    await writeFile(join(runRoot, "second-turn.stderr.log"), secondRun.stderr);
+
+
   }
   await writeFile(join(runRoot, "second-response.md"), secondResponse);
   second = validateTurn("second", fixture.second_turn, secondResponse, catalog.intent_patterns);
@@ -266,7 +203,7 @@ if (args["execute-target"]) {
     const rendered = finalPrompt.split(fixture.target.input_placeholder).join(fixture.target.input);
     targetRun = await executePhase({ phaseName: "target", model: args["target-model"], prompt: rendered, timeoutMs: timeouts.target, adapter: args["target-adapter"] ?? "codex-cli", adapterId: args["target-adapter-id"] });
     targetExecutionStatus = "EXECUTED";
-    await writeFile(join(runRoot, "target.jsonl"), targetRun.stdout);
+
     await writeFile(join(runRoot, "target-output.md"), targetRun.final_text);
     const lowered = targetRun.final_text.toLowerCase();
     for (const pattern of fixture.target.required_patterns ?? []) targetChecks.push({ id: `target:required:${pattern}`, passed: lowered.includes(pattern.toLowerCase()) });
@@ -278,12 +215,13 @@ const allChecks = [...first.checks, ...(second?.checks ?? []), ...targetChecks];
 const mechanicalEligible = allChecks.every((check) => check.passed);
 const profileText = await readFile(join(evalRoot, "judges/interview-v1.json"), "utf8");
 const profile = JSON.parse(profileText);
+const judgeValidatorDigest = JUDGE_VALIDATOR_SHA256;
 let judgeRun = null;
 let judge = { status: "NOT_RUN", result: null };
 if (args["execute-judge"] && mechanicalEligible) {
   judgeRun = await executePhase({ phaseName: "judge", model: args["judge-model"], prompt: judgePrompt(profile, fixture, runId, { fixture, first_response: firstResponse, second_response: secondResponse, deterministic_checks: allChecks }), timeoutMs: timeouts.judge, adapter: args["judge-adapter"] ?? "codex-cli", adapterId: args["judge-adapter-id"] });
-  await writeFile(join(runRoot, "judge.jsonl"), judgeRun.stdout);
-  const result = parseJudge(judgeRun.final_text, profile, fixture.id, runId);
+
+  const result = parseJudgeResponse(judgeRun.final_text, profile, { fixture_id: fixture.id, run_id: runId });
   judge = { status: result.valid ? "JUDGED" : "INVALID", result };
 } else if (args["execute-judge"]) judge = { status: "SKIPPED_MECHANICAL_INELIGIBLE", result: null };
 
@@ -304,7 +242,7 @@ const accepted = mechanicalEligible && (!args["execute-judge"] || (judge.status 
 const acceptance = !mechanicalEligible ? "REJECTED" : args["execute-judge"] ? (accepted ? "ACCEPTED" : "REJECTED") : "MECHANICALLY_ELIGIBLE";
 const runnerText = await readFile(fileURLToPath(import.meta.url), "utf8");
 const summary = {
-  schema_version: 1,
+  schema_version: 2,
   run_id: runId,
   fixture: { id: fixture.id, version: fixture.version, catalog_id: catalog.catalog_id, tier: fixture.tier, expected_mode: fixture.expected_mode },
   configuration: {
@@ -314,7 +252,7 @@ const summary = {
     adapter_ids: { model: args["model-adapter-id"] ?? null, target: args["target-adapter-id"] ?? null, judge: args["judge-adapter-id"] ?? null },
     timeouts_ms: timeouts
   },
-  digests: { catalog_sha256: sha256(catalogText), fixture_sha256: sha256(JSON.stringify(fixture)), profile_sha256: sha256(profileText), runner_sha256: sha256(runnerText), first_response_sha256: sha256(firstResponse), second_response_sha256: secondResponse ? sha256(secondResponse) : null, target_output_sha256: targetRun ? sha256(targetRun.final_text) : null },
+  digests: { catalog_sha256: sha256(catalogText), fixture_sha256: sha256(JSON.stringify(fixture)), profile_sha256: sha256(profileText), execution_runtime_sha256: EXECUTION_RUNTIME_SHA256, runner_sha256: sha256(runnerText), judge_validator_sha256: judgeValidatorDigest, first_response_sha256: sha256(firstResponse), second_response_sha256: secondResponse ? sha256(secondResponse) : null, target_output_sha256: targetRun ? sha256(targetRun.final_text) : null },
   execution,
   token_budgets: budgetChecks,
   turns: { first: { ...first, response_sha256: sha256(firstResponse) }, second: second ? { ...second, response_sha256: sha256(secondResponse) } : null },

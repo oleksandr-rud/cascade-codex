@@ -123,9 +123,8 @@ service -> ports -> built-in adapters and filesystem infrastructure. A module
 boundary does not imply another process. The project-level Workspace MCP is a
 narrow stdio transport for allowlisted context reads and closeout-owned
 artifact persistence; it is not a daemon, plugin dispatcher, or generic CLI
-proxy. A future asynchronous command transport should call
-`executeCascadeCommand` or submit concurrent requests to the serialized
-`CascadeCommandExecutor`, while keeping the CLI as a peer adapter.
+proxy. Command transports call `executeCascadeCommand` and pass their
+cancellation signal; the CLI is a peer adapter of the same application boundary.
 
 ## Active Work Paths
 

@@ -18,13 +18,13 @@ diagnosis, and controlled-plan baselines. Catalog metadata records each task's
 ## Evaluation sequence
 
 1. Resolve the enabled `cascade-prompt:prompt` subject skill and validate task,
-   model, evaluator, simulation, and judge contracts.
+   model, evaluator, execution adapter, and judge contracts.
 2. Ask Cascade Prompt to build a task prompt for the named target model and
    neutral tier, or automatically reuse a digest-bound cached response.
 3. Replace the task's single input placeholder and execute the target model.
-   Every builder, target, and judge invocation receives its own frozen
-   `agent-response` simulation contract, authorized dispatch, hash-chained
-   journal, terminal result, and controller verification.
+   Every builder, target, and judge uses one bounded model invocation with
+   fixed identity, a deadline, cancellation, an output limit and raw evidence.
+   These fixed calls require neither Cascade Simulations nor Python.
 4. Apply deterministic eligibility checks before any semantic scoring.
 5. Stop before semantic judgment when mechanical eligibility fails. For fully
    deterministic tasks, use the mechanical outcome and judge trajectory once
@@ -41,18 +41,34 @@ trajectory judgment. The trajectory judge does not see target correctness,
 eligibility, or the outcome judgment.
 
 Prompts are passed to execution adapters over stdin rather than process
-arguments. Simulation journals store prompt and output digests, while the
-campaign evidence directory retains the full phase artifacts. Automatic
-builder and trajectory caches are content-addressed and exclude target inputs,
+arguments. Codex phases run in temporary directories without repository
+instructions, memories, apps, or unrelated plugin context. Interview
+`--installed-plugin` turns retain installed-skill discovery; their target and
+judge phases remain isolated. Command adapters retain their declared workspace.
+A phase writes `<phase>.execution.json`, `<phase>.jsonl` and
+`<phase>.stderr.log`. The receipt binds prompt/output, adapter configuration,
+runtime and raw evidence digests. Creating its initial dispatch record is
+exclusive: an interrupted or completed invocation cannot be replayed under the
+same run and phase. Automatic
+builder and trajectory caches bind runtime, adapter and reasoning identity and exclude target inputs,
 evaluator material, gold answers, target outputs, and outcome judgments.
 
 Execution has tier-aware time limits: 180 seconds for efficient, 300 for
 balanced, 420 for frontier-generalist, and 600 for frontier-autonomous target
 runs; builders default to 300 seconds and judges to 240. Override them with
 `--builder-timeout-ms`, `--target-timeout-ms`, and `--judge-timeout-ms` (or
-`--turn-timeout-ms` in the interview runner). A timeout writes
+`--turn-timeout-ms` in the interview runner). A timeout, cancellation or output
+limit writes
 `execution-block.json`, preserves partial stdout/stderr, exits 3, and remains
 `BLOCKED / NOT_RUN`; it is never converted into a quality rejection.
+SIGINT and SIGTERM cancel the active invocation. A process that ignores graceful
+termination is killed, and descendants in its process group are cleaned up.
+No automatic retry follows an uncertain invocation.
+
+Quality summary version 3 and interview summary version 2 reference the direct
+phase receipt under `execution.<phase>.receipt`. Historical simulation-backed
+run directories remain immutable. Dynamic actor simulations keep their full
+controller lifecycle in Cascade Simulations.
 
 ## Commands
 
@@ -93,6 +109,16 @@ deliberate fresh measurement. Without judge execution, judge state is
 `run-summary.json` records usage, cached and non-cached input, duration, trace
 command count, cache state, and provisional budget status for every phase.
 Budget status is diagnostic and does not override quality acceptance.
+
+Quality and interview judgments share `scripts/judge-results.mjs` for identity,
+response shape, dimension coverage, score and floor checks. A `PASS` or `FAIL`
+verdict that contradicts the recomputed result is `INVALID`; `BLOCKED` remains
+non-accepting. Read `judge_status` and `acceptance` for semantic results; the
+existing runner exit codes do not treat semantic rejection as an execution
+failure. Both run summaries bind the validator digest. Trajectory cache
+keys include that digest, and cached responses are revalidated before reuse.
+Frozen historical runs are not rewritten. Run the focused contract checks with
+`node --test scripts/test-judge-results.mjs` from the skill directory.
 
 For repeated measurements, run at least three fresh target executions while
 reusing only the digest-bound builder and trajectory caches:
@@ -183,3 +209,9 @@ label for every frozen artifact. `evaluate` reports verdict agreement, false
 passes, false failures, and mean absolute dimension error. It deliberately
 returns `MEASURED_NOT_PROMOTED`; changing thresholds or profiles requires a new
 versioned profile and an evidence-backed decision.
+
+Variance execution forwards cancellation to the active repetition, stops before
+starting another repetition, and retains a partial version 2 aggregate plus
+stdout/stderr. Each repetition is bounded by `--repetition-timeout-ms` (default
+one hour); phase limits still apply inside it. Completed Codex turns require a
+terminal `turn.completed` event as well as an agent message.

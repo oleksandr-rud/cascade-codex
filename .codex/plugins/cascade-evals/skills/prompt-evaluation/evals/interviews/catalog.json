@@ -1,12 +1,12 @@
 {
   "schema_version": 1,
-  "catalog_id": "cascade-prompt-interviews-v1",
+  "catalog_id": "cascade-prompt-interviews-v2",
   "description": "Versioned multi-turn fixtures for adaptive prompt-intake behavior. Intent matching is a deterministic eligibility aid; semantic quality remains a separate judgment.",
   "intent_patterns": {
     "output_contract": ["schema", "fields", "field names", "types", "output format", "output shape", "exact output", "how many bullets"],
     "label_policy": ["total label", "total-like", "labels qualify", "which labels", "total due", "grand total", "amount due", "balance due"],
     "precedence": ["precedence", "takes precedence", "which controls", "which issue", "should win", "priority", "mixed case", "when both", "determine category", "current failure"],
-    "authority": ["authority", "which source", "source controls", "which rule", "which authorized", "conflict-resolution rule", "controlling authority", "authoritative"],
+    "authority": ["authority", "which source", "source controls", "which authorized", "conflict-resolution rule", "controlling authority", "authoritative"],
     "permission": ["permission boundary", "prepare only", "plan only", "execute", "perform the migration", "production writes"],
     "ambiguity": ["missing evidence", "ambiguous", "abstain", "human review", "return null"]
   },

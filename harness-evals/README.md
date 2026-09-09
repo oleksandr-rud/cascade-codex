@@ -2,7 +2,7 @@
 
 This directory owns canonical harness scenarios and structured output schemas.
 It is a source-checkout evaluation lab, not part of the generated core target
-runtime. The 138 generated scenarios and 981 admission corpus rows are loaded
+runtime. Generated scenarios and the admission corpus are loaded
 only by explicit source eval/corpus commands; normal request admission and
 plugin routing do not read them.
 Live traces and reports are generated under `.artifacts/harness-evals/` and are
@@ -66,6 +66,10 @@ writes raw traces, normalized traces, per-case mechanical eligibility, a source
 manifest, and summary reports. The `judge` command selects every eligible case,
 runs required outcome and trajectory profiles independently through the
 read-only Cascade Evals harness subject profile (no registered host role), and writes one judgment trace per case/profile.
+
+Each run or re-evaluation batch resolves its route inventory once; each judging
+or coverage batch reads its required profiles once. A later command resolves
+current sources again, so this reuse cannot hide edits between commands.
 
 The `coverage` command exact-matches each run's complete scenario object to the
 current catalog and exact harness source digest. It verifies raw, normalized,

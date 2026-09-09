@@ -2,7 +2,9 @@
 
 import { chmod, mkdtemp, readFile, writeFile } from "node:fs/promises";
 import { join } from "node:path";
-import { spawnSync } from "node:child_process";
+import { spawn, spawnSync } from "node:child_process";
+import { once } from "node:events";
+import assert from "node:assert/strict";
 import { tmpdir } from "node:os";
 import { fileURLToPath } from "node:url";
 
@@ -17,4 +19,24 @@ if (result.status !== 0) throw new Error(`${result.stderr}\n${result.stdout}`);
 const aggregate = JSON.parse(await readFile(join(output, "fixture-aggregate.aggregate.json"), "utf8"));
 if (aggregate.repetitions_completed !== 3 || aggregate.acceptance_rate !== 1 || Math.abs(aggregate.conservative_score.mean - 0.9) > 1e-9 || aggregate.flaky) throw new Error(JSON.stringify(aggregate));
 if (new Set(aggregate.runs.map((run) => run.run_id)).size !== 3) throw new Error("run identities must be unique");
+await writeFile(fake, `require("node:fs").writeFileSync(${JSON.stringify(join(root, "started"))},"started");process.on("SIGTERM",()=>{process.stdout.write("cancelled child");process.exit(3)});setInterval(()=>{},10);`);
+const child = spawn(process.execPath, [runner, "--task", "fixture-v1", "--repetitions", "3", "--runner", fake, "--output-dir", output, "--aggregate-id", "cancelled-aggregate"], { stdio: ["ignore", "pipe", "pipe"] });
+const exited = once(child, "close");
+const deadline = Date.now() + 5000;
+try {
+  while (true) {
+    try { await readFile(join(root, "started")); break; } catch {
+      if (Date.now() >= deadline) throw new Error("child did not start");
+      await new Promise((resolve) => setTimeout(resolve, 20));
+    }
+  }
+  child.kill("SIGTERM");
+  assert.equal((await exited)[0], 3);
+  const cancelled = JSON.parse(await readFile(join(output, "cancelled-aggregate.aggregate.json"), "utf8"));
+  assert.equal(cancelled.cancelled, true);
+  assert.equal(cancelled.status, "PARTIAL");
+  assert.equal(cancelled.runs.length, 1);
+  assert.equal(cancelled.runs[0].execution_status, "CANCELLED");
+  assert.equal(await readFile(join(output, "cancelled-aggregate-r01.stdout.log"), "utf8"), "cancelled child");
+} finally { child.kill("SIGKILL"); }
 console.log(`PASS: repeated runs retain receipts and aggregate variance without hiding failures (${root})`);

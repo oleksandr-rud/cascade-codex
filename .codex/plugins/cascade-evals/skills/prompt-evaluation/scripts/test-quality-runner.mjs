@@ -2,14 +2,15 @@
 
 import { chmod, mkdtemp, readFile, readdir, writeFile } from "node:fs/promises";
 import { join } from "node:path";
-import { spawnSync } from "node:child_process";
+import { spawn, spawnSync } from "node:child_process";
+import { once } from "node:events";
+import { createHash } from "node:crypto";
 import { tmpdir } from "node:os";
 import { fileURLToPath } from "node:url";
-import { resolveInstalledSkill, resolveSubjectSkill } from "./subject-plugin.mjs";
+import { resolveSubjectSkill } from "./subject-plugin.mjs";
 
 const runner = join(fileURLToPath(new URL(".", import.meta.url)), "run-quality-eval.mjs");
 const subjectSkillRoot = await resolveSubjectSkill();
-const simulationSkillRoot = await resolveInstalledSkill({ pluginName: "cascade-simulations", skillName: "simulate" });
 const root = await mkdtemp(join(tmpdir(), "cascade-prompt-runner-test-"));
 const binRoot = join(root, "bin");
 const outputRoot = join(root, "output");
@@ -33,7 +34,7 @@ if (prompt.includes("Return the standard Cascade Prompt READY output")) {
   const taskId = prompt.match(/"task_id": "([^"]+)"/)?.[1] || "missing";
   const profileId = prompt.match(/"profile_id": "([^"]+)"/)?.[1] || "cascade-prompt-trajectory-v1";
   const dimensions = [...prompt.matchAll(/"id": "([a-z_]+)"/g)].map((match) => match[1]).slice(0, 5);
-  text = JSON.stringify({ profile_id: profileId, rubric_version: 1, task_id: taskId, run_id: runId, ratings: dimensions.map((dimension_id) => ({ dimension_id, rating: 4, rationale: "fixture pass", evidence: ["fixture evidence"] })), verdict: "PASS", missing_evidence: [] });
+  text = JSON.stringify({ profile_id: profileId, rubric_version: 1, task_id: taskId, run_id: runId, ratings: dimensions.map((dimension_id) => ({ dimension_id, rating: 4, rationale: "fixture pass", evidence: ["fixture evidence"] })), verdict: process.env.FAKE_JUDGE_VERDICT || "PASS", missing_evidence: [] });
 } else if (process.env.FAKE_INELIGIBLE === "1") {
   text = '{"wrong":true}';
 } else if (prompt.includes("<approved_brand_packet>")) {
@@ -54,16 +55,16 @@ await chmod(fakePath, 0o755);
 function run(extraEnv = {}, extraArgs = []) {
   const result = spawnSync(process.execPath, [runner, "run", "--task", "structured-invoice-v1", "--prompt-model", "gpt-5.6-terra", "--target-model", "gpt-5.6-terra", "--execute-judges", "--judge-model", "gpt-5.6-terra", "--subject-skill-root", subjectSkillRoot, "--output-dir", outputRoot, ...extraArgs], {
     encoding: "utf8",
-    env: { ...process.env, CASCADE_SIMULATIONS_SKILL_ROOT: simulationSkillRoot, PATH: `${binRoot}:${process.env.PATH}`, ...extraEnv }
+    env: { ...process.env, CASCADE_SIMULATIONS_SKILL_ROOT: join(root, "unavailable-simulation-plugin"), PATH: `${binRoot}:${process.env.PATH}`, ...extraEnv }
   });
   const output = JSON.parse(result.stdout || "{}");
   return { result, output };
 }
 
-function runBrand(extraEnv = {}) {
-  const result = spawnSync(process.execPath, [runner, "run", "--task", "brand-context-copy-v1", "--prompt-model", "gpt-5.6-terra", "--target-model", "gpt-5.6-terra", "--subject-skill-root", subjectSkillRoot, "--output-dir", outputRoot], {
+function runBrand(extraEnv = {}, extraArgs = []) {
+  const result = spawnSync(process.execPath, [runner, "run", "--task", "brand-context-copy-v1", "--prompt-model", "gpt-5.6-terra", "--target-model", "gpt-5.6-terra", "--subject-skill-root", subjectSkillRoot, "--output-dir", outputRoot, ...extraArgs], {
     encoding: "utf8",
-    env: { ...process.env, CASCADE_SIMULATIONS_SKILL_ROOT: simulationSkillRoot, PATH: `${binRoot}:${process.env.PATH}`, ...extraEnv }
+    env: { ...process.env, CASCADE_SIMULATIONS_SKILL_ROOT: join(root, "unavailable-simulation-plugin"), PATH: `${binRoot}:${process.env.PATH}`, ...extraEnv }
   });
   const output = JSON.parse(result.stdout || "{}");
   return { result, output };
@@ -81,8 +82,13 @@ const first = run();
 assert(first.result.status === 0, `first run failed: ${first.result.stderr}`);
 const firstSummary = await summary(first);
 assert(firstSummary.execution.prompt_builder.status === "EXECUTED", "first builder must execute");
-assert(firstSummary.execution.prompt_builder.simulation?.status === "ACHIEVED" && firstSummary.execution.prompt_builder.simulation?.controller_verified, "builder must have a verified simulation receipt");
-assert(firstSummary.execution.target.simulation?.status === "ACHIEVED" && firstSummary.execution.target.simulation?.controller_verified, "target must have a verified simulation receipt");
+for (const phase of ["prompt_builder", "target"]) {
+  const bound = firstSummary.execution[phase].receipt;
+  const bytes = await readFile(join(first.output.run_root, bound.path));
+  assert(createHash("sha256").update(bytes).digest("hex") === bound.sha256, "phase receipt must bind the actual execution evidence");
+  assert(JSON.parse(bytes).status === "COMPLETED", "phase must have a completed invocation receipt");
+}
+assert(!(await readdir(first.output.run_root)).includes("simulations"), "one model call must not create a simulation lifecycle");
 assert(firstSummary.execution.outcome_judge.status === "DETERMINISTIC", "exact task must use deterministic outcome");
 assert(firstSummary.execution.trajectory_judge.status === "EXECUTED", "first trajectory judge must execute");
 assert(firstSummary.acceptance === "ACCEPTED", "first run must be accepted");
@@ -93,6 +99,26 @@ const secondSummary = await summary(second);
 assert(secondSummary.execution.prompt_builder.status === "REUSED_AUTOMATIC_CACHE", "second builder must use automatic cache");
 assert(secondSummary.execution.trajectory_judge.status === "REUSED_PROMPT_CACHE", "second trajectory must use prompt cache");
 assert(secondSummary.execution.total_usage.input_tokens === 1000, "second run must bill only the target fixture call");
+
+const validatorDigest = createHash("sha256").update(await readFile(new URL("./judge-results.mjs", import.meta.url))).update("\n--scoring--\n").update(await readFile(new URL("../../../scripts/judge-ratings.mjs", import.meta.url))).digest("hex");
+assert(firstSummary.digests.judge_validator_sha256 === validatorDigest, "run must bind the shared judge validator");
+const trajectoryCachePath = join(outputRoot, ".cache", "trajectory-judges", `${firstSummary.execution.trajectory_judge.cache_key}.json`);
+for (const corrupt of [(result) => { result.response.verdict = "FAIL"; }, (result) => { result.score = 0.5; }]) {
+  const cachedJudgment = JSON.parse(await readFile(trajectoryCachePath, "utf8"));
+  corrupt(cachedJudgment.result);
+  cachedJudgment.result_sha256 = createHash("sha256").update(JSON.stringify(cachedJudgment.result)).digest("hex");
+  await writeFile(trajectoryCachePath, JSON.stringify(cachedJudgment));
+  const revalidated = run();
+  assert(revalidated.result.status === 0, `cache revalidation run failed: ${revalidated.result.stderr}`);
+  const revalidatedSummary = await summary(revalidated);
+  assert(revalidatedSummary.execution.trajectory_judge.status === "EXECUTED", "cached validity and score must not bypass current response validation");
+}
+
+const contradictory = run({ FAKE_JUDGE_VERDICT: "FAIL" }, ["--no-trajectory-cache"]);
+assert(contradictory.result.status === 0, `contradictory judgment run must complete: ${contradictory.result.stderr}`);
+const contradictorySummary = await summary(contradictory);
+assert(contradictorySummary.judges.status === "INVALID", "verdict-score disagreement must remain INVALID");
+assert(contradictorySummary.acceptance === "REJECTED", "a FAIL verdict with passing ratings must not be promoted");
 
 const third = run({ FAKE_INELIGIBLE: "1" });
 assert(third.result.status === 2, `ineligible run must exit 2, got ${third.result.status}`);
@@ -113,6 +139,18 @@ const brandSummary = await summary(brand);
 assert(brandSummary.mechanical.status === "MECHANICALLY_ELIGIBLE", "brand context output within 85 words must be eligible");
 assert(brandSummary.mechanical.checks.some((check) => check.id === "max-words" && check.passed), "brand context run must enforce max_words");
 
+const judgedBrand = runBrand({}, ["--execute-judges", "--judge-model", "gpt-5.6-terra"]);
+assert(judgedBrand.result.status === 0, `judged brand run failed: ${judgedBrand.result.stderr}`);
+const judgedBrandSummary = await summary(judgedBrand);
+assert(judgedBrandSummary.execution.outcome_judge.status === "EXECUTED", "semantic outcome must execute its judge");
+assert(judgedBrandSummary.judges.outcome.valid && judgedBrandSummary.acceptance === "ACCEPTED", "valid semantic outcome and trajectory must be accepted");
+
+const contradictoryBrand = runBrand({ FAKE_JUDGE_VERDICT: "FAIL" }, ["--execute-judges", "--judge-model", "gpt-5.6-terra"]);
+assert(contradictoryBrand.result.status === 0, `contradictory semantic outcome run must complete: ${contradictoryBrand.result.stderr}`);
+const contradictoryBrandSummary = await summary(contradictoryBrand);
+assert(contradictoryBrandSummary.execution.trajectory_judge.status === "REUSED_PROMPT_CACHE", "outcome rejection must be exercised independently of the valid cached trajectory");
+assert(contradictoryBrandSummary.judges.outcome.valid === false && contradictoryBrandSummary.acceptance === "REJECTED", "contradictory semantic outcome must not be accepted");
+
 const longBrand = runBrand({ FAKE_BRAND_LONG: "1" });
 assert(longBrand.result.status === 2, `overlong brand output must exit 2, got ${longBrand.result.status}`);
 const longBrandSummary = await summary(longBrand);
@@ -124,8 +162,8 @@ const executionBlock = JSON.parse(await readFile(join(timedOut.output.run_root, 
 assert(executionBlock.status === "BLOCKED" && executionBlock.acceptance === "NOT_RUN", "timeout must be blocked, not rejected");
 assert(executionBlock.execution.status === "TIMED_OUT", "timeout must retain TIMED_OUT execution status");
 assert(executionBlock.root_cause === "environment-blocker", "timeout must be classified as an environment blocker");
-const timeoutSimulation = JSON.parse(await readFile(join(timedOut.output.run_root, "simulations/target/controller/result.json"), "utf8"));
-assert(timeoutSimulation.status === "TIMED_OUT", "timeout must be frozen by the simulation controller");
+const timeoutExecution = JSON.parse(await readFile(join(timedOut.output.run_root, "target.execution.json"), "utf8"));
+assert(timeoutExecution.status === "TIMED_OUT", "timeout must be retained in the invocation receipt");
 
 const cacheFiles = [];
 for (const folder of [join(outputRoot, ".cache", "prompt-builders"), join(outputRoot, ".cache", "trajectory-judges")]) {
@@ -136,4 +174,23 @@ assert(!cacheText.includes("NORTHSTAR INDUSTRIAL SUPPLY"), "cache must not conta
 assert(!cacheText.includes("INV-2048-A"), "cache must not contain gold or target output");
 assert(!cacheText.includes("semantic_anchors"), "cache must not contain evaluator material");
 
-console.log(`PASS: simulation-controlled phases, full-contract delivery, one-shot state enforcement, cache, timeout blocking, deterministic outcome, semantic text limits, judge gating, telemetry, and cache isolation (${root})`);
+console.log(`PASS: direct bounded phases, full-contract delivery, one-shot state enforcement, cache, timeout blocking, deterministic outcome, semantic text limits, judge gating, telemetry, and cache isolation (${root})`);
+
+const cancelledId = "cancelled-run";
+const cancelled = spawn(process.execPath, [runner, "run", "--run-id", cancelledId, "--task", "structured-invoice-v1", "--prompt-model", "fixture", "--target-model", "fixture", "--subject-skill-root", subjectSkillRoot, "--output-dir", outputRoot], {
+  env: { ...process.env, PATH: `${binRoot}:${process.env.PATH}`, FAKE_DELAY_MS: "10000" }, stdio: ["ignore", "pipe", "pipe"]
+});
+const closed = once(cancelled, "close");
+try {
+  const deadline = Date.now() + 5000;
+  while (true) {
+    try { await readFile(join(outputRoot, cancelledId, "prompt-builder.execution.json")); break; } catch {
+      if (Date.now() >= deadline) throw new Error("prompt builder did not start");
+      await new Promise((resolve) => setTimeout(resolve, 20));
+    }
+  }
+  cancelled.kill("SIGTERM");
+  assert((await closed)[0] === 3, "cancelled CLI must exit blocked");
+  const receipt = JSON.parse(await readFile(join(outputRoot, cancelledId, "prompt-builder.execution.json"), "utf8"));
+  assert(receipt.status === "CANCELLED", "CLI signal must reach the model invocation receipt");
+} finally { cancelled.kill("SIGKILL"); }

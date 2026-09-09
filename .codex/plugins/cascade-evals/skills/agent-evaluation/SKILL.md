@@ -28,7 +28,7 @@ Evaluate one digest-bound agent-system claim through `$evaluate`.
    recomputed. A keyword search over narrative output is not a mechanical gate;
    route narrative correctness to independent judges.
 4. Use the installed `cascade-simulations:simulate` contract only for declared
-   dynamic execution. Consume its frozen review receipt without converting it
+   dynamic execution. Consume its frozen controller verification without converting it
    into semantic acceptance.
 5. For a compatible case suite, invoke
    `../../scripts/run_agent_evaluation.py` from this plugin. Bind the exact

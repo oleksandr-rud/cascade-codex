@@ -2,9 +2,11 @@
 from __future__ import annotations
 
 import hashlib
+import itertools
 import json
 from pathlib import Path
 import sys
+import subprocess
 import tempfile
 import unittest
 
@@ -13,7 +15,7 @@ SCRIPT_ROOT = Path(__file__).resolve().parent
 sys.path.insert(0, str(SCRIPT_ROOT))
 
 from reduce_evaluation import ContractError, reduce_bundle
-from validate_judge import validate_profile, validate_response
+from validate_judge import score_ratings, validate_profile, validate_response
 
 
 def profile(profile_id: str, role: str) -> dict:
@@ -97,6 +99,21 @@ class EvaluationContractsTests(unittest.TestCase):
         result = validate_response(value, response("e", self.digest, "j", "c", value))
         self.assertEqual(result["score"], 1.0)
         self.assertTrue(result["passed"])
+
+    def test_native_judge_adapters_share_scoring_and_floor_rules(self) -> None:
+        value = validate_profile(profile("outcome-v1", "outcome"))
+        cases = list(itertools.product(range(5), repeat=2))
+        scorer = (SCRIPT_ROOT / "judge-ratings.mjs").as_uri()
+        script = f'import {{scoreRatings}} from {json.dumps(scorer)};import fs from "node:fs";const cases=JSON.parse(fs.readFileSync(0,"utf8"));console.log(JSON.stringify(cases.map(scores=>scoreRatings({{dimensions:[{{id:"contract-fit",weight:0.5}},{{id:"evidence-use",weight:0.5}}],ratings:scores.map((score,i)=>({{id:["contract-fit","evidence-use"][i],score}})),threshold:0.8,minimumDimension:2,weightTotal:1}}))));'
+        result = subprocess.run(["node", "--input-type=module", "-e", script], input=json.dumps(cases), text=True, capture_output=True, check=True, timeout=10)
+        for ratings, javascript in zip(cases, json.loads(result.stdout)):
+            python = score_ratings(value, response("e", self.digest, "j", "c", value, ratings)["ratings"])
+            self.assertEqual(python["score"], javascript["score"])
+            self.assertEqual(python["passed"], javascript["verdict"] == "PASS")
+        valid = response("e", self.digest, "j", "c", value)["ratings"]
+        for malformed in (None, {}, [valid[0]], [valid[0], valid[0]], [{**valid[0], "rating": True}, valid[1]], [{**valid[0], "dimension_id": []}, valid[1]], [{**valid[0], "evidence": []}, valid[1]]):
+            with self.subTest(malformed=malformed), self.assertRaises(ContractError):
+                score_ratings(value, malformed)
 
     def test_reducer_passes_two_independent_judges(self) -> None:
         receipt = reduce_bundle(self.bundle())

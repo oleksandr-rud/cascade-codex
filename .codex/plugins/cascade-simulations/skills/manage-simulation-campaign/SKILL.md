@@ -61,3 +61,11 @@ invent a host registry or execute a target from this skill.
 Return campaign identity, frozen inputs, execution/evaluation state, evidence
 coverage, reduction, defects, and unproven claims. Create campaign artifacts only
 for an explicitly authorized campaign.
+
+## Proportional starter
+
+The host's default `simulation init` renders only a bounded scenario, world,
+task, policy, oracle, mechanical claim, and required product intake bindings.
+Population, dataset, metric, treatment, calibration, and a design report are
+opt-in through `--research`. Add these contracts when the declared claim needs
+them; do not create synthetic calibration or release claims to fill a template.

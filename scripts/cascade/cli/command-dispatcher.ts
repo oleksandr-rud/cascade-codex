@@ -13,7 +13,7 @@ export type CascadeCommandName =
   | "workflow";
 
 export interface CascadeCommandModule {
-  main(args: string[]): Promise<number>;
+  main(args: string[], context?: { signal?: AbortSignal }): Promise<number>;
 }
 
 export type CascadeCommandLoader = () => Promise<CascadeCommandModule>;
@@ -25,6 +25,7 @@ export type CascadeCommandLoaders = Record<
 
 export interface CascadeCommandInvocation {
   argv: readonly string[];
+  signal?: AbortSignal;
 }
 
 export interface CascadeCommandDispatcherOptions {
@@ -119,5 +120,5 @@ export async function executeCascadeCommand(
   const command = rawCommand as CascadeCommandName;
   const loader = options.loaders?.[command] ?? DEFAULT_LOADERS[command];
   const module = await loader();
-  return module.main([...rawArgs]);
+  return module.main([...rawArgs], { signal: invocation.signal });
 }

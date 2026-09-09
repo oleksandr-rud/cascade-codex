@@ -1,7 +1,7 @@
 {
   "agent_count": 9,
   "agent_scenario_count": 9,
-  "catalog_digest": "0778c3585dbb7efd583a7f6191c998655f632a74df32368c6b506cbcb410ff57",
+  "catalog_digest": "8efe920541e6f7faf8aad3d55e07efef284da29cb60d7fc3e762eef8c8227702",
   "generated_by": "scripts/cascade/evals.ts",
   "scenario_count": 142,
   "scenarios": [
@@ -4290,11 +4290,11 @@
       "context_bindings": [
         {
           "path": ".codex/agents/simulation-evaluator/AGENT.md",
-          "sha256": "de945670922b7f823fb3a66f3393ffb6b438bf391644482b22a02867efdd2617"
+          "sha256": "76148f7a81e9c85a908f8cd7cc4ecadabe17c56981ba8904355fc926a5afabd0"
         },
         {
           "path": ".codex/plugins/cascade-evals/skills/simulation-evaluation/SKILL.md",
-          "sha256": "0c3e0178ba1747e9426f3644a908dbb384e38430364cc5bba1a7383fa6f20536"
+          "sha256": "d13070d6449644d93424c4ecfe1eb27a0a7b267f0fef24a1ee030a5a4d1d9431"
         },
         {
           "path": "product-evals/campaigns/simulation-contract-smoke.yaml",

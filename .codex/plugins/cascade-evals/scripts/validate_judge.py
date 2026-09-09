@@ -70,14 +70,20 @@ def validate_response(profile: dict[str, Any], response: Any) -> dict[str, Any]:
     require(isinstance(response.get("subject_digest"), str) and re.fullmatch(r"[a-f0-9]{64}", response["subject_digest"]) is not None, "response subject_digest is invalid")
     require(response.get("leakage_check") == "PASS", "judge leakage check did not pass")
     require(response.get("verdict") in {"PASS", "FAIL"}, "judge verdict must be PASS or FAIL")
-    ratings = response.get("ratings")
+    result = score_ratings(profile, response.get("ratings"))
+    require(response["verdict"] == ("PASS" if result["passed"] else "FAIL"), "judge verdict disagrees with harness-recomputed score or dimension floor")
+    return result
+
+
+def score_ratings(profile: dict[str, Any], ratings: Any) -> dict[str, Any]:
+    """Validate evidence-bearing ratings and recompute the controller decision."""
     require(isinstance(ratings, list), "response ratings must be an array")
     expected = {item["dimension_id"] for item in profile["dimensions"]}
     actual: dict[str, int] = {}
     for item in ratings:
         require(isinstance(item, dict), "every rating must be an object")
         dimension_id = item.get("dimension_id")
-        require(dimension_id in expected, f"unexpected dimension rating: {dimension_id}")
+        require(isinstance(dimension_id, str) and dimension_id in expected, f"unexpected dimension rating: {dimension_id}")
         require(dimension_id not in actual, f"duplicate rating: {dimension_id}")
         rating = item.get("rating")
         require(isinstance(rating, int) and not isinstance(rating, bool) and 0 <= rating <= 4, f"{dimension_id}: rating must be an integer from 0 to 4")
@@ -88,7 +94,6 @@ def validate_response(profile: dict[str, Any], response: Any) -> dict[str, Any]:
     require(set(actual) == expected, "response must rate every profile dimension exactly once")
     score = sum(float(item["weight"]) * actual[item["dimension_id"]] / 4 for item in profile["dimensions"])
     passed = score >= float(profile["threshold"]) and all(value >= profile["minimum_dimension"] for value in actual.values())
-    require(response["verdict"] == ("PASS" if passed else "FAIL"), "judge verdict disagrees with harness-recomputed score or dimension floor")
     return {"score": score, "passed": passed, "ratings": actual}
 
 

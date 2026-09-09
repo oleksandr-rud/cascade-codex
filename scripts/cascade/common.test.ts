@@ -123,6 +123,14 @@ describe("filesystem and process safety smoke", () => {
     expect(result.exitCode).toBe(130);
   });
 
+  test("command input is passed as literal stdin without entering argv", async () => {
+    const input = 'Private fixture: $(echo must-not-execute) `literal`\n' + "x".repeat(300000);
+    const result = await runCommand([process.execPath, "-e", "process.stdout.write(await Bun.stdin.text())"], { input, timeoutMs: 1000 });
+    expect(result.exitCode).toBe(0);
+    expect(result.stdout).toBe(input);
+    expect(result.argv.join(" ")).not.toContain(input);
+  });
+
   test("command timeout force-terminates a process that ignores SIGTERM", async () => {
     const result = await runCommand(
       [

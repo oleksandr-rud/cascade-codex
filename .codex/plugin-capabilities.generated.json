@@ -1,6 +1,6 @@
 {
   "artifact_type": "cascade-plugin-capability-catalog",
-  "catalog_digest": "a7a49338a1ef86c519ddf7e31d495098b7760facd544d60acbb5d89f5a8f5bbb",
+  "catalog_digest": "0741c5f9be1d965142a3483600177e55da585113364a3c42dcb7c4d71ea2e5fd",
   "marketplace": ".agents/plugins/marketplace.json",
   "plugins": [
     {
@@ -53,9 +53,9 @@
     },
     {
       "descriptor_path": ".codex/plugins/cascade-simulations/capabilities.yaml",
-      "descriptor_sha256": "3a802a96831d5ac0545e80de4fba75feb102dc52547b936fc6c731c8f242a632",
+      "descriptor_sha256": "6c22c7c202c2f035143d8cfae2da2d7ae3e4e8da23124d55fb470f6d84493e0a",
       "manifest_path": ".codex/plugins/cascade-simulations/.codex-plugin/plugin.json",
-      "manifest_sha256": "2b276b692eba8adc11ae1f9b69098ba008aeede6f934340371180af96edadbba",
+      "manifest_sha256": "ac841eb49eff1cf4b029229726fd64b7883d44897597f409520c239b11a8e105",
       "model_policy": {
         "evaluation_reasoning_effort": "max",
         "model": "gpt-5.6-sol",
@@ -339,13 +339,13 @@
           ]
         }
       ],
-      "version": "0.2.4+codex.20260827162112"
+      "version": "0.2.4+codex.20260909081821"
     },
     {
       "descriptor_path": ".codex/plugins/cascade-evals/capabilities.yaml",
-      "descriptor_sha256": "14f2861251145eac6fe2d7731fc948ceb7ad12506b5ff7c7d56fa02b16e759c5",
+      "descriptor_sha256": "e379475cae0b2fc55ad2abeb18f2f4516dc87072b585b765f93fa82c1387415d",
       "manifest_path": ".codex/plugins/cascade-evals/.codex-plugin/plugin.json",
-      "manifest_sha256": "77ed4f57ec51c9797d234df57e9b8e93ee43f0ec20be45da7918a23a4fc61a2f",
+      "manifest_sha256": "7b64d9c86106b7d0bac909060fd152e277c8e16c327567424220d37f56df78c2",
       "model_policy": {
         "evaluation_reasoning_effort": "max",
         "model": "gpt-5.6-sol",
@@ -485,7 +485,7 @@
           ],
           "authority": "READ_ONLY",
           "consumes": [
-            "simulation-review",
+            "controller-verification",
             "frozen-simulation-run"
           ],
           "description": "Independently evaluate semantic outcome, policy support, or claim support for one frozen simulation run.",
@@ -494,7 +494,9 @@
             "claim-support",
             "policy-support"
           ],
-          "optional_dependencies": [],
+          "optional_dependencies": [
+            "cascade-simulations:simulation-review"
+          ],
           "policy_tags": [
             "evaluation",
             "simulation-evaluation"
@@ -502,9 +504,7 @@
           "produces": [
             "simulation-evaluation-receipt"
           ],
-          "required_dependencies": [
-            "cascade-simulations:simulation-review"
-          ],
+          "required_dependencies": [],
           "route": "cascade-evals:simulation-evaluation",
           "triggers": [
             "a frozen simulation run needs independent semantic judgment"
@@ -541,7 +541,7 @@
           ]
         }
       ],
-      "version": "0.2.1+codex.20260908133706"
+      "version": "0.2.1+codex.20260909083539"
     },
     {
       "descriptor_path": ".codex/plugins/cascade-ai-architect/capabilities.yaml",

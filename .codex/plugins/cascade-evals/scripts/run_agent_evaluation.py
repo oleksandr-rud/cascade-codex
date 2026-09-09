@@ -27,7 +27,7 @@ from build_blind_packets import (
     write_json,
 )
 from reduce_evaluation import reduce_bundle
-from validate_judge import ContractError, require, validate_profile
+from validate_judge import ContractError, require, score_ratings, validate_profile
 
 
 SCRIPT_ROOT = Path(__file__).resolve().parent
@@ -1062,10 +1062,9 @@ def execute(args: argparse.Namespace) -> dict[str, Any]:
         response["profile_version"] = profile["version"]
         response["judge_identity"] = f"codex-{args.model}-{profile['profile_id']}"
         response["judge_context_id"] = str(uuid.uuid4())
-        ratings = {item["dimension_id"]: item["rating"] for item in response["ratings"]}
-        score = sum(item["weight"] * ratings[item["dimension_id"]] for item in profile["dimensions"]) / 4
-        floor_ok = all(ratings[item["dimension_id"]] >= profile["minimum_dimension"] for item in profile["dimensions"])
-        response["verdict"] = "PASS" if floor_ok and score >= profile["threshold"] else "FAIL"
+        # Thresholds stay controller-private; the raw model output remains in its trace.
+        scored = score_ratings(profile, response.get("ratings"))
+        response["verdict"] = "PASS" if scored["passed"] else "FAIL"
         return {
             "judgment": {"profile": profile, "response": response},
             "packet": {"profile_id": profile["profile_id"], "packet": packet, "response": response},

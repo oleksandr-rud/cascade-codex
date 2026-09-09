@@ -25,6 +25,7 @@ import {
   writeJson,
 } from "./common";
 import { readStructured } from "./structured-data";
+import { scoreRatings } from "../../.codex/plugins/cascade-evals/scripts/judge-ratings.mjs";
 import { runFixtureSelfTest } from "./target";
 import { runAdmissionCorpus } from "./admission";
 import { buildPluginCapabilityCatalog } from "./plugin-workflow";
@@ -656,10 +657,10 @@ async function knownSkills(): Promise<string[]> {
   return [...routes].sort();
 }
 
-async function routeSequence(value: unknown): Promise<string[]> {
+function routeSequence(value: unknown, skills: readonly string[]): string[] {
   if (typeof value !== "string") return [];
   const matches: { index: number; skill: string }[] = [];
-  for (const skill of await knownSkills()) {
+  for (const skill of skills) {
     const expression = new RegExp(
       `(^|[^a-z0-9-])(${skill.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")})(?![a-z0-9-])`,
       "gi",
@@ -671,12 +672,13 @@ async function routeSequence(value: unknown): Promise<string[]> {
   return matches.sort((a, b) => a.index - b.index).map((item) => item.skill);
 }
 
-async function handoffMatches(
+function handoffMatches(
   actual: unknown,
   primary: unknown,
   expected: string,
-): Promise<boolean> {
-  const sequence = await routeSequence(actual);
+  skills: readonly string[],
+): boolean {
+  const sequence = routeSequence(actual, skills);
   if (sequence[0] === primary) sequence.shift();
   return sequence[0] === expected;
 }
@@ -786,6 +788,7 @@ async function normalizeTrace(
 async function checkEligibility(
   scenario: JsonObject,
   trace: JsonObject,
+  skills?: readonly string[],
 ): Promise<JsonObject> {
   const expected = scenario.expectation;
   const final = trace.final_response;
@@ -902,7 +905,7 @@ async function checkEligibility(
   if (expected.next_route) {
     check(
       "handoff-route",
-      await handoffMatches(final?.next_route, primary, expected.next_route),
+      handoffMatches(final?.next_route, primary, expected.next_route, skills ?? await knownSkills()),
       { actual: final?.next_route, expected: expected.next_route },
     );
   }
@@ -957,7 +960,7 @@ function codexCommand(model: string, effort: string, prompt: string, schema: str
   ];
 }
 
-async function validateJudgment(
+export async function validateJudgment(
   judgment: JsonObject,
   profile: JsonObject,
   definition: JsonObject,
@@ -976,24 +979,11 @@ async function validateJudgment(
   ]) {
     if (judgment[key] !== expected) errors.push(`${key}-mismatch`);
   }
-  const dimensions = new Map(
-    (judgment.dimensions ?? []).map((item: JsonObject) => [item.id, item]),
-  );
-  let weighted = 0;
-  let minimum = 4;
-  for (const dimension of definition.dimensions ?? []) {
-    const actual = dimensions.get(dimension.id) as JsonObject | undefined;
-    if (!actual || !Number.isInteger(actual.score) || actual.score < 0 || actual.score > 4) {
-      errors.push(`invalid-dimension:${dimension.id}`);
-      continue;
-    }
-    weighted += (actual.score / 4) * dimension.weight;
-    minimum = Math.min(minimum, actual.score);
-  }
-  const score = Math.round(weighted * 100) / 100;
-  const threshold =
-    score >= definition.pass_threshold &&
-    minimum >= definition.minimum_dimension_score;
+  const scored = scoreRatings({ dimensions: definition.dimensions, ratings: judgment.dimensions, threshold: definition.pass_threshold / 100, minimumDimension: definition.minimum_dimension_score });
+  if (!scored.valid) errors.push(scored.error);
+  const score = scored.valid ? Math.round(scored.score * 10000) / 100 : 0;
+  const minimum = scored.valid ? scored.minimum_dimension_score : 0;
+  const threshold = scored.valid && scored.verdict === "PASS";
   if ((judgment.verdict === "PASS") !== threshold) errors.push("verdict-score-disagreement");
   if (judgment.root_cause === "model-variance" && repetitions < 2) {
     errors.push("model-variance-requires-repeated-run");
@@ -1009,12 +999,13 @@ async function validateJudgment(
   };
 }
 
-async function acceptedCandidate(
+function acceptedCandidate(
   eligibility: JsonObject,
   judgments: Record<string, JsonObject>,
-): Promise<[boolean, string]> {
+  required: readonly JsonObject[],
+): [boolean, string] {
   if (eligibility.verdict !== "PASS") return [false, "eligibility-not-pass"];
-  for (const profile of await requiredProfiles()) {
+  for (const profile of required) {
     const judgment = judgments[profile.id];
     if (!judgment) return [false, `missing-judge:${profile.id}`];
     if (judgment.accepted !== true) return [false, `judge-not-accepted:${profile.id}`];
@@ -1194,6 +1185,7 @@ async function commandRun(args: ReturnType<typeof parseArgs>): Promise<number> {
   }
   const selected = selectScenarios(current, args);
   if (!selected.length) throw new CascadeError("no scenarios matched");
+  const skills = selected.some((scenario) => scenario.expectation.next_route) ? await knownSkills() : [];
   const repetitions = Number(flag(args, "repetitions", "1"));
   const timeout = Number(flag(args, "timeout", "180")) * 1000;
   const runId =
@@ -1270,7 +1262,7 @@ async function commandRun(args: ReturnType<typeof parseArgs>): Promise<number> {
         result.durationMs,
         result.timedOut,
       );
-      const eligibility = await checkEligibility(scenario, trace);
+      const eligibility = await checkEligibility(scenario, trace, skills);
       eligibility.case_dir = rel(caseRoot);
       await Promise.all([
         writeJson(resolve(caseRoot, "normalized.json"), trace),
@@ -1293,6 +1285,7 @@ async function commandRun(args: ReturnType<typeof parseArgs>): Promise<number> {
 async function commandEvaluate(args: ReturnType<typeof parseArgs>): Promise<number> {
   const runRoot = resolve(ROOT, flag(args, "run-dir") ?? "");
   const selected = await readJson<JsonObject[]>(resolve(runRoot, "selected-scenarios.json"));
+  const skills = selected.some((scenario) => scenario.expectation.next_route) ? await knownSkills() : [];
   const scenarioMap = new Map(selected.map((item) => [item.id, item]));
   const metadata = await readJson<JsonObject>(resolve(runRoot, "run.json"));
   const eligibilities: JsonObject[] = [];
@@ -1314,7 +1307,7 @@ async function commandEvaluate(args: ReturnType<typeof parseArgs>): Promise<numb
       Number(prior.duration_seconds ?? 0) * 1000,
       prior.timed_out,
     );
-    const eligibility = await checkEligibility(scenario, trace);
+    const eligibility = await checkEligibility(scenario, trace, skills);
     eligibility.case_dir = rel(caseRoot);
     eligibility.replay = command.replay;
     await Promise.all([
@@ -1368,17 +1361,18 @@ async function commandJudge(args: ReturnType<typeof parseArgs>): Promise<number>
   const selected = await readJson<JsonObject[]>(resolve(runRoot, "selected-scenarios.json"));
   const scenarioMap = new Map(selected.map((item) => [item.id, item]));
   const summary = await readJson<JsonObject>(resolve(runRoot, "summary.json"));
-  const profileMap = await profiles();
   const requested = new Set(flags(args, "judge-profile"));
+  const required = (summary.eligibilities ?? []).some((item: JsonObject) => item.verdict === "PASS") ? await requiredProfiles() : [];
+  const definitions = await Promise.all(required
+    .filter((profile) => !requested.size || requested.has(profile.id))
+    .map(async (profile) => ({ profile, definition: await rubric(profile) })));
   const judgments: JsonObject[] = [];
   for (const eligibility of summary.eligibilities ?? []) {
     if (eligibility.verdict !== "PASS") continue;
     const caseName = basename(eligibility.case_dir);
     const scenario = scenarioMap.get(eligibility.scenario_id);
     if (!scenario) continue;
-    for (const profile of await requiredProfiles()) {
-      if (requested.size && !requested.has(profile.id)) continue;
-      const definition = await rubric(profile);
+    for (const { profile, definition } of definitions) {
       const outputRoot = resolve(runRoot, "judgments", caseName, profile.id);
       if (await exists(outputRoot)) throw new CascadeError(`judgment exists: ${rel(outputRoot)}`);
       await mkdir(outputRoot, { recursive: true });
@@ -1432,6 +1426,7 @@ async function commandJudge(args: ReturnType<typeof parseArgs>): Promise<number>
 async function commandCoverage(args: ReturnType<typeof parseArgs>): Promise<number> {
   const catalog = await generateCatalog();
   const manifest = await harnessSourceManifest();
+  const required = await requiredProfiles();
   const rows = new Map(
     catalog.scenarios.map((scenario: JsonObject) => [
       scenario.id,
@@ -1477,9 +1472,10 @@ async function commandCoverage(args: ReturnType<typeof parseArgs>): Promise<numb
             continue;
           }
           row.executed = true;
-          const [accepted, acceptance] = await acceptedCandidate(
+          const [accepted, acceptance] = acceptedCandidate(
             eligibility,
             judgmentsByCase[basename(eligibility.case_dir)] ?? {},
+            required,
           );
           row.covered ||= accepted;
           row.candidates.push({ run_id: metadata.run_id, accepted, acceptance });
@@ -1570,6 +1566,8 @@ function syntheticTrace(
 async function commandSelfTest(): Promise<number> {
   const admissionCorpus = await runAdmissionCorpus();
   const generatedCatalog = await generateCatalog();
+  const skills = await knownSkills();
+  const required = await requiredProfiles();
   const scenario = {
     id: "SELF-001",
     kind: "implicit-trigger",
@@ -1698,7 +1696,7 @@ async function commandSelfTest(): Promise<number> {
   const judgments: Record<string, JsonObject> = {};
   let lastProfile: JsonObject = {};
   let lastRubric: JsonObject = {};
-  for (const profile of await requiredProfiles()) {
+  for (const profile of required) {
     const definition = await rubric(profile);
     lastProfile = profile;
     lastRubric = definition;
@@ -1734,8 +1732,8 @@ async function commandSelfTest(): Promise<number> {
   );
   const missingJudgments = { ...judgments };
   delete missingJudgments[Object.keys(missingJudgments)[0]!];
-  const [fullyAccepted] = await acceptedCandidate(good, judgments);
-  const [missingRejected] = await acceptedCandidate(good, missingJudgments);
+  const [fullyAccepted] = acceptedCandidate(good, judgments, required);
+  const [missingRejected] = acceptedCandidate(good, missingJudgments, required);
   const targetFailures = await runFixtureSelfTest();
   const assertions: [boolean, string][] = [
     [good.verdict === "PASS", "good trace must pass"],
@@ -1760,8 +1758,8 @@ async function commandSelfTest(): Promise<number> {
     [!classifyCommand("rg token . 2>/dev/null").mutation, "dev-null redirect safe"],
     [!classifyCommand("rg 'placeholder|<[^>]+>' docs").mutation, "quoted redirect safe"],
     [classifyCommand("printf result > result.txt").mutation, "write redirect detected"],
-    [await handoffMatches("plan-change -> implement-change", "plan-change", "implement-change"), "handoff passes"],
-    [!(await handoffMatches("plan-change -> cascade-software-architect:review-change -> implement-change", "plan-change", "implement-change")), "wrong handoff fails"],
+    [handoffMatches("plan-change -> implement-change", "plan-change", "implement-change", skills), "handoff passes"],
+    [!handoffMatches("plan-change -> cascade-software-architect:review-change -> implement-change", "plan-change", "implement-change", skills), "wrong handoff fails"],
     [fullyAccepted, "required judges accept"],
     [!missingRejected, "missing judge rejects"],
     [Object.values(judgments).every((item) => item.computed_score === 100), "scores recomputed"],
