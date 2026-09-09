@@ -1,6 +1,6 @@
 # Cascade Design capability map
 
-Version: 0.1.0+codex.20260908124959
+Version: 0.1.0+codex.20260909141643
 
 `specs/extraction-manifest.json` freezes the pre-cutover Designer role and four
 repository skill packages as historical extraction evidence. The plugin owns
@@ -23,3 +23,8 @@ Cascade Personas. Goal-directed actor execution remains with Cascade
 Simulations. Prompt authoring remains with Cascade Prompt. Generic measurement,
 judges, and receipts remain with Cascade Evals. Target code changes and visible
 acceptance remain with the host harness.
+
+The user-selected Hybrid default, small component foundation, optional
+generative UI templates/catalog and reference
+assets belong to `design-system`. `create-design` applies them to candidate
+pages; the target host owns production adaptation and rendered verification.

@@ -1,5 +1,10 @@
 # Reusable Design Rule Contract
 
+The [Cascade outcome UI standard](outcome-ui-standard.md) is the governing
+default for new or unconstrained product and marketing interfaces. Preserve
+explicit target design authority. An explicit decision to establish a reusable
+default supplies accepted reuse scope; a one-off preference does not.
+
 A reusable design rule needs all of the following:
 
 - a stable identity and rule type;

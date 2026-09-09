@@ -22,6 +22,14 @@ defines faithful reproduction as the implementation default. The host binds that
 rule to its developer workflow and returns matched rendered evidence for Visual QA.
 Candidate readiness is separate from design approval and implemented pixel parity.
 
+The shared [Generative UI practice](../skills/design-system/references/generative-ui.md)
+guides UI composition and data/state ownership in Product, Marketing, Design,
+AI Architect, Software Architect and host implementation work. Design owns the
+rule; consumers reference it in existing handoffs. Its isolated catalog,
+decoder/renderer and web/chat demo are optional illustrations, with their local
+contract documented separately. Adopting the practice has no backend or live
+agent prerequisite and creates no new runtime service, role or artifact schema.
+
 ## Skill boundary
 
 ```text

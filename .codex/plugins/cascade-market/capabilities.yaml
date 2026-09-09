@@ -1,7 +1,7 @@
 schema_version: 1
 plugin:
   name: cascade-market
-  version: 0.2.0+codex.20260908124959
+  version: 0.2.0+codex.20260909141644
 model_policy:
   model: gpt-5.6-sol
   planning_reasoning_effort: high
@@ -64,7 +64,7 @@ skills:
     optional_consumes: [product-contract, product-evidence]
     produces: [growth-strategy]
     required_dependencies: []
-    optional_dependencies: [cascade-market:research-market, cascade-market:evaluate-market-opportunity, cascade-market:brand-positioning, cascade-market:design-market-experiments, cascade-product:define-product, cascade-product:validate-product, cascade-product:manage-product-lifecycle]
+    optional_dependencies: [cascade-market:research-market, cascade-market:evaluate-market-opportunity, cascade-market:brand-positioning, cascade-market:design-market-experiments, cascade-design:design-system, cascade-product:define-product, cascade-product:validate-product, cascade-product:manage-product-lifecycle]
     policy_tags: [market, growth-strategy, value-economics]
     effect: CANDIDATE_WRITE
     authority: READ_ONLY

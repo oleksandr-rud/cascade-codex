@@ -21,6 +21,10 @@ Compile one reviewable architecture candidate from the request and its authorita
    complete authority contracts when selected. Add specialists only for an
    exclusive boundary, done condition, and evaluation.
 5. **Design behavior.** Invoke `$design-agent-blueprint`, then the relevant workflow, role, skill, and persona design skills. Cover every complete behavior block; do not substitute prompt prose for tools, state, permissions, recovery, or observability.
+   When agent output includes interactive UI, consume the shared Generative UI
+   practice through `cascade-design:design-system`, `references/generative-ui.md`.
+   Bind it in the existing output/state contract; the practice itself does not
+   select a new agent topology, service or transport.
    Use `cascade-software-architect:select-architecture-patterns` only with a
    versioned pattern catalog, and send the completed candidate to
    `cascade-software-architect:review-architecture` when independent review is

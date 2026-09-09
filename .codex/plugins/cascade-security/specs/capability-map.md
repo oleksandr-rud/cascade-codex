@@ -1,6 +1,6 @@
 # Cascade Security capability map
 
-Version: 0.1.0+codex.20260827163437
+Version: 0.1.0+codex.20260909141647
 
 `specs/extraction-manifest.json` freezes the pre-cutover Security role and
 three repository skill packages. The plugin owns reusable security-review

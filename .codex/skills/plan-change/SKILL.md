@@ -31,6 +31,13 @@ A growth recommendation supplies a hypothesis, not accepted product scope.
 Use accepted current requirements directly for ordinary fixes; do not rerun
 market or growth strategy unless the change challenges those decisions.
 
+For UI, map the intended outcome to necessary information, the primary action,
+and observable completion/recovery. Bind the accepted target design or Cascade
+Design's shared outcome UI default as the presentation source.
+For structured choices, summaries or results, consume its shared Generative UI
+practice through `cascade-design:design-system`, `references/generative-ui.md`.
+Plan the accepted UI mapping; adopting the practice adds no backend work by itself.
+
 1. Restate the intended behavior, explicit non-goals, and success criteria.
 2. Inspect the current path through source, tests, persistence, interfaces, and
    rendered or observable outcomes as applicable.

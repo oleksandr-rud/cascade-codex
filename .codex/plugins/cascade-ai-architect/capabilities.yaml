@@ -1,7 +1,7 @@
 schema_version: 1
 plugin:
   name: cascade-ai-architect
-  version: 0.1.2+codex.20260908134828
+  version: 0.1.2+codex.20260909141641
 model_policy:
   model: gpt-5.6-sol
   planning_reasoning_effort: high
@@ -14,7 +14,7 @@ skills:
     consumes: [agent-system-request, authoritative-sources]
     produces: [agent-architecture-packet]
     required_dependencies: []
-    optional_dependencies: [cascade-software-architect:select-architecture-patterns, cascade-software-architect:review-architecture]
+    optional_dependencies: [cascade-software-architect:select-architecture-patterns, cascade-software-architect:review-architecture, cascade-design:design-system]
     policy_tags: [ai-architecture, topology]
     effect: CANDIDATE_WRITE
     authority: READ_ONLY
@@ -38,7 +38,7 @@ skills:
     consumes: [agent-capability-map]
     produces: [agent-blueprint]
     required_dependencies: []
-    optional_dependencies: [cascade-software-architect:select-architecture-patterns]
+    optional_dependencies: [cascade-software-architect:select-architecture-patterns, cascade-design:design-system]
     policy_tags: [ai-architecture, behavior-design]
     effect: CANDIDATE_WRITE
     authority: READ_ONLY

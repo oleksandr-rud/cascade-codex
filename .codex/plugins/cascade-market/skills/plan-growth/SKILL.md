@@ -29,6 +29,12 @@ set of hypotheses, not delivered value. Preserve missing inputs explicitly.
 Use the smallest relevant mode. A channel decision does not require a second
 channel, an invented subscription, or a complete growth campaign.
 
+When activation or a growth concept changes UI, consider structured choices,
+summaries and results through `cascade-design:design-system` and its shared
+`references/generative-ui.md` practice. Carry the proposed interaction and its
+intended outcome in existing product feedback; Product retains acceptance and
+Design retains composition. A growth proposal does not require a new UI backend.
+
 ## Build the strategy
 
 1. Compare reachable channels against the same audience, job, offer, trust,

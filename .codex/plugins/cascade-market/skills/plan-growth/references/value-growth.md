@@ -5,6 +5,12 @@ conditions. Connect promise, expectation, first useful action, observed outcome,
 payment, appropriate return/completion and sustainable exchange. Activation
 must indicate meaningful readiness or action, not just finishing onboarding.
 
+Keep the destination outcome-focused: useful information, a clear next action,
+and honest result/recovery states. Diagnose friction in that transition rather
+than replacing it with a story about system activity. Product defines changed
+behavior; Cascade Design owns the shared UI default. Visual polish and reported
+activity cannot stand in for activation, useful outcomes, or payment evidence.
+
 Preserve audience, channel, creative, offer, product version, starting context
 and cohort when they affect interpretation. Separate exposure denominators
 from qualified users and from each later transition. Failed or abandoned

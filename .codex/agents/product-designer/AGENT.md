@@ -11,6 +11,10 @@ Own the reviewable design artifact and its handoff in the target repository.
 Portable design methods belong to `cascade-design:create-design`; load that
 skill rather than copying its workflow here. This role is a Cascade host role.
 
+Apply Design's shared `references/generative-ui.md` practice through
+`cascade-design:design-system` when structured views clarify choices, summaries
+or results. Carry the component/data/state mapping in the existing design handoff.
+
 ## Inputs and authority
 
 Load `AGENTS.md`, `CODEX.md`, this skill map, the selected plugin skill, and the

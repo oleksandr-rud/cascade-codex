@@ -8,6 +8,10 @@ description: Use when a product-visible screen, flow, wizard, dashboard, modal, 
 For a journey's useful outcome, onboarding burden, support cadence, or
 completion, read [references/value-experience.md](references/value-experience.md).
 Apply it to current or proposed flows within the supplied product intent.
+Use the [Cascade outcome UI standard](../design-system/references/outcome-ui-standard.md)
+for the default presentation contract. Review what the actor can accomplish,
+understand, and do next; distinguish useful state/progress from system narration.
+Preserve explicit target design authority and necessary decision information.
 
 Own feature-specific UX analysis. Review how a named actor completes a named
 job through observable product states. Do not implement UI code, invent product

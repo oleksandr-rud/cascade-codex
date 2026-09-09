@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="uk">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Hybrid · Generative UI</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="hybrid.css">
+  <link rel="stylesheet" href="generative-ui.css">
+</head>
+<body>
+<div id="cascade-generative-ui" class="cascade-hybrid hy-demo-frame" lang="uk">
+  <header class="hy-app-header">
+    <span class="hy-brand">Hybrid</span>
+    <nav class="hy-nav" aria-label="Приклад розміщення">
+      <button class="hy-nav-item" type="button" data-layout="chat" aria-current="page">У чаті</button>
+      <button class="hy-nav-item" type="button" data-layout="web">На сторінці</button>
+    </nav>
+  </header>
+  <div class="hy-gen-controls hy-row hy-between">
+    <label class="hy-field" for="hy-gen-template">
+      <span class="hy-label">Шаблон</span>
+      <select id="hy-gen-template" class="hy-input" data-template>
+        <option value="choice">Вибір варіанта</option>
+        <option value="summary">Підсумок</option>
+        <option value="success">Результат</option>
+        <option value="error">Помилка</option>
+      </select>
+    </label>
+    <button class="hy-button hy-button--text" type="button" data-refresh>Оновити дані</button>
+  </div>
+  <p class="hy-gen-question" data-chat>Хочу запланувати розмовну практику.</p>
+  <p class="hy-gen-caption hy-muted hy-small" data-web hidden>Мої заняття / Нове заняття</p>
+  <main data-surface aria-label="План заняття"></main>
+  <details class="hy-gen-event">
+    <summary class="hy-small">Структуровані події</summary>
+    <pre data-event></pre>
+  </details>
+  <p class="hy-demo-note">Локальний приклад · відповіді змодельовані · дані зникають після перезавантаження.</p>
+</div>
+<script type="module" src="generative-ui-demo.mjs"></script>
+</body>
+</html>

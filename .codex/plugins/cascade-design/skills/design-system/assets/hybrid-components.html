@@ -1,0 +1,219 @@
+<!doctype html>
+<html lang="uk">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Hybrid — базові компоненти</title>
+  <link rel="stylesheet" href="hybrid.css">
+  <style>html { color-scheme: light dark; } body { margin: 16px; }</style>
+</head>
+<body>
+<div id="cascade-hybrid-kit" class="cascade-hybrid hy-demo-frame" lang="uk" aria-label="Hybrid — базова система компонентів">
+  <div class="hy-page">
+    <header class="hy-app-header">
+      <span class="hy-brand">Hybrid</span>
+      <nav class="hy-nav" aria-label="Приклади сторінок">
+        <button class="hy-nav-item" type="button" data-view="form" aria-current="page">Форма</button>
+        <button class="hy-nav-item" type="button" data-view="list">Список</button>
+        <button class="hy-nav-item" type="button" data-view="components">Елементи</button>
+      </nav>
+    </header>
+
+    <section data-panel="form" aria-labelledby="hy-form-heading">
+      <form id="hy-demo-form" novalidate>
+        <div class="hy-body">
+          <header class="hy-page-header">
+            <h2 class="hy-title" id="hy-form-heading">Запланувати заняття</h2>
+            <p class="hy-muted">Марія · 10 вересня 2026 · онлайн</p>
+          </header>
+          <div class="hy-section hy-field-grid">
+            <div class="hy-field">
+              <label class="hy-label" for="hy-topic">Тема заняття</label>
+              <input class="hy-input" id="hy-topic" name="topic" maxlength="120" required placeholder="Що хочете опрацювати?" aria-describedby="hy-topic-help hy-topic-error">
+              <span class="hy-muted hy-small" id="hy-topic-help">Коротко опишіть бажаний результат.</span>
+              <span class="hy-field-error" id="hy-topic-error" hidden>Додайте тему заняття.</span>
+            </div>
+            <div class="hy-field">
+              <label class="hy-label" for="hy-duration">Тривалість</label>
+              <select class="hy-input" id="hy-duration" name="duration">
+                <option value="60">60 хвилин</option>
+                <option value="30">30 хвилин</option>
+              </select>
+            </div>
+          </div>
+          <fieldset class="hy-section hy-choice-field">
+            <legend>Доступний час <span class="hy-muted hy-small">· за Києвом</span></legend>
+            <div class="hy-choices">
+              <label class="hy-choice"><input type="radio" name="hy-slot" value="11:00" checked><span>11:00</span></label>
+              <label class="hy-choice"><input type="radio" name="hy-slot" value="12:00"><span>12:00</span></label>
+              <label class="hy-choice"><input type="radio" name="hy-slot" value="14:00"><span>14:00</span></label>
+            </div>
+          </fieldset>
+        </div>
+        <div class="hy-action-zone">
+          <div class="hy-action-bar">
+            <div><p class="hy-value" data-selection aria-live="polite">11:00–12:00</p><p class="hy-muted hy-small">10 вересня · за Києвом</p></div>
+            <button class="hy-button hy-button--primary" type="submit" data-save>Зберегти чернетку</button>
+          </div>
+        </div>
+      </form>
+    </section>
+
+    <section class="hy-body" data-panel="list" aria-labelledby="hy-list-heading" hidden>
+      <header class="hy-page-header hy-row hy-between">
+        <div><h2 class="hy-title" id="hy-list-heading">Ваші чернетки</h2><p class="hy-muted">Збережені плани занять.</p></div>
+        <button class="hy-button" data-new type="button" hidden>Нова чернетка</button>
+      </header>
+      <div class="hy-empty" data-empty>
+        <h3 class="hy-heading">Поки немає чернеток</h3>
+        <p class="hy-muted">Оберіть тему й час першого заняття.</p>
+        <button class="hy-button hy-button--primary" data-new type="button">Створити чернетку</button>
+      </div>
+      <ul class="hy-list" data-drafts aria-label="Чернетки занять"></ul>
+    </section>
+
+    <section class="hy-body" data-panel="components" aria-labelledby="hy-components-heading" hidden>
+      <header class="hy-page-header"><h2 class="hy-title" id="hy-components-heading">Базові елементи</h2><p class="hy-muted">Невеликий набір для щоденних дій.</p></header>
+      <section class="hy-section">
+        <h3 class="hy-heading">Дії</h3>
+        <div class="hy-row">
+          <button type="button" class="hy-button hy-button--primary" data-example="Головна дія">Продовжити</button>
+          <button type="button" class="hy-button" data-example="Другорядна дія">Переглянути</button>
+          <button type="button" class="hy-button hy-button--text" data-example="Текстова дія">Докладніше</button>
+          <button type="button" class="hy-button" disabled>Недоступно</button>
+        </div>
+      </section>
+      <section class="hy-section hy-field-grid">
+        <div class="hy-field">
+          <label class="hy-label" for="hy-email">Поле з помилкою</label>
+          <input class="hy-input" id="hy-email" type="email" value="maria@" required aria-invalid="true" aria-describedby="hy-email-error">
+          <span class="hy-field-error" id="hy-email-error">Вкажіть повну адресу електронної пошти.</span>
+        </div>
+        <div class="hy-field">
+          <label class="hy-check"><input id="hy-hints" type="checkbox" checked><span>Показувати підказки</span></label>
+          <span class="hy-small hy-muted" data-hint>Додаткова інформація біля поля.</span>
+        </div>
+      </section>
+      <section class="hy-section">
+        <h3 class="hy-heading">Стани</h3>
+        <div class="hy-row">
+          <span class="hy-status">Чернетка</span>
+          <span class="hy-status" data-state="warning">Очікує підтвердження</span>
+          <span class="hy-status" data-state="success">Підтверджено</span>
+          <span class="hy-status" data-state="error">Не вдалося зберегти</span>
+        </div>
+      </section>
+      <section class="hy-section hy-stack">
+        <h3 class="hy-heading">Зворотний зв’язок</h3>
+        <p class="hy-feedback" data-state="success">Зміни збережено.</p>
+        <p class="hy-feedback" data-state="error">Зв’язок перервано. Введені дані залишилися у формі.</p>
+      </section>
+    </section>
+
+    <p class="hy-demo-note" data-demo-status role="status">Приклад · чернетки зберігаються лише до перезавантаження.</p>
+  </div>
+</div>
+<script>
+(() => {
+  const root = document.getElementById('cascade-hybrid-kit');
+  const form = root.querySelector('#hy-demo-form');
+  const topic = root.querySelector('#hy-topic');
+  const duration = root.querySelector('#hy-duration');
+  const error = root.querySelector('#hy-topic-error');
+  const drafts = [];
+  let editing = null;
+  let validationShown = false;
+  const slot = () => form.querySelector('input[name="hy-slot"]:checked').value;
+  function timeRange(start, minutes) {
+    const [hour, minute] = start.split(':').map(Number);
+    const end = hour * 60 + minute + Number(minutes);
+    return `${start}–${String(Math.floor(end / 60)).padStart(2, '0')}:${String(end % 60).padStart(2, '0')}`;
+  }
+  function showView(view) {
+    root.querySelectorAll('[data-panel]').forEach(panel => { panel.hidden = panel.dataset.panel !== view; });
+    root.querySelectorAll('[data-view]').forEach(button => {
+      if (button.dataset.view === view) button.setAttribute('aria-current', 'page');
+      else button.removeAttribute('aria-current');
+    });
+  }
+  function validateTopic() {
+    const valid = Boolean(topic.value.trim());
+    error.hidden = valid;
+    if (valid) topic.removeAttribute('aria-invalid');
+    else topic.setAttribute('aria-invalid', 'true');
+    return valid;
+  }
+  function updateSelection() {
+    root.querySelector('[data-selection]').textContent = timeRange(slot(), duration.value);
+  }
+  function renderList() {
+    const list = root.querySelector('[data-drafts]');
+    list.replaceChildren();
+    root.querySelector('[data-empty]').hidden = drafts.length > 0;
+    root.querySelector('.hy-page-header [data-new]').hidden = drafts.length === 0;
+    drafts.forEach((draft, index) => {
+      const row = document.createElement('li'); row.className = 'hy-list-row';
+      const main = document.createElement('div'); main.className = 'hy-list-main';
+      const title = document.createElement('p'); title.className = 'hy-list-title'; title.textContent = draft.topic;
+      const detail = document.createElement('p'); detail.className = 'hy-muted hy-small';
+      detail.textContent = `10 вересня · ${timeRange(draft.slot, draft.duration)} · за Києвом`;
+      main.append(title, detail);
+      const state = document.createElement('span'); state.className = 'hy-status'; state.textContent = 'Чернетка';
+      const edit = document.createElement('button'); edit.type = 'button'; edit.className = 'hy-button hy-button--text';
+      edit.textContent = 'Відкрити'; edit.setAttribute('aria-label', `Відкрити чернетку: ${draft.topic}`);
+      edit.addEventListener('click', () => {
+        editing = index; topic.value = draft.topic; duration.value = draft.duration;
+        form.querySelectorAll('input[name="hy-slot"]').forEach(input => { input.checked = input.value === draft.slot; });
+        root.querySelector('[data-save]').textContent = 'Оновити чернетку';
+        error.hidden = true; topic.removeAttribute('aria-invalid'); validationShown = false;
+        updateSelection(); showView('form'); topic.focus();
+      });
+      row.append(main, state, edit); list.append(row);
+    });
+  }
+  root.querySelectorAll('[data-view]').forEach(button => button.addEventListener('click', () => showView(button.dataset.view)));
+  root.querySelectorAll('[data-new]').forEach(button => button.addEventListener('click', () => {
+    editing = null; validationShown = false; form.reset(); error.hidden = true; topic.removeAttribute('aria-invalid');
+    root.querySelector('[data-save]').textContent = 'Зберегти чернетку';
+    updateSelection(); showView('form'); topic.focus();
+  }));
+  form.addEventListener('change', updateSelection);
+  topic.addEventListener('input', () => { if (validationShown) validateTopic(); });
+  function saveDraft(event) {
+    event.preventDefault(); validationShown = true;
+    if (!validateTopic()) { topic.focus(); return; }
+    const draft = { topic: topic.value.trim(), duration: duration.value, slot: slot() };
+    if (editing === null) { drafts.push(draft); editing = drafts.length - 1; }
+    else drafts[editing] = draft;
+    root.querySelector('[data-save]').textContent = 'Оновити чернетку';
+    renderList(); showView('list');
+    root.querySelector('[data-demo-status]').textContent = 'Чернетку збережено в цьому прикладі. Реальне бронювання не створено.';
+    root.querySelector('[data-view="list"]').focus();
+  }
+  form.addEventListener('submit', saveDraft);
+  root.querySelector('[data-save]').addEventListener('click', saveDraft);
+  const email = root.querySelector('#hy-email');
+  email.addEventListener('input', () => {
+    const valid = email.validity.valid;
+    root.querySelector('#hy-email-error').hidden = valid;
+    if (valid) email.removeAttribute('aria-invalid'); else email.setAttribute('aria-invalid', 'true');
+  });
+  root.querySelector('#hy-hints').addEventListener('change', event => { root.querySelector('[data-hint]').hidden = !event.target.checked; });
+  root.querySelectorAll('[data-example]').forEach(button => button.addEventListener('click', () => {
+    root.querySelector('[data-demo-status]').textContent = `Приклад натискання: ${button.dataset.example.toLowerCase()}.`;
+  }));
+  renderList(); updateSelection();
+  if (globalThis.Tweak) {
+    const preview = { gradientWidth: 100, gradientOpacity: .65 };
+    const render = () => {
+      root.style.setProperty('--hy-glow-width', `${preview.gradientWidth}%`);
+      root.style.setProperty('--hy-glow-opacity', preview.gradientOpacity);
+    };
+    const tweak = new Tweak({ container: root, onChange: render });
+    tweak.addSlider(preview, 'gradientWidth', { label: 'Ширина градієнта', min: 60, max: 100, step: 5, unit: '%' });
+    tweak.addSlider(preview, 'gradientOpacity', { label: 'Помітність градієнта', min: 0, max: 1, step: .05 });
+  }
+})();
+</script>
+</body>
+</html>
