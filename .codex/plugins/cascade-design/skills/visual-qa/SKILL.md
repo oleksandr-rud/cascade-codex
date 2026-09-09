@@ -10,6 +10,12 @@ named expected source across declared viewports and states. Do not treat visual
 preference as a defect, update snapshots blindly, implement code, or certify
 functional behavior.
 
+When no more specific accepted design governs the surface, bind the
+[Cascade outcome UI standard](../design-system/references/outcome-ui-standard.md)
+as the default expected source. Check informative hierarchy, minimal composition,
+readable liquid treatment, and truthful visible states. Rendered evidence is
+still required; a default style does not establish functional or speed proof.
+
 ## Source order
 
 1. Latest request and supplied screenshot, mockup, Figma frame, URL, or UI

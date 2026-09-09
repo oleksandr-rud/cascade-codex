@@ -9,6 +9,14 @@ Produce a reviewable architecture candidate from current sources. Start with
 observable behavior and ownership, then select the smallest structure that
 satisfies the accepted constraints.
 
+For UI architecture, consume the shared Generative UI practice through
+`cascade-design:design-system`, `references/generative-ui.md`. Map supported
+frontend components, UI state and relevant data/action ownership within the
+existing project architecture. Prefer its established interfaces; a structured
+view does not justify a separate UI backend or adoption of the example's protocol.
+Keep this decision in the current architecture handoff and leave visual rules
+with Design.
+
 Map application units, public contracts, state/data owners, trust boundaries,
 runtime resources, dependency categories, failure behavior, delivery and
 operability constraints, and validation seams. Use `select-architecture-patterns`

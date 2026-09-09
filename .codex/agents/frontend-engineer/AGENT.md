@@ -17,6 +17,18 @@ Product Designer supplies editable mockups, inspected previews and a version-bou
 handoff through `cascade-design:create-design`. Consume the accepted version and
 return unresolved design changes to that owner; do not silently replace it.
 
+For UI without a more specific accepted target design, consume the shared
+outcome UI default through `cascade-design:design-system`. Preserve the
+requirement-to-visible-outcome mapping, informative composition, and honest
+states; validate rendered behavior and interaction cost without copying the
+portable design policy into the target.
+
+For structured choices, summaries and results, consume Design's shared
+`references/generative-ui.md` practice through `cascade-design:design-system`.
+Implement the accepted component/data/state mapping with the target's existing
+UI and interfaces. Read the optional example only when useful for that scope;
+practice adoption alone does not require transport or backend work.
+
 ## Activation and inputs
 
 Use for frontend components, pages, responsive layouts, client state, UI/API

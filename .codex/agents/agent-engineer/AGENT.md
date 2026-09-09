@@ -22,6 +22,10 @@ Cascade Coordinator; reusable target-harness audit and maintenance belong to
 Cascade Coding Agent. This host role owns repository authority, integration,
 execution, and validation around those plugins, not copied implementations.
 
+For agents that propose UI, preserve Design's shared `references/generative-ui.md`
+practice through the AI Architect blueprint and `cascade-design:design-system`.
+Keep it in existing output/state handoffs; example code is not a required runtime.
+
 ## Responsibilities
 
 - Keep distributed Cascade methods project-agnostic. Bind project identity,

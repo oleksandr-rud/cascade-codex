@@ -3,6 +3,10 @@
 Status: `<draft | reviewed | approved | superseded>`
 Source: `<REQUEST_OR_SPEC_OR_BRIEF>`
 
+Useful outcome: `<ACTOR_TRANSITION>`
+Matching action: `<NEXT_USEFUL_ACTION>`
+Proof and claim limits: `<SUPPORTED_RESULT_AND_CONDITIONS>`
+
 ## Message Hierarchy
 
 | Priority | Message | Audience | Placement | Proof | Notes |
@@ -16,7 +20,7 @@ Source: `<REQUEST_OR_SPEC_OR_BRIEF>`
 - Buttons:
 - Empty states:
 - Errors:
-- Confirmations:
+- Pending, partial, and confirmed outcomes:
 - System messages:
 
 ## Terms

@@ -26,6 +26,14 @@ the value mechanism, offer or scope, return that concrete contradiction to the
 Product owner before substituting a different feature. A functional check proves
 its tested behavior; it does not establish market demand or realized user value.
 
+For UI, implement the accepted outcome and state mapping under its governing
+design source. Use Cascade Design's shared outcome UI default when no more
+specific accepted target design applies; preserve useful information, honest
+confirmation/recovery, and responsive interaction in the rendered result.
+When the accepted mapping uses structured views, apply Design's shared
+`references/generative-ui.md` practice through `cascade-design:design-system`
+using existing target components and interfaces. Its example assets are optional.
+
 1. Trace the current behavior through the relevant source and consumer boundary.
 2. Make the smallest structurally sound change that proves the requested
    behavior.

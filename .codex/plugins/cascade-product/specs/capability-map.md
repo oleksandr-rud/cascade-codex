@@ -1,6 +1,6 @@
 # Cascade Product capability map
 
-Version: 0.1.24+codex.20260908124959
+Version: 0.1.24+codex.20260909141642
 
 This plugin extracts product-lifecycle capabilities from the repository
 Orchestrator and product/spec skills into three standalone, user-triggered

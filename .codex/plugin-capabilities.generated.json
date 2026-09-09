@@ -1,6 +1,6 @@
 {
   "artifact_type": "cascade-plugin-capability-catalog",
-  "catalog_digest": "0741c5f9be1d965142a3483600177e55da585113364a3c42dcb7c4d71ea2e5fd",
+  "catalog_digest": "342b75a3961ea8114004cf55742e928212130454cda38e20e41b803cd648ca03",
   "marketplace": ".agents/plugins/marketplace.json",
   "plugins": [
     {
@@ -545,9 +545,9 @@
     },
     {
       "descriptor_path": ".codex/plugins/cascade-ai-architect/capabilities.yaml",
-      "descriptor_sha256": "072a654dfcef61cf470720ed40a4f5b6faed140a35634aaf21d2e0e18f4472a2",
+      "descriptor_sha256": "1847e2a9ac8a2f0ba6d42b2276a93cd13b948b2651764fb4a3d9c72bf908feb1",
       "manifest_path": ".codex/plugins/cascade-ai-architect/.codex-plugin/plugin.json",
-      "manifest_sha256": "80569a905d029a4cb9513d73ff3122bfdffcd7ac6e130d6238a1dbd583e2b888",
+      "manifest_sha256": "d2616f00bad0a6484171c1ef598afaba8d579e35140ce437f41ce4fb5302a01e",
       "model_policy": {
         "evaluation_reasoning_effort": "max",
         "model": "gpt-5.6-sol",
@@ -574,7 +574,8 @@
           ],
           "optional_dependencies": [
             "cascade-software-architect:select-architecture-patterns",
-            "cascade-software-architect:review-architecture"
+            "cascade-software-architect:review-architecture",
+            "cascade-design:design-system"
           ],
           "policy_tags": [
             "ai-architecture",
@@ -632,7 +633,8 @@
             "behavior-block-coverage"
           ],
           "optional_dependencies": [
-            "cascade-software-architect:select-architecture-patterns"
+            "cascade-software-architect:select-architecture-patterns",
+            "cascade-design:design-system"
           ],
           "policy_tags": [
             "ai-architecture",
@@ -871,13 +873,13 @@
           ]
         }
       ],
-      "version": "0.1.2+codex.20260908134828"
+      "version": "0.1.2+codex.20260909141641"
     },
     {
       "descriptor_path": ".codex/plugins/cascade-software-architect/capabilities.yaml",
-      "descriptor_sha256": "c1c3f59391696cda997cb9bdd2982467946f0d755041bda321be38da22fa0426",
+      "descriptor_sha256": "120850572c8d2180e5f02b26765f02569b532b31ad1d8ac6125987bf75f57419",
       "manifest_path": ".codex/plugins/cascade-software-architect/.codex-plugin/plugin.json",
-      "manifest_sha256": "8061df21c1155ccfacf3a7a1f67b5c774dc341ff1c0f8c4ecea150043528838f",
+      "manifest_sha256": "3f1214ce66c026cc93361435f31615959eae9d64114f0d23cda95c8c4c34c797",
       "model_policy": {
         "evaluation_reasoning_effort": "max",
         "model": "gpt-5.6-sol",
@@ -901,7 +903,8 @@
             "pattern-composition"
           ],
           "optional_dependencies": [
-            "cascade-software-architect:select-architecture-patterns"
+            "cascade-software-architect:select-architecture-patterns",
+            "cascade-design:design-system"
           ],
           "policy_tags": [
             "software-architecture",
@@ -1007,7 +1010,7 @@
           ]
         }
       ],
-      "version": "0.1.3+codex.20260908133706"
+      "version": "0.1.3+codex.20260909141641"
     },
     {
       "descriptor_path": ".codex/plugins/cascade-coding-agent/capabilities.yaml",
@@ -1162,9 +1165,9 @@
     },
     {
       "descriptor_path": ".codex/plugins/cascade-personas/capabilities.yaml",
-      "descriptor_sha256": "3725c4f459845311528d7eb327143b3ee4589342f39baef39dbc7b79d44512d1",
+      "descriptor_sha256": "16e0abf9c58c6fde63bc1273c04e5959f6b77b3aa496d4296cffaa4ab9b2d33f",
       "manifest_path": ".codex/plugins/cascade-personas/.codex-plugin/plugin.json",
-      "manifest_sha256": "0c4ac0fb8657df4b72b782a76c7e5c401174d4c8309e79afc979b551b2de3ef4",
+      "manifest_sha256": "d27f1bf8e060cbd1b0f38b89c3e60470352d1d17a4082a9a7df23d051018c812",
       "model_policy": {
         "evaluation_reasoning_effort": "max",
         "model": "gpt-5.6-sol",
@@ -1271,13 +1274,13 @@
           ]
         }
       ],
-      "version": "0.1.20+codex.20260827162112"
+      "version": "0.1.20+codex.20260909140051"
     },
     {
       "descriptor_path": ".codex/plugins/cascade-product/capabilities.yaml",
-      "descriptor_sha256": "2f3069cf31a6b9ed88f40fed26a01d16907183e00697e0b42887a406dd3dcdd2",
+      "descriptor_sha256": "bfca3e6ce10bf917369830cbbf6de651ffc2a016418a6d7c9594f66f671f5971",
       "manifest_path": ".codex/plugins/cascade-product/.codex-plugin/plugin.json",
-      "manifest_sha256": "6a7917210afe74dfb91e9c94a61cdd0d88bc4ff0fef10e5fcdc26aa74b52be2a",
+      "manifest_sha256": "8972dd0e295e8c530d1525b7415bdaa8c1898f73210b8e1314dec9c9e3fff2e7",
       "model_policy": {
         "evaluation_reasoning_effort": "max",
         "model": "gpt-5.6-sol",
@@ -1351,6 +1354,7 @@
             "cascade-prompt:prompt",
             "cascade-market:plan-growth",
             "cascade-design:ux-flow-review",
+            "cascade-design:design-system",
             "cascade-ai-architect:design-agent-blueprint"
           ],
           "policy_tags": [
@@ -1403,13 +1407,13 @@
           ]
         }
       ],
-      "version": "0.1.24+codex.20260908124959"
+      "version": "0.1.24+codex.20260909141642"
     },
     {
       "descriptor_path": ".codex/plugins/cascade-market/capabilities.yaml",
-      "descriptor_sha256": "1440b0980a5457d328057a3cd59a659800a488ae730e786fa4317ebf0df40653",
+      "descriptor_sha256": "d09bab446714c73b10779efa6e38004efa4328a59acd47adf46e2477bd90b95e",
       "manifest_path": ".codex/plugins/cascade-market/.codex-plugin/plugin.json",
-      "manifest_sha256": "a2e44b056c2867bceb87ade922ead5c78c30f10b9200af21886885af65baa90e",
+      "manifest_sha256": "faece7529aaecb6201e1e68348e8b29cb1188e18af4865465da6e4359920112f",
       "model_policy": {
         "evaluation_reasoning_effort": "max",
         "model": "gpt-5.6-sol",
@@ -1589,6 +1593,7 @@
             "cascade-market:evaluate-market-opportunity",
             "cascade-market:brand-positioning",
             "cascade-market:design-market-experiments",
+            "cascade-design:design-system",
             "cascade-product:define-product",
             "cascade-product:validate-product",
             "cascade-product:manage-product-lifecycle"
@@ -1609,13 +1614,13 @@
           ]
         }
       ],
-      "version": "0.2.0+codex.20260908124959"
+      "version": "0.2.0+codex.20260909141644"
     },
     {
       "descriptor_path": ".codex/plugins/cascade-design/capabilities.yaml",
-      "descriptor_sha256": "a3fa75e085595677a5207bb61c4f4dca3bad19d4c7ea4499c0f9a08db7f36bd5",
+      "descriptor_sha256": "5c677ac7e82ec8805ada16eef5e87cdae07413067be2d00f98633435798a1efa",
       "manifest_path": ".codex/plugins/cascade-design/.codex-plugin/plugin.json",
-      "manifest_sha256": "88e182ceca0490622b1eab4ee67f2e26c90803ed3c61c5cc196577c6fc053640",
+      "manifest_sha256": "428c507d09097fd260737f914746abfea9d2485e925f71c11c0ffec04b19200b",
       "model_policy": {
         "evaluation_reasoning_effort": "max",
         "model": "gpt-5.6-sol",
@@ -1668,7 +1673,7 @@
             "marketing-positioning",
             "design-evidence"
           ],
-          "description": "Define or audit reusable tokens, components, states, responsive behavior, motion, accessibility, and content constraints.",
+          "description": "Define or audit the Hybrid outcome UI default, basic components, shared generative UI practice, tokens, states, responsive behavior, motion, accessibility, and content constraints.",
           "effect": "CANDIDATE_WRITE",
           "evaluation_cases": [
             "reusable-rule",
@@ -1688,7 +1693,8 @@
           "required_dependencies": [],
           "route": "cascade-design:design-system",
           "triggers": [
-            "a reusable design-system rule is missing or changing"
+            "a reusable design-system rule is missing or changing",
+            "generative UI templates or component catalogs need a reusable rule"
           ]
         },
         {
@@ -1766,7 +1772,7 @@
             "product-contract",
             "design-evidence"
           ],
-          "description": "Create editable product mockups, inspected previews and a version-bound frontend handoff from grounded requirements.",
+          "description": "Create editable product and marketing mockups, inspected previews and a version-bound frontend handoff from grounded requirements.",
           "effect": "CANDIDATE_WRITE",
           "evaluation_cases": [
             "candidate-handoff",
@@ -1794,13 +1800,13 @@
           ]
         }
       ],
-      "version": "0.1.0+codex.20260908124959"
+      "version": "0.1.0+codex.20260909141643"
     },
     {
       "descriptor_path": ".codex/plugins/cascade-security/capabilities.yaml",
-      "descriptor_sha256": "2f25e0455b40ee36b75c43557d833e42c01c94b8b854580d92d41f76a9b96a02",
+      "descriptor_sha256": "6a70981a6369e5c6bf5f754d02b55f523628c169340fe8f57e0c173ffe3a2dcd",
       "manifest_path": ".codex/plugins/cascade-security/.codex-plugin/plugin.json",
-      "manifest_sha256": "e90fa1f16bdaa65e9d57ef3f816ff66f647c3f85849e49841f7c20ee871e078b",
+      "manifest_sha256": "4cf97469902cfe67987b1a55d8d6c171bf2cc9098884acdf4f11c1e136ef53e3",
       "model_policy": {
         "evaluation_reasoning_effort": "max",
         "model": "gpt-5.6-sol",
@@ -1908,13 +1914,13 @@
           ]
         }
       ],
-      "version": "0.1.0+codex.20260827163437"
+      "version": "0.1.0+codex.20260909141647"
     },
     {
       "descriptor_path": ".codex/plugins/cascade-project-management/capabilities.yaml",
-      "descriptor_sha256": "e73b6d9a5a99a8461150f34dc8a7ebb2f449d69033dda2d48eadde73e40c2303",
+      "descriptor_sha256": "7879ee6f5e3191bad4a7d438c380fb1d9c7aa5b18b6aa14fb64054615cd637b7",
       "manifest_path": ".codex/plugins/cascade-project-management/.codex-plugin/plugin.json",
-      "manifest_sha256": "30d7066bfb7d9c4d9999571f0ac1c45ed6dd997e1ea3d85bae1afbaae01b0a3e",
+      "manifest_sha256": "42cce19bbeaa1cab3e3345981ff9207399d7bca332dbdd45899941aa82f2b68c",
       "model_policy": {
         "evaluation_reasoning_effort": "max",
         "model": "gpt-5.6-sol",
@@ -2060,13 +2066,13 @@
           ]
         }
       ],
-      "version": "0.1.0+codex.20260827161436"
+      "version": "0.1.0+codex.20260909140054"
     },
     {
       "descriptor_path": ".codex/plugins/cascade-qa/capabilities.yaml",
-      "descriptor_sha256": "f9e02dbeb7e26edfd5938c8b092189d93a28b8ea044c13d51d14b9a1a86d9b83",
+      "descriptor_sha256": "7e3267f07a2144b2be4964eaf5fde57acfaa28bb80ec4e629c9d1de6ad06dd0f",
       "manifest_path": ".codex/plugins/cascade-qa/.codex-plugin/plugin.json",
-      "manifest_sha256": "783e097abc03b2b880163a10c18bf98e1db85485ee7714c44b8a95f11f6d28f9",
+      "manifest_sha256": "c818cdb0e565188cec39cd8e0ecd8243107bbdab31da80f1c5e035682f98b792",
       "model_policy": {
         "evaluation_reasoning_effort": "max",
         "model": "gpt-5.6-sol",
@@ -2199,7 +2205,7 @@
           ]
         }
       ],
-      "version": "0.1.0+codex.20260827161754"
+      "version": "0.1.0+codex.20260909140053"
     },
     {
       "descriptor_path": ".codex/plugins/cascade-coordinator/capabilities.yaml",

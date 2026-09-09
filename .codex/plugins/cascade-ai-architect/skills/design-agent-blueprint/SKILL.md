@@ -12,6 +12,12 @@ blocks; do not introduce a separate product model or role hierarchy.
 
 Design the smallest system that can satisfy the capability map. Keep semantic behavior contracts provider-neutral and separate from target-harness implementation.
 
+When an agent proposes interactive views, use the shared Generative UI practice
+owned by `cascade-design:design-system` in `references/generative-ui.md`.
+Bind supported templates/data and observed UI states in the existing behavior
+blocks; the frontend retains components and interactions. The reference demo's
+event format is optional and does not prescribe a backend or agent architecture.
+
 When a versioned host pattern catalog materially constrains topology, consume
 `cascade-software-architect:select-architecture-patterns`; do not copy its
 pattern-selection procedure or treat a default as a mandate.

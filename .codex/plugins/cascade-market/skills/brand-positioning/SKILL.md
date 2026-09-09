@@ -12,6 +12,19 @@ horizon. Demonstrations support demonstrated capability, not unmeasured efficacy
 For creative concepts, acquisition-to-outcome continuity or channel/lifecycle
 strategy, use cascade-market:plan-growth; retain message wording here.
 
+Lead product and marketing surfaces with the actor's useful result, supported
+proof, relevant conditions, and a matching action. Process stories and system
+activity are secondary unless they help that decision. Microcopy states the
+actual pending, confirmed, partial, or failed result and the next useful action;
+it never upgrades a request or an assumption into success. Route visual treatment
+through cascade-design:design-system and its shared outcome UI default; Marketing
+owns the promise and meaning, while Design owns composition and visual materials.
+
+For interactive product or marketing surfaces, consume the shared Generative UI
+practice through `cascade-design:design-system`, `references/generative-ui.md`.
+Bind promise, proof, conditions and call to action to the supported view and
+actual state in the existing message map; a simulated example proves no outcome.
+
 Create one reviewable marketing candidate. This skill owns positioning and
 marketing-language semantics. Cascade Market research and opportunity methods
 own external market facts,

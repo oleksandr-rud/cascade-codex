@@ -1,0 +1,18 @@
+/* Additional anatomy only; Hybrid owns colors, type, spacing and control styles. */
+.cascade-hybrid .hy-gen-surface { min-width: 0; }
+.cascade-hybrid .hy-gen-surface:empty { display: none; }
+.cascade-hybrid .hy-gen-options { display: grid; gap: var(--hy-space-2); margin-top: var(--hy-space-6); }
+.cascade-hybrid .hy-gen-option { justify-content: start; text-align: left; padding: 12px 14px; }
+.cascade-hybrid .hy-gen-option-copy { display: grid; gap: var(--hy-space-1); }
+.cascade-hybrid .hy-gen-details { margin: 0; }
+.cascade-hybrid .hy-gen-details dd { margin: 0; }
+.cascade-hybrid .hy-gen-result { margin-top: var(--hy-space-4) !important; }
+.cascade-hybrid .hy-gen-announcement { margin: 0; padding: 0 var(--hy-gutter) var(--hy-space-4); }
+.cascade-hybrid .hy-gen-announcement:empty { display: none; }
+.cascade-hybrid .hy-gen-announcement:not([data-visible]) { position: absolute; width: 1px; height: 1px; padding: 0; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.cascade-hybrid .hy-gen-controls { padding: 12px var(--hy-gutter); border-bottom: 1px solid var(--hy-line); }
+.cascade-hybrid .hy-gen-caption { padding: 20px var(--hy-gutter) 0; margin: 0; }
+.cascade-hybrid .hy-gen-question { margin: 20px var(--hy-gutter) 0 auto; padding: 12px 16px; border-radius: var(--hy-radius-control); background: var(--hy-selected); width: fit-content; max-width: calc(100% - 2 * var(--hy-gutter)); }
+.cascade-hybrid .hy-gen-event { border-top: 1px solid var(--hy-line); padding: 12px var(--hy-gutter); }
+.cascade-hybrid .hy-gen-event summary { cursor: pointer; min-height: 32px; }
+.cascade-hybrid .hy-gen-event pre { white-space: pre-wrap; overflow-wrap: anywhere; font-size: 12px; color: var(--hy-muted); }

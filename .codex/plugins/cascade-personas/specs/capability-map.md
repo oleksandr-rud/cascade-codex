@@ -1,6 +1,6 @@
 # Cascade Personas capability map
 
-Version: 0.1.20+codex.20260827162112
+Version: 0.1.20+codex.20260909140051
 
 This package consolidates human-model capabilities that were previously split across repository product documentation, Cascade Simulations, and the former umbrella Cascade Architect package. The paths below are development provenance, not runtime dependencies.
 

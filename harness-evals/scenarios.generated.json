@@ -1,7 +1,7 @@
 {
   "agent_count": 9,
   "agent_scenario_count": 9,
-  "catalog_digest": "8efe920541e6f7faf8aad3d55e07efef284da29cb60d7fc3e762eef8c8227702",
+  "catalog_digest": "db20970e4ead4b94dc2fe2f0d5a99651edb8da2075a206459121c60df4090bf0",
   "generated_by": "scripts/cascade/evals.ts",
   "scenario_count": 142,
   "scenarios": [
@@ -3935,7 +3935,7 @@
       "context_bindings": [
         {
           "path": ".codex/agents/agent-engineer/AGENT.md",
-          "sha256": "fa0e59e00e4675e003813e9caed3ba113370d1c7bd83985d33e9c4bb70f10ad0"
+          "sha256": "24742fb093174c28e9b47e1caa056fdaeb9d986695f31dc3a48a41f854101ef9"
         },
         {
           "path": ".codex/agents/agent-engineer/skills.yaml",
@@ -3951,7 +3951,7 @@
         },
         {
           "path": "CODEX.md",
-          "sha256": "8ebdff26900b98a99f6eb710a41b63ccddd443718a5a0a1113198dec474de9d7"
+          "sha256": "1bf1c7e4092c4dd45d58805cf5df4e0a84b2a32b987bd8b70452dcdafd75b5c4"
         }
       ],
       "execution": {
@@ -4055,7 +4055,7 @@
       "context_bindings": [
         {
           "path": ".codex/agents/frontend-engineer/AGENT.md",
-          "sha256": "e312c78e2b76ba92626fbdb27ac01d1eff8da6132023d5bc4a43ac8291d8d272"
+          "sha256": "46691ad509bb14241b3bf3afbc550b6882b7bb140d2c3dbc133a17a79731ed35"
         },
         {
           "path": ".codex/agents/frontend-engineer/skills.yaml",
@@ -4063,11 +4063,11 @@
         },
         {
           "path": ".codex/plugins/cascade-design/skills/design-system/references/design-system-contract.md",
-          "sha256": "523318b7972949190db49b1132d990a0daf34f3901369e91701ab196bd738d84"
+          "sha256": "6af72b3e4c6f4e672727c0e771f2c8a3a45dd390a8f95bc442929030d0374cb2"
         },
         {
           "path": ".codex/skills/plan-change/SKILL.md",
-          "sha256": "b74b8c6f76ba0cc75631f2227b288d1cb267ebdf897ccc74e362ae9e80527b78"
+          "sha256": "2a6e1ca2c761c93c87567d34019fe7a913fd579509fb89e1b2940328c83e9654"
         }
       ],
       "execution": {
@@ -4174,7 +4174,7 @@
       "context_bindings": [
         {
           "path": ".codex/agents/product-designer/AGENT.md",
-          "sha256": "480d3ed20e73efa81f893c8c7d8d9b670fda04462223c63bde3b1d435e09acbb"
+          "sha256": "c9d444faa3a5094459ab1162b0efc9028560f87b930cac5109657ea5686bfcba"
         },
         {
           "path": ".codex/agents/product-designer/skills.yaml",
@@ -4182,7 +4182,7 @@
         },
         {
           "path": ".codex/plugins/cascade-design/skills/create-design/SKILL.md",
-          "sha256": "da583fa101df06ce6192d927e8ab58d8f9b80ca5f23dfa40ef87fabbcc1253aa"
+          "sha256": "9a2ae90b553584ba255f9f200e444a05a19c68cc1a0d8f41295606eeca0e2d76"
         }
       ],
       "execution": {
@@ -4414,7 +4414,7 @@
         },
         {
           "path": ".codex/skills/plan-change/SKILL.md",
-          "sha256": "b74b8c6f76ba0cc75631f2227b288d1cb267ebdf897ccc74e362ae9e80527b78"
+          "sha256": "2a6e1ca2c761c93c87567d34019fe7a913fd579509fb89e1b2940328c83e9654"
         }
       ],
       "execution": {

@@ -96,6 +96,19 @@ than one node, a dependency, an artifact handoff, parallel branches, or a join.
 Both are non-dispatching controllers; the active host role retains repository
 access, execution, persistence, and acceptance.
 
+For product and marketing UI, consume the shared default owned by
+`cascade-design:design-system` at `references/outcome-ui-standard.md`.
+Product supplies the useful outcome and behavior, Marketing the supported
+promise, and Design the Hybrid default: informative minimal content and a
+restrained liquid control layer, using its basic component foundation.
+The target's explicit design direction governs its own scope; implementation
+and rendered validation carry that binding through the host workflow.
+For contextual choices, summaries and results, apply Design's shared
+`references/generative-ui.md` practice in Product, Marketing, Design,
+AI/Software Architect and implementation work. It guides UI composition from
+existing frontend components and structured data. Its demo is optional; adopting
+the practice creates no backend integration task or new agent role.
+
 ### Workspace MCP boundary
 
 `cascade_workspace` is the single project-level MCP resource and artifact

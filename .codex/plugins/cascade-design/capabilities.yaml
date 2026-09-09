@@ -1,7 +1,7 @@
 schema_version: 1
 plugin:
   name: cascade-design
-  version: 0.1.0+codex.20260908124959
+  version: 0.1.0+codex.20260909141643
 model_policy:
   model: gpt-5.6-sol
   planning_reasoning_effort: high
@@ -20,8 +20,8 @@ skills:
     authority: READ_ONLY
     evaluation_cases: [state-coverage, recovery]
   - route: cascade-design:design-system
-    description: Define or audit reusable tokens, components, states, responsive behavior, motion, accessibility, and content constraints.
-    triggers: [a reusable design-system rule is missing or changing]
+    description: Define or audit the Hybrid outcome UI default, basic components, shared generative UI practice, tokens, states, responsive behavior, motion, accessibility, and content constraints.
+    triggers: [a reusable design-system rule is missing or changing, generative UI templates or component catalogs need a reusable rule]
     anti_triggers: [a one-off feature flow or brand-positioning decision is requested]
     consumes: [product-contract, marketing-positioning, design-evidence]
     produces: [design-system-contract]
@@ -56,7 +56,7 @@ skills:
     authority: READ_ONLY
     evaluation_cases: [viewport-states, no-pixel-proof-from-source]
   - route: cascade-design:create-design
-    description: Create editable product mockups, inspected previews and a version-bound frontend handoff from grounded requirements.
+    description: Create editable product and marketing mockups, inspected previews and a version-bound frontend handoff from grounded requirements.
     triggers: [create or revise concrete mockups or a design prototype]
     anti_triggers: [review-only request, production frontend implementation]
     consumes: [product-contract, design-evidence]

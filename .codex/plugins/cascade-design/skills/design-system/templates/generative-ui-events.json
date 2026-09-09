@@ -1,0 +1,36 @@
+[
+  {
+    "version": 1, "type": "surface.replace", "runId": "demo-run", "surfaceId": "lesson", "revision": 1,
+    "view": {
+      "template": "choice", "title": "Коли вам зручно?", "description": "10 вересня · онлайн · за Києвом",
+      "options": [
+        { "id": "morning", "label": "11:00–12:00", "detail": "60 хвилин · розмовна практика" },
+        { "id": "afternoon", "label": "14:00–15:00", "detail": "60 хвилин · розмовна практика" }
+      ]
+    }
+  },
+  {
+    "version": 1, "type": "surface.replace", "runId": "demo-run", "surfaceId": "lesson", "revision": 2,
+    "view": {
+      "template": "summary", "title": "Перевірте план заняття",
+      "fields": [
+        { "label": "Результат", "value": "Говорити впевненіше" },
+        { "label": "Коли", "value": "10 вересня · 11:00–12:00" },
+        { "label": "Формат", "value": "Онлайн · 60 хвилин" }
+      ]
+    }
+  },
+  {
+    "version": 1, "type": "surface.replace", "runId": "demo-run", "surfaceId": "lesson", "revision": 3,
+    "view": { "template": "result", "title": "Зберігаємо чернетку", "state": "pending", "message": "Очікуємо підтвердження збереження." }
+  },
+  {
+    "version": 1, "type": "surface.replace", "runId": "demo-run", "surfaceId": "lesson", "revision": 4,
+    "view": { "template": "result", "title": "Чернетка готова", "state": "success", "message": "План збережено в цьому прикладі. Реальне бронювання не створено." }
+  },
+  {
+    "version": 1, "type": "surface.replace", "runId": "demo-run", "surfaceId": "lesson", "revision": 5,
+    "view": { "template": "result", "title": "Не вдалося зберегти", "state": "error", "message": "Результат невідомий. Перевірте стан перед повторною спробою." }
+  },
+  { "version": 1, "type": "surface.remove", "runId": "demo-run", "surfaceId": "lesson", "revision": 6 }
+]

@@ -21,6 +21,19 @@ it cannot approve product behavior. Keep candidates, alternatives and value
 models in the existing typed sections and connect accepted requirements through
 traceability, without adding undeclared schema fields.
 
+For a user-facing feature, bind the useful outcome to the visible state,
+information needed to decide, primary action, confirmation, and recovery.
+Specify what the person can accomplish and recognize; implementation activity
+is not itself a user outcome. Carry this mapping in the existing requirements
+and journeys. Cascade Design owns the shared outcome UI default and its tokens
+and composition; preserve any accepted target design without copying its rules here.
+
+For contextual choices, summaries or results, consider the shared Generative UI
+practice owned by `cascade-design:design-system` in `references/generative-ui.md`.
+Carry the outcome, necessary data, user decision and visible states in existing
+requirements and journeys. Product selects useful behavior; adopting this UI
+practice does not add a backend, agent or protocol requirement.
+
 Use cascade-design:ux-flow-review for interaction burden and
 cascade-ai-architect:design-agent-blueprint for a selected agent mechanism.
 Use cascade-product:manage-product-lifecycle for investment/gate decisions and

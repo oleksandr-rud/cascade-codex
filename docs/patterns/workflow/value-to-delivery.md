@@ -50,6 +50,17 @@ their specialist uncertainty matters; QA and Evals retain their evidence roles.
 Observed outcomes and growth failures return to Product lifecycle, which reopens
 the earliest challenged decision and marks affected consumers provisional.
 Ordinary fixes reuse accepted requirements without restarting market research.
+For product and marketing UI, Cascade Design owns the
+[outcome UI standard](../../../.codex/plugins/cascade-design/skills/design-system/references/outcome-ui-standard.md).
+The shared [Generative UI practice](../../../.codex/plugins/cascade-design/skills/design-system/references/generative-ui.md)
+guides structured choices, summaries and results in existing Product, Marketing,
+Design, AI/Software Architect and implementation handoffs. Its component and
+data/state decisions are part of UI design; the optional example creates no
+separate backend task or additional agent role.
+Product binds outcomes to visible behavior, Marketing binds promise and proof
+to a matching action, and the host implements the governing design. The default
+is informative, minimal, modern and liquid, with accessibility, truthful state
+and actual response performance retained. Accepted target designs govern their scope.
 The capability catalog declares growth feedback as an optional Product input;
 the workflow planner selects it only when relevant and checks its availability
 and order. Pre-product growth planning can omit a product contract.

@@ -1,6 +1,6 @@
 ---
 name: design-system
-description: Use when a reusable design or UX rule is missing or changing for tokens, components, interaction states, layout density, responsive behavior, accessibility, motion, content constraints, or visual-evidence expectations; do not use for one-off feature UX, product intent, brand positioning, runtime implementation, or unsupported style preference.
+description: Use when a reusable design or UX rule is missing or changing for tokens, components, generative UI templates, interaction states, layout density, responsive behavior, accessibility, motion, content constraints, or visual-evidence expectations; do not use for one-off feature UX, product intent, brand positioning, runtime implementation, or unsupported style preference.
 ---
 
 # Design System
@@ -9,6 +9,20 @@ Own reusable design rules. Convert validated recurring needs into observable
 token, component, interaction, responsive, accessibility, or visual-evidence
 contracts. Do not decide product intent, create brand positioning, or implement
 UI code.
+
+For new or unconstrained product and marketing UI, apply the
+[Cascade outcome UI standard](references/outcome-ui-standard.md): Hybrid,
+informative minimal composition, restrained liquid controls, fast interaction, and truthful
+outcome states. Explicit target design authority and approved mockups govern
+their scope; bind the chosen source rather than silently substituting a style.
+For the basic component system and page compositions, read
+[Hybrid foundations](references/hybrid-foundations.md). Its reference assets
+provide concrete tokens and anatomy; the host owns target implementation.
+For UI that benefits from structured choices, summaries or results, apply the
+shared [Generative UI practice](references/generative-ui.md) across Product,
+Marketing, Design, architect and implementation handoffs. It guides composition
+from frontend-owned components and bounded data. Its optional example is not a
+required backend, protocol or target implementation.
 
 ## Source order
 
@@ -35,9 +49,11 @@ handoff; this skill defines the rule while the host implements it.
 1. Bind the proposed rule and classify it as token, component, interaction
    state, layout/responsive, accessibility, motion, content, visual evidence,
    or unresolved design gap.
-2. Establish reuse evidence and a source of truth. One isolated screenshot or
-   personal preference is insufficient for a global rule; return `GAP` or
-   route the feature-specific issue to `cascade-design:ux-flow-review`.
+2. Establish reuse evidence and a source of truth. An explicit user or platform
+   decision setting a reusable default establishes its declared scope; repeated
+   screenshots are not required to authorize that decision. One isolated
+   screenshot or unscoped preference is insufficient for a global rule; return
+   `GAP` or route the feature-specific issue to `cascade-design:ux-flow-review`.
 3. Write the rule observably: user-visible effect, allowed states and
    transitions, responsive constraints, accessibility expectations, content
    constraints, and validation evidence.
