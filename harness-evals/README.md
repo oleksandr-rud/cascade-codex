@@ -100,6 +100,12 @@ current catalog and exact harness source digest. It verifies raw, normalized,
 and eligibility artifacts, then rejects stale sources, unsupported models,
 blocked or failed traces, missing judges, invalid ratings, and any required
 judge failure before claiming accepted coverage.
+Curated case YAML is bound through each complete scenario, separately from shared
+harness sources. Editing an unrelated case preserves valid evidence for unchanged
+cases; a changed or unknown scenario cannot be judged or counted as current.
+Judge receipts bind the exact scenario and execution identity as well as its
+raw target packet. Shared code, roles, skills, schemas and policy still invalidate
+all affected source-bound diagnostics.
 Coverage recomputes eligibility and ratings from the raw target and judge
 records; cached summary flags cannot establish acceptance. Judge receipts bind
 the exact target evidence packet. Missing or changed raw evidence, mismatched

@@ -93,9 +93,12 @@ agents:
       - docs/specs/persona-simulation-governance/contract.md
       - docs/patterns/boundaries/index.md
     sandbox_mode: read-only
+    # secure-design requires BLOCKED when these policy sources cannot instantiate
+    # a concrete adapter proposal. Judges still assess the evidence and handoff.
     status_any:
       - PASS
       - GAP
+      - BLOCKED
   - agent: simulation-operator
     allowed_supporting: []
     context_sources:

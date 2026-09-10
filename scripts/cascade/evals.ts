@@ -415,6 +415,8 @@ export async function generateCatalog(): Promise<JsonObject> {
 }
 
 export async function harnessSourceManifest(): Promise<JsonObject> {
+  // Curated case definitions are bound by exact scenario identity at judgment
+  // and coverage. An unrelated case edit must not invalidate this source set.
   const fixed = [
     "AGENTS.md",
     "CODEX.md",
@@ -431,9 +433,6 @@ export async function harnessSourceManifest(): Promise<JsonObject> {
     ".codex/harness-tooling/package.json",
     ".codex/harness-tooling/bun.lock",
     "scripts/cascade.ts",
-    "harness-evals/skill-cases.yaml",
-    "harness-evals/interactions.yaml",
-    "harness-evals/agent-outcomes.yaml",
     "harness-evals/response.schema.json",
     "harness-evals/judge-response.schema.json",
     "harness-evals/judge-profiles.yaml",
@@ -1443,7 +1442,7 @@ async function recordedTarget(runRoot: string, caseName: string, scenario: JsonO
   const trace = await recordedTrace(path, scenario);
   const eligibility = await checkEligibility(scenario, trace);
   eligibility.case_dir = rel(path);
-  return { trace, eligibility, digest: await packetDigest(path) };
+  return { trace, eligibility, digest: valueDigest({ packet: await packetDigest(path), scenario, execution }) };
 }
 
 async function recordedJudgments(runRoot: string, caseName: string, scenario: JsonObject, metadata: JsonObject,
@@ -1491,6 +1490,10 @@ async function commandJudge(args: ReturnType<typeof parseArgs>): Promise<number>
   const metadata = await readJson<JsonObject>(resolve(runRoot, "run.json"));
   if (metadata.harness_source_digest !== (await harnessSourceManifest()).digest) throw new CascadeError("judge run sources are stale");
   const selected = await readJson<JsonObject[]>(resolve(runRoot, "selected-scenarios.json"));
+  const currentScenarios = new Map((await generateCatalog()).scenarios.map((item: JsonObject) => [item.id, item]));
+  if (selected.some((item) => stableJson(item) !== stableJson(currentScenarios.get(item.id)))) {
+    throw new CascadeError("judge scenario definition is stale or unknown");
+  }
   const scenarioMap = new Map(selected.map((item) => [item.id, item]));
   const summary = await readJson<JsonObject>(resolve(runRoot, "summary.json"));
   const definitions = await Promise.all(required.filter((profile) => !requested.size || requested.has(profile.id))
@@ -1536,6 +1539,10 @@ async function commandJudge(args: ReturnType<typeof parseArgs>): Promise<number>
       judgments.push(...await recordedJudgments(runRoot, caseName, scenario, metadata, target, required));
     }
     if (metadata.harness_source_digest !== (await harnessSourceManifest()).digest) throw new CascadeError("sources changed during judging");
+    const latestScenarios = new Map((await generateCatalog()).scenarios.map((item: JsonObject) => [item.id, item]));
+    if (selected.some((item) => stableJson(item) !== stableJson(latestScenarios.get(item.id)))) {
+      throw new CascadeError("scenario definition changed during judging");
+    }
     const complete = judgments.length === targets.length * required.length;
     const accepted = judgments.length > 0 && judgments.every((item) => item.accepted === true);
     await writeJsonAtomic(resolve(runRoot, "judgments", "summary.json"), { run_id: metadata.run_id, judgments });
@@ -1742,6 +1749,12 @@ async function judgeLifecycleSelfTest(scenario: JsonObject, required: JsonObject
     assertions.push([await rejects(() => invoke("unknown-profile")) && await readText(summaryPath) === before, "unknown profile cannot erase existing judgments"]);
     for (const profile of required.slice(1)) await saveJudge(profile);
     assertions.push([await invoke(required.at(-1)!.id) === 0 && (await readJson<JsonObject>(summaryPath)).judgments.length === required.length, "separate profile runs preserve the complete aggregate"]);
+    const completeSummary = await readText(summaryPath);
+    await writeJson(resolve(runRoot, "selected-scenarios.json"), [{ ...scenario, prompt: "Changed frozen case" }]);
+    assertions.push([metadata.harness_source_digest === (await harnessSourceManifest()).digest
+      && await rejects(() => invoke(required[0]!.id)) && await readText(summaryPath) === completeSummary,
+      "case drift is rejected independently of unchanged harness sources and preserves prior judgments"]);
+    await writeJson(resolve(runRoot, "selected-scenarios.json"), [scenario]);
     await mkdir(resolve(runRoot, ".judge-lock"));
     assertions.push([await rejects(() => invoke(required[0]!.id)), "concurrent judge writer cannot overwrite a run"]);
     await rmdir(resolve(runRoot, ".judge-lock"));
@@ -1977,7 +1990,7 @@ async function commandSelfTest(): Promise<number> {
     command: "Get-Content .codex/skills/context/SKILL.md; rg --files missing-directory",
     aggregated_output: readOutput + "\nrg: missing-directory: not found",
   } }), "", 0, 1, false);
-  const lifecycleAssertions = await judgeLifecycleSelfTest(scenario, required);
+  const lifecycleAssertions = await judgeLifecycleSelfTest(generatedCatalog.scenarios.find((item: JsonObject) => item.id === "HS-context-implicit")!, required);
   const assertions: [boolean, string][] = [
     ...lifecycleAssertions,
     [mixedRead.loaded_skills.includes("context"), "a later failed search cannot erase an observed source read"],

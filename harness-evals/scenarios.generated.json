@@ -1,7 +1,7 @@
 {
   "agent_count": 9,
   "agent_scenario_count": 9,
-  "catalog_digest": "b4ce10aa5082fb3f6f5775e318c4561bad5e21249cec6d137452523aefa8391c",
+  "catalog_digest": "6429828f85059846037798cc7084a8d7104705b18e46ed6414e85baec5d319f1",
   "generated_by": "scripts/cascade/evals.ts",
   "scenario_count": 180,
   "scenarios": [
@@ -5546,7 +5546,8 @@
         ],
         "status_any": [
           "PASS",
-          "GAP"
+          "GAP",
+          "BLOCKED"
         ],
         "target_skill": "cascade-security:secure-design"
       },
