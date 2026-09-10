@@ -24,6 +24,12 @@ pattern-selection procedure or treat a default as a mandate.
 
 ## Select the topology
 
+For separable work, dependencies, branching or a requested graph option, apply
+[graph workflow authoring](references/graph-workflow-authoring.md) as a
+conditional recommendation. Review step ownership, context slices and prompt
+boundaries together; record why selected or unnecessary. This does not select
+a stateful profile or require a graph framework or additional agents.
+
 Evaluate in order:
 
 1. deterministic workflow with no model-controlled execution;

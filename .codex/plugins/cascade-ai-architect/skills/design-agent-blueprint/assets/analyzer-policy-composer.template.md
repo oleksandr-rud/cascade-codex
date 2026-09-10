@@ -18,6 +18,9 @@ do not treat example fields as a registered runtime schema or deployment.
 - Voice: `<disabled | add Voice Composer after canonical-answer validation>`.
 - Research: `<disabled | optional policy-admitted web/KB requests>`.
 - Deployment and model reuse: `<logical boundaries do not require services>`.
+- Graph authoring: `<selected | deferred | unnecessary>` with reason; when selected,
+  bind [step/context/prompt review](../references/graph-workflow-authoring.md),
+  static/dynamic choice, branch completion and recovery in the existing workflow.
 - Why selected, rejected alternatives, and reassessment evidence:
 - Final semantic owner: Main Composer.
 - State, policy, context, dispatch, and memory commit owner: `<runtime module>`.

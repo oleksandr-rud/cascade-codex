@@ -88,6 +88,12 @@ cache implementation.
 
 ## Default Decisions
 
+For workflows with dependencies or evidence branches, recommend the plugin's
+[graph workflow authoring option](../../../.codex/plugins/cascade-ai-architect/skills/design-agent-blueprint/references/graph-workflow-authoring.md).
+Review context slices, focused step prompts and runtime edges together. Record
+selection or deferral; retain synchronous direct calls and existing authority.
+This host catalog references the recommendation and does not own a second copy.
+
 Bind the installed or reviewed source version and digest of the owning plugin.
 Use `cascade-ai-architect:design-agent-blueprint`, then the relevant workflow,
 role, prompt-brief, and evaluation skills. Keep deterministic enforcement in the

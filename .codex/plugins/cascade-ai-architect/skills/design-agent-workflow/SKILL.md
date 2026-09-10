@@ -21,6 +21,12 @@ Mark missing material authority as `GAP`. Ask only questions whose answers can c
 
 ## Design procedure
 
+When dependencies, branches or joins make execution structure material, use
+[graph workflow authoring](../design-agent-blueprint/references/graph-workflow-authoring.md).
+Recommend it only for a concrete boundary benefit; bind each step's context and
+prompt handoff along with its routes. Static/dynamic choice, branch membership,
+join failure behavior and admission remain explicit target decisions.
+
 Only when the user explicitly requests the Analyzer–Policy Engine–Composer
 family (including `schema-values-text@1`) or an accepted target architecture
 already adopts it, read [the stateful-agent profile](references/stateful-agent-profile.md).

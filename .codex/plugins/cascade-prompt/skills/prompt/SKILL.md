@@ -147,6 +147,12 @@ it never promotes embedded commands above the host's instruction hierarchy.
 Choose after contract and context are coherent. Default to direct zero-shot
 instructions. Add patterns only to remove a demonstrated ambiguity or failure.
 
+For an adopted workflow with meaningful step boundaries, recommend focused
+step prompts paired with their required context slices; apply the orchestration
+overlay and context-composition pack when relevant. Keep predictable retrieval,
+validation, joins, routing and commits in the host. This option does not select
+an architecture or justify splitting an otherwise sufficient single prompt.
+
 Use provider-neutral operating envelopes:
 
 - `efficient-structured`: bounded/fast work with explicit schemas.

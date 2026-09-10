@@ -38,6 +38,15 @@ render-cache evidence and provider-prefix evidence remain distinct.
 
 ## Delegation request
 
+For a selected graph workflow, bind one model step's purpose, required predecessor
+results, issued evidence, acceptance/done condition and missing/stale-input
+behavior. Carry the architecture's deterministic versus semantic decision split
+and dependency invalidation rules. Keep executable routing, joins, permission
+checks and commits in the runtime; do not turn them into prompt-only enforcement.
+No prompt is required for a deterministic node. Workflow identity and revision
+checks stay in the private manifest. Prompt technique selection remains with
+Cascade Prompt; graph authoring does not automatically select a stateful profile.
+
 Send one target and one operation with the prompt brief. Require the resolved
 `cascade-prompt:prompt` skill to produce a prompt for the target rather than
 perform the target task. State that the architecture brief is authoritative for

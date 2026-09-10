@@ -73,6 +73,32 @@ spoken claim never proves that the action happened.
 The voice adapter/client produces playback observations; runtime validates and
 records delivery receipts. A model cannot certify that its own output was heard.
 
+## Optional graph authoring across roles
+
+Use [graph workflow authoring](graph-workflow-authoring.md) as the recommended
+review option when dependencies, routing or evidence branches need to be made
+explicit. The existing synchronous pipeline already supplies a static graph;
+adoption does not add services, a scheduler or model roles.
+
+Treat slice issuance, context rendering, proposal admission, transaction commit,
+route selection and response release as deterministic steps. Analyzer proposes;
+Composer produces a candidate; neither owns the edges that authorize effects.
+Compile a separate current context for each model step. Composer receives
+admitted findings and required unresolved work, not raw Analyzer proposals as
+accepted facts. A missing input returns to the issuer through the existing gap
+path; the formatter and Composer do not acquire store or retrieval authority.
+
+If independent research branches are selected, runtime binds their membership,
+deadlines and allowed partial/failure outcomes. The join collects observations
+with provenance; results still pass through Analyzer and admission before
+Composer use. A late result or correction invalidates only affected dependency
+contexts and requires current-scope revalidation. Dynamic research expansion is
+optional and bounded by the same admission and shared budgets.
+
+Carry these selected decisions together into workflow, context and prompt briefs.
+Keep pattern 2.4 and existing wire contracts; this is an authoring option, not
+an additional registered transport profile or a measured performance claim.
+
 ## Claims and the Analyzer boundary
 
 Use [StateDelta, policy data, and role projections](state-delta-policy-projection.md)

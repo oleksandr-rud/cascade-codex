@@ -60,5 +60,32 @@ claim/evidence rules. A schema-valid unsupported answer still fails. One bounded
 repair may consume concrete validation errors; unavailable tools or missing
 authority are gaps, not reasons to invent successful execution.
 
+## Recommended option: context for one workflow step
+
+For an adopted multi-step workflow with meaningful dependency or authority
+boundaries, recommend a distinct context slice per model step. For one bounded
+task, retain the single-context baseline. This pack does not choose or execute
+the graph.
+
+Map each step's objective and output obligations to required evidence and
+accepted predecessor results. Include stable role rules, current task/input,
+relevant decisions, unresolved obligations and source handles. Keep other
+material retrievable only through authorized paths. Distinguish unavailable,
+pending, rejected and conflicting results; a join or previous answer is not
+independent evidence. If required content cannot fit, preserve the gap rather
+than silently omitting it.
+
+Bind source selection, freshness and dependency validation to the host owner.
+Invalidate affected context after corrections, revocation or accepted state
+changes. Format the issued slice with stable instructions before volatile data;
+keep execution IDs, revisions and digests in the private manifest. In the
+stateful profile, only Policy Engine/admission issues a replacement slice;
+the context renderer gains no store access or retrieval authority.
+
+Review the context slice with its step prompt and architecture contract.
+Compare against the simpler baseline using evidence coverage, unsupported
+claims, context size and task completion; do not infer quality from token
+reduction or a graph diagram.
+
 Never add Analyzer–Policy Engine–Composer state contracts for a generic context
 template. Only an explicitly adopted architecture selects `stateful-agent.md`.

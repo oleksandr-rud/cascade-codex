@@ -46,6 +46,15 @@ only; ordinary authoring follows SKILL.md's conditional routing.
 
 ## Verification boundary
 
+The graph-authoring integration adds conditional guidance in
+[context composition](../runtime/context-composition.md),
+[tool orchestration](../runtime/task-overlays.md) and
+[the stateful profile](../runtime/stateful-agent.md), selected through SKILL
+workflow 3 and its existing conditional loads. Prompt owns focused step
+instructions and rendering; the supplied architecture owns topology and the
+host owns admission, state and execution. No generic context request selects
+Analyzer–Policy Engine–Composer. Source integration is not model-efficacy proof.
+
 Check links, YAML structure, registry/index parity, selected adapter paths,
 package metadata and installed/source equality mechanically. Review sample
 template substitutions for exact rule/schema/permission preservation. Model
