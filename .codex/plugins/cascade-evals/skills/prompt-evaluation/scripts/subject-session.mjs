@@ -8,15 +8,17 @@ import { join } from "node:path";
 // fixtures, profiles, other outputs, credentials, or the development checkout.
 export async function runSubjectSession({ snapshot, phase, runId, runRoot, model, reasoningEffort, request, cwd, timeoutMs, adapter, adapterConfig, adapterId }) {
   const started = Date.now();
+  let activeMs = 0, queueMs = 0;
   const reads = ["SKILL.md"];
   const transcript = [];
   const runs = [];
   for (let round = 0; round < 6; round++) {
-    const remaining = timeoutMs - (Date.now() - started);
+    const remaining = timeoutMs - activeMs;
     if (remaining <= 0) break;
     const prompt = subjectPrompt(snapshot, request, transcript);
     const run = requireCompleted(await runModelPhase({ phase: `${phase}-read-${round}`, runId, runRoot, model, reasoningEffort, prompt, cwd, timeoutMs: remaining, adapter, adapterConfig, adapterId }), { phase, runRoot });
     runs.push(run);
+    activeMs += run.duration_ms; queueMs += run.queue_wait_ms ?? 0;
     await writeFile(join(runRoot, `${phase}-read-${round}.jsonl`), run.stdout);
     await writeFile(join(runRoot, `${phase}-read-${round}.response.md`), run.final_text);
     let control;
@@ -31,7 +33,7 @@ export async function runSubjectSession({ snapshot, phase, runId, runRoot, model
       continue;
     }
     const usage = runs.every(r => r.usage) ? Object.fromEntries(["input_tokens", "cached_input_tokens", "noncached_input_tokens", "output_tokens", "reasoning_output_tokens"].map(key => [key, runs.reduce((sum, r) => sum + (r.usage[key] ?? 0), 0)])) : null;
-    return { ...run, duration_ms: Date.now() - started, usage, stdout: runs.map(r => r.stdout).join("\n"), stderr: runs.map(r => r.stderr).join("\n"),
+    return { ...run, duration_ms: activeMs, wall_duration_ms: Date.now() - started, queue_wait_ms: queueMs, usage, stdout: runs.map(r => r.stdout).join("\n"), stderr: runs.map(r => r.stderr).join("\n"),
       subject_reads: [...new Set(reads)], subject_sha256: snapshot.sha256, invocation_count: runs.length,
       execution_receipts: runs.map(r => r.execution_receipt), isolation: "tool-free-staged-subject-v1" };
   }

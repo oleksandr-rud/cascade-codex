@@ -33,7 +33,10 @@ identity and raw evidence directly.
    resolve the enabled installed plugin through `codex plugin list --json`.
 2. Validate the versioned catalog, task, evaluator, model matrix, budgets,
    interview fixtures, and judge profiles.
-3. Bind the prompt, model, adapter configuration and runtime digest in one
+3. Use `scripts/run-prompt-campaign.mjs` for multi-case execution. Its declared
+   run paths, partial checkpoints and shared three-call limit apply across
+   overlapping campaigns; never launch independent six-worker batches.
+   Bind the prompt, model, adapter configuration and runtime digest in one
    execution receipt per phase. Preserve stdout and stderr beside it. Existing
    phase receipts, including interrupted dispatches, cannot be replayed.
 4. Execute the prompt builder, target model, and requested independent judges
@@ -64,6 +67,12 @@ node scripts/run-variance-eval.mjs --task structured-invoice-v1 \
   --prompt-model gpt-5.6-sol --target-model gpt-5.6-sol \
   --reasoning-effort max --repetitions 3
 ```
+
+Use `run-prompt-campaign.mjs --inspect /absolute/campaign-or-run` to recover
+partial evidence without executing models. Unexpected process failure or an
+abandoned invocation halts new dispatch. After inspecting that evidence and
+restoring the environment, explicitly use `--recover-execution`; it refuses
+recovery while any invocation owner is active and never replays a call.
 
 For references/runtime coverage use `evals/rule-coverage.json` and all declared
 quality/interview cases. Required and forbidden reads are mechanical checks;

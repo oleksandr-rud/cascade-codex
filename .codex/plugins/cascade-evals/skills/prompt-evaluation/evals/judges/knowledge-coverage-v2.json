@@ -1,0 +1,93 @@
+{
+  "schema_version": 1,
+  "profile_id": "cascade-prompt-knowledge-coverage-v2",
+  "purpose": "Audit whether the frozen active runtime consumers preserve the operative rules of one frozen knowledge-base reference.",
+  "scale": {
+    "0": "Absent, unusable, or directly harmful.",
+    "1": "Major failures dominate; substantial repair is required.",
+    "2": "Partially correct but material defects remain.",
+    "3": "Correct and useful with only minor defects.",
+    "4": "Fully satisfies the anchored dimension with no material defect."
+  },
+  "dimensions": [
+    {
+      "id": "operative_rule_preservation",
+      "weight": 20,
+      "description": "Every material operative rule in the reference survives in the active consumer or the entrypoint; report material omissions precisely.",
+      "anchors": {
+        "0": "Absent or contradicts a hard task, evidence, or permission constraint.",
+        "1": "Major omissions or wrong decisions; the result cannot be used reliably.",
+        "2": "Partially satisfies this dimension but has a material unresolved defect.",
+        "3": "Satisfies all material obligations of this dimension; only minor nonblocking weaknesses.",
+        "4": "Complete, precise and proportionate support for this dimension, including applicable boundary behavior."
+      }
+    },
+    {
+      "id": "conditional_application",
+      "weight": 20,
+      "description": "Triggers and exclusions load the rules where needed and keep unrelated tasks proportional.",
+      "anchors": {
+        "0": "Absent or contradicts a hard task, evidence, or permission constraint.",
+        "1": "Major omissions or wrong decisions; the result cannot be used reliably.",
+        "2": "Partially satisfies this dimension but has a material unresolved defect.",
+        "3": "Satisfies all material obligations of this dimension; only minor nonblocking weaknesses.",
+        "4": "Complete, precise and proportionate support for this dimension, including applicable boundary behavior."
+      }
+    },
+    {
+      "id": "authority_and_trust",
+      "weight": 20,
+      "description": "Permission, source authority, untrusted-data and private-runtime boundaries remain correct.",
+      "anchors": {
+        "0": "Absent or contradicts a hard task, evidence, or permission constraint.",
+        "1": "Major omissions or wrong decisions; the result cannot be used reliably.",
+        "2": "Partially satisfies this dimension but has a material unresolved defect.",
+        "3": "Satisfies all material obligations of this dimension; only minor nonblocking weaknesses.",
+        "4": "Complete, precise and proportionate support for this dimension, including applicable boundary behavior."
+      }
+    },
+    {
+      "id": "exceptions_and_failures",
+      "weight": 20,
+      "description": "Missing, conflicting, stale, unsupported and recovery behavior required by the reference remains explicit.",
+      "anchors": {
+        "0": "Absent or contradicts a hard task, evidence, or permission constraint.",
+        "1": "Major omissions or wrong decisions; the result cannot be used reliably.",
+        "2": "Partially satisfies this dimension but has a material unresolved defect.",
+        "3": "Satisfies all material obligations of this dimension; only minor nonblocking weaknesses.",
+        "4": "Complete, precise and proportionate support for this dimension, including applicable boundary behavior."
+      }
+    },
+    {
+      "id": "usable_composition",
+      "weight": 20,
+      "description": "The active rules can produce the intended prompt without contradictions, invented dependencies, or excessive mandatory detail.",
+      "anchors": {
+        "0": "Absent or contradicts a hard task, evidence, or permission constraint.",
+        "1": "Major omissions or wrong decisions; the result cannot be used reliably.",
+        "2": "Partially satisfies this dimension but has a material unresolved defect.",
+        "3": "Satisfies all material obligations of this dimension; only minor nonblocking weaknesses.",
+        "4": "Complete, precise and proportionate support for this dimension, including applicable boundary behavior."
+      }
+    }
+  ],
+  "threshold": 0.8,
+  "minimum_dimension_rating": 3,
+  "score_formula": "sum(weight * rating / 4) / 100",
+  "blind_exclusions": [
+    "model ranking",
+    "peer outputs",
+    "acceptance decision",
+    "acceptance threshold",
+    "dimension floors",
+    "weights",
+    "mechanical verdicts",
+    "expected answers"
+  ],
+  "required_evidence": [
+    "Frozen reference content",
+    "Frozen active consumers and entrypoint",
+    "Each rating cites an exact excerpt at an existing evidence JSON pointer."
+  ],
+  "rubric_version": 4
+}

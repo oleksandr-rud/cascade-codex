@@ -217,7 +217,7 @@ async function executePhase({ phaseName, model, prompt, timeoutMs, adapter, adap
 
 const surfaceReceipts = Object.fromEntries(["model", "target", "judge"].map(phase => [phase, executionSurface(args[`${phase}-adapter`] ?? "codex-cli", args["adapter-config"], args[`${phase}-adapter-id`])]));
 const surfaceDigest = sha256(JSON.stringify(surfaceReceipts));
-const profileText = await readFile(join(evalRoot, "judges/interview-v3.json"), "utf8");
+const profileText = await readFile(join(evalRoot, "judges/interview-v4.json"), "utf8");
 const profile = JSON.parse(profileText);
 const runnerBundleDigest = await runnerDigest(dirname(fileURLToPath(import.meta.url)));
 const adapterConfigDigest = args["adapter-config"] ? sha256(await readFile(resolve(args["adapter-config"]), "utf8")) : null;
@@ -273,6 +273,11 @@ if (args["execute-target"]) {
     targetExecutionStatus = "EXECUTED";
     await writeFile(join(runRoot, "target.jsonl"), targetRun.stdout);
     await writeFile(join(runRoot, "target-output.md"), targetRun.final_text);
+    if (fixture.target.json_contract) {
+      let parsed; try { parsed = JSON.parse(targetRun.final_text); } catch { /* a malformed response fails the declared contract */ }
+      const expected = fixture.target.json_contract;
+      targetChecks.push({ id: "target:json-contract", passed: Boolean(parsed && !Array.isArray(parsed) && JSON.stringify(Object.keys(parsed).sort()) === JSON.stringify(Object.keys(expected).sort()) && Object.entries(expected).every(([key, type]) => type === "string_array" && Array.isArray(parsed[key]) && parsed[key].every(value => typeof value === "string"))) });
+    }
     const lowered = targetRun.final_text.toLowerCase();
     for (const pattern of fixture.target.required_patterns ?? []) targetChecks.push({ id: `target:required:${pattern}`, passed: lowered.includes(pattern.toLowerCase()) });
     for (const pattern of fixture.target.forbidden_patterns ?? []) targetChecks.push({ id: `target:forbidden:${pattern}`, passed: !lowered.includes(pattern.toLowerCase()) });

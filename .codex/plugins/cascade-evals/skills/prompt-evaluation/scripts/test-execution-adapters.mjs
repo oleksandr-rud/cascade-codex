@@ -6,6 +6,7 @@ import { tmpdir } from "node:os";
 import { runModel, extractCodex } from "./execution-adapters.mjs";
 
 const root = await mkdtemp(join(tmpdir(), "cascade-prompt-adapter-test-"));
+process.env.CASCADE_PROMPT_EVAL_COORDINATION_ROOT = join(root, "coordination");
 const adapter = join(root, "adapter.cjs");
 const config = join(root, "adapters.json");
 await writeFile(adapter, `#!/usr/bin/env node\nconst request=JSON.parse(require("node:fs").readFileSync(0,"utf8"));if(request.protocol!=="cascade-evals-command-v1")process.exit(9);process.stdout.write(JSON.stringify({text:"model="+request.model+" prompt="+request.prompt,usage:{input_tokens:4,output_tokens:2}}));\n`);
@@ -38,7 +39,7 @@ const blind=judgeRequest(profile,identity,interviewEvidence({prompt_build_reques
 check(!/"(?:weight|threshold|minimum_dimension_rating|first_turn|checks|semantic_anchors)"/.test(blind),"private evaluation fields leaked");
 const good=[{type:"item.completed",item:{type:"agent_message",text:"answer"}},{type:"turn.completed",usage:{input_tokens:1}}];
 check(extractCodex(good.map(JSON.stringify).join("\n")).finalText==="answer","complete no-tool trace");
-for(const bad of [[good[0]],[...good,{type:"item.completed",item:{type:"command_execution"}}],[...good,{type:"turn.failed"}]]){
+for(const bad of [[good[0]],[...good,{type:"item.completed",item:{type:"command_execution"}}],[...good,{type:"turn.failed"}],[...good,{type:"item.completed",item:{type:"error",message:"Code Mode is unavailable"}}]]){
  let rejected=false;try{extractCodex(bad.map(JSON.stringify).join("\n"));}catch{rejected=true;}check(rejected,"incomplete or tool-using trace must be rejected");
 }
 const subject=join(root,"subject");await mkdir(subject);await writeFile(join(subject,"SKILL.md"),"entry");await writeFile(join(subject,"reference.md"),"rule");
@@ -116,6 +117,11 @@ test("preserves process failure instead of relabeling it a timeout", async () =>
   assert.equal(result.status, "EXECUTION_FAILED");
   assert.equal(result.exit_status, 7);
   assert.equal(result.stderr, "failed");
+  for (const exit of [2, 3]) {
+    assert.equal((await command(`process.exit(${exit})`)).status, "EXECUTION_FAILED");
+    assert.equal((await command(`process.exit(${exit})`, { acceptedExitCodes: [0, 2, 3] })).status, "COMPLETED");
+  }
+  assert.equal((await command("process.exit(7)", { acceptedExitCodes: [0, 2, 3] })).status, "EXECUTION_FAILED");
   const signalled = await command('process.kill(process.pid,"SIGTERM")');
   assert.equal(signalled.status, "EXECUTION_FAILED");
 });
@@ -162,4 +168,77 @@ test("direct replay rejects changed input, identity, trace, runtime and uncertai
   await writeFile(receiptPath, JSON.stringify(receipt));
   await writeFile(join(sourceRoot, "target.jsonl"), stdout + "\n" + JSON.stringify({ type: "turn.failed" }));
   await assert.rejects(replayTarget(args), /tool-free response/);
+});
+
+
+test("v4 cites host-resolved lines without retyping whitespace; v3 stays strict", async () => {
+  const v4 = JSON.parse(await readFile(new URL("../evals/judges/interview-v4.json", import.meta.url), "utf8"));
+  const evidence = { first_response: "Rule one.\n  Preserve narrow authority.\n", source: { note: "Untrusted" } };
+  const rated = { ...payload, profile_id: v4.profile_id, rubric_version: 4, verdict: "RATED", missing_evidence: [], ratings: v4.dimensions.map(d => ({ dimension_id: d.id, rating: 4, rationale: "supported", evidence: ["source rule"], evidence_refs: [{ pointer: "/first_response", line_start: 1, line_end: 2 }] })) };
+  const parsed = parseJudgment(JSON.stringify(rated), v4, identity, evidence);
+  assert.equal(parsed.harness_verdict, "PASS");
+  assert.equal(parsed.evidence_bindings[0].sha256, sha256("Rule one.\n  Preserve narrow authority."));
+  assert.ok(judgeRequest(v4, identity, evidence).includes("L2|  Preserve narrow authority."));
+  for (const ref of [{ pointer: "/evidence/first_response", line_start: 1, line_end: 1 }, { pointer: "/missing", line_start: 1, line_end: 1 }, { pointer: "/first_response", line_start: 0, line_end: 1 }, { pointer: "/first_response", line_start: 1, line_end: 9 }, { pointer: "/first_response", line_start: 2, line_end: 1 }, { pointer: "/source", line_start: 1, line_end: 1 }, { pointer: "/first_response", line_start: 3, line_end: 3 }, { pointer: "/first_response", quote: "Rule one." }]) {
+    const changed = structuredClone(rated); changed.ratings[0].evidence_refs = [ref];
+    assert.equal(parseJudgment(JSON.stringify(changed), v4, identity, evidence).valid, false);
+  }
+  const nested = structuredClone(rated); nested.ratings[0].evidence_refs = [{ pointer: "/source/note", line_start: 1, line_end: 1 }];
+  assert.equal(parseJudgment(JSON.stringify(nested), v4, identity, evidence).valid, true);
+  assert.ok(judgeRequest(v4, identity, evidence).includes("allowed_evidence_pointers"));
+  assert.equal(parseJudgment(JSON.stringify(rated), profile, identity, evidence).valid, false);
+});
+
+test("independent processes share the same three-call limit and halted health gate", async () => {
+  const { GLOBAL_MODEL_LIMIT, acquireExecution, haltExecution, recoverExecution } = await import("./execution-coordinator.mjs");
+  const moduleUrl = new URL("./execution-coordinator.mjs", import.meta.url).href;
+  const worker = `const {acquireExecution}=await import(${JSON.stringify(moduleUrl)}); const slot=await acquireExecution(); const start=Date.now(); await new Promise(r=>setTimeout(r,180)); const end=Date.now(); await slot.release();console.log(JSON.stringify({start,end}));`;
+  const completed = await Promise.all(Array.from({ length: 8 }, () => command(worker, { timeoutMs: 5000 })));
+  const events = completed.flatMap(result => { assert.equal(result.status, "COMPLETED"); const x=JSON.parse(result.stdout); return [[x.start,1],[x.end,-1]]; }).sort((a,b)=>a[0]-b[0]||a[1]-b[1]);
+  let active=0, peak=0; for(const [,delta] of events){active+=delta;peak=Math.max(peak,active);}
+  assert.ok(peak <= GLOBAL_MODEL_LIMIT && peak > 1);
+  const lease=await acquireExecution(); await haltExecution("fixture environment failed");
+  await assert.rejects(acquireExecution(), /execution halted/);
+  await assert.rejects(recoverExecution(), /owners are active/);
+  await lease.release(); await recoverExecution();
+  await assert.rejects(acquireExecution({ signal: AbortSignal.abort() }), /cancelled while queued/);
+  const orphan = await command(`const {acquireExecution}=await import(${JSON.stringify(moduleUrl)});await acquireExecution();process.exit(0);`);
+  assert.equal(orphan.status,"COMPLETED");
+  await assert.rejects(acquireExecution(), /execution halted/);
+  await recoverExecution();
+});
+
+test("partial phase output survives while execution is still running", async () => {
+  const { inspectRun } = await import("./execution-progress.mjs");
+  const path=join(root,"slow.cjs"),configPath=join(root,"slow-config.json"),runRoot=join(root,"partial");
+  await writeFile(path, 'process.stdout.write("partial-evidence");setTimeout(()=>process.exit(0),700);');
+  await writeFile(configPath,JSON.stringify({adapters:{fixture:{command:process.execPath,args:[path]}}}));
+  const pending=runModelPhase({...configuration,adapterConfig:configPath,runRoot,runId:"partial",phase:"target",timeoutMs:5000});
+  let observed=false;
+  for(let i=0;i<30;i++){await new Promise(r=>setTimeout(r,20));try{if((await readFile(join(runRoot,"target.jsonl"),"utf8")).includes("partial-evidence")){observed=true;break;}}catch{}}
+  assert.equal(observed,true);const partial=inspectRun(runRoot);
+  assert.equal(partial.status,"PARTIAL");assert.equal(partial.acceptance,"NOT_RUN");assert.equal(partial.phases[0].status,"DISPATCHED");
+  const result=await pending;assert.equal(result.status,"INVALID_ADAPTER_RESPONSE");
+  assert.equal(inspectRun(runRoot).phases[0].status,"INVALID_ADAPTER_RESPONSE");
+  assert.equal(await readFile(join(runRoot,"target.jsonl"),"utf8"),"partial-evidence");
+});
+
+
+test("campaign recovery uses predeclared paths and keeps unresolved jobs in the denominator", async () => {
+  const campaignRoot=join(root,"campaign-recovery");await mkdir(campaignRoot);
+  const goodRoot=join(campaignRoot,"completed");await mkdir(goodRoot);
+  await writeFile(join(goodRoot,"run-summary.json"),JSON.stringify({acceptance:"ACCEPTED"}));
+  const partialRoot=join(root,"partial");
+  await writeFile(join(campaignRoot,"campaign-contract.json"),JSON.stringify({run_id:"recovery-fixture",run_root:campaignRoot,requested:3,jobs:[{id:"one",run_root:goodRoot},{id:"two",run_root:partialRoot},{id:"three",run_root:join(campaignRoot,"never-started")}]}));
+  const cli=new URL("./run-prompt-campaign.mjs",import.meta.url);
+  const result=await runCommand({command:process.execPath,args:[(await import("node:url")).fileURLToPath(cli),"--inspect",campaignRoot],input:"",timeoutMs:5000});
+  assert.equal(result.status,"COMPLETED");const observed=JSON.parse(result.stdout);
+  assert.equal(observed.requested,3);assert.equal(observed.evaluations_completed,1);assert.equal(observed.status,"PARTIAL");assert.equal(observed.acceptance_counts.NOT_RUN,2);
+  assert.equal(observed.records[1].phases[0].status,"INVALID_ADAPTER_RESPONSE");
+  // A crash during the final summary write must not hide surviving phase evidence.
+  await writeFile(join(partialRoot, "run-summary.json"), "{");
+  const recovered = (await import("./execution-progress.mjs")).inspectRun(partialRoot);
+  assert.equal(recovered.acceptance, "NOT_RUN");
+  assert.match(recovered.summary_error, /UNREADABLE_SUMMARY/);
+  assert.equal(recovered.phases[0].status, "INVALID_ADAPTER_RESPONSE");
 });

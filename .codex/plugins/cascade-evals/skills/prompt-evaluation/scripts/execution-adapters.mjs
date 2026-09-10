@@ -1,19 +1,22 @@
+import { acquireExecution, haltExecution, GLOBAL_MODEL_LIMIT } from "./execution-coordinator.mjs";
+import { checkpointRun } from "./execution-progress.mjs";
 import { spawn, spawnSync } from "node:child_process";
 import { createHash } from "node:crypto";
-import { readFileSync, writeFileSync } from "node:fs";
+import { readFileSync, writeFileSync, appendFileSync } from "node:fs";
 import { mkdir, mkdtemp, rename, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { isAbsolute, join, resolve } from "node:path";
 
-export const EXECUTION_RUNTIME_SHA256 = digest(readFileSync(new URL(import.meta.url)));
+export const EXECUTION_RUNTIME_SHA256 = digest(Buffer.concat([readFileSync(new URL(import.meta.url)), readFileSync(new URL("./execution-coordinator.mjs", import.meta.url)), readFileSync(new URL("./execution-progress.mjs", import.meta.url))]));
 
 export const DEFAULT_TIMEOUTS_MS = Object.freeze({
   "efficient-structured": 180_000,
   "balanced-production": 300_000,
   "frontier-generalist": 420_000,
   "frontier-autonomous": 600_000,
-  prompt_builder: 300_000,
-  judge: 240_000
+  prompt_builder: 600_000,
+  judge: 600_000,
+  knowledge_judge: 720_000
 });
 
 export function positiveTimeout(value, fallback, label) {
@@ -96,7 +99,7 @@ export function processAbortSignal() {
   return cancellation.signal;
 }
 
-export async function runCommand({ command, args, input, cwd, timeoutMs, signal, maxOutputBytes = 64 * 1024 * 1024, terminationGraceMs = 200 }) {
+export async function runCommand({ command, args, input, cwd, timeoutMs, signal, maxOutputBytes = 64 * 1024 * 1024, terminationGraceMs = 200, onStdout, onStderr, acceptedExitCodes = [0] }) {
   positiveTimeout(timeoutMs, undefined, "timeoutMs");
   positiveTimeout(terminationGraceMs, undefined, "terminationGraceMs");
   if (!Number.isInteger(timeoutMs) || !Number.isInteger(maxOutputBytes) || maxOutputBytes <= 0) throw new Error("execution requires finite time and output limits");
@@ -126,7 +129,9 @@ export async function runCommand({ command, args, input, cwd, timeoutMs, signal,
     const deadline = setTimeout(() => stop("TIMED_OUT"), timeoutMs);
     for (const stream of ["stdout", "stderr"]) child[stream].on("data", (chunk) => {
       const remaining = maxOutputBytes - bytes;
-      output[stream].push(chunk.subarray(0, Math.max(0, remaining)));
+      const retained = chunk.subarray(0, Math.max(0, remaining));
+      output[stream].push(retained);
+      try { (stream === "stdout" ? onStdout : onStderr)?.(retained); } catch (error) { failure = error; stop("EVIDENCE_WRITE_FAILED"); }
       bytes += Math.min(remaining, chunk.length);
       if (chunk.length > remaining) stop("OUTPUT_LIMIT_EXCEEDED");
     });
@@ -139,7 +144,7 @@ export async function runCommand({ command, args, input, cwd, timeoutMs, signal,
       signal?.removeEventListener("abort", abort);
       resolveResult({
         stdout: Buffer.concat(output.stdout).toString("utf8"), stderr: Buffer.concat(output.stderr).toString("utf8"),
-        status: terminal ?? (failure || exitStatus !== 0 ? "EXECUTION_FAILED" : "COMPLETED"), dispatched,
+        status: terminal ?? (failure || !acceptedExitCodes.includes(exitStatus) ? "EXECUTION_FAILED" : "COMPLETED"), dispatched,
         exit_status: exitStatus, signal: exitSignal,
         ...(failure ? { error: failure.message } : terminal ? { error: terminal.toLowerCase().replaceAll("_", " ") } : {})
       });
@@ -149,10 +154,10 @@ export async function runCommand({ command, args, input, cwd, timeoutMs, signal,
   });
 }
 
-export async function runModel({ model, reasoningEffort = "max", prompt, cwd, timeoutMs, adapter = "codex-cli", adapterConfig, adapterId, signal = processAbortSignal(), maxOutputBytes, installedPluginDiscovery = false }) {
+export async function runModel({ model, reasoningEffort = "max", prompt, cwd, timeoutMs, adapter = "codex-cli", adapterConfig, adapterId, signal = processAbortSignal(), maxOutputBytes, installedPluginDiscovery = false, onDispatch, onStdout, onStderr }) {
   if (typeof model !== "string" || !model || typeof prompt !== "string" || !prompt) throw new Error("model and prompt are required");
   const startedAt = new Date().toISOString();
-  const started = process.hrtime.bigint();
+  let started = process.hrtime.bigint();
   let command;
   let commandArgs;
   let input;
@@ -161,7 +166,9 @@ export async function runModel({ model, reasoningEffort = "max", prompt, cwd, ti
     command = "codex";
     commandArgs = ["exec", "--json", "--ephemeral", "--skip-git-repo-check", "--sandbox", "read-only",
       ...(!installedPluginDiscovery ? ["--ignore-user-config", "--disable", "plugins", "--disable", "remote_plugin", "--disable", "shell_tool", "--disable", "unified_exec", "--disable", "multi_agent", "--enable", "skip_host_skill_discovery"] : []),
-      ...["apps", "browser_use", "computer_use", "image_generation", "code_mode_host", "memories"].flatMap((feature) => ["--disable", feature]),
+      // Code-mode-only model transports require the host even for text-only turns.
+      // Disable action tools below; extractCodex still rejects every tool/error event.
+      ...["apps", "browser_use", "computer_use", "image_generation", "memories"].flatMap((feature) => ["--disable", feature]),
       "-c", "project_doc_max_bytes=0", "-c", "suppress_unstable_features_warning=true", "-c", 'web_search="disabled"', "-m", model, "-c", `model_reasoning_effort="${reasoningEffort}"`, "-"];
     input = prompt;
     identity = "codex-cli";
@@ -175,11 +182,21 @@ export async function runModel({ model, reasoningEffort = "max", prompt, cwd, ti
     throw new Error(`unsupported execution adapter: ${adapter}`);
   }
   const isolatedCwd = adapter === "codex-cli" ? await mkdtemp(join(tmpdir(), "cascade-prompt-execution-")) : null;
-  let result;
-  try { result = await runCommand({ command, args: commandArgs, cwd: isolatedCwd ?? cwd, input, timeoutMs, signal, maxOutputBytes }); }
-  finally { if (isolatedCwd) await rm(isolatedCwd, { recursive: true, force: true }); }
-  const durationMs = Math.round(Number(process.hrtime.bigint() - started) / 1e6);
-  const base = { model, reasoning_effort: reasoningEffort, adapter, adapter_identity: identity, timeout_ms: timeoutMs, started_at: startedAt, completed_at: new Date().toISOString(), duration_ms: durationMs, dispatched: result.dispatched, stdout: result.stdout ?? "", stderr: result.stderr ?? "" };
+  let result, lease;
+  try {
+    lease = await acquireExecution({ signal });
+    started = process.hrtime.bigint();
+    onDispatch?.({ queue_wait_ms: lease.wait_ms, concurrency_limit: GLOBAL_MODEL_LIMIT });
+    result = await runCommand({ command, args: commandArgs, cwd: isolatedCwd ?? cwd, input, timeoutMs, signal, maxOutputBytes, onStdout, onStderr });
+    if (["EXECUTION_FAILED", "EVIDENCE_WRITE_FAILED"].includes(result.status)) await haltExecution(`model process ended with ${result.status}; inspect its execution receipt`);
+  } catch (error) {
+    result = { status: error.status ?? "EXECUTION_FAILED", stdout: "", stderr: "", dispatched: false, error: error.message };
+  } finally {
+    if (lease) await lease.release();
+    if (isolatedCwd) await rm(isolatedCwd, { recursive: true, force: true });
+  }
+  const durationMs = lease ? Math.round(Number(process.hrtime.bigint() - started) / 1e6) : 0;
+  const base = { queue_wait_ms: lease?.wait_ms ?? 0, concurrency_limit: GLOBAL_MODEL_LIMIT, model, reasoning_effort: reasoningEffort, adapter, adapter_identity: identity, timeout_ms: timeoutMs, started_at: startedAt, completed_at: new Date().toISOString(), duration_ms: durationMs, dispatched: result.dispatched, stdout: result.stdout ?? "", stderr: result.stderr ?? "" };
   if (result.status !== "COMPLETED") return { ...base, ...result, error: result.error ?? (result.stderr || "adapter failed").slice(-2000) };
   try {
     if (adapter === "codex-cli") {
@@ -210,12 +227,17 @@ export async function runModelPhase({ phase, runId, runRoot, ...configuration })
     adapter_config_sha256: configuration.adapterConfig ? digest(readFileSync(resolve(configuration.adapterConfig))) : null
   };
   // An existing invocation, including an interrupted one, must never be replayed.
-  await writeFile(join(runRoot, path), `${JSON.stringify({ ...identity, status: "DISPATCHED" }, null, 2)}\n`, { flag: "wx" });
+  await writeFile(join(runRoot, path), `${JSON.stringify({ ...identity, status: "QUEUED" }, null, 2)}\n`, { flag: "wx" });
+  checkpointRun(runRoot);
   let run;
-  try { run = await runModel(configuration); }
+  try { run = await runModel({ ...configuration,
+    onDispatch(queue) { writeFileSync(join(runRoot, path), JSON.stringify({ ...identity, ...queue, status: "DISPATCHED" }, null, 2)); checkpointRun(runRoot); },
+    onStdout(chunk) { appendFileSync(join(runRoot, `${phase}.jsonl`), chunk); },
+    onStderr(chunk) { appendFileSync(join(runRoot, `${phase}.stderr.log`), chunk); }
+  }); }
   catch (error) { run = { status: "EXECUTION_FAILED", stdout: "", stderr: "", dispatched: false, error: error.message }; }
   const receipt = {
-    ...identity, status: run.status, dispatched: run.dispatched, started_at: run.started_at ?? null, completed_at: run.completed_at ?? new Date().toISOString(),
+    ...identity, queue_wait_ms: run.queue_wait_ms ?? 0, concurrency_limit: GLOBAL_MODEL_LIMIT, status: run.status, dispatched: run.dispatched, started_at: run.started_at ?? null, completed_at: run.completed_at ?? new Date().toISOString(),
     duration_ms: run.duration_ms ?? 0, timeout_ms: configuration.timeoutMs,
     stdout_sha256: digest(run.stdout), stderr_sha256: digest(run.stderr), output_sha256: run.final_text ? digest(run.final_text) : null,
     error: run.error ?? null
@@ -226,6 +248,7 @@ export async function runModelPhase({ phase, runId, runRoot, ...configuration })
   const temporary = join(runRoot, `${path}.tmp`);
   await writeFile(temporary, encoded, { flag: "wx" });
   await rename(temporary, join(runRoot, path));
+  checkpointRun(runRoot);
   return { ...run, execution_receipt: { path, sha256: digest(encoded) } };
 }
 
@@ -241,6 +264,8 @@ export function requireCompleted(run, { phase, runRoot }) {
     preserved_artifacts: [`${phase}.jsonl`, `${phase}.stderr.log`, `${phase}.execution.json`]
   };
   writeFileSync(join(runRoot, "execution-block.json"), `${JSON.stringify(block, null, 2)}\n`);
+  block.partial_result = checkpointRun(runRoot);
+  writeFileSync(join(runRoot, "execution-block.json"), JSON.stringify(block, null, 2));
   console.log(JSON.stringify({ run_root: runRoot, phase, status: "BLOCKED", execution_status: run.status, acceptance: "NOT_RUN" }, null, 2));
   process.exit(3);
 }

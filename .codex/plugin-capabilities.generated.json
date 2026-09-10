@@ -1,6 +1,6 @@
 {
   "artifact_type": "cascade-plugin-capability-catalog",
-  "catalog_digest": "f98766e6e1b685a49025b22161886364c5d07c0df709bbc5ae9ffdd666f68885",
+  "catalog_digest": "93151b8e9fd9f3aa8bef81be4c6ec0cd7e30340492a09a0e9a4677f63571f947",
   "marketplace": ".agents/plugins/marketplace.json",
   "plugins": [
     {
@@ -346,9 +346,9 @@
     },
     {
       "descriptor_path": ".codex/plugins/cascade-evals/capabilities.yaml",
-      "descriptor_sha256": "60d1402f811f8782449ff83e1a07b6c30a270b5099e97e89a8c4eea2154e788f",
+      "descriptor_sha256": "1b1cb8db7565dc9baf43c9e40157f12e8a829f59ac6d2be32d1592eb25d3849d",
       "manifest_path": ".codex/plugins/cascade-evals/.codex-plugin/plugin.json",
-      "manifest_sha256": "dff2efb9bdac4705d9468a36af3f14b9cc2549d5373dda60dab139f90e508a44",
+      "manifest_sha256": "e1cdcf2d1a85c28436b2245eb2fb84027b1836d364c91cbcc16474c29d4b8917",
       "model_policy": {
         "evaluation_reasoning_effort": "max",
         "model": "gpt-5.6-sol",
@@ -544,7 +544,7 @@
           ]
         }
       ],
-      "version": "0.3.2+codex.20260910084856"
+      "version": "0.3.3+codex.20260910094144"
     },
     {
       "descriptor_path": ".codex/plugins/cascade-ai-architect/capabilities.yaml",

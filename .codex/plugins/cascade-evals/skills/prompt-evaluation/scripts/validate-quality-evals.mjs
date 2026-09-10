@@ -55,11 +55,11 @@ async function absent(path, label) {
 const catalog = await readJson(join(evalRoot, "task-catalog.json"));
 const matrix = await readJson(join(evalRoot, "model-matrix.json"));
 const registry = await readModelRegistry(subjectSkillRoot);
-const outcome = await readJson(join(evalRoot, "judges/outcome-v3.json"));
-const trajectory = await readJson(join(evalRoot, "judges/trajectory-v3.json"));
-const interviewProfile = await readJson(join(evalRoot, "judges/interview-v3.json"));
+const outcome = await readJson(join(evalRoot, "judges/outcome-v4.json"));
+const trajectory = await readJson(join(evalRoot, "judges/trajectory-v4.json"));
+const interviewProfile = await readJson(join(evalRoot, "judges/interview-v4.json"));
 const interviewCatalog = await readJson(join(evalRoot, "interviews/catalog.json"));
-const responseSchema = await readJson(join(evalRoot, "judges/response-v3.schema.json"));
+const responseSchema = await readJson(join(evalRoot, "judges/response-v4.schema.json"));
 const calibration = await readJson(join(evalRoot, "judges/calibration-cases.json"));
 const humanLabelSchema = await readJson(join(evalRoot, "judges/human-labels.schema.json"));
 const humanLabelTemplate = await readJson(join(evalRoot, "judges/human-labels.template.json"));
@@ -215,10 +215,10 @@ function validateProfile(profile, expectedId) {
   check(profile.minimum_dimension_rating === 3, `${expectedId}: dimension floor must be 3 for v3`);
 }
 
-validateProfile(outcome, "cascade-prompt-outcome-v3");
-validateProfile(trajectory, "cascade-prompt-trajectory-v3");
-validateProfile(interviewProfile, "cascade-prompt-interview-v3");
-validateProfile(await readJson(join(evalRoot, "judges/knowledge-coverage-v1.json")), "cascade-prompt-knowledge-coverage-v1");
+validateProfile(outcome, "cascade-prompt-outcome-v4");
+validateProfile(trajectory, "cascade-prompt-trajectory-v4");
+validateProfile(interviewProfile, "cascade-prompt-interview-v4");
+validateProfile(await readJson(join(evalRoot, "judges/knowledge-coverage-v2.json")), "cascade-prompt-knowledge-coverage-v2");
 
 const allowedStates = new Set(["READY", "NEEDS_INPUT", "BLOCKED"]);
 const allowedModes = new Set(["Quick", "Guided", "Advanced"]);
@@ -247,8 +247,8 @@ for (const fixture of interviewCatalog.fixtures ?? []) {
     check(/^\{\{[A-Z0-9_]+\}\}$/.test(fixture.target.input_placeholder ?? ""), `${fixture.id}: invalid target placeholder`);
     check(fixture.prompt_build_request.includes(fixture.target.input_placeholder), `${fixture.id}: target placeholder must appear in request`);
     check(typeof fixture.target.input === "string" && fixture.target.input.length > 0, `${fixture.id}: target input is required`);
-    check(Array.isArray(fixture.target.required_patterns) && fixture.target.required_patterns.length > 0, `${fixture.id}: target required patterns are required`);
-    check(Array.isArray(fixture.target.forbidden_patterns), `${fixture.id}: target forbidden patterns must be an array`);
+    check((Array.isArray(fixture.target.required_patterns) && fixture.target.required_patterns.length > 0) || (fixture.target.json_contract && Object.keys(fixture.target.json_contract).length > 0 && Object.values(fixture.target.json_contract).every(type => type === "string_array")), `${fixture.id}: target requires patterns or a supported JSON contract`);
+    check(fixture.target.forbidden_patterns === undefined || Array.isArray(fixture.target.forbidden_patterns), `${fixture.id}: target forbidden patterns must be an array`);
   }
 }
 const coverage = JSON.parse(await readFile(join(evalRoot, "rule-coverage.json"), "utf8"));
@@ -297,7 +297,7 @@ for (const requiredFixture of ["complete-quick-v1", "missing-structured-schema-v
 }
 await readable(join(skillRoot, "scripts/run-interview-eval.mjs"), "interview runner");
 await readable(join(skillRoot, "scripts/test-interview-runner.mjs"), "interview runner tests");
-for (const file of ["execution-adapters.mjs", "legacy-response-evidence.mjs", "judge-results.mjs", "test-judge-results.mjs", "subject-plugin.mjs", "run-variance-eval.mjs", "run-human-calibration.mjs", "test-execution-adapters.mjs", "test-human-calibration.mjs", "test-variance-runner.mjs"]) await readable(join(skillRoot, "scripts", file), file);
+for (const file of ["execution-coordinator.mjs", "execution-progress.mjs", "run-prompt-campaign.mjs", "execution-adapters.mjs", "legacy-response-evidence.mjs", "judge-results.mjs", "test-judge-results.mjs", "subject-plugin.mjs", "run-variance-eval.mjs", "run-human-calibration.mjs", "test-execution-adapters.mjs", "test-human-calibration.mjs", "test-variance-runner.mjs"]) await readable(join(skillRoot, "scripts", file), file);
 await absent(join(subjectSkillRoot, "evals/task-catalog.json"), "subject-owned evaluation catalog");
 for (const migratedScript of ["execution-adapters.mjs", "run-quality-eval.mjs", "run-interview-eval.mjs", "run-variance-eval.mjs", "run-human-calibration.mjs"]) await absent(join(subjectSkillRoot, "scripts", migratedScript), `subject-owned ${migratedScript}`);
 

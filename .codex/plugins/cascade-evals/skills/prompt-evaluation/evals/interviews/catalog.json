@@ -523,7 +523,7 @@
     },
     {
       "id": "new-instruction-invalidation-v1",
-      "version": 2,
+      "version": 3,
       "tier": "balanced-production",
       "expected_mode": "Quick",
       "prompt_build_request": "Create a reusable prompt for {{RELEASE_NOTES}} that returns a Markdown summary with exactly the headings Changes and Risks, grounded only in the notes.",
@@ -553,7 +553,6 @@
         ],
         "required_response_patterns": [
           "Final Prompt",
-          "JSON object",
           "changes",
           "risks",
           "{{RELEASE_NOTES}}"
@@ -567,7 +566,15 @@
         "core-contract",
         "intake-readiness",
         "answer-merge"
-      ]
+      ],
+      "target": {
+        "input_placeholder": "{{RELEASE_NOTES}}",
+        "input": "Added a Retry button for failed exports. Known risk: retries may create duplicate export jobs.",
+        "json_contract": {
+          "changes": "string_array",
+          "risks": "string_array"
+        }
+      }
     },
     {
       "id": "astra-surface-v1",
@@ -1139,7 +1146,7 @@
       "version": 1,
       "tier": "balanced-production",
       "expected_mode": "Advanced",
-      "prompt_build_request": "Create a prompt for an explicitly adopted Analyzer–Policy Engine–Composer architecture using schema-values-text@1 and interim-responses. The issuer, executable schema subset and event-projections-and-context-format contracts are unavailable and cannot be supplied this turn. Do not reconstruct contracts from their names. Return BLOCKED and a safest partial template with named missing dependencies; do not claim readiness.",
+      "prompt_build_request": "Create a prompt for an explicitly adopted Analyzer\u2013Policy Engine\u2013Composer architecture using schema-values-text@1 and interim-responses. The issuer, executable schema subset and event-projections-and-context-format contracts are unavailable and cannot be supplied this turn. Do not reconstruct contracts from their names. Return BLOCKED and a safest partial template with named missing dependencies; do not claim readiness.",
       "first_turn": {
         "state": "BLOCKED",
         "min_questions": 0,
@@ -1166,7 +1173,7 @@
       "version": 1,
       "tier": "balanced-production",
       "expected_mode": "Advanced",
-      "prompt_build_request": "Create a reusable Composer prompt for an explicitly adopted Analyzer–Policy Engine–Composer architecture. Supplied architecture contract: event-projections-and-context-format v1 renders only host-issued {{ISSUED_SLICE}}, approved {{ROLE_RULES}} and {{POLICY_DESCRIPTIONS}}; no fetching state or expanding references. Runtime privately owns checkpoint/attempt/task/step IDs, revisions, hashes and timestamps; omit these envelope fields from model messages. Composer emits proposal-only JSON {\"proposals\": [{\"policy\": string, \"value\": string or null}]} and cannot apply changes. Missing selected values stay null; missing authority stops composition pending a newly admitted slice. Stable approved content order: system, role, policy. Whole-response validation precedes release. Interim-responses, iterative caching, and schema-values-text@1 are not adopted. Use balanced-production. Return a READY prompt preserving these contracts.",
+      "prompt_build_request": "Create a reusable Composer prompt for an explicitly adopted Analyzer\u2013Policy Engine\u2013Composer architecture. Supplied architecture contract: event-projections-and-context-format v1 renders only host-issued {{ISSUED_SLICE}}, approved {{ROLE_RULES}} and {{POLICY_DESCRIPTIONS}}; no fetching state or expanding references. Runtime privately owns checkpoint/attempt/task/step IDs, revisions, hashes and timestamps; omit these envelope fields from model messages. Composer emits proposal-only JSON {\"proposals\": [{\"policy\": string, \"value\": string or null}]} and cannot apply changes. Missing selected values stay null; missing authority stops composition pending a newly admitted slice. Stable approved content order: system, role, policy. Whole-response validation precedes release. Interim-responses, iterative caching, and schema-values-text@1 are not adopted. Use balanced-production. Return a READY prompt preserving these contracts.",
       "first_turn": {
         "state": "READY",
         "min_questions": 0,

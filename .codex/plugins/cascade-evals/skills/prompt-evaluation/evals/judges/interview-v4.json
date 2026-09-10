@@ -1,0 +1,94 @@
+{
+  "schema_version": 1,
+  "profile_id": "cascade-prompt-interview-v4",
+  "purpose": "Judge adaptive interview behavior without replacing deterministic state, question-count, intent, and final-prompt checks.",
+  "scale": {
+    "0": "Absent, unusable, or directly harmful.",
+    "1": "Major failures dominate; substantial repair is required.",
+    "2": "Partially correct but material defects remain.",
+    "3": "Correct and useful with only minor defects.",
+    "4": "Fully satisfies the anchored dimension with no material defect."
+  },
+  "dimensions": [
+    {
+      "id": "trigger_precision",
+      "weight": 25,
+      "description": "The interaction asks only for genuine material gaps and does not interview complete or safely defaultable requests.",
+      "anchors": {
+        "0": "Absent or contradicts a hard task, evidence, or permission constraint.",
+        "1": "Major omissions or wrong decisions; the result cannot be used reliably.",
+        "2": "Partially satisfies this dimension but has a material unresolved defect.",
+        "3": "Satisfies all material obligations of this dimension; only minor nonblocking weaknesses.",
+        "4": "Complete, precise and proportionate support for this dimension, including applicable boundary behavior."
+      }
+    },
+    {
+      "id": "material_gap_coverage",
+      "weight": 25,
+      "description": "Every blocking request gap or source conflict needed for a reliable prompt is resolved, defaulted safely, or explicitly blocked.",
+      "anchors": {
+        "0": "Absent or contradicts a hard task, evidence, or permission constraint.",
+        "1": "Major omissions or wrong decisions; the result cannot be used reliably.",
+        "2": "Partially satisfies this dimension but has a material unresolved defect.",
+        "3": "Satisfies all material obligations of this dimension; only minor nonblocking weaknesses.",
+        "4": "Complete, precise and proportionate support for this dimension, including applicable boundary behavior."
+      }
+    },
+    {
+      "id": "question_utility",
+      "weight": 20,
+      "description": "Questions are concise, grounded, answerable, appropriately grouped, and cheaper than proceeding incorrectly.",
+      "anchors": {
+        "0": "Absent or contradicts a hard task, evidence, or permission constraint.",
+        "1": "Major omissions or wrong decisions; the result cannot be used reliably.",
+        "2": "Partially satisfies this dimension but has a material unresolved defect.",
+        "3": "Satisfies all material obligations of this dimension; only minor nonblocking weaknesses.",
+        "4": "Complete, precise and proportionate support for this dimension, including applicable boundary behavior."
+      }
+    },
+    {
+      "id": "answer_merge",
+      "weight": 15,
+      "description": "Accepted answers update the intended fields, preserve unrelated decisions, avoid repeats, and handle refusal or invalidation correctly.",
+      "anchors": {
+        "0": "Absent or contradicts a hard task, evidence, or permission constraint.",
+        "1": "Major omissions or wrong decisions; the result cannot be used reliably.",
+        "2": "Partially satisfies this dimension but has a material unresolved defect.",
+        "3": "Satisfies all material obligations of this dimension; only minor nonblocking weaknesses.",
+        "4": "Complete, precise and proportionate support for this dimension, including applicable boundary behavior."
+      }
+    },
+    {
+      "id": "final_contract_coverage",
+      "weight": 15,
+      "description": "The ready prompt contains the resolved contract, and known builder omissions are repaired without blaming or re-questioning the user. Includes the correct named-model surface rules, conditional context selection, template variables and permission/source boundaries when applicable; no invented capability or policy.",
+      "anchors": {
+        "0": "Absent or contradicts a hard task, evidence, or permission constraint.",
+        "1": "Major omissions or wrong decisions; the result cannot be used reliably.",
+        "2": "Partially satisfies this dimension but has a material unresolved defect.",
+        "3": "Satisfies all material obligations of this dimension; only minor nonblocking weaknesses.",
+        "4": "Complete, precise and proportionate support for this dimension, including applicable boundary behavior."
+      }
+    }
+  ],
+  "threshold": 0.8,
+  "minimum_dimension_rating": 3,
+  "score_formula": "sum(weight * rating / 4) / 100",
+  "blind_exclusions": [
+    "model ranking",
+    "peer outputs",
+    "acceptance decision",
+    "acceptance threshold",
+    "dimension floors",
+    "weights",
+    "mechanical verdicts",
+    "expected answers"
+  ],
+  "required_evidence": [
+    "user request and supplied answers",
+    "ordered interaction transcript",
+    "applicable rule contracts when model-specific behavior is evaluated",
+    "Each rating cites an exact excerpt at an existing JSON pointer in the evidence packet."
+  ],
+  "rubric_version": 4
+}
