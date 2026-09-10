@@ -2,7 +2,7 @@
   "schema_version": 2,
   "plugin_id": "cascade-personas",
   "subject_kind": "agent",
-  "version": "0.1.23+codex.20260910152813",
+  "version": "0.1.28+codex.20260910163504",
   "expected_case_count": 15,
   "acceptance_threshold": 0.95,
   "minimum_dimension": 3,
@@ -14,8 +14,16 @@
     "reasoning_effort": "high",
     "explicit_comparison_override": false
   },
-  "expected_skills": ["build-persona", "compile-persona", "evaluate-persona"],
-  "required_schemas": ["persona.schema.json", "projection.schema.json", "handoff-envelope.schema.json"],
+  "expected_skills": [
+    "build-persona",
+    "compile-persona",
+    "evaluate-persona"
+  ],
+  "required_schemas": [
+    "persona.schema.json",
+    "projection.schema.json",
+    "handoff-envelope.schema.json"
+  ],
   "required_runtime_phrases": [
     "untrusted evidence",
     "RFC 8785",
@@ -32,7 +40,9 @@
     "compiler-generated mapping table",
     "Unresolved decision-critical evidence conflict is GAP"
   ],
-  "forbidden_runtime_phrases": ["runtime/model-index.json"],
+  "forbidden_runtime_phrases": [
+    "runtime/model-index.json"
+  ],
   "required_dependency_aliases": [
     "cascade-prompt:prompt",
     "cascade-evals:agent-evaluation",
@@ -179,5 +189,18 @@
       "path": "skills/simulation-actor/references/actor-prompt.md"
     }
   ],
-  "required_case_categories": ["happy", "boundary", "routing-collision", "missing-evidence", "adversarial", "handoff", "conflicting-source", "invalid-state", "missing-dependency", "privacy", "tool-failure", "output-pressure"]
+  "required_case_categories": [
+    "happy",
+    "boundary",
+    "routing-collision",
+    "missing-evidence",
+    "adversarial",
+    "handoff",
+    "conflicting-source",
+    "invalid-state",
+    "missing-dependency",
+    "privacy",
+    "tool-failure",
+    "output-pressure"
+  ]
 }

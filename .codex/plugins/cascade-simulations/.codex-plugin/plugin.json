@@ -1,6 +1,6 @@
 {
   "name": "cascade-simulations",
-  "version": "0.2.6+codex.20260910152813",
+  "version": "0.2.8+codex.20260910162214",
   "description": "Compile actors, manage versioned campaigns, execute bounded goal-directed simulations through Codex-host tools, and review frozen runs against fixed contracts.",
   "author": {
     "name": "Cascade"
@@ -28,6 +28,9 @@
       "Simulate a real user completing this workflow.",
       "Compile an actor, brief, outcome, or adapter from a validated persona projection.",
       "Manage or execute an approved simulation campaign and review its frozen run."
-    ]
+    ],
+    "brandColor": "#4F46E5",
+    "composerIcon": "./assets/composer-icon.svg",
+    "logo": "./assets/logo.svg"
   }
 }

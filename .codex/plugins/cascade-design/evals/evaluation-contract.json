@@ -2,7 +2,7 @@
   "schema_version": 2,
   "plugin_id": "cascade-design",
   "subject_kind": "agent",
-  "version": "0.1.4+codex.20260910152813",
+  "version": "0.1.9+codex.20260910163504",
   "expected_case_count": 19,
   "expected_cases_per_skill": {
     "ux-flow-review": 3,
@@ -28,7 +28,9 @@
     "design-system",
     "create-design"
   ],
-  "required_schemas": ["design-review.schema.json"],
+  "required_schemas": [
+    "design-review.schema.json"
+  ],
   "required_runtime_phrases": [
     "untrusted evidence",
     "../../schemas/design-review.schema.json",
@@ -122,30 +124,105 @@
     "scripts/evaluate_case_assertions.py"
   ],
   "required_dependency_artifacts": [
-    {"alias": "cascade-prompt:prompt", "path": "skills/prompt/SKILL.md"},
-    {"alias": "cascade-prompt:prompt", "path": "skills/prompt/runtime/grounded.md"},
-    {"alias": "cascade-prompt:prompt", "path": "skills/prompt/runtime/task-overlays.md"},
-    {"alias": "cascade-prompt:prompt", "path": "skills/prompt/runtime/tier-frontier-autonomous.md"},
-    {"alias": "cascade-prompt:prompt", "path": "skills/prompt/runtime/evaluation.md"},
-    {"alias": "cascade-prompt:prompt", "path": "skills/prompt/runtime/model-index.yaml"},
-    {"alias": "cascade-evals:agent-evaluation", "path": "skills/agent-evaluation/SKILL.md"},
-    {"alias": "cascade-evals:evaluate", "path": "skills/evaluate/SKILL.md"},
-    {"alias": "cascade-evals:evaluate", "path": "scripts/run_agent_evaluation.py"},
-    {"alias": "cascade-evals:evaluate", "path": "scripts/build_blind_packets.py"},
-    {"alias": "cascade-evals:evaluate", "path": "scripts/reduce_evaluation.py"},
-    {"alias": "cascade-evals:evaluate", "path": "scripts/validate_judge.py"},
-    {"alias": "cascade-evals:evaluate", "path": "skills/evaluate/references/agent-builder-response.schema.json"},
-    {"alias": "cascade-evals:evaluate", "path": "skills/evaluate/references/agent-target-response.schema.json"},
-    {"alias": "cascade-evals:evaluate", "path": "skills/evaluate/references/judge-packet.schema.json"},
-    {"alias": "cascade-evals:evaluate", "path": "skills/evaluate/references/model-policy.json"},
-    {"alias": "cascade-evals:build-judge", "path": "skills/build-judge/SKILL.md"},
-    {"alias": "cascade-evals:build-judge", "path": "skills/build-judge/references/judge-response.schema.json"},
-    {"alias": "cascade-ai-architect:map-agent-capabilities", "path": "skills/map-agent-capabilities/SKILL.md"},
-    {"alias": "cascade-ai-architect:build-agent-skills", "path": "skills/build-agent-skills/SKILL.md"},
-    {"alias": "cascade-coding-agent:integrate-agent-assets", "path": "skills/integrate-agent-assets/SKILL.md"},
-    {"alias": "cascade-coding-agent:maintain-harness", "path": "skills/maintain-harness/SKILL.md"},
-    {"alias": "cascade-product:define-product", "path": "skills/define-product/SKILL.md"},
-    {"alias": "cascade-personas:compile-persona", "path": "skills/compile-persona/SKILL.md"},
-    {"alias": "cascade-simulations:simulate", "path": "skills/simulate/SKILL.md"}
+    {
+      "alias": "cascade-prompt:prompt",
+      "path": "skills/prompt/SKILL.md"
+    },
+    {
+      "alias": "cascade-prompt:prompt",
+      "path": "skills/prompt/runtime/grounded.md"
+    },
+    {
+      "alias": "cascade-prompt:prompt",
+      "path": "skills/prompt/runtime/task-overlays.md"
+    },
+    {
+      "alias": "cascade-prompt:prompt",
+      "path": "skills/prompt/runtime/tier-frontier-autonomous.md"
+    },
+    {
+      "alias": "cascade-prompt:prompt",
+      "path": "skills/prompt/runtime/evaluation.md"
+    },
+    {
+      "alias": "cascade-prompt:prompt",
+      "path": "skills/prompt/runtime/model-index.yaml"
+    },
+    {
+      "alias": "cascade-evals:agent-evaluation",
+      "path": "skills/agent-evaluation/SKILL.md"
+    },
+    {
+      "alias": "cascade-evals:evaluate",
+      "path": "skills/evaluate/SKILL.md"
+    },
+    {
+      "alias": "cascade-evals:evaluate",
+      "path": "scripts/run_agent_evaluation.py"
+    },
+    {
+      "alias": "cascade-evals:evaluate",
+      "path": "scripts/build_blind_packets.py"
+    },
+    {
+      "alias": "cascade-evals:evaluate",
+      "path": "scripts/reduce_evaluation.py"
+    },
+    {
+      "alias": "cascade-evals:evaluate",
+      "path": "scripts/validate_judge.py"
+    },
+    {
+      "alias": "cascade-evals:evaluate",
+      "path": "skills/evaluate/references/agent-builder-response.schema.json"
+    },
+    {
+      "alias": "cascade-evals:evaluate",
+      "path": "skills/evaluate/references/agent-target-response.schema.json"
+    },
+    {
+      "alias": "cascade-evals:evaluate",
+      "path": "skills/evaluate/references/judge-packet.schema.json"
+    },
+    {
+      "alias": "cascade-evals:evaluate",
+      "path": "skills/evaluate/references/model-policy.json"
+    },
+    {
+      "alias": "cascade-evals:build-judge",
+      "path": "skills/build-judge/SKILL.md"
+    },
+    {
+      "alias": "cascade-evals:build-judge",
+      "path": "skills/build-judge/references/judge-response.schema.json"
+    },
+    {
+      "alias": "cascade-ai-architect:map-agent-capabilities",
+      "path": "skills/map-agent-capabilities/SKILL.md"
+    },
+    {
+      "alias": "cascade-ai-architect:build-agent-skills",
+      "path": "skills/build-agent-skills/SKILL.md"
+    },
+    {
+      "alias": "cascade-coding-agent:integrate-agent-assets",
+      "path": "skills/integrate-agent-assets/SKILL.md"
+    },
+    {
+      "alias": "cascade-coding-agent:maintain-harness",
+      "path": "skills/maintain-harness/SKILL.md"
+    },
+    {
+      "alias": "cascade-product:define-product",
+      "path": "skills/define-product/SKILL.md"
+    },
+    {
+      "alias": "cascade-personas:compile-persona",
+      "path": "skills/compile-persona/SKILL.md"
+    },
+    {
+      "alias": "cascade-simulations:simulate",
+      "path": "skills/simulate/SKILL.md"
+    }
   ]
 }

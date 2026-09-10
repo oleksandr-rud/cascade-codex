@@ -213,28 +213,45 @@ def resolve(
             EXIT_BLOCKED,
         )
 
-    source = item.get("source")
-    source_path_value = source.get("path") if isinstance(source, dict) else None
     version = item.get("version")
-    if not isinstance(source_path_value, str) or not source_path_value or not isinstance(version, str):
+    marketplace_name = item.get("marketplaceName")
+    components = (marketplace_name, plugin_name, version)
+    if (
+        any(not isinstance(value, str) or not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._+-]*", value) for value in components)
+        or item["pluginId"] != f"{plugin_name}@{marketplace_name}"
+    ):
         return (
             receipt(
                 "BLOCKED",
                 "MALFORMED_PLUGIN_ENTRY",
-                "The enabled plugin entry must advertise a source path and version.",
+                "The enabled plugin entry must identify an exact marketplace, plugin, and installed version.",
                 **base,
                 details={"plugin_id": item["pluginId"]},
             ),
             EXIT_BLOCKED,
         )
 
-    source_path = Path(source_path_value).expanduser().resolve()
+    # Inventory source.path is the mutable checkout, not the installed skill surface.
+    # Resolve only the advertised installed version; never search other cache versions.
+    cache_root = (Path.home() / ".codex" / "plugins" / "cache").resolve()
+    source_path = cache_root.joinpath(*components).resolve()
+    if not source_path.is_relative_to(cache_root):
+        return (
+            receipt(
+                "INVALID",
+                "PLUGIN_PATH_ESCAPE",
+                "The installed plugin root resolves outside the plugin cache.",
+                **base,
+                details={"plugin_id": item["pluginId"], "source_path": str(source_path)},
+            ),
+            EXIT_INVALID,
+        )
     if not source_path.is_dir() or not os.access(source_path, os.R_OK | os.X_OK):
         return (
             receipt(
                 "BLOCKED",
                 "SOURCE_UNAVAILABLE",
-                "The advertised plugin source path is not a readable directory.",
+                "The exact installed plugin cache is not a readable directory.",
                 **base,
                 details={"plugin_id": item["pluginId"], "source_path": str(source_path)},
             ),
@@ -247,7 +264,7 @@ def resolve(
             receipt(
                 "BLOCKED",
                 "MANIFEST_NOT_AVAILABLE",
-                "The advertised plugin source has no readable plugin manifest.",
+                "The exact installed plugin cache has no readable plugin manifest.",
                 **base,
                 details={"plugin_id": item["pluginId"], "source_path": str(source_path)},
             ),
@@ -306,7 +323,8 @@ def resolve(
         )
     if (
         Path(declared_skills_root).is_absolute()
-        or re.match(r"^[A-Za-z]:[\\/]", declared_skills_root)
+        or declared_skills_root.startswith(("/", "\\"))
+        or re.match(r"^[A-Za-z]:", declared_skills_root)
         or declared_skills_root.startswith("\\\\")
     ):
         return (
@@ -433,7 +451,7 @@ def resolve(
     result = receipt(
         "AVAILABLE",
         "RESOLVED",
-        "Exact installed and enabled plugin skill resolved from advertised source.",
+        "Exact installed and enabled plugin skill resolved from its versioned cache.",
         **base,
         details={
             "plugin": {

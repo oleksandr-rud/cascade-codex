@@ -1,6 +1,6 @@
 {
   "name": "cascade-coding-agent",
-  "version": "0.2.3+codex.20260910152813",
+  "version": "0.2.5+codex.20260910162214",
   "description": "Audits, adapts, integrates, and evolves Codex and coding-agent harnesses while preserving target-repository authority.",
   "author": {
     "name": "Cascade"
@@ -28,6 +28,9 @@
       "Audit this repository's Codex and agent harness for defects and duplicate authority.",
       "Adapt this coding-agent harness to a target repository.",
       "Maintain this harness or integrate a reviewed agent architecture packet with the smallest validated change."
-    ]
+    ],
+    "brandColor": "#4F46E5",
+    "composerIcon": "./assets/composer-icon.svg",
+    "logo": "./assets/logo.svg"
   }
 }

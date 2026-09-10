@@ -10,6 +10,7 @@ import subprocess
 import sys
 import tempfile
 import unittest
+from unittest.mock import patch
 
 import resolve_plugin_skill as resolver
 
@@ -22,7 +23,9 @@ class ResolvePluginSkillTests(unittest.TestCase):
     def setUp(self) -> None:
         self.tempdir = tempfile.TemporaryDirectory()
         self.addCleanup(self.tempdir.cleanup)
-        self.root = Path(self.tempdir.name) / "example-plugin"
+        self.installed_home = Path(self.tempdir.name) / "home"
+        self.root = self.installed_home / ".codex" / "plugins" / "cache" / "personal" / "example" / "1.2.3"
+        self.checkout = Path(self.tempdir.name) / "example-checkout"
         (self.root / ".codex-plugin").mkdir(parents=True)
         (self.root / "skills" / "prompt").mkdir(parents=True)
         self.write_manifest()
@@ -53,7 +56,7 @@ class ResolvePluginSkillTests(unittest.TestCase):
             "version": "1.2.3",
             "installed": True,
             "enabled": True,
-            "source": {"source": "local", "path": str(self.root)},
+            "source": {"source": "local", "path": str(self.checkout)},
         }
         entry.update(overrides)
         return {"installed": [entry], "available": []}
@@ -67,7 +70,8 @@ class ResolvePluginSkillTests(unittest.TestCase):
             "inventory_source": "fixture",
         }
         args.update(overrides)
-        return resolver.resolve(inventory, **args)
+        with patch.object(Path, "home", return_value=self.installed_home):
+            return resolver.resolve(inventory, **args)
 
     def test_available_records_paths_versions_and_digests(self) -> None:
         result, exit_code = self.resolve(self.inventory())
@@ -84,6 +88,27 @@ class ResolvePluginSkillTests(unittest.TestCase):
         self.assertEqual(len(result["skill"]["sha256"]), 64)
         self.assertEqual(len(result["dependency_sha256"]), 64)
         self.assertEqual(result["resolved_at"], FIXED_TIME)
+
+    def test_checkout_drift_cannot_replace_installed_skill(self) -> None:
+        shutil.copytree(self.root, self.checkout)
+        (self.checkout / ".codex-plugin" / "plugin.json").write_text(
+            json.dumps({"name": "example", "version": "9.9.9", "skills": "./skills/"}),
+            encoding="utf-8",
+        )
+        (self.checkout / "skills" / "prompt" / "SKILL.md").write_text(
+            "---\nname: prompt\ndescription: Uninstalled change.\n---\n", encoding="utf-8"
+        )
+        result, exit_code = self.resolve(self.inventory())
+        self.assertEqual(exit_code, resolver.EXIT_AVAILABLE, result)
+        self.assertEqual(result["skill"]["sha256"], resolver.sha256_file(self.root / "skills" / "prompt" / "SKILL.md"))
+        self.assertEqual(result["plugin"]["version"], "1.2.3")
+
+    def test_missing_installed_cache_never_falls_back_to_checkout_or_other_version(self) -> None:
+        shutil.copytree(self.root, self.checkout)
+        self.root.rename(self.root.with_name("9.9.9"))
+        result, exit_code = self.resolve(self.inventory())
+        self.assertEqual(exit_code, resolver.EXIT_BLOCKED)
+        self.assertEqual(result["code"], "SOURCE_UNAVAILABLE")
 
     def test_missing_plugin_is_blocked(self) -> None:
         result, exit_code = self.resolve({"installed": []})
@@ -149,7 +174,13 @@ class ResolvePluginSkillTests(unittest.TestCase):
             "---\nname: prompt\ndescription: Escaped prompt skill.\n---\n",
             encoding="utf-8",
         )
-        (self.root / "skills" / "prompt").symlink_to(outside_skill, target_is_directory=True)
+        link = self.root / "skills" / "prompt"
+        if sys.platform == "win32":
+            # Junctions exercise the same resolved-path escape without symlink privileges.
+            import _winapi
+            _winapi.CreateJunction(str(outside_skill), str(link))
+        else:
+            link.symlink_to(outside_skill, target_is_directory=True)
         result, exit_code = self.resolve(self.inventory())
         self.assertEqual(exit_code, resolver.EXIT_INVALID)
         self.assertEqual(
@@ -158,7 +189,7 @@ class ResolvePluginSkillTests(unittest.TestCase):
         )
 
     def test_absent_or_invalid_manifest_skills_field_is_invalid(self) -> None:
-        cases = [OMIT, None, "", "   ", 42, "/absolute/skills", "C:\\skills", "\\\\server\\skills"]
+        cases = [OMIT, None, "", "   ", 42, "/absolute/skills", "C:relative-skills", "\\rooted-skills", "C:\\skills", "\\\\server\\skills"]
         for skills in cases:
             with self.subTest(skills=skills):
                 self.write_manifest(skills=skills)
@@ -212,6 +243,10 @@ class ResolvePluginSkillTests(unittest.TestCase):
         result, exit_code = self.resolve({"installed": "not-a-list"})
         self.assertEqual(exit_code, resolver.EXIT_BLOCKED)
         self.assertEqual((result["status"], result["code"]), ("BLOCKED", "MALFORMED_INVENTORY"))
+        for overrides in [{"version": "../1.2.3"}, {"marketplaceName": "C:relative"}, {"marketplaceName": "/rooted"}, {"pluginId": "example@different"}]:
+            with self.subTest(overrides=overrides):
+                result, exit_code = self.resolve(self.inventory(**overrides))
+                self.assertEqual((exit_code, result["code"]), (resolver.EXIT_BLOCKED, "MALFORMED_PLUGIN_ENTRY"))
 
     def test_cli_reads_fixture_inventory_and_emits_receipt(self) -> None:
         inventory_path = Path(self.tempdir.name) / "inventory.json"
@@ -219,6 +254,11 @@ class ResolvePluginSkillTests(unittest.TestCase):
         completed = subprocess.run(
             [
                 sys.executable,
+                "-c",
+                "import runpy,sys; from pathlib import Path; from unittest.mock import patch; "
+                f"fixture_home=Path({str(self.installed_home)!r}); sys.argv=sys.argv[1:]; "
+                "context=patch.object(Path,'home',return_value=fixture_home); context.start(); "
+                "runpy.run_path(sys.argv[0],run_name='__main__')",
                 str(Path(resolver.__file__).resolve()),
                 "--plugin",
                 "example",

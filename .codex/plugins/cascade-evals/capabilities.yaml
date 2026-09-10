@@ -1,7 +1,7 @@
 schema_version: 1
 plugin:
   name: cascade-evals
-  version: 0.3.12+codex.20260910152813
+  version: 0.3.17+codex.20260910163504
 model_policy:
   model: gpt-6-astra
   planning_reasoning_effort: high

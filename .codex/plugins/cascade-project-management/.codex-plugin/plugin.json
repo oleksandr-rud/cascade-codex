@@ -1,6 +1,6 @@
 {
   "name": "cascade-project-management",
-  "version": "0.1.3+codex.20260910152813",
+  "version": "0.1.8+codex.20260910163504",
   "description": "Define tracker-ready work items and plan or coordinate evidence-bound projects and lean Agile MVP delivery without taking product priority, filing, or target execution authority.",
   "author": {
     "name": "Cascade"
@@ -30,6 +30,9 @@
       "Draft one grounded tracker-ready issue, story, or task from this evidence.",
       "Turn this initiative into a lean project or Agile MVP plan.",
       "Reconcile or close this project without losing evidence."
-    ]
+    ],
+    "brandColor": "#4F46E5",
+    "composerIcon": "./assets/composer-icon.svg",
+    "logo": "./assets/logo.svg"
   }
 }

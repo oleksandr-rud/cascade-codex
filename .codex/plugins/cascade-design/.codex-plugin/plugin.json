@@ -1,6 +1,6 @@
 {
   "name": "cascade-design",
-  "version": "0.1.4+codex.20260910152813",
+  "version": "0.1.9+codex.20260910163504",
   "description": "Create product mockups and review UX, accessibility, design systems and visual quality with explicit host implementation boundaries.",
   "author": {
     "name": "Cascade"
@@ -27,6 +27,9 @@
       "Create responsive mockups and a frontend handoff for this product flow.",
       "Audit this interface for accessibility risks.",
       "Validate this UI visually across relevant viewports."
-    ]
+    ],
+    "brandColor": "#4F46E5",
+    "composerIcon": "./assets/composer-icon.svg",
+    "logo": "./assets/logo.svg"
   }
 }

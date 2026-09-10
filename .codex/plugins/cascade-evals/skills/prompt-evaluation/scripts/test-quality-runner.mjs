@@ -104,6 +104,7 @@ console.log("PASS: standalone plugin validation preserves strict YAML parsing wi
 const first = run();
 assert(first.result.status === 3, `first run failed: ${first.result.stderr}`);
 const firstSummary = await summary(first);
+assert(firstSummary.configuration.configuration_id === "default-astra-high", "default configuration identity must agree with Astra/high receipts");
 assert(firstSummary.execution.prompt_builder.status === "EXECUTED", "first builder must execute");
 assert(firstSummary.execution.prompt_builder.receipts?.length === 1, "builder must have a bound direct execution receipt");
 assert(Boolean(firstSummary.execution.target.receipt?.sha256), "target must have a bound direct execution receipt");

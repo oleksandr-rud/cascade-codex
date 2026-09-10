@@ -1,13 +1,13 @@
 {
   "artifact_type": "cascade-plugin-capability-catalog",
-  "catalog_digest": "56a273ad66d989dec96b24ba497ffe7992b0751bd012e753f5c159741d1e4afe",
+  "catalog_digest": "b3b77c7607e141509514fd64f63264d6e10ddb22232a75605955ebdefa413f77",
   "marketplace": ".agents/plugins/marketplace.json",
   "plugins": [
     {
       "descriptor_path": ".codex/plugins/cascade-prompt/capabilities.yaml",
-      "descriptor_sha256": "3d32d66fc146169253d11325d2cf34828b3c16b0e5d10096046df4ba9020b43b",
+      "descriptor_sha256": "45260504ef3779429677713c1d9aecd2591cf3e082a53b7bfd57c0d81629a19f",
       "manifest_path": ".codex/plugins/cascade-prompt/.codex-plugin/plugin.json",
-      "manifest_sha256": "ff3e5b45af4e29db59b41922f982c84ab95ead28ec3545b4d2092e65bdc6de80",
+      "manifest_sha256": "b7e67df47aca25256ef535e57f523810ca21a767b06b0b1b3f358fce1275150e",
       "model_policy": {
         "evaluation_reasoning_effort": "high",
         "model": "gpt-6-astra",
@@ -52,13 +52,13 @@
           ]
         }
       ],
-      "version": "0.7.8+codex.20260910152813"
+      "version": "0.7.9+codex.20260910161119"
     },
     {
       "descriptor_path": ".codex/plugins/cascade-simulations/capabilities.yaml",
-      "descriptor_sha256": "8abe9ad92a5affa63e0244c4a220d0a400934b5cc61f337ce17d68fd07c240ba",
+      "descriptor_sha256": "c324953f6ae0e8f8df31ea62b2071c745989e77695fa660a2ecef4dc9aeeac45",
       "manifest_path": ".codex/plugins/cascade-simulations/.codex-plugin/plugin.json",
-      "manifest_sha256": "0c3afd9239771cea61351dd52ee5c2f9013aa42e94567fe6da3050a79700d7e8",
+      "manifest_sha256": "21a821669cd6e0f54cf1cbd6c47894d03571ad290dad2991aa97ae0655791d41",
       "model_policy": {
         "evaluation_reasoning_effort": "high",
         "model": "gpt-6-astra",
@@ -342,13 +342,13 @@
           ]
         }
       ],
-      "version": "0.2.6+codex.20260910152813"
+      "version": "0.2.8+codex.20260910162214"
     },
     {
       "descriptor_path": ".codex/plugins/cascade-evals/capabilities.yaml",
-      "descriptor_sha256": "bae8603717e97237ccb1bdc22d3e72bdc6b493c2237ec5cd005e5dc2ef0cb861",
+      "descriptor_sha256": "60352bbad407cbc0497e7a0819b6b9a04ca92b5366a8894fc3ce0f8a028540f8",
       "manifest_path": ".codex/plugins/cascade-evals/.codex-plugin/plugin.json",
-      "manifest_sha256": "77e7d1ba2784cdc70a2ef03e51cfb33557e00a2766127b20394759ab81d18980",
+      "manifest_sha256": "2f14778c2d0953b093a4a11f779734d1c7207c5708fa4275ae22da59023f2708",
       "model_policy": {
         "evaluation_reasoning_effort": "high",
         "model": "gpt-6-astra",
@@ -544,13 +544,13 @@
           ]
         }
       ],
-      "version": "0.3.12+codex.20260910152813"
+      "version": "0.3.17+codex.20260910163504"
     },
     {
       "descriptor_path": ".codex/plugins/cascade-ai-architect/capabilities.yaml",
-      "descriptor_sha256": "bb960355cd84072dc1b136e5de0b4dfd9b6663d72d4e82e5792a31b6cc9ae372",
+      "descriptor_sha256": "0e7f058f58751581380b2a3bc1a8e84a3f50a0941d7afb67ae61f537073a42b3",
       "manifest_path": ".codex/plugins/cascade-ai-architect/.codex-plugin/plugin.json",
-      "manifest_sha256": "adfc131b10c77aab064b6c7a58ec137edc9a171086f5a8883d89bd18a246a56a",
+      "manifest_sha256": "593a15ef26da3e6a4fd3ccb479e0fb07898f7b235d9595b76771bcf5daff5e39",
       "model_policy": {
         "evaluation_reasoning_effort": "high",
         "model": "gpt-6-astra",
@@ -876,13 +876,13 @@
           ]
         }
       ],
-      "version": "0.1.4+codex.20260910152813"
+      "version": "0.1.6+codex.20260910162214"
     },
     {
       "descriptor_path": ".codex/plugins/cascade-software-architect/capabilities.yaml",
-      "descriptor_sha256": "6bff72fcc880ae1d6c8b239b1a963191ccd26661fc45b9d37ef2a4cb6222b560",
+      "descriptor_sha256": "4db635b7c7588b9e85508e83f5a29466c9235490588430bf241d70f5e85a4347",
       "manifest_path": ".codex/plugins/cascade-software-architect/.codex-plugin/plugin.json",
-      "manifest_sha256": "aba3dd1910b50755566def3ee94238053390bea54fd72c53f6e560cb1a51285a",
+      "manifest_sha256": "7a0ae1f86de1b9f5f8a1bc6089b219f41c18a52ade2968c9f7b37d747630a671",
       "model_policy": {
         "evaluation_reasoning_effort": "high",
         "model": "gpt-6-astra",
@@ -1013,13 +1013,13 @@
           ]
         }
       ],
-      "version": "0.1.5+codex.20260910152813"
+      "version": "0.1.7+codex.20260910162214"
     },
     {
       "descriptor_path": ".codex/plugins/cascade-coding-agent/capabilities.yaml",
-      "descriptor_sha256": "0b940e976f21d2f99e8bb677b74ec97fa2ac77193dedc11aabfb1bf804e04817",
+      "descriptor_sha256": "24ee74211b32e4c8264d2dfd0e1ed147c628edf72284ce95bc6b6e367d4a548e",
       "manifest_path": ".codex/plugins/cascade-coding-agent/.codex-plugin/plugin.json",
-      "manifest_sha256": "17069a6a8eca76313eb6585eb8601b4ede3015973bd9c5fcf98183395c618f19",
+      "manifest_sha256": "0d2c01b2d2115d9447dc1c2885cbc1519a263338abba1896670a69564afc8e26",
       "model_policy": {
         "evaluation_reasoning_effort": "high",
         "model": "gpt-6-astra",
@@ -1164,13 +1164,13 @@
           ]
         }
       ],
-      "version": "0.2.3+codex.20260910152813"
+      "version": "0.2.5+codex.20260910162214"
     },
     {
       "descriptor_path": ".codex/plugins/cascade-personas/capabilities.yaml",
-      "descriptor_sha256": "6293b0b643f21752d3c886c973879c62dee6e9e4a7e5d671ec6691ce2b4dabef",
+      "descriptor_sha256": "f4f267ca1f508277934333604860f16daaa7cab87e7117315d1ef9d8a94d8777",
       "manifest_path": ".codex/plugins/cascade-personas/.codex-plugin/plugin.json",
-      "manifest_sha256": "fc5ac624f5de30d0318d954be9845785ccf9a3975707da70f9e46af695561100",
+      "manifest_sha256": "928bee4471a4dcfd98320d237968e3804263bf60fa2da862f2149ab05e8a2d52",
       "model_policy": {
         "evaluation_reasoning_effort": "high",
         "model": "gpt-6-astra",
@@ -1277,13 +1277,13 @@
           ]
         }
       ],
-      "version": "0.1.23+codex.20260910152813"
+      "version": "0.1.28+codex.20260910163504"
     },
     {
       "descriptor_path": ".codex/plugins/cascade-product/capabilities.yaml",
-      "descriptor_sha256": "0a5c294e6b408848622844e3010f4d1e1ccfedf0a2bc70be72842d3a6f28054a",
+      "descriptor_sha256": "cf0a4348dd80c3119b3df61e1b40adf5bb75f6d0b59184d39f7308559b94ee18",
       "manifest_path": ".codex/plugins/cascade-product/.codex-plugin/plugin.json",
-      "manifest_sha256": "9fb0cf3341c8bba1b702d634dec4d39bb7f15aa1657eaec1b1f3d220a6c5063d",
+      "manifest_sha256": "e0f465185ce1c5c1deb73e2431f46eb79c23a501dbabbb401684c8909063363a",
       "model_policy": {
         "evaluation_reasoning_effort": "high",
         "model": "gpt-6-astra",
@@ -1410,13 +1410,13 @@
           ]
         }
       ],
-      "version": "0.1.27+codex.20260910152813"
+      "version": "0.1.32+codex.20260910163504"
     },
     {
       "descriptor_path": ".codex/plugins/cascade-market/capabilities.yaml",
-      "descriptor_sha256": "4aff6e4cb9b40bf34117b41bf30accc356dede1c74dd7ac5f2247ce2f5e6cc8d",
+      "descriptor_sha256": "a7ea7d72258ac7173b70eb4b8c9d37e74a766d16dae3a83357f6bd54f07cebcb",
       "manifest_path": ".codex/plugins/cascade-market/.codex-plugin/plugin.json",
-      "manifest_sha256": "fbcc19387e7eb072e6224fdadd149e6ef4ffd6affbdbeab15d468a9b6b35a221",
+      "manifest_sha256": "6e840fbba84680707a5e9e167bdf2ee234f6fba60ae029baab8926fba3236b47",
       "model_policy": {
         "evaluation_reasoning_effort": "high",
         "model": "gpt-6-astra",
@@ -1617,13 +1617,13 @@
           ]
         }
       ],
-      "version": "0.2.3+codex.20260910152813"
+      "version": "0.2.8+codex.20260910163504"
     },
     {
       "descriptor_path": ".codex/plugins/cascade-design/capabilities.yaml",
-      "descriptor_sha256": "a484058e628d9e438fd5267c90c8c1cbe6d4ad5707a606fb65d4452ac9558a41",
+      "descriptor_sha256": "bf61a8cd1834966bab5c3f2b15e444dfefd64dd31a835d5d40f3ff20c3137ae9",
       "manifest_path": ".codex/plugins/cascade-design/.codex-plugin/plugin.json",
-      "manifest_sha256": "6e847af8bc47c1480253062c1a6f83dce8d0304f193b53fb4a7a716ce8dc80c8",
+      "manifest_sha256": "26adafce59a3319e3aea6ccf481fc6913a5179a6bc3ca577b18e92737a6e2516",
       "model_policy": {
         "evaluation_reasoning_effort": "high",
         "model": "gpt-6-astra",
@@ -1803,13 +1803,13 @@
           ]
         }
       ],
-      "version": "0.1.4+codex.20260910152813"
+      "version": "0.1.9+codex.20260910163504"
     },
     {
       "descriptor_path": ".codex/plugins/cascade-security/capabilities.yaml",
-      "descriptor_sha256": "650a64d0ab6e32c0ca9a361a1ba3348906b92304f3312a659dd9cb097de4fb61",
+      "descriptor_sha256": "4066bc6de61667b0ae6700b82a93e2728f457b477fc5dc10e9fbcd249fc8d43b",
       "manifest_path": ".codex/plugins/cascade-security/.codex-plugin/plugin.json",
-      "manifest_sha256": "c98bc1ba1a5ffc772bf085d5f3ce1fe61cdc666fa4d93b96f23e4ab8831e2c20",
+      "manifest_sha256": "6440fa4a1cc69064ca2ebc9339c296a1bfaa2458bd03d7d989f3aea843163a3f",
       "model_policy": {
         "evaluation_reasoning_effort": "high",
         "model": "gpt-6-astra",
@@ -1917,13 +1917,13 @@
           ]
         }
       ],
-      "version": "0.1.3+codex.20260910152813"
+      "version": "0.1.9+codex.20260910164220"
     },
     {
       "descriptor_path": ".codex/plugins/cascade-project-management/capabilities.yaml",
-      "descriptor_sha256": "a7c79009ed4f31672e0bf62a10f9ba4f305c618ee2dcc4ae523a92cdb2dc022e",
+      "descriptor_sha256": "b0baac85f9eaadcba9da54b3a1c6d1d729404888a387a2e590c07ce68ef520c8",
       "manifest_path": ".codex/plugins/cascade-project-management/.codex-plugin/plugin.json",
-      "manifest_sha256": "07f3bcc93fd462d2d93e9aecdb33285ed0f7746e7edf27f02de7262203d3c071",
+      "manifest_sha256": "a881d5ae20bc9dd6dc95f0136e73d9329ffcdc2e34d56cc6b82d030cbe614ab5",
       "model_policy": {
         "evaluation_reasoning_effort": "high",
         "model": "gpt-6-astra",
@@ -2069,13 +2069,13 @@
           ]
         }
       ],
-      "version": "0.1.3+codex.20260910152813"
+      "version": "0.1.8+codex.20260910163504"
     },
     {
       "descriptor_path": ".codex/plugins/cascade-qa/capabilities.yaml",
-      "descriptor_sha256": "03ecb3173dda4b7cecd0ee7ebd03a252d7ebf039ce110cd1adda189a664fdd9b",
+      "descriptor_sha256": "010b6eebdb3643be3b1e317acfef970cae057d1a51b5c3e95ea6453404624da1",
       "manifest_path": ".codex/plugins/cascade-qa/.codex-plugin/plugin.json",
-      "manifest_sha256": "bc92bf497495eeeadbb614014b1f087e5b26785601064ff9d01f1aa9cc9a9a51",
+      "manifest_sha256": "5f622cdc0f78542473fe05021aa63bfb1caae5220ef7246541028c49541db35e",
       "model_policy": {
         "evaluation_reasoning_effort": "high",
         "model": "gpt-6-astra",
@@ -2208,13 +2208,13 @@
           ]
         }
       ],
-      "version": "0.1.3+codex.20260910152813"
+      "version": "0.1.8+codex.20260910163504"
     },
     {
       "descriptor_path": ".codex/plugins/cascade-coordinator/capabilities.yaml",
-      "descriptor_sha256": "6d94b950f7aca0a2be7f3fea208f954be2baddf70d831ab7f9e29485b4da95ad",
+      "descriptor_sha256": "2429aedd6952d054cc6369c69e8279b80ac3b2487226b6fce024b763fd092306",
       "manifest_path": ".codex/plugins/cascade-coordinator/.codex-plugin/plugin.json",
-      "manifest_sha256": "7a2e0c5d7417f314f40f958e99ea5b39e2c2dea211849148ad862d16577069fa",
+      "manifest_sha256": "107a8132c824cf933b9f87d63697283f7829a81229960b606eeb8e4710a1116a",
       "model_policy": {
         "evaluation_reasoning_effort": "high",
         "model": "gpt-6-astra",
@@ -2300,7 +2300,7 @@
           ]
         }
       ],
-      "version": "0.1.2+codex.20260910152813"
+      "version": "0.1.4+codex.20260910162214"
     }
   ],
   "schema_version": 1

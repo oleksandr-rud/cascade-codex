@@ -51,6 +51,15 @@ output instead of silently following stale docs.
 2. Run or reproduce a local stack inventory. Prefer the bundled read-only
    helper at `scripts/security_stack_scan.ts`, resolved relative to this skill
    directory: `bun <skill-root>/scripts/security_stack_scan.ts <target-root>`.
+   Copy scanner, count and truncation only from a complete observed or supplied
+   inventory receipt. Unknown truncation is not `true` or proof of completeness.
+   If a supplied receipt omits a required measurement and a scan cannot be
+   reproduced, defer the inventory: use `scanner: not-run`, `scanned_files: 0`
+   and `truncated: false` for the unperformed replacement scan, explicitly
+   scoped as such. Preserve all supplied scan claims separately in sources or
+   findings, state the missing measurement, request a complete receipt, and
+   return GAP or BLOCKED. These empty-scan values never describe the supplied
+   scan or establish repository coverage.
 3. Pick only the trajectories relevant to the request.
 4. For each trajectory, create a spec using
    `templates/trajectory-spec.md` and the checklist in

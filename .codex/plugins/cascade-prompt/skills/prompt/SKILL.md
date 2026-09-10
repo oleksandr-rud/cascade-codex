@@ -184,8 +184,12 @@ source authority, safety, or output behavior.
 ### 4. Construct and audit once
 
 Only after readiness, use useful prompt sections. Delimit untrusted input with
-placeholders such as `{{SOURCE_TEXT}}`. Request concise evidence or validation,
-not hidden chain-of-thought.
+placeholders such as `{{SOURCE_TEXT}}`. Insert each full input placeholder only
+once by default, inside its data boundary; refer to the named block elsewhere.
+Repeating a variable in introductory prose duplicates its payload at substitution.
+Repeat full input only when the requested algorithm needs separate copies, and
+account for that context cost. Request concise evidence or validation, not hidden
+chain-of-thought.
 Keep prompt text separate from host settings such as chat templates, reasoning,
 sampling, output parsers and tool declarations. Describe unsupported controls
 as a surface gap; never pretend prose enables them or that a prompt switches

@@ -23,7 +23,9 @@ Templates are starting points, not extra mandatory sections. Fill resolved
 variables from the request and omit irrelevant blocks. Unresolved material
 schema, authority or decision rules still follow the intake gate. Expose
 remaining source placeholders in Variables to Fill; never invent content.
-Merge overlapping obligations rather than repeating template prose. Keep the
+Insert each full source/history placeholder once unless separate copies are
+required by the resolved task; use block names for later references. Merge
+overlapping obligations rather than repeating template prose. Keep the
 requested output shape; otherwise require the shortest useful answer with
 necessary evidence and gaps. Internal source ledgers and validation steps are
 not automatic user-facing sections or separate attachments.
