@@ -58,7 +58,9 @@ export function cascadeHelpText(): string {
 Usage:
   cascade closeout <snapshot|check|path>
   cascade validate
-  cascade eval <catalog|audit|run|evaluate|judge|coverage|self-test>
+  cascade eval <catalog|prepare|audit|run|evaluate|judge|coverage|closeout|self-test>
+    prepare --file DRAFT; run --suite FILE or focused filters (--all for core)
+    coverage [--suite FILE]; closeout --suite FILE (cleanup proposal only)
     judge --run-dir <path> [--judge-profile <required-profile-id>]
     Judge results are PASS only when every required profile accepts; partial
     profiles are INCOMPLETE. Existing valid judgments are retained on resume.

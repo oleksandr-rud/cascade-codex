@@ -34,8 +34,7 @@ import { runAdmissionCorpus } from "./admission";
 import { buildPluginCapabilityCatalog } from "./plugin-workflow";
 
 const EVAL_ROOT = rootPath("harness-evals");
-const CASE_SOURCE = resolve(EVAL_ROOT, "skill-cases.yaml");
-const INTERACTION_SOURCE = resolve(EVAL_ROOT, "interactions.yaml");
+const CORE_SOURCE = resolve(EVAL_ROOT, "core-cases.yaml");
 const AGENT_CASE_SOURCE = resolve(EVAL_ROOT, "agent-outcomes.yaml");
 const CATALOG_PATH = resolve(EVAL_ROOT, "scenarios.generated.json");
 const OUTPUT_SCHEMA = resolve(EVAL_ROOT, "response.schema.json");
@@ -46,15 +45,6 @@ const PLANNING_MODEL = "gpt-6-astra";
 const EXECUTION_MODEL = "gpt-6-astra";
 const JUDGE_MODEL = "gpt-6-astra";
 const STATUS_VALUES = new Set(["PASS", "FAIL", "BLOCKED", "GAP", "NOT_RUN"]);
-const KIND_SUFFIX: Record<string, string> = {
-  "implicit-trigger": "implicit",
-  "explicit-trigger": "explicit",
-  "near-miss": "near-miss",
-  "missing-precondition": "missing",
-  guardrail: "guardrail",
-  "output-contract": "output",
-  handoff: "handoff",
-};
 const REQUIRED_RESPONSE_KEYS = new Set([
   "scenario_id",
   "primary_skill",
@@ -233,14 +223,12 @@ function interactionScenario(item: JsonObject, contracts: Map<string, JsonObject
       maxLoadedSkills: item.max_loaded_skills,
       maxLoadedRoles: item.max_loaded_roles,
     }),
-    source: "harness-evals/interactions.yaml",
+    source: "harness-evals/core-cases.yaml",
   };
 }
 
 export async function generateCatalog(): Promise<JsonObject> {
-  const cases = (await readStructured<JsonObject>(CASE_SOURCE, rel(CASE_SOURCE))).skills ?? [];
-  const interactions =
-    (await readStructured<JsonObject>(INTERACTION_SOURCE, rel(INTERACTION_SOURCE))).interactions ?? [];
+  const core = (await readStructured<JsonObject>(CORE_SOURCE, rel(CORE_SOURCE))).scenarios ?? [];
   const agentCases = (await readStructured<JsonObject>(AGENT_CASE_SOURCE, rel(AGENT_CASE_SOURCE))).agents ?? [];
   const discovered = await skillPaths();
   const contracts = await agentContracts();
@@ -250,26 +238,6 @@ export async function generateCatalog(): Promise<JsonObject> {
   const unassigned = pluginCatalog.plugins.flatMap((plugin) => plugin.skills.map((skill) => skill.route))
     .filter((route) => !assigned.has(route));
   if (unassigned.length) throw new CascadeError(`plugin skills lack a host role: ${unassigned.join(", ")}`);
-  const bySkill = new Map<string, JsonObject>();
-  const duplicates: string[] = [];
-  for (const item of cases) {
-    if (bySkill.has(item.skill)) duplicates.push(item.skill);
-    bySkill.set(item.skill, item);
-  }
-  const missing = [...discovered.keys()].filter((key) => !bySkill.has(key));
-  const extra = [...bySkill.keys()].filter((key) => !discovered.has(key));
-  if (duplicates.length || missing.length || extra.length) {
-    throw new CascadeError(
-      `skill case registry mismatch: duplicates=${duplicates} missing=${missing} extra=${extra}`,
-    );
-  }
-  for (const item of cases) {
-    const contract = contracts.get(item.owner);
-    if (!contract) throw new CascadeError(`skill ${item.skill} has unknown owner ${item.owner}`);
-    if (!contract.skills.has(item.skill)) {
-      throw new CascadeError(`skill ${item.skill} is not wired to owner ${item.owner}`);
-    }
-  }
   const byAgent = new Map<string, JsonObject>();
   const duplicateAgents: string[] = [];
   for (const item of agentCases) {
@@ -283,53 +251,8 @@ export async function generateCatalog(): Promise<JsonObject> {
       `agent outcome registry mismatch: duplicates=${duplicateAgents} missing=${missingAgents} extra=${extraAgents}`,
     );
   }
-  const scenarios: JsonObject[] = [];
-  for (const skill of [...bySkill.keys()].sort()) {
-    const item = bySkill.get(skill)!;
-    const add = (kind: string, prompt: string, expected: JsonObject): void => {
-      scenarios.push({
-        id: `HS-${skill}-${KIND_SUFFIX[kind]}`,
-        kind,
-        target_skill: skill,
-        owner: item.owner,
-        prompt,
-        expectation: expected,
-        source: "harness-evals/skill-cases.yaml",
-      });
-    };
-    add("implicit-trigger", item.implicit, expectation(skill, skill));
-    add(
-      "explicit-trigger",
-      `Use the \`${skill}\` skill. ${item.implicit}`,
-      expectation(skill, skill),
-    );
-    add(
-      "near-miss",
-      item.near_miss.prompt,
-      expectation(item.near_miss.expected_primary, skill, {
-        forbiddenPrimary: [skill],
-      }),
-    );
-    add(
-      "missing-precondition",
-      item.missing,
-      expectation(skill, skill, { statuses: ["BLOCKED", "GAP"] }),
-    );
-    add("guardrail", item.guardrail, expectation(skill, skill));
-    add(
-      "output-contract",
-      `Use the \`${skill}\` skill for this case and return its documented output contract with source evidence and an explicit next route. ${item.implicit}`,
-      expectation(skill, skill),
-    );
-    add(
-      "handoff",
-      item.handoff.prompt,
-      expectation(skill, skill, { nextRoute: item.handoff.next_route }),
-    );
-  }
-  for (const item of interactions) {
-    scenarios.push(interactionScenario(item, contracts));
-  }
+  await validateScenarios(core, true);
+  const scenarios: JsonObject[] = [...core];
   for (const agent of [...byAgent.keys()].sort()) {
     const item = byAgent.get(agent)!;
     const contract = contracts.get(agent)!;
@@ -397,6 +320,7 @@ export async function generateCatalog(): Promise<JsonObject> {
         maxOutputChars: item.max_output_chars,
       }),
       source: "harness-evals/agent-outcomes.yaml",
+      risk: `Role baseline: ${agent} source loading, ownership, output and evidence boundaries.`,
     });
   }
   if (new Set(scenarios.map((item) => item.id)).size !== scenarios.length) {
@@ -434,6 +358,7 @@ export async function harnessSourceManifest(): Promise<JsonObject> {
     ".codex/harness-tooling/bun.lock",
     "scripts/cascade.ts",
     "harness-evals/response.schema.json",
+    "harness-evals/task-suite.schema.json",
     "harness-evals/judge-response.schema.json",
     "harness-evals/judge-profiles.yaml",
     "harness-evals/task-admission/case.schema.json",
@@ -453,6 +378,155 @@ export async function harnessSourceManifest(): Promise<JsonObject> {
     if (await isFile(path)) records.push({ path: rel(path), sha256: await sha256File(path) });
   }
   return { schema_version: 1, digest: valueDigest(records), files: records };
+}
+
+async function validateScenarios(scenarios: JsonObject[], core = false): Promise<void> {
+  if (!Array.isArray(scenarios) || !scenarios.length) throw new CascadeError("empty scenario set");
+  const skills = new Set(await knownSkills());
+  const contracts = await agentContracts();
+  const ids = new Set<string>();
+  const prompts = new Set<string>();
+  const risks = new Set<string>();
+  for (const scenario of scenarios) {
+    const e = scenario.expectation;
+    const prompt = String(scenario.prompt ?? "").trim().replace(/\s+/g, " ");
+    if (!/^[A-Za-z0-9][A-Za-z0-9_-]{0,119}$/.test(scenario.id ?? "") || ids.has(scenario.id)
+      || !prompt || prompts.has(prompt) || !String(scenario.risk ?? "").trim() || risks.has(scenario.risk)) {
+      throw new CascadeError("scenario requires a unique safe ID, distinct prompt and explicit risk");
+    }
+    ids.add(scenario.id); prompts.add(prompt); risks.add(scenario.risk);
+    if (!contracts.has(scenario.owner) || !skills.has(scenario.target_skill) || !e
+      || !skills.has(e.primary_skill) || e.target_skill !== scenario.target_skill
+      || !Array.isArray(e.status_any) || !e.status_any.length || e.status_any.some((s: string) => !STATUS_VALUES.has(s))
+      || !Array.isArray(e.must_load_skills) || !e.must_load_skills.includes(e.primary_skill)
+      || !Array.isArray(e.allowed_supporting) || e.allowed_supporting.some((s: string) => !skills.has(s))
+      || !Array.isArray(e.forbidden_primary) || e.forbidden_primary.includes(e.primary_skill)
+      || e.forbidden_primary.some((s: string) => !skills.has(s))
+      || (e.next_route && !routeSequence(e.next_route, [...skills]).length)
+      || ["mutation_policy", "network_policy", "delegation_policy"].some((key) => e[key] !== "none")) {
+      throw new CascadeError(`invalid scenario contract: ${scenario.id}`);
+    }
+    if ((!core || e.must_load_roles?.length) && !contracts.get(scenario.owner)!.all_skills.has(e.primary_skill)) {
+      throw new CascadeError(`scenario route is not wired to owner: ${scenario.id}`);
+    }
+  }
+}
+
+async function readSuite(file: string): Promise<JsonObject> {
+  const path = boundedPath(file, ".artifacts/harness-evals/suites/");
+  if (!path.endsWith(".json")) throw new CascadeError("suite must be a frozen JSON file");
+  const suite = await readJson<JsonObject>(path);
+  const { digest, ...body } = suite;
+  if (suite.schema_version !== 1 || suite.lifecycle !== "temporary" || digest !== valueDigest(body)
+    || !suite.task_id || !suite.purpose || !/^[a-f0-9]{64}$/.test(suite.harness_source_digest ?? "")) {
+    throw new CascadeError("invalid frozen temporary suite");
+  }
+  await validateScenarios(suite.scenarios);
+  return suite;
+}
+
+function suiteRunDirectory(file: string): string {
+  const path = boundedPath(file, ".artifacts/harness-evals/suites/");
+  return resolve(dirname(path), basename(path, ".json"), "runs");
+}
+
+async function commandPrepare(args: ReturnType<typeof parseArgs>): Promise<number> {
+  const draft = await readStructured<JsonObject>(boundedPath(flag(args, "file") ?? ""), "task eval draft");
+  assertJsonSchema(draft, await readJson<JsonObject>(resolve(EVAL_ROOT, "task-suite.schema.json")), "task eval draft");
+  const contracts = await agentContracts();
+  const scenarios = draft.cases.map((item: JsonObject) => ({
+    ...interactionScenario(item, contracts), kind: "task-case", risk: item.risk,
+    source: `temporary:${draft.task_id}`,
+  }));
+  await validateScenarios(scenarios);
+  const body = {
+    schema_version: 1, lifecycle: "temporary", task_id: draft.task_id, purpose: draft.purpose,
+    frozen_at: utcNow(), harness_source_digest: (await harnessSourceManifest()).digest, scenarios,
+  };
+  const digest = valueDigest(body);
+  const path = resolve(ARTIFACT_ROOT, "suites", `${draft.task_id}-${digest.slice(0, 12)}.json`);
+  await mkdir(dirname(path), { recursive: true });
+  await writeFile(path, JSON.stringify({ ...body, digest }, null, 2) + "\n", { flag: "wx" });
+  console.log(`suite_frozen=${rel(path)} cases=${scenarios.length} digest=${digest}`);
+  return 0;
+}
+
+async function evaluationCatalog(file?: string): Promise<JsonObject> {
+  if (!file) return generateCatalog();
+  const suite = await readSuite(file);
+  if (suite.harness_source_digest !== (await harnessSourceManifest()).digest) {
+    throw new CascadeError("temporary suite sources changed; prepare a new suite before execution");
+  }
+  return { scenarios: suite.scenarios, catalog_digest: valueDigest(suite.scenarios),
+    suite: { path: rel(boundedPath(file)), digest: suite.digest } };
+}
+
+async function runCatalog(metadata: JsonObject): Promise<JsonObject> {
+  const catalog = await evaluationCatalog(metadata.suite?.path);
+  if (metadata.suite && stableJson(metadata.suite) !== stableJson(catalog.suite)) {
+    throw new CascadeError("run is bound to a different frozen suite");
+  }
+  return catalog;
+}
+
+// Advisory only: never delete files, hide failed attempts or launch judges at closeout.
+async function temporaryCloseout(file: string): Promise<JsonObject> {
+  const suite = await readSuite(file);
+  const suitePath = rel(boundedPath(file));
+  const keep: JsonObject[] = [];
+  const runs: string[] = [];
+  const passed = new Set<string>();
+  const required = await requiredProfiles();
+  if (!required.length) throw new CascadeError("required judge profiles are empty");
+  const manifest = await harnessSourceManifest();
+  if (suite.harness_source_digest !== manifest.digest) keep.push({ path: suitePath, reason: "stale sources; review before cleanup" });
+  const directory = suiteRunDirectory(file);
+  for (const name of await isDirectory(directory) ? await readdir(directory) : []) {
+    const path = resolve(directory, name);
+    if (!(await isDirectory(path))) continue;
+    let metadata: JsonObject;
+    try { metadata = await readJson<JsonObject>(resolve(path, "run.json")); }
+    catch { keep.push({ path: rel(path), reason: "unreadable run identity; ownership cannot be established" }); continue; }
+    runs.push(rel(path));
+    try {
+      if (await exists(resolve(path, ".judge-lock"))) throw new CascadeError("judging is active");
+      if (metadata.suite?.path !== suitePath || metadata.suite?.digest !== suite.digest || metadata.harness_source_digest !== suite.harness_source_digest) throw new CascadeError("suite or source binding differs");
+      const selected = await readJson<JsonObject[]>(resolve(path, "selected-scenarios.json"));
+      const repetitions = metadata.repetitions;
+      if (!selected.length || !Number.isInteger(repetitions) || repetitions < 1) throw new CascadeError("incomplete run contract");
+      const ids = selected.map((s) => s.id);
+      if (new Set(ids).size !== ids.length || stableJson(ids) !== stableJson(metadata.scenario_ids)) throw new CascadeError("selected cases differ from run identity");
+      const expectedCases = selected.flatMap((s) => Array.from({ length: repetitions }, (_, index) =>
+        repetitions > 1 ? `${s.id}-r${String(index + 1).padStart(2, "0")}` : s.id)).sort();
+      if (stableJson((await readdir(resolve(path, "cases"))).sort()) !== stableJson(expectedCases)) throw new CascadeError("unaccounted or missing case evidence; preserve the run");
+      const summary = await readJson<JsonObject>(resolve(path, "summary.json"));
+      if (!summary.completed_at || summary.eligibilities?.length !== selected.length * repetitions) throw new CascadeError("run is incomplete");
+      for (const scenario of selected) {
+        if (stableJson(scenario) !== stableJson(suite.scenarios.find((item: JsonObject) => item.id === scenario.id))) throw new CascadeError("scenario changed");
+        for (let r = 1; r <= repetitions; r++) {
+          const caseName = repetitions > 1 ? `${scenario.id}-r${String(r).padStart(2, "0")}` : scenario.id;
+          const target = await recordedTarget(path, caseName, scenario, metadata);
+          const results = await recordedJudgments(path, caseName, scenario, metadata, target, required);
+          const [accepted] = acceptedCandidate(target.eligibility, Object.fromEntries(results.map((j) => [j.judge_profile_id, j])), required);
+          if (!accepted) throw new CascadeError("failed, blocked or unjudged case; triage and consider a permanent regression");
+        }
+        passed.add(scenario.id);
+      }
+    } catch (error) { keep.push({ path: rel(path), reason: String(error) }); }
+  }
+  const unverified = suite.scenarios.filter((s: JsonObject) => !passed.has(s.id)).map((s: JsonObject) => s.id);
+  if (unverified.length) keep.push({ path: suitePath, reason: `unverified cases: ${unverified.join(", ")}` });
+  if (manifest.digest !== (await harnessSourceManifest()).digest || (await readSuite(file)).digest !== suite.digest) {
+    keep.push({ path: suitePath, reason: "sources or suite changed during cleanup review" });
+  }
+  return { task_id: suite.task_id, action: "PROPOSE_ONLY", review_required: true,
+    delete_candidates: keep.length ? [] : [suitePath, ...runs], keep,
+    note: "Before authorizing deletion, retain a minimal unique regression for any discovered defect. No files were deleted; no core cases or campaign receipts are cleanup targets." };
+}
+
+async function commandCloseout(args: ReturnType<typeof parseArgs>): Promise<number> {
+  console.log(JSON.stringify(await temporaryCloseout(flag(args, "suite") ?? ""), null, 2));
+  return 0;
 }
 
 export async function resolveCascadeHarnessProfile(input: {
@@ -1211,7 +1285,8 @@ function selectScenarios(catalog: JsonObject, args: ReturnType<typeof parseArgs>
   if (kinds.size) selected = selected.filter((item) => kinds.has(item.kind));
   if (agents.size) selected = selected.filter((item) => agents.has(item.owner));
   const limit = Number(flag(args, "limit"));
-  return Number.isFinite(limit) && limit > 0 ? selected.slice(0, limit) : selected;
+  if (flag(args, "limit") !== undefined && (!Number.isInteger(limit) || limit < 1)) throw new CascadeError("limit must be a positive integer");
+  return flag(args, "limit") !== undefined ? selected.slice(0, limit) : selected;
 }
 
 function scenarioExecution(
@@ -1236,10 +1311,13 @@ function scenarioExecution(
 }
 
 async function commandRun(args: ReturnType<typeof parseArgs>): Promise<number> {
-  const expected = await generateCatalog();
-  const current = await readJson<JsonObject>(CATALOG_PATH);
-  if (stableJson(expected) !== stableJson(current)) {
+  const suiteFile = flag(args, "suite");
+  const current = await evaluationCatalog(suiteFile);
+  if (!suiteFile && stableJson(current) !== stableJson(await readJson<JsonObject>(CATALOG_PATH))) {
     throw new CascadeError("generated catalog is stale; run eval catalog --write");
+  }
+  if (!suiteFile && !boolFlag(args, "all") && !["scenario", "skill", "case-kind", "agent", "limit"].some((key) => flag(args, key))) {
+    throw new CascadeError("select focused cases, use --suite FILE, or explicitly request the core with --all");
   }
   const selected = selectScenarios(current, args);
   if (!selected.length) throw new CascadeError("no scenarios matched");
@@ -1249,7 +1327,9 @@ async function commandRun(args: ReturnType<typeof parseArgs>): Promise<number> {
   const runId =
     flag(args, "run-id") ??
     new Date().toISOString().replace(/[-:]/g, "").replace(/\.\d{3}/, "");
-  const runRoot = resolve(ARTIFACT_ROOT, runId);
+  if (!/^[A-Za-z0-9][A-Za-z0-9_-]{0,159}$/.test(runId) || runId === "suites") throw new CascadeError("invalid run ID");
+  if (!Number.isInteger(repetitions) || repetitions < 1 || !Number.isFinite(timeout) || timeout <= 0) throw new CascadeError("invalid repetitions or timeout");
+  const runRoot = resolve(suiteFile ? suiteRunDirectory(suiteFile) : ARTIFACT_ROOT, runId);
   if (await exists(runRoot)) throw new CascadeError(`run directory exists: ${rel(runRoot)}`);
   await mkdir(runRoot, { recursive: true });
   const manifest = await harnessSourceManifest();
@@ -1265,6 +1345,7 @@ async function commandRun(args: ReturnType<typeof parseArgs>): Promise<number> {
     run_id: runId,
     started_at: utcNow(),
     catalog_digest: current.catalog_digest,
+    ...(current.suite ? { suite: current.suite } : {}),
     harness_source_digest: manifest.digest,
     model: uniform("model"),
     model_profile: uniform("model_profile"),
@@ -1301,7 +1382,7 @@ async function commandRun(args: ReturnType<typeof parseArgs>): Promise<number> {
       );
       await writeJson(resolve(caseRoot, "command.json"), {
         argv: [...command.slice(0, -1), "<prompt-in-prompt.txt>"],
-        replay: `bun scripts/cascade.ts eval run --scenario ${scenario.id} --model ${execution.model} --reasoning-effort ${execution.reasoning_effort}`,
+        replay: `bun scripts/cascade.ts eval run${suiteFile ? ` --suite ${JSON.stringify(rel(boundedPath(suiteFile)))}` : ""} --scenario ${scenario.id} --model ${execution.model} --reasoning-effort ${execution.reasoning_effort}`,
       });
       console.log(`[${counter}/${selected.length * repetitions}] running ${caseName}`);
       const result = await runCommand(command, {
@@ -1490,7 +1571,7 @@ async function commandJudge(args: ReturnType<typeof parseArgs>): Promise<number>
   const metadata = await readJson<JsonObject>(resolve(runRoot, "run.json"));
   if (metadata.harness_source_digest !== (await harnessSourceManifest()).digest) throw new CascadeError("judge run sources are stale");
   const selected = await readJson<JsonObject[]>(resolve(runRoot, "selected-scenarios.json"));
-  const currentScenarios = new Map((await generateCatalog()).scenarios.map((item: JsonObject) => [item.id, item]));
+  const currentScenarios = new Map((await runCatalog(metadata)).scenarios.map((item: JsonObject) => [item.id, item]));
   if (selected.some((item) => stableJson(item) !== stableJson(currentScenarios.get(item.id)))) {
     throw new CascadeError("judge scenario definition is stale or unknown");
   }
@@ -1539,7 +1620,7 @@ async function commandJudge(args: ReturnType<typeof parseArgs>): Promise<number>
       judgments.push(...await recordedJudgments(runRoot, caseName, scenario, metadata, target, required));
     }
     if (metadata.harness_source_digest !== (await harnessSourceManifest()).digest) throw new CascadeError("sources changed during judging");
-    const latestScenarios = new Map((await generateCatalog()).scenarios.map((item: JsonObject) => [item.id, item]));
+    const latestScenarios = new Map((await runCatalog(metadata)).scenarios.map((item: JsonObject) => [item.id, item]));
     if (selected.some((item) => stableJson(item) !== stableJson(latestScenarios.get(item.id)))) {
       throw new CascadeError("scenario definition changed during judging");
     }
@@ -1555,7 +1636,7 @@ async function commandJudge(args: ReturnType<typeof parseArgs>): Promise<number>
 }
 
 async function commandCoverage(args: ReturnType<typeof parseArgs>): Promise<number> {
-  const catalog = await generateCatalog();
+  const catalog = await evaluationCatalog(flag(args, "suite"));
   const manifest = await harnessSourceManifest();
   const required = await requiredProfiles();
   if (!required.length) throw new CascadeError("required judge profiles are empty");
@@ -1568,12 +1649,14 @@ async function commandCoverage(args: ReturnType<typeof parseArgs>): Promise<numb
   const currentScenarios = new Map(
     catalog.scenarios.map((scenario: JsonObject) => [scenario.id, scenario]),
   );
-  if (await isDirectory(ARTIFACT_ROOT)) {
-    for (const name of await readdir(ARTIFACT_ROOT)) {
-      const runRoot = resolve(ARTIFACT_ROOT, name);
+  const directory = catalog.suite ? suiteRunDirectory(catalog.suite.path) : ARTIFACT_ROOT;
+  if (await isDirectory(directory)) {
+    for (const name of await readdir(directory)) {
+      const runRoot = resolve(directory, name);
       if (!(await isDirectory(runRoot))) continue;
       try {
         const metadata = await readJson<JsonObject>(resolve(runRoot, "run.json"));
+        if (stableJson(metadata.suite ?? null) !== stableJson(catalog.suite ?? null)) continue;
         const source = await readJson<JsonObject>(resolve(runRoot, "source-manifest.json"));
         const summary = await readJson<JsonObject>(resolve(runRoot, "summary.json"));
         const selected = await readJson<JsonObject[]>(resolve(runRoot, "selected-scenarios.json"));
@@ -1621,6 +1704,7 @@ async function commandCoverage(args: ReturnType<typeof parseArgs>): Promise<numb
     schema_version: 1,
     generated_at: utcNow(),
     catalog_digest: catalog.catalog_digest,
+    scope: catalog.suite ? "temporary-suite" : "core",
     harness_source_digest: manifest.digest,
     total: values.length,
     executed: values.filter((item) => item.executed).length,
@@ -1694,16 +1778,35 @@ function syntheticTrace(
 
 // Frozen synthetic packets exercise the real judge lifecycle without a model call.
 async function judgeLifecycleSelfTest(scenario: JsonObject, required: JsonObject[]): Promise<[boolean, string][]> {
-  const parent = rootPath(".artifacts/eval-fixtures");
+  const parent = resolve(ARTIFACT_ROOT, "suites");
   await mkdir(parent, { recursive: true });
-  const runRoot = await mkdtemp(resolve(parent, "judge-lifecycle-"));
+  const fixtureRoot = await mkdtemp(resolve(parent, "judge-lifecycle-"));
+  const suitePath = resolve(fixtureRoot, "suite.json");
+  const runRoot = resolve(suiteRunDirectory(suitePath), "fixture");
+  await mkdir(runRoot, { recursive: true });
+  const preparedPaths: string[] = [];
   const assertions: [boolean, string][] = [];
   const rejects = async (action: () => Promise<unknown>): Promise<boolean> => {
     try { await action(); return false; } catch { return true; }
   };
   try {
+    const draftPath = resolve(runRoot, "draft.json");
+    const draft = { schema_version: 1, task_id: basename(fixtureRoot).toLowerCase(), purpose: "Synthetic prepare validation",
+      cases: [{ id: "HT-context", risk: "Missing repository context", owner: "orchestrator", expected_primary: "context",
+        prompt: "Recover current task context. Repository access is unavailable; report the gap.", status_any: ["GAP", "BLOCKED"] }] };
+    await writeJson(draftPath, draft);
+    await commandPrepare(parseArgs(["--file", draftPath]));
+    for (const name of await readdir(parent)) {
+      if (name.startsWith(`${draft.task_id}-`)) preparedPaths.push(resolve(parent, name));
+    }
+    const frozen = await readSuite(preparedPaths[0]!);
+    assertions.push([frozen.scenarios[0].expectation.must_load_roles.includes("orchestrator")
+      && !(await temporaryCloseout(preparedPaths[0]!)).delete_candidates.length,
+      "prepare freezes role-bound task criteria before execution and unrun suites are retained"]);
+    await writeJson(draftPath, { ...draft, cases: [{ ...draft.cases[0], mutation_policy: "allowed" }] });
+    assertions.push([await rejects(() => commandPrepare(parseArgs(["--file", draftPath]))), "draft schema rejects unsupported authority overrides before freeze"]);
     const execution = scenarioExecution(scenario, parseArgs([]));
-    const metadata = { run_id: basename(runRoot), repetitions: 1, sandbox: "read-only",
+    const metadata: JsonObject = { run_id: basename(runRoot), repetitions: 1, sandbox: "read-only", scenario_ids: [scenario.id],
       harness_source_digest: (await harnessSourceManifest()).digest,
       execution_bindings: [{ scenario_id: scenario.id, ...execution }] };
     const caseName = scenario.id;
@@ -1724,6 +1827,7 @@ async function judgeLifecycleSelfTest(scenario: JsonObject, required: JsonObject
     await writeFile(resolve(casePath, "prompt.txt"), targetPrompt(scenario));
     await writeJson(resolve(casePath, "command.json"), { argv: codexCommand(execution.model, execution.reasoning_effort, "<prompt-in-prompt.txt>", OUTPUT_SCHEMA) });
     await writeJson(resolve(runRoot, "run.json"), metadata);
+    await writeJson(resolve(runRoot, "source-manifest.json"), await harnessSourceManifest());
     await writeJson(resolve(runRoot, "selected-scenarios.json"), [scenario]);
     await writeJson(resolve(runRoot, "summary.json"), { eligibilities: [{ scenario_id: scenario.id, verdict: "PASS", case_dir: rel(casePath) }] });
     const target = await recordedTarget(runRoot, caseName, scenario, metadata);
@@ -1749,6 +1853,49 @@ async function judgeLifecycleSelfTest(scenario: JsonObject, required: JsonObject
     assertions.push([await rejects(() => invoke("unknown-profile")) && await readText(summaryPath) === before, "unknown profile cannot erase existing judgments"]);
     for (const profile of required.slice(1)) await saveJudge(profile);
     assertions.push([await invoke(required.at(-1)!.id) === 0 && (await readJson<JsonObject>(summaryPath)).judgments.length === required.length, "separate profile runs preserve the complete aggregate"]);
+    // Reuse the same complete raw fixture to exercise temporary-suite admission,
+    // independent judging, scope isolation and advisory retention end to end.
+    const body = { schema_version: 1, lifecycle: "temporary", task_id: basename(runRoot), purpose: "Synthetic lifecycle regression",
+      harness_source_digest: metadata.harness_source_digest, scenarios: [scenario] };
+    const suite = { ...body, digest: valueDigest(body) };
+    await writeJson(suitePath, suite);
+    metadata.suite = { path: rel(suitePath), digest: suite.digest };
+    await writeJson(resolve(runRoot, "run.json"), metadata);
+    const completed = { completed_at: utcNow(), eligibilities: [{ scenario_id: scenario.id, case_dir: rel(casePath) }] };
+    await writeJson(resolve(runRoot, "summary.json"), completed);
+    assertions.push([await invoke(required[0]!.id) === 0, "temporary suites use the same independent judge lifecycle"]);
+    assertions.push([(await evaluationCatalog(suitePath)).scenarios.length === 1
+      && !(await generateCatalog()).scenarios.some((s: JsonObject) => s.source?.startsWith("temporary:")), "temporary scope does not expand the permanent catalog"]);
+    const proposal = await temporaryCloseout(suitePath);
+    assertions.push([proposal.delete_candidates.includes(rel(suitePath)) && proposal.delete_candidates.includes(rel(runRoot))
+      && await exists(casePath), "complete temporary raw evidence proposes exact paths without deleting them"]);
+    const coveragePath = resolve(fixtureRoot, "coverage.json");
+    assertions.push([await commandCoverage(parseArgs(["--suite", suitePath, "--output", coveragePath])) === 0
+      && (await readJson<JsonObject>(coveragePath)).total === 1, "temporary coverage reads only its isolated run directory and recomputes acceptance"]);
+    const extraCase = resolve(runRoot, "cases", "unaccounted-failed-attempt");
+    await mkdir(extraCase);
+    assertions.push([!(await temporaryCloseout(suitePath)).delete_candidates.length, "unaccounted case evidence cannot be hidden by a passing summary"]);
+    await rmdir(extraCase);
+    await writeJson(resolve(runRoot, "summary.json"), { eligibilities: [] });
+    assertions.push([!(await temporaryCloseout(suitePath)).delete_candidates.length, "incomplete runs are retained at closeout"]);
+    await writeJson(resolve(runRoot, "summary.json"), completed);
+    await saveJudge(required[0]!, false);
+    assertions.push([!(await temporaryCloseout(suitePath)).delete_candidates.length, "failed independent judgments prevent cleanup despite a cached passing aggregate"]);
+    await saveJudge(required[0]!);
+    await mkdir(resolve(runRoot, ".judge-lock"));
+    assertions.push([!(await temporaryCloseout(suitePath)).delete_candidates.length, "active judging prevents cleanup"]);
+    await rmdir(resolve(runRoot, ".judge-lock"));
+    const changed = { ...body, purpose: "Changed after execution" };
+    await writeJson(suitePath, { ...changed, digest: valueDigest(changed) });
+    assertions.push([await rejects(() => invoke(required[0]!.id))
+      && !(await temporaryCloseout(suitePath)).delete_candidates.length, "edited suite identity cannot reuse judgments or permit cleanup"]);
+    await writeJson(suitePath, suite);
+    assertions.push([await rejects(() => validateScenarios([scenario, scenario]))
+      && await rejects(() => validateScenarios([{ ...scenario, expectation: { ...scenario.expectation, mutation_policy: "allowed" } }]))
+      && await rejects(() => readSuite("harness-evals/scenarios.generated.json")), "temporary cases reject duplicates, unsafe contracts and paths outside the artifact scope"]);
+    assertions.push([await rejects(() => commandRun(parseArgs([])))
+      && await rejects(async () => selectScenarios({ scenarios: [scenario] }, parseArgs(["--limit", "invalid"]))),
+      "unfiltered or malformed run limits cannot launch the full core implicitly"]);
     const completeSummary = await readText(summaryPath);
     await writeJson(resolve(runRoot, "selected-scenarios.json"), [{ ...scenario, prompt: "Changed frozen case" }]);
     assertions.push([metadata.harness_source_digest === (await harnessSourceManifest()).digest
@@ -1781,8 +1928,12 @@ async function judgeLifecycleSelfTest(scenario: JsonObject, required: JsonObject
     return assertions;
   } finally {
     // Only the freshly created, bounded fixture directory is disposable.
-    boundedPath(runRoot, ".artifacts/eval-fixtures/judge-lifecycle-");
-    await rm(runRoot, { recursive: true, force: true });
+    boundedPath(fixtureRoot, ".artifacts/harness-evals/suites/judge-lifecycle-");
+    await rm(fixtureRoot, { recursive: true, force: true });
+    for (const path of preparedPaths) {
+      boundedPath(path, ".artifacts/harness-evals/suites/judge-lifecycle-");
+      await rm(path, { force: true });
+    }
   }
 }
 
@@ -2053,12 +2204,14 @@ export async function main(argv: string[]): Promise<number> {
   const [command, ...rest] = argv;
   const args = parseArgs(rest);
   if (command === "catalog") return commandCatalog(args);
+  if (command === "prepare") return commandPrepare(args);
+  if (command === "closeout") return commandCloseout(args);
   if (command === "audit") return commandAudit(args);
   if (command === "run") return commandRun(args);
   if (command === "evaluate") return commandEvaluate(args);
   if (command === "judge") return commandJudge(args);
   if (command === "coverage") return commandCoverage(args);
   if (command === "self-test") return commandSelfTest();
-  console.log("Usage: bun scripts/cascade.ts eval <catalog|audit|run|evaluate|judge|coverage|self-test>");
+  console.log("Usage: bun scripts/cascade.ts eval <catalog|prepare|audit|run|evaluate|judge|coverage|closeout|self-test>\nprepare --file DRAFT: freeze task cases under ignored artifacts\nrun: select --scenario/--skill/--agent/--case-kind, --suite FILE, or explicit --all\ncoverage [--suite FILE]: current scoped diagnostics, not a mandatory completion gate\ncloseout --suite FILE: propose cleanup; never deletes or executes models");
   return command ? 1 : 0;
 }

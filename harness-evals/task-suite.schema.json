@@ -1,0 +1,105 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "task_id",
+    "purpose",
+    "cases"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "task_id": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9-]{0,63}$"
+    },
+    "purpose": {
+      "type": "string",
+      "minLength": 1
+    },
+    "cases": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 50,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "risk",
+          "prompt",
+          "owner",
+          "expected_primary",
+          "status_any"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^HT-[A-Za-z0-9][A-Za-z0-9_-]{0,100}$"
+          },
+          "risk": {
+            "type": "string",
+            "minLength": 1
+          },
+          "prompt": {
+            "type": "string",
+            "minLength": 1
+          },
+          "owner": {
+            "type": "string",
+            "minLength": 1
+          },
+          "expected_primary": {
+            "type": "string",
+            "minLength": 1
+          },
+          "status_any": {
+            "type": "array",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": {
+              "enum": [
+                "PASS",
+                "FAIL",
+                "BLOCKED",
+                "GAP",
+                "NOT_RUN"
+              ]
+            }
+          },
+          "allowed_supporting": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            },
+            "uniqueItems": true
+          },
+          "forbidden_primary": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            },
+            "uniqueItems": true
+          },
+          "next_route": {
+            "type": "string",
+            "minLength": 1
+          },
+          "max_loaded_skills": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "max_loaded_roles": {
+            "type": "integer",
+            "minimum": 1
+          }
+        }
+      }
+    }
+  }
+}

@@ -53,6 +53,20 @@ For every required check, record one of:
 A local or mocked pass is not provider, deployment, release, semantic, or
 pixel-parity proof.
 
+For harness behavior changes needing semantic evaluation, select permanent
+cases by the affected risk. Generate additional cases from the accepted change
+and actual failure boundaries only when the core lacks them. Give each one a
+distinct risk, concrete input and expected route/status or handoff; freeze the
+task draft with `cascade eval prepare --file <draft>` before running
+`cascade eval run --suite <frozen-suite>`. Follow the host schema at
+`harness-evals/task-suite.schema.json` when this optional evaluation lab exists.
+Do not multiply every skill into a fixed case quota or make full catalog
+coverage an ordinary completion gate. Use the same frozen cases and rubric for
+a controlled comparison; any revision starts a new experiment. Keep temporary
+cases out of the core, promote unique discovered regressions, and route their
+cleanup proposal through closeout. No evaluation lab is required in a target
+bundle that omits it.
+
 ## Durable work
 
 If an existing lane or Coordination Graph is in scope, update only its affected

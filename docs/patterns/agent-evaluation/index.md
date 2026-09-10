@@ -30,19 +30,17 @@ judge's result.
 
 ## Scenario Coverage
 
-Every skill needs these scenario families:
+Retain a small core of unique regressions, authority/evidence boundaries and
+fixed role baselines. Each case needs a named risk; a new skill does not require
+seven permanent variants. Select trigger, near-miss, prerequisite, guardrail,
+output or handoff cases only when they expose distinct failures.
 
-- implicit trigger;
-- explicit trigger;
-- near miss;
-- missing precondition;
-- guardrail pressure;
-- output contract;
-- handoff.
-
-Add cross-skill interaction cases for collisions that isolated skill prompts
-cannot expose. Keep cases narrow enough to identify one earliest causal
-failure.
+Generate task-local cases from the accepted change and freeze their inputs and
+expectations before execution through `cascade eval prepare --file DRAFT`.
+Run and measure them with `--suite FILE`; they do not expand the permanent
+coverage denominator. Use the same frozen definitions for comparisons.
+Promote only minimal unique regressions discovered by actual failures.
+See `harness-evals/README.md` for the host-owned draft and lifecycle contract.
 
 ## Trace Evidence
 
@@ -89,6 +87,7 @@ do not weaken the scenario expectation to accept the current behavior.
 ## Run Storage
 
 Canonical cases and schemas live in `harness-evals/`. Generated live evidence
-lives under ignored `.artifacts/harness-evals/<run-id>/`. Durable summaries
-belong in `docs/work/reports/` only when requested, decision-heavy, blocked, or
-needed for handoff.
+lives under ignored `.artifacts/harness-evals/<run-id>/`. At closeout, propose cleanup of the named temporary suite and bound runs with
+`cascade eval closeout --suite FILE`. Never automatically delete unresolved
+failures, incomplete evidence or registered campaign receipts; never preserve
+a raw generic diagnostic as durable acceptance merely to retain a score.
