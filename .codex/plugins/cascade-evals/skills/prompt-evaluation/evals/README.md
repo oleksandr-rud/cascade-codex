@@ -18,13 +18,13 @@ diagnosis, and controlled-plan baselines. Catalog metadata records each task's
 ## Evaluation sequence
 
 1. Resolve the enabled `cascade-prompt:prompt` subject skill and validate task,
-   model, evaluator, simulation, and judge contracts.
+   model, evaluator, execution, and judge contracts.
 2. Ask Cascade Prompt to build a task prompt for the named target model and
    neutral tier, or automatically reuse a digest-bound cached response.
 3. Replace the task's single input placeholder and execute the target model.
-   Every builder, target, and judge invocation receives its own frozen
-   `agent-response` simulation contract, authorized dispatch, hash-chained
-   journal, terminal result, and controller verification.
+   Every builder, target, and judge invocation receives a direct execution
+   receipt binding the request, model, adapter, runtime, raw stdout/stderr,
+   and output. Existing or interrupted phase receipts cannot be overwritten.
 4. Apply deterministic eligibility checks before any semantic scoring.
 5. Stop before semantic judgment when mechanical eligibility fails. For fully
    deterministic tasks, use the mechanical outcome and judge trajectory once
@@ -41,7 +41,7 @@ trajectory judgment. The trajectory judge does not see target correctness,
 eligibility, or the outcome judgment.
 
 Prompts are passed to execution adapters over stdin rather than process
-arguments. Simulation journals store prompt and output digests, while the
+arguments. Execution receipts store prompt and output digests, while the
 campaign evidence directory retains the full phase artifacts. Automatic
 builder and trajectory caches are content-addressed and exclude target inputs,
 evaluator material, gold answers, target outputs, and outcome judgments.
@@ -217,7 +217,7 @@ V1/V2 profiles remain solely for historical diagnostic and calibration artifacts
 
 Run directories are exclusive and disjoint from the subject. Each run freezes
 case, subject path/byte manifest, runner bundle and adapter configuration identity
-before invocation; each phase additionally binds the Simulation dependency and
+before invocation; each phase additionally binds the execution runtime and
 actual adapter. Cache keys include these identities; cached raw judgments are
 reparsed with the current profile and retain their source run ID. Disable caches
 for independent repetitions. Variance completion requires every requested run,
@@ -238,7 +238,7 @@ its results do not substitute for behavioral execution. Use `--reference` with a
 exact path from `rule-coverage.json` and `--output-dir` for immutable evidence.
 
 Execution receipts bind the resolved executable hash/version, OS, Node version,
-CLI isolation policy and Simulation source. Remote model revision is explicitly
+CLI isolation policy and execution runtime. Remote model revision is explicitly
 unavailable: results are scoped to the named model alias and observed execution
 date. Nondefault live quality configurations require a matching
 `--configuration-id` in `model-matrix.json`; the Sol-to-Astra coverage configuration
@@ -253,8 +253,10 @@ mechanical regressions for fabricated quotes, missing references and missing dat
 
 
 For an interrupted judge phase, `--reuse-run-root /absolute/original/run` on the
-quality or interview runner verifies the original Codex transcript and Simulation
-journal before reusing completed subject/target responses. It requires the exact
+quality or interview runner verifies the original Codex transcript and direct
+execution receipt before reusing completed subject/target responses. Historical
+controller records use a lazy read-only verifier; only that legacy replay path
+requires Cascade Simulations and Python. It requires the exact
 case version and subject digest, checks target prompt identity, and emits separate
 reuse receipts. New judges run under the new runner/profile/timeout identity;
 `--judge-timeout-ms` sets a positive bounded timeout (also supported by knowledge
@@ -262,3 +264,9 @@ audits). Explicit response-file imports cannot be combined with verified reuse.
 Reuse is not a fresh stochastic repetition, cannot be recursively replayed, and
 has no new builder/target latency or usage measurement. Keep the original run root.
 Corrected fixtures require fresh authoring; never reuse their older responses.
+
+Fresh model phases do not select a simulation workflow. They use cancellable,
+bounded asynchronous execution. Variance accepts `--repetition-timeout-ms` and
+preserves partial child output; cancellation keeps the requested denominator.
+The shared `scripts/judge-ratings.mjs` scorer serves both historical v1 adapters
+and v3 evidence-bound judges; evidence validation remains profile-specific.

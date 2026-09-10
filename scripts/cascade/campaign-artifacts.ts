@@ -69,6 +69,10 @@ import {
 import {
   assertTerminalStatusMatchesClaimLedger,
   claimLedgerTerminalStatus,
+  evaluationContractSources,
+  evaluationExecutionFiles,
+  evaluationEvidencePaths,
+  evaluationEvidenceBody,
   parseCodexJsonl,
   reconstructCodexBlockedAttemptReason,
   type EvaluationRequest,
@@ -79,7 +83,6 @@ import {
   getAuthorityStatePath,
   observeFileExistsAuthority,
   replayFakeActionPrefixAuthority,
-  requiredPolicyEvidenceProjection,
   validatePolicyDriverEventAuthority,
   validateTaskEventChronologyAuthority,
   type CalibrationReceipt,
@@ -114,6 +117,7 @@ import type {
 import {
   ACTION_BINDING_VERSION,
   CAMPAIGN_FIXED_SOURCE_FILES,
+  EVALUATION_REASONING_EFFORTS,
   actionBindingDigest,
   assertSafeSimulationAction,
   policyAppliesToObservation,
@@ -653,7 +657,7 @@ function normalizeIdentities(
       throw new CascadeError("specialized evaluator identity must be distinct from every campaign role");
     }
   }
-  if ((simulationScope === "harness") !== (current.specialized_evaluator !== null)) {
+  if (simulationScope === "product" && current.specialized_evaluator !== null) {
     throw new CascadeError(
       `campaign ${simulationScope} scope requires specialized_evaluator ${simulationScope === "harness" ? "identity" : "to be null"}`,
     );
@@ -1620,7 +1624,8 @@ function validateReservationContract(
     );
     if (!historicalLegacy && schemaVersion !== LEGACY_CAMPAIGN_ARTIFACT_SCHEMA_VERSION) {
       const current = reservation as CampaignRunReservation;
-      if ((current.simulation_scope === "harness") !== (current.identities.specialized_evaluator !== null)) {
+      if ((current.simulation_scope === "product" && current.identities.specialized_evaluator !== null) ||
+        (current.specialized_evaluation?.applicability === "REQUIRED" && current.identities.specialized_evaluator === null)) {
         throw new CascadeError("campaign reservation scope and specialized evaluator applicability differ");
       }
       if (schemaVersion === CAMPAIGN_ARTIFACT_SCHEMA_VERSION) {
@@ -2218,8 +2223,8 @@ function validateCurrentEvaluationReceiptShape(
   ) {
     throw new CascadeError("COMPLETED general evaluation receipt shape is invalid");
   }
-  if (value.provider === "fixture") {
-    if (
+  if (value.provider === "fixture" || value.provider === "none") {
+    if ((value.provider === "none" && (!Array.isArray(value.claim_ledger) || value.claim_ledger.length !== 0)) ||
       value.model !== null ||
       value.reasoning_effort !== null ||
       value.rubric_id !== null ||
@@ -2235,7 +2240,7 @@ function validateCurrentEvaluationReceiptShape(
     value.provider !== "codex" ||
     typeof value.model !== "string" ||
     !value.model ||
-    !new Set(["low", "medium", "high", "xhigh"]).has(String(value.reasoning_effort)) ||
+    !EVALUATION_REASONING_EFFORTS.has(String(value.reasoning_effort)) ||
     typeof value.rubric_id !== "string" ||
     !value.rubric_id ||
     !isDigest(value.rubric_digest) ||
@@ -5974,6 +5979,24 @@ export class CampaignArtifactStore {
     ) {
       throw new CascadeError("attempt 1 cannot contain retry lineage evidence");
     }
+    const sessionProjection = input.execution.session === undefined
+      ? null
+      : requireRecord(input.execution.session, "execution session projection");
+    const checkpoints = await this.readSessionCheckpoints<{
+      task_results: Array<Record<string, unknown>>;
+      budget_usage?: Record<string, unknown>;
+      confirmation_usage?: Record<string, unknown>;
+    }>();
+    const checkpoint = checkpoints.at(-1) ?? null;
+    const sessionEvents = await this.readSessionEvents();
+    const stopped = checkpoint && ["CANCELLED", "TIMED_OUT", "BUDGET_EXHAUSTED", "BLOCKED", "FAILED"].includes(checkpoint.status);
+    const completed = new Set(checkpoint?.completed_step_ids ?? []);
+    const expectedTasks = stopped ? authoredTasks.filter((task) => completed.has(`task:${task.id}`)) : authoredTasks;
+    for (const task of authoredTasks) {
+      if (!expectedTasks.includes(task) && input.relativeFiles.some((path) => path.startsWith(`execution/tasks/${task.id}/`))) {
+        throw new CascadeError(`uncompleted task has execution evidence and cannot be omitted: ${task.id}`);
+      }
+    }
     const executionSummaries = Array.isArray(input.execution.task_results)
       ? input.execution.task_results.map((item, index) =>
           requireRecord(item, `execution task result ${index}`)
@@ -5983,12 +6006,12 @@ export class CampaignArtifactStore {
       new Set(executionSummaries.map((item) => item.task_id)).size !==
         executionSummaries.length ||
       stableJson(executionSummaries.map((item) => item.task_id)) !==
-        stableJson(authoredTasks.map((task) => task.id))
+        stableJson(expectedTasks.map((task) => task.id))
     ) {
       throw new CascadeError("execution task result authority is incomplete, duplicated, or reordered");
     }
     const taskResults = await Promise.all(executionSummaries.map(async (summary, index) => {
-      const task = authoredTasks[index]!;
+      const task = expectedTasks[index]!;
       const path = `execution/tasks/${task.id}/result.json`;
       const taskRoot = `execution/tasks/${task.id}`;
       const requiredSidecars = [
@@ -6871,16 +6894,6 @@ export class CampaignArtifactStore {
       (task) => task.required === true && task.status !== "PASS",
     );
     const requiredBlocked = requiredFailures.some((task) => task.status === "BLOCKED");
-    const sessionProjection = input.execution.session === undefined
-      ? null
-      : requireRecord(input.execution.session, "execution session projection");
-    const checkpoints = await this.readSessionCheckpoints<{
-      task_results: Array<Record<string, unknown>>;
-      budget_usage?: Record<string, unknown>;
-      confirmation_usage?: Record<string, unknown>;
-    }>();
-    const checkpoint = checkpoints.at(-1) ?? null;
-    const sessionEvents = await this.readSessionEvents();
     if (
       Boolean(sessionProjection) !== Boolean(checkpoint) ||
       Boolean(checkpoint) !== Boolean(sessionEvents.length)
@@ -7116,7 +7129,7 @@ export class CampaignArtifactStore {
         ? input.specializedBinding.claim_ids as string[]
         : [],
     );
-    const ledger: CurrentTerminalClaim[] = [];
+    const populationAuthority = new Map<string, Pick<CurrentTerminalClaim, "status" | "reason" | "evidence">>();
     for (const authored of input.claims) {
       if (locked.has(authored.id)) continue;
       const claim = authored.definition;
@@ -7126,10 +7139,9 @@ export class CampaignArtifactStore {
         }
         return value as string[];
       };
-      const requiredOracles = strings(claim.required_oracle_ids, "required_oracle_ids");
-      const requiredPolicies = strings(claim.required_policy_ids, "required_policy_ids");
-      const requiredMetrics = strings(claim.required_metric_ids, "required_metric_ids");
-      const evidenceRequirements = strings(claim.evidence_requirements, "evidence_requirements");
+      for (const field of ["required_oracle_ids", "required_policy_ids", "required_metric_ids", "evidence_requirements"]) {
+        strings(claim[field], field);
+      }
       if (
         typeof claim.population_authority !== "string" ||
         typeof claim.requires_calibration !== "boolean" ||
@@ -7191,115 +7203,7 @@ export class CampaignArtifactStore {
           };
         }
       }
-      if (!projected) {
-        const oracleResults = taskResults.flatMap((task) =>
-          Array.isArray(task.oracle_results) ? task.oracle_results as Array<Record<string, unknown>> : []
-        );
-        const policyDecisions = taskResults.flatMap((task) =>
-          Array.isArray(task.policy_decisions) ? task.policy_decisions as Array<Record<string, unknown>> : []
-        );
-        const missingOracles = requiredOracles.filter(
-          (id) => !oracleResults.some((result) => result.oracle_id === id),
-        );
-        const failedOracles = requiredOracles.filter((id) =>
-          oracleResults.some((result) => result.oracle_id === id && result.status === "FAIL")
-        );
-        const deniedPolicies = requiredPolicies.filter((id) =>
-          policyDecisions.some((decision) => decision.policy_id === id && decision.decision !== "ALLOW")
-        );
-        const missingPolicyProjection = requiredPolicyEvidenceProjection(
-          requiredPolicies,
-          policyDecisions as Array<{ policy_id: string }>,
-        );
-        const failedTasks = taskResults.filter(
-          (task) => task.required === true && task.status !== "PASS",
-        );
-        const metricResults = Array.isArray(input.calibration?.metric_results)
-          ? input.calibration!.metric_results as Array<Record<string, unknown>>
-          : [];
-        const missingMetrics = requiredMetrics.filter(
-          (id) => !metricResults.some((result) => result.metric_id === id),
-        );
-        const failedMetrics = requiredMetrics.filter((id) =>
-          metricResults.some((result) => result.metric_id === id && result.status !== "PASS")
-        );
-        const availableEvidence = new Set([
-          "source-manifest",
-          "execution-receipt",
-          ...(taskResults.length ? ["task-result"] : []),
-          ...(taskResults.some((task) => Array.isArray(task.events) && task.events.length) ? ["trajectory"] : []),
-          ...(policyDecisions.length ? ["policy-decisions"] : []),
-          ...(oracleResults.length ? ["oracle"] : []),
-          ...(taskResults.every((task) => requireRecord(task.cleanup, "task cleanup").verified === true) ? ["cleanup"] : []),
-          ...(input.calibration ? ["calibration-receipt"] : []),
-        ]);
-        const missingEvidence = evidenceRequirements.filter((item) => !availableEvidence.has(item));
-        if (missingOracles.length) {
-          projected = {
-            status: "BLOCKED",
-            reason: `required oracle evidence missing: ${missingOracles.join(", ")}`,
-            evidence: [],
-          };
-        } else if (missingPolicyProjection || missingMetrics.length || missingEvidence.length) {
-          projected = {
-            status: "BLOCKED",
-            reason: [
-              missingPolicyProjection?.reason ?? null,
-              missingMetrics.length ? `required metric evidence missing: ${missingMetrics.join(", ")}` : null,
-              missingEvidence.length ? `required artifacts missing: ${missingEvidence.join(", ")}` : null,
-            ].filter(Boolean).join("; "),
-            evidence: [],
-          };
-        } else if (failedTasks.length) {
-          projected = {
-            status: "UNSUPPORTED",
-            reason: `required task failed: ${failedTasks.map((task) => task.task_id).join(", ")}`,
-            evidence: failedTasks.map((task) => String(task.task_id)),
-          };
-        } else if (failedOracles.length || deniedPolicies.length || failedMetrics.length) {
-          projected = {
-            status: "UNSUPPORTED",
-            reason: [
-              failedOracles.length ? `failed oracles: ${failedOracles.join(", ")}` : null,
-              deniedPolicies.length ? `unsatisfied policies: ${deniedPolicies.join(", ")}` : null,
-              failedMetrics.length ? `failed metrics: ${failedMetrics.join(", ")}` : null,
-            ].filter(Boolean).join("; "),
-            evidence: [...failedOracles, ...deniedPolicies, ...failedMetrics],
-          };
-        } else if (claim.requires_calibration === true) {
-          if (!input.calibration) {
-            projected = { status: "NOT_RUN", reason: "required calibration receipt is absent", evidence: [] };
-          } else if (input.calibration.framework_fixture === true) {
-            projected = {
-              status: "NOT_RUN",
-              reason: "framework-fixture calibration cannot support target release eligibility",
-              evidence: [String(input.calibration.calibration_id)],
-            };
-          } else if (input.calibration.status !== "CALIBRATED") {
-            projected = {
-              status: input.calibration.status === "STALE" ? "BLOCKED" : "UNSUPPORTED",
-              reason: `required calibration is ${input.calibration.status}`,
-              evidence: [String(input.calibration.calibration_id)],
-            };
-          }
-        }
-        projected ??= {
-          status: "SUPPORTED",
-          reason: "all declared non-compensating gates passed",
-          evidence: [
-            ...requiredOracles,
-            ...requiredPolicies,
-            ...requiredMetrics,
-            ...evidenceRequirements,
-            ...(input.calibration ? [String(input.calibration.calibration_id)] : []),
-          ],
-        };
-      }
-      ledger.push({
-        claim_id: authored.id,
-        class: authored.class,
-        ...projected,
-      });
+      if (projected) populationAuthority.set(authored.id, projected);
     }
     const claims = input.claims
       .filter((claim) => !locked.has(claim.id))
@@ -7308,29 +7212,128 @@ export class CampaignArtifactStore {
       claims,
       task_results: taskResults as unknown as MechanicalTaskAuthority[],
       calibration: calibrationAuthority,
-      population_authority: (claim) => {
-        const prior = ledger.find((entry) => entry.claim_id === claim.id);
-        if (
-          prior?.reason ===
-            "claim requires an approved digest-bound product-persona derivation" ||
-          prior?.reason ===
-            "estimated-prevalence authority requires a product-scoped representative derivation with digest-bound non-fixture evidence and non-fixture calibration"
-        ) {
-          return {
-            status: prior.status,
-            reason: prior.reason,
-            evidence: prior.evidence,
-          };
-        }
-        return null;
-      },
+      population_authority: (claim) => populationAuthority.get(claim.id) ?? null,
     });
-    if (stableJson(mechanical.claim_ledger) !== stableJson(ledger)) {
-      throw new CascadeError(
-        "terminal mechanical projection diverges from the shared deterministic reducer",
-      );
-    }
     return { campaign, profile, rubric, mechanical };
+  }
+
+  private async readEvaluationInput(input: {
+    evaluationId: string;
+    evaluationInputDigest: string;
+    relativeFiles: readonly string[];
+    sourceManifest: Record<string, unknown>;
+    authority: { campaign: Record<string, unknown>; profile: Record<string, unknown> } | null;
+  }): Promise<{ manifest: Record<string, unknown>; listed: Set<string> }> {
+    const evaluationRoot = `evaluations/${input.evaluationId}`;
+    const manifestPath = `${evaluationRoot}/input/input-manifest.json`;
+    const manifest = requireExactOwnDataObject(
+      await readBoundedStructuredJson<unknown>(
+        this.path(manifestPath),
+        "Codex evaluation input manifest",
+      ),
+      "Codex evaluation input manifest",
+      [
+        "evaluation_id",
+        "evaluation_input_digest",
+        "files",
+        "manifest_digest",
+        "schema_version",
+      ],
+    );
+    const files = Array.isArray(manifest.files)
+      ? manifest.files.map((file, index) =>
+          requireExactOwnDataObject(file, `Codex input file ${index}`, ["path", "sha256"])
+        )
+      : [];
+    if (
+      manifest.schema_version !== 1 ||
+      manifest.evaluation_id !== input.evaluationId ||
+      manifest.evaluation_input_digest !== input.evaluationInputDigest ||
+      manifest.manifest_digest !== sha256Text(stableJson(files))
+    ) {
+      throw new CascadeError("Codex evaluation input manifest is stale or mismatched");
+    }
+    const listed = new Set<string>();
+    for (const [index, file] of files.entries()) {
+      if (
+        typeof file.path !== "string" ||
+        !file.path ||
+        file.path.startsWith("/") ||
+        file.path.split("/").includes("..") ||
+        typeof file.sha256 !== "string" ||
+        !/^[a-f0-9]{64}$/.test(file.sha256) ||
+        listed.has(file.path)
+      ) {
+        throw new CascadeError(`Codex input file ${index} is invalid`);
+      }
+      listed.add(file.path);
+      const record = await fileRecord(
+        this.runRoot,
+        this.path(`${evaluationRoot}/input/${file.path}`),
+      );
+      if (record.sha256 !== file.sha256) {
+        throw new CascadeError(`Codex evaluation input is stale: ${file.path}`);
+      }
+    }
+    const actualInputFiles = input.relativeFiles
+      .filter(
+        (path) =>
+          path.startsWith(`${evaluationRoot}/input/`) &&
+          path !== manifestPath,
+      )
+      .map((path) => path.slice(`${evaluationRoot}/input/`.length));
+    if (
+      stableJson([...listed].sort()) !== stableJson(actualInputFiles.sort())
+    ) {
+      throw new CascadeError("Codex evaluation input manifest is incomplete or substituted");
+    }
+
+    if (input.authority) {
+      const sources = input.sourceManifest.frozen_sources as FrozenCampaignArtifact[];
+      const taskInputs: string[] = [];
+      for (const path of input.authority.campaign.task_files as string[]) {
+        const task = await this.readCurrentFrozenJson(input.sourceManifest, path, "evaluation task");
+        taskInputs.push(...(task.inputs as string[] ?? []));
+      }
+      for (const path of evaluationExecutionFiles(input.relativeFiles, sources, taskInputs)) {
+        // Terminal clocks and receiving handoffs are appended after evaluation.
+        const later = path.startsWith("execution/lifecycle-clock/") || /^execution\/tasks\/[^/]+\/handoff\.json$/.test(path);
+        if (!later && !listed.has(`run/${path}`)) {
+          throw new CascadeError(`Codex evaluation omitted required execution evidence: ${path}`);
+        }
+      }
+      for (const file of files) {
+        if (!String(file.path).startsWith("run/execution/")) continue;
+        const original = await fileRecord(this.runRoot, this.path(String(file.path).slice(4)));
+        if (original.sha256 !== file.sha256) {
+          throw new CascadeError(`Codex evaluation copied evidence differs from frozen execution: ${file.path}`);
+        }
+      }
+      for (const [name, path] of Object.entries(evaluationContractSources({ rubric_file: String(input.authority.profile.rubric_file) }))) {
+        const source = sources.find((source) => resolve(source.source_path) === resolve(path));
+        if (!source || files.find((file) => file.path === `contracts/${name}`)?.sha256 !== source.sha256) {
+          throw new CascadeError(`Codex evaluation contract differs from frozen source: ${name}`);
+        }
+      }
+      const commandPath = `${evaluationRoot}/command.json`;
+      if (input.relativeFiles.includes(commandPath)) {
+        const command = await this.readArtifactJson<{ argv: string[] }>(commandPath, "evaluation command");
+        if (command.argv.at(-1) === "-") {
+          const prompt = await this.readArtifactText(`${evaluationRoot}/prompt.txt`, "inline evaluation prompt");
+          const contextText = prompt.match(/<frozen_input>\n([\s\S]*)\n<\/frozen_input>$/)?.[1];
+          if (!contextText) throw new CascadeError("Codex evaluation lacks its inline evidence context");
+          const evidence = [];
+          for (const path of evaluationEvidencePaths([...listed], sources, taskInputs)) {
+            evidence.push(evaluationEvidenceBody(path, await this.readArtifactBytes(`${evaluationRoot}/input/${path}`, "inline evidence binding")));
+          }
+          const expected = { request_path: "request.json", request: await this.readArtifactJson(`${evaluationRoot}/input/request.json`, "inline evaluation request"), input_manifest_digest: manifest.manifest_digest, evidence };
+          if (stableJson(JSON.parse(contextText)) !== stableJson(expected)) {
+            throw new CascadeError("Codex inline evaluation context differs from frozen evidence");
+          }
+        }
+      }
+    }
+    return { manifest, listed };
   }
 
   private async validateCurrentGeneralEvidenceLinks(input: {
@@ -7475,20 +7478,21 @@ export class CampaignArtifactStore {
         `COMPLETED general evaluation request differs from frozen authored authority: ${staleField}`,
       );
     }
+    const noGeneralClaims = generalMechanical.claim_ledger.length === 0;
     if (
       input.evaluation.source_manifest_digest !== input.sourceDigest ||
       input.evaluation.execution_receipt_digest !== input.executionDigest ||
       input.evaluation.calibration_receipt_digest !== calibrationDigest ||
       input.evaluation.evaluation_input_digest !== expectedInputDigest ||
-      input.evaluation.provider !== authority.profile.provider ||
+      input.evaluation.provider !== (noGeneralClaims ? "none" : authority.profile.provider) ||
       input.evaluation.profile_id !== authority.profile.id ||
       input.evaluation.profile_digest !== sha256Text(stableJson(authority.profile)) ||
-      input.evaluation.rubric_id !== (authority.rubric?.id ?? null) ||
+      input.evaluation.rubric_id !== (noGeneralClaims ? null : authority.rubric?.id ?? null) ||
       input.evaluation.rubric_digest !==
-        (authority.rubric ? sha256Text(stableJson(authority.rubric)) : null) ||
-      input.evaluation.model !== (authority.profile.model ?? null) ||
+        (!noGeneralClaims && authority.rubric ? sha256Text(stableJson(authority.rubric)) : null) ||
+      input.evaluation.model !== (noGeneralClaims ? null : authority.profile.model ?? null) ||
       input.evaluation.reasoning_effort !==
-        (authority.profile.reasoning_effort ?? null) ||
+        (noGeneralClaims ? null : authority.profile.reasoning_effort ?? null) ||
       stableJson(input.evaluation.principal_identities) !== stableJson(expectedPrincipals)
     ) {
       throw new CascadeError(
@@ -7496,7 +7500,7 @@ export class CampaignArtifactStore {
       );
     }
     const mechanical = generalMechanical;
-    if (authority.profile.provider === "fixture") {
+    if (noGeneralClaims || authority.profile.provider === "fixture") {
       const prohibited = input.relativeFiles.filter(
         (path) =>
           path === `${evaluationRoot}/input/input-manifest.json` ||
@@ -7525,10 +7529,10 @@ export class CampaignArtifactStore {
         input.evaluation.earliest_failure !==
           (expectedStatus === "PASS" ? null : earliestFailure ?? "mechanical-gate") ||
         stableJson(input.evaluation.residual_uncertainty) !== stableJson([
-          "fixture evaluation proves deterministic reducer mechanics only",
+          noGeneralClaims ? "no general claims require evaluation" : "fixture evaluation proves deterministic reducer mechanics only",
         ]) ||
         input.evaluation.next_route !==
-          "target-specific independent evaluation remains NOT_RUN" ||
+          (noGeneralClaims ? "aggregate the required specialized claims" : "target-specific independent evaluation remains NOT_RUN") ||
         stableJson(input.evaluation.refinement_proposal_bindings) !== "[]"
       ) {
         throw new CascadeError(
@@ -7556,67 +7560,15 @@ export class CampaignArtifactStore {
         throw new CascadeError(`Codex evaluation lacks canonical provider evidence: ${path}`);
       }
     }
-    const manifest = requireExactOwnDataObject(
-      await readBoundedStructuredJson<unknown>(
-        this.path(manifestPath),
-        "Codex evaluation input manifest",
-      ),
-      "Codex evaluation input manifest",
-      [
-        "evaluation_id",
-        "evaluation_input_digest",
-        "files",
-        "manifest_digest",
-        "schema_version",
-      ],
-    );
-    const files = Array.isArray(manifest.files)
-      ? manifest.files.map((file, index) =>
-          requireExactOwnDataObject(file, `Codex input file ${index}`, ["path", "sha256"])
-        )
-      : [];
-    if (
-      manifest.schema_version !== 1 ||
-      manifest.evaluation_id !== evaluationId ||
-      manifest.evaluation_input_digest !== expectedInputDigest ||
-      manifest.manifest_digest !== sha256Text(stableJson(files)) ||
-      input.evaluation.input_manifest_digest !== manifest.manifest_digest
-    ) {
-      throw new CascadeError("Codex evaluation input manifest is stale or mismatched");
-    }
-    const listed = new Set<string>();
-    for (const [index, file] of files.entries()) {
-      if (
-        typeof file.path !== "string" ||
-        !file.path ||
-        file.path.startsWith("/") ||
-        file.path.split("/").includes("..") ||
-        typeof file.sha256 !== "string" ||
-        !/^[a-f0-9]{64}$/.test(file.sha256) ||
-        listed.has(file.path)
-      ) {
-        throw new CascadeError(`Codex input file ${index} is invalid`);
-      }
-      listed.add(file.path);
-      const record = await fileRecord(
-        this.runRoot,
-        this.path(`${evaluationRoot}/input/${file.path}`),
-      );
-      if (record.sha256 !== file.sha256) {
-        throw new CascadeError(`Codex evaluation input is stale: ${file.path}`);
-      }
-    }
-    const actualInputFiles = input.relativeFiles
-      .filter(
-        (path) =>
-          path.startsWith(`${evaluationRoot}/input/`) &&
-          path !== manifestPath,
-      )
-      .map((path) => path.slice(`${evaluationRoot}/input/`.length));
-    if (
-      stableJson([...listed].sort()) !== stableJson(actualInputFiles.sort())
-    ) {
-      throw new CascadeError("Codex evaluation input manifest is incomplete or substituted");
+    const { manifest } = await this.readEvaluationInput({
+      evaluationId,
+      evaluationInputDigest: expectedInputDigest,
+      relativeFiles: input.relativeFiles,
+      sourceManifest: input.sourceManifest,
+      authority,
+    });
+    if (input.evaluation.input_manifest_digest !== manifest.manifest_digest) {
+      throw new CascadeError("Codex evaluation receipt input digest is stale or mismatched");
     }
     const traceRecord = await fileRecord(this.runRoot, this.path(tracePath));
     if (traceRecord.sha256 !== input.evaluation.provider_trace_digest) {
@@ -8066,8 +8018,8 @@ export class CampaignArtifactStore {
         path.endsWith("/receipt.json"),
     );
     if (
-      (reservation.simulation_scope === "harness" && specializedPaths.length !== 1) ||
-      (reservation.simulation_scope === "product" && specializedPaths.length !== 0)
+      (reservation.identities.specialized_evaluator !== null && specializedPaths.length !== 1) ||
+      (reservation.identities.specialized_evaluator === null && specializedPaths.length !== 0)
     ) {
       throw new CascadeError(
         "COMPLETED terminal evidence has a missing, duplicate, or prohibited specialized evaluation receipt",
@@ -8075,7 +8027,7 @@ export class CampaignArtifactStore {
     }
     let specialized: SpecializedEvaluationReceipt | null = null;
     let specializedDigest: string | null = null;
-    if (reservation.simulation_scope === "harness") {
+    if (reservation.identities.specialized_evaluator) {
       specialized = requireRecord(
         await readBoundedStructuredJson<unknown>(
           this.path(specializedPaths[0]!),
@@ -8362,60 +8314,23 @@ export class CampaignArtifactStore {
         };
         const evaluationRoot = `evaluations/${reservation.run_id}-evaluation`;
         const inputManifestPath = `${evaluationRoot}/input/input-manifest.json`;
-        const inputManifest = requireExactOwnDataObject(
-          await readBoundedStructuredJson<unknown>(
-            this.path(inputManifestPath),
-            "blocked evaluation input manifest",
-          ),
-          "blocked evaluation input manifest",
-          [
-            "evaluation_id",
-            "evaluation_input_digest",
-            "files",
-            "manifest_digest",
-            "schema_version",
-          ],
-        );
-        const inputFiles = Array.isArray(inputManifest.files)
-          ? inputManifest.files.map((value, index) =>
-              requireExactOwnDataObject(
-                value,
-                `blocked evaluation input manifest file ${index}`,
-                ["path", "sha256"],
-              )
-            )
-          : [];
-        const listedInputPaths = new Set<string>();
-        for (const [index, file] of inputFiles.entries()) {
-          if (
-            typeof file.path !== "string" ||
-            !file.path ||
-            file.path.startsWith("/") ||
-            file.path.split("/").includes("..") ||
-            typeof file.sha256 !== "string" ||
-            !/^[a-f0-9]{64}$/.test(file.sha256) ||
-            listedInputPaths.has(file.path)
-          ) {
-            throw new CascadeError(
-              `blocked evaluation input manifest file ${index} is invalid`,
-            );
-          }
-          listedInputPaths.add(file.path);
-          const record = await fileRecord(
-            this.runRoot,
-            this.path(`${evaluationRoot}/input/${file.path}`),
-          );
-          if (record.sha256 !== file.sha256) {
-            throw new CascadeError(
-              `blocked evaluation input differs from its manifest: ${file.path}`,
-            );
-          }
-        }
+        const { manifest: inputManifest, listed: listedInputPaths } = await this.readEvaluationInput({
+          evaluationId: `${reservation.run_id}-evaluation`,
+          evaluationInputDigest: String(expectedRequest.evaluation_input_digest),
+          relativeFiles,
+          sourceManifest,
+          authority: blockedAuthority,
+        });
         const providerOutputPath = `${evaluationRoot}/provider-output.json`;
         const providerOutputPresent = relativeFiles.includes(providerOutputPath);
+        const command = await readBoundedStructuredJson<{ argv?: unknown }>(
+          this.path(`${evaluationRoot}/command.json`),
+          "blocked evaluation command",
+        );
         const expectedAttemptFiles = [
           `${evaluationRoot}/attempt.json`,
           `${evaluationRoot}/command.json`,
+          ...(Array.isArray(command.argv) && command.argv.at(-1) === "-" ? [`${evaluationRoot}/prompt.txt`] : []),
           inputManifestPath,
           ...[...listedInputPaths].map((path) => `${evaluationRoot}/input/${path}`),
           ...(providerOutputPresent ? [providerOutputPath] : []),
@@ -8426,20 +8341,12 @@ export class CampaignArtifactStore {
           .filter((path) => path.startsWith(`${evaluationRoot}/`))
           .sort();
         if (
-          inputManifest.schema_version !== 1 ||
-          inputManifest.evaluation_id !== `${reservation.run_id}-evaluation` ||
-          inputManifest.evaluation_input_digest !== request.evaluation_input_digest ||
-          inputManifest.manifest_digest !== sha256Text(stableJson(inputFiles)) ||
           stableJson(actualAttemptFiles) !== stableJson(expectedAttemptFiles)
         ) {
           throw new CascadeError(
             "BLOCKED evaluation attempt file set or input manifest is not exact",
           );
         }
-        const command = await readBoundedStructuredJson<unknown>(
-          this.path(`${evaluationRoot}/command.json`),
-          "blocked evaluation command",
-        );
         const stdout = new TextDecoder("utf-8", { fatal: true }).decode(
           await this.readArtifactBytes(
             `${evaluationRoot}/stdout.jsonl`,

@@ -2,8 +2,31 @@ import {readFile,readdir,writeFile} from "node:fs/promises";
 import {join,resolve} from "node:path";
 import {digest} from "./evaluation-integrity.mjs";
 import {subjectPrompt} from "./subject-session.mjs";
-import {extractCodex} from "./execution-adapters.mjs";
-import {verifyRecordedResponse} from "./agent-response-simulation.mjs";
+import {extractCodex, executionSurface} from "./execution-adapters.mjs";
+
+async function verifyRecordedResponse(sourceRoot, phase, model, reasoningEffort, output, expectedPromptDigest) {
+  const path = join(sourceRoot, `${phase}.execution.json`);
+  let raw;
+  try { raw = await readFile(path, "utf8"); }
+  catch (error) {
+    if (error.code !== "ENOENT") throw error;
+    const legacy = await import("./legacy-response-evidence.mjs");
+    return legacy.verifyRecordedResponse(sourceRoot, phase, model, reasoningEffort, output, expectedPromptDigest);
+  }
+  const receipt = JSON.parse(raw);
+  const trace = await readFile(join(sourceRoot, `${phase}.jsonl`), "utf8");
+  const stderr = await readFile(join(sourceRoot, `${phase}.stderr.log`), "utf8");
+  const original = JSON.parse(await readFile(join(sourceRoot, "run-contract.json"), "utf8"));
+  const runId = original.args?.["run-id"] ?? sourceRoot.split(/[\\/]/).at(-1);
+  if (receipt.run_id !== runId || receipt.phase !== phase || receipt.status !== "COMPLETED" || !receipt.dispatched ||
+      receipt.adapter !== "codex-cli" || receipt.codex_context !== "isolated" || receipt.model !== model || receipt.reasoning_effort !== reasoningEffort ||
+      !expectedPromptDigest || receipt.prompt_sha256 !== expectedPromptDigest || receipt.output_sha256 !== digest(output) ||
+      receipt.stdout_sha256 !== digest(trace) || receipt.stderr_sha256 !== digest(stderr) || extractCodex(trace).finalText !== output ||
+      !/^[a-f0-9]{64}$/.test(receipt.runtime_sha256 ?? "") || receipt.runtime_sha256 !== original.execution_runtime_sha256 || digest(JSON.stringify(receipt.execution_surface)) !== digest(JSON.stringify(executionSurface("codex-cli")))) {
+    throw new Error("prior direct invocation does not prove this run, model, prompt, surface and response");
+  }
+  return { phase, source_root: sourceRoot, output_sha256: digest(output), receipt_sha256: digest(raw), execution: receipt };
+}
 
 async function contract(sourceRoot, currentCase, snapshot) {
   const original = JSON.parse(await readFile(join(sourceRoot,"run-contract.json"),"utf8"));

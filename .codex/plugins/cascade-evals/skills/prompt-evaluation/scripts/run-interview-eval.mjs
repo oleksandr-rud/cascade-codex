@@ -4,9 +4,9 @@ import { createHash } from "node:crypto";
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
-import { DEFAULT_TIMEOUTS_MS, positiveTimeout, requireCompleted, executionSurface } from "./execution-adapters.mjs";
+import { DEFAULT_TIMEOUTS_MS, positiveTimeout, requireCompleted, executionSurface, EXECUTION_RUNTIME_SHA256 } from "./execution-adapters.mjs";
 import { resolveSubjectSkill } from "./subject-plugin.mjs";
-import { runAgentResponseSimulation } from "./agent-response-simulation.mjs";
+import { runModelPhase } from "./execution-adapters.mjs";
 import { snapshotSubject, judgeRequest, parseJudgment, interviewEvidence, assertDisjointRoots, runnerDigest, subjectReadChecks } from "./evaluation-integrity.mjs";
 import { replaySubject, replayTarget } from "./replay-evidence.mjs";
 import { runSubjectSession } from "./subject-session.mjs";
@@ -155,7 +155,7 @@ function validateTurn(label, expected, response, intentPatterns) {
 }
 
 function phase(run, status = "EXECUTED") {
-  return { status: run?.replay ? "REUSED_VERIFIED_RUN" : status, replay:run?.replay ?? null, duration_ms: run?.duration_ms ?? 0, usage: run?.usage ?? null, trace_metrics: run?.trace_metrics ?? null, simulation: run?.simulation ?? null, simulations: run?.simulations ?? null, subject_reads: run?.subject_reads ?? null, isolation: run?.isolation ?? (run ? "tool-free-v1" : null) };
+  return { status: run?.replay ? "REUSED_VERIFIED_RUN" : status, replay:run?.replay ?? null, duration_ms: run?.duration_ms ?? 0, usage: run?.usage ?? null, trace_metrics: run?.trace_metrics ?? null, receipt: run?.execution_receipt ?? null, receipts: run?.execution_receipts ?? null, subject_reads: run?.subject_reads ?? null, isolation: run?.isolation ?? (run ? "tool-free-v1" : null) };
 }
 
 function budgetResult(execution, budget) {
@@ -212,7 +212,7 @@ const timeouts = {
   judge: positiveTimeout(args["judge-timeout-ms"], DEFAULT_TIMEOUTS_MS.judge, "--judge-timeout-ms")
 };
 async function executePhase({ phaseName, model, prompt, timeoutMs, adapter, adapterId }) {
-  return requireCompleted(await runAgentResponseSimulation({ phase: phaseName, runId, runRoot, model, reasoningEffort: args["reasoning-effort"], prompt, cwd: workspace, timeoutMs, adapter, adapterConfig: args["adapter-config"], adapterId }), { phase: phaseName, runRoot });
+  return requireCompleted(await runModelPhase({ phase: phaseName, runId, runRoot, model, reasoningEffort: args["reasoning-effort"], prompt, cwd: workspace, timeoutMs, adapter, adapterConfig: args["adapter-config"], adapterId }), { phase: phaseName, runRoot });
 }
 
 const surfaceReceipts = Object.fromEntries(["model", "target", "judge"].map(phase => [phase, executionSurface(args[`${phase}-adapter`] ?? "codex-cli", args["adapter-config"], args[`${phase}-adapter-id`])]));
@@ -221,7 +221,7 @@ const profileText = await readFile(join(evalRoot, "judges/interview-v3.json"), "
 const profile = JSON.parse(profileText);
 const runnerBundleDigest = await runnerDigest(dirname(fileURLToPath(import.meta.url)));
 const adapterConfigDigest = args["adapter-config"] ? sha256(await readFile(resolve(args["adapter-config"]), "utf8")) : null;
-await writeJson(join(runRoot, "run-contract.json"), { fixture, subject_sha256: subjectSnapshot.sha256, execution_surface_sha256: surfaceDigest, runner_bundle_sha256: runnerBundleDigest, adapter_config_sha256: adapterConfigDigest, profile_sha256: sha256(profileText), args });
+await writeJson(join(runRoot, "run-contract.json"), { fixture, execution_runtime_sha256: EXECUTION_RUNTIME_SHA256, subject_sha256: subjectSnapshot.sha256, execution_surface_sha256: surfaceDigest, runner_bundle_sha256: runnerBundleDigest, adapter_config_sha256: adapterConfigDigest, profile_sha256: sha256(profileText), args });
 const skillInstruction = "Follow the frozen subject SKILL.md and request only the required files through the host read protocol.";
 const firstPrompt = `Use $prompt to handle this prompt-building request. Builder mode is INTERVIEW. ${skillInstruction} Preserve the three-state adaptive interview contract.\n\n<fixture_id>${fixture.id}</fixture_id>\n<prompt_build_request>\n${fixture.prompt_build_request}\n</prompt_build_request>`;
 let firstRun = null;

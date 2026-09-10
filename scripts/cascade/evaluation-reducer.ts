@@ -95,7 +95,7 @@ export function reduceEvaluations(input: {
   if (input.specialized_declaration === null && input.specialized_receipt !== null) {
     throw new CascadeError("product evaluation cannot consume a specialized receipt");
   }
-  if (input.specialized_declaration !== null && input.specialized_receipt === null) {
+  if (input.specialized_declaration?.applicability === "REQUIRED" && input.specialized_receipt === null) {
     throw new CascadeError("harness evaluation requires exactly one specialized receipt");
   }
   if (input.specialized_receipt) {

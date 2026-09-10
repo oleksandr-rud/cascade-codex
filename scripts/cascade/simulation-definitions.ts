@@ -34,6 +34,11 @@ const SIMULATION_INTAKE_SCHEMA = await readJson<JsonSchema>(
 const SIMULATION_SEED_BINDING_SCHEMA = await readJson<JsonSchema>(
   rootPath("product-evals/intakes/seed-binding.schema.json"),
 );
+export const EVALUATION_REASONING_EFFORTS: ReadonlySet<string> = new Set(
+  (await readJson<{ properties: { reasoning_effort: { enum: string[] } } }>(
+    rootPath("product-evals/rubrics/evaluation-profile.schema.json"),
+  )).properties.reasoning_effort.enum,
+);
 const SIMULATION_SEED_BINDING_ROOT = rootPath(
   "product-evals/intakes/product/seed-bindings",
 );
@@ -80,7 +85,6 @@ export const CAMPAIGN_FIXED_SOURCE_FILES = [
   "scripts/cascade.ts",
   "scripts/cascade/cli/command-dispatcher.ts",
   "scripts/cascade/closeout.ts",
-  "scripts/cascade/cli/command-executor.ts",
   "scripts/cascade/admission.ts",
   "scripts/cascade/admission-clauses.ts",
   "scripts/cascade/briefs.ts",
@@ -106,6 +110,7 @@ export const CAMPAIGN_FIXED_SOURCE_FILES = [
   "scripts/cascade/campaign-report.ts",
   "scripts/cascade/evaluations.ts",
   "scripts/cascade/evals.ts",
+  ".codex/plugins/cascade-evals/scripts/judge-ratings.mjs",
   "scripts/cascade/evaluation-reducer.ts",
   "scripts/cascade/evaluation-authority.ts",
   "scripts/cascade/harness-evaluation-receipts.ts",
@@ -543,7 +548,7 @@ export interface SimulationDefinition {
   population_files: string[];
   scenario_files: string[];
   world_file: string;
-  dataset_file: string;
+  dataset_file?: string;
   metric_files: string[];
   treatment_files: string[];
   calibration_file?: string;
@@ -1546,7 +1551,7 @@ export interface ResolvedCampaign {
   scenarios: ScenarioDefinition[];
   world: WorldDefinition;
   fixture: Record<string, unknown>;
-  dataset: DatasetDefinition;
+  dataset?: DatasetDefinition;
   metrics: MetricDefinition[];
   treatments: TreatmentDefinition[];
   calibration?: CalibrationDefinition;
@@ -2284,7 +2289,7 @@ function validateEvaluationProfile(
   if (provider === "codex") {
     requireString(value, "model", label);
     const effort = requireString(value, "reasoning_effort", label);
-    if (!new Set(["low", "medium", "high", "xhigh", "max"]).has(effort)) {
+    if (!EVALUATION_REASONING_EFFORTS.has(effort)) {
       throw new CascadeError(`${label}.reasoning_effort is invalid`);
     }
     requireString(value, "rubric_file", label);
@@ -2333,8 +2338,8 @@ export function validateSimulation(
   }
   requireString(value, "title", label);
   for (const key of ["population_files", "scenario_files"]) {
-    const values = requireArray<string>(value, key, label);
-    if (!values.length) throw new CascadeError(`${label}.${key} must not be empty`);
+    const values = key === "population_files" && value[key] === undefined ? [] : requireArray<string>(value, key, label);
+    if (key === "scenario_files" && !values.length) throw new CascadeError(`${label}.${key} must not be empty`);
     uniqueStrings(values, `${label}.${key}`);
     const subdirectory = key === "population_files" ? "populations" : "scenarios";
     for (const file of values) {
@@ -2346,16 +2351,15 @@ export function validateSimulation(
     }
   }
   for (const key of ["metric_files", "treatment_files"]) {
-    const values = requireArray<string>(value, key, label);
-    if (!values.length) throw new CascadeError(`${label}.${key} must not be empty`);
+    const values = value[key] === undefined ? [] : requireArray<string>(value, key, label);
     uniqueStrings(values, `${label}.${key}`);
   }
   const worldFile = requireString(value, "world_file", label);
   if (!worldFile.startsWith(`${simulationRoot}/worlds/`)) {
     throw new CascadeError(`${label}.world_file must stay inside ${simulationRoot}/worlds/`);
   }
-  const datasetFile = requireString(value, "dataset_file", label);
-  if (!datasetFile.startsWith(`${simulationRoot}/datasets/`)) {
+  const datasetFile = value.dataset_file === undefined ? undefined : requireString(value, "dataset_file", label);
+  if (datasetFile !== undefined && !datasetFile.startsWith(`${simulationRoot}/datasets/`)) {
     throw new CascadeError(`${label}.dataset_file must stay inside ${simulationRoot}/datasets/`);
   }
 }
@@ -2438,7 +2442,7 @@ function validateScenario(
   objectValue(value.initial_state, `${label}.initial_state`);
   for (const key of ["actor_ids", "stop_conditions", "claim_ids"]) {
     const items = requireArray<string>(value, key, label);
-    if (!items.length) throw new CascadeError(`${label}.${key} must not be empty`);
+    if (key !== "actor_ids" && !items.length) throw new CascadeError(`${label}.${key} must not be empty`);
     uniqueStrings(items, `${label}.${key}`);
   }
 }
@@ -3399,7 +3403,7 @@ export function validateTask(
       (provider === "codex" &&
         (runtime.fixture_response_file !== undefined ||
           typeof runtime.model !== "string" || !runtime.model ||
-          !new Set(["low", "medium", "high", "xhigh", "max"]).has(String(runtime.reasoning_effort))))
+          !EVALUATION_REASONING_EFFORTS.has(String(runtime.reasoning_effort))))
     ) {
       throw new CascadeError(`${label}.agent.runtime fixture source is invalid`);
     }
@@ -3970,11 +3974,17 @@ export async function resolveCampaign(
       `${campaign.id} fixture evaluation is restricted to deterministic-fixture tier`,
     );
   }
-  const simulation = await loadFile<SimulationDefinition>(
+  const authoredSimulation = await loadFile<SimulationDefinition>(
     campaign.simulation_file,
     "product-evals/simulations/",
     validateSimulation,
   );
+  const simulation: SimulationDefinition = {
+    ...authoredSimulation,
+    population_files: authoredSimulation.population_files ?? [],
+    metric_files: authoredSimulation.metric_files ?? [],
+    treatment_files: authoredSimulation.treatment_files ?? [],
+  };
   validateCampaignIntakePathScope(
     campaign.simulation_file,
     campaign.intake_file,
@@ -4080,11 +4090,11 @@ export async function resolveCampaign(
     await readStructured(fixturePath, world.fixture_file),
     world.fixture_file,
   );
-  const dataset = await loadFile<DatasetDefinition>(
+  const dataset = simulation.dataset_file ? await loadFile<DatasetDefinition>(
     simulation.dataset_file,
     "product-evals/simulations/",
     validateDataset,
-  );
+  ) : undefined;
   const metrics = await Promise.all(
     simulation.metric_files.map((file) =>
       loadFile<MetricDefinition>(file, "product-evals/metrics/", validateMetric),
@@ -4171,6 +4181,11 @@ export async function resolveCampaign(
       loadFile<ClaimDefinition>(file, "product-evals/claims/", validateClaim),
     ),
   );
+  if (campaign.session && evaluationProfile.provider === "codex" &&
+      claims.some((claim) => !campaign.specialized_evaluation?.claim_ids.includes(claim.id)) &&
+      campaign.session.lease_ttl_ms < evaluationProfile.timeout_ms! + 30_000) {
+    throw new CascadeError(`${campaign.id} session lease_ttl_ms must cover the evaluator timeout plus 30000ms for evidence persistence`);
+  }
   const artifactPolicy = await loadFile<SimulationArtifactPolicy>(
     "product-evals/artifact-policy.yaml",
     "product-evals/",
@@ -4220,7 +4235,7 @@ export async function resolveCampaign(
     assertReferences(scenario.actor_ids, actorIds, `${scenario.id}.actor_ids`);
     assertReferences(scenario.claim_ids, claimIds, `${scenario.id}.claim_ids`);
   }
-  for (const item of dataset.cases) {
+  for (const item of dataset?.cases ?? []) {
     assertReferences([item.actor_id], actorIds, `${item.id}.actor_id`);
     assertReferences([item.scenario_id], scenarioIds, `${item.id}.scenario_id`);
   }
@@ -4350,10 +4365,13 @@ export async function resolveCampaign(
       );
     }
   }
-  if (treatments.filter((item) => item.baseline).length !== 1) {
+  if (treatments.length && treatments.filter((item) => item.baseline).length !== 1) {
     throw new CascadeError("simulation must define exactly one baseline treatment");
   }
   if (calibration) {
+    if (!dataset || !treatments.length || !metrics.length) {
+      throw new CascadeError("calibration requires a dataset, metrics, and treatments");
+    }
     if (calibration.simulation_id !== simulation.id) {
       throw new CascadeError(`${calibration.id}.simulation_id does not match`);
     }
@@ -4415,7 +4433,7 @@ export async function resolveCampaign(
     }
   }
 
-  const sourceFiles = [
+  const sourceFiles = [...new Set([
     ...CAMPAIGN_FIXED_SOURCE_FILES,
     campaign.evaluation_profile_file,
     ...(evaluationProfile.rubric_file ? [evaluationProfile.rubric_file] : []),
@@ -4429,7 +4447,7 @@ export async function resolveCampaign(
     ...simulation.scenario_files,
     simulation.world_file,
     world.fixture_file,
-    simulation.dataset_file,
+    ...(simulation.dataset_file ? [simulation.dataset_file] : []),
     ...simulation.metric_files,
     ...simulation.treatment_files,
     ...(simulation.calibration_file ? [simulation.calibration_file] : []),
@@ -4447,8 +4465,7 @@ export async function resolveCampaign(
     ...(intake?.status === "READY" && intake.product_context
       ? [intake.product_context.brief_path, intake.product_context.output_path]
       : []),
-  ];
-  uniqueStrings(sourceFiles, "resolved source files");
+  ])];
   const sourceDigests = await Promise.all(
     sourceFiles.map(async (file) => ({
       path: file,

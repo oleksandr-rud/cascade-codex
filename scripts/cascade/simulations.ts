@@ -92,6 +92,7 @@ export interface StarterOptions {
   ownerLane: string;
   title?: string;
   referenceDate?: string;
+  research?: boolean;
 }
 
 export interface DerivePopulationOptions {
@@ -351,11 +352,28 @@ export async function renderStarterPackage(
     ),
     INTAKE_ID: sha256Text(`${options.simulationId}:simulation-intake`).slice(0, 16),
   };
-  const rendered: RenderedStarterFile[] = template.files.map((file) => ({
+  let rendered: RenderedStarterFile[] = template.files.map((file) => ({
     path: replaceTokens(file.path, tokens) as string,
     content: replaceTokens(file.content, tokens),
     format: file.path.endsWith(".yaml") ? "yaml" as const : "json" as const,
   }));
+  if (!options.research) {
+    rendered = rendered.filter((file) => !/\/(populations|datasets|metrics|treatments|calibrations)\//.test(file.path) && !file.path.endsWith("-release-eligibility.yaml"));
+    for (const file of rendered) {
+      const content = file.content as Record<string, unknown>;
+      if (file.path.endsWith("/manifest.yaml")) {
+        for (const key of ["population_files", "dataset_file", "metric_files", "treatment_files", "calibration_file"]) delete content[key];
+        content.purpose = "Validate one bounded state transition with explicit policy, oracle, and cleanup evidence.";
+      }
+      if (file.path.includes("/scenarios/")) {
+        content.actor_ids = [];
+        content.claim_ids = [`${options.simulationId}-state-transition`];
+      }
+      if (file.path.includes("/campaigns/")) {
+        content.claim_files = [`product-evals/claims/${options.simulationId}-state-transition.yaml`];
+      }
+    }
+  }
   const campaignPath = `product-evals/campaigns/${options.simulationId}-smoke.yaml`;
   const seedBindingPath = `product-evals/intakes/product/seed-bindings/${options.simulationId}-smoke.json`;
   const campaignFile = rendered.find((file) => file.path === campaignPath);
@@ -366,7 +384,7 @@ export async function renderStarterPackage(
   (seedBindingFile.content as Record<string, unknown>).campaign_sha256 = sha256Text(
     stringifyYaml(campaignFile.content),
   );
-  rendered.push(await renderDesignReport(options, title));
+  if (options.research) rendered.push(await renderDesignReport(options, title));
   const paths = rendered.map((file) => file.path);
   if (new Set(paths).size !== paths.length) {
     throw new CascadeError("simulation starter template renders duplicate paths");
@@ -827,6 +845,7 @@ async function commandInit(value: string | undefined, argv: string[]) {
     ownerLane,
     title: flag(args, "title"),
     referenceDate: flag(args, "reference-date"),
+    research: boolFlag(args, "research"),
     dryRun: boolFlag(args, "dry-run"),
   });
   const status = boolFlag(args, "dry-run") ? "DRY_RUN" : "WRITTEN";
@@ -939,7 +958,7 @@ export async function main(argv: string[]): Promise<number> {
   if (command === "intake") return commandIntake(value, rest);
   console.log(`Usage:
   bun scripts/cascade.ts simulation init <simulation-id> --owner-lane W-NNN
-    [--title "Title"] [--reference-date YYYY-MM-DD] [--dry-run]
+    [--title "Title"] [--research] [--reference-date YYYY-MM-DD] [--dry-run]
     Output root: product-evals/simulations/product/<simulation-id>/
   bun scripts/cascade.ts simulation derive-population P-NNN --simulation <simulation-id>
     --mode <representative|coverage|stress|counterfactual> (--dry-run|--write)

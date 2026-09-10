@@ -1,15 +1,15 @@
 ---
 name: prompt-evaluation
-description: Run controlled prompt and adaptive-interview evaluation campaigns through Cascade Evals and bounded Cascade Simulations execution. Use when prompt quality, model-tier fit, repeated variance, interview behavior, independent judgment, or human calibration must be measured against versioned tasks and frozen evidence rather than merely authored or discussed.
+description: Run controlled prompt and adaptive-interview evaluations through bounded model execution. Use when prompt quality, model-tier fit, repeated variance, interview behavior, independent judgment, or human calibration must be measured against versioned tasks and frozen evidence rather than merely authored or discussed.
 ---
 
 # Prompt Evaluation
 
-Own prompt evaluation as an `agent-response` simulation campaign. Cascade
+Own prompt evaluation as a sequence of bounded model invocations. Cascade
 Prompt is the subject under test; this skill owns task packs, execution
 orchestration, repetitions, grading, calibration packets, and immutable
-evaluation receipts. Cascade Simulations supplies bounded phase execution and
-frozen-run integrity.
+evaluation receipts. Each bounded model invocation preserves its execution
+identity and raw evidence directly.
 
 ## Ownership
 
@@ -18,9 +18,11 @@ frozen-run integrity.
   composition instructions in Cascade Prompt.
 - Keep task fixtures, evaluators, judge profiles, execution adapters, timeout
   policy, variance aggregation, and calibration mechanics here.
-- Resolve the installed `cascade-simulations:simulate` skill for every bounded
-  builder, target, and judge `agent-response` simulation. Bind the dependency
-  receipt and fail closed when it is missing or invalid.
+- Builder, target, judge, and fixed interview turns use the local execution
+  adapter directly. They do not require Cascade Simulations or Python.
+- Use `cascade-simulations:simulate` for a dynamic actor choosing actions against
+  a changing environment. That separate contour retains its simulation contract,
+  authority, journal, recovery, cleanup and controller verification.
 - Never copy prompt runtime instructions into this plugin or bypass the subject
   skill with an evaluator-authored replacement prompt.
 
@@ -31,11 +33,11 @@ frozen-run integrity.
    resolve the enabled installed plugin through `codex plugin list --json`.
 2. Validate the versioned catalog, task, evaluator, model matrix, budgets,
    interview fixtures, and judge profiles.
-3. Freeze one simulation contract per model phase. Record only prompt/output
-   digests in the controller journal; keep full phase evidence in the campaign
-   run directory.
+3. Bind the prompt, model, adapter configuration and runtime digest in one
+   execution receipt per phase. Preserve stdout and stderr beside it. Existing
+   phase receipts, including interrupted dispatches, cannot be replayed.
 4. Execute the prompt builder, target model, and requested independent judges
-   through the declared `agent-response` adapter. A timeout is
+   through the declared bounded execution adapter. A timeout or cancellation is
    `BLOCKED / NOT_RUN`, never a quality rejection.
 5. Apply mechanical eligibility before semantic judgment. Do not expose the
    evaluator, gold answer, thresholds, or peer outputs to the target.
@@ -74,7 +76,8 @@ calibration contract.
 
 ## Boundaries
 
-- One model call completing is simulation execution evidence, not quality.
+- One model call completing proves execution only. Quality requires the
+  declared deterministic or independent semantic checks.
 - Mechanical eligibility, semantic judgment, calibration, and acceptance are
   separate states.
 - A selected task result supports only its bound task/corpus, subject runtime,

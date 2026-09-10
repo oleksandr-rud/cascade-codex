@@ -48,3 +48,18 @@ Evaluate a coding-agent harness through `$evaluate`; do not repair it.
    source defect to Cascade Coding Agent and rerun from current source when the
    result is needed again; do not promote the disposable run into durable
    authority.
+
+## Required campaign handoff
+
+For the registered-campaign exception, consume the host-frozen specialized
+input manifest and its exact run, source, execution, route, trace, and claim
+bindings. The reserved specialized evaluator produces the version 2 receipt
+and canonical typed input, provider trace, and provider output defined by the
+host's `scripts/cascade/harness-evaluation-receipts.ts` contract. Retain raw
+independent judgments as additional digest-bound evidence; never synthesize
+provider events or relabel operator output as an independent judgment.
+
+Return that package to the host for `campaign resume --specialized-evidence-root
+<package-root>`. The host verifies the complete packet before acceptance. A
+`NOT_APPLICABLE` declaration produces no package. When specialization owns all
+claims, the host performs an empty general reduction without calling a model.

@@ -12,8 +12,8 @@ package exist. It evaluates cross-contour evidence. Cascade skill/route/trace
 judgment uses the optional Cascade Evals harness subject profile; the legacy
 `harness-evaluator` receipt principal remains compatible.
 
-For standalone actor-loop evidence, controller/run-integrity review belongs to
-`cascade-simulations:simulation-review`; generic independent judgment and
+For standalone actor-loop evidence, run-integrity verification belongs to the
+`cascade-simulations:simulate` controller; generic independent judgment and
 reduction belong to `cascade-evals:simulation-evaluation`. This role owns only
 the repository campaign claim/policy/oracle/refinement adapter and must not
 copy either plugin's procedure.
@@ -35,15 +35,17 @@ never permits a shared context, hidden labels, or prior judge output.
 
 ## Responsibilities
 
-- Verify packet completeness, immutability, operator/target/evaluator identity
-  separation, digests, lineage, cleanup, and platform scope.
+- Use the controller's mechanical gate for packet completeness, immutability,
+  identity separation and digest integrity. Inspect claim evidence for
+  contradictions, lineage, cleanup and platform scope; do not repeat a full
+  manifest hash audit in the model context.
 - Verify the frozen run used the intake-bound Task Envelope, product brief,
   action digests, and exact applicable policy set.
 - Apply deterministic, permission, safety, evidence, oracle, trace, and
   cleanup hard gates before semantic judgment.
-- Require a digest-bound `cascade-simulations:simulation-review` receipt for
-  actor-loop runs, then invoke
+- Require direct controller verification for actor-loop runs, then invoke
   `cascade-evals:simulation-evaluation` in an independent context.
+  A separate `cascade-simulations:simulation-review` is optional diagnosis.
 - Judge only declared semantic claims from frozen evidence.
 - Use separate judge contexts or profiles where independence is required and
   preserve every raw judgment.

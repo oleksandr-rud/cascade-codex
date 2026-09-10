@@ -1,3 +1,4 @@
+import { scoreRatings } from "../../../scripts/judge-ratings.mjs";
 import { createHash } from "node:crypto";
 import { readFile, readdir, lstat } from "node:fs/promises";
 import { join, relative, isAbsolute } from "node:path";
@@ -62,14 +63,14 @@ export function parseJudgment(text, profile, identity, evidence) {
       Array.isArray(r.evidence) && r.evidence.length > 0 && r.evidence.every(nonempty) && Array.isArray(r.evidence_refs) && r.evidence_refs.length > 0 && r.evidence_refs.every(ref => validEvidenceRef(ref, evidence)));
   if (!valid) return { valid: false, error: "judge response violates the bound evidence-reference contract", response };
   if (response.verdict === "BLOCKED") return { valid: true, score: null, floor_passed: false, harness_verdict: "BLOCKED", response };
-  const score = profile.dimensions.reduce((sum, d) => sum + d.weight * ratings.find(r => r.dimension_id === d.id).rating / 4, 0) / 100;
-  const floorPassed = ratings.every(r => r.rating >= profile.minimum_dimension_rating);
-  return { valid: true, score, floor_passed: floorPassed, harness_verdict: score >= profile.threshold && floorPassed ? "PASS" : "FAIL", response };
+  const scored = scoreRatings({ dimensions: profile.dimensions, ratings: ratings.map(r => ({ id: r.dimension_id, score: r.rating })), threshold: profile.threshold, minimumDimension: profile.minimum_dimension_rating });
+  if (!scored.valid) return { valid: false, error: scored.error, response };
+  return { valid: true, score: scored.score, floor_passed: scored.floor_passed, harness_verdict: scored.verdict, response };
 }
 
 export async function runnerDigest(root) {
   const files = (await readdir(root)).filter(path => path.endsWith(".mjs")).sort();
-  return digest(JSON.stringify(await Promise.all(files.map(async path => ({ path, sha256: digest(await readFile(join(root, path), "utf8")) })))));
+  return digest(await readFile(new URL("../../../scripts/judge-ratings.mjs", import.meta.url), "utf8") + JSON.stringify(await Promise.all(files.map(async path => ({ path, sha256: digest(await readFile(join(root, path), "utf8")) })))));
 }
 
 export function subjectReadChecks(expected, execution, label) {

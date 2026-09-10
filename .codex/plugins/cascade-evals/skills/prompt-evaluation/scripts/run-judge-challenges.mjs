@@ -3,7 +3,7 @@ import {readFile,writeFile,mkdir} from "node:fs/promises";
 import {join,dirname,resolve} from "node:path";
 import {fileURLToPath} from "node:url";
 import {judgeRequest,parseJudgment,digest,runnerDigest} from "./evaluation-integrity.mjs";
-import {runAgentResponseSimulation} from "./agent-response-simulation.mjs";
+import {runModelPhase} from "./execution-adapters.mjs";
 const scripts=dirname(fileURLToPath(import.meta.url));
 const value=name=>{const i=process.argv.indexOf(`--${name}`);return i<0?undefined:process.argv[i+1];};
 const output=resolve(value("output-dir")??".artifacts/prompt-judge-challenges");
@@ -19,10 +19,10 @@ for(const item of catalog.cases){
  const identity={fixture_id:item.id,run_id:runId};
  const evidence={request:item.request,first_response:item.response,second_response:null};
  const request=judgeRequest(profile,identity,evidence);
- const run=await runAgentResponseSimulation({phase:item.id,runId,runRoot:root,model:contract.model,reasoningEffort:"max",prompt:request,cwd:workspace,timeoutMs:240000,adapter:"codex-cli"});
+ const run=await runModelPhase({phase:item.id,runId,runRoot:root,model:contract.model,reasoningEffort:"max",prompt:request,cwd:workspace,timeoutMs:240000,adapter:"codex-cli"});
  await writeFile(join(root,`${item.id}.jsonl`),run.stdout??"");
  const parsed=run.status==="COMPLETED"?parseJudgment(run.final_text,profile,identity,evidence):{valid:false,error:run.status};
- cases.push({id:item.id,expected:item.expected,observed:parsed.valid?parsed.harness_verdict:"INVALID",matched:parsed.valid&&parsed.harness_verdict===item.expected,result:parsed,simulation:run.simulation});
+ cases.push({id:item.id,expected:item.expected,observed:parsed.valid?parsed.harness_verdict:"INVALID",matched:parsed.valid&&parsed.harness_verdict===item.expected,result:parsed,receipt:run.execution_receipt});
 }
 const summary={...contract,cases,matched:cases.filter(c=>c.matched).length,total:cases.length,status:cases.every(c=>c.matched)?"PASS":"FAIL",label_provenance:catalog.label_provenance};
 await writeFile(join(root,"run-summary.json"),JSON.stringify(summary,null,2));

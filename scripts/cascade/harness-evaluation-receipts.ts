@@ -58,6 +58,28 @@ export interface SpecializedEvaluationExpectation {
   artifact_files: Array<SpecializedEvidenceArtifact & { content: string }>;
 }
 
+export function specializedEvaluationInput(expected: Pick<SpecializedEvaluationExpectation,
+  "run_id" | "campaign_id" | "source_manifest_digest" | "execution_receipt_digest" |
+  "claim_authority_digest" | "declaration" | "claims"
+>): Record<string, unknown> {
+  return {
+    schema_version: 1,
+    artifact_type: "specialized-evaluation-input-manifest",
+    specialized_evaluation_id: `${expected.run_id}-specialized-evaluation`,
+    run_id: expected.run_id,
+    campaign_id: expected.campaign_id,
+    source_manifest_digest: expected.source_manifest_digest,
+    execution_receipt_digest: expected.execution_receipt_digest,
+    claim_authority_digest: expected.claim_authority_digest,
+    route_ids: expected.declaration.route_ids,
+    trace_ids: expected.declaration.trace_ids,
+    claims: expected.declaration.claim_ids.map((claimId) => ({
+      claim_id: claimId,
+      class: expected.claims.find((claim) => claim.id === claimId)?.class,
+    })),
+  };
+}
+
 const DIGEST = /^[a-f0-9]{64}$/;
 
 function exactStrings(actual: string[], expected: string[], label: string): void {
@@ -241,28 +263,7 @@ function validateRequiredProviderPacket(
   const input = parseEvidenceJson(inputArtifact, "specialized input manifest");
   const trace = parseEvidenceJson(traceArtifact, "specialized provider trace");
   const output = parseEvidenceJson(outputArtifact, "specialized provider output");
-  const expectedClaims = expected.declaration.claim_ids.map((claimId) => ({
-    claim_id: claimId,
-    class: expected.claims.find((claim) => claim.id === claimId)?.class,
-  }));
-  if (
-    Object.keys(input).sort().join(",") !== [
-      "artifact_type", "campaign_id", "claim_authority_digest", "claims",
-      "execution_receipt_digest", "route_ids", "run_id", "schema_version",
-      "source_manifest_digest", "specialized_evaluation_id", "trace_ids",
-    ].sort().join(",") ||
-    input.schema_version !== 1 ||
-    input.artifact_type !== "specialized-evaluation-input-manifest" ||
-    input.specialized_evaluation_id !== receipt.specialized_evaluation_id ||
-    input.run_id !== expected.run_id ||
-    input.campaign_id !== expected.campaign_id ||
-    input.source_manifest_digest !== expected.source_manifest_digest ||
-    input.execution_receipt_digest !== expected.execution_receipt_digest ||
-    input.claim_authority_digest !== expected.claim_authority_digest ||
-    stableJson(input.route_ids) !== stableJson(expected.declaration.route_ids) ||
-    stableJson(input.trace_ids) !== stableJson(expected.declaration.trace_ids) ||
-    stableJson(input.claims) !== stableJson(expectedClaims)
-  ) {
+  if (stableJson(input) !== stableJson(specializedEvaluationInput(expected))) {
     throw new CascadeError("REQUIRED specialized input manifest is stale or invalid");
   }
   if (

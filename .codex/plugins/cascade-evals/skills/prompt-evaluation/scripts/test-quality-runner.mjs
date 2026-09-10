@@ -5,11 +5,10 @@ import { join } from "node:path";
 import { spawnSync } from "node:child_process";
 import { tmpdir } from "node:os";
 import { fileURLToPath } from "node:url";
-import { resolveInstalledSkill, resolveSubjectSkill } from "./subject-plugin.mjs";
+import { resolveSubjectSkill } from "./subject-plugin.mjs";
 
 const runner = join(fileURLToPath(new URL(".", import.meta.url)), "run-quality-eval.mjs");
 const subjectSkillRoot = await resolveSubjectSkill();
-const simulationSkillRoot = await resolveInstalledSkill({ pluginName: "cascade-simulations", skillName: "simulate" });
 const root = await mkdtemp(join(tmpdir(), "cascade-prompt-runner-test-"));
 const binRoot = join(root, "bin");
 const outputRoot = join(root, "output");
@@ -58,7 +57,7 @@ const adapterArgs = ["--adapter-config", adapterConfig, ...["prompt", "target", 
 function run(extraEnv = {}, extraArgs = []) {
   const result = spawnSync(process.execPath, [runner, "run", ...adapterArgs, "--task", "structured-invoice-v1", "--prompt-model", "gpt-5.6-terra", "--target-model", "gpt-5.6-terra", "--execute-judges", "--judge-model", "gpt-5.6-terra", "--subject-skill-root", subjectSkillRoot, "--output-dir", outputRoot, ...extraArgs], {
     encoding: "utf8",
-    env: { ...process.env, CASCADE_SIMULATIONS_SKILL_ROOT: simulationSkillRoot, ...extraEnv }
+    env: { ...process.env, CASCADE_SIMULATIONS_SKILL_ROOT: join(root, "unavailable-simulations"), ...extraEnv }
   });
   const output = JSON.parse(result.stdout || "{}");
   return { result, output };
@@ -67,7 +66,7 @@ function run(extraEnv = {}, extraArgs = []) {
 function runBrand(extraEnv = {}) {
   const result = spawnSync(process.execPath, [runner, "run", ...adapterArgs, "--task", "brand-context-copy-v1", "--prompt-model", "gpt-5.6-terra", "--target-model", "gpt-5.6-terra", "--subject-skill-root", subjectSkillRoot, "--output-dir", outputRoot], {
     encoding: "utf8",
-    env: { ...process.env, CASCADE_SIMULATIONS_SKILL_ROOT: simulationSkillRoot, ...extraEnv }
+    env: { ...process.env, CASCADE_SIMULATIONS_SKILL_ROOT: join(root, "unavailable-simulations"), ...extraEnv }
   });
   const output = JSON.parse(result.stdout || "{}");
   return { result, output };
@@ -85,8 +84,8 @@ const first = run();
 assert(first.result.status === 3, `first run failed: ${first.result.stderr}`);
 const firstSummary = await summary(first);
 assert(firstSummary.execution.prompt_builder.status === "EXECUTED", "first builder must execute");
-assert(firstSummary.execution.prompt_builder.simulation?.status === "ACHIEVED" && firstSummary.execution.prompt_builder.simulation?.controller_verified, "builder must have a verified simulation receipt");
-assert(firstSummary.execution.target.simulation?.status === "ACHIEVED" && firstSummary.execution.target.simulation?.controller_verified, "target must have a verified simulation receipt");
+assert(firstSummary.execution.prompt_builder.receipts?.length === 1, "builder must have a bound direct execution receipt");
+assert(Boolean(firstSummary.execution.target.receipt?.sha256), "target must have a bound direct execution receipt");
 assert(firstSummary.execution.outcome_judge.status === "DETERMINISTIC", "exact task must use deterministic outcome");
 assert(firstSummary.execution.trajectory_judge.status === "EXECUTED", "first trajectory judge must execute");
 assert(firstSummary.acceptance === "UNVERIFIED" && firstSummary.semantic_acceptance === "ACCEPTED", "fixture ratings may pass but external evidence must remain unverified");
@@ -132,8 +131,8 @@ const executionBlock = JSON.parse(await readFile(join(timedOut.output.run_root, 
 assert(executionBlock.status === "BLOCKED" && executionBlock.acceptance === "NOT_RUN", "timeout must be blocked, not rejected");
 assert(executionBlock.execution.status === "TIMED_OUT", "timeout must retain TIMED_OUT execution status");
 assert(executionBlock.root_cause === "environment-blocker", "timeout must be classified as an environment blocker");
-const timeoutSimulation = JSON.parse(await readFile(join(timedOut.output.run_root, "simulations/target/controller/result.json"), "utf8"));
-assert(timeoutSimulation.status === "TIMED_OUT", "timeout must be frozen by the simulation controller");
+const timeoutSimulation = JSON.parse(await readFile(join(timedOut.output.run_root, "target.execution.json"), "utf8"));
+assert(timeoutSimulation.status === "TIMED_OUT", "timeout must be retained in the direct execution receipt");
 
 const cacheFiles = [];
 for (const folder of [join(outputRoot, ".cache", "prompt-builders"), join(outputRoot, ".cache", "trajectory-judges")]) {
@@ -144,7 +143,7 @@ assert(!cacheText.includes("NORTHSTAR INDUSTRIAL SUPPLY"), "cache must not conta
 assert(!cacheText.includes("INV-2048-A"), "cache must not contain gold or target output");
 assert(!cacheText.includes("semantic_anchors"), "cache must not contain evaluator material");
 
-console.log(`PASS: simulation-controlled phases, full-contract delivery, one-shot state enforcement, cache, timeout blocking, deterministic outcome, semantic text limits, judge gating, telemetry, and cache isolation (${root})`);
+console.log(`PASS: directly executed phases, full-contract delivery, one-shot state enforcement, cache, timeout blocking, deterministic outcome, semantic text limits, judge gating, telemetry, and cache isolation (${root})`);
 
 const blockedJudgeRun = run({FAKE_JUDGE_BLOCKED:"1"},["--no-trajectory-cache"]);
 const blockedJudgeSummary = await summary(blockedJudgeRun);

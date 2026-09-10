@@ -5,11 +5,10 @@ import { join } from "node:path";
 import { spawnSync } from "node:child_process";
 import { tmpdir } from "node:os";
 import { fileURLToPath } from "node:url";
-import { resolveInstalledSkill, resolveSubjectSkill } from "./subject-plugin.mjs";
+import { resolveSubjectSkill } from "./subject-plugin.mjs";
 
 const runner = join(fileURLToPath(new URL(".", import.meta.url)), "run-interview-eval.mjs");
 const subjectSkillRoot = await resolveSubjectSkill();
-const simulationSkillRoot = await resolveInstalledSkill({ pluginName: "cascade-simulations", skillName: "simulate" });
 const root = await mkdtemp(join(tmpdir(), "cascade-prompt-interview-test-"));
 const binRoot = join(root, "bin");
 const outputRoot = join(root, "output");
@@ -43,7 +42,7 @@ const adapterArgs = ["--adapter-config", adapterConfig, ...["prompt", "target", 
 function run(fixture, extraArgs = [], extraEnv = {}) {
   const result = spawnSync(process.execPath, [runner, "run", ...adapterArgs, "--fixture", fixture, "--model", "gpt-5.6-terra", "--subject-skill-root", subjectSkillRoot, "--output-dir", outputRoot, ...extraArgs], {
     encoding: "utf8",
-    env: { ...process.env, CASCADE_SIMULATIONS_SKILL_ROOT: simulationSkillRoot, ...extraEnv }
+    env: { ...process.env, CASCADE_SIMULATIONS_SKILL_ROOT: join(root, "unavailable-simulations"), ...extraEnv }
   });
   let output = {};
   try {
@@ -65,8 +64,8 @@ function assert(condition, message) {
 const complete = run("complete-quick-v1", ["--execute-target", "--target-model", "gpt-5.6-terra"]);
 assert(complete.result.status === 0, `complete fixture failed: ${complete.result.stderr}\n${complete.result.stdout}`);
 const completeSummary = await summary(complete);
-assert(completeSummary.execution.first_turn.simulation?.status === "ACHIEVED" && completeSummary.execution.first_turn.simulation?.controller_verified, "interview turn must have a verified simulation receipt");
-assert(completeSummary.execution.target.simulation?.status === "ACHIEVED" && completeSummary.execution.target.simulation?.controller_verified, "interview target must have a verified simulation receipt");
+assert(completeSummary.execution.first_turn.receipts?.length === 1, "interview turn must have a bound direct execution receipt");
+assert(Boolean(completeSummary.execution.target.receipt?.sha256), "interview target must have a bound direct execution receipt");
 assert(completeSummary.turns.first.inspected.state === "READY", "complete fixture must be READY");
 assert(completeSummary.turns.first.inspected.questions.length === 0, "complete fixture must ask zero questions");
 assert(completeSummary.target.status === "PASS", "optional target execution must pass");
@@ -97,10 +96,10 @@ assert(timedOut.result.status === 3, `interview timeout must exit 3, got ${timed
 const executionBlock = JSON.parse(await readFile(join(timedOut.output.run_root, "execution-block.json"), "utf8"));
 assert(executionBlock.status === "BLOCKED" && executionBlock.acceptance === "NOT_RUN", "interview timeout must not be rejected");
 assert(executionBlock.phase === "first-turn" && executionBlock.execution.status === "TIMED_OUT", "interview timeout must identify its phase");
-const timeoutSimulation = JSON.parse(await readFile(join(timedOut.output.run_root, "simulations/first-turn-read-0/controller/result.json"), "utf8"));
-assert(timeoutSimulation.status === "TIMED_OUT", "interview timeout must be frozen by the simulation controller");
+const timeoutSimulation = JSON.parse(await readFile(join(timedOut.output.run_root, "first-turn-read-0.execution.json"), "utf8"));
+assert(timeoutSimulation.status === "TIMED_OUT", "interview timeout must be retained in the direct execution receipt");
 
-console.log(`PASS: simulation-controlled interview states, question intents, transcript replay, no-repeat, optional target execution, timeout blocking, telemetry, and failure checks (${root})`);
+console.log(`PASS: directly executed interview states, question intents, transcript replay, no-repeat, optional target execution, timeout blocking, telemetry, and failure checks (${root})`);
 
 const migrationFirst = join(root, "migration-first.md");
 const migrationSecond = join(root, "migration-second.md");

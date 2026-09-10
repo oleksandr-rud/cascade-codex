@@ -133,6 +133,7 @@ import {
   assertTerminalStatusMatchesClaimLedger,
   claimLedgerTerminalStatus,
   evaluationInputDigest,
+  generalEvaluationRequest,
   parseCodexJsonl,
   runCodexEvaluation,
 } from "./evaluations";
@@ -142,12 +143,13 @@ import {
   buildMechanicalEvaluationAuthority,
   applyFakeActionAuthority,
   observeFileExistsAuthority,
-  requiredPolicyEvidenceProjection,
   type CalibrationReceipt,
 } from "./evaluation-authority";
 import {
   buildNotApplicableSpecializedEvaluationReceipt,
+  specializedEvaluationInput,
   verifySpecializedEvaluationReceipt,
+  type SpecializedEvaluationExpectation,
   type SpecializedEvaluationReceipt,
   type SpecializedEvidenceArtifact,
 } from "./harness-evaluation-receipts";
@@ -171,7 +173,6 @@ import {
   type TaskAction,
   type TaskDefinition,
   type TerminalStep,
-  type SimulationAction,
   type SecretReference,
   findCampaignPath,
   resolveCampaign,
@@ -264,125 +265,6 @@ export function prepareCampaignConfirmationAuthority(
   return {
     confirmation_secrets: confirmationSecretRecord(confirmationSecrets),
     child_env_omit: childEnvOmit,
-  };
-}
-
-export interface ComputerUseLoopObservation {
-  sequence: number;
-  action_index: number | null;
-  reason: "INITIAL" | "POST_ACTION" | "POLICY_STOP";
-  payload: Record<string, unknown>;
-}
-
-export interface ComputerUseLoopResult {
-  status:
-    | "COMPLETED"
-    | "DENIED"
-    | "CONFIRMATION_REQUIRED"
-    | "BLOCKED"
-    | "CANCELLED";
-  earliest_failure: string | null;
-  proposed_action_count: number;
-  executed_action_count: number;
-  decisions: PolicyDecision[];
-  executed_actions: SimulationAction[];
-  observations: ComputerUseLoopObservation[];
-}
-
-/**
- * Shared action-level seam for Computer Use and structured browser tools.
- * Provider responses stay outside this helper; each normalized action is
- * authorized immediately before dispatch, and every stop emits a fresh
- * observation without executing the denied or later actions.
- */
-export async function runBoundedComputerUseLoop(input: {
-  batches: readonly (readonly SimulationAction[])[];
-  max_actions: number;
-  authorize: (action: SimulationAction, actionIndex: number) => PolicyDecision;
-  dispatch: (action: SimulationAction, decision: PolicyDecision) => Promise<void>;
-  observe: (input: {
-    action_index: number | null;
-    reason: ComputerUseLoopObservation["reason"];
-  }) => Promise<Record<string, unknown>>;
-  signal?: AbortSignal;
-}): Promise<ComputerUseLoopResult> {
-  if (!Number.isInteger(input.max_actions) || input.max_actions < 1) {
-    throw new CascadeError("Computer Use max_actions must be a positive integer");
-  }
-  if (!input.batches.length || input.batches.some((batch) => !batch.length)) {
-    throw new CascadeError("Computer Use responses must contain non-empty action batches");
-  }
-  const actions = input.batches.flatMap((batch) => [...batch]);
-  if (actions.length > input.max_actions) {
-    throw new CascadeError("Computer Use action batches exceed the declared action budget");
-  }
-  for (const action of actions) assertSafeSimulationAction(action);
-  const observations: ComputerUseLoopObservation[] = [{
-    sequence: 0,
-    action_index: null,
-    reason: "INITIAL",
-    payload: clone(await input.observe({ action_index: null, reason: "INITIAL" })),
-  }];
-  const decisions: PolicyDecision[] = [];
-  const executedActions: SimulationAction[] = [];
-  for (const [actionIndex, action] of actions.entries()) {
-    if (input.signal?.aborted) {
-      return {
-        status: "CANCELLED",
-        earliest_failure: "Computer Use loop cancelled before the next action",
-        proposed_action_count: actions.length,
-        executed_action_count: executedActions.length,
-        decisions,
-        executed_actions: executedActions,
-        observations,
-      };
-    }
-    const decision = input.authorize(action, actionIndex);
-    decisions.push(decision);
-    if (decision.decision !== "ALLOW") {
-      observations.push({
-        sequence: observations.length,
-        action_index: actionIndex,
-        reason: "POLICY_STOP",
-        payload: clone(await input.observe({
-          action_index: actionIndex,
-          reason: "POLICY_STOP",
-        })),
-      });
-      return {
-        status: decision.decision === "DENY"
-          ? "DENIED"
-          : decision.decision === "REQUIRE_CONFIRMATION"
-            ? "CONFIRMATION_REQUIRED"
-            : "BLOCKED",
-        earliest_failure: decision.reason,
-        proposed_action_count: actions.length,
-        executed_action_count: executedActions.length,
-        decisions,
-        executed_actions: executedActions,
-        observations,
-      };
-    }
-    await input.dispatch(action, decision);
-    executedActions.push(clone(action));
-    observations.push({
-      sequence: observations.length,
-      action_index: actionIndex,
-      reason: "POST_ACTION",
-      payload: clone(await input.observe({
-        action_index: actionIndex,
-        reason: "POST_ACTION",
-      })),
-    });
-  }
-  return {
-    status: "COMPLETED",
-    earliest_failure: null,
-    proposed_action_count: actions.length,
-    executed_action_count: executedActions.length,
-    decisions,
-    executed_actions: executedActions,
-    observations,
   };
 }
 
@@ -1534,143 +1416,13 @@ export function claimStatus(
   taskResults: TaskResult[],
   calibration: CalibrationReceipt | null,
 ): { status: ClaimStatus; reason: string; evidence: string[] } {
-  const populationAuthority = evaluatePopulationAuthority(
-    resolved,
-    claim,
+  const entry = buildMechanicalEvaluationAuthority({
+    claims: [claim],
+    task_results: taskResults,
     calibration,
-  );
-  if (populationAuthority) return populationAuthority;
-  const oracleResults = taskResults.flatMap((task) => task.oracle_results);
-  const policyDecisions = taskResults.flatMap((task) => task.policy_decisions);
-  const missingOracles = claim.required_oracle_ids.filter(
-    (id) => !oracleResults.some((result) => result.oracle_id === id),
-  );
-  const failedOracles = claim.required_oracle_ids.filter((id) =>
-    oracleResults.some(
-      (result) => result.oracle_id === id && result.status === "FAIL",
-    ),
-  );
-  const deniedPolicies = claim.required_policy_ids.filter((id) =>
-    policyDecisions.some(
-      (decision) =>
-        decision.policy_id === id && decision.decision !== "ALLOW",
-    ),
-  );
-  const missingPolicyProjection = requiredPolicyEvidenceProjection(
-    claim.required_policy_ids,
-    policyDecisions,
-  );
-  const failedTasks = taskResults.filter(
-    (task) => task.required && task.status !== "PASS",
-  );
-  const metricResults = calibration?.metric_results ?? [];
-  const missingMetrics = claim.required_metric_ids.filter(
-    (id) => !metricResults.some((result) => result.metric_id === id),
-  );
-  const failedMetrics = claim.required_metric_ids.filter((id) =>
-    metricResults.some(
-      (result) => result.metric_id === id && result.status !== "PASS",
-    ),
-  );
-  const availableEvidence = new Set([
-    "source-manifest",
-    "execution-receipt",
-    ...(taskResults.length ? ["task-result"] : []),
-    ...(taskResults.some((task) => task.events.length) ? ["trajectory"] : []),
-    ...(policyDecisions.length ? ["policy-decisions"] : []),
-    ...(oracleResults.length ? ["oracle"] : []),
-    ...(taskResults.every((task) => task.cleanup.verified) ? ["cleanup"] : []),
-    ...(calibration ? ["calibration-receipt"] : []),
-  ]);
-  const missingEvidence = claim.evidence_requirements.filter(
-    (requirement) => !availableEvidence.has(requirement),
-  );
-  if (missingOracles.length) {
-    return {
-      status: "BLOCKED",
-      reason: `required oracle evidence missing: ${missingOracles.join(", ")}`,
-      evidence: [],
-    };
-  }
-  if (missingPolicyProjection || missingMetrics.length || missingEvidence.length) {
-    return {
-      status: "BLOCKED",
-      reason: [
-        missingPolicyProjection?.reason ?? null,
-        missingMetrics.length
-          ? `required metric evidence missing: ${missingMetrics.join(", ")}`
-          : null,
-        missingEvidence.length
-          ? `required artifacts missing: ${missingEvidence.join(", ")}`
-          : null,
-      ]
-        .filter(Boolean)
-        .join("; "),
-      evidence: [],
-    };
-  }
-  if (failedTasks.length) {
-    return {
-      status: "UNSUPPORTED",
-      reason: `required task failed: ${failedTasks.map((item) => item.task_id).join(", ")}`,
-      evidence: failedTasks.map((item) => item.task_id),
-    };
-  }
-  if (failedOracles.length || deniedPolicies.length || failedMetrics.length) {
-    return {
-      status: "UNSUPPORTED",
-      reason: [
-        failedOracles.length
-          ? `failed oracles: ${failedOracles.join(", ")}`
-          : null,
-        deniedPolicies.length
-          ? `unsatisfied policies: ${deniedPolicies.join(", ")}`
-          : null,
-        failedMetrics.length
-          ? `failed metrics: ${failedMetrics.join(", ")}`
-          : null,
-      ]
-        .filter(Boolean)
-        .join("; "),
-      evidence: [...failedOracles, ...deniedPolicies, ...failedMetrics],
-    };
-  }
-  if (claim.requires_calibration) {
-    if (!calibration) {
-      return {
-        status: "NOT_RUN",
-        reason: "required calibration receipt is absent",
-        evidence: [],
-      };
-    }
-    if (calibration.framework_fixture) {
-      return {
-        status: "NOT_RUN",
-        reason:
-          "framework-fixture calibration cannot support target release eligibility",
-        evidence: [calibration.calibration_id],
-      };
-    }
-    if (calibration.status !== "CALIBRATED") {
-      return {
-        status:
-          calibration.status === "STALE" ? "BLOCKED" : "UNSUPPORTED",
-        reason: `required calibration is ${calibration.status}`,
-        evidence: [calibration.calibration_id],
-      };
-    }
-  }
-  return {
-    status: "SUPPORTED",
-    reason: "all declared non-compensating gates passed",
-    evidence: [
-      ...claim.required_oracle_ids,
-      ...claim.required_policy_ids,
-      ...claim.required_metric_ids,
-      ...claim.evidence_requirements,
-      ...(calibration ? [calibration.calibration_id] : []),
-    ],
-  };
+    population_authority: (current) => evaluatePopulationAuthority(resolved, current, calibration),
+  }).claim_ledger[0]!;
+  return { status: entry.status, reason: entry.reason, evidence: entry.evidence };
 }
 
 function buildMechanicalEvaluation(
@@ -1741,6 +1493,7 @@ export function assertEvaluationReceiptFresh(
   ) {
     throw new CascadeError("evaluation receipt shape is invalid");
   }
+  const noGeneralClaims = generalEvaluationRequest(resolved, identity, mechanical).mechanical_evaluation.claim_ledger.length === 0;
   const expected: Array<[unknown, unknown, string]> = [
     [evaluation.schema_version, 3, "schema_version"],
     [
@@ -1789,27 +1542,27 @@ export function assertEvaluationReceiptFresh(
     ],
     [
       evaluation.provider,
-      resolved.evaluationProfile.provider,
+      noGeneralClaims ? "none" : resolved.evaluationProfile.provider,
       "provider",
     ],
     [
       evaluation.rubric_id,
-      resolved.rubric?.id ?? null,
+      noGeneralClaims ? null : resolved.rubric?.id ?? null,
       "rubric_id",
     ],
     [
       evaluation.rubric_digest,
-      resolved.rubric ? valueDigest(resolved.rubric) : null,
+      !noGeneralClaims && resolved.rubric ? valueDigest(resolved.rubric) : null,
       "rubric_digest",
     ],
     [
       evaluation.model,
-      resolved.evaluationProfile.model ?? null,
+      noGeneralClaims ? null : resolved.evaluationProfile.model ?? null,
       "model",
     ],
     [
       evaluation.reasoning_effort,
-      resolved.evaluationProfile.reasoning_effort ?? null,
+      noGeneralClaims ? null : resolved.evaluationProfile.reasoning_effort ?? null,
       "reasoning_effort",
     ],
   ];
@@ -1827,7 +1580,7 @@ export function assertEvaluationReceiptFresh(
   if (evaluation.evaluation_input_digest !== expectedInputDigest) {
     throw new CascadeError("evaluation receipt input digest is stale or mismatched");
   }
-  if (resolved.evaluationProfile.provider === "codex") {
+  if (!noGeneralClaims && resolved.evaluationProfile.provider === "codex") {
     if (!expectedProviderDigests) {
       throw new CascadeError(
         "Codex evaluation freshness requires authenticated provider evidence",
@@ -1978,7 +1731,7 @@ export function assertEvaluationReceiptFresh(
     throw new CascadeError("evaluation receipt terminal status conflicts with failure metadata");
   }
   const { created_at: _actualCreatedAt, ...actualProjection } = evaluation;
-  if (resolved.evaluationProfile.provider === "fixture") {
+  if (noGeneralClaims || resolved.evaluationProfile.provider === "fixture") {
     const expectedReceipt = buildFixtureEvaluationReceipt(
       resolved,
       identity,
@@ -2084,6 +1837,45 @@ async function specializedEvidenceArtifacts(
       };
     }),
   );
+}
+
+async function importSpecializedEvidence(
+  store: CampaignArtifactStore,
+  evidenceRoot: string,
+  expected: Omit<SpecializedEvaluationExpectation, "artifact_files">,
+): Promise<SpecializedEvaluationReceipt> {
+  const root = await realpath(resolve(evidenceRoot));
+  const read = async (path: string) => {
+    const absolute = await realpath(resolve(root, path));
+    if (!absolute.startsWith(`${root}${sep}`)) throw new CascadeError("specialized evidence escapes its supplied root");
+    return new TextDecoder("utf-8", { fatal: true }).decode(await readBoundedRegularFile(absolute, path, { maxBytes: 10 * 1024 * 1024, physicalRoot: root }));
+  };
+  const receipt = JSON.parse(await read(expected.path)) as SpecializedEvaluationReceipt;
+  const prefix = `specialized-evaluations/${expected.run_id}-specialized-evaluation/`;
+  if (!Array.isArray(receipt.evidence_artifacts) || receipt.evidence_artifacts.length > 128) {
+    throw new CascadeError("specialized evidence manifest is invalid or unbounded");
+  }
+  const files = [];
+  let totalBytes = 0;
+  for (const file of receipt.evidence_artifacts) {
+    if (typeof file?.path !== "string" || !file.path.startsWith(prefix) || file.path === expected.path || file.path.split("/").some((part) => !part || part === "." || part === "..")) {
+      throw new CascadeError("specialized evidence must stay inside its evaluation namespace");
+    }
+    const content = await read(file.path);
+    totalBytes += Buffer.byteLength(content);
+    if (totalBytes > 32 * 1024 * 1024) throw new CascadeError("specialized evidence exceeds 32 MiB");
+    const sha256 = new Bun.CryptoHasher("sha256").update(content).digest("hex");
+    if (await store.artifactFileExists(file.path)) {
+      if ((await store.artifactFileRecord(file.path)).sha256 !== sha256) throw new CascadeError(`specialized evidence conflicts with frozen input: ${file.path}`);
+    }
+    files.push({ path: file.path, sha256, content });
+  }
+  verifySpecializedEvaluationReceipt(receipt, { ...expected, artifact_files: files });
+  for (const file of files) {
+    if (!(await store.artifactFileExists(file.path))) await store.writeStageText(file.path, file.content);
+  }
+  await store.writeStageJson(expected.path, receipt);
+  return receipt;
 }
 
 async function campaignPaths(): Promise<string[]> {
@@ -2314,7 +2106,8 @@ export function campaignSessionContract(
       configured?.lease_ttl_ms ??
       Math.min(
         24 * 60 * 60 * 1_000,
-        Math.max(60_000, maximumTaskLifecycle + 1_000),
+        Math.max(60_000, maximumTaskLifecycle + 1_000,
+          resolved.evaluationProfile.provider === "codex" ? resolved.evaluationProfile.timeout_ms! + 30_000 : 0),
       ),
   };
 }
@@ -2822,40 +2615,7 @@ async function persistOrReuseRuntimeHandoffAcceptance(
   return existing;
 }
 
-export function generalEvaluationRequest(
-  resolved: ResolvedCampaign,
-  identity: EvaluationIdentity,
-  mechanical: MechanicalEvaluation,
-): EvaluationRequest {
-  const lockedClaims = new Set(identity.specializedEvaluation?.claim_ids ?? []);
-  const generalLedger = mechanical.claim_ledger.filter(
-    (claim) => !lockedClaims.has(claim.claim_id),
-  );
-  const input = {
-    schema_version: 1 as const,
-    evaluation_id: `${identity.runId}-evaluation`,
-    run_id: identity.runId,
-    campaign_id: identity.campaignId,
-    source_manifest_digest: identity.sourceManifestDigest,
-    execution_receipt_digest: identity.executionReceiptDigest,
-    calibration_receipt_digest: identity.calibrationReceiptDigest,
-    operator_identity: identity.operatorIdentity,
-    target_actor_identity: identity.targetActorIdentity,
-    evaluator_identity: identity.evaluatorIdentity,
-    principal_identities: identity.principalIdentities,
-    specialized_evaluation: identity.specializedEvaluation,
-    profile: resolved.evaluationProfile,
-    rubric: resolved.rubric ?? null,
-    mechanical_evaluation: {
-      claim_ledger: generalLedger,
-      status: claimLedgerTerminalStatus(generalLedger),
-    },
-  };
-  return {
-    ...input,
-    evaluation_input_digest: valueDigest(input),
-  };
-}
+export { generalEvaluationRequest } from "./evaluations";
 
 export function codexEvaluationOutputFromTrace(trace: string): CodexEvaluationOutput {
   const output = parseCodexJsonl(trace).output;
@@ -3026,9 +2786,9 @@ async function commandRun(
   argv: string[],
   resume = false,
   now: () => Date = () => new Date(),
+  signal?: AbortSignal,
 ): Promise<number> {
   const args = parseArgs(argv);
-  await assertCampaignCatalogCurrent(await buildCampaignCatalog());
   let runId = value;
   let artifactStore: CampaignArtifactStore;
   let path: string;
@@ -3122,7 +2882,7 @@ async function commandRun(
         session_id: `${runId}:evaluator`,
         subject: evaluatorIdentity,
       },
-      specialized_evaluator: resolved.simulation.simulation_scope === "harness" ? {
+      specialized_evaluator: resolved.campaign.specialized_evaluation?.applicability === "REQUIRED" ? {
         role: "harness-evaluator",
         session_id: `${runId}:specialized-evaluator`,
         subject: flag(args, "specialized-evaluator", "local-harness-evaluator")!,
@@ -3449,6 +3209,7 @@ async function commandRun(
     TaskResult
   >({
     contract: sessionDefinition.contract,
+    signal,
     initial_state: {
       task_results: [],
       budget_usage: {},
@@ -3824,12 +3585,31 @@ async function commandRun(
 
   let specializedEvaluation: SpecializedEvaluationReceipt | null = null;
   const specializedDeclaration = resolved.campaign.specialized_evaluation;
-  if (resolved.simulation.simulation_scope === "harness") {
+  if (identities.specialized_evaluator) {
     if (!specializedDeclaration || !identities.specialized_evaluator) {
       throw new CascadeError("harness campaign is missing specialized evaluation applicability or principal");
     }
     const specializedPath =
       `specialized-evaluations/${runId}-specialized-evaluation/receipt.json`;
+    const specializedExpected = {
+      path: specializedPath,
+      run_id: runId,
+      campaign_id: resolved.campaign.id,
+      declaration: specializedDeclaration,
+      source_manifest_digest: sourceManifestDigest,
+      execution_receipt_digest: executionReceiptDigest,
+      claim_authority_digest: sourceManifest.claim_authority.sha256,
+      specialized_evaluator: identities.specialized_evaluator,
+      other_principals: [
+        identities.operator,
+        identities.evaluator,
+        identities.aggregator,
+        identities.target,
+        identities.simulator,
+        identities.recovery,
+      ],
+      claims: resolved.claims,
+    };
     if (resume && (await artifactStore.artifactFileExists(specializedPath))) {
       specializedEvaluation = await artifactStore.readArtifactJson<SpecializedEvaluationReceipt>(
         specializedPath,
@@ -3853,37 +3633,29 @@ async function commandRun(
         ["created_at"],
       );
     } else {
-      throw new CascadeError(
-        "REQUIRED specialized evaluation receipt is missing; route frozen Cascade route/trace evidence through cascade-evals:harness-evaluation before general evaluation",
-      );
+      const inputPath = `specialized-evaluations/${runId}-specialized-evaluation/input/input-manifest.json`;
+      await persistOrReuseStageJson(artifactStore, inputPath, specializedEvaluationInput(specializedExpected), resume);
+      const evidenceRoot = flag(args, "specialized-evidence-root");
+      if (!evidenceRoot) {
+        throw new CascadeError(
+          `REQUIRED specialization awaits independent evaluation of ${rel(runRoot)}/${inputPath}; resume with --specialized-evidence-root <directory> containing its receipt and provider evidence`,
+        );
+      }
+      specializedEvaluation = await importSpecializedEvidence(artifactStore, evidenceRoot, specializedExpected);
     }
     verifySpecializedEvaluationReceipt(specializedEvaluation, {
-      path: specializedPath,
-      run_id: runId,
-      campaign_id: resolved.campaign.id,
-      declaration: specializedDeclaration,
-      source_manifest_digest: sourceManifestDigest,
-      execution_receipt_digest: executionReceiptDigest,
-      claim_authority_digest: sourceManifest.claim_authority.sha256,
-      specialized_evaluator: identities.specialized_evaluator,
-      other_principals: [
-        identities.operator,
-        identities.evaluator,
-        identities.aggregator,
-        identities.target,
-        identities.simulator,
-        identities.recovery,
-      ],
-      claims: resolved.claims,
+      ...specializedExpected,
       artifact_files: await specializedEvidenceArtifacts(
         artifactStore,
         specializedEvaluation,
       ),
     });
-  } else if (specializedDeclaration !== null || identities.specialized_evaluator !== null) {
-    throw new CascadeError("product campaign cannot declare or reserve specialized evaluation");
+  } else if (specializedDeclaration?.applicability === "REQUIRED") {
+    throw new CascadeError("REQUIRED specialization needs an independent evaluator");
   }
 
+  const generalProvider = resolved.claims.every((claim) => specializedEvaluation?.claim_ids.includes(claim.id))
+    ? "none" : resolved.evaluationProfile.provider;
   const priorLifecycleEvents = resume
     ? (await artifactStore.readArtifactText("lifecycle.jsonl", "campaign lifecycle"))
         .split(/\r?\n/)
@@ -3901,7 +3673,7 @@ async function commandRun(
   if (
     priorEvaluation &&
     (parseRfc3339Instant(evaluationAt) === null ||
-      (priorEvaluation.provider !== resolved.evaluationProfile.provider ||
+      (priorEvaluation.provider !== generalProvider ||
         priorEvaluation.profile_id !== resolved.evaluationProfile.id ||
         priorEvaluation.evaluator_identity !== evaluatorIdentity))
   ) {
@@ -3910,7 +3682,7 @@ async function commandRun(
   if (!priorEvaluation) {
     const evaluationEvent = await artifactStore.appendTrustedLifecycle({
       status: "EVALUATING",
-      provider: resolved.evaluationProfile.provider,
+      provider: generalProvider,
       profile_id: resolved.evaluationProfile.id,
       evaluator_identity: evaluatorIdentity,
     });
@@ -4026,12 +3798,14 @@ async function commandRun(
       evaluationBlockedReason =
         "a prior Codex evaluation attempt has no durable receipt; automatic provider replay is forbidden";
     }
-  } else if (resolved.evaluationProfile.provider === "codex") {
+  } else if (resolved.evaluationProfile.provider === "codex" && expectedEvaluationRequest.mechanical_evaluation.claim_ledger.length) {
+    await artifactStore.renewLease(sessionDefinition.lease_ttl_ms, now());
     const result = await runCodexEvaluation(
       resolved,
       evaluationIdentity,
       mechanicalEvaluation,
       artifactStore,
+      signal,
     );
     evaluation = result.receipt;
     refinementProposals = result.refinementProposals;
@@ -4403,7 +4177,7 @@ async function commandSelfTest(): Promise<number> {
 
 export async function main(
   argv: string[],
-  dependencies: { now?: () => Date } = {},
+  dependencies: { now?: () => Date; signal?: AbortSignal } = {},
 ): Promise<number> {
   const [command, value, ...rest] = argv;
   if (command === "list") return commandList();
@@ -4412,10 +4186,10 @@ export async function main(
   }
   if (command === "validate" && value) return commandValidate(value);
   if (command === "run" && value) {
-    return commandRun(value, rest);
+    return commandRun(value, rest, false, dependencies.now, dependencies.signal);
   }
   if (command === "resume" && value) {
-    return commandRun(value, rest, true, dependencies.now);
+    return commandRun(value, rest, true, dependencies.now, dependencies.signal);
   }
   if (command === "verify" && value) return commandVerify(value, rest);
   if (command === "report" && value) {
@@ -4433,7 +4207,7 @@ export async function main(
   bun scripts/cascade.ts campaign run <campaign-id-or-path> [--run-id ID]
     [--attempt N] [--parent-run-id ID] [--lease-id ID]
     [--platform NAME] [--confirmation-receipt PATH]
-  bun scripts/cascade.ts campaign resume <run-id> --lease-id ID
+  bun scripts/cascade.ts campaign resume <run-id> [--specialized-evidence-root PATH] --lease-id ID
     [--recovery SUBJECT] [--recovery-reason TEXT]
     [--platform NAME] [--confirmation-receipt PATH]
   bun scripts/cascade.ts campaign verify <run-id>

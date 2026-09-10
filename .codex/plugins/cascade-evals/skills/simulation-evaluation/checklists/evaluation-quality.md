@@ -46,7 +46,7 @@
       namespace and cannot modify the execution package.
 - [ ] Failed, incomplete, malformed, stale, or mismatched provider output
       blocks aggregation and does not fall back to fixture evaluation.
-- [ ] Calibration is reduced from accepted frozen receipts into a separate
+- [ ] When calibration is declared, it is reduced from accepted frozen receipts into a separate
       append-only receipt with reviewer, label, metric, treatment, threshold,
       freshness, and invalidation identities.
 - [ ] A framework-fixture or stale calibration receipt cannot support a

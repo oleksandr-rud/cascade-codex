@@ -2117,3 +2117,36 @@ supplemental_results:
   astra_targets: ACCEPTED 2/2; one original target rejudged through verified replay
   invoice_variance: PARTIAL 1/3; two interrupted repetitions
   final_source_audit: ACCEPTED 3, REJECTED 3, INVALID 4; invalid ratings are diagnostic only
+post_merge:
+  upstream: 7c774a3
+  evaluated_commit: 258d478
+  package_parity:
+    - plugin: cascade-prompt
+      version: 0.7.1+codex.20260909222626
+      files: 35
+      status: PASS
+    - plugin: cascade-evals
+      version: 0.3.2+codex.20260910084856
+      files: 109
+      status: PASS
+    - plugin: cascade-simulations
+      version: 0.2.4+codex.20260909081821
+      files: 58
+      status: PASS
+  repository_tests:
+    passed: 41
+    failed: 0
+    assertions: 328
+  product_evaluation_tests:
+    passed: 15
+    failed: 3
+    cause: Windows campaign reservation POSIX file-mode guard
+  live_semantic_rerun: NOT_RUN
+  historical_replay: PASS
+  direct_replay_boundaries: PASS
+  harness_self_test:
+    status: PASS
+    cases: 31
+  campaign_self_test:
+    status: PASS
+    campaigns: 17

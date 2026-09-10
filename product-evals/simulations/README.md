@@ -28,3 +28,16 @@ separate append-only disposition receipt, but even an accepted disposition only
 routes evidence into `create-spec`; it does not edit or validate the
 source persona. External evidence manifests contain minimized metadata and
 digests, not raw sensitive source material.
+
+For a bounded scenario, a manifest needs its identity, scope, scenarios, and
+world. Population, dataset, metric, and treatment files may be omitted. An
+unpopulated scenario uses `actor_ids: []`; it cannot establish persona or
+population claims. Declared actor, population, metric, and treatment references
+must still resolve. A declared calibration requires its dataset, metrics, and
+baseline treatment, with the existing partition, freshness, and authority gates.
+
+`simulation init <id> --owner-lane W-NNN` renders 11 core files and a DRAFT
+product intake. It includes one mechanical claim and does not invent a release
+claim or a population. Product execution still requires the existing current
+intake and seed bindings. Add `--research` to render the population, dataset,
+comparison, calibration, release-claim, and design-report example scaffolding.

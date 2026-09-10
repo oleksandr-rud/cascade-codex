@@ -1,5 +1,5 @@
 import { requireCompleted } from "./execution-adapters.mjs";
-import { runAgentResponseSimulation } from "./agent-response-simulation.mjs";
+import { runModelPhase } from "./execution-adapters.mjs";
 import { writeFile } from "node:fs/promises";
 import { join } from "node:path";
 
@@ -15,7 +15,7 @@ export async function runSubjectSession({ snapshot, phase, runId, runRoot, model
     const remaining = timeoutMs - (Date.now() - started);
     if (remaining <= 0) break;
     const prompt = subjectPrompt(snapshot, request, transcript);
-    const run = requireCompleted(await runAgentResponseSimulation({ phase: `${phase}-read-${round}`, runId, runRoot, model, reasoningEffort, prompt, cwd, timeoutMs: remaining, adapter, adapterConfig, adapterId }), { phase, runRoot });
+    const run = requireCompleted(await runModelPhase({ phase: `${phase}-read-${round}`, runId, runRoot, model, reasoningEffort, prompt, cwd, timeoutMs: remaining, adapter, adapterConfig, adapterId }), { phase, runRoot });
     runs.push(run);
     await writeFile(join(runRoot, `${phase}-read-${round}.jsonl`), run.stdout);
     await writeFile(join(runRoot, `${phase}-read-${round}.response.md`), run.final_text);
@@ -33,7 +33,7 @@ export async function runSubjectSession({ snapshot, phase, runId, runRoot, model
     const usage = runs.every(r => r.usage) ? Object.fromEntries(["input_tokens", "cached_input_tokens", "noncached_input_tokens", "output_tokens", "reasoning_output_tokens"].map(key => [key, runs.reduce((sum, r) => sum + (r.usage[key] ?? 0), 0)])) : null;
     return { ...run, duration_ms: Date.now() - started, usage, stdout: runs.map(r => r.stdout).join("\n"), stderr: runs.map(r => r.stderr).join("\n"),
       subject_reads: [...new Set(reads)], subject_sha256: snapshot.sha256, invocation_count: runs.length,
-      simulations: runs.map(r => r.simulation), isolation: "tool-free-staged-subject-v1" };
+      execution_receipts: runs.map(r => r.execution_receipt), isolation: "tool-free-staged-subject-v1" };
   }
   return requireCompleted({ status: "TIMED_OUT", model, adapter, adapter_identity: adapter, timeout_ms: timeoutMs, duration_ms: Date.now() - started,
     stdout: runs.map(r => r.stdout).join("\n"), stderr: runs.map(r => r.stderr).join("\n"), error: "subject read round or total turn time budget exhausted" }, { phase, runRoot });

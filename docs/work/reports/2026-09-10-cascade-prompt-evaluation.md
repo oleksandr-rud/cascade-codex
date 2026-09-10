@@ -20,7 +20,7 @@ Frozen requests, source digests, model settings, controller events, and outputs
 bind each result to its actual subject. Verified replay preserves that identity
 without claiming a fresh model execution or a variance observation.
 
-The final Prompt package is `0.7.1+codex.20260909222626`; Evals is
+The evaluated Prompt package is `0.7.1+codex.20260909222626`; the pre-merge Evals package is
 `0.3.1+codex.20260910083517`. The last Evals build only normalized two JSON files'
 line endings; their parsed content was checked against the evaluated version.
 Installed/source parity passed for all 35 Prompt and 109 Evals files.
@@ -118,3 +118,37 @@ The next bounded improvement should address the three rejected source groups,
 repair judge quotation reliability, then rerun only affected source audits and
 unresolved behavioral cases against a newly frozen subject. Keep the historical
 failures and incomplete variance denominator intact.
+
+## Integration with incoming master
+
+After freezing the evaluation, remote master advanced to `7c774a3` with direct
+asynchronous model execution and a shared judge scorer. The evaluated state was
+first preserved in commit `258d478`; the merge then retained those upstream
+changes together with strict evidence checks, staged subject reads, requested
+variance denominators, and verified replay. Fresh phases no longer create a
+simulation workflow. Only read-only verification of historical controller
+receipts loads the legacy dependency.
+
+The merged Evals package is **0.3.2+codex.20260910084856**. Prompt source is
+unchanged. Live semantic campaigns were not rerun on the merged execution
+runtime, so the earlier judgments retain their original execution identity.
+Installed/source parity passed for Prompt, Evals, and Simulations after the merge.
+
+Post-merge checks passed: 41 repository tests (328 assertions), focused quality,
+interview, direct-execution and variance checks, 75 historical judge-contract
+checks, nine Python evaluation-contract tests, 31 harness self-test cases, the
+17-campaign self-test, catalogs, and the repository validator. Synthetic
+self-test calibration labels do not constitute human calibration. Existing real
+historical replay evidence was verified again; direct-receipt boundary tests
+reject altered requests, traces, execution identities, and uncertain dispatches.
+One POSIX descendant-process test is explicitly skipped on Windows.
+
+**Additional Windows gap:** the two incoming product evaluation test files
+produced 15 passes and three failures. All three stop at the existing
+maintainers-only POSIX file-mode guard when reading campaign reservations on
+Windows, before the intended evaluation assertions. The guard in
+`scripts/cascade/common.ts` and related campaign artifact checks uses mode bits;
+Windows permissions need a separately designed and verified equivalent. This is
+an environment/portability failure, not a Prompt quality rejection. The guard
+and failing tests remain intact. Consequently, the combined change does not
+claim that every repository or campaign check passes.

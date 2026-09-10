@@ -11,7 +11,6 @@ const skillRoot = dirname(dirname(fileURLToPath(import.meta.url)));
 const evalRoot = join(skillRoot, "evals");
 const subjectPathIndex = process.argv.indexOf("--subject-skill-root");
 const subjectSkillRoot = await resolveSubjectSkill({ explicitPath: subjectPathIndex >= 0 ? process.argv[subjectPathIndex + 1] : undefined });
-const simulateRoot = await resolveInstalledSkill({ envVar: "CASCADE_SIMULATIONS_SKILL_ROOT", pluginName: "cascade-simulations", skillName: "simulate" });
 const failures = [];
 
 function check(condition, message) {
@@ -83,7 +82,7 @@ check(tokenBudgets.schema_version === 1, "token budgets schema_version must be 1
 check(tokenBudgets.status === "PROVISIONAL", "v1 token budgets must remain PROVISIONAL");
 check(interviewCatalog.schema_version === 1, "interview catalog schema_version must be 1");
 const campaignSkillText = await readable(join(skillRoot, "SKILL.md"), "prompt-evaluation skill");
-check(campaignSkillText.includes("`agent-response` simulation"), "prompt-evaluation skill must declare the simulation contour");
+check(campaignSkillText.includes("local execution") && campaignSkillText.includes("do not require Cascade Simulations"), "prompt-evaluation must declare direct bounded execution");
 check(campaignSkillText.includes("subject under test"), "prompt-evaluation skill must preserve subject/runtime ownership");
 
 const allowedTiers = new Set(registry.tier_order ?? []);
@@ -298,10 +297,7 @@ for (const requiredFixture of ["complete-quick-v1", "missing-structured-schema-v
 }
 await readable(join(skillRoot, "scripts/run-interview-eval.mjs"), "interview runner");
 await readable(join(skillRoot, "scripts/test-interview-runner.mjs"), "interview runner tests");
-for (const file of ["execution-adapters.mjs", "agent-response-simulation.mjs", "subject-plugin.mjs", "run-variance-eval.mjs", "run-human-calibration.mjs", "test-execution-adapters.mjs", "test-human-calibration.mjs", "test-variance-runner.mjs"]) await readable(join(skillRoot, "scripts", file), file);
-await readable(join(simulateRoot, "scripts/simulation_runtime.py"), "shared simulation controller");
-await readable(join(simulateRoot, "references/simulation.schema.json"), "shared simulation schema");
-await readable(join(simulateRoot, "references/adapter.schema.json"), "shared adapter schema");
+for (const file of ["execution-adapters.mjs", "legacy-response-evidence.mjs", "judge-results.mjs", "test-judge-results.mjs", "subject-plugin.mjs", "run-variance-eval.mjs", "run-human-calibration.mjs", "test-execution-adapters.mjs", "test-human-calibration.mjs", "test-variance-runner.mjs"]) await readable(join(skillRoot, "scripts", file), file);
 await absent(join(subjectSkillRoot, "evals/task-catalog.json"), "subject-owned evaluation catalog");
 for (const migratedScript of ["execution-adapters.mjs", "run-quality-eval.mjs", "run-interview-eval.mjs", "run-variance-eval.mjs", "run-human-calibration.mjs"]) await absent(join(subjectSkillRoot, "scripts", migratedScript), `subject-owned ${migratedScript}`);
 
@@ -312,3 +308,5 @@ if (failures.length > 0) {
 }
 
 console.log(`PASS: ${taskIds.size} real tasks, ${fixtureIds.size} interview fixtures, ${coveredTiers.size} tiers, ${configurationIds.size} model configurations, 4 independent judge profiles`);
+
+await readable(join(skillRoot, "../../scripts/judge-ratings.mjs"), "shared judge scoring");

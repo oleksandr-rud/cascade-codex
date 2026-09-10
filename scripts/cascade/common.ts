@@ -1912,6 +1912,7 @@ export async function runCommand(
     maxOutputBytes?: number;
     unsetEnv?: string[];
     inheritEnv?: boolean;
+    input?: string;
   } = {},
 ): Promise<CommandResult> {
   if (!argv.length) throw new CascadeError("command argv must not be empty");
@@ -1960,7 +1961,7 @@ export async function runCommand(
   const process = Bun.spawn(argv, {
     cwd: options.cwd ?? ROOT,
     env: childEnv,
-    stdin: "ignore",
+    stdin: options.input === undefined ? "ignore" : new Blob([options.input]),
     stdout: "pipe",
     stderr: "pipe",
   });
