@@ -135,13 +135,25 @@ tools, preserving standalone plugin behavior.
 
 ## Model Routing
 
-Use `gpt-6-astra` with `max` reasoning by default for the primary session.
+Use `gpt-6-astra` with `high` reasoning by default for the primary session.
 Explicit custom-agent and evaluation profiles retain `gpt-5.6-sol`. Prompt and
 evaluation campaigns freeze `max` reasoning for builder, target, and judge
 unless a versioned explicit comparison says otherwise.
 The exact configured model and reasoning effort in `.codex/config.toml` and
 agent TOML are the runtime authority; evaluation commands may explicitly pin a
 different approved profile for a controlled experiment.
+
+Cascade Prompt recommends Astra/high for authoring. Other domain plugins retain
+Sol/high; Evals execution and independent judges retain their frozen Sol/max
+policy. Workflow nodes bind the selected plugin's catalog model, not the
+Coordinator's model. These are host configuration and plan bindings; loading a
+skill never switches the already running model. Preserve an explicitly chosen
+target model and the exact settings of an existing evaluation.
+
+Keep plugin answers concise by default. Output fields are required information,
+not a quota of headings or repeated prose. Preserve required schemas, evidence,
+permissions and material gaps; include extra files only when needed for the
+requested result or its actual handoff.
 
 No retired 5.5 model belongs in active routing.
 

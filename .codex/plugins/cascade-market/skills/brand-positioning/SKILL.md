@@ -109,6 +109,10 @@ intent is the blocker.
 
 ## Output
 
+Keep the user-facing answer concise. Output requirements specify information,
+not extra headings. Preserve required schemas, evidence and permissions. Avoid
+duplicate artifact prose, empty sections, unsolicited variants and extra files
+unless needed for the requested delivery or an actual handoff.
 Use status precisely:
 
 - `PROPOSED` when accepted sources support a reviewable marketing candidate;

@@ -65,6 +65,11 @@ claims until their current producer and authority are established.
 
 ## Output
 
+Keep the user-facing answer concise. Output requirements specify information,
+not extra headings. Preserve required schemas, evidence and permissions. Avoid
+duplicate artifact prose, empty sections, unsolicited variants and extra files
+unless needed for the requested delivery or an actual handoff.
+
 Return scope and revision; inspected/not-inspected surfaces; authority and
 dependency map; findings with severity and evidence; validation performed;
 unverified claims; recommended repair owner; and explicit `NOT_RUN` phases.

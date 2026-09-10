@@ -95,4 +95,9 @@ The last claim requires current external or human-labeled evidence. Synthetic ju
 
 ## Output
 
+Keep the user-facing answer concise. Output requirements specify information,
+not extra headings. Preserve required schemas, evidence and permissions. Avoid
+duplicate artifact prose, empty sections, unsolicited variants and extra files
+unless needed for the requested delivery or an actual handoff.
+
 Return mode, execution_state, subject identity/digest, eval asset manifest identity, claim boundary, cases/split, mechanical evidence, redacted-packet validation, judge profiles and model configuration, independent ratings and recomputed scores, calibration state, conservative verdict, explicit builder/target/dependency/isolation/judge receipt bindings, immutable evidence paths, privacy/destination decision, gaps, and the exact repair or promotion handoff. Use ../../schemas/handoff-envelope.schema.json for the cross-plugin result.

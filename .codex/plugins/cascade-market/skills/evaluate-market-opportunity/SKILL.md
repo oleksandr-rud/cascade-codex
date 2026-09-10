@@ -100,6 +100,11 @@ Use only applicable dimensions and define observable anchors before scoring:
 
 ## Output
 
+Keep the user-facing answer concise. Output requirements specify information,
+not extra headings. Preserve required schemas, evidence and permissions. Avoid
+duplicate artifact prose, empty sections, unsolicited variants and extra files
+unless needed for the requested delivery or an actual handoff.
+
 Return status READY, ABSTAIN, BLOCKED, or INVALID; opportunity identity; ledger digest/freshness; schema-valid scoring rubric and formula inputs; claim-to-rating matrix; score or null; coverage; floors/disqualifiers; adversarial findings; sensitivity; PMF state/scope/expiry; confidence; gaps; recommendation; artifact SHA-256; and exact Market Experiment or Product handoff/resume envelope.
 
 For a Cascade Evals case whose visible fixture contains `output_contract`, return exactly the requested strict I-JSON envelope with `artifact`, `artifact_sha256`, `supporting_artifacts`, and `handoffs`; the supporting artifacts must contain exactly one wrapper with exactly `kind`, `artifact`, and `sha256`, where `kind` is `EVIDENCE_LEDGER` and `artifact` is the exact v4 ledger used for scoring. Do not add wrapper metadata. When `require_handoff` is false, use `handoffs: []`; otherwise every handoff wrapper has exactly `artifact` and `sha256`. Emit `evaluate-market-opportunity` in case-level `selected_skill`. Use lowercase 64-character placeholders for computable digest leaves. The manifest-bound `finalize_target` hook may recompute only supporting-wrapper SHA-256, the exact identity-matched `ledger_sha256`, the outer assessment SHA-256, and digest-bound handoff leaves; it cannot change a rating, score, PMF state, status, scope, evidence claim, or identity. For a plugin handoff, read exact producer and consumer versions from the visible dependency identity context; an unavailable optional peer uses the explicit `0.0.0-unavailable` sentinel only when the schema permits it and never counts as enabled evidence. A new handoff uses `expires_at: null` or a timestamp strictly after `produced_at`. Mechanical eligibility never proves the cited market claims.

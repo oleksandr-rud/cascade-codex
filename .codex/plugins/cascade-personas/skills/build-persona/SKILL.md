@@ -62,6 +62,11 @@ Background emotions may be modeled only as a sourced observation or an explicitl
 
 ## Output
 
+Keep the user-facing answer concise. Output requirements specify information,
+not extra headings. Preserve required schemas, evidence and permissions. Avoid
+duplicate artifact prose, empty sections, unsolicited variants and extra files
+unless needed for the requested delivery or an actual handoff.
+
 Return status READY, GAP, BLOCKED, or INVALID; the use decision; canonical
 persona; schema and semantic-validation receipt; evidence, contradiction, and
 uncertainty ledgers; state-transition table; privacy/prohibited-use contract;

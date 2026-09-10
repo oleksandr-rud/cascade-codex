@@ -17,3 +17,8 @@ required evidence, and affected consumers. A missing required pattern or
 validation is `GAP`; do not substitute an adjacent contour. Return a candidate
 selection record only. The host owns its catalog, source retrieval, scaffolding,
 and validation commands.
+
+Keep the user-facing answer concise. Output requirements specify information,
+not extra headings. Preserve required schemas, evidence and permissions. Avoid
+duplicate artifact prose, empty sections, unsolicited variants and extra files
+unless needed for the requested delivery or an actual handoff.

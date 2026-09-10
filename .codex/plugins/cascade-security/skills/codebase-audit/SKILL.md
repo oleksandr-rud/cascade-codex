@@ -85,6 +85,11 @@ output instead of silently following stale docs.
 
 ## Output
 
+Keep the user-facing answer concise. Output requirements specify information,
+not extra headings. Preserve required schemas, evidence and permissions. Avoid
+duplicate artifact prose, empty sections, unsolicited variants and extra files
+unless needed for the requested delivery or an actual handoff.
+
 Return either a trajectory pack or a compact findings report. For machine
 consumption or evaluation, emit one JSON object that validates against
 `../../schemas/security-review.schema.json`, with `selected_skill` set to

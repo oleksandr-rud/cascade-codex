@@ -107,6 +107,30 @@ flowchart TB
 - Host adapters resolve repository paths, permissions, commands, runtime
   handles, and receipts. They do not copy portable plugin methods.
 
+## Model And Delivery Defaults
+
+The primary Codex session and Prompt authoring recommendation use Astra/high.
+The other domain-plugin recommendations remain Sol/high; Evals nodes and
+independent judges retain Sol/max. The simulation operator's explicit
+Sol/medium role profile is separate from a plugin recommendation. These are
+selected defaults, not a claim that every plugin has a comparative benchmark.
+
+Each plan node must use its owning plugin's catalog `model_policy.model`.
+Coordinator keeps its own Sol planner identity; its model does not overwrite
+the Prompt node's Astra binding. Evals nodes require max reasoning. Existing
+frozen evaluations preserve their own builder, target and judge tuples, and a
+user-selected target model is distinct from the model authoring its prompt.
+Descriptor/catalog and node schemas admit Sol and Astra, while the host rejects
+a node that differs from its current descriptor. Catalog changes invalidate
+old plan bindings. No skill or validated plan switches an in-flight model or
+authorizes dispatch; the host applies settings when starting execution.
+
+All plugin skills request concise user-facing delivery. Required structured
+artifacts, evidence, permissions and material gaps remain intact; avoid
+repeating their contents in surrounding prose or creating extra files without
+a concrete delivery or handoff need. This default is inline in each portable
+skill, so it does not depend on loading the repository's CODEX.md.
+
 ## Typical Combinations
 
 | Goal | Plugin combination | Host effect |

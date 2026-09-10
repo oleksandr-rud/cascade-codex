@@ -153,4 +153,9 @@ Use cascade-personas:compile-persona when a canonical persona needs a purpose-li
 
 ## Output
 
+Keep the user-facing answer concise. Output requirements specify information,
+not extra headings. Preserve required schemas, evidence and permissions. Avoid
+duplicate artifact prose, empty sections, unsolicited variants and extra files
+unless needed for the requested delivery or an actual handoff.
+
 Return the schema-valid typed PRODUCT_DEFINITION and RFC 8785 digest; explicit completeness_status READY, GAP, BLOCKED, or INVALID; approval_status PROPOSED, PENDING_APPROVAL, APPROVED, REJECTED, or DEFERRED; exact decision-to-work-product binding; explicit confidence basis and limitations; accepted-source and decision ledger; traceability matrix; acceptance examples; conflicts/assumptions/gaps; alternatives; digest/invalidation rules; and the exact next owner/artifact/gate. Never present an incomplete artifact as delivery-ready.

@@ -2,7 +2,7 @@
   "schema_version": 2,
   "plugin_id": "cascade-personas",
   "subject_kind": "agent",
-  "version": "0.1.20+codex.20260909140051",
+  "version": "0.1.21+codex.20260910143021",
   "expected_case_count": 15,
   "acceptance_threshold": 0.95,
   "minimum_dimension": 3,

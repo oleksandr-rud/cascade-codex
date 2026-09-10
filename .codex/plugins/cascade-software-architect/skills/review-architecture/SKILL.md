@@ -26,3 +26,8 @@ remains, state `NO_FINDINGS` and list residual risk and `NOT_RUN` evidence.
 
 This skill does not patch the architecture, approve a product, accept release,
 or replace Security, QA, or domain review.
+
+Keep the user-facing answer concise. Output requirements specify information,
+not extra headings. Preserve required schemas, evidence and permissions. Avoid
+duplicate artifact prose, empty sections, unsolicited variants and extra files
+unless needed for the requested delivery or an actual handoff.

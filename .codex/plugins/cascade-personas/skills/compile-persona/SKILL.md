@@ -108,4 +108,9 @@ Resolve a required dependency by its exact installed alias. If a required alias 
 
 ## Output
 
+Keep the user-facing answer concise. Output requirements specify information,
+not extra headings. Preserve required schemas, evidence and permissions. Avoid
+duplicate artifact prose, empty sections, unsolicited variants and extra files
+unless needed for the requested delivery or an actual handoff.
+
 Return status READY, GAP, BLOCKED, or INVALID; target decision; source identity; mapping table; compiled projection and SHA-256; omissions; validation findings; freshness and invalidation rule; and exact handoff/resume envelope. For multiple targets, return every one of those bindings separately per projection. A non-READY dependency result, stale digest, schema mismatch, or permission failure fails closed. The canonical persona remains authoritative.

@@ -67,6 +67,11 @@ specific scenarios, assertions, release policy, and repository edits local.
 
 ## Output
 
+Keep the user-facing answer concise. Output requirements specify information,
+not extra headings. Preserve required schemas, evidence and permissions. Avoid
+duplicate artifact prose, empty sections, unsolicited variants and extra files
+unless needed for the requested delivery or an actual handoff.
+
 Return changed behavior and owners; files changed; dependency identities;
 validation evidence grouped as source, fixture, installed, live, semantic, and
 release; remaining gaps; rollback/deprecation state; and the exact next action

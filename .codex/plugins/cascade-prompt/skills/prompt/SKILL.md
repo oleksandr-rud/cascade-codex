@@ -9,6 +9,12 @@ Deliver a prompt rather than solve the task unless the user requests both.
 
 ## Runtime and source policy
 
+Default authoring recommendation: `gpt-6-astra` with host reasoning `high`.
+An installed skill inherits the active host model; prose cannot switch it.
+This authoring default does not select the generated prompt's target model:
+preserve the user's target and adapt only its relevant surface. Frozen Evals
+campaigns retain their separately declared builder, target and judge settings.
+
 This file covers Quick work. The published package contains only active runtime
 and model-routing material; internal development plans and source-preservation
 archives are not part of the runtime contract.
@@ -47,10 +53,13 @@ Load only the smallest conditional material:
   the older catalog date. Verify current availability before recommending a
   purchase or changing a provider configuration; a candidate is not a measured winner.
 - `runtime/context-composition.md` for an explicit context-template/layout
-  request or material multi-source/history composition. A reusable prompt with
-  one bounded input and a resolved schema uses core plus its task overlay;
-  "reusable" alone does not require a context template. Load only the selected
-  template when this pack applies.
+  request or material multi-source/history composition. Combining public web
+  evidence with an internal knowledge base or database always selects this pack
+  and `assets/templates/grounded-answer.md` for a research answer, even without
+  an explicit template request. A reusable prompt with one bounded input and a
+  resolved schema uses core plus its task overlay; "reusable" alone does not
+  require a context template. Load only the selected template when this pack
+  applies.
 - `references/knowledge-coverage.md` only for an explicit knowledge-base or
   runtime coverage audit. It maps reference rules to their active consumers.
 - `runtime/evaluation.md` for audit, comparison, tests, or effectiveness claims.

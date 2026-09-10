@@ -60,3 +60,8 @@ into policy, permission, or persona facts.
 
 - `references/persona.schema.json`: deterministic profile contract.
 - `scripts/validate_persona.py`: schema and cross-field validation.
+
+Keep the user-facing answer concise. Output requirements specify information,
+not extra headings. Preserve required schemas, evidence and permissions. Avoid
+duplicate artifact prose, empty sections, unsolicited variants and extra files
+unless needed for the requested delivery or an actual handoff.

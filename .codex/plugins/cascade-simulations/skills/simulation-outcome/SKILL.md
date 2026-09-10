@@ -22,3 +22,8 @@ route taken.
 
 An ordinary outcome contract proves only this run's bounded result. It does not
 establish release readiness, population prevalence, or general product quality.
+
+Keep the user-facing answer concise. Output requirements specify information,
+not extra headings. Preserve required schemas, evidence and permissions. Avoid
+duplicate artifact prose, empty sections, unsolicited variants and extra files
+unless needed for the requested delivery or an actual handoff.

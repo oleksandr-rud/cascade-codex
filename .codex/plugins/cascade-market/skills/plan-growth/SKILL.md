@@ -90,3 +90,8 @@ or successful specialist execution.
 
 This skill never performs outreach, publishes, spends, or implements features.
 Keep its execution fields NOT_RUN even when historical performance is supplied.
+
+Keep the user-facing answer concise. Output requirements specify information,
+not extra headings. Preserve required schemas, evidence and permissions. Avoid
+duplicate artifact prose, empty sections, unsolicited variants and extra files
+unless needed for the requested delivery or an actual handoff.

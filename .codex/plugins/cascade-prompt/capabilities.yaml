@@ -1,9 +1,9 @@
 schema_version: 1
 plugin:
   name: cascade-prompt
-  version: 0.7.5+codex.20260910140800
+  version: 0.7.7+codex.20260910144422
 model_policy:
-  model: gpt-5.6-sol
+  model: gpt-6-astra
   planning_reasoning_effort: high
   evaluation_reasoning_effort: max
 skills:

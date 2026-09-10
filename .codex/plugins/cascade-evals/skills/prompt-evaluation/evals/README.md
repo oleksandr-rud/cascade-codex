@@ -58,6 +58,11 @@ runs; builders and ordinary judges default to 600 seconds, source judges to 720.
 
 From the skill root:
 
+The Node validator includes its pinned `yaml` 2.9.0 parser and ISC license under
+`scripts/vendor/`; it needs no package installation in the immutable plugin cache.
+The generated module records the repository-root rebuild command. Update the
+module and license together when changing this dependency.
+
 ```bash
 node scripts/validate-quality-evals.mjs
 node scripts/run-quality-eval.mjs list

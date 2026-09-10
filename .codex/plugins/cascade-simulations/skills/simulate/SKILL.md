@@ -45,8 +45,8 @@ explicitly out of scope.
    An unavailable runtime binding is a `BLOCKED` preflight fact, not a reason
    to load execution-only resources.
 4. Return one inline package with one source ledger, one contract per requested
-   component, one phase-state table, and one combined assumptions/risks/handoff
-   list. Cite a source label once per material decision and do not restate the
+   component, phase states, and combined assumptions/risks/handoffs.
+   Use prose or a compact table according to the requested result. Cite a source label once per material decision and do not restate the
    same phase or blocker in multiple sections.
 5. Give each blocker, gap, assumption, risk, and unrun phase one stable ID and
    define it once. Other sections reference that ID without repeating its
@@ -159,3 +159,8 @@ explicitly out of scope.
 - `scripts/compile_prompt.py`: deterministic assembly of the validated runtime
   prompt.
 - `scripts/simulation_runtime.py`: hash-chained sequential run controller.
+
+Keep the user-facing answer concise. Output requirements specify information,
+not extra headings. Preserve required schemas, evidence and permissions. Avoid
+duplicate artifact prose, empty sections, unsolicited variants and extra files
+unless needed for the requested delivery or an actual handoff.

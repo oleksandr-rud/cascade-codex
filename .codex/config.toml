@@ -1,5 +1,5 @@
 model = "gpt-6-astra"
-model_reasoning_effort = "max"
+model_reasoning_effort = "high"
 
 [harness]
 name = "cascade"

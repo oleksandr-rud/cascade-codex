@@ -237,7 +237,7 @@ validation_commands:
     - "bun run test:browser"
 
 routing:
-  model_policy: "Use gpt-6-astra with max reasoning by default for the primary session. Explicit custom-agent and evaluation profiles retain gpt-5.6-sol; freeze the reasoning effort in each receipt and use max for prompt/evaluation campaigns unless an explicit comparison says otherwise."
+  model_policy: "Use gpt-6-astra with high reasoning by default for the primary session and Prompt authoring. Other plugin recommendations and explicit custom-agent profiles retain gpt-5.6-sol. Bind workflow nodes to their plugin catalog model; frozen evaluation builder, target and judge settings remain separate and use max unless an explicit comparison says otherwise. Loading a skill cannot switch the active model."
   admission: "Compile every request through the task-admission microkernel; the Task Envelope selects proportional controls without granting authority or dispatching work."
   non_atomic_fallback_path:
     - "context"

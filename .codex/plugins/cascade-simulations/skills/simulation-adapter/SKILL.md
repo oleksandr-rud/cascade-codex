@@ -30,3 +30,8 @@ allowed-action subset; the adapter binds those actions to host capabilities and
 Codex executes the target tool. Observations are outputs of actions, not an
 uncontrolled second call path. The adapter never chooses the goal or declares
 success.
+
+Keep the user-facing answer concise. Output requirements specify information,
+not extra headings. Preserve required schemas, evidence and permissions. Avoid
+duplicate artifact prose, empty sections, unsolicited variants and extra files
+unless needed for the requested delivery or an actual handoff.

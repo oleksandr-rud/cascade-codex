@@ -55,6 +55,11 @@ evidence scope and gate reduction.
 
 ## Output
 
+Keep the user-facing answer concise. Output requirements specify information,
+not extra headings. Preserve required schemas, evidence and permissions. Avoid
+duplicate artifact prose, empty sections, unsolicited variants and extra files
+unless needed for the requested delivery or an actual handoff.
+
 Return the typed assessment, receipt ledger, scoped claims, defects or gaps,
 gate recommendation, blockers, and exact next owner. Keep all mutation,
 execution, repair, and release flags false.

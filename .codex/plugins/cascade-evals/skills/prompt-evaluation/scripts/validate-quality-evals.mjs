@@ -4,7 +4,7 @@ import { snapshotSubject } from "./evaluation-integrity.mjs";
 import { readFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { parse as parseYaml } from "yaml";
+import { parse as parseYaml } from "./vendor/yaml.mjs";
 import { resolveInstalledSkill, resolveSubjectSkill } from "./subject-plugin.mjs";
 
 const skillRoot = dirname(dirname(fileURLToPath(import.meta.url)));

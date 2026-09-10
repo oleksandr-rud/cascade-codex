@@ -145,6 +145,11 @@ digest. It must not use a remembered, opaque, or unrelated digest.
 
 ## Output
 
+Keep the user-facing answer concise. Output requirements specify information,
+not extra headings. Preserve required schemas, evidence and permissions. Avoid
+duplicate artifact prose, empty sections, unsolicited variants and extra files
+unless needed for the requested delivery or an actual handoff.
+
 Return status READY, GAP, BLOCKED, or INVALID; hypothesis; evidence gap; schema-valid experiment contract and SHA-256; instrument/prompt handoff; recruitment and bias controls; predeclared criteria; required permissions; execution_state NOT_RUN or RECEIPT_SUPPLIED; validated result/analysis or exact resume requirement; ledger update; interpretation limits; and Product handoff. Never imply this plugin executed the experiment.
 
 For a Cascade Evals case whose visible fixture contains `output_contract`, put

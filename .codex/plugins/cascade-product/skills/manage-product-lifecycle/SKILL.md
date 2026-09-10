@@ -191,4 +191,9 @@ that one Product-output binding.
 
 ## Output
 
+Keep the user-facing answer concise. Output requirements specify information,
+not extra headings. Preserve required schemas, evidence and permissions. Avoid
+duplicate artifact prose, empty sections, unsolicited variants and extra files
+unless needed for the requested delivery or an actual handoff.
+
 Return the schema-valid typed LIFECYCLE_RECORD work product and its digest; decision/gate record; decision and evidence ledgers; product boundary; actor/persona references; current conflicts/gaps; selected handoff envelopes; prioritized outcome/slice; invalidation rules; and exact next owner/artifact/action. Label implementation, deployment, release, live-market proof, and human validation NOT_RUN unless current evidence exists. Canonicalize JSON artifacts with RFC 8785 and compute SHA-256 over canonical UTF-8 bytes.

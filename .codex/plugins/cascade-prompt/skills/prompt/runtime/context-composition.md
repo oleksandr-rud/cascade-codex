@@ -1,6 +1,8 @@
 # Context composition and template selection
 
-Use only when a context-bearing template or reusable context layout is needed.
+Use for an explicit context layout or material multi-source/history composition.
+A research answer combining public web evidence with an internal knowledge base
+or database requires the grounded-answer template even without a template request.
 This pack renders the resolved contract; it does not choose an agent topology.
 
 ## Select one starting template

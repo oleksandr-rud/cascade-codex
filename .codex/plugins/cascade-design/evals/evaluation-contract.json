@@ -2,7 +2,7 @@
   "schema_version": 2,
   "plugin_id": "cascade-design",
   "subject_kind": "agent",
-  "version": "0.1.1+codex.20260909181000",
+  "version": "0.1.2+codex.20260910143021",
   "expected_case_count": 19,
   "expected_cases_per_skill": {
     "ux-flow-review": 3,

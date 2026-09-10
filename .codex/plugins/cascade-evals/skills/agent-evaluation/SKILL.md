@@ -56,3 +56,8 @@ Evaluate one digest-bound agent-system claim through `$evaluate`.
    and reduction contract.
 7. Return a candidate evaluation receipt. Promotion remains a separate target
    authority action.
+
+Keep the user-facing answer concise. Output requirements specify information,
+not extra headings. Preserve required schemas, evidence and permissions. Avoid
+duplicate artifact prose, empty sections, unsolicited variants and extra files
+unless needed for the requested delivery or an actual handoff.

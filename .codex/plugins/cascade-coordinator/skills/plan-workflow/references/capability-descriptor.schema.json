@@ -20,7 +20,7 @@
       "additionalProperties": false,
       "required": ["model", "planning_reasoning_effort", "evaluation_reasoning_effort"],
       "properties": {
-        "model": { "const": "gpt-5.6-sol" },
+        "model": { "enum": ["gpt-5.6-sol", "gpt-6-astra"] },
         "planning_reasoning_effort": { "enum": ["high", "max"] },
         "evaluation_reasoning_effort": { "const": "max" }
       }

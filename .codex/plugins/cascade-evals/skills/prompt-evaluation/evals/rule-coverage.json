@@ -1338,7 +1338,7 @@
     },
     {
       "path": "runtime/context-composition.md",
-      "sha256": "c48b78f8a940234454e1fbd1093847967cd4c855204df2ead883c122f66a3b72",
+      "sha256": "05ae134bb6fe72c4aa1a098253ee08954930eea2e2f59b6fb8fdfaf2dd63a5ff",
       "consumers": [
         "runtime/context-composition.md"
       ],
@@ -1669,7 +1669,7 @@
     },
     {
       "path": "SKILL.md",
-      "sha256": "f480fbaf3b65c618ee4a2f94110b0d1d368e85beef054a11f71c32aa14e52e1b",
+      "sha256": "cb2b7cb075caa8884e39855248418306b48f5ca986b879df4fa7db7c1c620264",
       "consumers": [
         "SKILL.md"
       ],

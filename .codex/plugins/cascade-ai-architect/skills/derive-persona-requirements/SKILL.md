@@ -67,3 +67,8 @@ extracts architecture requirements only; Cascade Simulations owns runtime
 persona validation and executable actor preparation. Cascade Prompt may author
 model-facing prompts after architecture is frozen, but none of these consumers
 may change Persona evidence or privacy authority.
+
+Keep the user-facing answer concise. Output requirements specify information,
+not extra headings. Preserve required schemas, evidence and permissions. Avoid
+duplicate artifact prose, empty sections, unsolicited variants and extra files
+unless needed for the requested delivery or an actual handoff.

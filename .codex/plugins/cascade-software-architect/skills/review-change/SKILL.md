@@ -24,3 +24,8 @@ blocker is reached.
 Return findings first, then open questions, residual risk, and evidence that was
 `NOT_RUN`. Do not patch, self-accept, manufacture process artifacts, or require
 review passes solely to satisfy a count.
+
+Keep the user-facing answer concise. Output requirements specify information,
+not extra headings. Preserve required schemas, evidence and permissions. Avoid
+duplicate artifact prose, empty sections, unsolicited variants and extra files
+unless needed for the requested delivery or an actual handoff.

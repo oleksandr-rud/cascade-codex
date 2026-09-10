@@ -108,3 +108,8 @@ authoring, or calibration work, read `evals/README.md` for the complete contract
   not silently alter judgment or reuse an incompatible judgment cache.
 - This compact plugin campaign does not claim Cascade repository release
   eligibility or replace its product-evals campaign governance.
+
+Keep the user-facing answer concise. Output requirements specify information,
+not extra headings. Preserve required schemas, evidence and permissions. Avoid
+duplicate artifact prose, empty sections, unsolicited variants and extra files
+unless needed for the requested delivery or an actual handoff.

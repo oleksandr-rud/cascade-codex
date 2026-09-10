@@ -1016,7 +1016,7 @@ async function validateConfigToml(
     any
   >;
   if (config.model !== "gpt-6-astra") errors.push("default model must be gpt-6-astra");
-  if (config.model_reasoning_effort !== "max") errors.push("default reasoning effort must be max");
+  if (config.model_reasoning_effort !== "high") errors.push("default reasoning effort must be high");
   const evals = config.harness_evals ?? {};
   if (evals.planning_model !== "gpt-5.6-sol") errors.push("planning model mismatch");
   if (evals.execution_model !== "gpt-5.6-sol") errors.push("execution model mismatch");

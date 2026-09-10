@@ -76,3 +76,8 @@ schema, identity, and authority failures cannot be overridden by a judge.
 Finish when every selected route is current, claim-bound, trigger-supported,
 anti-trigger-safe, dependency-closed, within authority, disjoint from rejected
 candidates, and covered by an observable output or next planning gate.
+
+Keep the user-facing answer concise. Output requirements specify information,
+not extra headings. Preserve required schemas, evidence and permissions. Avoid
+duplicate artifact prose, empty sections, unsolicited variants and extra files
+unless needed for the requested delivery or an actual handoff.

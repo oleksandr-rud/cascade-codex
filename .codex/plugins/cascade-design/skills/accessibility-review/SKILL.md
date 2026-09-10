@@ -54,6 +54,10 @@ Automated checks supplement rather than replace manual interaction evidence.
 
 ## Output contract
 
+Keep the user-facing answer concise. Output requirements specify information,
+not extra headings. Preserve required schemas, evidence and permissions. Avoid
+duplicate artifact prose, empty sections, unsolicited variants and extra files
+unless needed for the requested delivery or an actual handoff.
 For reusable handoff or evaluation output, emit one JSON object conforming to
 `../../schemas/design-review.schema.json` with `selected_skill` set to
 `accessibility-review`. Otherwise render the same fields concisely. Include a

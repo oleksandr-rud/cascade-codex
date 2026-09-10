@@ -68,6 +68,11 @@ filing, or an item that cannot be separated without a decision.
 
 ## Output
 
+Keep the user-facing answer concise. Output requirements specify information,
+not extra headings. Preserve required schemas, evidence and permissions. Avoid
+duplicate artifact prose, empty sections, unsolicited variants and extra files
+unless needed for the requested delivery or an actual handoff.
+
 Return the typed artifact plus, when the user wants prose, a tracker-ready body
 rendered from [assets/work-item.template.md](assets/work-item.template.md).
 Keep the typed artifact canonical and the Markdown body a projection.

@@ -94,6 +94,11 @@ for survivor and invalidation rules.
 
 ## Output
 
+Keep the user-facing answer concise. Output requirements specify information,
+not extra headings. Preserve required schemas, evidence and permissions. Avoid
+duplicate artifact prose, empty sections, unsolicited variants and extra files
+unless needed for the requested delivery or an actual handoff.
+
 Return the typed artifact, sources inspected, current authority, frontier,
 risks and blockers, dispositions when reconciling, scoped invalidation,
 conditional handoffs, and next owner. Do not create a replacement graph when a

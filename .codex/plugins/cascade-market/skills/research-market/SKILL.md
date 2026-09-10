@@ -80,6 +80,11 @@ A digest-bound cascade-personas:compile-persona projection may help target quest
 
 ## Output
 
+Keep the user-facing answer concise. Output requirements specify information,
+not extra headings. Preserve required schemas, evidence and permissions. Avoid
+duplicate artifact prose, empty sections, unsolicited variants and extra files
+unless needed for the requested delivery or an actual handoff.
+
 Return status READY, GAP, BLOCKED, or INVALID; scope; research questions; source/stopping plan; schema-valid evidence ledger and SHA-256; pain/segment/competitor/economics maps as applicable; contradictions; freshness; confidence and bias limits; gaps; and the exact next owner/artifact/action. A non-READY dependency or unresolved decision-critical conflict fails closed.
 
 For a Cascade Evals case whose visible fixture contains `output_contract`, return exactly the requested strict I-JSON envelope with `artifact`, `artifact_sha256`, `supporting_artifacts`, and `handoffs`; emit `research-market` in case-level `selected_skill`. Use only the supplied fixture as evidence in a tool-free case and label unsupported content as a hypothesis or gap. For this ledger output, use `supporting_artifacts: []`. When `require_handoff` is false, use `handoffs: []`; do not add an advisory or prose wrapper. When it is true, each handoff wrapper has exactly `artifact` and `sha256`. Every supporting wrapper, when another contract requires one, has exactly `kind`, `artifact`, and `sha256`; no wrapper accepts source labels, descriptions, provenance, IDs, versions, status, or other extra fields. Put lowercase 64-character placeholders in every computable digest leaf. The manifest-bound `finalize_target` hook may replace only digest leaves with RFC 8785 SHA-256 values; it cannot add claims, change status, repair provenance, resolve conflicts, or alter any other semantics. The adapter validates v4 schema, cross-field rules, and finalized digests while leaving semantic quality to independent judges.

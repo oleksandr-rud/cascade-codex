@@ -46,6 +46,11 @@ oracle, data, and contour choices. Render requested cases from
 
 ## Output
 
+Keep the user-facing answer concise. Output requirements specify information,
+not extra headings. Preserve required schemas, evidence and permissions. Avoid
+duplicate artifact prose, empty sections, unsolicited variants and extra files
+unless needed for the requested delivery or an actual handoff.
+
 Return the typed design, traceability ledger, test cases, evidence contracts,
 execution requests, and conditional specialist handoffs. Keep product,
 runtime, execution, repair, and release boundary flags false.

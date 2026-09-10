@@ -82,3 +82,8 @@ separate explicit authority action.
 
 Return the prepared artifacts, their digests, validation receipt, dependency
 requirements, and every phase that remains `NOT_RUN` or `BLOCKED`.
+
+Keep the user-facing answer concise. Output requirements specify information,
+not extra headings. Preserve required schemas, evidence and permissions. Avoid
+duplicate artifact prose, empty sections, unsolicited variants and extra files
+unless needed for the requested delivery or an actual handoff.

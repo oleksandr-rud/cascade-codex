@@ -99,6 +99,11 @@ normal gap, and do not upgrade a partial or timed-out run to evidence.
 
 ## Output
 
+Keep the user-facing answer concise. Output requirements specify information,
+not extra headings. Preserve required schemas, evidence and permissions. Avoid
+duplicate artifact prose, empty sections, unsolicited variants and extra files
+unless needed for the requested delivery or an actual handoff.
+
 Return a typed VALIDATION_REPORT and digest plus a proposal bound to ../../schemas/product-decision.schema.json and any dependency handoff envelopes: hypothesis/subject identity, evidence matrix, predeclared criteria, execution/NOT_RUN states, results by evidence class, conflicts, confidence and limitations, recommendation, approval owner/status, invalidated artifacts, and exact resume owner/artifact/action. Never collapse mixed evidence into one score or mark approval/release without the named authority and evidence.
 
 When the fixture supplies `decision_owner`, use that exact identity for the

@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import { chmod, mkdtemp, readFile, readdir, writeFile } from "node:fs/promises";
+import { chmod, cp, mkdtemp, readFile, readdir, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 import { spawnSync } from "node:child_process";
 import { tmpdir } from "node:os";
@@ -83,6 +83,23 @@ async function summary(run) {
 function assert(condition, message) {
   if (!condition) throw new Error(message);
 }
+
+// The installed plugin must validate YAML without the source checkout's node_modules.
+const standalonePlugin = join(root, "standalone-evals");
+const standaloneSubject = join(root, "standalone-prompt", "skills", "prompt");
+await cp(fileURLToPath(new URL("../../../", import.meta.url)), standalonePlugin, { recursive: true });
+await cp(join(subjectSkillRoot, "../.."), join(root, "standalone-prompt"), { recursive: true });
+const standaloneValidator = join(standalonePlugin, "skills/prompt-evaluation/scripts/validate-quality-evals.mjs");
+const validateStandalone = () => spawnSync(process.execPath, [standaloneValidator, "--subject-skill-root", standaloneSubject], {
+  cwd: root, encoding: "utf8", env: { ...process.env, NODE_PATH: "" },
+});
+const standaloneValid = validateStandalone();
+assert(standaloneValid.status === 0 && standaloneValid.stdout.includes("PASS:"), `standalone validation failed: ${standaloneValid.stderr}`);
+const modelIndex = join(standaloneSubject, "runtime/model-index.yaml");
+await writeFile(modelIndex, `${await readFile(modelIndex, "utf8")}\nmodels: []\n`);
+const duplicateKey = validateStandalone();
+assert(duplicateKey.status !== 0 && duplicateKey.stderr.includes("Map keys must be unique"), "standalone validation must reject duplicate YAML keys");
+console.log("PASS: standalone plugin validation preserves strict YAML parsing without checkout dependencies");
 
 const first = run();
 assert(first.result.status === 3, `first run failed: ${first.result.stderr}`);

@@ -64,3 +64,8 @@ target repository. Do not scaffold source, select dependencies, mutate a target,
 or accept the candidate. Return sources, assumptions, boundaries, alternatives,
 chosen structure, consumer impacts, risks, validation gates, and unresolved
 gaps.
+
+Keep the user-facing answer concise. Output requirements specify information,
+not extra headings. Preserve required schemas, evidence and permissions. Avoid
+duplicate artifact prose, empty sections, unsolicited variants and extra files
+unless needed for the requested delivery or an actual handoff.

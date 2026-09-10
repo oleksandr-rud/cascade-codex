@@ -89,3 +89,8 @@ do not authorize target writes or replace target-owned schemas.
 Return target/source identity, plugin dependency receipts, files
 written/merged/skipped, preservation and drift status, target validation,
 installed/source parity, every `NOT_RUN` or blocker, and the exact next owner.
+
+Keep the user-facing answer concise. Output requirements specify information,
+not extra headings. Preserve required schemas, evidence and permissions. Avoid
+duplicate artifact prose, empty sections, unsolicited variants and extra files
+unless needed for the requested delivery or an actual handoff.

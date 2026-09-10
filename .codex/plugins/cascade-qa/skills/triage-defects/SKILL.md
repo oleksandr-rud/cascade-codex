@@ -64,6 +64,11 @@ for proof and routing rules. Render a requested record from
 
 ## Output
 
+Keep the user-facing answer concise. Output requirements specify information,
+not extra headings. Preserve required schemas, evidence and permissions. Avoid
+duplicate artifact prose, empty sections, unsolicited variants and extra files
+unless needed for the requested delivery or an actual handoff.
+
 Return the typed triage, exact evidence, classification, confidence, nullable
 repair owner, evidence-collection handoff, prohibited shortcuts, and rerun
 contract. Keep source and test mutation flags false.
