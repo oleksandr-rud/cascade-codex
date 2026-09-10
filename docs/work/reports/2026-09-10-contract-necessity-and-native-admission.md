@@ -75,9 +75,11 @@ and the pilot are isolated on `codex/autonomous-project-harness-eval`.
   filesystem or network permissions.
 
 Exact controllers, source/image/plugin freezes and raw attempts stay under the
-ignored `.artifacts/autonomous-project-pilot-*` roots. The reusable public
-brief, references, follow-up, acceptance code and judge profiles are in
-[`harness-evals/pilots/request-tracker-v1`](../../../harness-evals/pilots/request-tracker-v1/README.md).
+ignored `.artifacts/autonomous-project-pilot-*` roots. After integration into
+master at `a1540b0`, the completed pilot was removed from the active checkout and
+its disposable builder workspaces were moved to Trash. The public brief,
+references, follow-up, acceptance code and judge profiles remain in the
+[pilot source at `a1540b0`](https://github.com/oleksandr-rud/cascade-codex/tree/a1540b036f93e00f6962f7fcfa027353dc2b9f04/harness-evals/pilots/request-tracker-v1).
 Paired controls, human calibration and broad model/production claims remain
 outside the demonstrated result.
 

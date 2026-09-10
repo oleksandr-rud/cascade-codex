@@ -9,6 +9,10 @@ plan preserves the experiment design; the [results and limits](2026-09-10-contra
 distinguish those outcomes. The supplied references did not contain Cascade's
 module/startup architecture standard, so conformance to it remains unproven.
 
+The completed pilot was removed from the active checkout after the Harness
+fixes reached master at `a1540b0`. This historical plan, results and frozen local
+evidence remain available; disposable builder workspaces were moved to Trash.
+
 ## Question and pilot project
 
 Can the installed Cascade harness independently plan, build, run, and modify a
@@ -124,8 +128,8 @@ streamed evidence, process cleanup, and timeout/cancellation handling. Verify
 those boundaries before the project run. Reuse existing execution and evidence
 components; do not introduce a general benchmark framework for this pilot.
 
-The public brief/reference pack, hidden checks and two judge profiles are in
-[`harness-evals/pilots/request-tracker-v1`](../../../harness-evals/pilots/request-tracker-v1/README.md).
+The public brief/reference pack, hidden checks and two judge profiles are
+preserved in the [pilot source at `a1540b0`](https://github.com/oleksandr-rud/cascade-codex/tree/a1540b036f93e00f6962f7fcfa027353dc2b9f04/harness-evals/pilots/request-tracker-v1).
 Product checks own application behavior;
 Cascade Evals owns independent judging and reduction; simulation/controller
 verification owns execution integrity. Generic route diagnostics do not become
