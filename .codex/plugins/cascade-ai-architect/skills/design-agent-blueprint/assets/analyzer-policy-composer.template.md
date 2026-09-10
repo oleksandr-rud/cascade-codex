@@ -58,6 +58,7 @@ features need an explicit activation decision; a filled template is not a runtim
 | ProjectionPolicy | Role/purpose, registered selectors, mapping/transforms, required/optional data, freshness, access and budgets |
 | RoleContext | Invocation, accepted revision, source/authorization/definition/projection identities, typed payload, expiry |
 | Claim | Typed value, literal span, normalization, source identity, status, scope, correction lineage |
+| Selective storage and context | Domain-record/claim/source/memory ownership; derived graph links; per-section source, scope, freshness, dependency, budget and gap rules; optional [worked example](selective-memory/README.md) |
 | PolicyDecision | Versioned rule matches, effects, obligations, reasons, accepted/rejected operations |
 | ComposerContext | State/policy/source identities, allowed facts/acts, uncertainty, redaction, expiry, budget |
 | ResponseContract | Answer mode, language/channel, intent, structure/schema, size, citations, style, required/forbidden content and missing-data behavior |

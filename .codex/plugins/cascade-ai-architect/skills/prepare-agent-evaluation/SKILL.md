@@ -33,6 +33,11 @@ A generic agent, tool, memory, or conversational request does not select this pr
    rubrics, budgets, model policy, and run identity before any execution.
 2. Select representative positive, negative, collision, permission, recovery,
    budget, and stopping cases. Use semantic IDs and exact source locators.
+   For adopted selective state/claims/memory designs, use the development seeds
+   at `../design-agent-blueprint/assets/selective-memory/evaluation-cases.json`.
+   Bind interpretation, admission, domain state, memory, context and response in
+   the same scenario. These visible seeds and backend fixtures are not sealed
+   evidence, executed model results or a substitute for this preparation contract.
 3. Apply deterministic architecture assertions only to structured evidence:
    schema and digest identity, reference closure, exclusive ownership, tool and
    permission contracts, trace integrity, budgets, prohibited actions, and

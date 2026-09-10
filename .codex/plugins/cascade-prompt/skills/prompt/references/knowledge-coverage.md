@@ -46,6 +46,13 @@ only; ordinary authoring follows SKILL.md's conditional routing.
 
 ## Verification boundary
 
+The maintainer's semantic interpretation rule is enforced in SKILL workflow 2,
+classification/tool overlays, context composition, the stateful profile and
+evaluation guidance: LLM-produced defined enums/claims precede deterministic
+consumption. Regex/keyword semantic shortcuts, including partial-task prefilters
+and fallback verdict extraction, are forbidden. This records guidance coverage,
+not migration or measured correctness of existing classifiers.
+
 The graph-authoring integration adds conditional guidance in
 [context composition](../runtime/context-composition.md),
 [tool orchestration](../runtime/task-overlays.md) and

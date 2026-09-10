@@ -24,6 +24,10 @@ pattern-selection procedure or treat a default as a mandate.
 
 ## Select the topology
 
+Apply [the semantic decision boundary](references/semantic-decision-boundary.md)
+for meaning-dependent text interpretation: LLM-produced typed proposals, then
+deterministic validation and consumption; no keyword/regex semantic shortcuts.
+
 For separable work, dependencies, branching or a requested graph option, apply
 [graph workflow authoring](references/graph-workflow-authoring.md) as a
 conditional recommendation. Review step ownership, context slices and prompt
@@ -62,6 +66,13 @@ Define all fourteen behavior blocks in `references/behavior-blocks.md`. Then def
 - trace events, metrics, and local evaluations.
 
 Do not hide application state in prompt history. The harness owns durable state, permissions, budgets, and tool enforcement. Prompts explain behavior but do not grant authority.
+
+For evolving evidence, corrections, partial state or task memory, consider
+[selective state, claims and memory](references/selective-state-claims-memory.md).
+Choose domain records versus claims by authority/provenance needs, keep deltas
+as proposals, and define each context section's sources, dependencies and gaps.
+Its runnable prepared-data example is optional backend evidence, not a full
+StateDelta runtime or measured LLM quality. Do not turn every property into a claim.
 
 ## Check completeness
 

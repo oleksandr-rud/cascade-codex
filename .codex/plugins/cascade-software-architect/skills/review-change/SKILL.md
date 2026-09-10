@@ -21,6 +21,12 @@ constraints, current diff, nearby dirty work, and relevant consumers. Trace each
 changed behavior through public interfaces, state or persistence, tools,
 permissions, generated artifacts, tests, and observable outcomes as applicable.
 
+For LLM tasks, flag semantic decisions inferred from free text with regexes,
+keywords, phrase tables or lexical scores, including partial-task shortcuts
+and fallbacks. Require LLM interpretation into defined enums/claims followed
+by code validation and consumption. Exact format parsing remains mechanical;
+an enum produced by lexical guessing is still a violation.
+
 Find correctness defects, regressions, unsafe edge cases, contract or ownership
 drift, stale consumers/documentation, and missing proof. Separate introduced
 findings from pre-existing state. Rank actionable findings by impact and

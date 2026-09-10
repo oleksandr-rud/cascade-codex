@@ -19,6 +19,13 @@ the user's authority and the plan's mutation boundary.
 
 ## Implement
 
+For LLM tasks or meaning-dependent subtasks, preserve the semantic boundary in
+CODEX.md: LLM interpretation produces defined enums/claims; code validates and
+consumes them. Do not implement regex/keyword intent extraction, prose-based
+route selection or semantic grading, even as a prefilter or fallback. Report
+existing violations outside the accepted migration scope without disguising
+them as fixed by guidance.
+
 For a Product-backed slice, preserve the accepted requirement IDs and outcome
 links through changed behavior and relevant instrumentation. Implement the
 specified acceptance and failure/recovery paths. If technical evidence changes

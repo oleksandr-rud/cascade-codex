@@ -18,6 +18,12 @@ vertical use-case slices, current-state transactions and direct context builders
 CQRS, persisted read models, event sourcing, brokers and generic process-manager
 frameworks are optional decisions with concrete evidence, not template defaults.
 
+For an implementation starting with state, claims, memory and graph relationships,
+use [the selective storage and context example](selective-state-claims-memory.md).
+It reuses existing Operation values for a bounded persistence slice, supplies
+prepared data and context/evaluation templates, and preserves domain authority.
+Treat its tests as backend evidence; provider and semantic evaluation are separate.
+
 When specifying delta updates, policy data, memory or downstream context, read
 [the state and projection contract](state-delta-policy-projection.md).
 Use [the machine schema bundle](agent-contracts.schema.json) as the

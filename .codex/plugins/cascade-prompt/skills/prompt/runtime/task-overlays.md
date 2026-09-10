@@ -17,6 +17,10 @@ this whole pack into the generated prompt.
   Resolve allowed labels, decision boundaries, priority for mixed cases,
   insufficient/conflicting evidence, abstention or human review, and exact
   output shape.
+  Meaning is interpreted by the LLM into the declared labels/claims. Do not
+  classify free text with regexes, keyword tables or phrase heuristics before
+  the model, after it, or as a fallback. Code validates enums and consumes
+  structured outcomes; it cannot resolve semantic ambiguity from word matches.
 - **Research/retrieval** — triggers: research, search, cite, current, compare
   sources, specialized web search, database or hybrid retrieval. Resolve
   authority, freshness/version, source/domain restrictions, query and tool

@@ -81,7 +81,10 @@ explicit. The existing synchronous pipeline already supplies a static graph;
 adoption does not add services, a scheduler or model roles.
 
 Treat slice issuance, context rendering, proposal admission, transaction commit,
-route selection and response release as deterministic steps. Analyzer proposes;
+route enforcement and release enforcement as runtime-owned steps. Required
+semantic interpretation and evidence-support checks remain explicit LLM or
+qualified-reviewer assessments; deterministic validation alone cannot prove them.
+Analyzer proposes;
 Composer produces a candidate; neither owns the edges that authorize effects.
 Compile a separate current context for each model step. Composer receives
 admitted findings and required unresolved work, not raw Analyzer proposals as
@@ -91,8 +94,10 @@ path; the formatter and Composer do not acquire store or retrieval authority.
 If independent research branches are selected, runtime binds their membership,
 deadlines and allowed partial/failure outcomes. The join collects observations
 with provenance; results still pass through Analyzer and admission before
-Composer use. A late result or correction invalidates only affected dependency
-contexts and requires current-scope revalidation. Dynamic research expansion is
+Composer use. Revalidate late results before admission; reject duplicate,
+cancelled or ineligible results without invalidating valid current context.
+Only admitted changes to relevant state, evidence, permissions or dependencies
+invalidate affected context. Dynamic research expansion is
 optional and bounded by the same admission and shared budgets.
 
 Carry these selected decisions together into workflow, context and prompt briefs.
@@ -100,6 +105,13 @@ Keep pattern 2.4 and existing wire contracts; this is an authoring option, not
 an additional registered transport profile or a measured performance claim.
 
 ## Claims and the Analyzer boundary
+
+Apply [the semantic decision boundary](semantic-decision-boundary.md).
+Analyzer interprets text into typed proposals; code consumes admitted fields.
+Never infer intent, claim meaning, negation, approval or routing from plain-text
+regexes or keywords, including a shortcut before Analyzer or a fallback after
+invalid output. Semantic ambiguity is resolved or reported by the model; code
+checks the explicit status and domain rules without pretending to verify meaning.
 
 Use [StateDelta, policy data, and role projections](state-delta-policy-projection.md)
 for the detailed wire contract, record update semantics, projection rules, and

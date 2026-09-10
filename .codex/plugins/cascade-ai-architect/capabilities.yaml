@@ -1,7 +1,7 @@
 schema_version: 1
 plugin:
   name: cascade-ai-architect
-  version: 0.1.8+codex.20260910195500
+  version: 0.1.11+codex.20260911001500
 model_policy:
   model: gpt-6-astra
   planning_reasoning_effort: high

@@ -41,6 +41,22 @@ Respect ignore rules; add `--no-ignore` only for an explicitly needed ignored
 source, never for a whole cache or artifact inventory. Prefer exact file reads
 when the path is known. If ripgrep is unavailable, use the available equivalent.
 
+## Semantic Interpretation Boundary
+
+For all agent, prompt/context, implementation, review and evaluation work, use
+LLMs to interpret free text into defined enums, claims or proposals. Code
+validates and consumes those fields. Do not use regexes, keyword/phrase tables
+or lexical scoring to infer meaning, intent, relevance, approval, routing or
+semantic quality, including preprocessing and fallback paths.
+See [the shared authoring contract](.codex/plugins/cascade-ai-architect/skills/design-agent-blueprint/references/semantic-decision-boundary.md).
+Exact structured-format/command parsing, field syntax validation and file search
+remain mechanical operations. Model output never grants runtime authority.
+
+The existing lexical admission implementation is a known migration gap.
+Its classifications may be inspected as legacy diagnostics; do not treat them
+as semantic decisions or use them in place of current LLM interpretation and
+host-bound structured validation. Guidance adoption does not migrate that code.
+
 ## Plugin-First Capability Routing
 
 Plugins own portable methods, schemas, templates, and generic evaluation
@@ -192,9 +208,11 @@ No retired 5.5 model belongs in active routing.
 
 Run the cheap task-admission microkernel for every request. Its Task Envelope is
 a proportional routing hint: it does not grant permission, create work,
-dispatch an agent, or establish a pass. Correct an obvious lexical
-misclassification in-process from the direct request and current repository
-evidence.
+dispatch an agent, or establish a pass. Existing lexical classifications are
+nonconforming legacy diagnostics, not an acceptable semantic decision path.
+Resolve meaning through LLM interpretation and structured host validation;
+an unavailable structured intake path is a gap, never permission to use lexical
+inference. Keep actual runtime migration separately scoped and evidenced.
 
 Normal admission loads only the versioned policy, control catalog, and Task
 Envelope schema. The 981-case admission corpus is source-checkout regression

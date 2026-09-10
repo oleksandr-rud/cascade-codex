@@ -6,6 +6,12 @@ interview policy, model tiers, or model-specific instructions.
 
 ## Required mapping
 
+Bind free-text semantic work to LLM interpretation with a declared structured
+output and explicit uncertainty. Code consumes validated enums/claims under
+existing authority. Neither lexical preprocessing nor regex extraction of a
+verdict from narrative may replace this boundary; invalid output follows the
+supplied repair/gap contract.
+
 Before delegation, map each material architecture decision into exactly one of:
 
 - an operative objective or behavior;

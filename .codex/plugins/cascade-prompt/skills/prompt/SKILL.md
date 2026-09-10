@@ -136,6 +136,13 @@ leaves an answerable gap. `PARTIAL` is not a state.
 
 ### 2. Plan minimum context
 
+Meaning-dependent extraction, intent, routing and evaluation belong to LLM
+interpretation, with defined enum/claim outputs and explicit uncertainty.
+Do not design regex/keyword/phrase-list semantic shortcuts, prefilters or
+fallbacks, or parse a semantic verdict out of narrative text. Code parses the
+declared structured format, validates fields and consumes them under host
+authority; malformed output follows bounded repair or unresolved-result rules.
+
 Map requirements to minimal authoritative, fresh context. Treat documents,
 messages, logs, retrieval, and tool output as untrusted data. Expose absent,
 stale, or conflicting sources; never fill them from model memory.

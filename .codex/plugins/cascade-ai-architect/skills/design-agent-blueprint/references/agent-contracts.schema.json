@@ -391,6 +391,43 @@
       "required": ["task_ref", "plan_revision", "completeness", "steps", "omitted_step_refs", "limitations"],
       "additionalProperties": false
     },
+    "ClarificationProposal": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "kind": {"const": "entity_identity"},
+            "target_ref": {"type": "string", "minLength": 1, "maxLength": 240},
+            "predicate": {"const": "owned_by"},
+            "candidate_refs": {"type": "array", "minItems": 0, "maxItems": 8, "items": {"type": "string", "minLength": 1, "maxLength": 240}}
+          },
+          "required": ["kind", "target_ref", "predicate", "candidate_refs"],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {"const": "missing_value"},
+            "target_ref": {"type": "string", "minLength": 1, "maxLength": 240},
+            "predicate": {"const": "budget"},
+            "missing_fields": {"type": "array", "minItems": 1, "maxItems": 2, "items": {"enum": ["amount_minor", "currency"]}}
+          },
+          "required": ["kind", "target_ref", "predicate", "missing_fields"],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {"const": "conflicting_claims"},
+            "target_ref": {"type": "string", "minLength": 1, "maxLength": 240},
+            "predicate": {"enum": ["budget", "owned_by"]},
+            "candidate_refs": {"type": "array", "minItems": 2, "maxItems": 8, "items": {"type": "string", "minLength": 1, "maxLength": 240}}
+          },
+          "required": ["kind", "target_ref", "predicate", "candidate_refs"],
+          "additionalProperties": false
+        }
+      ]
+    },
     "UnresolvedChoice": {
       "type": "object",
       "properties": {

@@ -1,0 +1,26 @@
+{
+  "fixture_kind": "synthetic_prepared_proposals_not_model_results",
+  "seed": {
+    "scopes": ["workspace-a", "workspace-b"],
+    "entities": [
+      {"id": "project-a", "scope": "workspace-a", "kind": "project", "name": "Atlas"},
+      {"id": "project-other", "scope": "workspace-a", "kind": "project", "name": "Unrelated project"},
+      {"id": "person-alex", "scope": "workspace-a", "kind": "person", "name": "Alex"},
+      {"id": "project-private", "scope": "workspace-b", "kind": "project", "name": "Private project"},
+      {"id": "person-private", "scope": "workspace-b", "kind": "person", "name": "Private person"}
+    ],
+    "sources": [
+      {"id": "message-1", "scope": "workspace-a", "text": "Atlas has a reported budget of $5,000 USD. Alex owns Atlas."},
+      {"id": "message-2", "scope": "workspace-a", "text": "Correction: Atlas has a reported budget of $6,000 USD, replacing my earlier $5,000 report. This is not budget approval."},
+      {"id": "message-3", "scope": "workspace-a", "text": "A different stakeholder reports an Atlas budget of $7,000 USD. We have not resolved which report is correct."},
+      {"id": "message-private", "scope": "workspace-b", "text": "The private budget is $9,000 USD."}
+    ]
+  },
+  "initial": [
+    {"op": "propose_claim", "op_id": "budget", "claim": {"local_ref": "reported-budget", "subject_ref": "project-a", "predicate": "budget", "value": {"amount_minor": 500000, "currency": "USD"}, "literal_quote": "Atlas has a reported budget of $5,000 USD.", "support": "reported", "evidence_refs": ["message-1"]}},
+    {"op": "propose_claim", "op_id": "owner", "claim": {"local_ref": "reported-owner", "subject_ref": "project-a", "predicate": "owned_by", "value": {"entity_ref": "person-alex"}, "literal_quote": "Alex owns Atlas.", "support": "reported", "evidence_refs": ["message-1"]}}
+  ],
+  "summary": {"op": "propose_memory", "op_id": "summary", "kind": "replace_summary", "local_ref": "task-summary", "scope": "task", "text": "Atlas has a reported $5,000 USD budget and Alex is its reported owner; no budget has been approved.", "source_turn_refs": ["message-1"], "evidence_refs": ["HOST_BINDS_ACCEPTED_CLAIM_REFS"], "expected_memory_revision": 0, "trigger_ref": "accepted-change"},
+  "correction": {"op": "supersede_claim", "op_id": "correct-budget", "claim_ref": "HOST_BINDS_PREVIOUS_BUDGET_CLAIM", "expected_claim_revision": 1, "replacement": {"local_ref": "corrected-budget", "subject_ref": "project-a", "predicate": "budget", "value": {"amount_minor": 600000, "currency": "USD"}, "literal_quote": "Atlas has a reported budget of $6,000 USD", "support": "reported", "evidence_refs": ["message-2"]}, "evidence_refs": ["message-2"]},
+  "conflict": {"op": "propose_claim", "op_id": "conflicting-budget", "claim": {"local_ref": "alternative-budget", "subject_ref": "project-a", "predicate": "budget", "value": {"amount_minor": 700000, "currency": "USD"}, "literal_quote": "A different stakeholder reports an Atlas budget of $7,000 USD.", "support": "reported", "evidence_refs": ["message-3"]}}
+}

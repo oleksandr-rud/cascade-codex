@@ -23,6 +23,12 @@ For cross-boundary modules, public contracts, shared abstractions, state
 machines, or major refactors, apply
 [checklists/deep-module-review.md](checklists/deep-module-review.md).
 
+For LLM task boundaries, flag regex/keyword/phrase-based semantic decisions
+over plain text. Require LLM-produced defined enums/claims, structural
+validation and code-owned consumption/authority, including fallback paths.
+Format parsing is not semantic interpretation; a typed wrapper around a
+lexical guess does not satisfy this boundary.
+
 Check for duplicated authority, bypassed boundaries, cyclic dependencies,
 shallow abstractions, invalid pattern composition, write conflicts, missing
 recovery or stop behavior, stale consumers, and evidence stronger than the run

@@ -9,6 +9,13 @@ Produce one versioned `cascade-capability-selection` candidate. The host owns
 admission, permissions, deterministic validation, repository access, and
 execution. This skill owns semantic inclusion and exclusion only.
 
+Interpret claim and descriptor meaning with the LLM; never choose a capability
+from regexes, keyword/phrase tables or lexical overlap. Emit the defined
+claim-bound selection structure for host validation. A mechanically valid
+Task Envelope whose semantic fields were inferred lexically is an upstream
+interpretation gap; do not treat those fields as established meaning. The host
+must supply a current semantically interpreted envelope before dependent routing.
+
 ## Inputs
 
 Require a current validated Task Envelope, the digest-bound generated plugin

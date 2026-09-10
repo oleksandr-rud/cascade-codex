@@ -15,6 +15,12 @@ the governing base, recommend `cascade-coding-agent:pull-and-integrate` through
 Consume the resulting report and reassess affected assumptions after authorized
 host execution. Designing an architecture does not itself authorize a pull.
 
+For LLM tasks and semantic subtasks, assign free-text interpretation to an LLM
+that emits defined enums/claims and explicit uncertainty. Code validates and
+consumes that structure under existing domain authority. Reject regex/keyword
+intent, relevance, approval or routing inference, including prefilters and
+fallbacks; declared syntax parsing is a separate mechanical concern.
+
 For UI architecture, consume the shared Generative UI practice through
 `cascade-design:design-system`, `references/generative-ui.md`. Map supported
 frontend components, UI state and relevant data/action ownership within the
@@ -34,6 +40,15 @@ Derive source modules from cohesive business capabilities. Map accepted scenario
 language, lifecycle, invariants, transaction boundaries and state owners before
 naming modules. An entity or aggregate can justify a module only when that
 business boundary is evidenced; never create one module per table or noun.
+
+For an adopted state/claims/memory design, separate domain-owned operational
+records, source-backed assertions and derived memory. Deltas are proposed writes;
+aggregate rules and transactions own acceptance. Graph links do not expand write
+authority. Prefer derived graph views over a second mutable store until queries
+justify it. Bind correction, conflict, source revocation, memory invalidation and
+schema evolution to observable cases. The optional worked target example is owned
+by `cascade-ai-architect:design-agent-blueprint` at
+`references/selective-state-claims-memory.md`; it is not production migration proof.
 Keep entities in one module when they serve one cohesive lifecycle. Require each
 module to own identifiable state
 or policy, invariants and use cases, one public entrypoint, and its

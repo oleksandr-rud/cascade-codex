@@ -8,6 +8,13 @@ description: Design, validate, reduce, or audit a versioned evaluation across pr
 Own the reusable measurement lifecycle. Keep subject semantics in the selected
 adapter and keep target execution in its declared runtime.
 
+For meaning-dependent checks, use LLM or qualified human semantic judgments
+with defined ratings/claims. Do not grade prose by regex, keyword presence,
+phrase lists or lexical overlap, including prefilters and fallback scoring.
+Code validates and reduces structured judgments; exact syntax, numeric/domain
+oracles and observed structured effects remain deterministic checks. Invalid
+judge output is not repaired by extracting a verdict from narrative.
+
 ## Source order
 
 1. Evaluation claim, decision, population, authority, and target artifact.

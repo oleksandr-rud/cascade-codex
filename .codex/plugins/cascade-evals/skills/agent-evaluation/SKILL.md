@@ -23,6 +23,18 @@ Evaluate one digest-bound agent-system claim through `$evaluate`.
    envelope.
 2. Bind an explicit subject pack and validate every reference; missing packs
    are `BLOCKED`, not replaced by generic cases.
+   For state/claims/memory subjects, trace the same case through interpretation,
+   admitted delta, domain state, memory validity, issued context and final outcome.
+   Keep prepared-proposal backend tests separate from actual model runs. Include
+   semantic negative controls where valid structure contains a wrong interpretation;
+   permission gates and reference checks cannot establish factual support. Compare
+   the frozen complete version set and report quality, latency and cost separately.
+   For clarification paths, add a distinct semantic dimension for user-actionable
+   presentation: readable distinguishing details, no opaque handles in prose,
+   no invented distinctions, and a useful missing-information question when
+   candidates cannot be distinguished. Include unnecessary clarification and
+   ambiguous follow-up risks where the subject supports them. Schema/reference
+   gates cannot establish usability; preserve older results when adding a rubric.
 3. Apply deterministic schema, ownership, tool, permission, trace, budget, and
    prohibited-action gates only to structured artifacts that can actually be
    recomputed. A keyword search over narrative output is not a mechanical gate;

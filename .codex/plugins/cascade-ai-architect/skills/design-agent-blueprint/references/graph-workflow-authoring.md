@@ -47,10 +47,16 @@ or rejected proposal into every downstream step.
 
 ## Functions, branches and joins
 
+Apply [the semantic decision boundary](semantic-decision-boundary.md) to every
+text-to-decision step. LLMs interpret free text into defined enums or claims;
+code validates and consumes them. Keyword/regex inference is not deterministic
+domain logic, even when wrapped in an enum or used only as a fallback.
+
 Use code for predictable retrieval mechanics, parsing, validation, aggregation,
 explicit conditions and bookkeeping. Use models for semantic extraction,
 interpretation or synthesis when needed. A model classifier proposes a route;
-runtime validates the label, ambiguity, scope and budget before dispatch.
+runtime validates the label, explicit ambiguity status, scope and budget before
+dispatch. Runtime validation does not resolve semantic ambiguity by itself.
 Schema-valid output is not proof of semantic correctness or permission.
 
 Parallelize only admitted independent work. Bind branch membership and required

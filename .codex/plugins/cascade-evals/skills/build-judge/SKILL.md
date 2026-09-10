@@ -5,6 +5,12 @@ description: Create, revise, version, validate, or calibrate semantic judge prof
 
 # Build Judge
 
+Semantic judgments must interpret the evidence and emit the declared structured
+ratings/claims. Do not replace judgment with regexes, keywords, phrase lists or
+lexical overlap. Code may validate and aggregate structured fields or check an
+explicit literal-format requirement; it must not extract a semantic verdict
+from unconstrained prose, including as a fallback after invalid output.
+
 Build the measurement contract; do not execute the target or treat synthetic
 agreement as human calibration.
 

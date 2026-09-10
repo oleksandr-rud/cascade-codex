@@ -55,6 +55,14 @@ Use the existing `closeout` contract when durable state needs updating.
 
 ## Operating Rules
 
+- LLMs interpret free text into defined enums, claims or proposals; code validates
+  and consumes those fields. Do not infer meaning, intent, relevance, approval,
+  routing or semantic quality with regexes, keywords, phrase tables or lexical
+  scores, including shortcuts and fallbacks. Exact format/command parsing and
+  syntax checks remain mechanical. Model output does not grant authority.
+- Treat an existing lexical admission classifier as a reported migration gap;
+  its presence or passing legacy tests does not make it a compliant semantic path.
+
 - Think before coding: disclose assumptions; ask only material blocker questions.
 - Simplicity first: no speculative features or unnecessary abstractions.
 - Surgical changes: preserve unrelated edits and target-owned instructions.

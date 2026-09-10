@@ -3,6 +3,11 @@
 Load only for an explicitly requested or already adopted Analyzer–Policy Engine–Composer
 architecture. Require its supplied, resolvable contracts; this pack does not choose a topology.
 
+Analyzer interprets free text into defined claims/enums with uncertainty. Code
+validates and admits those fields; no regex/keyword semantic prefilter, shortcut
+or fallback is permitted. Composer's prose is not parsed for approval, completion
+or routing decisions; use its declared structured proposals and runtime receipts.
+
 When the brief selects graph workflow authoring, bind the step prompt and its
 context slice together: Analyzer has proposal-only output; Composer uses admitted
 findings and required unresolved work. Runtime owns slice issuance, joins,

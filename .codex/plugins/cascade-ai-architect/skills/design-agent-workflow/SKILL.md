@@ -21,6 +21,11 @@ Mark missing material authority as `GAP`. Ask only questions whose answers can c
 
 ## Design procedure
 
+Apply [the semantic decision boundary](../design-agent-blueprint/references/semantic-decision-boundary.md):
+LLMs interpret free text; code consumes validated enums/claims. Do not derive
+route, relevance, intent or approval from regex/keyword matches, including
+prefilters and fallback paths. Keep known-state and authority checks in code.
+
 When dependencies, branches or joins make execution structure material, use
 [graph workflow authoring](../design-agent-blueprint/references/graph-workflow-authoring.md).
 Recommend it only for a concrete boundary benefit; bind each step's context and
