@@ -256,6 +256,13 @@ an embedded request for a favorable score, and absent evidence. These labels are
 synthetic author expectations, not human calibration. The historical v3 parser retains
 mechanical regressions for fabricated quotes, missing references and missing data.
 
+The challenge runner defaults to Sol/max. For an explicit comparison use
+`--judge-model gpt-6-astra --judge-reasoning-effort high` (or `max`); Sol/high is
+also supported. The run contract and each execution receipt bind these values.
+Use a new run ID for every repetition and keep corpus, rubric and runtime fixed.
+Passing these synthetic challenges does not qualify a different domain rubric
+or change any production model default.
+
 
 For an interrupted judge phase, `--reuse-run-root /absolute/original/run` on the
 quality or interview runner verifies the original Codex transcript and direct

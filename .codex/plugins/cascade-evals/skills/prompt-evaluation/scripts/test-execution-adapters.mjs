@@ -276,7 +276,7 @@ test("campaign recovery uses predeclared paths and keeps unresolved jobs in the 
   assert.equal(recovered.phases[0].status, "INVALID_ADAPTER_RESPONSE");
 });
 
-test("campaign model overrides are bound before dispatch for both runner types", async () => {
+test("campaign and challenge model overrides are bound before dispatch", async () => {
   const { haltExecution, recoverExecution } = await import("./execution-coordinator.mjs");
   await haltExecution("synthetic pre-dispatch inspection; no model may execute");
   try {
@@ -301,6 +301,28 @@ test("campaign model overrides are bound before dispatch for both runner types",
       } else assert.equal(option("model"), "gpt-6-astra");
     }
     assert.equal(JSON.parse(result.stdout).jobs_finished, 0);
+    const challenge = (await import("node:url")).fileURLToPath(new URL("./run-judge-challenges.mjs", import.meta.url));
+    for (const [id, options, model, effort, comparison] of [
+      ["default", [], "gpt-5.6-sol", "max", false],
+      ["astra", ["--judge-model", "gpt-6-astra", "--judge-reasoning-effort", "high"], "gpt-6-astra", "high", true],
+    ]) {
+      const result = await runCommand({ command: process.execPath, args: [challenge, "--cases", "j01",
+        "--output-dir", output, "--run-id", id, ...options], input: "", timeoutMs: 10000, acceptedExitCodes: [3] });
+      assert.equal(result.status, "COMPLETED");
+      const contract = JSON.parse(await readFile(join(output, id, "run-contract.json"), "utf8"));
+      const receipt = JSON.parse(await readFile(join(output, id, "j01.execution.json"), "utf8"));
+      for (const bound of [contract, receipt]) {
+        assert.equal(bound.model, model);
+        assert.equal(bound.reasoning_effort, effort);
+      }
+      assert.equal(contract.explicit_comparison, comparison);
+      assert.equal(receipt.dispatched, false);
+    }
+    for (const options of [["--judge-model", "unsupported-judge"], ["--judge-model"], ["--judge-reasoning-effort", "none"]]) {
+      const result = await runCommand({ command: process.execPath, args: [challenge, ...options], input: "", timeoutMs: 10000, acceptedExitCodes: [1] });
+      assert.equal(result.status, "COMPLETED");
+      assert.match(result.stderr, /unsupported challenge judge|missing value/);
+    }
   } finally { await recoverExecution(); }
 });
 

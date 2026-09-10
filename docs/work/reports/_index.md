@@ -17,6 +17,7 @@ Use filenames like `YYYY-MM-DD-slug.md`.
 
 | Date | Report | Purpose |
 |---|---|---|
+| 2026-09-10 | [Astra plugin and judge pilot](2026-09-10-astra-plugin-and-judge-pilot.md) | Frozen 48-call judge comparison, seven-domain model-binding preflights, migration constraints, and retained production defaults. |
 | 2026-09-10 | [Concise prompts, retrieval, and model pilot](2026-09-10-concise-prompts-search-and-model-benchmark.md) | Conditional output, web/database controls, frozen Astra/high versus Sol/max observations, preserved failures, and unchanged model defaults. |
 | 2026-09-10 | [Harness admission and Prompt repairs](2026-09-10-harness-admission-and-prompt-repairs.md) | Ukrainian directive routing, Prompt readiness and context loading, CLI compatibility, oracle repairs, and preserved validation evidence. |
 | 2026-09-10 | [Autonomous project Harness evaluation plan](2026-09-10-autonomous-project-harness-evaluation-plan.md) | Proposed isolated build/run/change pilot, independent complexity and reference checks, control comparison, and the missing writable execution profile; NOT_RUN. |
