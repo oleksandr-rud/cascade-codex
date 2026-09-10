@@ -59,6 +59,12 @@ subjects and `cascade-simulations:simulate` for dynamic execution. Neither
 provider depends on Cascade Evals at runtime. Missing, disabled, ambiguous, or
 identity-mismatched dependencies fail closed; no cache search or copied
 fallback is allowed.
+The skill resolver uses the enabled inventory entry's exact marketplace, name,
+and version under the installed plugin cache, matching the native Codex skill
+surface. Inventory `source.path` advertises the mutable checkout and does not
+select evaluation bytes. An intentional source evaluation must use the prompt
+runner's explicit `--subject-skill-root` override. A missing installed version
+stays blocked even when a checkout or another cached version is present.
 
 ## Model policy
 

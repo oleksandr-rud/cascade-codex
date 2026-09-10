@@ -1272,7 +1272,7 @@
     },
     {
       "path": "runtime/intake-interview.md",
-      "sha256": "195ac565f6e835531a537a9661a9eccf8f9aaaf3cdc363cc2bd7fcf281055666",
+      "sha256": "82e67ce79d0e5735e66fe763a7dc87c6b13c66cb4e78c38491d4ca79010165e9",
       "consumers": [
         "runtime/intake-interview.md"
       ],
@@ -1529,7 +1529,7 @@
     },
     {
       "path": "SKILL.md",
-      "sha256": "09a2155e64f779c7307e2b1e20d630fe1a5e97d2b88a60c2c2b66476815f73af",
+      "sha256": "05140313de0de1409ac15084503b56cb871fe3c826c7b65e5816b71aaf5e6eaf",
       "consumers": [
         "SKILL.md"
       ],

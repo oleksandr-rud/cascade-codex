@@ -96,7 +96,8 @@ remains `NOT_RUN`. Keep sealed expectations outside target-visible material.
 
 ## Model policy
 
-Read `references/model-policy.json`. Default builder, target, and judge
+When selecting a model configuration or preparing execution, read
+`references/model-policy.json`. Default builder, target, and judge
 invocations to `gpt-5.6-sol` with `max` reasoning effort.
 Explicit comparison configurations may bind a different supported model and
 reasoning effort, but every value must be frozen in the evaluation bundle and

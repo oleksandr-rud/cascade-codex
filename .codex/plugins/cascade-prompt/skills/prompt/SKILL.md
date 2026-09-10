@@ -71,6 +71,11 @@ Classify the request as `Create`, `Refine`, `Diagnose`, `Convert`, `Compare`, or
 - `Advanced`: reusable, source-heavy, high-stakes, tool-using, multi-stage,
   autonomous, or evaluation-suite work.
 
+Advanced selects additional reading, not an automatic interview. Load the intake
+pack for that trigger even when no question is needed; a complete Advanced brief
+still returns READY. Apply explicit total limits literally and use safe disclosed
+defaults for uncertainty that can remain an honest gap in the resulting prompt.
+
 Reclassify a would-be Quick request with a material gap as Guided before loading
 `runtime/intake-interview.md`. An explicit mode cannot bypass safety, authority,
 permission, or a hard output blocker.

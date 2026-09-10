@@ -65,9 +65,16 @@ function assert(condition, message) {
   if (!condition) throw new Error(message);
 }
 
-const complete = run("complete-quick-v1", ["--execute-target", "--target-model", "gpt-5.6-terra"]);
+const complete = run("complete-quick-v1", ["--run-id", "campaign-complete-quick-v1", "--execute-target", "--target-model", "gpt-5.6-terra"]);
 assert(complete.result.status === 0, `complete fixture failed: ${complete.result.stderr}\n${complete.result.stdout}`);
 const completeSummary = await summary(complete);
+assert(completeSummary.run_id === "campaign-complete-quick-v1" && complete.output.run_root === join(outputRoot, "campaign-complete-quick-v1"), "campaign IDs must select the declared interview result directory");
+const collision = run("complete-quick-v1", ["--run-id", "campaign-complete-quick-v1"]);
+assert(collision.result.status !== 0 && JSON.stringify(await summary(complete)) === JSON.stringify(completeSummary), "a repeated campaign ID must preserve the prior result");
+const unsafeId = run("complete-quick-v1", ["--run-id", "../outside"]);
+assert(unsafeId.result.status !== 0 && unsafeId.result.stderr.includes("unsafe run ID"), "unsafe interview result paths must be rejected before dispatch");
+const falseDiscovery = run("complete-quick-v1", ["--installed-plugin"]);
+assert(falseDiscovery.result.status !== 0 && falseDiscovery.result.stderr.includes("cannot verify native discovery"), "an isolated interview must not claim installed-plugin discovery from an ignored flag");
 assert(completeSummary.execution.first_turn.receipts?.length === 1, "interview turn must have a bound direct execution receipt");
 assert(Boolean(completeSummary.execution.target.receipt?.sha256), "interview target must have a bound direct execution receipt");
 assert(completeSummary.turns.first.inspected.state === "READY", "complete fixture must be READY");
