@@ -1,7 +1,7 @@
 {
   "agent_count": 9,
   "agent_scenario_count": 9,
-  "catalog_digest": "e6103766e2fc2582686195358cfabb2b51d58f3ac053bb1e7e9939887efd7cbe",
+  "catalog_digest": "b4ce10aa5082fb3f6f5775e318c4561bad5e21249cec6d137452523aefa8391c",
   "generated_by": "scripts/cascade/evals.ts",
   "scenario_count": 180,
   "scenarios": [
@@ -5219,7 +5219,7 @@
         },
         {
           "path": "AGENTS.md",
-          "sha256": "d4bc1bde21452431ac4873caeebc4cdbc4fdb4601c790a389fd22852d126fbd6"
+          "sha256": "d7b66cf8135e6086b6cf5bb1d7b2c2e11038f7d4d326c691f6fd40f43f8d0641"
         },
         {
           "path": "CODEX.md",

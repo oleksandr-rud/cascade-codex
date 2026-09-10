@@ -50,6 +50,11 @@ target-product application:
 
 ## Implementation Workflow
 
+When a role is explicitly assigned, read its contract and skill map before
+announcing, selecting, or loading any skill. Follow `CODEX.md`'s load order.
+A bounded read-only audit or review uses its owning method directly; additional
+host skills require a separate need not already covered by that method.
+
 Every non-trivial implementation, bug fix, refactor, public contract change, or
 product-visible behavior change should start with a short plan before edits:
 
