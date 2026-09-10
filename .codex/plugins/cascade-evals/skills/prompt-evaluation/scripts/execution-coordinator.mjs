@@ -1,4 +1,4 @@
-import { mkdir, readFile, writeFile, unlink, stat } from "node:fs/promises";
+import { mkdir, readFile as readFileOnce, writeFile as writeFileOnce, unlink, stat } from "node:fs/promises";
 import { homedir } from "node:os";
 import { join, resolve } from "node:path";
 import { randomUUID } from "node:crypto";
@@ -8,6 +8,21 @@ import { setTimeout as delay } from "node:timers/promises";
 export const GLOBAL_MODEL_LIMIT = 3;
 export const coordinationRoot = () => resolve(process.env.CASCADE_PROMPT_EVAL_COORDINATION_ROOT ?? join(homedir(), ".codex", "prompt-evaluation-execution"));
 const alive = pid => { try { process.kill(pid, 0); return true; } catch (e) { return e.code !== "ESRCH"; } };
+
+// Windows can briefly reject open while another process closes/deletes a slot.
+// Retry only that pre-open failure; never change permissions, ignore an owner,
+// repeat a possibly completed write/unlink, or hide a persistent access error.
+async function retryFileOpen(operation) {
+  for (let attempt = 0; ; attempt++) {
+    try { return await operation(); }
+    catch (error) {
+      if (error.code !== "EPERM" || error.syscall !== "open" || attempt >= 5) throw error;
+      await delay(50);
+    }
+  }
+}
+const readFile = (...args) => retryFileOpen(() => readFileOnce(...args));
+const writeFile = (...args) => retryFileOpen(() => writeFileOnce(...args));
 
 export async function haltExecution(reason, root = coordinationRoot()) {
   await mkdir(root, { recursive: true });

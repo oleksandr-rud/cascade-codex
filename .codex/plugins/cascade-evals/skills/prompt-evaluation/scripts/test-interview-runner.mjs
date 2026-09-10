@@ -82,6 +82,13 @@ assert(completeSummary.turns.first.inspected.questions.length === 0, "complete f
 assert(completeSummary.target.status === "PASS", "optional target execution must pass");
 assert(completeSummary.acceptance === "MECHANICALLY_ELIGIBLE", "unjudged complete fixture must remain mechanically eligible");
 
+const splitEffort = run("complete-quick-v1", ["--reasoning-effort", "high", "--judge-reasoning-effort", "max", "--execute-judge"]);
+const splitSummary = await summary(splitEffort);
+const builderEffortReceipt = JSON.parse(await readFile(join(splitEffort.output.run_root, "first-turn-read-0.execution.json"), "utf8"));
+const judgeEffortReceipt = JSON.parse(await readFile(join(splitEffort.output.run_root, "judge.execution.json"), "utf8"));
+assert(builderEffortReceipt.reasoning_effort === "high" && judgeEffortReceipt.reasoning_effort === "max", "authoring comparisons must not silently change the fixed judge effort");
+assert(splitSummary.configuration.reasoning_effort === "high" && splitSummary.configuration.judge_reasoning_effort === "max", "the recorded comparison must distinguish both efforts");
+
 const guided = run("support-mixed-case-v1");
 assert(guided.result.status === 0, `guided fixture failed: ${guided.result.stderr}\n${guided.result.stdout}`);
 const guidedSummary = await summary(guided);

@@ -18,8 +18,11 @@ this whole pack into the generated prompt.
   insufficient/conflicting evidence, abstention or human review, and exact
   output shape.
 - **Research/retrieval** — triggers: research, search, cite, current, compare
-  sources. Resolve authority, freshness, retrieval boundary and stop condition,
-  citation format, conflict policy, and unsupported-claim behavior.
+  sources, specialized web search, database or hybrid retrieval. Resolve
+  authority, freshness/version, source/domain restrictions, query and tool
+  boundaries, budgets and stop conditions, citation format, conflict policy,
+  and unsupported-claim behavior. Use `grounded.md` for source inspection and
+  separate web/database authority, private-data boundaries and stable joins.
 - **Coding/diagnosis** — triggers: implement, debug, repair, refactor, inspect
   logs/code. Resolve intended behavior, relevant code/log/config context,
   protected contracts, permitted writes, smallest validation seam, and evidence

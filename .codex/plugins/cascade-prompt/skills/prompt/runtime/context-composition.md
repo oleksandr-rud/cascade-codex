@@ -11,10 +11,20 @@ This pack renders the resolved contract; it does not choose an agent topology.
 | Bounded source-only extraction into a supplied schema | [structured-extraction.md](../assets/templates/structured-extraction.md) |
 | Authorized tool work with current state and history | [contextual-agent.md](../assets/templates/contextual-agent.md) |
 
+Choose by the requested result: a source-backed answer or research synthesis
+uses grounded-answer even when retrieval needs web/database tools. Add its
+resolved retrieval controls from grounded.md and task-overlays.md. Choose
+contextual-agent when continued action over current state/history is itself
+the task. The presence of tools or a call budget alone does not select it.
+
 Templates are starting points, not extra mandatory sections. Fill resolved
 variables from the request and omit irrelevant blocks. Unresolved material
 schema, authority or decision rules still follow the intake gate. Expose
 remaining source placeholders in Variables to Fill; never invent content.
+Merge overlapping obligations rather than repeating template prose. Keep the
+requested output shape; otherwise require the shortest useful answer with
+necessary evidence and gaps. Internal source ledgers and validation steps are
+not automatic user-facing sections or separate attachments.
 
 ## Compose only needed context
 

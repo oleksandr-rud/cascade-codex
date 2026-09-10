@@ -452,7 +452,8 @@
       "runner": "interview",
       "rule_ids": [
         "conditional-loading",
-        "exact-values"
+        "exact-values",
+        "output-economy"
       ],
       "required_reads": [
         "runtime/tier-balanced-production.md"
@@ -680,6 +681,88 @@
         "tier-balanced-production",
         "task-pricing-and-packaging-validation"
       ]
+    },
+    {
+      "id": "web-search-prompt-v1",
+      "runner": "interview",
+      "rule_ids": [
+        "core-contract",
+        "source-authority",
+        "context-template-grounded",
+        "model-astra",
+        "output-economy",
+        "task-web-search"
+      ],
+      "required_reads": [
+        "runtime/intake-interview.md",
+        "runtime/grounded.md",
+        "runtime/task-overlays.md",
+        "runtime/context-composition.md",
+        "assets/templates/grounded-answer.md",
+        "runtime/tier-balanced-production.md",
+        "runtime/model-index.yaml",
+        "runtime/model-astra.md"
+      ],
+      "forbidden_reads": [
+        "runtime/stateful-agent.md",
+        "assets/templates/structured-extraction.md",
+        "assets/templates/contextual-agent.md"
+      ]
+    },
+    {
+      "id": "specialized-web-search-prompt-v1",
+      "runner": "interview",
+      "rule_ids": [
+        "core-contract",
+        "source-authority",
+        "context-template-grounded",
+        "model-astra",
+        "output-economy",
+        "task-specialized-web-search"
+      ],
+      "required_reads": [
+        "runtime/intake-interview.md",
+        "runtime/grounded.md",
+        "runtime/task-overlays.md",
+        "runtime/context-composition.md",
+        "assets/templates/grounded-answer.md",
+        "runtime/tier-balanced-production.md",
+        "runtime/model-index.yaml",
+        "runtime/model-astra.md"
+      ],
+      "forbidden_reads": [
+        "runtime/stateful-agent.md",
+        "assets/templates/structured-extraction.md",
+        "assets/templates/contextual-agent.md"
+      ]
+    },
+    {
+      "id": "hybrid-web-database-prompt-v1",
+      "runner": "interview",
+      "rule_ids": [
+        "core-contract",
+        "source-authority",
+        "context-template-grounded",
+        "model-astra",
+        "output-economy",
+        "task-hybrid-retrieval"
+      ],
+      "required_reads": [
+        "runtime/intake-interview.md",
+        "runtime/grounded.md",
+        "runtime/task-overlays.md",
+        "runtime/context-composition.md",
+        "assets/templates/grounded-answer.md",
+        "runtime/tier-balanced-production.md",
+        "runtime/model-index.yaml",
+        "runtime/model-astra.md",
+        "runtime/safety-high-stakes.md"
+      ],
+      "forbidden_reads": [
+        "runtime/stateful-agent.md",
+        "assets/templates/structured-extraction.md",
+        "assets/templates/contextual-agent.md"
+      ]
     }
   ],
   "external_target_execution": {
@@ -716,8 +799,10 @@
     "long-context",
     "mistral24-surface",
     "modality-limits",
+    "model-astra",
     "multimodal-order",
     "named-model",
+    "output-economy",
     "private-runtime-boundary",
     "qwen35-history",
     "qwen36-history",
@@ -737,14 +822,17 @@
     "task-context-constrained-copy",
     "task-evidence-bound-product-decision",
     "task-grounded-conflict-synthesis",
+    "task-hybrid-retrieval",
     "task-long-horizon-agent-planning",
     "task-plugin-workflow-planning",
     "task-pricing-and-packaging-validation",
     "task-product-experiment-design",
     "task-product-idea-shaping",
     "task-repository-change-planning",
+    "task-specialized-web-search",
     "task-structured-extraction",
     "task-technical-diagnosis",
+    "task-web-search",
     "tier-balanced-production",
     "tier-efficient-structured",
     "tier-frontier-autonomous",
@@ -797,7 +885,10 @@
         "plugin-workflow-plan-v1",
         "business-opportunity-screen-v1",
         "product-concept-scope-v1",
-        "pricing-package-experiment-v1"
+        "pricing-package-experiment-v1",
+        "specialized-web-search-prompt-v1",
+        "web-search-prompt-v1",
+        "hybrid-web-database-prompt-v1"
       ],
       "coverage_level": "reference-rules-through-runtime"
     },
@@ -826,7 +917,10 @@
         "plugin-workflow-plan-v1",
         "business-opportunity-screen-v1",
         "product-concept-scope-v1",
-        "pricing-package-experiment-v1"
+        "pricing-package-experiment-v1",
+        "specialized-web-search-prompt-v1",
+        "web-search-prompt-v1",
+        "hybrid-web-database-prompt-v1"
       ],
       "coverage_level": "reference-rules-through-runtime"
     },
@@ -848,13 +942,16 @@
         "gemma4-roles-v1",
         "mistral24-surface-v1",
         "unknown27b-v1",
-        "explicit-efficient-complex-v1"
+        "explicit-efficient-complex-v1",
+        "specialized-web-search-prompt-v1",
+        "web-search-prompt-v1",
+        "hybrid-web-database-prompt-v1"
       ],
       "coverage_level": "reference-rules-through-runtime"
     },
     {
       "path": "references/model-system/prompt-composition.md",
-      "sha256": "b2316cc15686dd480917992f8651e593b7f8cf32924f0f600333afb4431a250d",
+      "sha256": "e1aa775e3c1ae56ed5a89eb85e4d8ad23e93cd640c9885ba31deb6b2a72ae1b0",
       "consumers": [
         "SKILL.md",
         "runtime/context-composition.md",
@@ -918,7 +1015,10 @@
         "brand-context-copy-v1",
         "business-opportunity-screen-v1",
         "product-concept-scope-v1",
-        "pricing-package-experiment-v1"
+        "pricing-package-experiment-v1",
+        "specialized-web-search-prompt-v1",
+        "web-search-prompt-v1",
+        "hybrid-web-database-prompt-v1"
       ],
       "coverage_level": "reference-rules-through-runtime"
     },
@@ -979,7 +1079,10 @@
         "brand-context-copy-v1",
         "business-opportunity-screen-v1",
         "product-concept-scope-v1",
-        "pricing-package-experiment-v1"
+        "pricing-package-experiment-v1",
+        "specialized-web-search-prompt-v1",
+        "web-search-prompt-v1",
+        "hybrid-web-database-prompt-v1"
       ],
       "coverage_level": "reference-rules-through-runtime"
     },
@@ -1026,7 +1129,10 @@
         "qwen36-history-v1",
         "qwen38-history-v1",
         "structured-invoice-v1",
-        "unknown27b-v1"
+        "unknown27b-v1",
+        "specialized-web-search-prompt-v1",
+        "web-search-prompt-v1",
+        "hybrid-web-database-prompt-v1"
       ],
       "coverage_level": "reference-rules-through-runtime"
     },
@@ -1087,7 +1193,10 @@
         "brand-context-copy-v1",
         "business-opportunity-screen-v1",
         "product-concept-scope-v1",
-        "pricing-package-experiment-v1"
+        "pricing-package-experiment-v1",
+        "specialized-web-search-prompt-v1",
+        "web-search-prompt-v1",
+        "hybrid-web-database-prompt-v1"
       ],
       "coverage_level": "reference-rules-through-runtime"
     },
@@ -1152,7 +1261,10 @@
         "brand-context-copy-v1",
         "business-opportunity-screen-v1",
         "product-concept-scope-v1",
-        "pricing-package-experiment-v1"
+        "pricing-package-experiment-v1",
+        "specialized-web-search-prompt-v1",
+        "web-search-prompt-v1",
+        "hybrid-web-database-prompt-v1"
       ],
       "coverage_level": "reference-rules-through-runtime"
     },
@@ -1214,13 +1326,16 @@
         "brand-context-copy-v1",
         "business-opportunity-screen-v1",
         "product-concept-scope-v1",
-        "pricing-package-experiment-v1"
+        "pricing-package-experiment-v1",
+        "specialized-web-search-prompt-v1",
+        "web-search-prompt-v1",
+        "hybrid-web-database-prompt-v1"
       ],
       "coverage_level": "reference-rules-through-runtime"
     },
     {
       "path": "runtime/context-composition.md",
-      "sha256": "5a0f57a5905c2ccf5840e7ff2343882e1dc9d8141b26eedc33a5905f9f773651",
+      "sha256": "c48b78f8a940234454e1fbd1093847967cd4c855204df2ead883c122f66a3b72",
       "consumers": [
         "runtime/context-composition.md"
       ],
@@ -1228,7 +1343,10 @@
         "grounded-context-template-v1",
         "extraction-context-template-v1",
         "agent-context-template-v1",
-        "long-context-joins-v1"
+        "long-context-joins-v1",
+        "specialized-web-search-prompt-v1",
+        "web-search-prompt-v1",
+        "hybrid-web-database-prompt-v1"
       ],
       "coverage_level": "direct-rule-contract"
     },
@@ -1246,7 +1364,7 @@
     },
     {
       "path": "runtime/grounded.md",
-      "sha256": "c0e83082d84f0f2834f4bbb7e9381cb400a838eee6d38f09d4fba773ea994d1a",
+      "sha256": "d20e9fb787d73823b49537e1c924f0c940d2d9c15a8fd37ac825edeb5cd61730",
       "consumers": [
         "runtime/grounded.md"
       ],
@@ -1266,13 +1384,16 @@
         "plugin-workflow-plan-v1",
         "business-opportunity-screen-v1",
         "product-concept-scope-v1",
-        "pricing-package-experiment-v1"
+        "pricing-package-experiment-v1",
+        "specialized-web-search-prompt-v1",
+        "web-search-prompt-v1",
+        "hybrid-web-database-prompt-v1"
       ],
       "coverage_level": "direct-rule-contract"
     },
     {
       "path": "runtime/intake-interview.md",
-      "sha256": "82e67ce79d0e5735e66fe763a7dc87c6b13c66cb4e78c38491d4ca79010165e9",
+      "sha256": "47569d192e71f5dea52f4bcae785a40152cfe6df6b64b46402b71a1fd9d7bf89",
       "consumers": [
         "runtime/intake-interview.md"
       ],
@@ -1303,7 +1424,10 @@
         "plugin-workflow-plan-v1",
         "business-opportunity-screen-v1",
         "product-concept-scope-v1",
-        "pricing-package-experiment-v1"
+        "pricing-package-experiment-v1",
+        "specialized-web-search-prompt-v1",
+        "web-search-prompt-v1",
+        "hybrid-web-database-prompt-v1"
       ],
       "coverage_level": "direct-rule-contract"
     },
@@ -1314,7 +1438,10 @@
         "runtime/model-astra.md"
       ],
       "case_ids": [
-        "astra-surface-v1"
+        "astra-surface-v1",
+        "specialized-web-search-prompt-v1",
+        "web-search-prompt-v1",
+        "hybrid-web-database-prompt-v1"
       ],
       "coverage_level": "direct-rule-contract"
     },
@@ -1333,7 +1460,10 @@
         "gemma4-roles-v1",
         "mistral24-surface-v1",
         "unknown27b-v1",
-        "explicit-efficient-complex-v1"
+        "explicit-efficient-complex-v1",
+        "specialized-web-search-prompt-v1",
+        "web-search-prompt-v1",
+        "hybrid-web-database-prompt-v1"
       ],
       "coverage_level": "direct-rule-contract"
     },
@@ -1378,7 +1508,8 @@
         "bounded-document-tool-workflow-v1",
         "migration-control-plan-v1",
         "api-version-migration-plan-v1",
-        "plugin-workflow-plan-v1"
+        "plugin-workflow-plan-v1",
+        "hybrid-web-database-prompt-v1"
       ],
       "coverage_level": "direct-rule-contract"
     },
@@ -1396,7 +1527,7 @@
     },
     {
       "path": "runtime/task-overlays.md",
-      "sha256": "66751ce2a60eff10787305ecc734dc19f5136e0ba45a9292f22b2180a17f8168",
+      "sha256": "8ab40325e51a50fdf5a804260d55963c9cdeebe0a900a3519defa4d63618b595",
       "consumers": [
         "runtime/task-overlays.md"
       ],
@@ -1434,7 +1565,10 @@
         "brand-context-copy-v1",
         "business-opportunity-screen-v1",
         "product-concept-scope-v1",
-        "pricing-package-experiment-v1"
+        "pricing-package-experiment-v1",
+        "specialized-web-search-prompt-v1",
+        "web-search-prompt-v1",
+        "hybrid-web-database-prompt-v1"
       ],
       "coverage_level": "direct-rule-contract"
     },
@@ -1462,7 +1596,10 @@
         "source-conflict-brief-v1",
         "product-prioritization-v1",
         "business-opportunity-screen-v1",
-        "pricing-package-experiment-v1"
+        "pricing-package-experiment-v1",
+        "specialized-web-search-prompt-v1",
+        "web-search-prompt-v1",
+        "hybrid-web-database-prompt-v1"
       ],
       "coverage_level": "direct-rule-contract"
     },
@@ -1529,7 +1666,7 @@
     },
     {
       "path": "SKILL.md",
-      "sha256": "05140313de0de1409ac15084503b56cb871fe3c826c7b65e5816b71aaf5e6eaf",
+      "sha256": "4e3e49883fd7088ab60d3399d4f14fc834748c1f4201a745f476dd96a971fc55",
       "consumers": [
         "SKILL.md"
       ],
@@ -1583,7 +1720,10 @@
         "current-research-no-sources-v1",
         "high-stakes-bounded-classification-v1",
         "multimodal-creative-brief-v1",
-        "bounded-document-tool-workflow-v1"
+        "bounded-document-tool-workflow-v1",
+        "specialized-web-search-prompt-v1",
+        "web-search-prompt-v1",
+        "hybrid-web-database-prompt-v1"
       ],
       "coverage_level": "entrypoint-or-template-contract"
     },
@@ -1595,7 +1735,10 @@
       ],
       "case_ids": [
         "grounded-context-template-v1",
-        "long-context-joins-v1"
+        "long-context-joins-v1",
+        "specialized-web-search-prompt-v1",
+        "web-search-prompt-v1",
+        "hybrid-web-database-prompt-v1"
       ],
       "coverage_level": "entrypoint-or-template-contract"
     },

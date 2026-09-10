@@ -191,6 +191,7 @@ export async function runModel({ model, reasoningEffort = "max", prompt, cwd, ti
     if (["EXECUTION_FAILED", "EVIDENCE_WRITE_FAILED"].includes(result.status)) await haltExecution(`model process ended with ${result.status}; inspect its execution receipt`);
   } catch (error) {
     result = { status: error.status ?? "EXECUTION_FAILED", stdout: "", stderr: "", dispatched: false, error: error.message };
+    if (result.status === "EXECUTION_FAILED") await haltExecution(`execution setup failed before dispatch: ${error.message}`);
   } finally {
     if (lease) await lease.release();
     if (isolatedCwd) await rm(isolatedCwd, { recursive: true, force: true });

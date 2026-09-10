@@ -24,3 +24,20 @@ Load this pack only when claims depend on supplied or retrieved sources.
 For long context, retrieve targeted high-authority passages first and stop when
 all material claims are supported or the remaining gap is explicit. Do not load
 whole collections merely because they are available.
+
+For web search, resolve the question, query scope, permitted search/open tools,
+source quality, date or version constraints, call budget, and stopping rule.
+Inspect source pages before using claims; snippets are discovery clues, not
+proof that a page was read. Distinguish publication/update dates from event
+dates. For specialized search preserve supplied domains, repositories,
+document types, languages and exact versions; do not silently broaden them.
+
+For combined web and database work, define each source's authority by claim
+type. Inspect supplied schema/tool contracts before constructing queries;
+preserve read-only, tenant/row/column scope, parameters, limits and pagination.
+Never send private rows, identifiers or query results to public web tools.
+Join only on supplied stable keys with compatible units, periods and versions;
+unmatched or conflicting records remain gaps. Cite web claims with inspected
+URLs and database claims with returned record/query handles without exposing
+secrets. A row limit, failed tool or missing source is partial coverage, not
+proof of completeness. Keep the evidence trace only as detailed as needed.

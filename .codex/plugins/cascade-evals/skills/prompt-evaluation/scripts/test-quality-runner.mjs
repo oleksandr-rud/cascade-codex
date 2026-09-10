@@ -104,6 +104,15 @@ assert(secondSummary.execution.prompt_builder.status === "REUSED_AUTOMATIC_CACHE
 assert(secondSummary.execution.trajectory_judge.status === "REUSED_PROMPT_CACHE", "second trajectory must use prompt cache");
 assert(secondSummary.execution.total_usage.input_tokens === 1000, "second run must bill only the target fixture call");
 
+const otherJudgeEffort = run({}, ["--judge-reasoning-effort", "high"]);
+const otherJudgeSummary = await summary(otherJudgeEffort);
+assert(otherJudgeSummary.execution.prompt_builder.status === "REUSED_AUTOMATIC_CACHE", "changing only judge effort must retain the identical builder");
+assert(otherJudgeSummary.execution.trajectory_judge.status === "EXECUTED", "a judge-effort change must not reuse an incompatible judgment");
+const judgeReceipt = JSON.parse(await readFile(join(otherJudgeEffort.output.run_root, "judge-trajectory.execution.json"), "utf8"));
+const targetReceipt = JSON.parse(await readFile(join(otherJudgeEffort.output.run_root, "target.execution.json"), "utf8"));
+assert(judgeReceipt.reasoning_effort === "high" && targetReceipt.reasoning_effort === "max", "phase receipts must bind the distinct judge and target efforts");
+assert(otherJudgeSummary.configuration.judge_reasoning_effort === "high", "comparison identity must retain judge effort");
+
 const third = run({ FAKE_INELIGIBLE: "1" });
 assert(third.result.status === 3, `unverified ineligible run must exit 3, got ${third.result.status}`);
 const thirdSummary = await summary(third);

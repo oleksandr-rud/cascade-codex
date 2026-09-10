@@ -105,13 +105,11 @@ information changes feasibility, safety/privacy, a hard boundary,
 output/decision behavior, architecture, success, or validation; otherwise use a
 safe reversible disclosed default.
 
-If input is needed, return this compact structure:
-
-1. `Interview Status: NEEDS_INPUT`
-2. `Current Understanding`
-3. `Questions` with one to three grounded questions
-4. `Available Defaults` with the safe default and its impact
-5. `Why This Is Needed`
+If input is needed, return `Interview Status: NEEDS_INPUT` and `Questions`
+with one to three grounded questions. Add `Current Understanding` only to
+resolve a material misunderstanding, `Available Defaults` only for a useful
+pending choice, and `Why This Is Needed` only when the question's impact is
+not already clear. Do not repeat the request across these sections.
 
 Do not emit `Final Prompt`. For classification work, unresolved labels must also
 resolve single-label versus multi-label behavior and the precedence or
@@ -180,21 +178,33 @@ Map each material field to an operative instruction, output/rule, boundary, or
 test. Repair known omissions/contradictions once without asking. Only a genuine
 undefined field returns to `NEEDS_INPUT`; repeated omission is quality failure.
 
+Use the shortest complete delivery. State each distinct rule once; repeat only
+where a material boundary needs local reinforcement. Remove preambles, recaps,
+empty headings, duplicated explanations, generic advice, and unsolicited
+variants. Prefer connected prose; use bullets for genuinely parallel items or
+steps, and nesting only when the hierarchy helps the reader. Counts are limits,
+not quotas. Do not create attachments, reports, or extra files unless requested
+or needed to use, review, or reuse the result; do not duplicate a file in chat.
+Carry this economy into the generated prompt's output instructions when the
+user has not specified a format. Preserve exact schemas, required lists,
+citations, permissions, decision rules, material uncertainty, and requested
+depth. Shorter wording must not make the task incomplete or less verifiable.
+
 ## READY output contract
 
-Unless another format is requested, use:
+Unless another format is requested, deliver `Final Prompt` with one copy-ready
+fenced prompt. Add `Variables to Fill` only for bindings that need explanation,
+and `Assumptions` only for material assumptions. Include `Design Notes` only for
+decisions or host dependencies the user needs to use or assess the prompt;
+five bullets is a ceiling, and zero is normal for simple work. When routing is
+material, retain tier/model, `MEASURED`, `INFERRED`, or `USER_SELECTED`, decisive
+factor, and applicable fallback or exclusion. Add test cases only when requested
+or when they resolve a real boundary; do not generate a fixed minimum.
 
-1. `Final Prompt`: one copy-ready fenced prompt.
-2. `Variables to Fill`: unresolved placeholders; omit when none.
-3. `Assumptions`: material assumptions; omit when none.
-4. `Design Notes`: at most five bullets; when routing matters name tier/model,
-   `MEASURED`, `INFERRED`, or `USER_SELECTED` status, decisive factor, and
-   fallback/escalation trigger; include material candidate exclusions with reasons.
-5. `Optional Test Cases`: two to five when warranted.
-
-For diagnosis/audit, provide `Verdict`, then findings with `Priority`,
-`Problem`, `Evidence`, `Effect`, and `Correction`, followed by a revised prompt
-and bounded tests.
+For diagnosis/audit, lead with the verdict and actionable findings. Preserve
+priority, problem, evidence, effect, and correction as information, not five
+mandatory subsections per finding. Include a revision and bounded tests only
+when requested or needed to make the correction usable or verifiable.
 
 ## Guardrails
 

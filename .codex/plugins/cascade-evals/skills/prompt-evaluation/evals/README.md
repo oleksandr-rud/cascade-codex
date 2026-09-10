@@ -189,8 +189,8 @@ versioned profile and an evidence-backed decision.
 
 ## Rule coverage and blinded judges (v3)
 
-The interview catalog adds 24 conditional-loading and rule-boundary cases to
-12 existing interaction cases (36 total). `rule-coverage.json` binds all 50 case
+The interview catalog adds 27 conditional-loading and rule-boundary cases to
+12 existing interaction cases (39 total). `rule-coverage.json` binds all 53 case
 IDs to rule groups. Cases include seven exact model adapters, unknown checkpoints,
 three context templates, long-context joins and budgets, multimodal limitations,
 realtime staleness, comparison uncertainty, explicit stateful contracts, and
@@ -230,7 +230,7 @@ coverage and one observed passing execution do not establish exhaustive correctn
 or a global model ranking. Token budgets remain diagnostic.
 
 The closed coverage inventory binds all 26 references/runtime files plus the
-entrypoint and three templates, 59 rule groups
+entrypoint and three templates, 64 rule groups
 and all 18 source routing cases. It validates case/rule equality, all task and
 both-turn paths, source hashes and active consumers. `run-knowledge-audit.mjs`
 adds a separate static semantic audit for each of the ten model-system references;
@@ -282,7 +282,7 @@ node scripts/run-prompt-campaign.mjs --inspect /absolute/evidence/campaign-id
 node scripts/run-prompt-campaign.mjs --recover-execution
 ```
 
-Omitting `--cases` selects all 50 behavioral cases, ten knowledge audits and the
+Omitting `--cases` selects all 53 behavioral cases, ten knowledge audits and the
 synthetic challenge job. The launcher declares every case ID and output path
 before dispatch, reads results from those paths even if stdout JSON is absent,
 and distinguishes jobs_finished from evaluations_completed. Undispatched,
@@ -333,3 +333,34 @@ Interview runs honor `--run-id` exactly, matching the campaign's predeclared res
 Default subject resolution reads the exact enabled, installed plugin cache version. The inventory's mutable checkout path cannot substitute newer source bytes or make an intact installed version appear missing. Source checkout evaluation remains an explicit `--subject-skill-root` choice; an absent installed version never falls back to a checkout or another cache version.
 
 Installed subject bytes and native discovery are separate claims. The interview runner always uses an isolated staged-read subject. The obsolete `--installed-plugin` flag is rejected before dispatch because it never activated native discovery. Verify native triggers and filesystem searches in separate fresh Codex sessions with installed skills, preserving the actual read/search trace; staged-read results do not prove native discovery.
+
+## Bounded model comparisons and research prompts
+
+Quality/interview campaigns forward explicit model settings into each declared
+job before dispatch: `--model` selects the interview author, `--prompt-model`
+and `--target-model` select quality phases, and `--judge-model` selects the
+independent judge. `--reasoning-effort` controls author/target execution.
+`--judge-reasoning-effort` independently fixes the judge's effort; omission
+preserves the previous shared-effort behavior. Receipts, summaries, comparison
+identity and judgment-cache keys retain the effective judge effort. Model
+overrides with knowledge-audit or challenge jobs are rejected before dispatch.
+
+Slot-file opens retry a Windows-style `EPERM` only when the failing syscall is
+`open`, at most five times with 50 ms between attempts. Ownership checks and
+the shared three-call limit remain intact. Persistent errors and errors after
+open remain failures; they never authorize permission changes or replay a
+possibly completed write/unlink. Unexpected setup failures halt new dispatch.
+
+The explicit `astra-high-pilot-v1` matrix configuration uses Astra/high for
+author and target with Sol/max for judges on code review and plugin workflow
+planning. It is a comparison candidate, not a new default. The workflow fixture
+distinguishes the compiling model from the pinned model policy in its output.
+
+The three research-authoring fixtures cover general web search, exact-version
+specialized search, and web plus a scoped private database. Judges receive
+grounding, source-inspection, privacy/join, template and compact-delivery rules.
+These cases produce prompts; they do not execute web or database tools. Keep
+that boundary separate from source-packet target runs or live tool evaluation.
+Measure useful output, preserved requirements and unnecessary commentary
+together; shorter text alone is not a quality pass. A one-run pilot does not
+establish variance or justify changing every harness role's recommended model.

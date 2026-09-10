@@ -33,12 +33,20 @@ if (process.argv.includes("--recover-execution")) {
   ];
   const selected = value("cases")?.split(",") ?? available.map(job => job.id);
   if (new Set(selected).size !== selected.length || selected.some(id => !available.some(job => job.id === id))) throw new Error("unknown or duplicate campaign case");
+  const modelOptions = ["model", "prompt-model", "target-model", "judge-model", "reasoning-effort", "judge-reasoning-effort", "configuration-id"];
+  if (modelOptions.some(name => value(name)) && selected.some(id => !["run-quality-eval.mjs", "run-interview-eval.mjs"].includes(available.find(job => job.id === id).script))) throw new Error("model overrides require a quality/interview-only campaign");
   const runId = value("run-id") ?? `prompt-campaign-${new Date().toISOString().replace(/[:.]/g, "-")}`;
   if (!/^[a-zA-Z0-9][a-zA-Z0-9._-]*$/.test(runId)) throw new Error("unsafe campaign run ID");
   const output = resolve(value("output-dir") ?? ".artifacts/prompt-campaigns"), root = join(output, runId);
   assertDisjointRoots(subject, output);
   await mkdir(output, { recursive: true }); await mkdir(root);
-  const jobs = selected.map(id => { const job = available.find(job => job.id === id); return { ...job, run_id: `${runId}-${id}`, run_root: join(root, "cases", `${runId}-${id}`) }; });
+  const jobs = selected.map(id => {
+    const job = available.find(job => job.id === id);
+    const options = ["judge-timeout-ms", "builder-timeout-ms", "turn-timeout-ms", "target-timeout-ms", "reasoning-effort", "judge-reasoning-effort", "judge-model", "target-model",
+      ...(job.script === "run-quality-eval.mjs" ? ["prompt-model", "configuration-id"] : ["model"])];
+    const args = [...job.args, ...options.filter(name => value(name)).flatMap(name => [`--${name}`, value(name)])];
+    return { ...job, args, run_id: `${runId}-${id}`, run_root: join(root, "cases", `${runId}-${id}`) };
+  });
   const contract = { schema_version: 1, run_id: runId, run_root: root, requested: jobs.length, concurrency_limit: GLOBAL_MODEL_LIMIT, subject_root: subject, subject_sha256: (await snapshotSubject(subject)).sha256, runner_bundle_sha256: await runnerDigest(scripts), jobs };
   await writeFile(join(root, "campaign-contract.json"), JSON.stringify(contract, null, 2), { flag: "wx" });
   const results = [], signal = processAbortSignal(); let next = 0;
@@ -49,7 +57,6 @@ if (process.argv.includes("--recover-execution")) {
     while (next < jobs.length && !signal.aborted && !await executionHealth()) {
       const job = jobs[next++];
       const args = [join(scripts, job.script), ...job.args, "--subject-skill-root", subject, "--output-dir", join(root, "cases"), "--run-id", job.run_id];
-      for (const name of ["judge-timeout-ms", "builder-timeout-ms", "turn-timeout-ms", "target-timeout-ms"]) if (value(name)) args.push(`--${name}`, value(name));
       const result = await runCommand({ command: process.execPath, args, input: "", timeoutMs: positiveTimeout(value("case-timeout-ms"), 3_600_000, "--case-timeout-ms"), signal, terminationGraceMs: 2000, acceptedExitCodes: [0, 2, 3] });
       await writeFile(join(root, `${job.id}.stdout.log`), result.stdout);
       await writeFile(join(root, `${job.id}.stderr.log`), result.stderr);

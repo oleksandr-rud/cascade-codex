@@ -103,5 +103,8 @@ authoring, or calibration work, read `evals/README.md` for the complete contract
 - `gpt-5.6-sol` with `max` reasoning is the default prompt-builder, target,
   and judge configuration.
   Other supported models require an explicit comparison configuration.
+- For a model/effort comparison, keep the judge fixed with
+  `--judge-model` and `--judge-reasoning-effort`; author/target changes must
+  not silently alter judgment or reuse an incompatible judgment cache.
 - This compact plugin campaign does not claim Cascade repository release
   eligibility or replace its product-evals campaign governance.

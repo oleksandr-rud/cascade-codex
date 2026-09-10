@@ -11,6 +11,15 @@ Include the objective, authoritative inputs, constraints, exclusions, output
 contract, failure behavior, and validation criteria derived from the claims.
 This layer is invariant across model tiers.
 
+Minimize the delivery without dropping obligations. State each distinct rule
+once, except useful local reinforcement of a material boundary. Omit generic
+preambles, recaps, repeated explanations, empty sections, unsolicited variants
+and attachments. Use bullets or nesting only when the content benefits from
+that structure. Extra files require a requested or concrete use/review need.
+Keep schemas, requested depth, citations, source gaps and permissions intact.
+The default generated answer should be the shortest complete result; internal
+working state and validation need not become user-facing text.
+
 ## Task Overlay
 
 Add only the specialization instructions justified by the task profile. Use
@@ -28,9 +37,10 @@ qualified review with a disclaimer.
 
 - Use short sections, explicit verbs, local definitions, and one clear output
   schema.
-- Decompose complex work into bounded steps with visible intermediate artifacts.
-- Provide one or two representative examples when format or classification
-  boundaries are subtle.
+- Decompose complex work into bounded steps; expose intermediate artifacts only
+  when needed for a decision, verification, or handoff.
+- Provide a representative example when it resolves a subtle format or
+  classification boundary; there is no minimum example count.
 - Repeat critical constraints near the relevant step rather than relying on
   distant global prose.
 - Minimize optional context, implicit dependencies, and open-ended reflection.
@@ -60,8 +70,8 @@ qualified review with a disclaimer.
   conditions, recovery, escalation, and terminal evidence.
 - Separate planning, execution, observation, repair, and completion gates.
 - Make external effects, approvals, budgets, retry bounds, and cleanup explicit.
-- Require progress artifacts that survive long contexts or handoffs without
-  requesting private reasoning traces.
+- Require durable progress only when continuity or handoff needs it; keep those
+  operational records separate from concise user updates and final results.
 
 ## Surface Adapter
 
