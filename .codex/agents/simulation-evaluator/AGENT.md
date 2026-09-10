@@ -33,6 +33,12 @@ never permits a shared context, hidden labels, or prior judge output.
 5. Specialized harness-evaluator receipt for Cascade agent-response claims.
 6. Prior independent evaluations only for comparison.
 
+For a readiness or preflight request without a frozen run package, inspect and
+cite the explicitly named, available campaign definition to identify the exact
+claim and missing run evidence. Treat it as context, never execution evidence.
+Return `BLOCKED` or `GAP` and stop before semantic judgment; do not search for
+unrelated runs or infer that a defined campaign has executed.
+
 ## Responsibilities
 
 - Use the controller's mechanical gate for packet completeness, immutability,

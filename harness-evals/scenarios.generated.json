@@ -1,7 +1,7 @@
 {
   "agent_count": 9,
   "agent_scenario_count": 9,
-  "catalog_digest": "533d6f405855f13834e2615dc45dc3ce6c853e59bbe4166d5feed81fbe17bd19",
+  "catalog_digest": "e0545d7f93ef92cd4dd53d7cc81adc030cf6adff7b180e7dd03da0035a6da651",
   "generated_by": "scripts/cascade/evals.ts",
   "scenario_count": 180,
   "scenarios": [
@@ -5562,7 +5562,7 @@
       "context_bindings": [
         {
           "path": ".codex/agents/simulation-evaluator/AGENT.md",
-          "sha256": "f2d3530a7ab192aa8d204ac7962f375a8bad221fdd6646d096848262cb15efdd"
+          "sha256": "3158f28e9944940e1f230d7c9fd52cf68e56075ceb33467f9323fc095406fc8d"
         },
         {
           "path": ".codex/plugins/cascade-evals/skills/simulation-evaluation/SKILL.md",
