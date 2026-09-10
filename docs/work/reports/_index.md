@@ -17,6 +17,7 @@ Use filenames like `YYYY-MM-DD-slug.md`.
 
 | Date | Report | Purpose |
 |---|---|---|
+| 2026-09-10 | [Contract necessity and native admission](2026-09-10-contract-necessity-and-native-admission.md) | Real consumers, optional workflow records, native hook failure, and removal of the unsupported default permission gate. |
 | 2026-09-10 | [Harness admission and Prompt repairs](2026-09-10-harness-admission-and-prompt-repairs.md) | Ukrainian directive routing, Prompt readiness and context loading, CLI compatibility, oracle repairs, and preserved validation evidence. |
 | 2026-09-10 | [Autonomous project Harness evaluation plan](2026-09-10-autonomous-project-harness-evaluation-plan.md) | Proposed isolated build/run/change pilot, independent complexity and reference checks, control comparison, and the missing writable execution profile; NOT_RUN. |
 | 2026-09-10 | [Prompt discovery and model audit](2026-09-10-cascade-prompt-discovery-and-model-audit.md) | Installed material loading, native trigger/search probes, campaign run-ID repair, Windows fixes, model-specific support, and preserved quality gaps. |

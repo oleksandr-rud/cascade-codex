@@ -28,6 +28,12 @@ by this target; a generic agent/context task does not select a stateful profile.
 Current code outranks stale planning prose. Preserve unrelated dirty work and
 never infer authority from a work record, plugin, prompt, or passing check.
 
+The default admission hooks classify submitted requests and clear interrupted
+state. Native Codex permissions and its sandbox govern command execution.
+The standalone admission guard has no production trusted-host authority bridge;
+do not register it for `PreToolUse` or `PermissionRequest` in this runtime.
+Its synthetic guard tests do not establish a working native permission adapter.
+
 For repository searches in any role or skill, use `rg --files <root>` to locate
 files and `rg -n -e '<pattern>' <paths>` to search content. Start with the known
 owner's paths; use `--hidden` for `.codex` assets and `-g` for filename filters.

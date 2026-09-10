@@ -1,0 +1,54 @@
+schema_version: 1
+version: 1
+population: One synthetic local request-tracker build and its CSV follow-up; no
+  population generalization.
+model: gpt-5.6-sol
+threshold: 0.75
+minimum_dimension: 3
+blindness:
+  - No hidden cases, expected outputs or gate verdicts
+  - No numeric thresholds or dimension floors
+  - No peer judgments or prior attempts
+  - No condition label or claimed score
+profile_id: request-tracker-product-code-v1
+role: outcome
+decision: Assess proportionate implementation, architecture and concrete
+  reference application using the two frozen source snapshots.
+dimensions:
+  - dimension_id: scope-and-complexity
+    description: Each material unit, dependency, abstraction and feature has a
+      current reason. A complexity finding must cite avoidable cost and a
+      smaller viable alternative preserving behavior.
+    weight: 0.4
+    anchors:
+      "0": The implementation cannot be traced or substitutes unrelated scope.
+      "1": Speculative infrastructure or duplication dominates the small required
+        application.
+      "2": Material avoidable layering or unused functionality creates demonstrated
+        maintenance cost.
+      "3": All major structures have current reasons; only minor local excess remains.
+      "4": Every meaningful structure is proportionate, with no evidenced avoidable
+        complexity.
+  - dimension_id: architecture-and-change
+    description: Trace UI, HTTP validation, persistence, failure handling and the
+      follow-up edits; assess actual boundaries and regression risks.
+    weight: 0.35
+    anchors:
+      "0": Fundamental state ownership or durability is missing.
+      "1": Major coupling or inconsistent rules makes required behavior unsafe.
+      "2": A material boundary or change regression remains.
+      "3": Boundaries and the follow-up are sound, with minor gaps.
+      "4": Boundaries are clear and minimal; the follow-up preserves behavior with
+        coherent validation and storage ownership.
+  - dimension_id: reference-application
+    description: Map relevant R1-R4 statements to actual decisions and code/tests.
+      Reading or citing alone is insufficient; explain justified
+      non-applicability.
+    weight: 0.25
+    anchors:
+      "0": Implementation contradicts the essential references.
+      "1": References are mainly decorative with major contradictions.
+      "2": Some applicable guidance lacks a working implementation path.
+      "3": Applicable guidance is reflected in concrete paths with minor gaps.
+      "4": Applicable references consistently connect to decisions, executable paths
+        and supporting checks.

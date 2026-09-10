@@ -967,13 +967,13 @@ const TASK_ADMISSION_HOOK_MAX_CONTEXT_CHARACTERS = 16_000;
 export function admissionHookWiringErrors(config: Record<string, any>, hooks: Record<string, any>): string[] {
   const errors: string[] = [];
   if (config.cascade?.admission_hook !== TASK_ADMISSION_HOOK_PATH) errors.push("Cascade admission hook path is invalid");
-  for (const event of ["UserPromptSubmit", "Interrupt", "PreToolUse", "PermissionRequest"]) {
+  for (const event of ["UserPromptSubmit", "Interrupt"]) {
     const groups = hooks.hooks?.[event];
     if (!Array.isArray(groups) || groups.length !== 1 || !Array.isArray(groups[0]?.hooks) || groups[0].hooks.length !== (event === "UserPromptSubmit" ? 2 : 1)) {
       errors.push(`Cascade admission hook wiring is invalid for ${event}`);
       continue;
     }
-    if (["UserPromptSubmit", "Interrupt"].includes(event) ? groups[0].matcher !== undefined : groups[0].matcher !== "*") {
+    if (groups[0].matcher !== undefined) {
       errors.push(`Cascade admission hook matcher is invalid for ${event}`);
     }
     if (event === "UserPromptSubmit") {
@@ -992,6 +992,11 @@ export function admissionHookWiringErrors(config: Record<string, any>, hooks: Re
       || hook.additionalContextLimit < TASK_ADMISSION_HOOK_MIN_CONTEXT_CHARACTERS
       || hook.additionalContextLimit > TASK_ADMISSION_HOOK_MAX_CONTEXT_CHARACTERS)) {
       errors.push("Cascade admission hook additional context limit is invalid for UserPromptSubmit");
+    }
+  }
+  for (const event of ["PreToolUse", "PermissionRequest"]) {
+    if (hooks.hooks?.[event] !== undefined) {
+      errors.push(`Cascade must not register ${event} without an implemented trusted host authority bridge; native Codex permissions own command execution`);
     }
   }
   if (hooks.hooks?.PostToolUse !== undefined) errors.push("retired post-patch evaluation hook must be removed");
