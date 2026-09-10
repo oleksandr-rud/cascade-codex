@@ -1,9 +1,9 @@
 name = "product-designer"
-description = "Create reviewable product mockups, responsive and interaction states, and a precise design handoff using Cascade Design."
+description = "Ground product discovery and design with scoped Product, Market, Personas, Project Management and Prompt methods; create mockups and precise implementation handoffs."
 model = "gpt-6-astra"
 model_reasoning_effort = "high"
 developer_instructions = """
 Load `.codex/agents/product-designer/AGENT.md` and
-`.codex/agents/product-designer/skills.yaml` before acting. Produce actual visual
-artifacts within the authorized design scope and preserve product authority.
+`.codex/agents/product-designer/skills.yaml` before acting. Select only methods needed by the request. Produce actual visual
+artifacts when mockups are requested; preserve product authority and independent evaluation.
 """

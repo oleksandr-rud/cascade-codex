@@ -51,14 +51,14 @@ durable paths, target commands, campaign state, and acceptance.
 |---|---|---|
 | Prompt creation and prompt diagnosis | `cascade-prompt:prompt` | Requesting role |
 | Semantic capability selection and cross-plugin artifact ordering | `cascade-coordinator:select-capabilities` then `cascade-coordinator:plan-workflow` when a graph is needed | Orchestrator |
-| Software, plugin, and workflow architecture, patterns, and independent review | `cascade-software-architect:<skill>` | Requesting role; Agent Engineer for host integration |
+| Software, plugin, and workflow architecture, patterns, and independent review | `cascade-software-architect:<skill>` | Software Engineer for software design; Code Reviewer for independent review; Agent Engineer for host integration |
 | AI-agent topology, behavior, roles, skills, prompt briefs, persona requirements, and evaluation briefs | `cascade-ai-architect:<skill>` | Requesting role; Agent Engineer for host integration |
 | Harness audit, maintenance, and asset integration | `cascade-coding-agent:<skill>` | Agent Engineer |
-| Market research, selection, differentiation and experiments | `cascade-market:<skill>` | Orchestrator |
+| Market research, selection, differentiation and experiments | `cascade-market:<skill>` | Orchestrator; Product Designer for scoped design research |
 | Channel selection, growth strategy, cohort economics and product feedback | `cascade-market:plan-growth` | Orchestrator |
-| Positioning, messaging, naming, tone, proof, and trust language | `cascade-market:brand-positioning` | Orchestrator |
-| Product value and offers, feature formation, lifecycle and outcome validation | `cascade-product:<skill>` | Orchestrator |
-| Canonical personas and compiled projections | `cascade-personas:<skill>` | Orchestrator |
+| Positioning, messaging, naming, tone, proof, and trust language | `cascade-market:brand-positioning` | Orchestrator; Product Designer within the design brief |
+| Product value and offers, feature formation, lifecycle and outcome validation | `cascade-product:<skill>` | Orchestrator for lifecycle; Product Designer for scoped definition and validation |
+| Canonical personas and compiled projections | `cascade-personas:<skill>` | Orchestrator; Product Designer for scoped authoring/compilation, independent review separately |
 | UX, accessibility, visual, and design-system review | `cascade-design:<skill>` | Requesting role or Orchestrator |
 | Design authoring and mockup handoff | `cascade-design:create-design`; host artifact persistence | Product Designer |
 | Software implementation | Host context, planning, implementation and validation skills | Software Engineer; Orchestrator may apply locally |
@@ -72,7 +72,7 @@ durable paths, target commands, campaign state, and acceptance.
 | Prompt or adaptive-interview evaluation | `cascade-evals:prompt-evaluation` | Requesting role; independent judge identity declared by the frozen evaluation |
 | AI-agent, role, skill, workflow, tool-loop, or architecture evaluation | `cascade-evals:agent-evaluation` | Requesting role; independent judge identity declared by the frozen evaluation |
 | Generic evaluation design or judge-contract construction | `cascade-evals:evaluate` or `cascade-evals:build-judge` | Requesting role; Agent Engineer only for harness-owned judge contracts |
-| Project planning, coordination, reconciliation, and closeout assessment | `cascade-project-management:<skill>` | Orchestrator |
+| Project planning, coordination, reconciliation, and closeout assessment | `cascade-project-management:<skill>` | Orchestrator across owners; Product Designer within its design workstream |
 | Quality planning, test design, assessment, and defect triage | `cascade-qa:<skill>` | Requesting role |
 
 Simulation Operator and Simulation Evaluator are optional source/lab roles.
@@ -234,7 +234,11 @@ archive entry by default.
 Repo-local roles provide context, permission, and independence boundaries; they
 do not duplicate plugin methods.
 
-- `product-designer`: authorized mockup creation and frontend handoff through Cascade Design.
+- `product-designer`: scoped product discovery, market/positioning evidence, persona
+  preparation, prompts, design-work planning and bounded rehearsal through the
+  selected plugins; owns mockups and frontend handoff. Portfolio/growth strategy,
+  project-wide coordination, campaign execution and independent acceptance retain
+  their existing owners. Load methods on demand, not the entire skill map.
 - `software-engineer`: scoped target implementation and proportional verification.
 - `frontend-engineer`: approved-design UI implementation and rendered fidelity evidence.
 - `code-reviewer`: read-only diff review; separate context required for independence.

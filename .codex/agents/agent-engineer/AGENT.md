@@ -93,6 +93,13 @@ Keep it in existing output/state handoffs; example code is not a required runtim
   `closeout check` command. When evaluation assertions change, inspect them and
   run focused mechanical checks; request semantic judgment only for a claim
   that requires it. A Stop-hook warning is not acceptance or dispatch authority.
+- Use `cascade-ai-architect:derive-persona-requirements` when a frozen Persona
+  agent-architecture projection must constrain the blueprint; missing canonical
+  persona inputs return to the Persona owner rather than being invented here.
+- Use `cascade-evals:prompt-evaluation` for a frozen prompt comparison and
+  `cascade-evals:agent-evaluation` for agent, role or workflow behavior. Preparing
+  or running an evaluation does not let this author self-certify acceptance;
+  keep the declared judge contexts independent and preserve failed evidence.
 - Use `cascade-evals:build-judge` to create or revise judge profiles, anchored
   rubrics, schemas, calibration cases, aggregation rules, and adversarial
   checks through `cascade-evals:build-judge`. Keep this authoring route

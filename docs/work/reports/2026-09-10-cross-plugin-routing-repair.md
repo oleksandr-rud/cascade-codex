@@ -154,3 +154,41 @@ references. The native CLI also reported shortened skill descriptions; the archi
 method remained visible and loaded. This diagnostic did not change unrelated
 plugin enablement or claim that global context pressure was eliminated.
 This branch has not been integrated into master by this repair.
+
+## Subsequent master synchronization
+
+The follow-up request to use Astra and check freshness found seven missing master
+commits, including the existing Astra migration. Master advanced once more during
+verification. Both `585a72b` and the latest observed `dec88f1` were merged into the
+experimental branch, preserving the prerequisite/input repairs above. New primary,
+role, plugin and evaluation invocations now default to `gpt-6-astra` / `high`.
+Existing frozen evaluations retain their recorded models and evidence.
+
+Both branches had independently allocated HX-072 through HX-089. Published master
+case IDs remain intact; this branch's 18 prerequisite cases now use HX-092 through
+HX-109 in the same order. Historical evidence above retains its original IDs and
+source manifests. The architecture handoff case is now HX-106. The merged runner
+retains role ownership checks, routing-only scope and environment-blocker handling;
+one identical reader self-check was consolidated. No scenario or assertion was
+dropped to resolve the collision.
+
+Final integration checks passed: 81 runtime tests with 468 assertions, 37 harness
+self-checks, 148 artifact tests and all seven package/manifest checks. All three
+catalogs were regenerated; the harness catalog contains 180 scenarios. Fourteen
+installed packages match 639 source files and 166 dependency bindings, with 18
+unrelated installed packages preserved. Combined package versions use build stamp
+`20260910172549`; Prompt retains the incoming master identity.
+
+A fresh HX-106 invocation without a model or reasoning override selected the
+`execution` default, Astra/high, loaded `plan-change` and returned the required
+software-architecture handoff: routing eligibility PASS. Its frozen source files
+match this merged implementation. The preceding HX-086 canary against the first
+merge is retained separately. These checks do not rerun or semantically qualify
+all prior plugin evaluations or the autonomous application build. Codex's local
+configuration diagnostic confirmed Astra; its full doctor command reports a
+noninteractive `TERM=dumb` terminal limitation, not a model configuration failure.
+
+Evidence is under `.artifacts/astra-master-sync-20260910/` and
+`.artifacts/harness-evals/astra-master-sync-20260910-v2/`. This synchronization
+updates the experimental branch and installed packages; it does not push the
+experiment into master.

@@ -204,6 +204,36 @@ function expectation(
   };
 }
 
+function interactionScenario(item: JsonObject, contracts: Map<string, JsonObject>): JsonObject {
+  const owner = item.owner ?? "orchestrator";
+  if (item.owner !== undefined) {
+    const contract = contracts.get(owner);
+    if (!contract) throw new CascadeError(`interaction ${item.id} has unknown owner ${owner}`);
+    for (const route of [item.expected_primary, ...(item.allowed_supporting ?? [])]) {
+      if (!contract.all_skills.has(route)) {
+        throw new CascadeError(`interaction ${item.id} skill ${route} is not wired to owner ${owner}`);
+      }
+    }
+  }
+  return {
+    id: item.id,
+    kind: "interaction",
+    target_skill: item.expected_primary,
+    owner,
+    prompt: item.prompt,
+    expectation: expectation(item.expected_primary, item.expected_primary, {
+      forbiddenPrimary: item.forbidden_primary ?? [],
+      allowedSupporting: item.allowed_supporting ?? [],
+      statuses: item.status_any,
+      nextRoute: item.next_route,
+      mustLoadRoles: item.owner !== undefined ? [owner] : [],
+      maxLoadedSkills: item.max_loaded_skills,
+      maxLoadedRoles: item.max_loaded_roles,
+    }),
+    source: "harness-evals/interactions.yaml",
+  };
+}
+
 export async function generateCatalog(): Promise<JsonObject> {
   const cases = (await readStructured<JsonObject>(CASE_SOURCE, rel(CASE_SOURCE))).skills ?? [];
   const interactions =
@@ -211,6 +241,12 @@ export async function generateCatalog(): Promise<JsonObject> {
   const agentCases = (await readStructured<JsonObject>(AGENT_CASE_SOURCE, rel(AGENT_CASE_SOURCE))).agents ?? [];
   const discovered = await skillPaths();
   const contracts = await agentContracts();
+  // Source/lab catalog coverage; core target bundles intentionally omit lab roles.
+  const pluginCatalog = await buildPluginCapabilityCatalog();
+  const assigned = new Set([...contracts.values()].flatMap((contract) => [...contract.all_skills]));
+  const unassigned = pluginCatalog.plugins.flatMap((plugin) => plugin.skills.map((skill) => skill.route))
+    .filter((route) => !assigned.has(route));
+  if (unassigned.length) throw new CascadeError(`plugin skills lack a host role: ${unassigned.join(", ")}`);
   const bySkill = new Map<string, JsonObject>();
   const duplicates: string[] = [];
   for (const item of cases) {
@@ -289,20 +325,7 @@ export async function generateCatalog(): Promise<JsonObject> {
     );
   }
   for (const item of interactions) {
-    scenarios.push({
-      id: item.id,
-      kind: "interaction",
-      target_skill: item.expected_primary,
-      owner: "orchestrator",
-      prompt: item.prompt,
-      expectation: expectation(item.expected_primary, item.expected_primary, {
-        forbiddenPrimary: item.forbidden_primary ?? [],
-        allowedSupporting: item.allowed_supporting ?? [],
-        nextRoute: item.next_route,
-        statuses: item.status_any,
-      }),
-      source: "harness-evals/interactions.yaml",
-    });
+    scenarios.push(interactionScenario(item, contracts));
   }
   for (const agent of [...byAgent.keys()].sort()) {
     const item = byAgent.get(agent)!;
@@ -920,7 +943,7 @@ async function checkEligibility(
     ![0, null, undefined].includes(trace.exit_code) ||
     trace.terminal_event === "turn.failed" ||
     [...(trace.errors ?? []), ...(trace.stderr_lines ?? [])].some((line) =>
-      /failed to spawn|requires a newer version|model .+ (?:is not supported|was not found)|authentication (?:failed|required)|code.mode (?:host is disabled|is unavailable)/i.test(
+      /failed to spawn|requires a newer version|model .+ (?:is not supported|was not found)|authentication (?:failed|required)|code.mode (?:host is disabled|is unavailable)|CreateProcess.*Rejected.*blocked by policy/i.test(
         line,
       ),
     );
@@ -952,6 +975,8 @@ function codexCommand(model: string, effort: string, prompt: string, schema: str
     "image_generation",
     "--enable",
     "code_mode_host",
+    "--disable",
+    "multi_agent",
     "-m",
     model,
     "-c",
@@ -1654,14 +1679,18 @@ async function commandSelfTest(): Promise<number> {
     scenario,
     syntheticTrace(scenario, "context", ["context"], { terminal: "turn.failed" }),
   );
-  const unavailableReader = await checkEligibility(scenario, {
-    ...syntheticTrace(scenario, "context", []),
-    errors: ["Code Mode is unavailable because code-mode host is disabled."],
-  });
   const supporting = await checkEligibility(
     scenario,
     syntheticTrace(scenario, "context", ["context"], { supporting: ["plan-change"] }),
   );
+  const unavailableHost = await checkEligibility(scenario, {
+    ...syntheticTrace(scenario, "plan-change", []),
+    errors: ["Code Mode is unavailable because code-mode host is disabled."],
+  });
+  const deniedRead = await checkEligibility(scenario, {
+    ...syntheticTrace(scenario, "plan-change", []),
+    stderr_lines: ["exec_command failed: CreateProcess { message: Rejected(command rejected: blocked by policy) }"],
+  });
   const agentScenario = {
     id: "SELF-AGENT-001",
     kind: "agent-outcome",
@@ -1745,9 +1774,22 @@ async function commandSelfTest(): Promise<number> {
   const [fullyAccepted] = acceptedCandidate(good, judgments, required);
   const [missingRejected] = acceptedCandidate(good, missingJudgments, required);
   const targetFailures = await runFixtureSelfTest();
+  const roleContracts = await agentContracts();
+  const roleCase = { id: "SELF-ROLE-ROUTE", owner: "product-designer", expected_primary: "cascade-product:define-product", prompt: "Define a scoped product candidate." };
+  const wiredInteraction = interactionScenario(roleCase, roleContracts);
+  const rejectsInteraction = (changes: JsonObject): boolean => {
+    try { interactionScenario({ ...roleCase, ...changes }, roleContracts); return false; }
+    catch (error) { return error instanceof CascadeError; }
+  };
   const assertions: [boolean, string][] = [
+    [wiredInteraction.owner === "product-designer" && wiredInteraction.expectation.must_load_roles.includes("product-designer"), "role usage requires the wired specialist contract"],
+    [rejectsInteraction({ expected_primary: "cascade-coding-agent:maintain-harness" }), "unwired primary must fail before execution"],
+    [rejectsInteraction({ allowed_supporting: ["cascade-coding-agent:maintain-harness"] }), "unwired supporting skill must fail before execution"],
+    [rejectsInteraction({ owner: "missing-role" }), "unknown usage owner must fail before execution"],
     [good.verdict === "PASS", "good trace must pass"],
     [wrong.hard_failures.includes("primary-route"), "wrong route must fail"],
+    [unavailableHost.verdict === "BLOCKED" && unavailableHost.failure_class === "environment", "unavailable source-reading host is an environment block"],
+    [deniedRead.verdict === "BLOCKED" && deniedRead.failure_class === "environment", "policy-denied process with failed eligibility is an environment block"],
     [mutation.hard_failures.includes("read-only-safety"), "mutation must fail"],
     [fileChange.hard_failures.includes("read-only-safety"), "file change item must fail"],
     [webSearch.hard_failures.includes("read-only-safety"), "web search item must fail"],
@@ -1765,7 +1807,6 @@ async function commandSelfTest(): Promise<number> {
       "agent detail budget must remain diagnostic",
     ],
     [incomplete.verdict === "BLOCKED", "failed terminal must block"],
-    [unavailableReader.verdict === "BLOCKED" && unavailableReader.failure_class === "environment", "unavailable source reader must be an environment blocker"],
     [!classifyCommand("rg token . 2>/dev/null").mutation, "dev-null redirect safe"],
     [!classifyCommand("rg 'placeholder|<[^>]+>' docs").mutation, "quoted redirect safe"],
     [classifyCommand("printf result > result.txt").mutation, "write redirect detected"],

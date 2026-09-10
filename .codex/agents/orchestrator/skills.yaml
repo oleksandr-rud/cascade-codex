@@ -35,6 +35,9 @@ plugin_skills:
   - cascade-simulations:manage-simulation-campaign
   - cascade-simulations:simulate
   - cascade-security:secure-design
+  - cascade-prompt:prompt
+  - cascade-evals:prompt-evaluation
+  - cascade-evals:agent-evaluation
 skills:
   - name: context
     source: .codex/skills/context/SKILL.md

@@ -1,6 +1,11 @@
 plugin_skills:
   - cascade-simulations:execute-simulation-campaign
   - cascade-simulations:simulate
+  - cascade-simulations:simulation-actor
+  - cascade-simulations:simulation-persona
+  - cascade-simulations:simulation-brief
+  - cascade-simulations:simulation-outcome
+  - cascade-simulations:simulation-adapter
 skills:
   - name: run-qa-plan
     source: .codex/skills/run-qa-plan/SKILL.md

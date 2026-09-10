@@ -30,7 +30,21 @@ expands each entry into seven cases:
 6. output contract;
 7. handoff.
 
-`interactions.yaml` adds cross-skill collision cases. The generated catalog is
+`interactions.yaml` adds cross-skill collision cases. An optional `owner` binds
+one to a registered role, verifies its primary and allowed supporting routes
+against that role's skill map, and requires the role contract in the trace.
+Optional `status_any`, `next_route`, `max_loaded_skills` and `max_loaded_roles`
+record the expected result, handoff and proportional context use. Legacy cases
+without an owner retain general Orchestrator routing behavior. Source catalog
+generation also rejects plugin capabilities with no registered host role; this
+coverage check is lab-only because core bundles intentionally omit lab roles.
+
+The Product Designer usage cases cover discovery, positioning, personas,
+prompts, design planning and simulation preparation as well as simple mockups
+and strategy handoff boundaries. Cases are diagnostic inputs, not proof that a
+model has passed them; use bounded current-source live runs for that claim.
+
+The generated catalog is
 `scenarios.generated.json`; CI or local validation should use `catalog --check`
 to prove it is current.
 
@@ -113,3 +127,14 @@ change or calibrate these contracts; use
 diagnostic.
 The per-case `effectiveness_score` is the lower required-judge score, while the
 coverage ledger retains both profile scores and their distributions.
+
+The CLI enables the Code Mode host needed for Astra's local source-reading
+commands and disables multi-agent dispatch, plugins, apps and visual/network
+surfaces. Read-only sandboxing and trace checks still apply. Disabling the host
+can make every source read fail before a role is exercised; classify that as
+execution-environment evidence, not a semantic role-quality result.
+
+A failed eligibility check accompanied by the CLI's disabled-Code-Mode or
+policy-rejected CreateProcess diagnostics is BLOCKED/environment, rather than a
+model routing failure. The policy remains in force; the runner does not retry
+with a broader sandbox. Model prose alone cannot supply that classification.
