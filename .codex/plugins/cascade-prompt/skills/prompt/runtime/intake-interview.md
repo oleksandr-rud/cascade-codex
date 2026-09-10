@@ -37,6 +37,17 @@ permission, hard boundaries, output/decision behavior, architecture, success,
 or validation. Do not ask when answered, safely defaultable, or merely omitted
 from the draft.
 
+Apply an explicit maximum to all operations it covers: retries consume a total
+tool-call budget unless a separate allowance is explicitly authorized. Do not
+ask whether a retry may exceed a supplied total cap.
+
+For reusable source prompts, unspecified freshness thresholds can remain an
+honest gap: use supplied expiry, validity, and supersession metadata, otherwise
+report freshness unknown. Do not invent an age cutoff or block authoring merely
+to choose one. Ask only if the required decision cannot represent that uncertainty.
+When a safe default preserves every hard requirement, apply and disclose it;
+do not present that same safe default while withholding an otherwise ready prompt.
+
 Priority: safety/permission; authority; output; decisions; tools; proof;
 optimization.
 

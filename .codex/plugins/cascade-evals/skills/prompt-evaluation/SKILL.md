@@ -19,7 +19,8 @@ identity and raw evidence directly.
 - Keep task fixtures, evaluators, judge profiles, execution adapters, timeout
   policy, variance aggregation, and calibration mechanics here.
 - Builder, target, judge, and fixed interview turns use the local execution
-  adapter directly. They do not require Cascade Simulations or Python.
+  adapter directly. They do not require Cascade Simulations. Default installed
+  subject discovery uses the packaged Python 3 resolver before Node model execution.
 - Use `cascade-simulations:simulate` for a dynamic actor choosing actions against
   a changing environment. That separate contour retains its simulation contract,
   authority, journal, recovery, cleanup and controller verification.
@@ -27,6 +28,12 @@ identity and raw evidence directly.
   skill with an evaluator-authored replacement prompt.
 
 ## Workflow
+
+For a design-only request, use `cascade-evals:evaluate`'s design-only contract:
+return cases, mechanical gates, judge needs, missing evidence, and phase states.
+Preserve any supplied frozen prompt. Do not dispatch the execution workflow or
+load integration schemas merely to describe a plan. Read the detailed execution
+references only when the requested design needs their exact contract.
 
 1. Resolve the subject plugin and exact skill root. Use
    `--subject-skill-root` only for an intentional source checkout; otherwise
@@ -80,8 +87,8 @@ applicable frozen rules go to blinded judges. Keep named-model authorship distin
 from execution on that model. Run `scripts/run-judge-challenges.mjs` for synthetic
 judge discrimination checks; these are not human calibration.
 
-Read `evals/README.md` for the complete evidence, adapter, judge, timeout, and
-calibration contract.
+Before executable runs, evidence reduction, adapter integration, judge-profile
+authoring, or calibration work, read `evals/README.md` for the complete contract.
 
 ## Boundaries
 

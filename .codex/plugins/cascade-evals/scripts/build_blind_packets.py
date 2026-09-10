@@ -46,7 +46,7 @@ def write_json(path: Path, value: Any) -> str:
 
 def artifact(path: Path, *, relative_to: Path) -> dict[str, str]:
     return {
-        "path": os.path.relpath(path.resolve(), relative_to.resolve()),
+        "path": Path(os.path.relpath(path.resolve(), relative_to.resolve())).as_posix(),
         "sha256": digest_bytes(path.read_bytes()),
     }
 
@@ -211,14 +211,14 @@ def build_packets(
             }
             validate_judge_packet(packet, judge_packet_schema)
             judge_paths.append({
-                "path": str(judge_path.relative_to(output_dir)),
+                "path": judge_path.relative_to(output_dir).as_posix(),
                 "sha256": write_json(judge_path, packet),
             })
 
     receipt = {
         "schema_version": 1,
         "evaluation_id": evaluation_id,
-        "target_packet": {"path": str(target_path.relative_to(output_dir)), "sha256": target_digest},
+        "target_packet": {"path": target_path.relative_to(output_dir).as_posix(), "sha256": target_digest},
         "sealed_packet": {
             "state": "HELD_IN_CONTROLLER_MEMORY",
             "path": None,

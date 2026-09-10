@@ -57,7 +57,7 @@ def aggregate_digest(assets: list[dict[str, str]]) -> str:
 
 def relative_to_subject(subject_root: Path, path: Path, label: str) -> str:
     try:
-        return str(path.resolve().relative_to(subject_root.resolve()))
+        return path.resolve().relative_to(subject_root.resolve()).as_posix()
     except ValueError as error:
         raise ContractError(f"{label} must be inside the subject root") from error
 
@@ -666,7 +666,7 @@ def run_codex(
 def relative_evidence(root: Path, paths: list[Path]) -> list[dict[str, str]]:
     result: list[dict[str, str]] = []
     for path in paths:
-        relative = str(path.resolve().relative_to(root.resolve()))
+        relative = path.resolve().relative_to(root.resolve()).as_posix()
         result.append({"path": relative, "sha256": sha256(path)})
     return result
 

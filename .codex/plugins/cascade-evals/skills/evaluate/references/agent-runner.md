@@ -2,6 +2,10 @@
 
 Read before executable agent evaluation or blind packet construction. Paths and
 commands below are relative to the evaluate skill directory, as in its entrypoint.
+Emitted artifact and manifest-relative paths use `/` on every platform so the
+same frozen contract compares identically on Windows and Unix. Plugin skill
+roots must be relative to their package; absolute, drive-relative, rooted, and
+resolved link escapes are invalid.
 
 Use `../../scripts/build_blind_packets.py` to construct target and judge
 packets when the subject adapter supplies a compatible case suite. The builder

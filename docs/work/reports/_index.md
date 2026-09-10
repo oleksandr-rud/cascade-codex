@@ -17,6 +17,7 @@ Use filenames like `YYYY-MM-DD-slug.md`.
 
 | Date | Report | Purpose |
 |---|---|---|
+| 2026-09-10 | [Prompt discovery and model audit](2026-09-10-cascade-prompt-discovery-and-model-audit.md) | Installed material loading, native trigger/search probes, campaign run-ID repair, Windows fixes, model-specific support, and preserved quality gaps. |
 | 2026-09-10 | [Evaluation simplification and installed plugins](2026-09-10-evaluation-simplification-and-plugin-update.md) | Published decisions and commits, exact installed versions, source/cache parity, historical canaries, and remaining proof limits. |
 | 2026-09-10 | [Prompt evaluation reliability](2026-09-10-cascade-prompt-evaluation-reliability.md) | Shared model-call limits, interruption evidence, versioned judge citations, and the bounded reliability pilot. |
 | 2026-09-10 | [Original Prompt campaign reconstruction](2026-09-10-cascade-prompt-original-analysis.md) | Preserved outcomes, missing evidence, timeout diagnosis, and working behavior in the original 65-job campaign. |

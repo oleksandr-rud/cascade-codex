@@ -175,6 +175,7 @@ function parseJudge(text, profile, fixtureId, runId, evidence) {
 }
 
 const args = parseArgs(process.argv.slice(2));
+if (args["installed-plugin"]) fail("--installed-plugin cannot verify native discovery; this runner uses an isolated staged subject. Audit native installed-plugin discovery separately.");
 if (args["reuse-run-root"] && (args["first-response-file"] || args["second-response-file"])) fail("cannot combine verified replay with explicit response files");
 const command = args._[0] ?? "list";
 const catalogText = await readFile(join(evalRoot, "interviews/catalog.json"), "utf8");
@@ -196,7 +197,8 @@ if (args["execute-target"] && !fixture.target) fail(`${fixture.id} has no target
 const subjectSkillRoot = await resolveSubjectSkill({ explicitPath: args["subject-skill-root"], pluginName: args["subject-plugin"] ?? "cascade-prompt", skillName: args["subject-skill"] ?? "prompt" });
 
 const subjectSnapshot = await snapshotSubject(subjectSkillRoot);
-const runId = `${fixture.id}-${new Date().toISOString().replace(/[:.]/g, "-")}`;
+const runId = args["run-id"] ?? `${fixture.id}-${new Date().toISOString().replace(/[:.]/g, "-")}`;
+if (!/^[a-zA-Z0-9][a-zA-Z0-9._-]*$/.test(runId)) fail("unsafe run ID");
 const outputRoot = resolve(args["output-dir"] ?? join(process.cwd(), ".artifacts/prompt-interviews"));
 assertDisjointRoots(subjectSkillRoot, outputRoot);
 const runnerText = await readFile(fileURLToPath(import.meta.url), "utf8");

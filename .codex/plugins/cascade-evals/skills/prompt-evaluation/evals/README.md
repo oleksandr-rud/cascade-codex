@@ -154,8 +154,7 @@ node scripts/run-interview-eval.mjs list
 node scripts/run-interview-eval.mjs run \
   --fixture support-mixed-case-v1 \
   --model gpt-5.6-sol \
-  --reasoning-effort max \
-  --installed-plugin
+  --reasoning-effort max
 ```
 
 The runner executes the first turn, replays the ordered transcript plus the
@@ -167,8 +166,9 @@ Equivalent descriptive markers may use explicit alternative groups; exact data
 fields and placeholders remain literal. Add `--execute-judge --judge-model <model-id>` for the
 independent interview profile. For a fixture with a target contract, add
 `--execute-target --target-model <model-id>` to run the generated prompt.
-Use `--installed-plugin` after reinstall to resolve the installed package as
-the staged subject. This does not test normal app-side skill discovery.
+The enabled installed package is the default staged subject. This does not
+test normal app-side skill discovery; `--installed-plugin` is obsolete and
+rejected before dispatch.
 
 Intent patterns are mechanical eligibility aids, not a substitute for semantic
 judgment. Report first-turn and answer-turn token observations separately.
@@ -327,3 +327,9 @@ responses. Prompt runtime behavior is unchanged by these evaluation repairs.
 The Codex Code Mode host remains available because code-mode-only model transports require it even for text-only turns. Action tools remain disabled in isolated runs; every tool or error event still invalidates a tool-free response. Campaign child exit codes 2 (rejected) and 3 (incomplete) are expected outcomes; unexpected exits halt shared dispatch.
 
 Version 4 requests enumerate allowed leaf pointers relative to the evidence object. The outer request envelope is excluded; a pointer such as `/evidence/reference/content` remains invalid when the permitted path is `/reference/content`. Recovery reports a truncated final summary without discarding surviving phase evidence.
+
+Interview runs honor `--run-id` exactly, matching the campaign's predeclared result directory. Duplicate IDs preserve prior results and fail before dispatch; traversal-shaped IDs are rejected. Historical runs whose interview runner ignored that option require explicit identity-checked reconciliation of their actual directories; do not rewrite the original campaign contract.
+
+Default subject resolution reads the exact enabled, installed plugin cache version. The inventory's mutable checkout path cannot substitute newer source bytes or make an intact installed version appear missing. Source checkout evaluation remains an explicit `--subject-skill-root` choice; an absent installed version never falls back to a checkout or another cache version.
+
+Installed subject bytes and native discovery are separate claims. The interview runner always uses an isolated staged-read subject. The obsolete `--installed-plugin` flag is rejected before dispatch because it never activated native discovery. Verify native triggers and filesystem searches in separate fresh Codex sessions with installed skills, preserving the actual read/search trace; staged-read results do not prove native discovery.
