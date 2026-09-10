@@ -11,8 +11,8 @@
   "execution_adapter": {
     "id": "cascade-evals-agent-runner-v1",
     "runner": "cascade-evals/scripts/run_agent_evaluation.py",
-    "model": "gpt-5.6-sol",
-    "reasoning_effort": "max",
+    "model": "gpt-6-astra",
+    "reasoning_effort": "high",
     "sandbox": "read-only+os-read-isolation",
     "target_invocations": 5,
     "target_batching": "contiguous-balanced-parallel-v1",

@@ -67,3 +67,8 @@ Reject or mark `GAP` when:
 - a terminal condition cannot be distinguished in evidence.
 
 Return the workflow as a versioned `CANDIDATE`. Registration, runtime wiring, and execution require separate authorization.
+
+Keep the user-facing answer concise. Output requirements specify information,
+not extra headings. Preserve required schemas, evidence and permissions. Avoid
+duplicate artifact prose, empty sections, unsolicited variants and extra files
+unless needed for the requested delivery or an actual handoff.

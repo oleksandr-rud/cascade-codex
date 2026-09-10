@@ -1,6 +1,6 @@
 {
   "name": "cascade-product",
-  "version": "0.1.25+codex.20260910171300",
+  "version": "0.1.33+codex.20260910172549",
   "description": "Model product value and offers, form evidence-linked features, manage investment gates, and connect accepted behavior to delivery and outcome learning.",
   "author": {
     "name": "Cascade"
@@ -28,6 +28,9 @@
       "Model the value and offer for this product.",
       "Compare these feature ideas and define the smallest useful slice.",
       "Review outcomes and update product priorities."
-    ]
+    ],
+    "brandColor": "#4F46E5",
+    "composerIcon": "./assets/composer-icon.svg",
+    "logo": "./assets/logo.svg"
   }
 }

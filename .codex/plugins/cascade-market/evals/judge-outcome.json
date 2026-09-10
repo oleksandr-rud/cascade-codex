@@ -1,11 +1,11 @@
 {
   "schema_version": 1,
   "profile_id": "market-outcome",
-  "version": 3,
+  "version": 4,
   "role": "outcome",
   "decision": "Does the plugin produce trustworthy, decision-relevant market research, opportunity assessments, experiments, and positioning candidates without overstating evidence?",
   "population": "Market research, opportunity assessment, validation experiment, and brand-positioning requests across complete, sparse, adversarial, and out-of-authority evidence. Apply each dimension only to cases where the visible request and subject contract make it applicable; a correct typed omission outside that scope is compliance, not missing output.",
-  "model": "gpt-5.6-sol",
+  "model": "gpt-6-astra",
   "threshold": 0.95,
   "minimum_dimension": 3,
   "dimensions": [

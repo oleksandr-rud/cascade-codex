@@ -1,15 +1,17 @@
 {
   "schema_version": 1,
-  "policy_id": "cascade-evals-model-policy-v1",
+  "policy_id": "cascade-evals-model-policy-v2",
   "defaults": {
-    "builder_model": "gpt-5.6-sol",
-    "builder_reasoning_effort": "max",
-    "target_model": "gpt-5.6-sol",
-    "target_reasoning_effort": "max",
-    "judge_model": "gpt-5.6-sol",
-    "judge_reasoning_effort": "max"
+    "builder_model": "gpt-6-astra",
+    "builder_reasoning_effort": "high",
+    "target_model": "gpt-6-astra",
+    "target_reasoning_effort": "high",
+    "judge_model": "gpt-6-astra",
+    "judge_reasoning_effort": "high"
   },
   "explicit_comparison_overrides_allowed": true,
   "independent_judge_context_required": true,
-  "forbidden_models": ["gpt-5.5"]
+  "forbidden_models": [
+    "gpt-5.5"
+  ]
 }

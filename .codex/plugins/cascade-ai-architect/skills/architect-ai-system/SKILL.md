@@ -57,3 +57,8 @@ Compile one reviewable architecture candidate from the request and its authorita
 - Read `references/packet-contract.md` before compiling or reviewing a packet.
 - Read `references/architecture.schema.json` when implementing another validator or translating the packet to a target harness.
 - Copy `assets/architecture.packet.yaml` as the machine-index template; it uses the JSON-compatible subset of YAML so validation needs no third-party parser.
+
+Keep the user-facing answer concise. Output requirements specify information,
+not extra headings. Preserve required schemas, evidence and permissions. Avoid
+duplicate artifact prose, empty sections, unsolicited variants and extra files
+unless needed for the requested delivery or an actual handoff.

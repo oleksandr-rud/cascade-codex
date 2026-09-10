@@ -5,6 +5,24 @@ description: Form or revise product value models, offers and feature candidates,
 
 # Define Product
 
+## Delivery mode
+
+Choose the delivery mode before following artifact-production steps below.
+For a standalone explanation, recommendation, review or prose draft without a
+structured-output request, return one useful answer. Preserve every applicable
+substantive requirement: evidence and source authority, uncertainty, conflicts,
+permissions, acceptance/recovery conditions, decision status and next action.
+The output lists specify information to cover, not extra files or repeated prose.
+Do not invent IDs, hashes, receipts or approval to make a prose answer look formal.
+Do not label that answer a validated canonical artifact or completed handoff.
+
+For an explicitly requested structured/canonical artifact, persistence,
+evaluation, or actual cross-plugin handoff, apply all artifact-production steps,
+required schemas, fields, source bindings, ledgers, digests, validators and gates
+below unchanged. Provide the artifact once; add only the explanation needed to
+use it. A prose projection never substitutes for required machine-readable data.
+Missing material evidence or authority remains a gap or blocker in either mode.
+
 ## Value model and feature formation
 
 Use this skill to form value, offer and feature proposals as well as to define
@@ -152,5 +170,10 @@ Use cascade-personas:compile-persona when a canonical persona needs a purpose-li
    deferred action is still required.
 
 ## Output
+
+Keep the user-facing answer concise. Output requirements specify information,
+not extra headings. Preserve required schemas, evidence and permissions. Avoid
+duplicate artifact prose, empty sections, unsolicited variants and extra files
+unless needed for the requested delivery or an actual handoff.
 
 Return the schema-valid typed PRODUCT_DEFINITION and RFC 8785 digest; explicit completeness_status READY, GAP, BLOCKED, or INVALID; approval_status PROPOSED, PENDING_APPROVAL, APPROVED, REJECTED, or DEFERRED; exact decision-to-work-product binding; explicit confidence basis and limitations; accepted-source and decision ledger; traceability matrix; acceptance examples; conflicts/assumptions/gaps; alternatives; digest/invalidation rules; and the exact next owner/artifact/gate. Never present an incomplete artifact as delivery-ready.

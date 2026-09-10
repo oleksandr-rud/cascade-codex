@@ -39,9 +39,9 @@ const OUTPUT_SCHEMA = resolve(EVAL_ROOT, "response.schema.json");
 const JUDGE_SCHEMA = resolve(EVAL_ROOT, "judge-response.schema.json");
 const JUDGE_PROFILES = resolve(EVAL_ROOT, "judge-profiles.yaml");
 const ARTIFACT_ROOT = rootPath(".artifacts/harness-evals");
-const PLANNING_MODEL = "gpt-5.6-sol";
-const EXECUTION_MODEL = "gpt-5.6-sol";
-const JUDGE_MODEL = "gpt-5.6-sol";
+const PLANNING_MODEL = "gpt-6-astra";
+const EXECUTION_MODEL = "gpt-6-astra";
+const JUDGE_MODEL = "gpt-6-astra";
 const STATUS_VALUES = new Set(["PASS", "FAIL", "BLOCKED", "GAP", "NOT_RUN"]);
 const KIND_SUFFIX: Record<string, string> = {
   "implicit-trigger": "implicit",
@@ -1176,7 +1176,7 @@ function scenarioExecution(
   return {
     model,
     reasoning_effort:
-      flag(args, "reasoning-effort") ?? scenario.execution?.reasoning_effort ?? "low",
+      flag(args, "reasoning-effort") ?? scenario.execution?.reasoning_effort ?? "high",
     model_profile: explicitModel
       ? "custom"
       : explicitProfile ?? (scenario.execution?.model ? "agent-contract" : "execution"),

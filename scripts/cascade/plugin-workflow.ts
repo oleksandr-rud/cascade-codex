@@ -314,7 +314,7 @@ function catalogSkillMap(catalog: PluginCapabilityCatalog): Map<string, JsonReco
   const result = new Map<string, JsonRecord>();
   for (const plugin of catalog.plugins) {
     for (const skill of plugin.skills as JsonRecord[]) {
-      result.set(skill.route, { ...skill, plugin_version: plugin.version });
+      result.set(skill.route, { ...skill, plugin_version: plugin.version, model_policy: plugin.model_policy });
     }
   }
   return result;
@@ -523,8 +523,11 @@ export function validatePluginPlan(
     if ((AUTHORITY_RANK[node.authority] ?? 99) > (AUTHORITY_RANK[envelope.workload.authority] ?? -1)) {
       throw new CascadeError(`${node.route} exceeds Task Envelope authority`);
     }
-    if (node.route.startsWith("cascade-evals:") && node.model.reasoning_effort !== "max") {
-      throw new CascadeError(`${node.route} evaluation reasoning effort must be max`);
+    if (node.model.id !== descriptor.model_policy.model) {
+      throw new CascadeError(`${node.route} model differs from its capability policy`);
+    }
+    if (node.route.startsWith("cascade-evals:") && node.model.reasoning_effort !== descriptor.model_policy.evaluation_reasoning_effort) {
+      throw new CascadeError(`${node.route} evaluation reasoning effort differs from its capability policy`);
     }
     for (const claimId of node.claim_ids as string[]) {
       if (!claims.has(claimId)) throw new CascadeError(`${node.route} references unknown claim ${claimId}`);

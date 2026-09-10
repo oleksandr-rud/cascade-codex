@@ -1,6 +1,6 @@
 claim_files:
   - product-evals/claims/agent-standalone-codex-execution.yaml
-evaluation_profile_file: product-evals/rubrics/codex-independent-v1.yaml
+evaluation_profile_file: product-evals/rubrics/codex-independent-v2.yaml
 id: agent-standalone-codex-canary
 oracle_files:
   - product-evals/oracles/agent-response-contract-valid-v1.yaml

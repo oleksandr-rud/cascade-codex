@@ -58,14 +58,19 @@ runs; builders and ordinary judges default to 600 seconds, source judges to 720.
 
 From the skill root:
 
+The Node validator includes its pinned `yaml` 2.9.0 parser and ISC license under
+`scripts/vendor/`; it needs no package installation in the immutable plugin cache.
+The generated module records the repository-root rebuild command. Update the
+module and license together when changing this dependency.
+
 ```bash
 node scripts/validate-quality-evals.mjs
 node scripts/run-quality-eval.mjs list
 node scripts/run-quality-eval.mjs run \
   --task structured-invoice-v1 \
-  --prompt-model gpt-5.6-sol \
-  --target-model gpt-5.6-sol \
-  --reasoning-effort max
+  --prompt-model gpt-6-astra \
+  --target-model gpt-6-astra \
+  --reasoning-effort high
 ```
 
 By default the runners resolve the enabled `cascade-prompt` plugin through
@@ -78,9 +83,9 @@ override that cache with an existing Cascade Prompt response:
 ```bash
 node scripts/run-quality-eval.mjs run \
   --task structured-invoice-v1 \
-  --prompt-model gpt-5.6-sol \
-  --target-model gpt-5.6-sol \
-  --reasoning-effort max \
+  --prompt-model gpt-6-astra \
+  --target-model gpt-6-astra \
+  --reasoning-effort high \
   --prompt-response-file /absolute/path/to/response.md
 ```
 
@@ -100,10 +105,10 @@ reusing only the digest-bound builder and trajectory caches:
 ```bash
 node scripts/run-variance-eval.mjs \
   --task structured-invoice-v1 \
-  --prompt-model gpt-5.6-sol \
-  --target-model gpt-5.6-sol \
-  --reasoning-effort max \
-  --execute-judges --judge-model gpt-5.6-sol \
+  --prompt-model gpt-6-astra \
+  --target-model gpt-6-astra \
+  --reasoning-effort high \
+  --execute-judges --judge-model gpt-6-astra \
   --repetitions 3
 ```
 
@@ -153,8 +158,8 @@ state only.
 node scripts/run-interview-eval.mjs list
 node scripts/run-interview-eval.mjs run \
   --fixture support-mixed-case-v1 \
-  --model gpt-5.6-sol \
-  --reasoning-effort max
+  --model gpt-6-astra \
+  --reasoning-effort high
 ```
 
 The runner executes the first turn, replays the ordered transcript plus the
@@ -189,8 +194,8 @@ versioned profile and an evidence-backed decision.
 
 ## Rule coverage and blinded judges (v3)
 
-The interview catalog adds 24 conditional-loading and rule-boundary cases to
-12 existing interaction cases (36 total). `rule-coverage.json` binds all 50 case
+The interview catalog adds 27 conditional-loading and rule-boundary cases to
+12 existing interaction cases (39 total). `rule-coverage.json` binds all 53 case
 IDs to rule groups. Cases include seven exact model adapters, unknown checkpoints,
 three context templates, long-context joins and budgets, multimodal limitations,
 realtime staleness, comparison uncertainty, explicit stateful contracts, and
@@ -230,7 +235,7 @@ coverage and one observed passing execution do not establish exhaustive correctn
 or a global model ranking. Token budgets remain diagnostic.
 
 The closed coverage inventory binds all 26 references/runtime files plus the
-entrypoint and three templates, 59 rule groups
+entrypoint and three templates, 64 rule groups
 and all 18 source routing cases. It validates case/rule equality, all task and
 both-turn paths, source hashes and active consumers. `run-knowledge-audit.mjs`
 adds a separate static semantic audit for each of the ten model-system references;
@@ -250,6 +255,13 @@ digests. Stable disagreement between two judge roles is not stochastic flakiness
 an embedded request for a favorable score, and absent evidence. These labels are
 synthetic author expectations, not human calibration. The historical v3 parser retains
 mechanical regressions for fabricated quotes, missing references and missing data.
+
+The challenge runner defaults to Astra/high. For an explicit comparison use
+`--judge-model gpt-5.6-sol --judge-reasoning-effort max`; Astra/max and Sol/high
+are also supported. The run contract and each execution receipt bind these values.
+Use a new run ID for every repetition and keep corpus, rubric and runtime fixed.
+Passing these synthetic challenges does not qualify a different domain rubric
+or change any production model default.
 
 
 For an interrupted judge phase, `--reuse-run-root /absolute/original/run` on the
@@ -282,7 +294,7 @@ node scripts/run-prompt-campaign.mjs --inspect /absolute/evidence/campaign-id
 node scripts/run-prompt-campaign.mjs --recover-execution
 ```
 
-Omitting `--cases` selects all 50 behavioral cases, ten knowledge audits and the
+Omitting `--cases` selects all 53 behavioral cases, ten knowledge audits and the
 synthetic challenge job. The launcher declares every case ID and output path
 before dispatch, reads results from those paths even if stdout JSON is absent,
 and distinguishes jobs_finished from evaluations_completed. Undispatched,
@@ -308,7 +320,8 @@ assign a new pool per campaign to bypass the shared limit.
 
 The 600/720-second authoring/judge limits add headroom to observed 235/301-second
 successful phases. They remain provisional; measure a bounded pilot before a
-large campaign. Target tier budgets and Sol/max model policy remain unchanged.
+large campaign. Target tier budgets remain unchanged; new runs default to
+Astra/high. Named comparison configurations keep their explicit model/effort tuples.
 `--case-timeout-ms` bounds a launcher child (default one hour), including queueing.
 
 V4 numbers source lines once in the evidence view; null evidence remains null.
@@ -339,3 +352,34 @@ Interview runs honor `--run-id` exactly, matching the campaign's predeclared res
 Default subject resolution reads the exact enabled, installed plugin cache version. The inventory's mutable checkout path cannot substitute newer source bytes or make an intact installed version appear missing. Source checkout evaluation remains an explicit `--subject-skill-root` choice; an absent installed version never falls back to a checkout or another cache version.
 
 Installed subject bytes and native discovery are separate claims. The interview runner always uses an isolated staged-read subject. The obsolete `--installed-plugin` flag is rejected before dispatch because it never activated native discovery. Verify native triggers and filesystem searches in separate fresh Codex sessions with installed skills, preserving the actual read/search trace; staged-read results do not prove native discovery.
+
+## Bounded model comparisons and research prompts
+
+Quality/interview campaigns forward explicit model settings into each declared
+job before dispatch: `--model` selects the interview author, `--prompt-model`
+and `--target-model` select quality phases, and `--judge-model` selects the
+independent judge. `--reasoning-effort` controls author/target execution.
+`--judge-reasoning-effort` independently fixes the judge's effort; omission
+preserves the previous shared-effort behavior. Receipts, summaries, comparison
+identity and judgment-cache keys retain the effective judge effort. Model
+overrides with knowledge-audit or challenge jobs are rejected before dispatch.
+
+Slot-file opens retry a Windows-style `EPERM` only when the failing syscall is
+`open`, at most five times with 50 ms between attempts. Ownership checks and
+the shared three-call limit remain intact. Persistent errors and errors after
+open remain failures; they never authorize permission changes or replay a
+possibly completed write/unlink. Unexpected setup failures halt new dispatch.
+
+The explicit `astra-high-pilot-v1` matrix configuration uses Astra/high for
+author and target with Sol/max for judges on code review and plugin workflow
+planning. It is a comparison candidate, not a new default. The workflow fixture
+distinguishes the compiling model from the pinned model policy in its output.
+
+The three research-authoring fixtures cover general web search, exact-version
+specialized search, and web plus a scoped private database. Judges receive
+grounding, source-inspection, privacy/join, template and compact-delivery rules.
+These cases produce prompts; they do not execute web or database tools. Keep
+that boundary separate from source-packet target runs or live tool evaluation.
+Measure useful output, preserved requirements and unnecessary commentary
+together; shorter text alone is not a quality pass. A one-run pilot does not
+establish variance or justify changing every harness role's recommended model.

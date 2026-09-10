@@ -27,3 +27,8 @@ persona authority separate from simulated behavior.
 
 A synthetic actor is suitable for mechanics and hypothesis exploration only.
 One run cannot validate or mutate its source persona.
+
+Keep the user-facing answer concise. Output requirements specify information,
+not extra headings. Preserve required schemas, evidence and permissions. Avoid
+duplicate artifact prose, empty sections, unsolicited variants and extra files
+unless needed for the requested delivery or an actual handoff.

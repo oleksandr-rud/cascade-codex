@@ -19,7 +19,7 @@ the repository campaign claim/policy/oracle/refinement adapter and must not
 copy either plugin's procedure.
 
 The custom-agent manifest pins independent semantic evaluation to
-`gpt-5.6-sol` at high reasoning effort. Sharing a model family with a target
+`gpt-6-astra` at high reasoning effort. Sharing a model family with a target
 never permits a shared context, hidden labels, or prior judge output.
 
 ## Evidence Order

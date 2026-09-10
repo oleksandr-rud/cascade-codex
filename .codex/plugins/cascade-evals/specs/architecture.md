@@ -41,10 +41,14 @@ explicit `digest-only-json-response-v1` finalizer between a tool-free target and
 mechanical eligibility. The controller retains both copies, records every
 changed pointer, and rejects changes outside lowercase SHA-256 leaves before
 the finalized artifact reaches independent judges. Independent judges likewise use separate
-concurrent contexts. All target and judge contexts use macOS sandbox read-denial for the original
-subject, its installed cache, and historical evaluation artifacts.
-An allowed-read control must succeed before the denied-read probe can count as
-evidence, so an unavailable enclosing sandbox fails closed. No mechanical receipt, sealed
+concurrent contexts. macOS uses sandbox read-denial for original subject,
+installed cache and historical artifacts. Windows uses a local Docker image
+pinned by immutable ID, with only the current phase directory and a read-only
+Codex login mounted; no source, history, peer directory or Docker socket is
+mounted. Every container is inspected before start, and an allowed-read control
+plus backend-specific isolation checks must pass. Unavailable execution is
+BLOCKED. The receipt distinguishes Docker mount isolation from macOS read denial;
+see `skills/evaluate/references/agent-runner.md` for setup and cleanup behavior. No mechanical receipt, sealed
 oracle, builder context, or peer response is materialized until all judges
 exit. Only structured deterministic facts may pass the subject adapter;
 semantic response quality belongs to the independent judges. Frozen,
@@ -68,7 +72,7 @@ stays blocked even when a checkout or another cached version is present.
 
 ## Model policy
 
-`gpt-5.6-sol` with `max` reasoning is the default builder, target, and judge
+`gpt-6-astra` with `high` reasoning is the default builder, target, and judge
 configuration. A versioned evaluation may declare another
 supported model or reasoning effort only as an explicit comparison
 configuration. Every model and reasoning-effort value is frozen into the

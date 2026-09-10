@@ -98,7 +98,7 @@ describe("Cascade lean target runtime bundle", () => {
       selection_digest: "0".repeat(64),
       selector: {
         route: "cascade-coordinator:select-capabilities",
-        model: "gpt-5.6-sol",
+        model: "gpt-6-astra",
         reasoning_effort: "high",
         prompt_sha256: "a".repeat(64),
       },
@@ -152,14 +152,20 @@ describe("Cascade lean target runtime bundle", () => {
     );
 
     // Exercise the real bundled planner boundary with and without growth feedback.
-    const featureEnvelope = await compileTaskEnvelope({
+    const growthEnvelope = await compileTaskEnvelope({
       request: "Plan growth and use the evidence to define a product feature.",
       task_id: "lean-runtime-growth-product",
       produced_at: "2026-09-08T00:00:00+00:00",
     });
-    await writeFile(resolve(artifacts, "envelope.json"), JSON.stringify(featureEnvelope));
-    for (const includeGrowth of [true, false]) {
-      const routes = [
+    for (const variant of ["growth", "product", "prompt-evals"]) {
+      const includeGrowth = variant === "growth";
+      const promptPair = variant === "prompt-evals";
+      const featureEnvelope = promptPair ? await compileTaskEnvelope({
+        request: "Create and independently evaluate a reusable prompt.",
+        task_id: "lean-runtime-prompt-models", produced_at: "2026-09-10T00:00:00+00:00",
+      }) : growthEnvelope;
+      await writeFile(resolve(artifacts, "envelope.json"), JSON.stringify(featureEnvelope));
+      const routes = promptPair ? ["cascade-prompt:prompt", "cascade-evals:prompt-evaluation"] : [
         ...(includeGrowth ? ["cascade-market:plan-growth"] : []),
         "cascade-product:define-product",
       ];
@@ -167,19 +173,19 @@ describe("Cascade lean target runtime bundle", () => {
         const owner = catalog.plugins.find((item) =>
           item.skills.some((entry: Record<string, any>) => entry.route === route),
         )!;
-        return { ...owner.skills.find((entry: Record<string, any>) => entry.route === route), plugin_version: owner.version };
+        return { ...owner.skills.find((entry: Record<string, any>) => entry.route === route), plugin_version: owner.version, model_policy: owner.model_policy };
       });
       const featureSelection = {
         ...selection,
         task_envelope_id: featureEnvelope.envelope_id,
         request_digest: featureEnvelope.request_digest,
-        input_artifacts: [...new Set(["task-envelope", "plugin-capability-catalog", ...descriptors.flatMap((item) => item.consumes)])],
+        input_artifacts: [...new Set(["task-envelope", "plugin-capability-catalog", ...descriptors.flatMap((item) => item.consumes)])].filter((item) => !promptPair || item !== "prompt-candidate"),
         selected_candidates: descriptors.map((item) => ({
           ...selection.selected_candidates[0],
           route: item.route,
           plugin_version: item.plugin_version,
           claim_ids: [featureEnvelope.claims[0]!.claim_id],
-          trigger_evidence: ["The requested growth evidence informs a product feature."],
+          trigger_evidence: [promptPair ? "The request requires a prompt and its independent evaluation." : "The requested growth evidence informs a product feature."],
           required_dependencies: item.required_dependencies,
           effect: item.effect,
           authority: item.authority,
@@ -187,7 +193,7 @@ describe("Cascade lean target runtime bundle", () => {
       } as CapabilitySelection;
       featureSelection.selection_digest = capabilitySelectionDigest(featureSelection);
       const nodes = descriptors.map((item) => ({
-        node_id: item.route === "cascade-market:plan-growth" ? "growth" : "product",
+        node_id: promptPair ? (item.route === "cascade-prompt:prompt" ? "prompt" : "eval") : (item.route === "cascade-market:plan-growth" ? "growth" : "product"),
         route: item.route,
         plugin_version: item.plugin_version,
         claim_ids: [featureEnvelope.claims[0]!.claim_id],
@@ -197,7 +203,7 @@ describe("Cascade lean target runtime bundle", () => {
         ...(includeGrowth && item.route === "cascade-product:define-product" ? { optional_consumes: ["growth-strategy"] } : {}),
         effect: item.effect,
         authority: item.authority,
-        model: { id: "gpt-5.6-sol", reasoning_effort: "high" },
+        model: { id: item.model_policy.model, reasoning_effort: item.route.startsWith("cascade-evals:") ? item.model_policy.evaluation_reasoning_effort : item.model_policy.planning_reasoning_effort },
         reason: "Use available evidence to form an accountable feature proposal.",
       }));
       const plan = {
@@ -208,10 +214,10 @@ describe("Cascade lean target runtime bundle", () => {
         request_digest: featureEnvelope.request_digest,
         capability_catalog_digest: catalog.catalog_digest,
         capability_selection_digest: featureSelection.selection_digest,
-        planner: { route: "cascade-coordinator:plan-workflow", model: "gpt-5.6-sol", reasoning_effort: "high", prompt_sha256: "b".repeat(64) },
+        planner: { route: "cascade-coordinator:plan-workflow", model: "gpt-6-astra", reasoning_effort: "high", prompt_sha256: "b".repeat(64) },
         input_artifacts: featureSelection.input_artifacts,
         selected_nodes: nodes,
-        edges: includeGrowth ? [{ from: "growth", to: "product", artifact: "growth-strategy" }] : [],
+        edges: promptPair ? [{ from: "prompt", to: "eval", artifact: "prompt-candidate" }] : includeGrowth ? [{ from: "growth", to: "product", artifact: "growth-strategy" }] : [],
         parallel_groups: [],
         rejected_candidates: [],
         validation_gates: ["Validate source identities and artifact handoffs."],
@@ -227,7 +233,21 @@ describe("Cascade lean target runtime bundle", () => {
       const accepted = await checkPlan(plan);
       expect(accepted.exitCode).toBe(0);
       expect(accepted.stdout.toString()).toContain("plugin_plan_status=PASS");
-      if (includeGrowth) {
+      if (promptPair) {
+        expect(nodes.map((node) => node.model)).toEqual([
+          { id: "gpt-6-astra", reasoning_effort: "high" },
+          { id: "gpt-6-astra", reasoning_effort: "high" },
+        ]);
+        const wrongAuthor = structuredClone(plan);
+        wrongAuthor.selected_nodes[0]!.model.id = "gpt-5.6-sol";
+        expect((await checkPlan(wrongAuthor)).stderr.toString()).toContain("model differs from its capability policy");
+        const wrongJudge = structuredClone(plan);
+        wrongJudge.selected_nodes[1]!.model.id = "gpt-5.6-sol";
+        expect((await checkPlan(wrongJudge)).stderr.toString()).toContain("model differs from its capability policy");
+        const wrongEffortJudge = structuredClone(plan);
+        wrongEffortJudge.selected_nodes[1]!.model.reasoning_effort = "max";
+        expect((await checkPlan(wrongEffortJudge)).stderr.toString()).toContain("evaluation reasoning effort differs from its capability policy");
+      } else if (includeGrowth) {
         expect((await checkPlan({ ...plan, edges: [] })).stderr.toString()).toContain("required artifact edge is missing");
         expect((await checkPlan({ ...plan, selected_nodes: [...nodes].reverse() })).stderr.toString()).toContain("consumes unavailable artifact");
       } else {
@@ -253,9 +273,9 @@ describe("Cascade lean target runtime bundle", () => {
         schema_version: 1, artifact_type: "cascade-plugin-plan", status: "CANDIDATE",
         task_envelope_id: envelope.envelope_id, request_digest: envelope.request_digest,
         capability_catalog_digest: catalog.catalog_digest, capability_selection_digest: qaSelection.selection_digest,
-        planner: { route: "cascade-coordinator:plan-workflow", model: "gpt-5.6-sol", reasoning_effort: "high", prompt_sha256: "b".repeat(64) },
+        planner: { route: "cascade-coordinator:plan-workflow", model: "gpt-6-astra", reasoning_effort: "high", prompt_sha256: "b".repeat(64) },
         input_artifacts: qaSelection.input_artifacts,
-        selected_nodes: [{ node_id: "quality", route: qa.route, plugin_version: qaPlugin.version, claim_ids: [envelope.claims[0]!.claim_id], policy_tags: qa.policy_tags, consumes: qa.consumes, optional_consumes: selectedInput ? [selectedInput] : [], produces: qa.produces, effect: qa.effect, authority: qa.authority, model: { id: "gpt-5.6-sol", reasoning_effort: "high" }, reason: "Plan evidence gates from accepted behavior in the change contract." }],
+        selected_nodes: [{ node_id: "quality", route: qa.route, plugin_version: qaPlugin.version, claim_ids: [envelope.claims[0]!.claim_id], policy_tags: qa.policy_tags, consumes: qa.consumes, optional_consumes: selectedInput ? [selectedInput] : [], produces: qa.produces, effect: qa.effect, authority: qa.authority, model: { id: qaPlugin.model_policy.model, reasoning_effort: qaPlugin.model_policy.planning_reasoning_effort }, reason: "Plan evidence gates from accepted behavior in the change contract." }],
         edges: [], parallel_groups: [], rejected_candidates: [], blockers: [], dispatch_authorized: false,
         validation_gates: ["Verify accepted behavior before planning gates."], stop_conditions: ["Stop before execution."],
       }));

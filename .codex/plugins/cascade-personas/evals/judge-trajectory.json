@@ -1,11 +1,11 @@
 {
   "schema_version": 1,
   "profile_id": "persona-trajectory",
-  "version": 2,
+  "version": 3,
   "role": "trajectory",
   "decision": "Does the plugin follow a reliable path from evidence through canonical model, projection, and independent evaluation?",
   "population": "Persona workflows with normal, missing, conflicting, and hostile inputs.",
-  "model": "gpt-5.6-sol",
+  "model": "gpt-6-astra",
   "threshold": 0.95,
   "minimum_dimension": 3,
   "dimensions": [

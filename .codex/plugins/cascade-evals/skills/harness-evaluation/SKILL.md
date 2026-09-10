@@ -63,3 +63,8 @@ Return that package to the host for `campaign resume --specialized-evidence-root
 <package-root>`. The host verifies the complete packet before acceptance. A
 `NOT_APPLICABLE` declaration produces no package. When specialization owns all
 claims, the host performs an empty general reduction without calling a model.
+
+Keep the user-facing answer concise. Output requirements specify information,
+not extra headings. Preserve required schemas, evidence and permissions. Avoid
+duplicate artifact prose, empty sections, unsolicited variants and extra files
+unless needed for the requested delivery or an actual handoff.

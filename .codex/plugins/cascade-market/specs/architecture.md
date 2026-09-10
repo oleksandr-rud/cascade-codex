@@ -69,8 +69,8 @@ receipt, and handoff mutation probes exercise the same runtime validators.
 Semantic quality remains `semantic_status=NOT_RUN` until independent judges
 finish, and no model result turns synthetic evidence into market proof.
 Acceptance policy remains controller-only and is never copied into
-target-visible subject assets. An explicit Sol Max campaign binds
-`gpt-5.6-sol` with `max` separately for builder, target, and both judges.
+target-visible subject assets. An explicit Astra High campaign binds
+`gpt-6-astra` with `high` separately for builder, target, and both judges.
 
 ## Growth strategy
 

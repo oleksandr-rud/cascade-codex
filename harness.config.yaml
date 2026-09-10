@@ -34,10 +34,10 @@ project:
 
 models:
   default: "gpt-6-astra"
-  planning: "gpt-5.6-sol"
-  judged_evaluation: "gpt-5.6-sol"
-  subagent_execution: "gpt-5.6-sol"
-  read_heavy: "gpt-5.6-sol"
+  planning: "gpt-6-astra"
+  judged_evaluation: "gpt-6-astra"
+  subagent_execution: "gpt-6-astra"
+  read_heavy: "gpt-6-astra"
 
 plugin_architecture:
   mode: "plugin-first"
@@ -237,7 +237,7 @@ validation_commands:
     - "bun run test:browser"
 
 routing:
-  model_policy: "Use gpt-6-astra with max reasoning by default for the primary session. Explicit custom-agent and evaluation profiles retain gpt-5.6-sol; freeze the reasoning effort in each receipt and use max for prompt/evaluation campaigns unless an explicit comparison says otherwise."
+  model_policy: "Use gpt-6-astra with high reasoning for the primary session, custom agents, Cascade plugins and new evaluation builder, target and independent judges. Bind nodes to the owning plugin catalog policy. Preserve explicit target-model choices, named comparison configurations and frozen evaluation settings. Loading a skill cannot switch the active model."
   admission: "Compile every request through the task-admission microkernel; the Task Envelope selects proportional controls without granting authority or dispatching work."
   non_atomic_fallback_path:
     - "context"

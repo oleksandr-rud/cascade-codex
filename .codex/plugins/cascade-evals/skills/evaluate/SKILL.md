@@ -98,7 +98,7 @@ remains `NOT_RUN`. Keep sealed expectations outside target-visible material.
 
 When selecting a model configuration or preparing execution, read
 `references/model-policy.json`. Default builder, target, and judge
-invocations to `gpt-5.6-sol` with `max` reasoning effort.
+invocations to `gpt-6-astra` with `high` reasoning effort.
 Explicit comparison configurations may bind a different supported model and
 reasoning effort, but every value must be frozen in the evaluation bundle and
 preserved in the receipt. Never silently change the default or reuse the target
@@ -122,6 +122,11 @@ coverage, rating ranges, weights, thresholds, verdict-score agreement, and
 conservative aggregation. Structural fixture passes are not live evaluation.
 
 ## Output
+
+Keep the user-facing answer concise. Output requirements specify information,
+not extra headings. Preserve required schemas, evidence and permissions. Avoid
+duplicate artifact prose, empty sections, unsolicited variants and extra files
+unless needed for the requested delivery or an actual handoff.
 
 Return the claim and subject digest; selected adapter/cases/split; source,
 profile, rubric, model, runner, and environment identities; phase states;

@@ -5,6 +5,24 @@ description: Manage product strategy, portfolio allocation, priorities, owner-he
 
 # Manage Product Lifecycle
 
+## Delivery mode
+
+Choose the delivery mode before following artifact-production steps below.
+For a standalone explanation, recommendation, review or prose draft without a
+structured-output request, return one useful answer. Preserve every applicable
+substantive requirement: evidence and source authority, uncertainty, conflicts,
+permissions, acceptance/recovery conditions, decision status and next action.
+The output lists specify information to cover, not extra files or repeated prose.
+Do not invent IDs, hashes, receipts or approval to make a prose answer look formal.
+Do not label that answer a validated canonical artifact or completed handoff.
+
+For an explicitly requested structured/canonical artifact, persistence,
+evaluation, or actual cross-plugin handoff, apply all artifact-production steps,
+required schemas, fields, source bindings, ledgers, digests, validators and gates
+below unchanged. Provide the artifact once; add only the explanation needed to
+use it. A prose projection never substitutes for required machine-readable data.
+Missing material evidence or authority remains a gap or blocker in either mode.
+
 ## Value strategy and learning
 
 For cross-stage strategy, portfolio allocation or evidence that changes a prior
@@ -190,5 +208,10 @@ that one Product-output binding.
 9. After observed outcomes, update the decision ledger, invalidate affected artifacts, and reopen only the earliest changed gate.
 
 ## Output
+
+Keep the user-facing answer concise. Output requirements specify information,
+not extra headings. Preserve required schemas, evidence and permissions. Avoid
+duplicate artifact prose, empty sections, unsolicited variants and extra files
+unless needed for the requested delivery or an actual handoff.
 
 Return the schema-valid typed LIFECYCLE_RECORD work product and its digest; decision/gate record; decision and evidence ledgers; product boundary; actor/persona references; current conflicts/gaps; selected handoff envelopes; prioritized outcome/slice; invalidation rules; and exact next owner/artifact/action. Label implementation, deployment, release, live-market proof, and human validation NOT_RUN unless current evidence exists. Canonicalize JSON artifacts with RFC 8785 and compute SHA-256 over canonical UTF-8 bytes.

@@ -63,6 +63,11 @@ architecture inside this skill.
 
 ## Required receipt
 
+Keep the user-facing answer concise. Output requirements specify information,
+not extra headings. Preserve required schemas, evidence and permissions. Avoid
+duplicate artifact prose, empty sections, unsolicited variants and extra files
+unless needed for the requested delivery or an actual handoff.
+
 Return source packet/version/digests; integration decisions; target paths and
 owners; dependency versions/digests; candidate versus active state; validation
 evidence; deviations; deprecations; rollback; and all unexecuted gates. For a

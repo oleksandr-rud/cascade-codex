@@ -63,7 +63,7 @@ actual work.
 6. Preserve the Task Envelope authority ceiling. A selection never grants
    permission, dispatches an agent, executes a tool, mutates a target, schedules
    project work, or accepts its own result.
-7. Use `gpt-5.6-sol` with the current planning effort and a non-null digest of
+7. Use `gpt-6-astra` with the current planning effort and a non-null digest of
    the exact selection prompt. Emit `dispatch_authorized: false`.
 
 ## Route disposition
@@ -85,3 +85,8 @@ schema, identity, and authority failures cannot be overridden by a judge.
 Finish when every selected route is current, claim-bound, trigger-supported,
 anti-trigger-safe, dependency-closed, within authority, disjoint from rejected
 candidates, and covered by an observable output or next planning gate.
+
+Keep the user-facing answer concise. Output requirements specify information,
+not extra headings. Preserve required schemas, evidence and permissions. Avoid
+duplicate artifact prose, empty sections, unsolicited variants and extra files
+unless needed for the requested delivery or an actual handoff.

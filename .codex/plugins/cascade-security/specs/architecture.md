@@ -55,6 +55,6 @@ The package owns balanced cases, deterministic route/status/schema assertions,
 and security-specific outcome and trajectory rubrics. Cascade Prompt audits
 the instruction contract. Cascade Evals owns sanitized execution, sealed
 labels, independent judge contexts, conservative reduction, and receipts. The
-qualification contract explicitly binds `gpt-5.6-sol` with `max` reasoning for
+qualification contract explicitly binds `gpt-6-astra` with `high` reasoning for
 builder, target, and judges. Mechanical eligibility runs before semantic
 judging; structural tests never count as a semantic score.

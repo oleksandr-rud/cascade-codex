@@ -7,6 +7,24 @@ description: Compile a frozen canonical persona into a digest-bound projection f
 
 Produce a purpose-limited view from a frozen persona while preserving provenance and exclusions.
 
+## Delivery mode
+
+Choose the delivery mode before following artifact-production steps below.
+For a standalone explanation, recommendation, review or prose draft without a
+structured-output request, return one useful answer. Preserve every applicable
+substantive requirement: evidence and source authority, uncertainty, conflicts,
+permissions, acceptance/recovery conditions, decision status and next action.
+The output lists specify information to cover, not extra files or repeated prose.
+Do not invent IDs, hashes, receipts or approval to make a prose answer look formal.
+Do not label that answer a validated canonical artifact or completed handoff.
+
+For an explicitly requested structured/canonical artifact, persistence,
+evaluation, or actual cross-plugin handoff, apply all artifact-production steps,
+required schemas, fields, source bindings, ledgers, digests, validators and gates
+below unchanged. Provide the artifact once; add only the explanation needed to
+use it. A prose projection never substitutes for required machine-readable data.
+Missing material evidence or authority remains a gap or blocker in either mode.
+
 ## Required inputs
 
 - canonical persona bytes or an exact version and digest;
@@ -107,5 +125,10 @@ Resolve a required dependency by its exact installed alias. If a required alias 
    and `runtime/model-index.yaml`; no other tier is in this frozen composition.
 
 ## Output
+
+Keep the user-facing answer concise. Output requirements specify information,
+not extra headings. Preserve required schemas, evidence and permissions. Avoid
+duplicate artifact prose, empty sections, unsolicited variants and extra files
+unless needed for the requested delivery or an actual handoff.
 
 Return status READY, GAP, BLOCKED, or INVALID; target decision; source identity; mapping table; compiled projection and SHA-256; omissions; validation findings; freshness and invalidation rule; and exact handoff/resume envelope. For multiple targets, return every one of those bindings separately per projection. A non-READY dependency result, stale digest, schema mismatch, or permission failure fails closed. The canonical persona remains authoritative.

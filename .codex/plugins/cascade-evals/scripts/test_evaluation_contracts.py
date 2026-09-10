@@ -27,7 +27,7 @@ def profile(profile_id: str, role: str) -> dict:
         "role": role,
         "decision": "whether the subject meets the declared contract",
         "population": "the selected versioned cases",
-        "model": "gpt-5.6-sol",
+        "model": "gpt-6-astra",
         "threshold": 0.8,
         "minimum_dimension": 2,
         "dimensions": [
@@ -76,12 +76,12 @@ class EvaluationContractsTests(unittest.TestCase):
             "evaluation_id": evaluation_id,
             "subject": {"kind": "agent", "id": "fixture-agent", "version": "1", "digest": self.digest},
             "models": {
-                "builder_model": "gpt-5.6-sol",
-                "builder_reasoning_effort": "max",
-                "target_model": "gpt-5.6-sol",
-                "target_reasoning_effort": "max",
-                "judge_model": "gpt-5.6-sol",
-                "judge_reasoning_effort": "max",
+                "builder_model": "gpt-6-astra",
+                "builder_reasoning_effort": "high",
+                "target_model": "gpt-6-astra",
+                "target_reasoning_effort": "high",
+                "judge_model": "gpt-6-astra",
+                "judge_reasoning_effort": "high",
             },
             "mechanical_status": "PASS",
             "evidence_root": str(self.root),
@@ -132,7 +132,7 @@ class EvaluationContractsTests(unittest.TestCase):
         with self.assertRaises(ContractError):
             reduce_bundle(bundle)
 
-    def test_sol_max_is_required_unless_comparison_is_explicit(self) -> None:
+    def test_astra_high_is_required_unless_comparison_is_explicit(self) -> None:
         bundle = self.bundle()
         bundle["models"]["judge_model"] = "gpt-5.6-terra"
         with self.assertRaises(ContractError):
@@ -151,7 +151,7 @@ class EvaluationContractsTests(unittest.TestCase):
             "target_reasoning_effort": "max",
             "judge_model": "gpt-5.6-sol",
             "judge_reasoning_effort": "max",
-            "explicit_comparison": False,
+            "explicit_comparison": True,
         }
         for judgment in bundle["judgments"]:
             judgment["profile"]["model"] = "gpt-5.6-sol"

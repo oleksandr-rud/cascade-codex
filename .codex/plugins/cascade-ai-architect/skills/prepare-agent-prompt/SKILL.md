@@ -62,3 +62,8 @@ A generic agent, tool, memory, or conversational request does not select this pr
 Finish when the architecture mapping is complete and every brief instruction
 traces to a requirement, boundary, permission, output rule, or test. The
 downstream prompt and evaluation remain separately versioned artifacts.
+
+Keep the user-facing answer concise. Output requirements specify information,
+not extra headings. Preserve required schemas, evidence and permissions. Avoid
+duplicate artifact prose, empty sections, unsolicited variants and extra files
+unless needed for the requested delivery or an actual handoff.

@@ -31,11 +31,18 @@ partitioned into the declared number of balanced, non-empty contiguous target
 batches; each batch and each independent judge runs in its own disposable
 context, with batches and judges concurrent only within their respective
 phases. Batch outputs are schema-bound and deterministically merged back into
-frozen split order. Every model context runs under macOS `sandbox-exec`
-read-denial for the original subject, installed subject cache, and historical
-evaluation artifacts. An allowed-read control must succeed before the denied
-source probe is accepted; unavailable nested sandboxing is BLOCKED rather than
-misreported as successful isolation. Run the adapter through an environment
+frozen split order. On macOS, model contexts use `sandbox-exec` read-denial for the original
+subject, installed subject cache, and historical evaluation artifacts. An
+allowed-read control must succeed before the denied-source probe is accepted.
+On Windows, the default backend uses a local Docker image with only the current
+disposable phase directory and the existing Codex login file mounted. The login
+file is read-only; repository, installed cache, history, Docker socket and peer
+phase directories are not mounted. Before each process starts, inspect and
+reject extra mounts, writable credentials, image drift or weakened container
+isolation. Pin the immutable image ID, verify an allowed-read control and host
+mount absence, and retain tool-free transcript checks. The two backend modes
+have distinct receipt identities. Unavailable isolation is BLOCKED, never a
+subject rejection or an invitation to disable the boundary. Run the adapter through an environment
 that supplies `jsonschema`, for example
 `uv run --offline --with jsonschema python ../../scripts/run_agent_evaluation.py ...`.
 Controller data, mechanical labels, builder context,
@@ -65,3 +72,33 @@ instead of returning a prose summary or Markdown fence.
 The output root and subject source must be disjoint, and the output root must
 not already exist. Omitting `--execute` is a binding preflight-only `NOT_RUN`;
 it is not evaluation evidence.
+
+## Windows / local Docker setup
+
+Build the declared Codex runtime once from the installed Cascade Evals root:
+
+```powershell
+docker build -t cascade-evals-codex:0.153.4 -f scripts/codex-isolation.Dockerfile scripts
+```
+
+Use the normal `run_agent_evaluation.py ... --execute` command on Windows with
+Docker running and an existing Codex login. No plugin, project or host skill
+configuration is loaded by model contexts. `--container-image` explicitly
+selects a different local image or selects Docker on another platform; the
+runner binds its immutable image ID before dispatch and checks required Codex
+features. It never pulls an image or changes a login during evaluation.
+`--codex-auth-file` can select an existing login file; credentials never enter
+packets or receipts. Only the normal authenticated model API receives them.
+
+Containers have a read-only root, dropped capabilities, no new privileges,
+limited processes/memory and private temporary storage. Every timeout or error
+removes only that invocation's uniquely named container. A cleanup failure is
+BLOCKED and identifies the container for inspection. Exit 3 means unavailable
+execution or timeout; exit 2 remains invalid contracts or a completed non-pass.
+Docker mount isolation is not a claim that macOS sandbox-exec ran on Windows.
+
+A mechanically ineligible target stops before any judge dispatch. Its raw and
+finalized responses, mechanical findings, subject manifest, builder design and
+phase logs are preserved in the controller directory. The receipt remains
+INVALID with semantic_status NOT_RUN; preserved evidence never promotes failure
+to acceptance. Corrected fixtures require a versioned suite and a fresh run.

@@ -37,7 +37,7 @@ BUILDER_RESPONSE_SCHEMA = PLUGIN_ROOT / "skills" / "evaluate" / "references" / "
 JUDGE_RESPONSE_SCHEMA = PLUGIN_ROOT / "skills" / "build-judge" / "references" / "judge-response.schema.json"
 JUDGE_PACKET_SCHEMA = PLUGIN_ROOT / "skills" / "evaluate" / "references" / "judge-packet.schema.json"
 MODEL_POLICY = PLUGIN_ROOT / "skills" / "evaluate" / "references" / "model-policy.json"
-DEFAULT_MODEL = "gpt-5.6-sol"
+DEFAULT_MODEL = "gpt-6-astra"
 REASONING_EFFORTS = {"low", "medium", "high", "xhigh", "max", "ultra"}
 SHA256_HEX = re.compile(r"^[0-9a-f]{64}$")
 FINALIZATION_MODE = "digest-only-json-response-v1"
@@ -597,6 +597,85 @@ def load_assertion_adapter(path: Path):
     return module
 
 
+class ExecutionBlocked(RuntimeError):
+    """Execution environment is unavailable; this is not a subject rejection."""
+
+
+def docker_phase(
+    command: list[str], *, workdir: Path, auth_file: Path, image: str,
+    prompt: str = "", timeout_seconds: int = 60,
+) -> subprocess.CompletedProcess:
+    """Mount only one disposable phase and the existing Codex login file."""
+    mounts = {"/work": workdir.resolve(), "/codex-home/auth.json": auth_file.resolve()}
+    require(all("," not in str(path) for path in mounts.values()), "Docker mount paths cannot contain commas")
+    name = "cascade-eval-" + uuid.uuid4().hex
+    create = ["docker", "create", "--pull", "never", "--name", name, "--interactive", "--read-only",
+              "--cap-drop", "ALL", "--security-opt", "no-new-privileges",
+              "--network", "bridge", "--pids-limit", "128", "--memory", "2g",
+              "--tmpfs", "/tmp:rw,nosuid,nodev,size=512m",
+              "--tmpfs", "/codex-home:rw,nosuid,nodev,size=64m",
+              "--env", "CODEX_HOME=/codex-home", "--workdir", "/work"]
+    for destination, source in mounts.items():
+        create += ["--mount", f"type=bind,source={source},target={destination}" +
+                   (",readonly" if destination != "/work" else "")]
+    create += [image, *command]
+    try:
+        subprocess.run(create, check=True, capture_output=True, text=True, timeout=30)
+        inspected = subprocess.run(["docker", "inspect", name], check=True,
+                                   capture_output=True, text=True, timeout=15)
+        container = json.loads(inspected.stdout)[0]
+        config = container["HostConfig"]
+        actual = container["Mounts"]
+        # Reject extra image-declared volumes before starting any process.
+        require({m["Destination"] for m in actual} == set(mounts), "unexpected container mount")
+        require(all(m["Type"] == "bind" for m in actual), "container mount must be a bind")
+        require(all(m["RW"] == (m["Destination"] == "/work") for m in actual), "container mount access drift")
+        require(config["ReadonlyRootfs"] and not config["Privileged"] and
+                config["NetworkMode"] == "bridge" and config["CapDrop"] == ["ALL"] and
+                "no-new-privileges" in config["SecurityOpt"], "container isolation drift")
+        require(container["Image"] == image, "container image identity drift")
+        return subprocess.run(["docker", "start", "--attach", "--interactive", name],
+                              input=prompt, capture_output=True, text=True,
+                              encoding="utf-8", timeout=timeout_seconds, check=False)
+    finally:
+        # A killed Docker client does not stop its container. Always remove this exact UUID.
+        cleanup = subprocess.run(["docker", "rm", "--force", name], capture_output=True,
+                                 text=True, timeout=30, check=False)
+        if cleanup.returncode and "No such container" not in cleanup.stderr:
+            raise ExecutionBlocked(f"container cleanup failed for {name}; inspect before retrying")
+
+
+def prepare_docker(image_name: str, auth_file: Path) -> dict[str, Any]:
+    if not auth_file.is_file():
+        raise ExecutionBlocked("Codex login file is unavailable; sign in before container evaluation")
+    if os.environ.get("DOCKER_HOST", "").startswith(("tcp://", "ssh://")):
+        raise ExecutionBlocked("container evaluation requires a local Docker endpoint; remote credential mounts are not allowed")
+    try:
+        context = subprocess.run(["docker", "context", "inspect", "--format", "{{.Endpoints.docker.Host}}"],
+                                 check=True, capture_output=True, text=True, timeout=15)
+        require(context.stdout.strip().startswith(("npipe://", "unix://")), "Docker context must use a local socket")
+        inspected = subprocess.run(["docker", "image", "inspect", image_name, "--format", "{{.Id}}"],
+                                   check=True, capture_output=True, text=True, timeout=15)
+        image = inspected.stdout.strip()
+        require(re.fullmatch(r"sha256:[0-9a-f]{64}", image) is not None, "invalid immutable Docker image identity")
+        with tempfile.TemporaryDirectory(prefix="cascade-evals-container-probe-") as directory:
+            workdir = Path(directory)
+            (workdir / "allowed.txt").write_text("allowed-control", encoding="utf-8")
+            probe = docker_phase(
+                ["node", "-e", "const fs=require('fs');if(fs.readFileSync('/work/allowed.txt','utf8')!=='allowed-control')process.exit(2);if(fs.existsSync('/var/run/docker.sock')||fs.existsSync('/host')||fs.existsSync('/mnt/c'))process.exit(3);console.log('MOUNT_ISOLATION_PASS')"],
+                workdir=workdir, auth_file=auth_file, image=image)
+            require(probe.returncode == 0 and probe.stdout.strip() == "MOUNT_ISOLATION_PASS",
+                    "container allowed-read and host-mount isolation control failed")
+            version = docker_phase(["codex", "--version"], workdir=workdir, auth_file=auth_file, image=image)
+            features = docker_phase(["codex", "features", "list"], workdir=workdir, auth_file=auth_file, image=image)
+            require(version.returncode == 0 and features.returncode == 0 and
+                    re.search(r"^skip_host_skill_discovery\s", features.stdout, re.M),
+                    "container Codex lacks required host-skill isolation")
+        return {"image": image, "codex_version": version.stdout.strip(), "auth_file": auth_file}
+    except (OSError, subprocess.SubprocessError, ContractError) as error:
+        raise ExecutionBlocked("Docker evaluation preflight failed; build scripts/codex-isolation.Dockerfile, start Docker and verify the local Codex login") from error
+
+
 def run_codex(
     *,
     prompt: str,
@@ -608,6 +687,7 @@ def run_codex(
     timeout_seconds: int,
     denied_read_roots: list[Path] | None = None,
     require_no_tools: bool = False,
+    container_runtime: dict[str, Any] | None = None,
 ) -> str:
     require(not output.exists(), f"Codex output path must be new: {output}")
     output.parent.mkdir(parents=True, exist_ok=True)
@@ -628,6 +708,14 @@ def run_codex(
         "unified_exec",
         "--disable",
         "multi_agent",
+        "--enable", "skip_host_skill_discovery",
+        "--disable", "memories",
+        "--disable", "browser_use",
+        "--disable", "computer_use",
+        "--disable", "image_generation",
+        "-c", "project_doc_max_bytes=0",
+        "-c", "suppress_unstable_features_warning=true",
+        "-c", 'web_search="disabled"',
         "--ephemeral",
         "--skip-git-repo-check",
         "-s",
@@ -642,21 +730,24 @@ def run_codex(
         str(output),
         "-",
     ]
-    if denied_read_roots:
+    if container_runtime is not None:
+        command[command.index("--output-schema") + 1] = "/work/" + schema.resolve().relative_to(workdir.resolve()).as_posix()
+        command[command.index("-o") + 1] = "/work/" + output.resolve().relative_to(workdir.resolve()).as_posix()
+        process = docker_phase(command, workdir=workdir, prompt=prompt,
+                               timeout_seconds=timeout_seconds,
+                               image=container_runtime["image"], auth_file=container_runtime["auth_file"])
+    elif denied_read_roots:
         executable = shutil.which("sandbox-exec")
         require(sys.platform == "darwin" and executable is not None, "enforced read isolation requires macOS sandbox-exec")
         command = [executable, "-p", sandbox_profile(denied_read_roots), *command]
-    process = subprocess.run(
-        command,
-        cwd=workdir,
-        check=False,
-        capture_output=True,
-        text=True,
-        input=prompt,
-        timeout=timeout_seconds,
-    )
+    if container_runtime is None:
+        process = subprocess.run(
+            command, cwd=workdir, check=False, capture_output=True,
+            text=True, encoding="utf-8", input=prompt, timeout=timeout_seconds,
+        )
     log = process.stdout + process.stderr
-    require(process.returncode == 0, f"Codex invocation failed: {log[-2000:]}")
+    if process.returncode != 0:
+        raise ExecutionBlocked(f"Codex invocation failed: {log[-2000:]}")
     if require_no_tools:
         require_tool_free_jsonl(process.stdout)
     require(output.is_file(), f"Codex invocation produced no output: {output}")
@@ -743,7 +834,7 @@ def execute(args: argparse.Namespace) -> dict[str, Any]:
     )
     require(models.get("reasoning_effort") == args.reasoning_effort, "contract reasoning effort does not match")
     require(
-        models.get("explicit_comparison_override") is (args.model != DEFAULT_MODEL or args.reasoning_effort != "max"),
+        models.get("explicit_comparison_override") is (args.model != DEFAULT_MODEL or args.reasoning_effort != "high"),
         "explicit comparison declaration does not match model policy",
     )
     model_policy = json.loads(MODEL_POLICY.read_text(encoding="utf-8"))
@@ -755,10 +846,10 @@ def execute(args: argparse.Namespace) -> dict[str, Any]:
         defaults.get("builder_model") == DEFAULT_MODEL
         and defaults.get("target_model") == DEFAULT_MODEL
         and defaults.get("judge_model") == DEFAULT_MODEL
-        and defaults.get("builder_reasoning_effort") == "max"
-        and defaults.get("target_reasoning_effort") == "max"
-        and defaults.get("judge_reasoning_effort") == "max",
-        "model policy defaults drifted from Sol max",
+        and defaults.get("builder_reasoning_effort") == "high"
+        and defaults.get("target_reasoning_effort") == "high"
+        and defaults.get("judge_reasoning_effort") == "high",
+        "model policy defaults drifted from Astra high",
     )
     require(all(profile["model"] == args.model for profile in profiles), "judge profile model must match the selected model")
     require(len({profile["profile_id"] for profile in profiles}) == len(profiles), "judge profile IDs must be unique")
@@ -823,7 +914,17 @@ def execute(args: argparse.Namespace) -> dict[str, Any]:
 
     denied_roots = isolation_roots(args.subject_root, manifest)
     profile_text = sandbox_profile(denied_roots)
-    verify_read_isolation(profile_text, args.cases)
+    container_runtime = None
+    if sys.platform == "win32" or getattr(args, "container_image", None):
+        container_runtime = prepare_docker(
+            getattr(args, "container_image", None) or "cascade-evals-codex:0.153.4",
+            getattr(args, "codex_auth_file", None) or Path.home() / ".codex" / "auth.json",
+        )
+    else:
+        try:
+            verify_read_isolation(profile_text, args.cases)
+        except ContractError as error:
+            raise ExecutionBlocked(str(error)) from error
 
     builder_packet = {
         "schema_version": 1,
@@ -867,13 +968,14 @@ def execute(args: argparse.Namespace) -> dict[str, Any]:
             reasoning_effort=args.reasoning_effort,
             timeout_seconds=remaining_timeout(),
             require_no_tools=True,
+            container_runtime=container_runtime,
         )
         builder_response = json.loads(builder_output_path.read_text(encoding="utf-8"))
     require(builder_response.get("evaluation_id") == args.evaluation_id, "builder evaluation_id mismatch")
     require(builder_response.get("subject_digest") == args.subject_digest, "builder subject_digest mismatch")
     require(
         builder_response.get("status") == "READY",
-        "Sol Max builder rejected the frozen evaluation design: "
+        "Evaluation builder rejected the frozen evaluation design: "
         + json.dumps(builder_response.get("findings", []), sort_keys=True),
     )
 
@@ -947,6 +1049,7 @@ def execute(args: argparse.Namespace) -> dict[str, Any]:
                 timeout_seconds=target_phase_timeout,
                 denied_read_roots=denied_roots,
                 require_no_tools=True,
+                container_runtime=container_runtime,
             )
             batch_target = json.loads(target_output_path.read_text(encoding="utf-8"))
             normalize_target_cases(batch_target, case_ids)
@@ -986,11 +1089,40 @@ def execute(args: argparse.Namespace) -> dict[str, Any]:
     require(isinstance(mechanical, dict), "assertion adapter must return an object")
     require(mechanical.get("evaluation_id") == args.evaluation_id, "mechanical evaluation_id mismatch")
     require(mechanical.get("subject_digest") == args.subject_digest, "mechanical subject_digest mismatch")
-    require(
-        mechanical.get("status") == "PASS",
-        "mechanical eligibility failed: " + json.dumps(mechanical.get("findings", []), sort_keys=True),
-    )
     require(mechanical.get("semantic_status") == "NOT_RUN", "subject adapter must not self-certify semantic quality")
+    if mechanical.get("status") != "PASS":
+        # All target contexts have exited and no judge will be dispatched. Preserve
+        # failure evidence now instead of losing it with disposable phase directories.
+        controller = args.output_dir / "controller"
+        for name, value in {
+            "builder-packet": builder_packet, "builder-response": builder_response,
+            "subject-manifest": manifest, "raw-target-output": raw_target,
+            "target-output": target, "mechanical-receipt": mechanical,
+            "target-finalization-receipt": finalization,
+        }.items():
+            path = controller / f"{name}.json"
+            write_json(path, value)
+            os.chmod(path, 0o600)
+        logs = controller / "process-logs"
+        logs.mkdir(parents=True, exist_ok=False, mode=0o700)
+        for name, log in {"builder": builder_log, **target_logs}.items():
+            path = logs / f"{name}.log"
+            path.write_text(log, encoding="utf-8")
+            os.chmod(path, 0o600)
+        result = {
+            "schema_version": 1, "evaluation_id": args.evaluation_id,
+            "status": "INVALID", "mechanical_status": mechanical.get("status"),
+            "semantic_status": "NOT_RUN", "judge_invocations": 0,
+            "subject_digest": args.subject_digest, "evidence_root": str(args.output_dir.resolve()),
+            "reason": "mechanical eligibility failed; raw responses and diagnostics preserved",
+            "execution_runtime": {
+                "model": args.model, "reasoning_effort": args.reasoning_effort,
+                "container_image": container_runtime["image"] if container_runtime else None,
+                "target_invocations": len(target_case_batches),
+            },
+        }
+        write_json(controller / "evaluation-receipt.json", result)
+        return result
 
     judgments: list[dict[str, Any]] = []
     judge_packets: list[dict[str, Any]] = []
@@ -1054,6 +1186,7 @@ def execute(args: argparse.Namespace) -> dict[str, Any]:
                 timeout_seconds=judge_phase_timeout,
                 denied_read_roots=denied_roots,
                 require_no_tools=True,
+                container_runtime=container_runtime,
             )
             response = json.loads(judge_output.read_text(encoding="utf-8"))
         response["evaluation_id"] = args.evaluation_id
@@ -1124,10 +1257,12 @@ def execute(args: argparse.Namespace) -> dict[str, Any]:
         {
             "schema_version": 1,
             "status": "PASS",
-            "mode": "inline-tool-free-plus-macos-deny-read-v3",
-            "profile_sha256": hashlib.sha256(profile_text.encode("utf-8")).hexdigest(),
+            "mode": "inline-tool-free-plus-docker-mount-isolation-v1" if container_runtime else "inline-tool-free-plus-macos-deny-read-v3",
+            "container_image": container_runtime["image"] if container_runtime else None,
+            "codex_version": container_runtime["codex_version"] if container_runtime else None,
+            "profile_sha256": None if container_runtime else hashlib.sha256(profile_text.encode("utf-8")).hexdigest(),
             "denied_roots": [str(path) for path in denied_roots],
-            "probe": str(args.cases.resolve()),
+            "probe": "allowed-read-control-and-exact-mount-inventory" if container_runtime else str(args.cases.resolve()),
             "target_contexts": len(target_case_batches),
             "target_batching": "contiguous-balanced-parallel-v1",
             "judge_contexts": len(profiles),
@@ -1205,7 +1340,7 @@ def execute(args: argparse.Namespace) -> dict[str, Any]:
         "target_reasoning_effort": args.reasoning_effort,
         "judge_model": args.model,
         "judge_reasoning_effort": args.reasoning_effort,
-        "explicit_comparison": args.model != DEFAULT_MODEL or args.reasoning_effort != "max",
+        "explicit_comparison": args.model != DEFAULT_MODEL or args.reasoning_effort != "high",
     }
     bundle = {
         "schema_version": 1,
@@ -1241,14 +1376,24 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--evaluation-id", required=True)
     parser.add_argument("--output-dir", type=Path, required=True)
     parser.add_argument("--model", default=DEFAULT_MODEL)
-    parser.add_argument("--reasoning-effort", default="max")
+    parser.add_argument("--reasoning-effort", default="high")
     parser.add_argument("--timeout-seconds", type=int, default=1800)
+    parser.add_argument("--container-image", help="Local Codex image; Windows defaults to cascade-evals-codex:0.153.4. Bound to immutable image ID before dispatch.")
+    parser.add_argument("--codex-auth-file", type=Path, help="Existing Codex login file, mounted read-only in isolated phases.")
     parser.add_argument("--execute", action="store_true")
     args = parser.parse_args(argv)
     try:
         result = execute(args)
         print(json.dumps(result, indent=2, sort_keys=True))
         return 0 if result.get("overall_status", result.get("status")) in {"PASS", "NOT_RUN"} else 2
+    except (ExecutionBlocked, subprocess.TimeoutExpired) as error:
+        failure = {"status": "BLOCKED", "evaluation_id": args.evaluation_id, "reason": str(error)}
+        # No further model dispatch is possible here. Keep the incomplete attempt visible.
+        args.output_dir.mkdir(parents=True, exist_ok=True)
+        with (args.output_dir / "execution-block.json").open("x", encoding="utf-8") as stream:
+            json.dump(failure, stream, indent=2)
+        print(json.dumps(failure, indent=2))
+        return 3
     except (
         OSError,
         ValueError,

@@ -154,7 +154,7 @@ export async function runCommand({ command, args, input, cwd, timeoutMs, signal,
   });
 }
 
-export async function runModel({ model, reasoningEffort = "max", prompt, cwd, timeoutMs, adapter = "codex-cli", adapterConfig, adapterId, signal = processAbortSignal(), maxOutputBytes, installedPluginDiscovery = false, onDispatch, onStdout, onStderr }) {
+export async function runModel({ model, reasoningEffort = "high", prompt, cwd, timeoutMs, adapter = "codex-cli", adapterConfig, adapterId, signal = processAbortSignal(), maxOutputBytes, installedPluginDiscovery = false, onDispatch, onStdout, onStderr }) {
   if (typeof model !== "string" || !model || typeof prompt !== "string" || !prompt) throw new Error("model and prompt are required");
   const startedAt = new Date().toISOString();
   let started = process.hrtime.bigint();
@@ -197,6 +197,7 @@ export async function runModel({ model, reasoningEffort = "max", prompt, cwd, ti
     if (["EXECUTION_FAILED", "EVIDENCE_WRITE_FAILED"].includes(result.status)) await haltExecution(`model process ended with ${result.status}; inspect its execution receipt`);
   } catch (error) {
     result = { status: error.status ?? "EXECUTION_FAILED", stdout: "", stderr: "", dispatched: false, error: error.message };
+    if (result.status === "EXECUTION_FAILED") await haltExecution(`execution setup failed before dispatch: ${error.message}`);
   } finally {
     if (lease) await lease.release();
     if (isolatedCwd) await rm(isolatedCwd, { recursive: true, force: true });
@@ -225,7 +226,7 @@ export async function runModelPhase({ phase, runId, runRoot, ...configuration })
   const path = `${phase}.execution.json`;
   const identity = {
     schema_version: 1, run_id: runId, phase,
-    model: configuration.model, reasoning_effort: configuration.reasoningEffort ?? "max",
+    model: configuration.model, reasoning_effort: configuration.reasoningEffort ?? "high",
     adapter: configuration.adapter ?? "codex-cli", adapter_identity: configuration.adapterId ?? configuration.adapter ?? "codex-cli",
     codex_context: (configuration.adapter ?? "codex-cli") === "codex-cli" ? (configuration.installedPluginDiscovery ? "installed-plugin-discovery" : "isolated") : null,
     execution_surface: {

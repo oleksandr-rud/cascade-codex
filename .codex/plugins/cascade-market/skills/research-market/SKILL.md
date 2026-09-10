@@ -17,6 +17,24 @@ Its portable capability provenance is frozen in
 `../../specs/extraction-manifest.json`; those repository paths and hashes explain
 the extraction but are never live runtime instructions.
 
+## Delivery mode
+
+Choose the delivery mode before following artifact-production steps below.
+For a standalone explanation, recommendation, review or prose draft without a
+structured-output request, return one useful answer. Preserve every applicable
+substantive requirement: evidence and source authority, uncertainty, conflicts,
+permissions, acceptance/recovery conditions, decision status and next action.
+The output lists specify information to cover, not extra files or repeated prose.
+Do not invent IDs, hashes, receipts or approval to make a prose answer look formal.
+Do not label that answer a validated canonical artifact or completed handoff.
+
+For an explicitly requested structured/canonical artifact, persistence,
+evaluation, or actual cross-plugin handoff, apply all artifact-production steps,
+required schemas, fields, source bindings, ledgers, digests, validators and gates
+below unchanged. Provide the artifact once; add only the explanation needed to
+use it. A prose projection never substitutes for required machine-readable data.
+Missing material evidence or authority remains a gap or blocker in either mode.
+
 ## Retrieval order and authority
 
 1. Research question, decision, geography, time horizon, segment, exclusions, and evidence standard.
@@ -79,6 +97,11 @@ A digest-bound cascade-personas:compile-persona projection may help target quest
 8. Emit a v4 ledger conforming to ../../schemas/evidence-ledger.schema.json and validate it with `uv run --offline --with jsonschema python ../../scripts/validate_artifact.py ledger LEDGER.json --schema ../../schemas/evidence-ledger.schema.json`. This recomputes source identities, timestamps, permitted uses, event lineage, substantive contradiction distinctness/reciprocity, and READY eligibility. Canonicalize with RFC 8785 and compute SHA-256 over canonical UTF-8 bytes. Hand product decisions through the v4 ../../schemas/handoff-envelope.schema.json to cascade-product:manage-product-lifecycle rather than silently turning findings into requirements.
 
 ## Output
+
+Keep the user-facing answer concise. Output requirements specify information,
+not extra headings. Preserve required schemas, evidence and permissions. Avoid
+duplicate artifact prose, empty sections, unsolicited variants and extra files
+unless needed for the requested delivery or an actual handoff.
 
 Return status READY, GAP, BLOCKED, or INVALID; scope; research questions; source/stopping plan; schema-valid evidence ledger and SHA-256; pain/segment/competitor/economics maps as applicable; contradictions; freshness; confidence and bias limits; gaps; and the exact next owner/artifact/action. A non-READY dependency or unresolved decision-critical conflict fails closed.
 

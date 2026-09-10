@@ -88,7 +88,6 @@ class PromptContractTest(unittest.TestCase):
             "one grouped action",
             "preliminary metadata, line-count, or inventory command",
             "execution-only resources",
-            "one phase-state table",
             "one stable ID",
             "compact pointers to the authoritative IDs",
             "within 1,400 words",

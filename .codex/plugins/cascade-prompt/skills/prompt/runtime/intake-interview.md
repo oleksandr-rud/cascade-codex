@@ -74,10 +74,12 @@ outsource work.
 
 ## Respond, merge, audit
 
-- `READY`: emit the `Final Prompt` heading, then audit.
-- `NEEDS_INPUT`: show that status, `Current Understanding`, `Questions` with
-  1–3 grounded questions, `Available Defaults` with impact, and
-  `Why This Is Needed`. For classification work, unresolved labels also require
+- `READY`: emit the `Final Prompt` heading and audit coverage internally.
+  Expose only material assumptions, binding help, or useful design decisions.
+- `NEEDS_INPUT`: show that status and `Questions` with 1–3 grounded questions.
+  Add understanding, defaults, or reasons only when they resolve confusion or
+  help answer; never restate the same information in separate sections.
+  For classification work, unresolved labels also require
   single-label versus multi-label behavior and the precedence or abstention
   rule for mixed or ambiguous cases. No `Final Prompt`.
 - `BLOCKED`: name the dependency and safest partial template. `PARTIAL` is not

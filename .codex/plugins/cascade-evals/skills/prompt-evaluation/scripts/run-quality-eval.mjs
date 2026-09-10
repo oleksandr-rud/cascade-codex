@@ -252,10 +252,11 @@ if (command === "list") {
 }
 
 if (command !== "run") fail(`unknown command: ${command}`);
-args["prompt-model"] ??= matrix.defaults?.prompt_model ?? "gpt-5.6-sol";
-args["target-model"] ??= matrix.defaults?.target_model ?? "gpt-5.6-sol";
-args["reasoning-effort"] ??= matrix.defaults?.reasoning_effort ?? "max";
-if (args["execute-judges"]) args["judge-model"] ??= matrix.defaults?.judge_model ?? "gpt-5.6-sol";
+args["prompt-model"] ??= matrix.defaults?.prompt_model ?? "gpt-6-astra";
+args["target-model"] ??= matrix.defaults?.target_model ?? "gpt-6-astra";
+args["reasoning-effort"] ??= matrix.defaults?.reasoning_effort ?? "high";
+const judgeReasoningEffort = args["judge-reasoning-effort"] ?? args["reasoning-effort"];
+if (args["execute-judges"]) args["judge-model"] ??= matrix.defaults?.judge_model ?? "gpt-6-astra";
 for (const required of ["task"]) {
   if (!args[required]) fail(`--${required} is required`);
 }
@@ -292,7 +293,7 @@ const timeouts = {
   judge: positiveTimeout(args["judge-timeout-ms"], DEFAULT_TIMEOUTS_MS.judge, "--judge-timeout-ms")
 };
 async function executePhase({ phase, model, prompt, timeoutMs, adapter, adapterId }) {
-  return requireCompleted(await runModelPhase({ phase, runId, runRoot, model, reasoningEffort: args["reasoning-effort"], prompt, cwd: targetWorkspace, timeoutMs, adapter, adapterConfig: args["adapter-config"], adapterId }), { phase, runRoot });
+  return requireCompleted(await runModelPhase({ phase, runId, runRoot, model, reasoningEffort: phase.startsWith("judge-") ? judgeReasoningEffort : args["reasoning-effort"], prompt, cwd: targetWorkspace, timeoutMs, adapter, adapterConfig: args["adapter-config"], adapterId }), { phase, runRoot });
 }
 
 const subjectSnapshot = await snapshotSubject(subjectSkillRoot);
@@ -304,11 +305,11 @@ const surfaceDigest = sha256(JSON.stringify(surfaceReceipts));
 const runnerBundleDigest = await runnerDigest(dirname(fileURLToPath(import.meta.url)));
 const adapterConfigDigest = args["adapter-config"] ? sha256(await readFile(resolve(args["adapter-config"]), "utf8")) : null;
 await writeJson(join(runRoot, "run-contract.json"), { task, execution_runtime_sha256: EXECUTION_RUNTIME_SHA256, subject_sha256: contractDigest, execution_surface_sha256: surfaceDigest, runner_bundle_sha256: runnerBundleDigest, adapter_config_sha256: adapterConfigDigest, args, outcome_profile: outcomeProfile, trajectory_profile: trajectoryProfile });
-const defaultTuple = args["reasoning-effort"] === matrix.defaults.reasoning_effort && args["prompt-model"] === matrix.defaults.prompt_model && args["target-model"] === matrix.defaults.target_model && (!args["execute-judges"] || args["judge-model"] === matrix.defaults.judge_model);
-const selectedConfiguration = matrix.configurations.find(c => c.id === args["configuration-id"] && c.prompt_model === args["prompt-model"] && c.target_model === args["target-model"] && c.tasks.includes(task.id) && args["reasoning-effort"] === (c.reasoning_effort ?? matrix.defaults.reasoning_effort) && (!args["execute-judges"] || args["judge-model"] === (c.judge_model ?? matrix.defaults.judge_model)) && c.execution_adapter === (args["target-adapter"] ?? "codex-cli"));
+const defaultTuple = args["reasoning-effort"] === matrix.defaults.reasoning_effort && args["prompt-model"] === matrix.defaults.prompt_model && args["target-model"] === matrix.defaults.target_model && (!args["execute-judges"] || (args["judge-model"] === matrix.defaults.judge_model && judgeReasoningEffort === matrix.defaults.reasoning_effort));
+const selectedConfiguration = matrix.configurations.find(c => c.id === args["configuration-id"] && c.prompt_model === args["prompt-model"] && c.target_model === args["target-model"] && c.tasks.includes(task.id) && args["reasoning-effort"] === (c.reasoning_effort ?? matrix.defaults.reasoning_effort) && (!args["execute-judges"] || (args["judge-model"] === (c.judge_model ?? matrix.defaults.judge_model) && judgeReasoningEffort === (c.judge_reasoning_effort ?? c.reasoning_effort ?? matrix.defaults.reasoning_effort))) && c.execution_adapter === (args["target-adapter"] ?? "codex-cli"));
 const liveAdapters = ["prompt", "target", "judge"].every(p => !args[`${p}-adapter`] || args[`${p}-adapter`] === "codex-cli");
 if (liveAdapters && !defaultTuple && !selectedConfiguration) fail("nondefault live execution requires a matching --configuration-id from model-matrix.json");
-const configurationId = defaultTuple ? "default-sol-max" : selectedConfiguration?.id ?? "unverified-external-fixture";
+const configurationId = defaultTuple ? "default-astra-high" : selectedConfiguration?.id ?? "unverified-external-fixture";
 const builderCacheKey = sha256(JSON.stringify({ execution_surface_sha256: surfaceDigest, runner_bundle_sha256: runnerBundleDigest, adapter_config_sha256: adapterConfigDigest, execution_policy: "tool-free-staged-subject-v1", reasoning_effort: args["reasoning-effort"], adapter: args["prompt-adapter"] ?? "codex-cli", adapter_id: args["prompt-adapter-id"] ?? null, task_id: task.id, task_version: task.version, builder_mode: task.builder_mode, target_task_contract: task.target_task_contract, builder_request: builderRequest, prompt_model: args["prompt-model"], target_model: args["target-model"], tier: task.tier, runtime_contract_digest: contractDigest }));
 const builderCachePath = join(promptCacheRoot, `${builderCacheKey}.json`);
 
@@ -403,7 +404,7 @@ if (args["execute-judges"] && !mechanical.eligible) {
 
   const builderTask = { id: task.id, version: task.version, builder_mode: task.builder_mode, tier: task.tier, task_family: task.task_family, prompt_build_request: task.prompt_build_request, target_task_contract: task.target_task_contract };
   const trajectoryEvidence = ({ task: builderTask, target_model: args["target-model"], target_tier: task.tier, builder_response: builderResponse, generated_prompt: generatedPrompt, rule_contracts: interviewEvidence({ judge_context_paths: task.judge_context_paths ?? ["SKILL.md", `runtime/tier-${task.tier}.md`] }, null, null, subjectSnapshot).rule_contracts });
-  const trajectoryCacheKey = sha256(JSON.stringify({ execution_surface_sha256: surfaceDigest, runner_bundle_sha256: runnerBundleDigest, execution_runtime_sha256: EXECUTION_RUNTIME_SHA256, subject_sha256: contractDigest, task_contract_sha256: sha256(task.target_task_contract), adapter: args["judge-adapter"] ?? "codex-cli", adapter_id: args["judge-adapter-id"] ?? null, adapter_config_sha256: adapterConfigDigest, reasoning_effort: args["reasoning-effort"], isolation: "tool-free-staged-subject-v1", task_id: task.id, task_version: task.version, target_model: args["target-model"], target_tier: task.tier, judge_model: args["judge-model"], profile_sha256: sha256(trajectoryProfileText), builder_response_sha256: sha256(builderResponse), generated_prompt_sha256: sha256(generatedPrompt) }));
+  const trajectoryCacheKey = sha256(JSON.stringify({ execution_surface_sha256: surfaceDigest, runner_bundle_sha256: runnerBundleDigest, execution_runtime_sha256: EXECUTION_RUNTIME_SHA256, subject_sha256: contractDigest, task_contract_sha256: sha256(task.target_task_contract), adapter: args["judge-adapter"] ?? "codex-cli", adapter_id: args["judge-adapter-id"] ?? null, adapter_config_sha256: adapterConfigDigest, reasoning_effort: judgeReasoningEffort, isolation: "tool-free-staged-subject-v1", task_id: task.id, task_version: task.version, target_model: args["target-model"], target_tier: task.tier, judge_model: args["judge-model"], profile_sha256: sha256(trajectoryProfileText), builder_response_sha256: sha256(builderResponse), generated_prompt_sha256: sha256(generatedPrompt) }));
   const trajectoryCachePath = join(trajectoryCacheRoot, `${trajectoryCacheKey}.json`);
   const cachedTrajectory = args["no-trajectory-cache"] ? null : await readTrajectoryCache(trajectoryCachePath, trajectoryCacheKey, trajectoryProfile, task.id, trajectoryEvidence);
   let trajectoryResult;
@@ -467,6 +468,7 @@ const summary = {
     configuration_id: configurationId, execution_surface: surfaceReceipts,
     subject_plugin: args["subject-plugin"] ?? "cascade-prompt", subject_skill: args["subject-skill"] ?? "prompt", subject_skill_root: subjectSkillRoot,
     prompt_model: args["prompt-model"], target_model: args["target-model"], judge_model: args["judge-model"] ?? null, reasoning_effort: args["reasoning-effort"],
+    judge_reasoning_effort: judgeReasoningEffort,
     adapters: { prompt: args["prompt-adapter"] ?? "codex-cli", target: args["target-adapter"] ?? "codex-cli", judge: args["judge-adapter"] ?? "codex-cli" },
     adapter_ids: { prompt: args["prompt-adapter-id"] ?? null, target: args["target-adapter-id"] ?? null, judge: args["judge-adapter-id"] ?? null },
     timeouts_ms: timeouts

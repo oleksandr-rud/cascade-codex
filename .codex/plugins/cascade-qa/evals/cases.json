@@ -5,7 +5,7 @@
   "split_id": "qualification-v1",
   "split_membership": ["QA-001", "QA-002", "QA-003", "QA-004", "QA-005", "QA-006", "QA-007", "QA-008", "QA-009", "QA-010", "QA-011", "QA-012"],
   "subject_adapter": "cascade-evals:agent-evaluation",
-  "execution_adapter": {"id": "cascade-evals-agent-runner-v1", "runner": "cascade-evals/scripts/run_agent_evaluation.py", "model": "gpt-5.6-sol", "reasoning_effort": "max", "sandbox": "read-only+os-read-isolation", "target_invocations": 4, "target_batching": "contiguous-balanced-parallel-v1", "case_count": 12},
+  "execution_adapter": {"id": "cascade-evals-agent-runner-v1", "runner": "cascade-evals/scripts/run_agent_evaluation.py", "model": "gpt-6-astra", "reasoning_effort": "high", "sandbox": "read-only+os-read-isolation", "target_invocations": 4, "target_batching": "contiguous-balanced-parallel-v1", "case_count": 12},
   "packet_contract": {"target_fields": ["case_id", "request", "fixture"], "sealed_fields": ["skill", "expected_status", "oracle", "mechanical_assertions"], "judge_builder": "cascade-evals/scripts/build_blind_packets.py", "judge_schema": "cascade-evals/skills/evaluate/references/judge-packet.schema.json"},
   "assertion_catalog": {
     "status_matches_expected": {"input_identity": "target-output:{case_id}:response:status", "deterministic_rule": "The serialized QA artifact status equals expected_status; the outer case status is transport-only.", "evidence_identity": "ME-{case_id}-status", "failure_status": "INVALID", "repair_owner": "cascade-qa"},

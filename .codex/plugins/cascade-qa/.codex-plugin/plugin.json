@@ -1,6 +1,6 @@
 {
   "name": "cascade-qa",
-  "version": "0.1.1+codex.20260910171300",
+  "version": "0.1.9+codex.20260910172549",
   "description": "Plan quality, design tests, assess evidence, and triage defects from accepted behavior without taking product definition, host execution, test repair, or release authority.",
   "author": {
     "name": "Cascade"
@@ -27,6 +27,9 @@
       "Create a risk-based quality plan for this accepted behavior.",
       "Design traceable test cases for this requirement.",
       "Assess this evidence or triage these failures."
-    ]
+    ],
+    "brandColor": "#4F46E5",
+    "composerIcon": "./assets/composer-icon.svg",
+    "logo": "./assets/logo.svg"
   }
 }

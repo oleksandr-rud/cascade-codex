@@ -69,4 +69,8 @@ Do not hide application state in prompt history. The harness owns durable state,
 
 ## Output
 
+Keep the user-facing answer concise. Output requirements specify information,
+not extra headings. Preserve required schemas, evidence and permissions. Avoid
+duplicate artifact prose, empty sections, unsolicited variants and extra files
+unless needed for the requested delivery or an actual handoff.
 Use `assets/agent-blueprint.template.md` for the human-review surface and emit the `system`, `topology`, `behavior_blocks`, and `components.agents` fragments for `architecture.yaml`. Keep implementation-specific file paths as proposed targets until the user authorizes target writes.

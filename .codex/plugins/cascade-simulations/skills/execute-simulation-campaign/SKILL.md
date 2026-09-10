@@ -162,6 +162,10 @@ receipt.
 
 ## Output
 
+Keep the user-facing answer concise. Output requirements specify information,
+not extra headings. Preserve required schemas, evidence and permissions. Avoid
+duplicate artifact prose, empty sections, unsolicited variants and extra files
+unless needed for the requested delivery or an actual handoff.
 - campaign, run, task, source, fixture, environment, runner, driver, operator,
   and target-actor identity;
 - approval, permission, isolation, timeout, budget, and platform scope;

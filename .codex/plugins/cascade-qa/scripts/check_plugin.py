@@ -76,8 +76,8 @@ def validate(root: Path = ROOT) -> list[str]:
     except Exception as error:
         errors.append(f"artifact schema is invalid: {error}")
     models = contract.get("models", {})
-    if any(models.get(role) != "gpt-5.6-sol" for role in ("builder", "target", "judge")) or models.get("reasoning_effort") != "max" or models.get("explicit_comparison_override") is not False:
-        errors.append("model matrix must use explicit gpt-5.6-sol max")
+    if any(models.get(role) != "gpt-6-astra" for role in ("builder", "target", "judge")) or models.get("reasoning_effort") != "high" or models.get("explicit_comparison_override") is not False:
+        errors.append("model matrix must use explicit gpt-6-astra high")
     if contract.get("acceptance_threshold") != 0.95 or contract.get("minimum_dimension") != 3:
         errors.append("acceptance policy must be 0.95 with dimension floor 3")
 
@@ -90,7 +90,7 @@ def validate(root: Path = ROOT) -> list[str]:
     if set(suite.get("assertion_catalog", {})) != EXPECTED_ASSERTIONS:
         errors.append("mechanical assertion catalog is incomplete")
     adapter = suite.get("execution_adapter", {})
-    if adapter.get("model") != "gpt-5.6-sol" or adapter.get("reasoning_effort") != "max" or adapter.get("case_count") != 12 or adapter.get("target_invocations") != 4:
+    if adapter.get("model") != "gpt-6-astra" or adapter.get("reasoning_effort") != "high" or adapter.get("case_count") != 12 or adapter.get("target_invocations") != 4:
         errors.append("execution adapter model or batching is invalid")
     counts = {skill: 0 for skill in EXPECTED_SKILLS}
     ids: set[str] = set()
@@ -123,7 +123,7 @@ def validate(root: Path = ROOT) -> list[str]:
     for path in profiles:
         profile = load(path)
         dimensions = profile.get("dimensions", [])
-        if profile.get("model") != "gpt-5.6-sol" or profile.get("threshold") != 0.95 or profile.get("minimum_dimension") != 3:
+        if profile.get("model") != "gpt-6-astra" or profile.get("threshold") != 0.95 or profile.get("minimum_dimension") != 3:
             errors.append(f"{path.name}: policy mismatch")
         if not dimensions or abs(sum(float(item.get("weight", 0)) for item in dimensions) - 1.0) > 1e-9 or any(set(item.get("anchors", {})) != {"0", "1", "2", "3", "4"} for item in dimensions):
             errors.append(f"{path.name}: rubric dimensions are invalid")

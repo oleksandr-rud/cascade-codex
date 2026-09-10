@@ -1,11 +1,11 @@
 {
   "schema_version": 1,
   "profile_id": "product-trajectory",
-  "version": 1,
+  "version": 2,
   "role": "trajectory",
   "decision": "Does the plugin follow a disciplined product lifecycle without seizing contributor or implementation authority?",
   "population": "Normal and adversarial product workflows with incomplete or changing evidence.",
-  "model": "gpt-5.6-sol",
+  "model": "gpt-6-astra",
   "threshold": 0.95,
   "minimum_dimension": 3,
   "dimensions": [

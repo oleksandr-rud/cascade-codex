@@ -74,7 +74,7 @@ assertions, and design-specific outcome and trajectory rubrics. Cascade Prompt
 audits the instruction contract. Cascade Evals owns the sanitized target
 runtime, sealed labels, independent judge contexts, conservative reduction,
 and receipts. The qualification configuration explicitly binds
-`gpt-5.6-sol` with `max` reasoning for builder, target, and judges. Mechanical
+`gpt-6-astra` with `high` reasoning for builder, target, and judges. Mechanical
 eligibility runs before semantic judging; structural tests never count as a
 semantic acceptance score.
 

@@ -30,8 +30,9 @@ runs remain the dominant latency in live evaluations.
 - Registered host skills: 9
 - Canonical skill and role source: `.codex/skills/` and `.codex/agents/`
 - Repo-local Cascade plugin sources: 14
-- Planning model: `gpt-5.6-sol`
-- Execution, prompt-builder, and judge model: `gpt-5.6-sol`
+- Planning model: `gpt-6-astra`
+- Execution, prompt-builder, and judge model: `gpt-6-astra`
+- Default reasoning effort: `high`
 - Tooling runtime: Bun `1.3.3`
 - Validator: `bun scripts/cascade.ts validate`
 - Lean target runtime: `bun run build:runtime` (the build enforces a 120-file ceiling)
@@ -251,12 +252,12 @@ clear boundary:
 
 | Role | Model | Owns |
 |---|---|---|
-| `orchestrator` | `gpt-5.6-sol` | Proportional normal-task routing, Coordinator consumption, plugin-backed work, implementation, and evidence. |
-| `agent-engineer` | `gpt-5.6-sol` | Cascade maintenance, target onboarding/adaptation, and host integration of reviewed agent/LLM assets, including tools, memory, observability, eval wiring, and Codex surfaces. |
-| `security` | `gpt-5.6-sol` | Read-only host selection of Cascade Security methods, redacted target evidence, and repository-specific validation or implementation handoff. |
-| `harness-evaluator` | `gpt-5.6-sol` | Human-facing Harness Judge for read-only outcome or trajectory judgment of eligible Cascade scenario outputs and traces after deterministic hard gates. |
-| `simulation-operator` | `gpt-5.6-sol` | Bounded mutable execution of one approved command, terminal, browser, desktop, mobile, or agent-response campaign with evidence freezing and cleanup. |
-| `simulation-evaluator` | `gpt-5.6-sol` | Independent read-only evaluation of frozen cross-contour evidence, policies, oracles, semantic claims, and claim support. |
+| `orchestrator` | `gpt-6-astra` | Proportional normal-task routing, Coordinator consumption, plugin-backed work, implementation, and evidence. |
+| `agent-engineer` | `gpt-6-astra` | Cascade maintenance, target onboarding/adaptation, and host integration of reviewed agent/LLM assets, including tools, memory, observability, eval wiring, and Codex surfaces. |
+| `security` | `gpt-6-astra` | Read-only host selection of Cascade Security methods, redacted target evidence, and repository-specific validation or implementation handoff. |
+| `harness-evaluator` | `gpt-6-astra` | Human-facing Harness Judge for read-only outcome or trajectory judgment of eligible Cascade scenario outputs and traces after deterministic hard gates. |
+| `simulation-operator` | `gpt-6-astra` | Bounded mutable execution of one approved command, terminal, browser, desktop, mobile, or agent-response campaign with evidence freezing and cleanup. |
+| `simulation-evaluator` | `gpt-6-astra` | Independent read-only evaluation of frozen cross-contour evidence, policies, oracles, semantic claims, and claim support. |
 
 Agent Engineer is not limited to Cascade internals, but it integrates rather
 than owns reusable architecture. Cascade AI Architect designs agent behavior;

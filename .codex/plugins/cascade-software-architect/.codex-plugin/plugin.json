@@ -1,6 +1,6 @@
 {
   "name": "cascade-software-architect",
-  "version": "0.2.0+codex.20260910171300",
+  "version": "0.2.1+codex.20260910172549",
   "description": "Designs and independently reviews source-grounded software and plugin architectures without implementing, coordinating, or accepting them.",
   "author": {
     "name": "Cascade"
@@ -26,6 +26,9 @@
     "defaultPrompt": [
       "Design the software-system boundaries for this request.",
       "Review this architecture or change for boundary defects."
-    ]
+    ],
+    "brandColor": "#4F46E5",
+    "composerIcon": "./assets/composer-icon.svg",
+    "logo": "./assets/logo.svg"
   }
 }

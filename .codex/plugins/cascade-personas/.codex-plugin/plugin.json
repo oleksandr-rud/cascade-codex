@@ -1,6 +1,6 @@
 {
   "name": "cascade-personas",
-  "version": "0.1.21+codex.20260910171300",
+  "version": "0.1.29+codex.20260910172549",
   "description": "Build, compile, and evaluate evidence-backed or explicitly synthetic human models with stable traits, dynamic state, provenance, privacy controls, and consumer-specific projections.",
   "author": {
     "name": "Cascade"
@@ -15,7 +15,7 @@
   "skills": "./skills/",
   "interface": {
     "displayName": "Cascade Personas",
-    "shortDescription": "Build governed, stateful human models.",
+    "shortDescription": "Build evidence-based personas for products and AI workflows",
     "longDescription": "Create source-grounded or explicitly synthetic personas with claim provenance, stable profiles, dynamic variables and transitions, uncertainty, privacy rules, and immutable projections for product work, market hypotheses, agent architecture, simulations, and evaluations.",
     "developerName": "Cascade",
     "category": "Productivity",
@@ -27,6 +27,9 @@
       "Build an evidence-backed persona with dynamic state.",
       "Compile this persona for a Cascade simulation.",
       "Design an independent persona quality evaluation."
-    ]
+    ],
+    "brandColor": "#4F46E5",
+    "composerIcon": "./assets/composer-icon.svg",
+    "logo": "./assets/logo.svg"
   }
 }

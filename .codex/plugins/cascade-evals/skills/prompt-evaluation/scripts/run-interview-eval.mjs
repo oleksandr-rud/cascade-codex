@@ -186,10 +186,11 @@ if (command === "list") {
 }
 if (command !== "run") fail(`unknown command: ${command}`);
 if (!args.fixture) fail("--fixture is required");
-args.model ??= "gpt-5.6-sol";
-args["reasoning-effort"] ??= "max";
-if (args["execute-judge"]) args["judge-model"] ??= "gpt-5.6-sol";
-if (args["execute-target"]) args["target-model"] ??= "gpt-5.6-sol";
+args.model ??= "gpt-6-astra";
+args["reasoning-effort"] ??= "high";
+const judgeReasoningEffort = args["judge-reasoning-effort"] ?? args["reasoning-effort"];
+if (args["execute-judge"]) args["judge-model"] ??= "gpt-6-astra";
+if (args["execute-target"]) args["target-model"] ??= "gpt-6-astra";
 
 const fixture = catalog.fixtures.find((candidate) => candidate.id === args.fixture);
 if (!fixture) fail(`unknown fixture: ${args.fixture}`);
@@ -214,7 +215,7 @@ const timeouts = {
   judge: positiveTimeout(args["judge-timeout-ms"], DEFAULT_TIMEOUTS_MS.judge, "--judge-timeout-ms")
 };
 async function executePhase({ phaseName, model, prompt, timeoutMs, adapter, adapterId }) {
-  return requireCompleted(await runModelPhase({ phase: phaseName, runId, runRoot, model, reasoningEffort: args["reasoning-effort"], prompt, cwd: workspace, timeoutMs, adapter, adapterConfig: args["adapter-config"], adapterId }), { phase: phaseName, runRoot });
+  return requireCompleted(await runModelPhase({ phase: phaseName, runId, runRoot, model, reasoningEffort: phaseName === "judge" ? judgeReasoningEffort : args["reasoning-effort"], prompt, cwd: workspace, timeoutMs, adapter, adapterConfig: args["adapter-config"], adapterId }), { phase: phaseName, runRoot });
 }
 
 const surfaceReceipts = Object.fromEntries(["model", "target", "judge"].map(phase => [phase, executionSurface(args[`${phase}-adapter`] ?? "codex-cli", args["adapter-config"], args[`${phase}-adapter-id`])]));
@@ -322,9 +323,10 @@ const summary = {
   run_id: runId,
   fixture: { id: fixture.id, version: fixture.version, catalog_id: catalog.catalog_id, tier: fixture.tier, expected_mode: fixture.expected_mode },
   configuration: {
-    configuration_id: sha256(JSON.stringify({ model: args.model, judge: args["judge-model"], target: args["target-model"], effort: args["reasoning-effort"], surface: surfaceDigest })), execution_surface: surfaceReceipts,
+    configuration_id: sha256(JSON.stringify({ model: args.model, judge: args["judge-model"], target: args["target-model"], effort: args["reasoning-effort"], judge_effort: judgeReasoningEffort, surface: surfaceDigest })), execution_surface: surfaceReceipts,
     subject_plugin: args["subject-plugin"] ?? "cascade-prompt", subject_skill: args["subject-skill"] ?? "prompt", subject_skill_root: subjectSkillRoot,
     model: args.model, installed_plugin: Boolean(args["installed-plugin"]), judge_model: args["judge-model"] ?? null, target_model: args["target-model"] ?? null, reasoning_effort: args["reasoning-effort"],
+    judge_reasoning_effort: judgeReasoningEffort,
     adapters: { model: args["model-adapter"] ?? "codex-cli", target: args["target-adapter"] ?? "codex-cli", judge: args["judge-adapter"] ?? "codex-cli" },
     adapter_ids: { model: args["model-adapter-id"] ?? null, target: args["target-adapter-id"] ?? null, judge: args["judge-adapter-id"] ?? null },
     timeouts_ms: timeouts

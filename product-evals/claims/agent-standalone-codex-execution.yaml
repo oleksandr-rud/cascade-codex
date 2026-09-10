@@ -19,7 +19,7 @@ requires_calibration: false
 schema_version: 1
 scope:
   driver: agent-runtime
-  model: gpt-5.6-sol
+  model: gpt-6-astra
   runtime_provider: codex
   target_mode: explicit-instructions
   task_id: AGENT-STANDALONE-CODEX-CANARY

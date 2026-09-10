@@ -1,69 +1,103 @@
 {
   "schema_version": 1,
   "plugin_id": "cascade-security",
-  "plugin_version": "0.1.1+codex.20260910171300",
+  "plugin_version": "0.1.10+codex.20260910172549",
   "source_revision": "d34754f350d3b94e91373ff7f0b7f066cb69f011",
   "source_state": "LISTED_PATHS_MATCH_SOURCE_REVISION_BEFORE_CUTOVER",
   "artifacts": [
     {
       "path": ".codex/skills/codebase-audit/SKILL.md",
       "sha256": "ea654fc99db52b7e303fc0493f6fcdbb57b331dbc18253097e2a505ec50e4e01",
-      "capabilities": ["trajectory selection", "evidence classification", "security surface inventory"]
+      "capabilities": [
+        "trajectory selection",
+        "evidence classification",
+        "security surface inventory"
+      ]
     },
     {
       "path": ".codex/skills/codebase-audit/checklists/trajectory-generation.md",
       "sha256": "60bf91a6fe4463be5a5746f818bd143ee539815a23b38285e6080c463b28f0dd",
-      "capabilities": ["trajectory completeness checks"]
+      "capabilities": [
+        "trajectory completeness checks"
+      ]
     },
     {
       "path": ".codex/skills/codebase-audit/templates/trajectory-spec.md",
       "sha256": "e2afcc81f885b5cfd67df9503e37da2ad4931de24fc3bd5b1035823155c3a5b8",
-      "capabilities": ["trajectory artifact shape"]
+      "capabilities": [
+        "trajectory artifact shape"
+      ]
     },
     {
       "path": ".codex/skills/auth-analysis/SKILL.md",
       "sha256": "e28e1565e4bad8d3b0fb3c858481918055db16fe7d563cad1d526fbe6a564af2",
-      "capabilities": ["session lifecycle", "RBAC", "tenant isolation", "client-server auth parity"]
+      "capabilities": [
+        "session lifecycle",
+        "RBAC",
+        "tenant isolation",
+        "client-server auth parity"
+      ]
     },
     {
       "path": ".codex/skills/auth-analysis/checklists/auth-hardening.md",
       "sha256": "abe44cfeafc426bb5fd90d9dc2e52bfbe5fd0cf30e86974fc1727c1e1c4be631",
-      "capabilities": ["auth hardening checks"]
+      "capabilities": [
+        "auth hardening checks"
+      ]
     },
     {
       "path": ".codex/skills/auth-analysis/templates/auth-analysis-report.md",
       "sha256": "dc8ee20e16be007d35a2f74cfdbef36df96c565acbd0f9e47b89296c48088a79",
-      "capabilities": ["auth review artifact shape"]
+      "capabilities": [
+        "auth review artifact shape"
+      ]
     },
     {
       "path": ".codex/skills/secure-design/SKILL.md",
       "sha256": "5541ae2e9d592f0e4c25c44fdcdd89231f60e3af2a2e871e5df831f65aef8848",
-      "capabilities": ["trust boundaries", "abuse cases", "secure defaults", "control requirements"]
+      "capabilities": [
+        "trust boundaries",
+        "abuse cases",
+        "secure defaults",
+        "control requirements"
+      ]
     },
     {
       "path": ".codex/skills/secure-design/checklists/secure-design.md",
       "sha256": "c4d133767ccfc115b5533b103c01045e7f45feae72b77ce71f6e32a46667e49e",
-      "capabilities": ["secure-design completeness checks"]
+      "capabilities": [
+        "secure-design completeness checks"
+      ]
     },
     {
       "path": ".codex/skills/secure-design/templates/secure-design-review.md",
       "sha256": "509a5d9049bdd5b6faa66fdd20bf4ade0b37ee000620ee567cba11510557ae3d",
-      "capabilities": ["secure-design artifact shape"]
+      "capabilities": [
+        "secure-design artifact shape"
+      ]
     },
     {
       "path": ".codex/agents/security/AGENT.md",
       "sha256": "12b81bb3a3e43203c6700d0e250410b9837d8a3b0469d3d4fe21149c0a9b7218",
-      "capabilities": ["read-only role isolation", "sensitive-evidence handling", "host handoffs"]
+      "capabilities": [
+        "read-only role isolation",
+        "sensitive-evidence handling",
+        "host handoffs"
+      ]
     },
     {
       "path": ".codex/agents/security/checklists/security-agent-workflows.md",
       "sha256": "c7ef96c58c4f772d2b50890c3f7b1d60c5f0c5c2736516e357fb0d168bc4f51d",
-      "capabilities": ["combined security workflow selection"]
+      "capabilities": [
+        "combined security workflow selection"
+      ]
     },
     {
       "path": ".codex/agents/security/scripts/security_stack_scan.ts",
       "sha256": "85a657eb55d320f39eefb1605adce4d96181f423c181958be4f665913057fe32",
-      "capabilities": ["bounded filename-only stack and security-surface inventory"]
+      "capabilities": [
+        "bounded filename-only stack and security-surface inventory"
+      ]
     }
   ]
 }

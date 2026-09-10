@@ -14,6 +14,24 @@ selection use cascade-market:plan-growth.
 
 Assess a named opportunity against predeclared criteria. The score organizes a decision; it is not truth and does not replace source evidence or the Product owner's decision.
 
+## Delivery mode
+
+Choose the delivery mode before following artifact-production steps below.
+For a standalone explanation, recommendation, review or prose draft without a
+structured-output request, return one useful answer. Preserve every applicable
+substantive requirement: evidence and source authority, uncertainty, conflicts,
+permissions, acceptance/recovery conditions, decision status and next action.
+The output lists specify information to cover, not extra files or repeated prose.
+Do not invent IDs, hashes, receipts or approval to make a prose answer look formal.
+Do not label that answer a validated canonical artifact or completed handoff.
+
+For an explicitly requested structured/canonical artifact, persistence,
+evaluation, or actual cross-plugin handoff, apply all artifact-production steps,
+required schemas, fields, source bindings, ledgers, digests, validators and gates
+below unchanged. Provide the artifact once; add only the explanation needed to
+use it. A prose projection never substitutes for required machine-readable data.
+Missing material evidence or authority remains a gap or blocker in either mode.
+
 ## Required inputs
 
 - opportunity and decision;
@@ -99,6 +117,11 @@ Use only applicable dimensions and define observable anchors before scoring:
    Product transfer uses ../../schemas/handoff-envelope.schema.json.
 
 ## Output
+
+Keep the user-facing answer concise. Output requirements specify information,
+not extra headings. Preserve required schemas, evidence and permissions. Avoid
+duplicate artifact prose, empty sections, unsolicited variants and extra files
+unless needed for the requested delivery or an actual handoff.
 
 Return status READY, ABSTAIN, BLOCKED, or INVALID; opportunity identity; ledger digest/freshness; schema-valid scoring rubric and formula inputs; claim-to-rating matrix; score or null; coverage; floors/disqualifiers; adversarial findings; sensitivity; PMF state/scope/expiry; confidence; gaps; recommendation; artifact SHA-256; and exact Market Experiment or Product handoff/resume envelope.
 

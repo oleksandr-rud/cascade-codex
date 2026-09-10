@@ -1,11 +1,11 @@
 {
   "schema_version": 1,
   "profile_id": "persona-outcome",
-  "version": 2,
+  "version": 3,
   "role": "outcome",
   "decision": "Does the plugin produce useful, evidence-honest, safe persona artifacts for its declared consumers?",
   "population": "Representative persona creation, projection, and evaluation requests including sparse and adversarial evidence.",
-  "model": "gpt-5.6-sol",
+  "model": "gpt-6-astra",
   "threshold": 0.95,
   "minimum_dimension": 3,
   "dimensions": [

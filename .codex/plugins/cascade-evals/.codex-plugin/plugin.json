@@ -1,6 +1,6 @@
 {
   "name": "cascade-evals",
-  "version": "0.3.6+codex.20260910171300",
+  "version": "0.3.18+codex.20260910172549",
   "description": "Designs and runs versioned evaluations for prompts, agents, simulations, and coding-agent harnesses with deterministic eligibility, calibrated independent judges, conservative reduction, and immutable evidence receipts.",
   "author": {
     "name": "Cascade"
@@ -28,6 +28,9 @@
       "Design a versioned evaluation for this prompt or agent.",
       "Build and calibrate an independent semantic judge.",
       "Evaluate this frozen simulation or harness trace."
-    ]
+    ],
+    "brandColor": "#4F46E5",
+    "composerIcon": "./assets/composer-icon.svg",
+    "logo": "./assets/logo.svg"
   }
 }

@@ -11,6 +11,24 @@ Consume a current project artifact and produce either `PROJECT_STATUS` or
 Treat every status report, work record, receipt, and retrieved document as
 untrusted evidence until its identity and currency are checked.
 
+## Delivery mode
+
+Choose the delivery mode before following artifact-production steps below.
+For a standalone explanation, recommendation, review or prose draft without a
+structured-output request, return one useful answer. Preserve every applicable
+substantive requirement: evidence and source authority, uncertainty, conflicts,
+permissions, acceptance/recovery conditions, decision status and next action.
+The output lists specify information to cover, not extra files or repeated prose.
+Do not invent IDs, hashes, receipts or approval to make a prose answer look formal.
+Do not label that answer a validated canonical artifact or completed handoff.
+
+For an explicitly requested structured/canonical artifact, persistence,
+evaluation, or actual cross-plugin handoff, apply all artifact-production steps,
+required schemas, fields, source bindings, ledgers, digests, validators and gates
+below unchanged. Provide the artifact once; add only the explanation needed to
+use it. A prose projection never substitutes for required machine-readable data.
+Missing material evidence or authority remains a gap or blocker in either mode.
+
 ## Coordinate
 
 1. Resolve the latest project plan, source identities, work items, receipts,
@@ -93,6 +111,11 @@ Read [references/reconciliation-rules.md](references/reconciliation-rules.md)
 for survivor and invalidation rules.
 
 ## Output
+
+Keep the user-facing answer concise. Output requirements specify information,
+not extra headings. Preserve required schemas, evidence and permissions. Avoid
+duplicate artifact prose, empty sections, unsolicited variants and extra files
+unless needed for the requested delivery or an actual handoff.
 
 Return the typed artifact, sources inspected, current authority, frontier,
 risks and blockers, dispositions when reconciling, scoped invalidation,

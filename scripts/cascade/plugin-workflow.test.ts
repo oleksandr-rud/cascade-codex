@@ -18,7 +18,7 @@ const envelope = await compileTaskEnvelope({
 function fixture(routes: string[], inputs: string[], alternatives: Record<string, string[]> = {}) {
   const descriptors = routes.map((route) => {
     const plugin = catalog.plugins.find((item) => item.skills.some((skill: any) => skill.route === route))!;
-    return { ...plugin.skills.find((skill: any) => skill.route === route), plugin_version: plugin.version };
+    return { ...plugin.skills.find((skill: any) => skill.route === route), plugin_version: plugin.version, model_policy: plugin.model_policy };
   });
   const selection = {
     schema_version: 1,
@@ -29,7 +29,7 @@ function fixture(routes: string[], inputs: string[], alternatives: Record<string
     capability_catalog_digest: catalog.catalog_digest,
     selection_digest: "0".repeat(64),
     selector: {
-      route: "cascade-coordinator:select-capabilities", model: "gpt-5.6-sol",
+      route: "cascade-coordinator:select-capabilities", model: "gpt-6-astra",
       reasoning_effort: "high", prompt_sha256: "a".repeat(64),
     },
     input_artifacts: ["task-envelope", "plugin-capability-catalog", ...inputs],
@@ -51,7 +51,7 @@ function fixture(routes: string[], inputs: string[], alternatives: Record<string
     capability_catalog_digest: catalog.catalog_digest,
     capability_selection_digest: selection.selection_digest,
     planner: {
-      route: "cascade-coordinator:plan-workflow", model: "gpt-5.6-sol",
+      route: "cascade-coordinator:plan-workflow", model: "gpt-6-astra",
       reasoning_effort: "high", prompt_sha256: "b".repeat(64),
     },
     input_artifacts: selection.input_artifacts,
@@ -61,7 +61,7 @@ function fixture(routes: string[], inputs: string[], alternatives: Record<string
       consumes: skill.consumes, produces: skill.produces,
       optional_consumes: alternatives[skill.route] ?? [],
       effect: skill.effect, authority: skill.authority,
-      model: { id: "gpt-5.6-sol", reasoning_effort: "max" },
+      model: { id: skill.model_policy.model, reasoning_effort: skill.route.startsWith("cascade-evals:") ? skill.model_policy.evaluation_reasoning_effort : skill.model_policy.planning_reasoning_effort },
       reason: "Consume accepted inputs without recreating their producers.",
     })),
     edges: [] as { from: string; to: string; artifact: string }[],

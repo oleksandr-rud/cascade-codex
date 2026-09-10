@@ -1,6 +1,6 @@
 {
   "name": "cascade-market",
-  "version": "0.2.1+codex.20260910171300",
+  "version": "0.2.9+codex.20260910172549",
   "description": "Research and select markets, assess differentiation, plan growth channels and lifecycle economics, and create evidence-backed experiments and positioning.",
   "author": {
     "name": "Cascade"
@@ -30,6 +30,9 @@
       "Compare these markets and their reachable entry opportunities.",
       "Plan the next growth move and its product implications.",
       "Create evidence-backed positioning and messaging."
-    ]
+    ],
+    "brandColor": "#4F46E5",
+    "composerIcon": "./assets/composer-icon.svg",
+    "logo": "./assets/logo.svg"
   }
 }

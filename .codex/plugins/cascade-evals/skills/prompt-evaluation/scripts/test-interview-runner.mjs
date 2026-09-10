@@ -46,7 +46,7 @@ await writeFile(adapterConfig, JSON.stringify({ adapters: { fixture: { command: 
 const adapterArgs = ["--adapter-config", adapterConfig, ...["prompt", "target", "judge", "model"].flatMap(phase => [`--${phase}-adapter`, "command-json-v1", `--${phase}-adapter-id`, "fixture"])];
 
 function run(fixture, extraArgs = [], extraEnv = {}) {
-  const result = spawnSync(process.execPath, [runner, "run", ...adapterArgs, "--fixture", fixture, "--model", "gpt-5.6-terra", "--subject-skill-root", subjectSkillRoot, "--output-dir", outputRoot, ...extraArgs], {
+  const result = spawnSync(process.execPath, [runner, "run", ...adapterArgs, "--fixture", fixture, "--subject-skill-root", subjectSkillRoot, "--output-dir", outputRoot, ...extraArgs], {
     encoding: "utf8",
     env: { ...process.env, CASCADE_SIMULATIONS_SKILL_ROOT: join(root, "unavailable-simulations"), ...extraEnv }
   });
@@ -70,6 +70,10 @@ function assert(condition, message) {
 const complete = run("complete-quick-v1", ["--run-id", "campaign-complete-quick-v1", "--execute-target", "--target-model", "gpt-5.6-terra"]);
 assert(complete.result.status === 0, `complete fixture failed: ${complete.result.stderr}\n${complete.result.stdout}`);
 const completeSummary = await summary(complete);
+const defaultBuilder = JSON.parse(await readFile(join(complete.output.run_root, "first-turn-read-0.execution.json"), "utf8"));
+const explicitTarget = JSON.parse(await readFile(join(complete.output.run_root, "target.execution.json"), "utf8"));
+assert(defaultBuilder.model === "gpt-6-astra" && defaultBuilder.reasoning_effort === "high", "omitted interview options must dispatch Astra/high");
+assert(explicitTarget.model === "gpt-5.6-terra" && explicitTarget.reasoning_effort === "high", "default effort must preserve an explicit target model");
 assert(completeSummary.run_id === "campaign-complete-quick-v1" && complete.output.run_root === join(outputRoot, "campaign-complete-quick-v1"), "campaign IDs must select the declared interview result directory");
 const collision = run("complete-quick-v1", ["--run-id", "campaign-complete-quick-v1"]);
 assert(collision.result.status !== 0 && JSON.stringify(await summary(complete)) === JSON.stringify(completeSummary), "a repeated campaign ID must preserve the prior result");
@@ -83,6 +87,13 @@ assert(completeSummary.turns.first.inspected.state === "READY", "complete fixtur
 assert(completeSummary.turns.first.inspected.questions.length === 0, "complete fixture must ask zero questions");
 assert(completeSummary.target.status === "PASS", "optional target execution must pass");
 assert(completeSummary.acceptance === "MECHANICALLY_ELIGIBLE", "unjudged complete fixture must remain mechanically eligible");
+
+const splitEffort = run("complete-quick-v1", ["--reasoning-effort", "high", "--judge-reasoning-effort", "max", "--execute-judge"]);
+const splitSummary = await summary(splitEffort);
+const builderEffortReceipt = JSON.parse(await readFile(join(splitEffort.output.run_root, "first-turn-read-0.execution.json"), "utf8"));
+const judgeEffortReceipt = JSON.parse(await readFile(join(splitEffort.output.run_root, "judge.execution.json"), "utf8"));
+assert(builderEffortReceipt.reasoning_effort === "high" && judgeEffortReceipt.reasoning_effort === "max", "authoring comparisons must not silently change the fixed judge effort");
+assert(splitSummary.configuration.reasoning_effort === "high" && splitSummary.configuration.judge_reasoning_effort === "max", "the recorded comparison must distinguish both efforts");
 
 const guided = run("support-mixed-case-v1");
 assert(guided.result.status === 0, `guided fixture failed: ${guided.result.stderr}\n${guided.result.stdout}`);

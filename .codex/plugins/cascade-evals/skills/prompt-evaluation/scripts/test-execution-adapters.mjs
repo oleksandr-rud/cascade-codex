@@ -275,3 +275,96 @@ test("campaign recovery uses predeclared paths and keeps unresolved jobs in the 
   assert.match(recovered.summary_error, /UNREADABLE_SUMMARY/);
   assert.equal(recovered.phases[0].status, "INVALID_ADAPTER_RESPONSE");
 });
+
+test("campaign and challenge model overrides are bound before dispatch", async () => {
+  const { haltExecution, recoverExecution } = await import("./execution-coordinator.mjs");
+  await haltExecution("synthetic pre-dispatch inspection; no model may execute");
+  try {
+    const cli = (await import("node:url")).fileURLToPath(new URL("./run-prompt-campaign.mjs", import.meta.url));
+    const output = join(root, "campaign-model-options");
+    const result = await runCommand({ command: process.execPath, args: [cli,
+      "--cases", "complete-quick-v1,code-review-race-v1", "--output-dir", output,
+      "--run-id", "fixed-judge", "--model", "gpt-6-astra", "--prompt-model", "gpt-6-astra",
+      "--target-model", "gpt-6-astra", "--reasoning-effort", "high",
+      "--judge-model", "gpt-5.6-sol", "--judge-reasoning-effort", "max",
+      "--configuration-id", "astra-high-pilot-v1"], input: "", timeoutMs: 10000, acceptedExitCodes: [3] });
+    assert.equal(result.status, "COMPLETED");
+    const contract = JSON.parse(await readFile(join(output, "fixed-judge", "campaign-contract.json"), "utf8"));
+    for (const job of contract.jobs) {
+      const option = name => job.args[job.args.indexOf(`--${name}`) + 1];
+      assert.equal(option("reasoning-effort"), "high");
+      assert.equal(option("judge-reasoning-effort"), "max");
+      assert.equal(option("judge-model"), "gpt-5.6-sol");
+      if (job.script === "run-quality-eval.mjs") {
+        assert.equal(option("prompt-model"), "gpt-6-astra");
+        assert.equal(option("configuration-id"), "astra-high-pilot-v1");
+      } else assert.equal(option("model"), "gpt-6-astra");
+    }
+    assert.equal(JSON.parse(result.stdout).jobs_finished, 0);
+    const challenge = (await import("node:url")).fileURLToPath(new URL("./run-judge-challenges.mjs", import.meta.url));
+    for (const [id, options, model, effort, comparison] of [
+      ["default", [], "gpt-6-astra", "high", false],
+      ["sol-comparison", ["--judge-model", "gpt-5.6-sol", "--judge-reasoning-effort", "max"], "gpt-5.6-sol", "max", true],
+    ]) {
+      const result = await runCommand({ command: process.execPath, args: [challenge, "--cases", "j01",
+        "--output-dir", output, "--run-id", id, ...options], input: "", timeoutMs: 10000, acceptedExitCodes: [3] });
+      assert.equal(result.status, "COMPLETED");
+      const contract = JSON.parse(await readFile(join(output, id, "run-contract.json"), "utf8"));
+      const receipt = JSON.parse(await readFile(join(output, id, "j01.execution.json"), "utf8"));
+      for (const bound of [contract, receipt]) {
+        assert.equal(bound.model, model);
+        assert.equal(bound.reasoning_effort, effort);
+      }
+      assert.equal(contract.explicit_comparison, comparison);
+      assert.equal(receipt.dispatched, false);
+    }
+    for (const options of [["--judge-model", "unsupported-judge"], ["--judge-model"], ["--judge-reasoning-effort", "none"]]) {
+      const result = await runCommand({ command: process.execPath, args: [challenge, ...options], input: "", timeoutMs: 10000, acceptedExitCodes: [1] });
+      assert.equal(result.status, "COMPLETED");
+      assert.match(result.stderr, /unsupported challenge judge|missing value/);
+    }
+  } finally { await recoverExecution(); }
+});
+
+test("slot contention retries only transient pre-open errors and preserves ownership", async () => {
+  const source = await readFile(new URL("./execution-coordinator.mjs", import.meta.url), "utf8");
+  for (const mode of ["transient", "persistent", "post-open"]) {
+    const fixturePath = join(root, `coordinator-${mode}.mjs`);
+    const injected = source.replace("readFile as readFileOnce", "readFile as nativeReadFile")
+      .replace("writeFile as writeFileOnce", "writeFile as nativeWriteFile") + `
+let readAttempts = 0, writeAttempts = 0;
+const fault = syscall => Object.assign(new Error("synthetic sharing error"), { code: "EPERM", syscall });
+const readFileOnce = async (...args) => {
+  if (String(args[0]).endsWith("slot-0.json")) {
+    readAttempts++;
+    if (${JSON.stringify(mode)} === "persistent" || (${JSON.stringify(mode)} === "transient" && readAttempts <= 2)) throw fault("open");
+  }
+  return nativeReadFile(...args);
+};
+const writeFileOnce = async (...args) => {
+  if (String(args[0]).endsWith("slot-0.json")) {
+    writeAttempts++;
+    if (${JSON.stringify(mode)} === "post-open") throw fault("write");
+    if (${JSON.stringify(mode)} === "transient" && writeAttempts <= 2) throw fault("open");
+  }
+  return nativeWriteFile(...args);
+};
+export const counts = () => ({ readAttempts, writeAttempts });
+`;
+    await writeFile(fixturePath, injected);
+    const coordinator = await import((await import("node:url")).pathToFileURL(fixturePath).href);
+    const pool = join(root, `fault-pool-${mode}`);
+    if (mode === "transient") {
+      const lease = await coordinator.acquireExecution({ root: pool, timeoutMs: 1000 });
+      assert.equal(lease.slot, 0);
+      assert.equal(coordinator.counts().writeAttempts, 3);
+      const owner = JSON.parse(await readFile(join(pool, "slot-0.json"), "utf8"));
+      assert.equal(owner.pid, process.pid);
+      await lease.release();
+      await assert.rejects(readFile(join(pool, "slot-0.json")), { code: "ENOENT" });
+    } else {
+      await assert.rejects(coordinator.acquireExecution({ root: pool, timeoutMs: 1000 }), /synthetic sharing error/);
+      assert.equal(mode === "persistent" ? coordinator.counts().readAttempts : coordinator.counts().writeAttempts, mode === "persistent" ? 6 : 1);
+    }
+  }
+});

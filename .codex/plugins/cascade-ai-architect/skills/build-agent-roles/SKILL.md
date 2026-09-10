@@ -43,3 +43,8 @@ A role contract is invalid when:
 - its role exists only because an agent name was requested.
 
 Return `CANDIDATE` role files and a boundary index. Do not write target agent registries, edit harness routing, spawn a role, or claim it is executable until the target harness validates and explicitly activates it.
+
+Keep the user-facing answer concise. Output requirements specify information,
+not extra headings. Preserve required schemas, evidence and permissions. Avoid
+duplicate artifact prose, empty sections, unsolicited variants and extra files
+unless needed for the requested delivery or an actual handoff.

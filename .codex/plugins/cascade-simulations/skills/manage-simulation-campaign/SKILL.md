@@ -58,6 +58,11 @@ invent a host registry or execute a target from this skill.
 
 ## Output
 
+Keep the user-facing answer concise. Output requirements specify information,
+not extra headings. Preserve required schemas, evidence and permissions. Avoid
+duplicate artifact prose, empty sections, unsolicited variants and extra files
+unless needed for the requested delivery or an actual handoff.
+
 Return campaign identity, frozen inputs, execution/evaluation state, evidence
 coverage, reduction, defects, and unproven claims. Create campaign artifacts only
 for an explicitly authorized campaign.

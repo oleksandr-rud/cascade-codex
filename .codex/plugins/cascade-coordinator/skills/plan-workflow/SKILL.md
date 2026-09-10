@@ -72,10 +72,13 @@ and catalog descriptors are sufficient planning inputs.
    permission, weakens policy, executes a tool, dispatches an agent, mutates a
    target, accepts its own output, or substitutes Project Management for a
    domain decision.
-6. Bind model-controlled planning, prompt construction, target execution, and
-   independent judges to `gpt-5.6-sol`. Use the host planning effort for the
-   plan itself and `max` for frozen evaluation builder, target, and judge
-   contracts. Judges must run in separate contexts.
+6. Bind each work node to its owning plugin's catalog `model_policy.model` and
+   planning effort; use `evaluation_reasoning_effort` for Evals nodes. The
+   Coordinator's own Astra planning model does not replace a node's policy.
+   Preserve the separate builder, target and judge bindings of any frozen
+   evaluation contract; do not infer them from the prompt author's model.
+   Judges run in separate contexts. A plan records configuration, not an
+   automatic model switch or dispatch.
 7. Bind the plan to the capability-selection digest and the non-null digest of
    the exact planner prompt. Emit a schema-conforming candidate with
    claim-to-node bindings, plugin versions, complete artifact edges, ordering
@@ -96,7 +99,12 @@ evidence.
 
 Finish when the plan schema validates, its selected routes exactly match the
 validated selection, its graph is acyclic, every required dependency and
-consumed artifact is satisfied by an input or explicit edge, authority and Sol
+consumed artifact is satisfied by an input or explicit edge, authority and catalog
 model policy are preserved, and every selected node has an observable output or
 gate. Return `BLOCKED` with the first missing owner/input when these conditions
 cannot be met. Registration and execution require separate host authority.
+
+Keep the user-facing answer concise. Output requirements specify information,
+not extra headings. Preserve required schemas, evidence and permissions. Avoid
+duplicate artifact prose, empty sections, unsolicited variants and extra files
+unless needed for the requested delivery or an actual handoff.

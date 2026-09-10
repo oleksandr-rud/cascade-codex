@@ -19,6 +19,9 @@ sys.path.insert(0, str(SCRIPT_ROOT))
 
 from run_agent_evaluation import (
     ContractError,
+    docker_phase,
+    prepare_docker,
+    ExecutionBlocked,
     aggregate_digest,
     apply_target_finalizer,
     execute,
@@ -48,7 +51,7 @@ def profile(profile_id: str) -> dict:
         "role": "outcome",
         "decision": "whether the response meets the contract",
         "population": "one fixture case",
-        "model": "gpt-5.6-sol",
+        "model": "gpt-6-astra",
         "threshold": 0.95,
         "minimum_dimension": 3,
         "dimensions": [{
@@ -83,8 +86,8 @@ class AgentEvaluationRunnerTests(unittest.TestCase):
             "execution_adapter": {
                 "id": "cascade-evals-agent-runner-v1",
                 "runner": "cascade-evals/scripts/run_agent_evaluation.py",
-                "model": "gpt-5.6-sol",
-                "reasoning_effort": "max",
+                "model": "gpt-6-astra",
+                "reasoning_effort": "high",
                 "target_invocations": 1,
                 "target_batching": "contiguous-balanced-parallel-v1",
                 "case_count": 1,
@@ -129,10 +132,10 @@ class AgentEvaluationRunnerTests(unittest.TestCase):
             "acceptance_threshold": 0.95,
             "minimum_dimension": 3,
             "models": {
-                "builder": "gpt-5.6-sol",
-                "target": "gpt-5.6-sol",
-                "judge": "gpt-5.6-sol",
-                "reasoning_effort": "max",
+                "builder": "gpt-6-astra",
+                "target": "gpt-6-astra",
+                "judge": "gpt-6-astra",
+                "reasoning_effort": "high",
                 "explicit_comparison_override": False,
             },
         }), encoding="utf-8")
@@ -186,11 +189,108 @@ class AgentEvaluationRunnerTests(unittest.TestCase):
             assertion_adapter=self.adapter,
             evaluation_id="fixture-eval",
             output_dir=output,
-            model="gpt-5.6-sol",
-            reasoning_effort="max",
+            model="gpt-6-astra",
+            reasoning_effort="high",
             timeout_seconds=60,
             execute=False,
         )
+
+    def test_container_rejects_extra_mount_before_start_and_cleans_up(self) -> None:
+        auth = self.root / "auth.json"
+        auth.write_text("{}", encoding="utf-8")
+        image = "sha256:" + "a" * 64
+        inspected = {"Image": image, "HostConfig": {}, "Mounts": [
+            {"Destination": "/work", "Type": "bind", "RW": True},
+            {"Destination": "/codex-home/auth.json", "Type": "bind", "RW": False},
+            {"Destination": "/host", "Type": "bind", "RW": False},
+        ]}
+        calls = []
+        def fake(command, **kwargs):
+            calls.append(command)
+            return subprocess.CompletedProcess(command, 0,
+                json.dumps([inspected]) if command[1] == "inspect" else "", "")
+        with patch("run_agent_evaluation.subprocess.run", side_effect=fake):
+            with self.assertRaisesRegex(ContractError, "unexpected container mount"):
+                docker_phase(["codex", "--version"], workdir=self.root, auth_file=auth, image=image)
+        self.assertFalse(any(c[1] == "start" for c in calls))
+        self.assertEqual(calls[-1][1:3], ["rm", "--force"])
+
+    def test_container_timeout_removes_exact_invocation(self) -> None:
+        auth = self.root / "auth.json"
+        auth.write_text("{}", encoding="utf-8")
+        image = "sha256:" + "a" * 64
+        inspected = {"Image": image, "HostConfig": {
+            "ReadonlyRootfs": True, "Privileged": False, "NetworkMode": "bridge",
+            "CapDrop": ["ALL"], "SecurityOpt": ["no-new-privileges"],
+        }, "Mounts": [
+            {"Destination": "/work", "Type": "bind", "RW": True},
+            {"Destination": "/codex-home/auth.json", "Type": "bind", "RW": False},
+        ]}
+        calls = []
+        def fake(command, **kwargs):
+            calls.append(command)
+            if command[1] == "start":
+                raise subprocess.TimeoutExpired(command, 1)
+            return subprocess.CompletedProcess(command, 0,
+                json.dumps([inspected]) if command[1] == "inspect" else "", "")
+        with patch("run_agent_evaluation.subprocess.run", side_effect=fake):
+            with self.assertRaises(subprocess.TimeoutExpired):
+                docker_phase(["codex", "--version"], workdir=self.root, auth_file=auth, image=image)
+        self.assertEqual(calls[-1][-1], calls[0][calls[0].index("--name") + 1])
+        self.assertEqual(calls[-1][1:3], ["rm", "--force"])
+
+    def test_container_remote_endpoint_cannot_receive_login(self) -> None:
+        auth = self.root / "auth.json"
+        auth.write_text("{}", encoding="utf-8")
+        with patch.dict("os.environ", {"DOCKER_HOST": "tcp://remote.example:2376"}):
+            with patch("run_agent_evaluation.subprocess.run") as invocation:
+                with self.assertRaisesRegex(ExecutionBlocked, "local Docker endpoint"):
+                    prepare_docker("fixture", auth)
+        invocation.assert_not_called()
+
+    def test_container_missing_login_blocks_before_dispatch(self) -> None:
+        with patch("run_agent_evaluation.subprocess.run") as invocation:
+            with self.assertRaises(ExecutionBlocked):
+                prepare_docker("fixture", self.root / "absent-auth.json")
+        invocation.assert_not_called()
+
+    def test_ineligible_target_preserves_evidence_without_dispatching_judges(self) -> None:
+        from types import SimpleNamespace
+        output = self.root / "ineligible"
+        args = self.args(output)
+        args.execute = True
+        args.container_image = "fixture"
+        calls = []
+        def fake_codex(**kwargs):
+            calls.append(kwargs["prompt"])
+            if "<controller_packet>" in kwargs["prompt"]:
+                response = {"schema_version": 1, "evaluation_id": args.evaluation_id,
+                    "subject_digest": args.subject_digest, "status": "READY",
+                    "findings": [], "sealed_material_handled_as_data": True}
+            else:
+                response = {"schema_version": 2, "evaluation_id": args.evaluation_id,
+                    "subject_digest": args.subject_digest, "cases": {"CASE-001": {"case_id": "CASE-001",
+                    "selected_skill": "fixture", "status": "GAP", "response": "frozen failed response",
+                    "signals": {"contract_compliance": "FAIL"}, "evidence": ["fixture evidence"]}}}
+            kwargs["output"].write_text(json.dumps(response), encoding="utf-8")
+            return "frozen phase log"
+        adapter = SimpleNamespace(evaluate=lambda suite, target: {
+            "evaluation_id": args.evaluation_id, "subject_digest": args.subject_digest,
+            "status": "INVALID", "semantic_status": "NOT_RUN", "findings": ["missing required field"]})
+        version = json.loads((SCRIPT_ROOT.parent / ".codex-plugin/plugin.json").read_text())["version"]
+        with patch("run_agent_evaluation.installed_dependency_roots", return_value={"cascade-evals": (version, SCRIPT_ROOT.parent)}), \
+             patch("run_agent_evaluation.prepare_docker", return_value={"image": "sha256:" + "a" * 64}), \
+             patch("run_agent_evaluation.load_assertion_adapter", return_value=adapter), \
+             patch("run_agent_evaluation.run_codex", side_effect=fake_codex):
+            receipt = execute(args)
+        self.assertEqual(receipt["status"], "INVALID")
+        self.assertEqual(receipt["semantic_status"], "NOT_RUN")
+        self.assertEqual(receipt["judge_invocations"], 0)
+        self.assertEqual(len(calls), 2)
+        frozen = json.loads((output / "controller/raw-target-output.json").read_text())
+        self.assertEqual(frozen["cases"][0]["response"], "frozen failed response")
+        self.assertTrue((output / "controller/mechanical-receipt.json").is_file())
+        self.assertEqual(len(list((output / "controller/process-logs").glob("*.log"))), 2)
 
     def test_dry_run_sanitizes_subject_and_keeps_sealed_state_in_memory(self) -> None:
         output = self.root / "artifact"

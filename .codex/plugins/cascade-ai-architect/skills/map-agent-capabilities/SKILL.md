@@ -42,6 +42,11 @@ Cluster capabilities when they share an outcome, authoritative context, tool and
 
 ## Output
 
+Keep the user-facing answer concise. Output requirements specify information,
+not extra headings. Preserve required schemas, evidence and permissions. Avoid
+duplicate artifact prose, empty sections, unsolicited variants and extra files
+unless needed for the requested delivery or an actual handoff.
+
 Return `capability-map.md` plus `capabilities` and `clusters` fragments compatible with the architecture packet. Include:
 
 - source inventory and conflict decisions;
