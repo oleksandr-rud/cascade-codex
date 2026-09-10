@@ -132,6 +132,39 @@ test("rejects unresolved adapters and unbounded execution before dispatch", asyn
   await assert.rejects(command("", { timeoutMs: undefined }), /finite time/);
 });
 
+test("requires host skill isolation before Codex dispatch and preserves a non-dispatched receipt", { skip: process.platform === "win32" }, async () => {
+  const bin = join(root, "codex-preflight");
+  await mkdir(bin);
+  const marker = join(bin, "dispatched.json");
+  const executable = join(bin, "codex");
+  const modulePath = new URL("./execution-adapters.mjs", import.meta.url).href;
+  for (const supported of [false, true]) {
+    await writeFile(executable, `#!${process.execPath}\nconst fs=require('node:fs');
+if(process.argv.includes('--version')) console.log('codex-cli fixture');
+else if(process.argv.includes('features')) console.log(${JSON.stringify(supported ? "skip_host_skill_discovery stable false" : "plugins stable true")});
+else { fs.writeFileSync(${JSON.stringify(marker)},JSON.stringify(process.argv)); console.log(${JSON.stringify(good.map(JSON.stringify).join("\n"))}); }\n`);
+    await chmod(executable, 0o755);
+    const runRoot = join(bin, supported ? "supported" : "unsupported");
+    const script = `process.env.PATH=${JSON.stringify(bin)}+':'+process.env.PATH;
+const {runModelPhase}=await import(${JSON.stringify(modulePath)});
+console.log(JSON.stringify(await runModelPhase({phase:'preflight',runId:'preflight',runRoot:${JSON.stringify(runRoot)},model:'fixture',prompt:'hello',timeoutMs:1000})));`;
+    const result = await command(script, { timeoutMs: 5000 });
+    assert.equal(result.status, "COMPLETED", result.stderr);
+    const receipt = JSON.parse(await readFile(join(runRoot, "preflight.execution.json"), "utf8"));
+    assert.equal(receipt.dispatched, supported);
+    if (!supported) {
+      assert.equal(existsSync(marker), false);
+      assert.match(receipt.error, /requires Codex with skip_host_skill_discovery/);
+      assert.equal(receipt.output_sha256, null);
+    } else {
+      assert.equal(receipt.status, "COMPLETED");
+      const args = JSON.parse(await readFile(marker, "utf8"));
+      assert.ok(args.includes("skip_host_skill_discovery"));
+      assert.ok(args.includes("--ignore-user-config"));
+    }
+  }
+});
+
 test("terminates descendants when the invocation exits", { skip: process.platform === "win32" }, async () => {
   const marker = join(root, "orphan.txt");
   const descendant = `setTimeout(()=>require("node:fs").writeFileSync(${JSON.stringify(marker)},"orphan"),300)`;

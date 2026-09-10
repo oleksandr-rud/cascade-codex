@@ -105,9 +105,12 @@ describe("task admission safety smoke", () => {
       ["Виправ помилку у scripts/cascade/common.ts", "LOCAL_WRITE"],
       ["Будь ласка, оновіть README.md", "LOCAL_WRITE"],
       ["Можеш виправити README.md?", "LOCAL_WRITE"],
+      ["Але спочатку, спочатку давай, будь ласка, виправимо всі проблеми, які є.", "LOCAL_WRITE"],
+      ["Давайте зробимо зміни у README.md", "LOCAL_WRITE"],
       ["Перевір README.md та виправ помилку у scripts/cascade/common.ts", "LOCAL_WRITE"],
       ["Видали файл README.md", "DESTRUCTIVE"],
       ["запуш та витягни останні зміни з master", "EXTERNAL_WRITE"],
+      ["Але перед цим запушимо всі поточні зміни в master.", "EXTERNAL_WRITE"],
     ] as const) {
       const envelope = await compileTrusted(request, { produced_at: fixed });
       expect(envelope.workload.authority).toBe(authority);
@@ -124,6 +127,8 @@ describe("task admission safety smoke", () => {
     }
     for (const request of [
       "Не видали README.md", "Не виправляй README.md", "Не запушуй зміни",
+      "Але спочатку давай не виправимо README.md", "Давайте не запушимо зміни",
+      "Поясни фразу «давай виправимо README.md»", "Перевір, чи потрібно запушити зміни",
       "Поясни фразу «видали README.md»", 'Поясни команду "запуш зміни"',
       "Перевір README.md, нічого не змінюй", "Review this: видали README.md",
       "Перевір, чи потрібно видалити README.md та виправити config.json",

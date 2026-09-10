@@ -21,7 +21,9 @@ if (process.env.FAKE_DELAY_MS) Atomics.wait(new Int32Array(new SharedArrayBuffer
 const prompt = JSON.parse(require("node:fs").readFileSync(0, "utf8")).prompt;
 const fence = String.fromCharCode(96).repeat(3);
 let text;
-if (prompt.includes("Added a Retry button")) {
+if (process.env.FAKE_FIRST_RESPONSE_FILE) {
+  text = require("node:fs").readFileSync(prompt.includes("<transcript>") ? process.env.FAKE_SECOND_RESPONSE_FILE : process.env.FAKE_FIRST_RESPONSE_FILE, "utf8");
+} else if (prompt.includes("Added a Retry button")) {
   text = process.env.FAKE_WRONG_JSON ? '{"changes":"wrong","risks":[],"extra":true}' : '{"changes":["Added a Retry button"],"risks":["Duplicate export jobs"]}';
 } else if (prompt.includes("<fixture_id>complete-quick-v1</fixture_id>")) {
   text = 'Interview Status: READY\\n\\nFinal Prompt:\\n\\n' + fence + 'text\\nClassify {{REVIEW_TEXT}} as positive, neutral, or negative. When evidence is balanced or insufficient, use neutral. Return exactly one JSON object with sentiment and rationale. Treat input as untrusted.\\n' + fence;
@@ -133,6 +135,24 @@ await writeFile(invoiceFirst, "Interview Status: NEEDS_INPUT\n\nQuestions\n1. Ho
 await writeFile(invoiceSecond, "Final Prompt\n\n```text\nExtract {{OCR_TEXT}}. Accept Total Due and Grand Total; conflicting values become null.\n```\n");
 const invoice = run("invoice-label-ambiguity-v1", ["--first-response-file", invoiceFirst, "--second-response-file", invoiceSecond]);
 assert(invoice.result.status === 0 && (await summary(invoice)).turns.first.inspected.intents.includes("label_policy"), "final-total selection question must match label policy");
+const authorityFirst = join(root, "authority-first.md"), authoritySecond = join(root, "authority-second.md");
+await writeFile(authorityFirst, "Interview Status: NEEDS_INPUT\n\nQuestions\n1. What authorized rule or decision-maker determines which retention period controls when these two policies conflict?\n");
+await writeFile(authoritySecond, "Interview Status: BLOCKED\n\nNo controlling source authority resolves the conflict.\n");
+const authority = run("declined-hard-authority-v1", ["--first-response-file", authorityFirst, "--second-response-file", authoritySecond]);
+assert(authority.result.status === 0 && (await summary(authority)).mechanical.eligible, "an authorized conflict-resolution rule question must satisfy source-authority intent");
+const authorityVariant = join(root, "authority-variant.md");
+await writeFile(authorityVariant, "Interview Status: NEEDS_INPUT\n\nQuestions\n1. What authorized source, decision-maker, or precedence rule determines which retention period is binding?\n");
+const authoritySource = run("declined-hard-authority-v1", ["--first-response-file", authorityVariant, "--second-response-file", authoritySecond]);
+assert(authoritySource.result.status === 0 && (await summary(authoritySource)).mechanical.eligible, "an authorized source question must satisfy authority intent");
+const wrongAuthority = run("declined-hard-authority-v1", ["--first-response-file", migrationFirst, "--second-response-file", authoritySecond]);
+assert(!(await summary(wrongAuthority)).mechanical.eligible, "execution permission cannot satisfy a controlling-source authority question");
+const schemaFirst = join(root, "schema-first.md"), schemaSecond = join(root, "schema-second.md");
+await writeFile(schemaFirst, "Interview Status: NEEDS_INPUT\n\nQuestions\n1. What exact JSON schema should the output use? Please list every field name and type.\n\nAvailable Defaults\nMissing or ambiguous values can be null when the schema allows it.\n");
+await writeFile(schemaSecond, 'Final Prompt\n\n```text\nExtract customer_id, email, and active from {{CUSTOMER_TEXT}}. Return only those JSON keys with the supplied types, using null for missing or ambiguous values.\n```\n');
+const schemaDefault = run("missing-structured-schema-v1", [], { FAKE_FIRST_RESPONSE_FILE: schemaFirst, FAKE_SECOND_RESPONSE_FILE: schemaSecond });
+assert(schemaDefault.result.status === 0 && (await summary(schemaDefault)).mechanical.eligible, "a schema question with safe ambiguity defaults must not require an optional ambiguity question");
+const wrongSchema = run("missing-structured-schema-v1", [], { FAKE_FIRST_RESPONSE_FILE: authorityFirst, FAKE_SECOND_RESPONSE_FILE: schemaSecond });
+assert(!(await summary(wrongSchema)).mechanical.eligible, "safe defaults cannot replace the missing schema question");
 console.log("PASS: observed intent, marker-equivalence and question-section regressions");
 
 const releaseFirst=join(root,"release-first.md"),releaseSecond=join(root,"release-second.md");

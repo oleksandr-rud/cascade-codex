@@ -164,6 +164,12 @@ export async function runModel({ model, reasoningEffort = "max", prompt, cwd, ti
   let identity;
   if (adapter === "codex-cli") {
     command = "codex";
+    if (!installedPluginDiscovery) {
+      const features = spawnSync(command, ["features", "list"], { encoding: "utf8", timeout: 10_000, maxBuffer: 1024 * 1024 });
+      if (features.status !== 0 || !/^skip_host_skill_discovery\s/m.test(features.stdout ?? "")) {
+        throw new Error("isolated evaluation requires Codex with skip_host_skill_discovery; run codex update before starting a new attempt");
+      }
+    }
     commandArgs = ["exec", "--json", "--ephemeral", "--skip-git-repo-check", "--sandbox", "read-only",
       ...(!installedPluginDiscovery ? ["--ignore-user-config", "--disable", "plugins", "--disable", "remote_plugin", "--disable", "shell_tool", "--disable", "unified_exec", "--disable", "multi_agent", "--enable", "skip_host_skill_discovery"] : []),
       // Code-mode-only model transports require the host even for text-only turns.
@@ -223,7 +229,11 @@ export async function runModelPhase({ phase, runId, runRoot, ...configuration })
     model: configuration.model, reasoning_effort: configuration.reasoningEffort ?? "max",
     adapter: configuration.adapter ?? "codex-cli", adapter_identity: configuration.adapterId ?? configuration.adapter ?? "codex-cli",
     codex_context: (configuration.adapter ?? "codex-cli") === "codex-cli" ? (configuration.installedPluginDiscovery ? "installed-plugin-discovery" : "isolated") : null,
-    execution_surface: executionSurface(configuration.adapter ?? "codex-cli", configuration.adapterConfig, configuration.adapterId),
+    execution_surface: {
+      ...executionSurface(configuration.adapter ?? "codex-cli", configuration.adapterConfig, configuration.adapterId),
+      ...(configuration.installedPluginDiscovery && (configuration.adapter ?? "codex-cli") === "codex-cli"
+        ? { configuration_policy: "installed plugin discovery; host config and read-only tools; apps/web/memories/project instructions disabled" } : {})
+    },
     prompt_sha256: digest(configuration.prompt), runtime_sha256: EXECUTION_RUNTIME_SHA256,
     adapter_config_sha256: configuration.adapterConfig ? digest(readFileSync(resolve(configuration.adapterConfig))) : null
   };

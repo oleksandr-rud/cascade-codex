@@ -1,13 +1,13 @@
 {
   "artifact_type": "cascade-plugin-capability-catalog",
-  "catalog_digest": "1bcfcf91c367f097dab5826604ab5fff7567ed7085dc2fa18960e0837446afe8",
+  "catalog_digest": "034a469c1283a255eff5f884bac421b8fee85920bfe642d942c8f313a02fea71",
   "marketplace": ".agents/plugins/marketplace.json",
   "plugins": [
     {
       "descriptor_path": ".codex/plugins/cascade-prompt/capabilities.yaml",
-      "descriptor_sha256": "6640d340ed02d52d70d9e9123f808cb178d2cb04b64da73bbeeeaa5425b75288",
+      "descriptor_sha256": "cca793e3f9169520d6f9d4a768130bc0d8fd319432c83d200261d4a8d4a649f3",
       "manifest_path": ".codex/plugins/cascade-prompt/.codex-plugin/plugin.json",
-      "manifest_sha256": "343a08768482be5b2c96b56f8df4577372cad7122189792f42047a3262db1d5c",
+      "manifest_sha256": "c1e7ca5f5610bc60ad9d0b1055b277d3bf4cdea05ae31d2470480c3e361810c7",
       "model_policy": {
         "evaluation_reasoning_effort": "max",
         "model": "gpt-5.6-sol",
@@ -52,7 +52,7 @@
           ]
         }
       ],
-      "version": "0.7.4+codex.20260910134732"
+      "version": "0.7.5+codex.20260910140800"
     },
     {
       "descriptor_path": ".codex/plugins/cascade-simulations/capabilities.yaml",
@@ -346,9 +346,9 @@
     },
     {
       "descriptor_path": ".codex/plugins/cascade-evals/capabilities.yaml",
-      "descriptor_sha256": "def72a4a4f3c00305ce2d4025b0f17cb18cd1d5ea3efc96a36832e22983cda98",
+      "descriptor_sha256": "3d4ce18335aa0db7c890647682480210562b789b06b5190d8a396f70a0326cd6",
       "manifest_path": ".codex/plugins/cascade-evals/.codex-plugin/plugin.json",
-      "manifest_sha256": "eaa34a69187f955b3d1f0baf858985aa9cbe268f37a371b2e0fd13e30448ec4a",
+      "manifest_sha256": "c5c975a5b8e977285754e05e5d4100288e2f77d2281d89245eb7d29af5126c30",
       "model_policy": {
         "evaluation_reasoning_effort": "max",
         "model": "gpt-5.6-sol",
@@ -544,7 +544,7 @@
           ]
         }
       ],
-      "version": "0.3.6+codex.20260910134732"
+      "version": "0.3.7+codex.20260910140800"
     },
     {
       "descriptor_path": ".codex/plugins/cascade-ai-architect/capabilities.yaml",

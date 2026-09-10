@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "catalog_id": "cascade-prompt-interviews-v3",
+  "catalog_id": "cascade-prompt-interviews-v6",
   "description": "Versioned multi-turn fixtures for adaptive prompt-intake behavior. Intent matching is a deterministic eligibility aid; semantic quality remains a separate judgment.",
   "intent_patterns": {
     "output_contract": [
@@ -42,6 +42,8 @@
       "source controls",
       "which rule",
       "which authorized",
+      "authorized rule",
+      "authorized source",
       "conflict-resolution rule",
       "controlling authority",
       "authoritative",
@@ -117,7 +119,7 @@
     },
     {
       "id": "missing-structured-schema-v1",
-      "version": 2,
+      "version": 4,
       "tier": "efficient-structured",
       "expected_mode": "Guided",
       "prompt_build_request": "Create a reusable prompt that extracts a customer record from {{CUSTOMER_TEXT}} and returns JSON. Do not invent values.",
@@ -126,8 +128,7 @@
         "min_questions": 1,
         "max_questions": 2,
         "required_intents": [
-          "output_contract",
-          "ambiguity"
+          "output_contract"
         ],
         "forbidden_intents": [
           "authority",
@@ -149,6 +150,10 @@
           "email",
           "active",
           "{{CUSTOMER_TEXT}}"
+        ],
+        "forbidden_subject_reads": [
+          "runtime/context-composition.md",
+          "assets/templates/structured-extraction.md"
         ]
       },
       "judge_context_paths": [
@@ -416,7 +421,7 @@
     },
     {
       "id": "declined-hard-authority-v1",
-      "version": 1,
+      "version": 3,
       "tier": "balanced-production",
       "expected_mode": "Advanced",
       "prompt_build_request": "Create a reusable compliance brief prompt for {{SOURCE_PACKET}}. Two supplied policies have equal stated authority and directly conflicting retention periods. No controlling-source or escalation rule is supplied. The brief must recommend one binding period.",
