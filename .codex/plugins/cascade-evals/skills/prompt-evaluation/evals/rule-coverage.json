@@ -25,7 +25,10 @@
         "answer-merge"
       ],
       "required_reads": [],
-      "forbidden_reads": []
+      "forbidden_reads": [
+        "runtime/context-composition.md",
+        "assets/templates/structured-extraction.md"
+      ]
     },
     {
       "id": "invoice-label-ambiguity-v1",
@@ -1272,7 +1275,7 @@
     },
     {
       "path": "runtime/intake-interview.md",
-      "sha256": "82e67ce79d0e5735e66fe763a7dc87c6b13c66cb4e78c38491d4ca79010165e9",
+      "sha256": "f7e3f5b490a7f3f6d16b43a69b35b416cff7000d441f6355cdeebf0fc9e5a513",
       "consumers": [
         "runtime/intake-interview.md"
       ],
@@ -1529,7 +1532,7 @@
     },
     {
       "path": "SKILL.md",
-      "sha256": "05140313de0de1409ac15084503b56cb871fe3c826c7b65e5816b71aaf5e6eaf",
+      "sha256": "8acd2bd0b9ded04dcf5c5ef1493957e6379336b7d6db9d210f03fee078c11595",
       "consumers": [
         "SKILL.md"
       ],

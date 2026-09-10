@@ -67,10 +67,10 @@ const HARD_ACTION_NOUN = /\b(?:destruction|erasure|deletion|obliteration|purge)\
 const HARD_ACTION_START = /^(?:please\s+)?(?:delete|erase|destroy|wipe|purge|obliterate|eradicate|expunge|discard)\w*\b/i;
 const META_WORDING = /\b(?:parser|classifier|classification|detection|support|handling|tests?|docs?|documentation|wording|phrase|sentence|terms?)\b/i;
 const MUTATION_START = /^(?:please\s+)?(?:add|apply|adjust|alter|revise|rewrite|rework|rebuild|redesign|repair|overhaul|refresh|modernize|revamp|change|edit|modify|update|implement|build|create|document|remove|delete|erase|destroy|wipe|purge|refactor|write)\b/i;
-const UKRAINIAN_PREFIX = String.raw`(?:(?:а|і|й|та|але|потім|тепер|зараз|ми|ви|ти|можеш|можемо|можете|маємо|потрібно|треба|прошу|будь\s+ласка)[,\s]+)*`;
-const UKRAINIAN_MUTATION = String.raw`(?:зроб(?:и|іть|ити)|створ(?:и|іть|ити)|реалізу(?:й|йте|вати)|дода(?:й|йте|ти)|онов(?:и|іть|ити)|виправ(?:те|іть|ити)?|перероб(?:и|іть|ити)|перебуду(?:й|йте|вати)|змін(?:и|іть|ити)|переймену(?:й|йте|вати)|впровад(?:ь|ьте|ити))`;
+const UKRAINIAN_PREFIX = String.raw`(?:(?:а|і|й|та|але|потім|тепер|зараз|спочатку|перед\s+цим|давай(?:те)?|ми|ви|ти|можеш|можемо|можете|маємо|потрібно|треба|прошу|будь\s+ласка)[,\s]+)*`;
+const UKRAINIAN_MUTATION = String.raw`(?:зроб(?:и|іть|ити|имо)|створ(?:и|іть|ити)|реалізу(?:й|йте|вати)|дода(?:й|йте|ти)|онов(?:и|іть|ити)|виправ(?:те|іть|ити|имо)?|перероб(?:и|іть|ити)|перебуду(?:й|йте|вати)|змін(?:и|іть|ити)|переймену(?:й|йте|вати)|впровад(?:ь|ьте|ити))`;
 const UKRAINIAN_DESTRUCTIVE = String.raw`(?:видал(?:и|іть|ити)|знищ(?:и|іть|ити)|зітри|стерти)`;
-const UKRAINIAN_EXTERNAL = String.raw`(?:запуш(?:ити|те)?|пушни|опубліку(?:й|йте|вати)|надішли|надішліть|надіслати)`;
+const UKRAINIAN_EXTERNAL = String.raw`(?:запуш(?:ити|имо|те)?|пушни|опубліку(?:й|йте|вати)|надішли|надішліть|надіслати)`;
 const UKRAINIAN_VALIDATION = String.raw`(?:перевір(?:ити|те)?|протесту(?:й|йте|вати))`;
 const UKRAINIAN_ACTION = `${UKRAINIAN_MUTATION}|${UKRAINIAN_DESTRUCTIVE}|${UKRAINIAN_EXTERNAL}|${UKRAINIAN_VALIDATION}`;
 const UKRAINIAN_MUTATION_START = new RegExp(`^${UKRAINIAN_PREFIX}${UKRAINIAN_MUTATION}(?=$|[\\s,.;:!?])`, "iu");

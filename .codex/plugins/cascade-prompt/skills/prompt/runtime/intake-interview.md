@@ -32,10 +32,11 @@ multi-stage tools, or evaluation design.
 
 ## Ask
 
-Ask only when the answer changes feasibility, safety/privacy, authority,
-permission, hard boundaries, output/decision behavior, architecture, success,
-or validation. Do not ask when answered, safely defaultable, or merely omitted
-from the draft.
+Ask only when the missing answer prevents satisfying a hard requirement for
+feasibility, safety/privacy, authority, permission, output, architecture,
+success, or validation. A preference changing the result does not itself make
+it blocking. Do not ask when answered, safely defaultable, supplied by a runtime
+placeholder, or merely omitted from the draft.
 
 Apply an explicit maximum to all operations it covers: retries consume a total
 tool-call budget unless a separate allowance is explicitly authorized. Do not
@@ -61,8 +62,12 @@ Generate by field type; ground in task entities:
 Offer 2–3 exclusive options only when supplied or logically bounded by the
 task; otherwise ask a free-form question. Always retain a free-form answer path.
 Never invent business policy to manufacture options. Recommend only safe
-defaults and state their operational impact. Combine dependent gaps; ask at most three in one round. A second
-round requires a new blocker.
+defaults and state their operational impact. Ask the smallest set of questions,
+usually one; three is a ceiling, not a quota. Combine dependent output fields,
+types, and missing/ambiguous-value behavior into one output-contract question.
+Do not add optional normalization or source-excerpt questions when source
+preservation and the requested output shape suffice. A second round requires a
+new blocker.
 
 Confirm each is unanswered, material, resolving, answerable, safe, and does not
 outsource work.

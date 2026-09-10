@@ -17,6 +17,7 @@ Use filenames like `YYYY-MM-DD-slug.md`.
 
 | Date | Report | Purpose |
 |---|---|---|
+| 2026-09-10 | [Harness admission and Prompt repairs](2026-09-10-harness-admission-and-prompt-repairs.md) | Ukrainian directive routing, Prompt readiness and context loading, CLI compatibility, oracle repairs, and preserved validation evidence. |
 | 2026-09-10 | [Autonomous project Harness evaluation plan](2026-09-10-autonomous-project-harness-evaluation-plan.md) | Proposed isolated build/run/change pilot, independent complexity and reference checks, control comparison, and the missing writable execution profile; NOT_RUN. |
 | 2026-09-10 | [Prompt discovery and model audit](2026-09-10-cascade-prompt-discovery-and-model-audit.md) | Installed material loading, native trigger/search probes, campaign run-ID repair, Windows fixes, model-specific support, and preserved quality gaps. |
 | 2026-09-10 | [Evaluation simplification and installed plugins](2026-09-10-evaluation-simplification-and-plugin-update.md) | Published decisions and commits, exact installed versions, source/cache parity, historical canaries, and remaining proof limits. |

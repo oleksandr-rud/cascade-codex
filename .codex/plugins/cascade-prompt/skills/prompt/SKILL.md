@@ -13,8 +13,11 @@ This file covers Quick work. The published package contains only active runtime
 and model-routing material; internal development plans and source-preservation
 archives are not part of the runtime contract.
 
-Resolve every path relative to this installed `SKILL.md`. Do not search source
-repositories, alternate caches, or memory unless the package is incomplete.
+Set the skill root to the directory containing the `SKILL.md` you actually read:
+`skills/prompt/` inside the installed package. Join every relative path below to
+that root, including model-index adapter paths. The package root and working
+directory are not the skill root. Do not search source repositories, alternate
+caches, or memory unless the package is incomplete.
 Load only the smallest conditional material:
 
 - `runtime/intake-interview.md` after a material gap reclassifies the request as
@@ -43,9 +46,11 @@ Load only the smallest conditional material:
   Entry-level `checked_at` overrides the catalog date; undated entries retain
   the older catalog date. Verify current availability before recommending a
   purchase or changing a provider configuration; a candidate is not a measured winner.
-- `runtime/context-composition.md` when producing a reusable context-bearing
-  prompt, context template, or long-context/history layout. It selects one
-  template; never load all templates or the whole knowledge base by default.
+- `runtime/context-composition.md` for an explicit context-template/layout
+  request or material multi-source/history composition. A reusable prompt with
+  one bounded input and a resolved schema uses core plus its task overlay;
+  "reusable" alone does not require a context template. Load only the selected
+  template when this pack applies.
 - `references/knowledge-coverage.md` only for an explicit knowledge-base or
   runtime coverage audit. It maps reference rules to their active consumers.
 - `runtime/evaluation.md` for audit, comparison, tests, or effectiveness claims.
@@ -99,11 +104,11 @@ Derive obligations for objective, input/placeholder, output, hard boundaries,
 success, material validation, and architecture-changing target details. Add
 only applicable task/risk/surface obligations.
 
-Classify request, source-conflict, optional, and composition gaps. Never invent
-labels, schemas, policy, authority, permission, or precedence. Ask when missing
-information changes feasibility, safety/privacy, a hard boundary,
-output/decision behavior, architecture, success, or validation; otherwise use a
-safe reversible disclosed default.
+Classify request, source-conflict, optional, and composition gaps. Ask only when
+no supplied value, runtime placeholder, or safe reversible default can satisfy a
+hard requirement. Never invent labels, schemas, policy, authority, permission,
+or precedence. Requested placeholders are future runtime inputs, not missing
+authoring answers. Apply and disclose safe defaults for optional preferences.
 
 If input is needed, return this compact structure:
 
@@ -116,8 +121,11 @@ If input is needed, return this compact structure:
 Do not emit `Final Prompt`. For classification work, unresolved labels must also
 resolve single-label versus multi-label behavior and the precedence or
 abstention rule for mixed or ambiguous cases. Merge answers, preserve unrelated
-decisions, and do not repeat resolved questions. Unresolved hard dependencies
-return `BLOCKED` with the safest partial template. `PARTIAL` is not a state.
+decisions, and do not repeat resolved questions. An answerable hard gap returns
+`NEEDS_INPUT` first, even when no safe default exists. Use `BLOCKED` with the
+safest partial template only when a required resource is unavailable or the
+user cannot or declines to resolve the hard gap. Absence from the brief alone
+leaves an answerable gap. `PARTIAL` is not a state.
 
 ### 2. Plan minimum context
 
@@ -182,7 +190,9 @@ undefined field returns to `NEEDS_INPUT`; repeated omission is quality failure.
 
 ## READY output contract
 
-Unless another format is requested, use:
+Unless the user explicitly requests another response format, use these literal
+section labels. Describing the deliverable as a reusable or production prompt
+does not rename `Final Prompt`:
 
 1. `Final Prompt`: one copy-ready fenced prompt.
 2. `Variables to Fill`: unresolved placeholders; omit when none.

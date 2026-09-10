@@ -326,6 +326,12 @@ responses. Prompt runtime behavior is unchanged by these evaluation repairs.
 
 The Codex Code Mode host remains available because code-mode-only model transports require it even for text-only turns. Action tools remain disabled in isolated runs; every tool or error event still invalidates a tool-free response. Campaign child exit codes 2 (rejected) and 3 (incomplete) are expected outcomes; unexpected exits halt shared dispatch.
 
+Isolated Codex execution requires the `skip_host_skill_discovery` feature.
+The adapter checks `codex features list` before model dispatch and records an
+unsupported CLI as a non-dispatched failure. Update Codex before starting a new
+attempt; never drop the isolation flag to make an older CLI run. Native discovery
+receipts instead identify the retained host configuration and read-only tools.
+
 Version 4 requests enumerate allowed leaf pointers relative to the evidence object. The outer request envelope is excluded; a pointer such as `/evidence/reference/content` remains invalid when the permitted path is `/reference/content`. Recovery reports a truncated final summary without discarding surviving phase evidence.
 
 Interview runs honor `--run-id` exactly, matching the campaign's predeclared result directory. Duplicate IDs preserve prior results and fail before dispatch; traversal-shaped IDs are rejected. Historical runs whose interview runner ignored that option require explicit identity-checked reconciliation of their actual directories; do not rewrite the original campaign contract.
