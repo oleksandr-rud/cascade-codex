@@ -15,10 +15,13 @@ mount the source checkout or Docker socket in the builder container.
 Freeze the source/runtime/plugin/image digests and exact commands before model
 dispatch. The controlled model is `gpt-5.6-sol` with `max` reasoning, a single
 builder session followed by two independent judge contexts. The evaluation-wide
-deadline is 60 minutes from first builder dispatch: initial build up to 20
+deadline is 60 minutes from first builder dispatch: initial build up to 25
 minutes, follow-up up to 12, independent acceptance up to 8 total, judges up to
-10 concurrently, with the remaining time reserved for freezing and cleanup.
+10 concurrently, with the remaining five minutes reserved for freezing and cleanup.
 Each phase also receives the remaining overall deadline. No implicit retries.
+Attempt v3 used the earlier 20-minute initial limit and timed out before a
+completed turn. Attempt v4 freezes this revised allocation; preserve v3's
+timeout and keep any post-timeout functional diagnosis separate from acceptance.
 
 The disposable controller reuses Cascade Evals' bounded process execution,
 global model-call pool and judge reduction. It keeps raw events, frozen first

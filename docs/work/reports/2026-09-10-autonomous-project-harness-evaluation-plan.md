@@ -1,9 +1,10 @@
-# Autonomous project Harness evaluation — proposed pilot
+# Autonomous project Harness evaluation — pilot plan
 
-Status: **DESIGNED; NOT_RUN**. Inspected harness revision: `bf40c48`.
-This is a reviewable experiment plan, not a registered campaign or an acceptance
-receipt. Target selection, exact reference pack, execution profile, budgets,
-and judge packets must be frozen before dispatch.
+Status: **PREPARED FOR ATTEMPT V4**. The original design inspected `bf40c48`;
+attempt v3 froze repaired source `ad897e8` on
+`codex/autonomous-project-harness-eval`. This is an experiment plan, not a
+registered campaign or an acceptance receipt. The public brief, reference pack,
+execution profile, budgets and judge packets are frozen before dispatch.
 
 ## Question and pilot project
 
@@ -113,20 +114,28 @@ also denies network, so it cannot serve as an unchanged live model builder.
 Changing a prompt or calling a read-only trace a successful build would not
 close this gap.
 
-The next implementation slice is one bounded project-building execution
+The implemented slice is one bounded project-building execution
 profile: a fresh writable target, model connectivity, controlled dependency
 provisioning and localhost access, enforced denial of sealed evaluator inputs,
 streamed evidence, process cleanup, and timeout/cancellation handling. Verify
 those boundaries before the project run. Reuse existing execution and evidence
 components; do not introduce a general benchmark framework for this pilot.
 
-The public brief/reference pack, hidden checks and two judge profiles are the
-remaining subject-specific inputs. Product checks own application behavior;
+The public brief/reference pack, hidden checks and two judge profiles are in
+[`harness-evals/pilots/request-tracker-v1`](../../../harness-evals/pilots/request-tracker-v1/README.md).
+Product checks own application behavior;
 Cascade Evals owns independent judging and reduction; simulation/controller
 verification owns execution integrity. Generic route diagnostics do not become
 product or architecture acceptance evidence.
 
-Current phases: design **PREPARED**; exact bindings and runnable profile
-**PENDING**; target execution, product checks, independent judgments and human
-calibration **NOT_RUN**. Preserve reusable case/rubric sources; keep raw runs
-under ignored artifact roots according to the chosen adapter contract.
+Current phases: design and exact bindings **PREPARED**; allowed/denied filesystem
+and network probes **PASS**; attempt v3 **TIMED_OUT** before a completed native
+turn, despite passing builder checks. Its prescribed independent acceptance and
+judgments remain **NOT_RUN**. A separate post-timeout functional diagnosis does
+not change that result. Attempt v4 receives 25 minutes for the initial build
+within the unchanged 60-minute overall limit; it starts from a fresh project.
+Human calibration remains **NOT_RUN**. The earlier controller and blocked native
+attempts remain separate.
+See [contract findings and native admission repair](2026-09-10-contract-necessity-and-native-admission.md)
+for their evidence boundaries. Preserve reusable case/rubric sources; keep raw
+runs under ignored artifact roots according to the chosen adapter contract.

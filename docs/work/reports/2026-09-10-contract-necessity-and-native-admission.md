@@ -61,7 +61,18 @@ and the pilot are isolated on `codex/autonomous-project-harness-eval`.
 - Final source validator: PASS. Runtime suite: 41 tests and 348 assertions
   PASS. The regenerated portable runtime contains 98 files and 14 plugin
   bindings; its payload is 28,358 bytes smaller than the failed baseline.
-  A fresh native build remains NOT_RUN at this checkpoint.
+  Native attempt v3 used source `ad897e8`. Its routing hook produced a bounded envelope without blockers;
+  ordinary commands and source writes now execute. Its isolated 14 Cascade
+  packages again match all 610 source files. Its own tests, target validator and
+  foreground restart smoke passed, but the turn exceeded the fixed 20-minute
+  limit while preparing the handoff. The attempt remains TIMED_OUT with no
+  completed-turn usage. Its prescribed independent acceptance and judgments are
+  NOT_RUN. A separate post-timeout functional diagnosis must not replace this
+  outcome. A fresh v4 attempt allocates 25 minutes to the initial build within
+  the same 60-minute overall limit. Its setup also creates the empty native
+  `.agents` directory and trusts only the known `/workspace` Git path, addressing
+  the observed sandbox remount and Git ownership errors without changing
+  filesystem or network permissions.
 
 Exact controllers, source/image/plugin freezes and raw attempts stay under the
 ignored `.artifacts/autonomous-project-pilot-*` roots. The reusable public
