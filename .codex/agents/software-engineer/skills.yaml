@@ -1,4 +1,5 @@
 plugin_skills:
+  - cascade-coding-agent:pull-and-integrate
   - cascade-software-architect:review-change
   - cascade-software-architect:review-architecture
   - cascade-qa:triage-defects

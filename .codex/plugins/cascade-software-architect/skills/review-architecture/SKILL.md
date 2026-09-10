@@ -9,6 +9,12 @@ Invocation does not establish independence. Review in the authoring context is
 self-review; an independent gate needs a separate context bound to the same
 architecture candidate and evidence. The host owns that context and authority.
 
+When branch divergence or a stale integration base invalidates architectural
+assumptions, recommend `cascade-coding-agent:pull-and-integrate` using
+[the Git integration handoff](../../references/git-integration-handoff.md).
+Reassess affected contracts after authorized host integration; return findings
+to an already active integration owner without recursive dispatch.
+
 Recover the exact architecture claim, authoritative sources, accepted
 assumptions, current candidate, and all direct or hidden consumers. Trace
 behavior through public contracts, state/data owners, interfaces, dependencies,

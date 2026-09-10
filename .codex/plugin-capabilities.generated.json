@@ -1,6 +1,6 @@
 {
   "artifact_type": "cascade-plugin-capability-catalog",
-  "catalog_digest": "a418b58e0a45b22e6081e336dcfda6a9a7b0f3b2fd9c87d7bc9dca13ad467a26",
+  "catalog_digest": "c2c09ef3b8b56ee570843cd9c2bef7ac970b72a4d073a4a71049abb9baffe685",
   "marketplace": ".agents/plugins/marketplace.json",
   "plugins": [
     {
@@ -871,9 +871,9 @@
     },
     {
       "descriptor_path": ".codex/plugins/cascade-software-architect/capabilities.yaml",
-      "descriptor_sha256": "411bf157aada84b6a43f5d7f3bb8352686fe129903bfe6ec0da1e4267ba5cb8a",
+      "descriptor_sha256": "8fa454e93326b26bfad9374ddaed60637f847b3ec8bcb55f35a534a635530fe6",
       "manifest_path": ".codex/plugins/cascade-software-architect/.codex-plugin/plugin.json",
-      "manifest_sha256": "bbdc846c5f193b49f1b88d341117aad059defe0b6b937e8939e3bd7d4010f96f",
+      "manifest_sha256": "5a518fc915e3ebd5bd23336e95ffab5aad4e45844c636237cae123e258afdbb9",
       "model_policy": {
         "evaluation_reasoning_effort": "high",
         "model": "gpt-6-astra",
@@ -894,11 +894,16 @@
           "effect": "CANDIDATE_WRITE",
           "evaluation_cases": [
             "boundary-ownership",
-            "pattern-composition"
+            "pattern-composition",
+            "stale-base-host-integration-handoff"
+          ],
+          "optional_consumes": [
+            "git-integration-report"
           ],
           "optional_dependencies": [
             "cascade-software-architect:select-architecture-patterns",
-            "cascade-design:design-system"
+            "cascade-design:design-system",
+            "cascade-coding-agent:pull-and-integrate"
           ],
           "policy_tags": [
             "software-architecture",
@@ -959,12 +964,16 @@
           "evaluation_cases": [
             "hidden-consumer",
             "authority-collision",
-            "no-findings"
+            "no-findings",
+            "stale-base-host-integration-handoff"
           ],
           "optional_consumes": [
-            "consumer-map"
+            "consumer-map",
+            "git-integration-report"
           ],
-          "optional_dependencies": [],
+          "optional_dependencies": [
+            "cascade-coding-agent:pull-and-integrate"
+          ],
           "policy_tags": [
             "software-architecture",
             "independent-review"
@@ -993,12 +1002,17 @@
           "evaluation_cases": [
             "introduced-defect",
             "unrelated-dirty-work",
-            "no-findings"
+            "no-findings",
+            "readonly-integration-handoff",
+            "no-recursive-integration"
           ],
           "optional_consumes": [
-            "consumer-map"
+            "consumer-map",
+            "git-integration-report"
           ],
-          "optional_dependencies": [],
+          "optional_dependencies": [
+            "cascade-coding-agent:pull-and-integrate"
+          ],
           "policy_tags": [
             "software-architecture",
             "independent-review"
@@ -1013,13 +1027,13 @@
           ]
         }
       ],
-      "version": "0.2.1+codex.20260910172549"
+      "version": "0.2.4+codex.20260910204851"
     },
     {
       "descriptor_path": ".codex/plugins/cascade-coding-agent/capabilities.yaml",
-      "descriptor_sha256": "f2ac6510d5213a0e39ca6db4e91bfb15bd6e83906fa03ec50bdda56c14b6a067",
+      "descriptor_sha256": "de34156e4ee409dbf4994bc5b1c4f84e463c2555088b0521501fabce40d3cb65",
       "manifest_path": ".codex/plugins/cascade-coding-agent/.codex-plugin/plugin.json",
-      "manifest_sha256": "9002f07effaa6d572e0ee8b5b0041de06562e31782ae3186eca4b71ddc97253f",
+      "manifest_sha256": "4db8eb52b58887eca5b6fdbde3c0cbcde5935e4c970818691531796015142f99",
       "model_policy": {
         "evaluation_reasoning_effort": "high",
         "model": "gpt-6-astra",
@@ -1027,6 +1041,57 @@
       },
       "name": "cascade-coding-agent",
       "skills": [
+        {
+          "anti_triggers": [
+            "only a read-only branch comparison is requested",
+            "reviewed agent assets need installation without Git branch integration",
+            "a skill about pulling is being authored rather than executed"
+          ],
+          "authority": "LOCAL_WRITE",
+          "consumes": [
+            "git-integration-request"
+          ],
+          "description": "Integrate develop or the actual primary branch when develop is absent; resolve Git conflicts by branch authority rather than chronology and prepare reviewed changes for push with explicit readiness.",
+          "effect": "HOST_EFFECT",
+          "evaluation_cases": [
+            "older-authoritative-base",
+            "clean-merge-semantic-conflict",
+            "rebase-side-inversion",
+            "dirty-work-preservation",
+            "ambiguous-source",
+            "report-required-on-noop",
+            "absent-develop-primary-fallback",
+            "fork-base-versus-push-target",
+            "remote-movement-before-push",
+            "review-bound-to-final-candidate",
+            "prepared-without-push-authority"
+          ],
+          "optional_consumes": [
+            "git-repository-state",
+            "branch-authority-policy",
+            "change-review-findings"
+          ],
+          "optional_dependencies": [
+            "cascade-software-architect:review-change"
+          ],
+          "policy_tags": [
+            "coding-agent",
+            "git-integration",
+            "branch-authority"
+          ],
+          "produces": [
+            "git-integration-report"
+          ],
+          "required_dependencies": [],
+          "route": "cascade-coding-agent:pull-and-integrate",
+          "triggers": [
+            "a Git branch must be pulled or synchronized with its upstream",
+            "dev or develop or the primary branch must be merged or rebased into the working branch",
+            "an active merge or rebase needs conflict resolution",
+            "local changes must be adapted to an authoritative branch even without Git conflict markers",
+            "changes must be prepared for push"
+          ]
+        },
         {
           "anti_triggers": [
             "a new software or agent architecture must first be designed"
@@ -1166,7 +1231,7 @@
           ]
         }
       ],
-      "version": "0.2.6+codex.20260910172549"
+      "version": "0.3.3+codex.20260910204851"
     },
     {
       "descriptor_path": ".codex/plugins/cascade-personas/capabilities.yaml",

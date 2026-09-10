@@ -54,6 +54,7 @@ durable paths, target commands, campaign state, and acceptance.
 | Software, plugin, and workflow architecture, patterns, and independent review | `cascade-software-architect:<skill>` | Software Engineer for software design; Code Reviewer for independent review; Agent Engineer for host integration |
 | AI-agent topology, behavior, roles, skills, prompt briefs, persona requirements, and evaluation briefs | `cascade-ai-architect:<skill>` | Requesting role; Agent Engineer for host integration |
 | Harness audit, maintenance, and asset integration | `cascade-coding-agent:<skill>` | Agent Engineer |
+| Git pull, upstream synchronization, merge/rebase conflicts and preparing changes for push | `cascade-coding-agent:pull-and-integrate`; `cascade-software-architect:review-change` for applicable review | Active implementation owner; host executes authorized Git effects |
 | Market research, selection, differentiation and experiments | `cascade-market:<skill>` | Orchestrator; Product Designer for scoped design research |
 | Channel selection, growth strategy, cohort economics and product feedback | `cascade-market:plan-growth` | Orchestrator |
 | Positioning, messaging, naming, tone, proof, and trust language | `cascade-market:brand-positioning` | Orchestrator; Product Designer within the design brief |
@@ -101,6 +102,19 @@ claim-bound selected set and explicit rejections. Use
 than one node, a dependency, an artifact handoff, parallel branches, or a join.
 Both are non-dispatching controllers; the active host role retains repository
 access, execution, persistence, and acceptance.
+
+For a requested or already authorized Git pull, upstream integration, or conflict
+resolution, load `cascade-coding-agent:pull-and-integrate` before mutation, even
+when Git predicts a clean merge. Interpret intent semantically, including
+requests in other languages; do not use lexical trigger tables. This exact route
+applies to target product repositories as well as the harness. Bind the user's
+or repository's branch authority separately from commit chronology and report
+all material adaptations after execution. Read-only comparisons and requests to
+author the skill do not authorize running an integration. Push preparation also
+selects this route. Unless an explicit base or repository policy overrides it,
+integrate `develop` when present, otherwise the remote's verified primary branch.
+Every run prepares and reports push readiness, including an already-current
+base, while keeping the push destination separate and honoring push authority.
 The Orchestrator's [Coordinator host bridge](.codex/agents/orchestrator/AGENT.md#coordinator-host-bridge)
 owns serialized input preparation and deterministic selection/plan validation;
 prose summaries of admission or selected routes do not satisfy those inputs.

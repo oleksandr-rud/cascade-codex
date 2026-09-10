@@ -9,6 +9,12 @@ Produce a reviewable architecture candidate from current sources. Start with
 observable behavior and ownership, then select the smallest structure that
 satisfies the accepted constraints.
 
+If architecture work depends on reconciling divergent branches or adapting to
+the governing base, recommend `cascade-coding-agent:pull-and-integrate` through
+[the Git integration handoff](../../references/git-integration-handoff.md).
+Consume the resulting report and reassess affected assumptions after authorized
+host execution. Designing an architecture does not itself authorize a pull.
+
 For UI architecture, consume the shared Generative UI practice through
 `cascade-design:design-system`, `references/generative-ui.md`. Map supported
 frontend components, UI state and relevant data/action ownership within the

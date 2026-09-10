@@ -10,6 +10,15 @@ persona, simulation, AI-agent behavior, project scheduling, implementation, or
 execution semantics. It consumes those owners' artifacts and returns candidate
 structures or read-only findings.
 
+Architecture design, architecture review and change review can recommend
+`cascade-coding-agent:pull-and-integrate` when source divergence or a stale base
+requires reconciliation. These are conditional host handoffs; the originating
+method retains read-only authority and consumes the resulting integration report.
+The host performs authorized integration, then returns the new candidate for
+reassessment. Optional reverse links do not dispatch plugins or create a cyclic
+plan. See [the handoff contract](../references/git-integration-handoff.md) for
+identity binding and suppression of recursive integration requests.
+
 Its server-side default is a modular monolith with concrete domain modules,
 owned state or policy, public in-process contracts, and one application/release
 boundary. A shared database does not share ownership of module data. Generic

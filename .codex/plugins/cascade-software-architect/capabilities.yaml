@@ -1,7 +1,7 @@
 schema_version: 1
 plugin:
   name: cascade-software-architect
-  version: 0.2.1+codex.20260910172549
+  version: 0.2.4+codex.20260910204851
 model_policy:
   model: gpt-6-astra
   planning_reasoning_effort: high
@@ -12,13 +12,14 @@ skills:
     triggers: [a new application has no accepted architecture, business or data ownership and dependency boundaries are unresolved]
     anti_triggers: [only an internal edit within accepted boundaries or an AI-agent topology decision is needed]
     consumes: [accepted-requirements, architecture-constraints]
+    optional_consumes: [git-integration-report]
     produces: [architecture-candidate]
     required_dependencies: []
-    optional_dependencies: [cascade-software-architect:select-architecture-patterns, cascade-design:design-system]
+    optional_dependencies: [cascade-software-architect:select-architecture-patterns, cascade-design:design-system, cascade-coding-agent:pull-and-integrate]
     policy_tags: [software-architecture, boundaries]
     effect: CANDIDATE_WRITE
     authority: READ_ONLY
-    evaluation_cases: [boundary-ownership, pattern-composition]
+    evaluation_cases: [boundary-ownership, pattern-composition, stale-base-host-integration-handoff]
   - route: cascade-software-architect:select-architecture-patterns
     description: Disposition and compose compatible architecture patterns from a versioned host-supplied catalog.
     triggers: [architecture patterns or defaults must be selected]
@@ -37,24 +38,24 @@ skills:
     anti_triggers: [only domain acceptance or implementation of an already reviewed architecture is needed]
     consumes: []
     consumes_any_of: [architecture-candidate, agent-architecture-packet, agent-workflow]
-    optional_consumes: [consumer-map]
+    optional_consumes: [consumer-map, git-integration-report]
     produces: [architecture-review-findings]
     required_dependencies: []
-    optional_dependencies: []
+    optional_dependencies: [cascade-coding-agent:pull-and-integrate]
     policy_tags: [software-architecture, independent-review]
     effect: READ_ONLY
     authority: READ_ONLY
-    evaluation_cases: [hidden-consumer, authority-collision, no-findings]
+    evaluation_cases: [hidden-consumer, authority-collision, no-findings, stale-base-host-integration-handoff]
   - route: cascade-software-architect:review-change
     description: Independently review a current diff against its request, architecture, public contracts, consumers, and regression surface.
     triggers: [a risky or requested change needs fixed-point review]
     anti_triggers: [a tiny internal change has sufficient direct validation, no current diff exists to review]
     consumes: [change-diff, change-contract]
-    optional_consumes: [consumer-map]
+    optional_consumes: [consumer-map, git-integration-report]
     produces: [change-review-findings]
     required_dependencies: []
-    optional_dependencies: []
+    optional_dependencies: [cascade-coding-agent:pull-and-integrate]
     policy_tags: [software-architecture, independent-review]
     effect: READ_ONLY
     authority: READ_ONLY
-    evaluation_cases: [introduced-defect, unrelated-dirty-work, no-findings]
+    evaluation_cases: [introduced-defect, unrelated-dirty-work, no-findings, readonly-integration-handoff, no-recursive-integration]

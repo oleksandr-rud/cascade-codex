@@ -1,7 +1,7 @@
 {
   "agent_count": 9,
   "agent_scenario_count": 9,
-  "catalog_digest": "2a1ae3199de15e07fcee2d35bace4d73513304da0044ed41000d8fcb760af8cf",
+  "catalog_digest": "9e93f086d92505cbe20aae9b7c35abbcf1d575afc3c9a6ba835c64e6aca30a45",
   "generated_by": "scripts/cascade/evals.ts",
   "scenario_count": 45,
   "scenarios": [
@@ -1174,7 +1174,7 @@
         },
         {
           "path": ".codex/agents/agent-engineer/skills.yaml",
-          "sha256": "a02bd0467549e6a0cb8aa29f9c8b4271cf397318e13ff8af37049cc6e2b8d2fd"
+          "sha256": "6e6c9bbb7e5306202f89381f99d86b6033203c0522d23e31db50f4b9da1ad45c"
         },
         {
           "path": ".codex/plugins/cascade-coding-agent/skills/audit-harness/SKILL.md",
@@ -1186,7 +1186,7 @@
         },
         {
           "path": "CODEX.md",
-          "sha256": "0fb03d3b2168c44bbfacb163bd693f4d9df2a66bb42b1eb1808b192ed590ff6c"
+          "sha256": "6c0a0b714ec80b211b2e3a4aef6e1743071cc093d956447e3af378fe557e214f"
         }
       ],
       "execution": {
@@ -1242,7 +1242,7 @@
         },
         {
           "path": ".codex/plugins/cascade-software-architect/skills/review-change/SKILL.md",
-          "sha256": "aa6ec018a159c86ab74fa524eafe85c920444746bd4951431d99c44f23e827ea"
+          "sha256": "c1da805c4fce857956b6262f9ff5f03f3f669af1c0d2b3e834d5f43b7185eb41"
         }
       ],
       "execution": {
@@ -1296,7 +1296,7 @@
         },
         {
           "path": ".codex/agents/frontend-engineer/skills.yaml",
-          "sha256": "9ef5de5c39a9fa5726a25bb6f60c18dc0e4021044c80192d09c5c2de9af1adca"
+          "sha256": "3f04859b781520de091022127bbfccfd80296d3689b7c27aff6c01a2bac1324a"
         },
         {
           "path": ".codex/plugins/cascade-design/skills/design-system/references/design-system-contract.md",
@@ -1654,7 +1654,7 @@
         },
         {
           "path": ".codex/agents/software-engineer/skills.yaml",
-          "sha256": "56c20987f59a2f37a3d88e011fd3be2334e94823f69a6125d8d0bc269f7c3635"
+          "sha256": "5f40bbb5f0af32f668ade50219866983b50c17d788972c6898233ef1a156fdc3"
         },
         {
           "path": ".codex/skills/plan-change/SKILL.md",

@@ -1,6 +1,6 @@
 {
   "name": "cascade-software-architect",
-  "version": "0.2.1+codex.20260910172549",
+  "version": "0.2.4+codex.20260910204851",
   "description": "Designs and independently reviews source-grounded software and plugin architectures without implementing, coordinating, or accepting them.",
   "author": {
     "name": "Cascade"

@@ -9,6 +9,13 @@ Invocation does not establish independence. Review in the implementation
 context is self-review; an independent gate needs a separate context bound to
 the same request, diff and evidence. The host owns that context and its authority.
 
+When branch divergence, an outdated base or integration conflicts obstruct the
+reviewed change, recommend `cascade-coding-agent:pull-and-integrate` using
+[the Git integration handoff](../../references/git-integration-handoff.md).
+After authorized host integration, review the new fixed point. If this review
+was invoked by an active integration, return findings to that owner instead of
+recursively invoking integration. Review itself remains read-only.
+
 Recover the exact request, accepted assumptions, architecture and policy
 constraints, current diff, nearby dirty work, and relevant consumers. Trace each
 changed behavior through public interfaces, state or persistence, tools,

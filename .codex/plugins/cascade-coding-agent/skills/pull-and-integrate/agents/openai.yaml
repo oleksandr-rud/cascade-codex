@@ -1,0 +1,6 @@
+interface:
+  display_name: "Pull and Integrate"
+  short_description: "Integrate the base branch and prepare reviewed changes for push"
+  default_prompt: "Use $pull-and-integrate to integrate develop or the primary branch if develop is absent, review and prepare my changes for push, and report adaptations and readiness."
+policy:
+  allow_implicit_invocation: true
