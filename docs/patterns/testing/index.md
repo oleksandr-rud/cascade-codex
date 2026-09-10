@@ -33,6 +33,15 @@ Outcome terms:
 - `NOT_RUN`: optional or out-of-scope check was not run.
 - `GAP`: expected behavior is missing or ambiguous.
 
+## Filesystem Safety
+
+Filesystem safety checks use native path comparisons. On Windows, unprivileged
+directory junctions exercise reparse-point rejection; Unix retains file and
+directory symlink fixtures. Ancestor-substitution checks accept Windows blocking
+the attempted rename only when the read still returns the original bytes. If
+replacement succeeds, the containment rejection remains required. These are
+executed platform-specific safety outcomes, not skipped checks.
+
 ## Browser And E2E
 
 - Use public locators: role, label, placeholder, text, stable test ID.

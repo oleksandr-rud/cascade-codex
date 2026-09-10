@@ -6,6 +6,18 @@ Evaluate routing and the composed prompt separately. The comparison unit is:
 
 `model + reasoning mode + tools + context plan + output controls`
 
+Record request/contract and context-plan identity, source freshness, hard
+capabilities, selected tier/configuration, and decision status: `MEASURED`,
+`INFERRED`, or `USER_SELECTED`. Include excluded candidates with reasons,
+fallback/escalation triggers, and the versioned evaluation result when available.
+Keep ordinary routing notes compact; detailed records belong to an audit.
+
+For open weights also freeze checkpoint/revision, quantization, serving engine,
+chat-template version, parser, sampling, and effective context/output limits.
+Compare Ukrainian and other actual workload languages, schema validity,
+abstention, injection resistance, truncation, and tool failures where relevant.
+Do not transfer a result across these configurations without new evidence.
+
 Use deterministic checks for schemas, exact fields, counts, allowed values,
 permissions, and mutation boundaries. Use blind semantic judgment only for
 quality that deterministic checks cannot decide. A self-check is not
@@ -13,7 +25,9 @@ independent evidence.
 
 For reusable prompts cover happy path, boundary, missing input, conflicting
 evidence/instructions, adversarial source content, output-format pressure, and
-tool/retrieval failure when applicable. Hold model, tools, input, sampling, and
+tool/retrieval failure when applicable. Reusable routing also covers explicit
+model choices, high-risk cases, and cost/latency-sensitive workloads.
+Hold model, tools, input, sampling, and
 versions constant when comparing variants. Prefer the shorter prompt when
 performance is materially equivalent.
 
@@ -33,7 +47,14 @@ Use labels precisely:
 - `pinned-baseline`: deliberately retained comparison configuration.
 
 Provider claims establish candidate eligibility, not measured effectiveness.
-Unavailable models and unrun phases remain `NOT_RUN`. Human calibration is
+Repair the earliest failing layer: missing/stale evidence -> context; redundant
+questions -> intake; dropped/invented requirements -> core contract; malformed
+output -> schema/adapter; fragile decisions -> boundary rule/example; missing
+capability -> alternate configuration. Stop or constrain permission violations.
+Do not respond to every failure by adding prose or selecting a larger model.
+After repair, rerun affected cases and preserve passing evidence whose bound
+inputs did not change. A higher tier without material gain is a downgrade
+candidate. Unavailable models and unrun phases remain `NOT_RUN`. Human calibration is
 distinct from synthetic judge-contract fixtures.
 
 This pack defines how Cascade Prompt should design an evaluation, not how it

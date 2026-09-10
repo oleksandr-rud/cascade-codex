@@ -5,26 +5,134 @@ catalog_labels:
   - best-observed-for-workload
   - pinned-baseline
 checked_at: 2026-08-05
-# Undated entries retain this review date; adding Astra does not reverify other providers.
+# Undated entries retain this review date; scoped entry updates do not reverify other models.
 evidence_statuses:
   - provider_claim
   - inferred_requires_eval
   - measured
 models:
+  - id: Qwen/Qwen3.8-27B
+    checked_at: 2026-09-09
+    capabilities: [text, vision, tools, reasoning-controls, long-context]
+    status: current-candidate
+    prompt_adapter: runtime/model-qwen.md
+    provider: Qwen
+    catalog_labels: [tier-candidate]
+    runtime_controls: [chat template, deployment context limit, output parser, tool availability]
+    sources: [https://huggingface.co/Qwen/Qwen3.8-27B]
+    prompting_notes:
+      - Dense 27B language backbone; effective deployment and workload must be evaluated.
+    tier_candidates:
+      - tier: balanced-production
+        conditions: Exact deployed configuration passes the task capability gate and representative validation.
+        evidence_status: inferred_requires_eval
+      - tier: frontier-generalist
+        conditions: Exact deployed configuration passes the task capability gate and representative validation.
+        evidence_status: inferred_requires_eval
+  - id: Qwen/Qwen3.6-27B
+    checked_at: 2026-09-09
+    capabilities: [text, vision, tools, long-context]
+    status: current-candidate
+    prompt_adapter: runtime/model-qwen.md
+    provider: Qwen
+    catalog_labels: [tier-candidate]
+    runtime_controls: [chat template, deployment context limit, output parser, tool availability]
+    sources: [https://huggingface.co/Qwen/Qwen3.6-27B]
+    prompting_notes:
+      - Explicit earlier checkpoint; do not inherit 3.8 history defaults or reasoning levels.
+    tier_candidates:
+      - tier: balanced-production
+        conditions: Exact deployed configuration passes the task capability gate and representative validation.
+        evidence_status: inferred_requires_eval
+      - tier: frontier-generalist
+        conditions: Exact deployed configuration passes the task capability gate and representative validation.
+        evidence_status: inferred_requires_eval
+  - id: Qwen/Qwen3.5-27B
+    checked_at: 2026-09-09
+    capabilities: [text, vision, tools, long-context]
+    status: current-candidate
+    prompt_adapter: runtime/model-qwen.md
+    provider: Qwen
+    catalog_labels: [tier-candidate]
+    runtime_controls: [chat template, deployment context limit, output parser, tool availability]
+    sources: [https://huggingface.co/Qwen/Qwen3.5-27B]
+    prompting_notes:
+      - Explicit earlier checkpoint; retain its own history and sampling contract.
+    tier_candidates:
+      - tier: efficient-structured
+        conditions: Exact deployed configuration passes the task capability gate and representative validation.
+        evidence_status: inferred_requires_eval
+      - tier: balanced-production
+        conditions: Exact deployed configuration passes the task capability gate and representative validation.
+        evidence_status: inferred_requires_eval
+  - id: google/gemma-3-27b-it
+    checked_at: 2026-09-09
+    capabilities: [text, vision, long-context]
+    status: current-candidate
+    prompt_adapter: runtime/model-open-weight.md
+    provider: Google
+    catalog_labels: [tier-candidate]
+    runtime_controls: [chat template, deployment context limit, output parser, tool availability]
+    sources: [https://huggingface.co/google/gemma-3-27b-it]
+    prompting_notes:
+      - Explicit 27B comparison; require exact template and serving capabilities.
+    tier_candidates:
+      - tier: efficient-structured
+        conditions: Exact deployed configuration passes the task capability gate and representative validation.
+        evidence_status: inferred_requires_eval
+      - tier: balanced-production
+        conditions: Exact deployed configuration passes the task capability gate and representative validation.
+        evidence_status: inferred_requires_eval
+  - id: google/gemma-4-31B-it
+    checked_at: 2026-09-09
+    capabilities: [text, vision, tools, long-context]
+    status: current-candidate
+    prompt_adapter: runtime/model-open-weight.md
+    provider: Google
+    catalog_labels: [tier-candidate]
+    runtime_controls: [chat template, deployment context limit, output parser, tool availability]
+    sources: [https://huggingface.co/google/gemma-4-31B-it]
+    prompting_notes:
+      - Nearby 31B dense candidate, with Gemma 4 specific role and tool formatting.
+    tier_candidates:
+      - tier: balanced-production
+        conditions: Exact deployed configuration passes the task capability gate and representative validation.
+        evidence_status: inferred_requires_eval
+      - tier: frontier-generalist
+        conditions: Exact deployed configuration passes the task capability gate and representative validation.
+        evidence_status: inferred_requires_eval
+  - id: mistralai/Mistral-Small-3.2-24B-Instruct-2506
+    checked_at: 2026-09-09
+    capabilities: [text, vision, tools, long-context]
+    status: current-candidate
+    prompt_adapter: runtime/model-open-weight.md
+    provider: Mistral
+    catalog_labels: [tier-candidate]
+    runtime_controls: [chat template, deployment context limit, output parser, tool availability]
+    sources: [https://huggingface.co/mistralai/Mistral-Small-3.2-24B-Instruct-2506]
+    prompting_notes:
+      - Dated 24B comparison candidate, not a latest-model assertion.
+    tier_candidates:
+      - tier: efficient-structured
+        conditions: Exact deployed configuration passes the task capability gate and representative validation.
+        evidence_status: inferred_requires_eval
+      - tier: balanced-production
+        conditions: Exact deployed configuration passes the task capability gate and representative validation.
+        evidence_status: inferred_requires_eval
   - id: gpt-6-astra
-    checked_at: 2026-09-08
+    checked_at: 2026-09-09
+    prompt_adapter: runtime/model-astra.md
     provider: OpenAI
-    capabilities: [text, tools, reasoning-controls]
+    capabilities: [text, vision, tools, reasoning-controls, structured-output, long-context]
     catalog_labels: [tier-candidate]
     status: current-candidate
     runtime_controls: [reasoning effort, tool availability, context selection]
     sources:
       - https://developers.openai.com/api/docs/guides/latest-model#gpt-6-astra-behavior
-      - https://developers.openai.com/tracks/building-agents#how-to-choose
+      - https://developers.openai.com/api/docs/models/gpt-6-astra
     specialties: [complex-reasoning, agentic-work, instruction-following]
     prompting_notes:
-      - Audit accessible skills and instructions for accidental constraints.
-      - State desired brevity, initiative, delegation authority, and proportional validation.
+      - Apply the linked adapter even when the tier is already known.
     tier_candidates:
       - tier: frontier-generalist
         conditions: Complex source-grounded work with explicit success criteria.

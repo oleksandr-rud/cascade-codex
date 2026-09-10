@@ -135,8 +135,9 @@ describe("task-scoped closeout integrity", () => {
     await expect(snapshotSubject(root, ["../outside"])).rejects.toThrow();
     await expect(snapshotSubject(root, ["*.ts"])).rejects.toThrow();
     await expect(snapshotSubject(root, ["subject.txt", "subject.txt"])).rejects.toThrow();
-    await symlink("subject.txt", resolve(root, "link.txt"));
-    await expect(snapshotSubject(root, ["link.txt"])).rejects.toThrow();
+    await symlink(process.platform === "win32" ? root : "subject.txt", resolve(root, "link.txt"),
+      process.platform === "win32" ? "junction" : "file");
+    await expect(snapshotSubject(root, ["link.txt"])).rejects.toThrow("must not traverse symlinks");
     const { contract, file } = await prepare();
     const malformed = JSON.stringify({ arbitrary: "PASS" });
     contract.required_checks[0]!.evidence_sha256 = sha(malformed);

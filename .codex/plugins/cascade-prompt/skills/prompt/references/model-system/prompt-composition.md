@@ -69,3 +69,10 @@ Translate the composed prompt into the target surface: system/developer/user
 roles, tool declarations, structured-output schema, context-window mechanics,
 reasoning controls, or UI fields. Keep provider-specific syntax here; do not
 rewrite the task contract around a provider brand.
+
+At runtime, the selected `prompt_adapter` in `runtime/model-index.yaml`
+(relative to SKILL.md) supplies version-specific surface rules. This lookup
+also applies when the tier is already known. Never transfer native roles,
+reasoning controls or history defaults merely because model sizes are similar.
+Use `runtime/context-composition.md` for one selected reusable context template;
+it preserves this composition contract and does not introduce a topology.

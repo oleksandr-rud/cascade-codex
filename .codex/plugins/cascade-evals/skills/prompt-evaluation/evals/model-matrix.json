@@ -24,7 +24,11 @@
       "tier": "efficient-structured",
       "execution_adapter": "codex-cli",
       "availability": "AVAILABLE_IN_CURRENT_RUNTIME",
-      "tasks": ["structured-invoice-v1", "support-triage-v1", "brand-context-copy-v1"]
+      "tasks": [
+        "structured-invoice-v1",
+        "support-triage-v1",
+        "brand-context-copy-v1"
+      ]
     },
     {
       "id": "openai-terra-balanced",
@@ -33,7 +37,18 @@
       "tier": "balanced-production",
       "execution_adapter": "codex-cli",
       "availability": "AVAILABLE_IN_CURRENT_RUNTIME",
-      "tasks": ["support-triage-v1", "source-conflict-brief-v1", "incident-root-cause-v1", "product-prioritization-v1", "onboarding-experiment-v1", "code-review-race-v1", "brand-context-copy-v1", "business-opportunity-screen-v1", "product-concept-scope-v1", "pricing-package-experiment-v1"]
+      "tasks": [
+        "support-triage-v1",
+        "source-conflict-brief-v1",
+        "incident-root-cause-v1",
+        "product-prioritization-v1",
+        "onboarding-experiment-v1",
+        "code-review-race-v1",
+        "brand-context-copy-v1",
+        "business-opportunity-screen-v1",
+        "product-concept-scope-v1",
+        "pricing-package-experiment-v1"
+      ]
     },
     {
       "id": "openai-sol-generalist",
@@ -42,7 +57,16 @@
       "tier": "frontier-generalist",
       "execution_adapter": "codex-cli",
       "availability": "AVAILABLE_IN_CURRENT_RUNTIME",
-      "tasks": ["source-conflict-brief-v1", "incident-root-cause-v1", "product-prioritization-v1", "onboarding-experiment-v1", "code-review-race-v1", "business-opportunity-screen-v1", "product-concept-scope-v1", "pricing-package-experiment-v1"]
+      "tasks": [
+        "source-conflict-brief-v1",
+        "incident-root-cause-v1",
+        "product-prioritization-v1",
+        "onboarding-experiment-v1",
+        "code-review-race-v1",
+        "business-opportunity-screen-v1",
+        "product-concept-scope-v1",
+        "pricing-package-experiment-v1"
+      ]
     },
     {
       "id": "openai-sol-autonomous",
@@ -51,7 +75,11 @@
       "tier": "frontier-autonomous",
       "execution_adapter": "codex-cli",
       "availability": "AVAILABLE_IN_CURRENT_RUNTIME",
-      "tasks": ["migration-control-plan-v1", "api-version-migration-plan-v1", "plugin-workflow-plan-v1"]
+      "tasks": [
+        "migration-control-plan-v1",
+        "api-version-migration-plan-v1",
+        "plugin-workflow-plan-v1"
+      ]
     },
     {
       "id": "anthropic-haiku-efficient",
@@ -60,7 +88,11 @@
       "tier": "efficient-structured",
       "execution_adapter": "command-json-v1",
       "availability": "ADAPTER_CONFIG_REQUIRED",
-      "tasks": ["structured-invoice-v1", "support-triage-v1", "brand-context-copy-v1"]
+      "tasks": [
+        "structured-invoice-v1",
+        "support-triage-v1",
+        "brand-context-copy-v1"
+      ]
     },
     {
       "id": "anthropic-opus-generalist",
@@ -69,7 +101,16 @@
       "tier": "frontier-generalist",
       "execution_adapter": "command-json-v1",
       "availability": "ADAPTER_CONFIG_REQUIRED",
-      "tasks": ["source-conflict-brief-v1", "incident-root-cause-v1", "product-prioritization-v1", "onboarding-experiment-v1", "code-review-race-v1", "business-opportunity-screen-v1", "product-concept-scope-v1", "pricing-package-experiment-v1"]
+      "tasks": [
+        "source-conflict-brief-v1",
+        "incident-root-cause-v1",
+        "product-prioritization-v1",
+        "onboarding-experiment-v1",
+        "code-review-race-v1",
+        "business-opportunity-screen-v1",
+        "product-concept-scope-v1",
+        "pricing-package-experiment-v1"
+      ]
     },
     {
       "id": "anthropic-fable-autonomous",
@@ -78,7 +119,24 @@
       "tier": "frontier-autonomous",
       "execution_adapter": "command-json-v1",
       "availability": "ADAPTER_CONFIG_REQUIRED",
-      "tasks": ["migration-control-plan-v1", "api-version-migration-plan-v1"]
+      "tasks": [
+        "migration-control-plan-v1",
+        "api-version-migration-plan-v1"
+      ]
+    },
+    {
+      "id": "sol-to-astra-coverage-v1",
+      "prompt_model": "gpt-5.6-sol",
+      "target_model": "gpt-6-astra",
+      "judge_model": "gpt-5.6-sol",
+      "reasoning_effort": "max",
+      "tier": "frontier-generalist",
+      "execution_adapter": "codex-cli",
+      "availability": "AVAILABLE_IN_CURRENT_RUNTIME",
+      "tasks": [
+        "structured-invoice-v1",
+        "source-conflict-brief-v1"
+      ]
     }
   ]
 }

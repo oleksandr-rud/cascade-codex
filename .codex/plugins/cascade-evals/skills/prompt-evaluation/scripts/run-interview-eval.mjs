@@ -4,9 +4,12 @@ import { createHash } from "node:crypto";
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
-import { DEFAULT_TIMEOUTS_MS, positiveTimeout, requireCompleted } from "./execution-adapters.mjs";
+import { DEFAULT_TIMEOUTS_MS, positiveTimeout, requireCompleted, executionSurface } from "./execution-adapters.mjs";
 import { resolveSubjectSkill } from "./subject-plugin.mjs";
 import { runAgentResponseSimulation } from "./agent-response-simulation.mjs";
+import { snapshotSubject, judgeRequest, parseJudgment, interviewEvidence, assertDisjointRoots, runnerDigest, subjectReadChecks } from "./evaluation-integrity.mjs";
+import { replaySubject, replayTarget } from "./replay-evidence.mjs";
+import { runSubjectSession } from "./subject-session.mjs";
 
 const campaignSkillRoot = dirname(dirname(fileURLToPath(import.meta.url)));
 const evalRoot = join(campaignSkillRoot, "evals");
@@ -105,7 +108,7 @@ function tryExtractFinalPrompt(response) {
 }
 
 function extractQuestions(text) {
-  const section = text.match(/(?:^|\n)\s*(?:#{1,6}\s*)?(?:\*\*)?Questions(?:\*\*)?\s*\r?\n([\s\S]*?)(?=\r?\n\s*(?:#{1,6}\s*)?(?:\*\*)?(?:Safe defaults|Why these matter|Why|Final Prompt|Variables to Fill|Assumptions|Design Notes|Interview Status)(?:\*\*)?\s*(?:\r?\n|$)|$)/i)?.[1] ?? "";
+  const section = text.match(/(?:^|\n)\s*(?:#{1,6}\s*)?(?:\*\*)?Questions(?:\*\*)?\s*\r?\n([\s\S]*?)(?=\r?\n\s*(?:#{1,6}\s*)?(?:\*\*)?(?:Safe defaults|Available Defaults|Why these matter|Why This Is Needed|Why|Final Prompt|Variables to Fill|Assumptions|Design Notes|Interview Status)(?:\*\*)?\s*(?:\r?\n|$)|$)/i)?.[1] ?? "";
   const questions = section.split(/\r?\n/).map((line) => line.match(/^\s*\d+[.)]\s+(.+?)\s*$/)?.[1]).filter(Boolean);
   if (questions.length) return questions;
   for (const line of text.split(/\r?\n/)) {
@@ -122,11 +125,12 @@ function extractQuestions(text) {
 
 function inspectResponse(text, intentPatterns) {
   const finalPrompt = tryExtractFinalPrompt(text);
+  const metadata = text.replace(/```[^\n]*\r?\n[\s\S]*?\r?\n```/g, "");
   let state = "INVALID";
-  if (/Interview Status:\s*NEEDS_INPUT/i.test(text)) state = "NEEDS_INPUT";
-  else if (/Interview Status:\s*BLOCKED/i.test(text) || /(?:^|\n)\s*(?:#{1,6}\s*)?BLOCKED\b/i.test(text)) state = "BLOCKED";
+  if (/Interview Status:\s*NEEDS_INPUT/i.test(metadata)) state = "NEEDS_INPUT";
+  else if (/Interview Status:\s*BLOCKED/i.test(metadata) || /(?:^|\n)\s*(?:#{1,6}\s*)?BLOCKED\b/i.test(metadata)) state = "BLOCKED";
   else if (finalPrompt) state = "READY";
-  const questions = extractQuestions(text);
+  const questions = extractQuestions(metadata);
   const questionText = questions.join(" ").toLowerCase();
   const intents = Object.entries(intentPatterns).filter(([, patterns]) => patterns.some((pattern) => questionText.includes(pattern.toLowerCase()))).map(([intent]) => intent);
   return { state, final_prompt: finalPrompt, questions, intents };
@@ -145,12 +149,13 @@ function validateTurn(label, expected, response, intentPatterns) {
   for (const intent of expected.forbidden_intents ?? []) add(`forbidden-intent:${intent}`, !inspected.intents.includes(intent), `detected ${inspected.intents.join(", ") || "none"}`);
   const lowered = response.toLowerCase();
   for (const pattern of expected.required_response_patterns ?? []) add(`required-pattern:${pattern}`, lowered.includes(pattern.toLowerCase()));
+  for (const group of expected.required_response_pattern_groups ?? []) add(`required-pattern-group:${group[0]}`, group.some(pattern => lowered.includes(pattern.toLowerCase())));
   for (const pattern of expected.forbidden_response_patterns ?? []) add(`forbidden-pattern:${pattern}`, !lowered.includes(pattern.toLowerCase()));
   return { inspected, checks, eligible: checks.every((check) => check.passed) };
 }
 
 function phase(run, status = "EXECUTED") {
-  return { status, duration_ms: run?.duration_ms ?? 0, usage: run?.usage ?? null, trace_metrics: run?.trace_metrics ?? null, simulation: run?.simulation ?? null };
+  return { status: run?.replay ? "REUSED_VERIFIED_RUN" : status, replay:run?.replay ?? null, duration_ms: run?.duration_ms ?? 0, usage: run?.usage ?? null, trace_metrics: run?.trace_metrics ?? null, simulation: run?.simulation ?? null, simulations: run?.simulations ?? null, subject_reads: run?.subject_reads ?? null, isolation: run?.isolation ?? (run ? "tool-free-v1" : null) };
 }
 
 function budgetResult(execution, budget) {
@@ -163,28 +168,14 @@ function budgetResult(execution, budget) {
 }
 
 function judgePrompt(profile, fixture, runId, evidence) {
-  const contract = { profile_id: profile.profile_id, rubric_version: 1, fixture_id: fixture.id, run_id: runId, ratings: [{ dimension_id: "profile dimension", rating: "integer 0-4", rationale: "concise", evidence: ["specific fragment"] }], verdict: "PASS | FAIL | BLOCKED", missing_evidence: [] };
-  return `You are an independent adaptive-interview judge. Return exactly one JSON object and no Markdown. Apply the profile literally. Rate each dimension once from 0-4 with concise evidence. Do not compute a total.\n\n<judge_profile>\n${JSON.stringify(profile, null, 2)}\n</judge_profile>\n\n<response_contract>\n${JSON.stringify(contract, null, 2)}\n</response_contract>\n\n<evidence>\n${JSON.stringify(evidence, null, 2)}\n</evidence>`;
+  return judgeRequest(profile, { fixture_id: fixture.id, run_id: runId }, evidence);
 }
-
-function parseJudge(text, profile, fixtureId, runId) {
-  let response;
-  try {
-    response = JSON.parse(stripSingleFence(text));
-  } catch (error) {
-    return { valid: false, error: `invalid judge JSON: ${error.message}` };
-  }
-  const ids = profile.dimensions.map((dimension) => dimension.id);
-  const ratings = response.ratings ?? [];
-  const valid = response.profile_id === profile.profile_id && response.rubric_version === 1 && response.fixture_id === fixtureId && response.run_id === runId && ["PASS", "FAIL", "BLOCKED"].includes(response.verdict) && Array.isArray(response.missing_evidence) && ratings.length === ids.length && new Set(ratings.map((rating) => rating.dimension_id)).size === ids.length && ids.every((id) => ratings.some((rating) => rating.dimension_id === id)) && ratings.every((rating) => Number.isInteger(rating.rating) && rating.rating >= 0 && rating.rating <= 4 && typeof rating.rationale === "string" && Array.isArray(rating.evidence));
-  if (!valid) return { valid: false, error: "judge response violates the profile contract", response };
-  const byId = new Map(ratings.map((rating) => [rating.dimension_id, rating.rating]));
-  const score = profile.dimensions.reduce((sum, dimension) => sum + dimension.weight * byId.get(dimension.id) / 4, 0) / 100;
-  const floorPassed = ratings.every((rating) => rating.rating >= profile.minimum_dimension_rating);
-  return { valid: true, score, floor_passed: floorPassed, harness_verdict: response.verdict !== "BLOCKED" && score >= profile.threshold && floorPassed ? "PASS" : "FAIL", response };
+function parseJudge(text, profile, fixtureId, runId, evidence) {
+  return parseJudgment(text, profile, { fixture_id: fixtureId, run_id: runId }, evidence);
 }
 
 const args = parseArgs(process.argv.slice(2));
+if (args["reuse-run-root"] && (args["first-response-file"] || args["second-response-file"])) fail("cannot combine verified replay with explicit response files");
 const command = args._[0] ?? "list";
 const catalogText = await readFile(join(evalRoot, "interviews/catalog.json"), "utf8");
 const catalog = JSON.parse(catalogText);
@@ -204,11 +195,17 @@ if (!fixture) fail(`unknown fixture: ${args.fixture}`);
 if (args["execute-target"] && !fixture.target) fail(`${fixture.id} has no target execution contract`);
 const subjectSkillRoot = await resolveSubjectSkill({ explicitPath: args["subject-skill-root"], pluginName: args["subject-plugin"] ?? "cascade-prompt", skillName: args["subject-skill"] ?? "prompt" });
 
+const subjectSnapshot = await snapshotSubject(subjectSkillRoot);
 const runId = `${fixture.id}-${new Date().toISOString().replace(/[:.]/g, "-")}`;
 const outputRoot = resolve(args["output-dir"] ?? join(process.cwd(), ".artifacts/prompt-interviews"));
+assertDisjointRoots(subjectSkillRoot, outputRoot);
+const runnerText = await readFile(fileURLToPath(import.meta.url), "utf8");
 const runRoot = join(outputRoot, runId);
 const workspace = join(runRoot, "workspace");
-await mkdir(workspace, { recursive: true });
+await mkdir(outputRoot, { recursive: true });
+await mkdir(runRoot);
+await mkdir(workspace);
+await writeJson(join(runRoot, "subject-manifest.json"), subjectSnapshot.manifest);
 const timeouts = {
   turn: positiveTimeout(args["turn-timeout-ms"], DEFAULT_TIMEOUTS_MS.prompt_builder, "--turn-timeout-ms"),
   target: positiveTimeout(args["target-timeout-ms"], DEFAULT_TIMEOUTS_MS[fixture.tier], "--target-timeout-ms"),
@@ -218,15 +215,20 @@ async function executePhase({ phaseName, model, prompt, timeoutMs, adapter, adap
   return requireCompleted(await runAgentResponseSimulation({ phase: phaseName, runId, runRoot, model, reasoningEffort: args["reasoning-effort"], prompt, cwd: workspace, timeoutMs, adapter, adapterConfig: args["adapter-config"], adapterId }), { phase: phaseName, runRoot });
 }
 
-const skillInstruction = args["installed-plugin"]
-  ? "Use the installed $prompt skill; do not search for a source checkout or alternate cache. After opening its SKILL.md, batch required runtime-pack reads into one command."
-  : `Read the subject skill directly from ${join(subjectSkillRoot, "SKILL.md")} and load only required packs. After reading SKILL.md, batch all required runtime-pack reads into one command.`;
+const surfaceReceipts = Object.fromEntries(["model", "target", "judge"].map(phase => [phase, executionSurface(args[`${phase}-adapter`] ?? "codex-cli", args["adapter-config"], args[`${phase}-adapter-id`])]));
+const surfaceDigest = sha256(JSON.stringify(surfaceReceipts));
+const profileText = await readFile(join(evalRoot, "judges/interview-v3.json"), "utf8");
+const profile = JSON.parse(profileText);
+const runnerBundleDigest = await runnerDigest(dirname(fileURLToPath(import.meta.url)));
+const adapterConfigDigest = args["adapter-config"] ? sha256(await readFile(resolve(args["adapter-config"]), "utf8")) : null;
+await writeJson(join(runRoot, "run-contract.json"), { fixture, subject_sha256: subjectSnapshot.sha256, execution_surface_sha256: surfaceDigest, runner_bundle_sha256: runnerBundleDigest, adapter_config_sha256: adapterConfigDigest, profile_sha256: sha256(profileText), args });
+const skillInstruction = "Follow the frozen subject SKILL.md and request only the required files through the host read protocol.";
 const firstPrompt = `Use $prompt to handle this prompt-building request. Builder mode is INTERVIEW. ${skillInstruction} Preserve the three-state adaptive interview contract.\n\n<fixture_id>${fixture.id}</fixture_id>\n<prompt_build_request>\n${fixture.prompt_build_request}\n</prompt_build_request>`;
 let firstRun = null;
 let firstResponse;
 if (args["first-response-file"]) firstResponse = await readFile(resolve(args["first-response-file"]), "utf8");
 else {
-  firstRun = await executePhase({ phaseName: "first-turn", model: args.model, prompt: firstPrompt, timeoutMs: timeouts.turn, adapter: args["model-adapter"] ?? "codex-cli", adapterId: args["model-adapter-id"] });
+  firstRun = args["reuse-run-root"] ? await replaySubject({sourceRoot:args["reuse-run-root"],phase:"first-turn",request:firstPrompt,currentCase:fixture,snapshot:subjectSnapshot,model:args.model,reasoningEffort:args["reasoning-effort"],runRoot}) : await runSubjectSession({ snapshot: subjectSnapshot, phase: "first-turn", runId, runRoot, model: args.model, reasoningEffort: args["reasoning-effort"], request: firstPrompt, cwd: workspace, timeoutMs: timeouts.turn, adapter: args["model-adapter"] ?? "codex-cli", adapterConfig: args["adapter-config"], adapterId: args["model-adapter-id"] });
   firstResponse = firstRun.final_text;
   await writeFile(join(runRoot, "first-turn.jsonl"), firstRun.stdout);
   await writeFile(join(runRoot, "first-turn.stderr.log"), firstRun.stderr);
@@ -241,7 +243,7 @@ if (fixture.second_user_message) {
   const secondPrompt = `Continue the same Cascade Prompt interaction by reconstructing semantic state from this ordered transcript. Apply only the new user message, preserve unrelated resolved fields, and do not repeat answered questions. ${skillInstruction}\n\n<fixture_id>${fixture.id}</fixture_id>\n<transcript>\n<user>${fixture.prompt_build_request}</user>\n<assistant>${firstResponse}</assistant>\n<user>${fixture.second_user_message}</user>\n</transcript>`;
   if (args["second-response-file"]) secondResponse = await readFile(resolve(args["second-response-file"]), "utf8");
   else {
-    secondRun = await executePhase({ phaseName: "second-turn", model: args.model, prompt: secondPrompt, timeoutMs: timeouts.turn, adapter: args["model-adapter"] ?? "codex-cli", adapterId: args["model-adapter-id"] });
+    secondRun = args["reuse-run-root"] ? await replaySubject({sourceRoot:args["reuse-run-root"],phase:"second-turn",request:secondPrompt,currentCase:fixture,snapshot:subjectSnapshot,model:args.model,reasoningEffort:args["reasoning-effort"],runRoot}) : await runSubjectSession({ snapshot: subjectSnapshot, phase: "second-turn", runId, runRoot, model: args.model, reasoningEffort: args["reasoning-effort"], request: secondPrompt, cwd: workspace, timeoutMs: timeouts.turn, adapter: args["model-adapter"] ?? "codex-cli", adapterConfig: args["adapter-config"], adapterId: args["model-adapter-id"] });
     secondResponse = secondRun.final_text;
     await writeFile(join(runRoot, "second-turn.jsonl"), secondRun.stdout);
     await writeFile(join(runRoot, "second-turn.stderr.log"), secondRun.stderr);
@@ -250,7 +252,10 @@ if (fixture.second_user_message) {
   second = validateTurn("second", fixture.second_turn, secondResponse, catalog.intent_patterns);
   const firstQuestions = new Set(first.inspected.questions.map((question) => question.toLowerCase().replace(/\s+/g, " ").trim()));
   const repeated = second.inspected.questions.filter((question) => firstQuestions.has(question.toLowerCase().replace(/\s+/g, " ").trim()));
-  second.checks.push({ id: "second:no-exact-repeat", passed: repeated.length === 0, ...(repeated.length ? { detail: repeated.join(" | ") } : {}) });
+  // Repetition is only a defect when the user already resolved that question.
+  // Preserve exact repeats for inspection; the independent answer-merge judge
+  // evaluates resolution against the actual user reply.
+  second.repeated_questions = repeated;
   second.eligible = second.checks.every((check) => check.passed);
 }
 
@@ -264,7 +269,7 @@ if (args["execute-target"]) {
   targetChecks.push({ id: `target:placeholder:${fixture.target.input_placeholder}`, passed: Boolean(finalPrompt?.includes(fixture.target.input_placeholder)) });
   if (finalPrompt?.includes(fixture.target.input_placeholder)) {
     const rendered = finalPrompt.split(fixture.target.input_placeholder).join(fixture.target.input);
-    targetRun = await executePhase({ phaseName: "target", model: args["target-model"], prompt: rendered, timeoutMs: timeouts.target, adapter: args["target-adapter"] ?? "codex-cli", adapterId: args["target-adapter-id"] });
+    targetRun = args["reuse-run-root"] ? await replayTarget({sourceRoot:args["reuse-run-root"],currentCase:fixture,snapshot:subjectSnapshot,model:args["target-model"],reasoningEffort:args["reasoning-effort"],prompt:rendered,runRoot}) : await executePhase({ phaseName: "target", model: args["target-model"], prompt: rendered, timeoutMs: timeouts.target, adapter: args["target-adapter"] ?? "codex-cli", adapterId: args["target-adapter-id"] });
     targetExecutionStatus = "EXECUTED";
     await writeFile(join(runRoot, "target.jsonl"), targetRun.stdout);
     await writeFile(join(runRoot, "target-output.md"), targetRun.final_text);
@@ -274,17 +279,18 @@ if (args["execute-target"]) {
   } else targetExecutionStatus = "SKIPPED_INVALID_READY_RESPONSE";
 }
 
-const allChecks = [...first.checks, ...(second?.checks ?? []), ...targetChecks];
+const readChecks = [...subjectReadChecks(fixture.first_turn, firstRun, "first"), ...subjectReadChecks(fixture.second_turn ?? {}, secondRun, "second")];
+const allChecks = [...first.checks, ...(second?.checks ?? []), ...targetChecks, ...readChecks];
 const mechanicalEligible = allChecks.every((check) => check.passed);
-const profileText = await readFile(join(evalRoot, "judges/interview-v1.json"), "utf8");
-const profile = JSON.parse(profileText);
+
 let judgeRun = null;
 let judge = { status: "NOT_RUN", result: null };
 if (args["execute-judge"] && mechanicalEligible) {
-  judgeRun = await executePhase({ phaseName: "judge", model: args["judge-model"], prompt: judgePrompt(profile, fixture, runId, { fixture, first_response: firstResponse, second_response: secondResponse, deterministic_checks: allChecks }), timeoutMs: timeouts.judge, adapter: args["judge-adapter"] ?? "codex-cli", adapterId: args["judge-adapter-id"] });
+  const evidence = interviewEvidence(fixture, firstResponse, secondResponse, subjectSnapshot);
+  judgeRun = await executePhase({ phaseName: "judge", model: args["judge-model"], prompt: judgePrompt(profile, fixture, runId, evidence), timeoutMs: timeouts.judge, adapter: args["judge-adapter"] ?? "codex-cli", adapterId: args["judge-adapter-id"] });
   await writeFile(join(runRoot, "judge.jsonl"), judgeRun.stdout);
-  const result = parseJudge(judgeRun.final_text, profile, fixture.id, runId);
-  judge = { status: result.valid ? "JUDGED" : "INVALID", result };
+  const result = parseJudge(judgeRun.final_text, profile, fixture.id, runId, evidence);
+  judge = { status: !result.valid ? "INVALID" : result.harness_verdict === "BLOCKED" ? "BLOCKED" : "JUDGED", result };
 } else if (args["execute-judge"]) judge = { status: "SKIPPED_MECHANICAL_INELIGIBLE", result: null };
 
 const budgets = await readJson(join(evalRoot, "token-budgets.json"));
@@ -301,20 +307,22 @@ const budgetChecks = {
   target: budgetResult(execution.target, budgets.target)
 };
 const accepted = mechanicalEligible && (!args["execute-judge"] || (judge.status === "JUDGED" && judge.result.harness_verdict === "PASS"));
-const acceptance = !mechanicalEligible ? "REJECTED" : args["execute-judge"] ? (accepted ? "ACCEPTED" : "REJECTED") : "MECHANICALLY_ELIGIBLE";
-const runnerText = await readFile(fileURLToPath(import.meta.url), "utf8");
+const semanticAcceptance = !mechanicalEligible ? "REJECTED" : args["execute-judge"] ? (["BLOCKED", "INVALID"].includes(judge.status) ? judge.status : accepted ? "ACCEPTED" : "REJECTED") : "MECHANICALLY_ELIGIBLE";
+const evidenceGrade = [args["model-adapter"], args["target-adapter"], args["judge-adapter"]].every(a => !a || a === "codex-cli") && !args["first-response-file"] && !args["second-response-file"] ? "LIVE_CODEX_TOOL_FREE" : "UNVERIFIED_EXTERNAL_OR_FIXTURE";
+const acceptance = ["ACCEPTED", "REJECTED"].includes(semanticAcceptance) && evidenceGrade !== "LIVE_CODEX_TOOL_FREE" ? "UNVERIFIED" : semanticAcceptance;
 const summary = {
   schema_version: 1,
   run_id: runId,
   fixture: { id: fixture.id, version: fixture.version, catalog_id: catalog.catalog_id, tier: fixture.tier, expected_mode: fixture.expected_mode },
   configuration: {
+    configuration_id: sha256(JSON.stringify({ model: args.model, judge: args["judge-model"], target: args["target-model"], effort: args["reasoning-effort"], surface: surfaceDigest })), execution_surface: surfaceReceipts,
     subject_plugin: args["subject-plugin"] ?? "cascade-prompt", subject_skill: args["subject-skill"] ?? "prompt", subject_skill_root: subjectSkillRoot,
     model: args.model, installed_plugin: Boolean(args["installed-plugin"]), judge_model: args["judge-model"] ?? null, target_model: args["target-model"] ?? null, reasoning_effort: args["reasoning-effort"],
     adapters: { model: args["model-adapter"] ?? "codex-cli", target: args["target-adapter"] ?? "codex-cli", judge: args["judge-adapter"] ?? "codex-cli" },
     adapter_ids: { model: args["model-adapter-id"] ?? null, target: args["target-adapter-id"] ?? null, judge: args["judge-adapter-id"] ?? null },
     timeouts_ms: timeouts
   },
-  digests: { catalog_sha256: sha256(catalogText), fixture_sha256: sha256(JSON.stringify(fixture)), profile_sha256: sha256(profileText), runner_sha256: sha256(runnerText), first_response_sha256: sha256(firstResponse), second_response_sha256: secondResponse ? sha256(secondResponse) : null, target_output_sha256: targetRun ? sha256(targetRun.final_text) : null },
+  digests: { execution_surface_sha256: surfaceDigest, runner_bundle_sha256: runnerBundleDigest, adapter_config_sha256: adapterConfigDigest, runtime_contract_sha256: subjectSnapshot.sha256, catalog_sha256: sha256(catalogText), fixture_sha256: sha256(JSON.stringify(fixture)), profile_sha256: sha256(profileText), runner_sha256: sha256(runnerText), first_response_sha256: sha256(firstResponse), second_response_sha256: secondResponse ? sha256(secondResponse) : null, target_output_sha256: targetRun ? sha256(targetRun.final_text) : null },
   execution,
   token_budgets: budgetChecks,
   turns: { first: { ...first, response_sha256: sha256(firstResponse) }, second: second ? { ...second, response_sha256: sha256(secondResponse) } : null },
@@ -322,8 +330,11 @@ const summary = {
   mechanical: { status: mechanicalEligible ? "MECHANICALLY_ELIGIBLE" : "INELIGIBLE", eligible: mechanicalEligible, checks: allChecks },
   judge,
   acceptance,
+  evidence_grade: evidenceGrade,
+  semantic_acceptance: semanticAcceptance,
   limitations: ["Intent patterns are deterministic eligibility aids, not semantic proof.", "No global model ranking is implied.", "Token budgets are provisional diagnostics."]
 };
 await writeJson(join(runRoot, "run-summary.json"), summary);
 console.log(JSON.stringify({ run_root: runRoot, run_id: runId, first_state: first.inspected.state, second_state: second?.inspected.state ?? null, target_status: summary.target.status, judge_status: judge.status, mechanical_status: summary.mechanical.status, acceptance }, null, 2));
-if (!mechanicalEligible) process.exitCode = 2;
+if (["BLOCKED", "INVALID", "UNVERIFIED"].includes(acceptance)) process.exitCode = 3;
+else if (acceptance === "REJECTED") process.exitCode = 2;

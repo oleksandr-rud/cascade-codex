@@ -17,7 +17,7 @@ await mkdir(binRoot, { recursive: true });
 
 const fakeCodex = `#!/usr/bin/env node
 if (process.env.FAKE_DELAY_MS) Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, Number(process.env.FAKE_DELAY_MS));
-const prompt = process.argv.at(-1) === "-" ? require("node:fs").readFileSync(0, "utf8") : "";
+const prompt = JSON.parse(require("node:fs").readFileSync(0, "utf8")).prompt;
 const fence = String.fromCharCode(96).repeat(3);
 let text;
 if (prompt.includes("<fixture_id>complete-quick-v1</fixture_id>")) {
@@ -31,18 +31,19 @@ if (prompt.includes("<fixture_id>complete-quick-v1</fixture_id>")) {
 } else {
   text = 'Final Prompt\\n\\n' + fence + 'text\\nUse the resolved contract and placeholder.\\n' + fence;
 }
-console.log(JSON.stringify({type:"thread.started",thread_id:"fake"}));
-console.log(JSON.stringify({type:"item.completed",item:{type:"agent_message",text}}));
-console.log(JSON.stringify({type:"turn.completed",usage:{input_tokens:800,cached_input_tokens:300,output_tokens:120,reasoning_output_tokens:20}}));
+console.log(JSON.stringify({text,usage:{input_tokens:800,cached_input_tokens:300,output_tokens:120,reasoning_output_tokens:20}}));
 `;
-const fakePath = join(binRoot, "codex");
+const fakePath = join(binRoot, "adapter.cjs");
 await writeFile(fakePath, fakeCodex);
 await chmod(fakePath, 0o755);
+const adapterConfig = join(root, "adapters.json");
+await writeFile(adapterConfig, JSON.stringify({ adapters: { fixture: { command: process.execPath, args: [fakePath] } } }));
+const adapterArgs = ["--adapter-config", adapterConfig, ...["prompt", "target", "judge", "model"].flatMap(phase => [`--${phase}-adapter`, "command-json-v1", `--${phase}-adapter-id`, "fixture"])];
 
 function run(fixture, extraArgs = [], extraEnv = {}) {
-  const result = spawnSync(process.execPath, [runner, "run", "--fixture", fixture, "--model", "gpt-5.6-terra", "--subject-skill-root", subjectSkillRoot, "--output-dir", outputRoot, ...extraArgs], {
+  const result = spawnSync(process.execPath, [runner, "run", ...adapterArgs, "--fixture", fixture, "--model", "gpt-5.6-terra", "--subject-skill-root", subjectSkillRoot, "--output-dir", outputRoot, ...extraArgs], {
     encoding: "utf8",
-    env: { ...process.env, CASCADE_SIMULATIONS_SKILL_ROOT: simulationSkillRoot, PATH: `${binRoot}:${process.env.PATH}`, ...extraEnv }
+    env: { ...process.env, CASCADE_SIMULATIONS_SKILL_ROOT: simulationSkillRoot, ...extraEnv }
   });
   let output = {};
   try {
@@ -85,7 +86,7 @@ const validSecondPath = join(root, "valid-second.md");
 await writeFile(invalidFirstPath, "Interview Status: NEEDS_INPUT\n\nQuestions\n1. What schema?\n2. What fields?\n3. What types?\n4. What format?\n\nFinal Prompt\n```text\nPremature.\n```\n");
 await writeFile(validSecondPath, "Final Prompt\n\n```text\nExtract customer_id, email, and active from {{CUSTOMER_TEXT}}.\n```\n");
 const invalid = run("missing-structured-schema-v1", ["--first-response-file", invalidFirstPath, "--second-response-file", validSecondPath]);
-assert(invalid.result.status === 2, `invalid fixture must exit 2, got ${invalid.result.status}`);
+assert(invalid.result.status === 3, `unverified rejected fixture must exit 3, got ${invalid.result.status}`);
 const invalidSummary = await summary(invalid);
 assert(invalidSummary.mechanical.status === "INELIGIBLE", "invalid fixture must be mechanically ineligible");
 assert(invalidSummary.mechanical.checks.some((check) => check.id === "first:question-max" && !check.passed), "question limit failure must be recorded");
@@ -96,7 +97,23 @@ assert(timedOut.result.status === 3, `interview timeout must exit 3, got ${timed
 const executionBlock = JSON.parse(await readFile(join(timedOut.output.run_root, "execution-block.json"), "utf8"));
 assert(executionBlock.status === "BLOCKED" && executionBlock.acceptance === "NOT_RUN", "interview timeout must not be rejected");
 assert(executionBlock.phase === "first-turn" && executionBlock.execution.status === "TIMED_OUT", "interview timeout must identify its phase");
-const timeoutSimulation = JSON.parse(await readFile(join(timedOut.output.run_root, "simulations/first-turn/controller/result.json"), "utf8"));
+const timeoutSimulation = JSON.parse(await readFile(join(timedOut.output.run_root, "simulations/first-turn-read-0/controller/result.json"), "utf8"));
 assert(timeoutSimulation.status === "TIMED_OUT", "interview timeout must be frozen by the simulation controller");
 
 console.log(`PASS: simulation-controlled interview states, question intents, transcript replay, no-repeat, optional target execution, timeout blocking, telemetry, and failure checks (${root})`);
+
+const migrationFirst = join(root, "migration-first.md");
+const migrationSecond = join(root, "migration-second.md");
+await writeFile(migrationFirst, "Interview Status: NEEDS_INPUT\n\nQuestions\n1. What execution authority should the agent have?\n\nAvailable Defaults\n1. Plan only.\n2. No writes.\n");
+await writeFile(migrationSecond, "Final Prompt\n\n```text\nPLAN-ONLY: prepare {{MIGRATION_REQUEST}}. Do not execute or request credentials.\n```\n");
+const migration = run("migration-permission-v1", ["--first-response-file", migrationFirst, "--second-response-file", migrationSecond]);
+const migrationSummary = await summary(migration);
+assert(migration.result.status === 0 && migrationSummary.mechanical.eligible, "permission wording and equivalent plan-only markers must not cause false rejection");
+assert(migrationSummary.turns.first.inspected.questions.length === 1 && !migrationSummary.turns.first.inspected.intents.includes("authority"), "defaults are not questions and execution authority is not source authority");
+const invoiceFirst = join(root, "invoice-first.md");
+const invoiceSecond = join(root, "invoice-second.md");
+await writeFile(invoiceFirst, "Interview Status: NEEDS_INPUT\n\nQuestions\n1. How should final_total be selected when eligible totals conflict?\n");
+await writeFile(invoiceSecond, "Final Prompt\n\n```text\nExtract {{OCR_TEXT}}. Accept Total Due and Grand Total; conflicting values become null.\n```\n");
+const invoice = run("invoice-label-ambiguity-v1", ["--first-response-file", invoiceFirst, "--second-response-file", invoiceSecond]);
+assert(invoice.result.status === 0 && (await summary(invoice)).turns.first.inspected.intents.includes("label_policy"), "final-total selection question must match label policy");
+console.log("PASS: observed intent, marker-equivalence and question-section regressions");

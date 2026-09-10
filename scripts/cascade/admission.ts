@@ -1417,7 +1417,11 @@ function atomicClaims(request: string, spans: RequestSpan[], intent: Intent, rel
       ?? claimKind(statement, index);
     const localIntent = source === "EXTERNAL_SOURCE" ? "ANSWER" : kind === "NON_GOAL" ? inferIntent(statement) : index === 0 ? intent : inferIntent(statement);
     const localRelation = source === "EXTERNAL_SOURCE" ? "NEW" : kind === "NON_GOAL" ? inferRelation(statement) : index === 0 ? relation : "NEW";
-    const localTags = (source === "EXTERNAL_SOURCE" ? inferExternalTags(statement) : inferTags(statement, localIntent, localRelation))
+    const clauseAuthority = source === "USER"
+      ? deriveAdmissionClausePatches(statement, [{ start: 0, end: statement.length, source: "USER" }]).add_authority_tags ?? []
+      : [];
+    const localTags = [...(source === "EXTERNAL_SOURCE" ? inferExternalTags(statement) : inferTags(statement, localIntent, localRelation)),
+      ...clauseAuthority, ...(directUserAttested ? clauseAuthority.map((tag) => `requested-${tag}`) : [])]
       .filter((tag) => directUserAttested || !tag.startsWith("requested-"))
       .filter((tag) => allTags.has(tag));
     if (kind === "CURRENT_STATE" && allTags.has("current-state") && !localTags.includes("current-state")) localTags.push("current-state");
@@ -1932,9 +1936,14 @@ function deriveTaskEnvelopePayload(input: TaskDerivationInput): JsonObject {
   const expectedClassificationRequest = classificationRequestFromSpans(input.canonical_request, input.request_spans);
   if (input.classification_request !== expectedClassificationRequest || input.classification_digest !== sha256Text(expectedClassificationRequest)) throw new CascadeError("task derivation classification input is not bound to user-authored spans");
   const taskId = input.task_id;
-  const semanticClauseSpans = input.provenance_mode === "TRUSTED_SOURCE_SEGMENTS"
-    ? refinedLexicalRequestSpans(input.canonical_request)
-    : input.request_spans;
+  // Lexical framing may downgrade a trusted user span to quoted material, but
+  // it must never promote host-labelled external content into a user directive.
+  const lexicalSpans = refinedLexicalRequestSpans(input.canonical_request);
+  const semanticClauseSpans = input.request_spans.flatMap((span) => lexicalSpans.flatMap((lexical) => {
+    const start = Math.max(span.start, lexical.start);
+    const end = Math.min(span.end, lexical.end);
+    return end > start ? [{ start, end, source: span.source === "EXTERNAL_SOURCE" || lexical.source === "EXTERNAL_SOURCE" ? "EXTERNAL_SOURCE" as const : "USER" as const }] : [];
+  }));
   const clausePatches = deriveAdmissionClausePatches(input.canonical_request, semanticClauseSpans as AdmissionClauseSpan[]);
   const inferredRelation = input.relation_override ?? clausePatches.relation ?? inferRelation(input.classification_request);
   const requestDigest = input.request_digest;
@@ -1987,6 +1996,7 @@ function deriveTaskEnvelopePayload(input: TaskDerivationInput): JsonObject {
     ...directShellTags,
     ...directShellRequestedTags,
     ...(clausePatches.add_authority_tags ?? []),
+    ...(directUserAttested ? (clausePatches.add_authority_tags ?? []).map((tag) => `requested-${tag}`) : []),
     ...(clausePatches.add_policy_tags ?? []),
     ...(clausePatches.shell_action_class === "DESTRUCTIVE" ? ["destructive"] : clausePatches.shell_action_class === "EXTERNAL_WRITE" ? ["external-write"] : []),
   ])

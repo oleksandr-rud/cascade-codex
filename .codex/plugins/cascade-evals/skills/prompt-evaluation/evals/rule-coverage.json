@@ -1,0 +1,1686 @@
+{
+  "schema_version": 1,
+  "coverage_id": "cascade-prompt-rule-coverage-v1",
+  "subject": "cascade-prompt:prompt",
+  "knowledge_scope": "references and runtime",
+  "claim_boundary": "Rule-group coverage and selected boundary cases, not exhaustive input-space proof or real execution on named open-weight targets.",
+  "cases": [
+    {
+      "id": "complete-quick-v1",
+      "runner": "interview",
+      "rule_ids": [
+        "core-contract",
+        "intake-readiness",
+        "answer-merge"
+      ],
+      "required_reads": [],
+      "forbidden_reads": []
+    },
+    {
+      "id": "missing-structured-schema-v1",
+      "runner": "interview",
+      "rule_ids": [
+        "core-contract",
+        "intake-readiness",
+        "answer-merge"
+      ],
+      "required_reads": [],
+      "forbidden_reads": []
+    },
+    {
+      "id": "invoice-label-ambiguity-v1",
+      "runner": "interview",
+      "rule_ids": [
+        "core-contract",
+        "intake-readiness",
+        "answer-merge"
+      ],
+      "required_reads": [],
+      "forbidden_reads": []
+    },
+    {
+      "id": "support-mixed-case-v1",
+      "runner": "interview",
+      "rule_ids": [
+        "core-contract",
+        "intake-readiness",
+        "answer-merge"
+      ],
+      "required_reads": [],
+      "forbidden_reads": []
+    },
+    {
+      "id": "explicit-source-authority-v1",
+      "runner": "interview",
+      "rule_ids": [
+        "core-contract",
+        "intake-readiness",
+        "answer-merge"
+      ],
+      "required_reads": [],
+      "forbidden_reads": []
+    },
+    {
+      "id": "migration-permission-v1",
+      "runner": "interview",
+      "rule_ids": [
+        "core-contract",
+        "intake-readiness",
+        "answer-merge"
+      ],
+      "required_reads": [],
+      "forbidden_reads": []
+    },
+    {
+      "id": "safe-optional-preference-v1",
+      "runner": "interview",
+      "rule_ids": [
+        "core-contract",
+        "intake-readiness",
+        "answer-merge"
+      ],
+      "required_reads": [],
+      "forbidden_reads": []
+    },
+    {
+      "id": "declined-nonblocking-choice-v1",
+      "runner": "interview",
+      "rule_ids": [
+        "core-contract",
+        "intake-readiness",
+        "answer-merge"
+      ],
+      "required_reads": [],
+      "forbidden_reads": []
+    },
+    {
+      "id": "declined-hard-authority-v1",
+      "runner": "interview",
+      "rule_ids": [
+        "core-contract",
+        "intake-readiness",
+        "answer-merge"
+      ],
+      "required_reads": [],
+      "forbidden_reads": []
+    },
+    {
+      "id": "answer-already-in-source-v1",
+      "runner": "interview",
+      "rule_ids": [
+        "core-contract",
+        "intake-readiness",
+        "answer-merge"
+      ],
+      "required_reads": [],
+      "forbidden_reads": []
+    },
+    {
+      "id": "builder-omission-repair-v1",
+      "runner": "interview",
+      "rule_ids": [
+        "core-contract",
+        "intake-readiness",
+        "answer-merge"
+      ],
+      "required_reads": [],
+      "forbidden_reads": []
+    },
+    {
+      "id": "new-instruction-invalidation-v1",
+      "runner": "interview",
+      "rule_ids": [
+        "core-contract",
+        "intake-readiness",
+        "answer-merge"
+      ],
+      "required_reads": [],
+      "forbidden_reads": []
+    },
+    {
+      "id": "astra-surface-v1",
+      "runner": "interview",
+      "rule_ids": [
+        "named-model",
+        "astra-surface"
+      ],
+      "required_reads": [
+        "runtime/model-index.yaml",
+        "runtime/model-astra.md",
+        "runtime/tier-efficient-structured.md",
+        "runtime/task-overlays.md"
+      ],
+      "forbidden_reads": [
+        "runtime/stateful-agent.md"
+      ]
+    },
+    {
+      "id": "qwen38-history-v1",
+      "runner": "interview",
+      "rule_ids": [
+        "named-model",
+        "qwen38-history"
+      ],
+      "required_reads": [
+        "runtime/model-index.yaml",
+        "runtime/model-qwen.md",
+        "runtime/tier-efficient-structured.md",
+        "runtime/task-overlays.md"
+      ],
+      "forbidden_reads": [
+        "runtime/stateful-agent.md"
+      ]
+    },
+    {
+      "id": "qwen36-history-v1",
+      "runner": "interview",
+      "rule_ids": [
+        "named-model",
+        "qwen36-history"
+      ],
+      "required_reads": [
+        "runtime/model-index.yaml",
+        "runtime/model-qwen.md",
+        "runtime/tier-efficient-structured.md",
+        "runtime/task-overlays.md"
+      ],
+      "forbidden_reads": [
+        "runtime/stateful-agent.md"
+      ]
+    },
+    {
+      "id": "qwen35-history-v1",
+      "runner": "interview",
+      "rule_ids": [
+        "named-model",
+        "qwen35-history"
+      ],
+      "required_reads": [
+        "runtime/model-index.yaml",
+        "runtime/model-qwen.md",
+        "runtime/tier-efficient-structured.md",
+        "runtime/task-overlays.md"
+      ],
+      "forbidden_reads": [
+        "runtime/stateful-agent.md"
+      ]
+    },
+    {
+      "id": "gemma3-roles-v1",
+      "runner": "interview",
+      "rule_ids": [
+        "named-model",
+        "gemma3-roles"
+      ],
+      "required_reads": [
+        "runtime/model-index.yaml",
+        "runtime/model-open-weight.md",
+        "runtime/tier-efficient-structured.md",
+        "runtime/task-overlays.md"
+      ],
+      "forbidden_reads": [
+        "runtime/stateful-agent.md"
+      ]
+    },
+    {
+      "id": "gemma4-roles-v1",
+      "runner": "interview",
+      "rule_ids": [
+        "named-model",
+        "gemma4-roles"
+      ],
+      "required_reads": [
+        "runtime/model-index.yaml",
+        "runtime/model-open-weight.md",
+        "runtime/tier-efficient-structured.md",
+        "runtime/task-overlays.md"
+      ],
+      "forbidden_reads": [
+        "runtime/stateful-agent.md"
+      ]
+    },
+    {
+      "id": "mistral24-surface-v1",
+      "runner": "interview",
+      "rule_ids": [
+        "named-model",
+        "mistral24-surface"
+      ],
+      "required_reads": [
+        "runtime/model-index.yaml",
+        "runtime/model-open-weight.md",
+        "runtime/tier-efficient-structured.md",
+        "runtime/task-overlays.md"
+      ],
+      "forbidden_reads": [
+        "runtime/stateful-agent.md"
+      ]
+    },
+    {
+      "id": "unknown27b-v1",
+      "runner": "interview",
+      "rule_ids": [
+        "named-model",
+        "unknown-capability"
+      ],
+      "required_reads": [
+        "runtime/model-index.yaml",
+        "runtime/tier-efficient-structured.md",
+        "runtime/task-overlays.md"
+      ],
+      "forbidden_reads": [
+        "runtime/model-qwen.md",
+        "runtime/model-open-weight.md",
+        "runtime/model-astra.md",
+        "runtime/stateful-agent.md"
+      ]
+    },
+    {
+      "id": "grounded-context-template-v1",
+      "runner": "interview",
+      "rule_ids": [
+        "context-trust",
+        "context-template-grounded",
+        "source-authority"
+      ],
+      "required_reads": [
+        "runtime/intake-interview.md",
+        "runtime/grounded.md",
+        "runtime/context-composition.md",
+        "assets/templates/grounded-answer.md",
+        "runtime/tier-balanced-production.md"
+      ],
+      "forbidden_reads": [
+        "assets/templates/structured-extraction.md",
+        "assets/templates/contextual-agent.md",
+        "runtime/stateful-agent.md"
+      ]
+    },
+    {
+      "id": "extraction-context-template-v1",
+      "runner": "interview",
+      "rule_ids": [
+        "context-template-extraction",
+        "schema-validation"
+      ],
+      "required_reads": [
+        "runtime/context-composition.md",
+        "assets/templates/structured-extraction.md",
+        "runtime/task-overlays.md",
+        "runtime/tier-efficient-structured.md"
+      ],
+      "forbidden_reads": [
+        "runtime/grounded.md",
+        "assets/templates/grounded-answer.md",
+        "assets/templates/contextual-agent.md",
+        "runtime/stateful-agent.md"
+      ]
+    },
+    {
+      "id": "agent-context-template-v1",
+      "runner": "interview",
+      "rule_ids": [
+        "context-template-agent",
+        "tool-authority",
+        "history-invalidation"
+      ],
+      "required_reads": [
+        "runtime/intake-interview.md",
+        "runtime/task-overlays.md",
+        "runtime/safety-high-stakes.md",
+        "runtime/context-composition.md",
+        "assets/templates/contextual-agent.md",
+        "runtime/tier-frontier-autonomous.md"
+      ],
+      "forbidden_reads": [
+        "runtime/stateful-agent.md",
+        "assets/templates/grounded-answer.md",
+        "assets/templates/structured-extraction.md"
+      ]
+    },
+    {
+      "id": "long-context-joins-v1",
+      "runner": "interview",
+      "rule_ids": [
+        "long-context",
+        "context-budget",
+        "retrieval-stop"
+      ],
+      "required_reads": [
+        "runtime/intake-interview.md",
+        "runtime/grounded.md",
+        "runtime/task-overlays.md",
+        "runtime/context-composition.md",
+        "assets/templates/grounded-answer.md",
+        "runtime/tier-frontier-generalist.md"
+      ],
+      "forbidden_reads": [
+        "runtime/stateful-agent.md"
+      ]
+    },
+    {
+      "id": "multimodal-missing-v1",
+      "runner": "interview",
+      "rule_ids": [
+        "multimodal-order",
+        "modality-limits"
+      ],
+      "required_reads": [
+        "runtime/task-overlays.md",
+        "runtime/tier-balanced-production.md"
+      ],
+      "forbidden_reads": [
+        "runtime/stateful-agent.md"
+      ]
+    },
+    {
+      "id": "realtime-staleness-v1",
+      "runner": "interview",
+      "rule_ids": [
+        "realtime-staleness",
+        "exact-values"
+      ],
+      "required_reads": [
+        "runtime/task-overlays.md",
+        "runtime/tier-balanced-production.md"
+      ],
+      "forbidden_reads": [
+        "runtime/stateful-agent.md"
+      ]
+    },
+    {
+      "id": "comparison-unknown-v1",
+      "runner": "interview",
+      "rule_ids": [
+        "comparison-unknown",
+        "evaluation-honesty"
+      ],
+      "required_reads": [
+        "runtime/task-overlays.md",
+        "runtime/evaluation.md",
+        "runtime/tier-balanced-production.md"
+      ],
+      "forbidden_reads": [
+        "runtime/stateful-agent.md"
+      ]
+    },
+    {
+      "id": "stateful-missing-contract-v1",
+      "runner": "interview",
+      "rule_ids": [
+        "stateful-contract-gate"
+      ],
+      "required_reads": [
+        "runtime/stateful-agent.md",
+        "runtime/intake-interview.md"
+      ],
+      "forbidden_reads": []
+    },
+    {
+      "id": "stateful-issued-slice-v1",
+      "runner": "interview",
+      "rule_ids": [
+        "stateful-issued-slice",
+        "private-runtime-boundary"
+      ],
+      "required_reads": [
+        "runtime/stateful-agent.md",
+        "runtime/intake-interview.md",
+        "runtime/tier-balanced-production.md"
+      ],
+      "forbidden_reads": []
+    },
+    {
+      "id": "kb-audit-honesty-v1",
+      "runner": "interview",
+      "rule_ids": [
+        "reference-runtime-map",
+        "evaluation-honesty"
+      ],
+      "required_reads": [
+        "references/knowledge-coverage.md",
+        "runtime/evaluation.md",
+        "runtime/intake-interview.md",
+        "runtime/tier-frontier-generalist.md"
+      ],
+      "forbidden_reads": [
+        "runtime/stateful-agent.md"
+      ]
+    },
+    {
+      "id": "quick-negative-load-v1",
+      "runner": "interview",
+      "rule_ids": [
+        "conditional-loading",
+        "exact-values"
+      ],
+      "required_reads": [
+        "runtime/tier-balanced-production.md"
+      ],
+      "forbidden_reads": [
+        "runtime/intake-interview.md",
+        "runtime/grounded.md",
+        "runtime/safety-high-stakes.md",
+        "runtime/stateful-agent.md",
+        "runtime/model-index.yaml",
+        "runtime/context-composition.md",
+        "runtime/evaluation.md",
+        "assets/templates/grounded-answer.md",
+        "assets/templates/structured-extraction.md",
+        "assets/templates/contextual-agent.md"
+      ]
+    },
+    {
+      "id": "explicit-efficient-complex-v1",
+      "runner": "interview",
+      "rule_ids": [
+        "capability-mismatch",
+        "tool-authority"
+      ],
+      "required_reads": [
+        "runtime/model-index.yaml",
+        "runtime/tier-efficient-structured.md",
+        "runtime/intake-interview.md",
+        "runtime/task-overlays.md",
+        "runtime/safety-high-stakes.md"
+      ],
+      "forbidden_reads": [
+        "runtime/stateful-agent.md"
+      ]
+    },
+    {
+      "id": "current-research-no-sources-v1",
+      "runner": "interview",
+      "rule_ids": [
+        "freshness",
+        "source-authority",
+        "research-overlay"
+      ],
+      "required_reads": [
+        "runtime/intake-interview.md",
+        "runtime/grounded.md",
+        "runtime/task-overlays.md",
+        "runtime/safety-high-stakes.md",
+        "runtime/tier-balanced-production.md"
+      ],
+      "forbidden_reads": [
+        "runtime/stateful-agent.md"
+      ]
+    },
+    {
+      "id": "high-stakes-bounded-classification-v1",
+      "runner": "interview",
+      "rule_ids": [
+        "risk-independent-of-tier",
+        "classification-abstention"
+      ],
+      "required_reads": [
+        "runtime/task-overlays.md",
+        "runtime/safety-high-stakes.md",
+        "runtime/tier-efficient-structured.md"
+      ],
+      "forbidden_reads": [
+        "runtime/stateful-agent.md"
+      ]
+    },
+    {
+      "id": "multimodal-creative-brief-v1",
+      "runner": "interview",
+      "rule_ids": [
+        "creative-overlay",
+        "multimodal-order"
+      ],
+      "required_reads": [
+        "runtime/task-overlays.md",
+        "runtime/tier-balanced-production.md"
+      ],
+      "forbidden_reads": [
+        "runtime/stateful-agent.md"
+      ]
+    },
+    {
+      "id": "bounded-document-tool-workflow-v1",
+      "runner": "interview",
+      "rule_ids": [
+        "tool-authority",
+        "bounded-repair"
+      ],
+      "required_reads": [
+        "runtime/intake-interview.md",
+        "runtime/task-overlays.md",
+        "runtime/safety-high-stakes.md",
+        "runtime/tier-balanced-production.md"
+      ],
+      "forbidden_reads": [
+        "runtime/stateful-agent.md"
+      ]
+    },
+    {
+      "id": "structured-invoice-v1",
+      "runner": "quality",
+      "rule_ids": [
+        "core-contract",
+        "tier-efficient-structured",
+        "task-structured-extraction"
+      ]
+    },
+    {
+      "id": "support-triage-v1",
+      "runner": "quality",
+      "rule_ids": [
+        "core-contract",
+        "tier-efficient-structured",
+        "task-classification-with-abstention"
+      ]
+    },
+    {
+      "id": "source-conflict-brief-v1",
+      "runner": "quality",
+      "rule_ids": [
+        "core-contract",
+        "tier-balanced-production",
+        "task-grounded-conflict-synthesis"
+      ]
+    },
+    {
+      "id": "incident-root-cause-v1",
+      "runner": "quality",
+      "rule_ids": [
+        "core-contract",
+        "tier-frontier-generalist",
+        "task-technical-diagnosis"
+      ]
+    },
+    {
+      "id": "migration-control-plan-v1",
+      "runner": "quality",
+      "rule_ids": [
+        "core-contract",
+        "tier-frontier-autonomous",
+        "task-long-horizon-agent-planning"
+      ]
+    },
+    {
+      "id": "product-prioritization-v1",
+      "runner": "quality",
+      "rule_ids": [
+        "core-contract",
+        "tier-balanced-production",
+        "task-evidence-bound-product-decision"
+      ]
+    },
+    {
+      "id": "onboarding-experiment-v1",
+      "runner": "quality",
+      "rule_ids": [
+        "core-contract",
+        "tier-frontier-generalist",
+        "task-product-experiment-design"
+      ]
+    },
+    {
+      "id": "code-review-race-v1",
+      "runner": "quality",
+      "rule_ids": [
+        "core-contract",
+        "tier-frontier-generalist",
+        "task-code-review-and-patch-design"
+      ]
+    },
+    {
+      "id": "api-version-migration-plan-v1",
+      "runner": "quality",
+      "rule_ids": [
+        "core-contract",
+        "tier-frontier-autonomous",
+        "task-repository-change-planning"
+      ]
+    },
+    {
+      "id": "plugin-workflow-plan-v1",
+      "runner": "quality",
+      "rule_ids": [
+        "core-contract",
+        "tier-frontier-autonomous",
+        "task-plugin-workflow-planning"
+      ]
+    },
+    {
+      "id": "brand-context-copy-v1",
+      "runner": "quality",
+      "rule_ids": [
+        "core-contract",
+        "tier-efficient-structured",
+        "task-context-constrained-copy"
+      ]
+    },
+    {
+      "id": "business-opportunity-screen-v1",
+      "runner": "quality",
+      "rule_ids": [
+        "core-contract",
+        "tier-balanced-production",
+        "task-business-opportunity-screening"
+      ]
+    },
+    {
+      "id": "product-concept-scope-v1",
+      "runner": "quality",
+      "rule_ids": [
+        "core-contract",
+        "tier-frontier-generalist",
+        "task-product-idea-shaping"
+      ]
+    },
+    {
+      "id": "pricing-package-experiment-v1",
+      "runner": "quality",
+      "rule_ids": [
+        "core-contract",
+        "tier-balanced-production",
+        "task-pricing-and-packaging-validation"
+      ]
+    }
+  ],
+  "external_target_execution": {
+    "Qwen3.8-27B": "NOT_RUN_NO_BOUND_ENDPOINT",
+    "Qwen3.6-27B": "NOT_RUN_NO_BOUND_ENDPOINT",
+    "Qwen3.5-27B": "NOT_RUN_NO_BOUND_ENDPOINT",
+    "gemma-3-27b-it": "NOT_RUN_NO_BOUND_ENDPOINT",
+    "gemma-4-31B-it": "NOT_RUN_NO_BOUND_ENDPOINT",
+    "Mistral-Small-3.2-24B-Instruct-2506": "NOT_RUN_NO_BOUND_ENDPOINT"
+  },
+  "human_calibration": "NOT_RUN",
+  "rule_inventory": [
+    "answer-merge",
+    "astra-surface",
+    "bounded-repair",
+    "capability-mismatch",
+    "classification-abstention",
+    "comparison-unknown",
+    "conditional-loading",
+    "context-budget",
+    "context-template-agent",
+    "context-template-extraction",
+    "context-template-grounded",
+    "context-trust",
+    "core-contract",
+    "creative-overlay",
+    "evaluation-honesty",
+    "exact-values",
+    "freshness",
+    "gemma3-roles",
+    "gemma4-roles",
+    "history-invalidation",
+    "intake-readiness",
+    "long-context",
+    "mistral24-surface",
+    "modality-limits",
+    "multimodal-order",
+    "named-model",
+    "private-runtime-boundary",
+    "qwen35-history",
+    "qwen36-history",
+    "qwen38-history",
+    "realtime-staleness",
+    "reference-runtime-map",
+    "research-overlay",
+    "retrieval-stop",
+    "risk-independent-of-tier",
+    "schema-validation",
+    "source-authority",
+    "stateful-contract-gate",
+    "stateful-issued-slice",
+    "task-business-opportunity-screening",
+    "task-classification-with-abstention",
+    "task-code-review-and-patch-design",
+    "task-context-constrained-copy",
+    "task-evidence-bound-product-decision",
+    "task-grounded-conflict-synthesis",
+    "task-long-horizon-agent-planning",
+    "task-plugin-workflow-planning",
+    "task-pricing-and-packaging-validation",
+    "task-product-experiment-design",
+    "task-product-idea-shaping",
+    "task-repository-change-planning",
+    "task-structured-extraction",
+    "task-technical-diagnosis",
+    "tier-balanced-production",
+    "tier-efficient-structured",
+    "tier-frontier-autonomous",
+    "tier-frontier-generalist",
+    "tool-authority",
+    "unknown-capability"
+  ],
+  "knowledge_inventory": [
+    {
+      "path": "references/knowledge-coverage.md",
+      "sha256": "cd1b65a1b233c06ec2834b4669f4afa00d1c167e428156cab910a02bb969a67a",
+      "consumers": [
+        "references/knowledge-coverage.md"
+      ],
+      "case_ids": [
+        "kb-audit-honesty-v1"
+      ],
+      "coverage_level": "direct-rule-contract"
+    },
+    {
+      "path": "references/model-system/clarification-policy.md",
+      "sha256": "79f320860c076028b869dec5cf112c47640e6e995178cdffff79d8d10faf5c08",
+      "consumers": [
+        "runtime/intake-interview.md"
+      ],
+      "case_ids": [
+        "missing-structured-schema-v1",
+        "invoice-label-ambiguity-v1",
+        "support-mixed-case-v1",
+        "explicit-source-authority-v1",
+        "migration-permission-v1",
+        "declined-nonblocking-choice-v1",
+        "declined-hard-authority-v1",
+        "grounded-context-template-v1",
+        "agent-context-template-v1",
+        "long-context-joins-v1",
+        "stateful-missing-contract-v1",
+        "stateful-issued-slice-v1",
+        "kb-audit-honesty-v1",
+        "explicit-efficient-complex-v1",
+        "current-research-no-sources-v1",
+        "bounded-document-tool-workflow-v1",
+        "source-conflict-brief-v1",
+        "incident-root-cause-v1",
+        "migration-control-plan-v1",
+        "product-prioritization-v1",
+        "onboarding-experiment-v1",
+        "code-review-race-v1",
+        "api-version-migration-plan-v1",
+        "plugin-workflow-plan-v1",
+        "business-opportunity-screen-v1",
+        "product-concept-scope-v1",
+        "pricing-package-experiment-v1"
+      ],
+      "coverage_level": "reference-rules-through-runtime"
+    },
+    {
+      "path": "references/model-system/context-acquisition.md",
+      "sha256": "07008690cdbbe22eeea7380258e76c3424ee4ad77a006426ca33866b1bb130ec",
+      "consumers": [
+        "runtime/grounded.md",
+        "runtime/context-composition.md"
+      ],
+      "case_ids": [
+        "explicit-source-authority-v1",
+        "declined-hard-authority-v1",
+        "grounded-context-template-v1",
+        "extraction-context-template-v1",
+        "agent-context-template-v1",
+        "long-context-joins-v1",
+        "current-research-no-sources-v1",
+        "source-conflict-brief-v1",
+        "incident-root-cause-v1",
+        "migration-control-plan-v1",
+        "product-prioritization-v1",
+        "onboarding-experiment-v1",
+        "code-review-race-v1",
+        "api-version-migration-plan-v1",
+        "plugin-workflow-plan-v1",
+        "business-opportunity-screen-v1",
+        "product-concept-scope-v1",
+        "pricing-package-experiment-v1"
+      ],
+      "coverage_level": "reference-rules-through-runtime"
+    },
+    {
+      "path": "references/model-system/model-registry.yaml",
+      "sha256": "0b05e7837957f3a42a566490c6ae0ede7e8bd6f5518e3a11860664f17c6e4a74",
+      "consumers": [
+        "runtime/model-index.yaml",
+        "runtime/model-astra.md",
+        "runtime/model-qwen.md",
+        "runtime/model-open-weight.md"
+      ],
+      "case_ids": [
+        "astra-surface-v1",
+        "qwen38-history-v1",
+        "qwen36-history-v1",
+        "qwen35-history-v1",
+        "gemma3-roles-v1",
+        "gemma4-roles-v1",
+        "mistral24-surface-v1",
+        "unknown27b-v1",
+        "explicit-efficient-complex-v1"
+      ],
+      "coverage_level": "reference-rules-through-runtime"
+    },
+    {
+      "path": "references/model-system/prompt-composition.md",
+      "sha256": "b2316cc15686dd480917992f8651e593b7f8cf32924f0f600333afb4431a250d",
+      "consumers": [
+        "SKILL.md",
+        "runtime/context-composition.md",
+        "runtime/model-astra.md",
+        "runtime/model-qwen.md",
+        "runtime/model-open-weight.md",
+        "runtime/task-overlays.md",
+        "runtime/safety-high-stakes.md",
+        "runtime/tier-efficient-structured.md",
+        "runtime/tier-balanced-production.md",
+        "runtime/tier-frontier-generalist.md",
+        "runtime/tier-frontier-autonomous.md"
+      ],
+      "case_ids": [
+        "complete-quick-v1",
+        "missing-structured-schema-v1",
+        "invoice-label-ambiguity-v1",
+        "support-mixed-case-v1",
+        "explicit-source-authority-v1",
+        "migration-permission-v1",
+        "safe-optional-preference-v1",
+        "declined-nonblocking-choice-v1",
+        "declined-hard-authority-v1",
+        "answer-already-in-source-v1",
+        "builder-omission-repair-v1",
+        "new-instruction-invalidation-v1",
+        "astra-surface-v1",
+        "qwen38-history-v1",
+        "qwen36-history-v1",
+        "qwen35-history-v1",
+        "gemma3-roles-v1",
+        "gemma4-roles-v1",
+        "mistral24-surface-v1",
+        "unknown27b-v1",
+        "grounded-context-template-v1",
+        "extraction-context-template-v1",
+        "agent-context-template-v1",
+        "long-context-joins-v1",
+        "multimodal-missing-v1",
+        "realtime-staleness-v1",
+        "comparison-unknown-v1",
+        "stateful-missing-contract-v1",
+        "stateful-issued-slice-v1",
+        "kb-audit-honesty-v1",
+        "quick-negative-load-v1",
+        "explicit-efficient-complex-v1",
+        "current-research-no-sources-v1",
+        "high-stakes-bounded-classification-v1",
+        "multimodal-creative-brief-v1",
+        "bounded-document-tool-workflow-v1",
+        "structured-invoice-v1",
+        "support-triage-v1",
+        "source-conflict-brief-v1",
+        "incident-root-cause-v1",
+        "migration-control-plan-v1",
+        "product-prioritization-v1",
+        "onboarding-experiment-v1",
+        "code-review-race-v1",
+        "api-version-migration-plan-v1",
+        "plugin-workflow-plan-v1",
+        "brand-context-copy-v1",
+        "business-opportunity-screen-v1",
+        "product-concept-scope-v1",
+        "pricing-package-experiment-v1"
+      ],
+      "coverage_level": "reference-rules-through-runtime"
+    },
+    {
+      "path": "references/model-system/request-profile.md",
+      "sha256": "fb3a3a0c530cdc5fa102a58f6f35d3573baaf6dca1120259556d9880f9eb2831",
+      "consumers": [
+        "SKILL.md",
+        "runtime/intake-interview.md"
+      ],
+      "case_ids": [
+        "complete-quick-v1",
+        "missing-structured-schema-v1",
+        "invoice-label-ambiguity-v1",
+        "support-mixed-case-v1",
+        "explicit-source-authority-v1",
+        "migration-permission-v1",
+        "safe-optional-preference-v1",
+        "declined-nonblocking-choice-v1",
+        "declined-hard-authority-v1",
+        "answer-already-in-source-v1",
+        "builder-omission-repair-v1",
+        "new-instruction-invalidation-v1",
+        "astra-surface-v1",
+        "qwen38-history-v1",
+        "qwen36-history-v1",
+        "qwen35-history-v1",
+        "gemma3-roles-v1",
+        "gemma4-roles-v1",
+        "mistral24-surface-v1",
+        "unknown27b-v1",
+        "grounded-context-template-v1",
+        "extraction-context-template-v1",
+        "agent-context-template-v1",
+        "long-context-joins-v1",
+        "multimodal-missing-v1",
+        "realtime-staleness-v1",
+        "comparison-unknown-v1",
+        "stateful-missing-contract-v1",
+        "stateful-issued-slice-v1",
+        "kb-audit-honesty-v1",
+        "quick-negative-load-v1",
+        "explicit-efficient-complex-v1",
+        "current-research-no-sources-v1",
+        "high-stakes-bounded-classification-v1",
+        "multimodal-creative-brief-v1",
+        "bounded-document-tool-workflow-v1",
+        "structured-invoice-v1",
+        "support-triage-v1",
+        "source-conflict-brief-v1",
+        "incident-root-cause-v1",
+        "migration-control-plan-v1",
+        "product-prioritization-v1",
+        "onboarding-experiment-v1",
+        "code-review-race-v1",
+        "api-version-migration-plan-v1",
+        "plugin-workflow-plan-v1",
+        "brand-context-copy-v1",
+        "business-opportunity-screen-v1",
+        "product-concept-scope-v1",
+        "pricing-package-experiment-v1"
+      ],
+      "coverage_level": "reference-rules-through-runtime"
+    },
+    {
+      "path": "references/model-system/routing-cases.yaml",
+      "sha256": "8871c7d2a493b77cc28608a11a0b81cc47d644878afbf38bdecff540734403f7",
+      "consumers": [
+        "assets/templates/contextual-agent.md",
+        "assets/templates/grounded-answer.md",
+        "assets/templates/structured-extraction.md",
+        "runtime/context-composition.md",
+        "runtime/grounded.md",
+        "runtime/intake-interview.md",
+        "runtime/model-astra.md",
+        "runtime/model-index.yaml",
+        "runtime/model-open-weight.md",
+        "runtime/model-qwen.md",
+        "runtime/safety-high-stakes.md",
+        "runtime/task-overlays.md",
+        "runtime/tier-balanced-production.md",
+        "runtime/tier-efficient-structured.md",
+        "runtime/tier-frontier-autonomous.md",
+        "runtime/tier-frontier-generalist.md"
+      ],
+      "case_ids": [
+        "agent-context-template-v1",
+        "api-version-migration-plan-v1",
+        "astra-surface-v1",
+        "bounded-document-tool-workflow-v1",
+        "current-research-no-sources-v1",
+        "explicit-efficient-complex-v1",
+        "extraction-context-template-v1",
+        "gemma3-roles-v1",
+        "gemma4-roles-v1",
+        "grounded-context-template-v1",
+        "high-stakes-bounded-classification-v1",
+        "incident-root-cause-v1",
+        "long-context-joins-v1",
+        "migration-control-plan-v1",
+        "multimodal-creative-brief-v1",
+        "new-instruction-invalidation-v1",
+        "quick-negative-load-v1",
+        "qwen35-history-v1",
+        "qwen36-history-v1",
+        "qwen38-history-v1",
+        "structured-invoice-v1",
+        "unknown27b-v1"
+      ],
+      "coverage_level": "reference-rules-through-runtime"
+    },
+    {
+      "path": "references/model-system/routing-evaluation.md",
+      "sha256": "99a1693b5cedcdb95a27156138494cd8c77031a1aa93dc8dcdb5b86d745f9472",
+      "consumers": [
+        "runtime/evaluation.md"
+      ],
+      "case_ids": [
+        "comparison-unknown-v1",
+        "kb-audit-honesty-v1"
+      ],
+      "coverage_level": "reference-rules-through-runtime"
+    },
+    {
+      "path": "references/model-system/specialization-overlays.md",
+      "sha256": "ad8272484bc23474dbd67048a685a536d6e47de3ac1c97785303246b5c9cd645",
+      "consumers": [
+        "runtime/task-overlays.md",
+        "runtime/grounded.md",
+        "runtime/safety-high-stakes.md"
+      ],
+      "case_ids": [
+        "explicit-source-authority-v1",
+        "migration-permission-v1",
+        "declined-hard-authority-v1",
+        "astra-surface-v1",
+        "qwen38-history-v1",
+        "qwen36-history-v1",
+        "qwen35-history-v1",
+        "gemma3-roles-v1",
+        "gemma4-roles-v1",
+        "mistral24-surface-v1",
+        "unknown27b-v1",
+        "grounded-context-template-v1",
+        "extraction-context-template-v1",
+        "agent-context-template-v1",
+        "long-context-joins-v1",
+        "multimodal-missing-v1",
+        "realtime-staleness-v1",
+        "comparison-unknown-v1",
+        "explicit-efficient-complex-v1",
+        "current-research-no-sources-v1",
+        "high-stakes-bounded-classification-v1",
+        "multimodal-creative-brief-v1",
+        "bounded-document-tool-workflow-v1",
+        "structured-invoice-v1",
+        "support-triage-v1",
+        "source-conflict-brief-v1",
+        "incident-root-cause-v1",
+        "migration-control-plan-v1",
+        "product-prioritization-v1",
+        "onboarding-experiment-v1",
+        "code-review-race-v1",
+        "api-version-migration-plan-v1",
+        "plugin-workflow-plan-v1",
+        "brand-context-copy-v1",
+        "business-opportunity-screen-v1",
+        "product-concept-scope-v1",
+        "pricing-package-experiment-v1"
+      ],
+      "coverage_level": "reference-rules-through-runtime"
+    },
+    {
+      "path": "references/model-system/task-profiling.md",
+      "sha256": "cdbb5e2309bf1c839ccb1b52cdebfb60f92d70a08f26b03a112a8d9f6ac7bae7",
+      "consumers": [
+        "SKILL.md",
+        "runtime/model-index.yaml",
+        "runtime/tier-efficient-structured.md",
+        "runtime/tier-balanced-production.md",
+        "runtime/tier-frontier-generalist.md",
+        "runtime/tier-frontier-autonomous.md"
+      ],
+      "case_ids": [
+        "complete-quick-v1",
+        "missing-structured-schema-v1",
+        "invoice-label-ambiguity-v1",
+        "support-mixed-case-v1",
+        "explicit-source-authority-v1",
+        "migration-permission-v1",
+        "safe-optional-preference-v1",
+        "declined-nonblocking-choice-v1",
+        "declined-hard-authority-v1",
+        "answer-already-in-source-v1",
+        "builder-omission-repair-v1",
+        "new-instruction-invalidation-v1",
+        "astra-surface-v1",
+        "qwen38-history-v1",
+        "qwen36-history-v1",
+        "qwen35-history-v1",
+        "gemma3-roles-v1",
+        "gemma4-roles-v1",
+        "mistral24-surface-v1",
+        "unknown27b-v1",
+        "grounded-context-template-v1",
+        "extraction-context-template-v1",
+        "agent-context-template-v1",
+        "long-context-joins-v1",
+        "multimodal-missing-v1",
+        "realtime-staleness-v1",
+        "comparison-unknown-v1",
+        "stateful-missing-contract-v1",
+        "stateful-issued-slice-v1",
+        "kb-audit-honesty-v1",
+        "quick-negative-load-v1",
+        "explicit-efficient-complex-v1",
+        "current-research-no-sources-v1",
+        "high-stakes-bounded-classification-v1",
+        "multimodal-creative-brief-v1",
+        "bounded-document-tool-workflow-v1",
+        "structured-invoice-v1",
+        "support-triage-v1",
+        "source-conflict-brief-v1",
+        "incident-root-cause-v1",
+        "migration-control-plan-v1",
+        "product-prioritization-v1",
+        "onboarding-experiment-v1",
+        "code-review-race-v1",
+        "api-version-migration-plan-v1",
+        "plugin-workflow-plan-v1",
+        "brand-context-copy-v1",
+        "business-opportunity-screen-v1",
+        "product-concept-scope-v1",
+        "pricing-package-experiment-v1"
+      ],
+      "coverage_level": "reference-rules-through-runtime"
+    },
+    {
+      "path": "references/model-system/tier-selection.md",
+      "sha256": "9cca16815294f1e95ec1e0826dbd1f7d1755289cfd365955da419a4e9317be6d",
+      "consumers": [
+        "runtime/tier-efficient-structured.md",
+        "runtime/tier-balanced-production.md",
+        "runtime/tier-frontier-generalist.md",
+        "runtime/tier-frontier-autonomous.md"
+      ],
+      "case_ids": [
+        "complete-quick-v1",
+        "missing-structured-schema-v1",
+        "invoice-label-ambiguity-v1",
+        "support-mixed-case-v1",
+        "explicit-source-authority-v1",
+        "migration-permission-v1",
+        "safe-optional-preference-v1",
+        "declined-nonblocking-choice-v1",
+        "declined-hard-authority-v1",
+        "answer-already-in-source-v1",
+        "builder-omission-repair-v1",
+        "new-instruction-invalidation-v1",
+        "astra-surface-v1",
+        "qwen38-history-v1",
+        "qwen36-history-v1",
+        "qwen35-history-v1",
+        "gemma3-roles-v1",
+        "gemma4-roles-v1",
+        "mistral24-surface-v1",
+        "unknown27b-v1",
+        "grounded-context-template-v1",
+        "extraction-context-template-v1",
+        "agent-context-template-v1",
+        "long-context-joins-v1",
+        "multimodal-missing-v1",
+        "realtime-staleness-v1",
+        "comparison-unknown-v1",
+        "stateful-issued-slice-v1",
+        "kb-audit-honesty-v1",
+        "quick-negative-load-v1",
+        "explicit-efficient-complex-v1",
+        "current-research-no-sources-v1",
+        "high-stakes-bounded-classification-v1",
+        "multimodal-creative-brief-v1",
+        "bounded-document-tool-workflow-v1",
+        "structured-invoice-v1",
+        "support-triage-v1",
+        "source-conflict-brief-v1",
+        "incident-root-cause-v1",
+        "migration-control-plan-v1",
+        "product-prioritization-v1",
+        "onboarding-experiment-v1",
+        "code-review-race-v1",
+        "api-version-migration-plan-v1",
+        "plugin-workflow-plan-v1",
+        "brand-context-copy-v1",
+        "business-opportunity-screen-v1",
+        "product-concept-scope-v1",
+        "pricing-package-experiment-v1"
+      ],
+      "coverage_level": "reference-rules-through-runtime"
+    },
+    {
+      "path": "runtime/context-composition.md",
+      "sha256": "5a0f57a5905c2ccf5840e7ff2343882e1dc9d8141b26eedc33a5905f9f773651",
+      "consumers": [
+        "runtime/context-composition.md"
+      ],
+      "case_ids": [
+        "grounded-context-template-v1",
+        "extraction-context-template-v1",
+        "agent-context-template-v1",
+        "long-context-joins-v1"
+      ],
+      "coverage_level": "direct-rule-contract"
+    },
+    {
+      "path": "runtime/evaluation.md",
+      "sha256": "2a972f03af45cb4a94b484aa308bb957113d154374aba932dba2bae46dc487fe",
+      "consumers": [
+        "runtime/evaluation.md"
+      ],
+      "case_ids": [
+        "comparison-unknown-v1",
+        "kb-audit-honesty-v1"
+      ],
+      "coverage_level": "direct-rule-contract"
+    },
+    {
+      "path": "runtime/grounded.md",
+      "sha256": "c0e83082d84f0f2834f4bbb7e9381cb400a838eee6d38f09d4fba773ea994d1a",
+      "consumers": [
+        "runtime/grounded.md"
+      ],
+      "case_ids": [
+        "explicit-source-authority-v1",
+        "declined-hard-authority-v1",
+        "grounded-context-template-v1",
+        "long-context-joins-v1",
+        "current-research-no-sources-v1",
+        "source-conflict-brief-v1",
+        "incident-root-cause-v1",
+        "migration-control-plan-v1",
+        "product-prioritization-v1",
+        "onboarding-experiment-v1",
+        "code-review-race-v1",
+        "api-version-migration-plan-v1",
+        "plugin-workflow-plan-v1",
+        "business-opportunity-screen-v1",
+        "product-concept-scope-v1",
+        "pricing-package-experiment-v1"
+      ],
+      "coverage_level": "direct-rule-contract"
+    },
+    {
+      "path": "runtime/intake-interview.md",
+      "sha256": "195ac565f6e835531a537a9661a9eccf8f9aaaf3cdc363cc2bd7fcf281055666",
+      "consumers": [
+        "runtime/intake-interview.md"
+      ],
+      "case_ids": [
+        "missing-structured-schema-v1",
+        "invoice-label-ambiguity-v1",
+        "support-mixed-case-v1",
+        "explicit-source-authority-v1",
+        "migration-permission-v1",
+        "declined-nonblocking-choice-v1",
+        "declined-hard-authority-v1",
+        "grounded-context-template-v1",
+        "agent-context-template-v1",
+        "long-context-joins-v1",
+        "stateful-missing-contract-v1",
+        "stateful-issued-slice-v1",
+        "kb-audit-honesty-v1",
+        "explicit-efficient-complex-v1",
+        "current-research-no-sources-v1",
+        "bounded-document-tool-workflow-v1",
+        "source-conflict-brief-v1",
+        "incident-root-cause-v1",
+        "migration-control-plan-v1",
+        "product-prioritization-v1",
+        "onboarding-experiment-v1",
+        "code-review-race-v1",
+        "api-version-migration-plan-v1",
+        "plugin-workflow-plan-v1",
+        "business-opportunity-screen-v1",
+        "product-concept-scope-v1",
+        "pricing-package-experiment-v1"
+      ],
+      "coverage_level": "direct-rule-contract"
+    },
+    {
+      "path": "runtime/model-astra.md",
+      "sha256": "25ca1efe687f151e66f7b67c8404e40ae626b3cf49a810dc034b15d2912b68ac",
+      "consumers": [
+        "runtime/model-astra.md"
+      ],
+      "case_ids": [
+        "astra-surface-v1"
+      ],
+      "coverage_level": "direct-rule-contract"
+    },
+    {
+      "path": "runtime/model-index.yaml",
+      "sha256": "8e7b1abc71f7d8598eb13d5f98c6db3246610ae35297d0987de75f194d1accc3",
+      "consumers": [
+        "runtime/model-index.yaml"
+      ],
+      "case_ids": [
+        "astra-surface-v1",
+        "qwen38-history-v1",
+        "qwen36-history-v1",
+        "qwen35-history-v1",
+        "gemma3-roles-v1",
+        "gemma4-roles-v1",
+        "mistral24-surface-v1",
+        "unknown27b-v1",
+        "explicit-efficient-complex-v1"
+      ],
+      "coverage_level": "direct-rule-contract"
+    },
+    {
+      "path": "runtime/model-open-weight.md",
+      "sha256": "ed9825ecfc82637460a21fea8d6df114f9d369f3bf128654e887538c651194b0",
+      "consumers": [
+        "runtime/model-open-weight.md"
+      ],
+      "case_ids": [
+        "gemma3-roles-v1",
+        "gemma4-roles-v1",
+        "mistral24-surface-v1"
+      ],
+      "coverage_level": "direct-rule-contract"
+    },
+    {
+      "path": "runtime/model-qwen.md",
+      "sha256": "576b2628f01469f84b7740b4ac4defaa63a9e542e05e60f6fea59a03c9601e43",
+      "consumers": [
+        "runtime/model-qwen.md"
+      ],
+      "case_ids": [
+        "qwen38-history-v1",
+        "qwen36-history-v1",
+        "qwen35-history-v1"
+      ],
+      "coverage_level": "direct-rule-contract"
+    },
+    {
+      "path": "runtime/safety-high-stakes.md",
+      "sha256": "e5a83f680e173808dc81551605553cfa06ef017e1918e63bde09b1b71485c42c",
+      "consumers": [
+        "runtime/safety-high-stakes.md"
+      ],
+      "case_ids": [
+        "migration-permission-v1",
+        "agent-context-template-v1",
+        "explicit-efficient-complex-v1",
+        "current-research-no-sources-v1",
+        "high-stakes-bounded-classification-v1",
+        "bounded-document-tool-workflow-v1",
+        "migration-control-plan-v1",
+        "api-version-migration-plan-v1",
+        "plugin-workflow-plan-v1"
+      ],
+      "coverage_level": "direct-rule-contract"
+    },
+    {
+      "path": "runtime/stateful-agent.md",
+      "sha256": "651c6e73dc5a61f8b366e5f8d8db72f3089dcac089c4e5673d286e5804106312",
+      "consumers": [
+        "runtime/stateful-agent.md"
+      ],
+      "case_ids": [
+        "stateful-missing-contract-v1",
+        "stateful-issued-slice-v1"
+      ],
+      "coverage_level": "direct-rule-contract"
+    },
+    {
+      "path": "runtime/task-overlays.md",
+      "sha256": "66751ce2a60eff10787305ecc734dc19f5136e0ba45a9292f22b2180a17f8168",
+      "consumers": [
+        "runtime/task-overlays.md"
+      ],
+      "case_ids": [
+        "migration-permission-v1",
+        "astra-surface-v1",
+        "qwen38-history-v1",
+        "qwen36-history-v1",
+        "qwen35-history-v1",
+        "gemma3-roles-v1",
+        "gemma4-roles-v1",
+        "mistral24-surface-v1",
+        "unknown27b-v1",
+        "extraction-context-template-v1",
+        "agent-context-template-v1",
+        "long-context-joins-v1",
+        "multimodal-missing-v1",
+        "realtime-staleness-v1",
+        "comparison-unknown-v1",
+        "explicit-efficient-complex-v1",
+        "current-research-no-sources-v1",
+        "high-stakes-bounded-classification-v1",
+        "multimodal-creative-brief-v1",
+        "bounded-document-tool-workflow-v1",
+        "structured-invoice-v1",
+        "support-triage-v1",
+        "source-conflict-brief-v1",
+        "incident-root-cause-v1",
+        "migration-control-plan-v1",
+        "product-prioritization-v1",
+        "onboarding-experiment-v1",
+        "code-review-race-v1",
+        "api-version-migration-plan-v1",
+        "plugin-workflow-plan-v1",
+        "brand-context-copy-v1",
+        "business-opportunity-screen-v1",
+        "product-concept-scope-v1",
+        "pricing-package-experiment-v1"
+      ],
+      "coverage_level": "direct-rule-contract"
+    },
+    {
+      "path": "runtime/tier-balanced-production.md",
+      "sha256": "3f7a820670b2fd9a6769f1f52df2e0558c937d8dc5ed32117e9f1bcc5291aac1",
+      "consumers": [
+        "runtime/tier-balanced-production.md"
+      ],
+      "case_ids": [
+        "explicit-source-authority-v1",
+        "safe-optional-preference-v1",
+        "declined-nonblocking-choice-v1",
+        "declined-hard-authority-v1",
+        "new-instruction-invalidation-v1",
+        "grounded-context-template-v1",
+        "multimodal-missing-v1",
+        "realtime-staleness-v1",
+        "comparison-unknown-v1",
+        "stateful-issued-slice-v1",
+        "quick-negative-load-v1",
+        "current-research-no-sources-v1",
+        "multimodal-creative-brief-v1",
+        "bounded-document-tool-workflow-v1",
+        "source-conflict-brief-v1",
+        "product-prioritization-v1",
+        "business-opportunity-screen-v1",
+        "pricing-package-experiment-v1"
+      ],
+      "coverage_level": "direct-rule-contract"
+    },
+    {
+      "path": "runtime/tier-efficient-structured.md",
+      "sha256": "4d229315051d185917944bfdfbc4f221cab30f39d67e98dfe1877545175d7cfe",
+      "consumers": [
+        "runtime/tier-efficient-structured.md"
+      ],
+      "case_ids": [
+        "complete-quick-v1",
+        "missing-structured-schema-v1",
+        "invoice-label-ambiguity-v1",
+        "support-mixed-case-v1",
+        "answer-already-in-source-v1",
+        "builder-omission-repair-v1",
+        "astra-surface-v1",
+        "qwen38-history-v1",
+        "qwen36-history-v1",
+        "qwen35-history-v1",
+        "gemma3-roles-v1",
+        "gemma4-roles-v1",
+        "mistral24-surface-v1",
+        "unknown27b-v1",
+        "extraction-context-template-v1",
+        "explicit-efficient-complex-v1",
+        "high-stakes-bounded-classification-v1",
+        "structured-invoice-v1",
+        "support-triage-v1",
+        "brand-context-copy-v1"
+      ],
+      "coverage_level": "direct-rule-contract"
+    },
+    {
+      "path": "runtime/tier-frontier-autonomous.md",
+      "sha256": "bacff6f20bf32b99239bff0aad02c933cfa187843d4980757cb1f294c8d0783b",
+      "consumers": [
+        "runtime/tier-frontier-autonomous.md"
+      ],
+      "case_ids": [
+        "migration-permission-v1",
+        "agent-context-template-v1",
+        "migration-control-plan-v1",
+        "api-version-migration-plan-v1",
+        "plugin-workflow-plan-v1"
+      ],
+      "coverage_level": "direct-rule-contract"
+    },
+    {
+      "path": "runtime/tier-frontier-generalist.md",
+      "sha256": "773efa67fe50ec2f7440585ccf114a51e6ae7fd955ad8673e55ab116916ba0b2",
+      "consumers": [
+        "runtime/tier-frontier-generalist.md"
+      ],
+      "case_ids": [
+        "long-context-joins-v1",
+        "kb-audit-honesty-v1",
+        "incident-root-cause-v1",
+        "onboarding-experiment-v1",
+        "code-review-race-v1",
+        "product-concept-scope-v1"
+      ],
+      "coverage_level": "direct-rule-contract"
+    },
+    {
+      "path": "SKILL.md",
+      "sha256": "09a2155e64f779c7307e2b1e20d630fe1a5e97d2b88a60c2c2b66476815f73af",
+      "consumers": [
+        "SKILL.md"
+      ],
+      "case_ids": [
+        "structured-invoice-v1",
+        "support-triage-v1",
+        "source-conflict-brief-v1",
+        "incident-root-cause-v1",
+        "migration-control-plan-v1",
+        "product-prioritization-v1",
+        "onboarding-experiment-v1",
+        "code-review-race-v1",
+        "api-version-migration-plan-v1",
+        "plugin-workflow-plan-v1",
+        "brand-context-copy-v1",
+        "business-opportunity-screen-v1",
+        "product-concept-scope-v1",
+        "pricing-package-experiment-v1",
+        "complete-quick-v1",
+        "missing-structured-schema-v1",
+        "invoice-label-ambiguity-v1",
+        "support-mixed-case-v1",
+        "explicit-source-authority-v1",
+        "migration-permission-v1",
+        "safe-optional-preference-v1",
+        "declined-nonblocking-choice-v1",
+        "declined-hard-authority-v1",
+        "answer-already-in-source-v1",
+        "builder-omission-repair-v1",
+        "new-instruction-invalidation-v1",
+        "astra-surface-v1",
+        "qwen38-history-v1",
+        "qwen36-history-v1",
+        "qwen35-history-v1",
+        "gemma3-roles-v1",
+        "gemma4-roles-v1",
+        "mistral24-surface-v1",
+        "unknown27b-v1",
+        "grounded-context-template-v1",
+        "extraction-context-template-v1",
+        "agent-context-template-v1",
+        "long-context-joins-v1",
+        "multimodal-missing-v1",
+        "realtime-staleness-v1",
+        "comparison-unknown-v1",
+        "stateful-missing-contract-v1",
+        "stateful-issued-slice-v1",
+        "kb-audit-honesty-v1",
+        "quick-negative-load-v1",
+        "explicit-efficient-complex-v1",
+        "current-research-no-sources-v1",
+        "high-stakes-bounded-classification-v1",
+        "multimodal-creative-brief-v1",
+        "bounded-document-tool-workflow-v1"
+      ],
+      "coverage_level": "entrypoint-or-template-contract"
+    },
+    {
+      "path": "assets/templates/grounded-answer.md",
+      "sha256": "d136209d9b94e7198b343db29e5a8f447b499ca3bb600ec8fc0a90b07be6df77",
+      "consumers": [
+        "assets/templates/grounded-answer.md"
+      ],
+      "case_ids": [
+        "grounded-context-template-v1",
+        "long-context-joins-v1"
+      ],
+      "coverage_level": "entrypoint-or-template-contract"
+    },
+    {
+      "path": "assets/templates/structured-extraction.md",
+      "sha256": "eb43d9bc9ff39e3bce409703b2f800250f22b28a2bcc471bcb4571e42c05c136",
+      "consumers": [
+        "assets/templates/structured-extraction.md"
+      ],
+      "case_ids": [
+        "extraction-context-template-v1"
+      ],
+      "coverage_level": "entrypoint-or-template-contract"
+    },
+    {
+      "path": "assets/templates/contextual-agent.md",
+      "sha256": "1f849e5cbe63e97e7d6e6d357e7e2af7aa9b6db004be2af41131936f7d0270be",
+      "consumers": [
+        "assets/templates/contextual-agent.md"
+      ],
+      "case_ids": [
+        "agent-context-template-v1"
+      ],
+      "coverage_level": "entrypoint-or-template-contract"
+    }
+  ],
+  "routing_case_mapping": {
+    "invoice-field-extraction": [
+      "structured-invoice-v1"
+    ],
+    "everyday-tool-workflow": [
+      "bounded-document-tool-workflow-v1"
+    ],
+    "hard-root-cause-diagnosis": [
+      "incident-root-cause-v1"
+    ],
+    "long-running-multi-repo-agent": [
+      "migration-control-plan-v1",
+      "api-version-migration-plan-v1"
+    ],
+    "explicit-efficient-model-complex-task": [
+      "explicit-efficient-complex-v1"
+    ],
+    "current-research-missing-sources": [
+      "current-research-no-sources-v1"
+    ],
+    "high-stakes-simple-classification": [
+      "high-stakes-bounded-classification-v1"
+    ],
+    "multimodal-creative-brief": [
+      "multimodal-creative-brief-v1"
+    ],
+    "astra-adapter": [
+      "astra-surface-v1"
+    ],
+    "qwen-version-boundary": [
+      "qwen38-history-v1"
+    ],
+    "qwen-36-history": [
+      "qwen36-history-v1"
+    ],
+    "qwen-35-history": [
+      "qwen35-history-v1"
+    ],
+    "unknown-27b-deployment": [
+      "unknown27b-v1"
+    ],
+    "gemma-role-boundary": [
+      "gemma3-roles-v1",
+      "gemma4-roles-v1"
+    ],
+    "context-template-boundary": [
+      "grounded-context-template-v1",
+      "extraction-context-template-v1",
+      "agent-context-template-v1"
+    ],
+    "context-budget-boundary": [
+      "long-context-joins-v1"
+    ],
+    "quick-no-extra-context": [
+      "quick-negative-load-v1"
+    ],
+    "context-correction": [
+      "new-instruction-invalidation-v1",
+      "agent-context-template-v1"
+    ]
+  }
+}

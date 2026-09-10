@@ -1,0 +1,96 @@
+{
+  "schema_version": 1,
+  "profile_id": "cascade-prompt-trajectory-v2",
+  "purpose": "Judge generated-prompt architecture and tier adaptation without seeing target correctness, outcome scores, eligibility, peer outputs, or acceptance decisions.",
+  "scale": {
+    "0": "Absent, unusable, or directly harmful.",
+    "1": "Major failures dominate; substantial repair is required.",
+    "2": "Partially sound but material defects remain.",
+    "3": "Sound and efficient with only minor defects.",
+    "4": "Fully satisfies the anchored dimension with no material defect."
+  },
+  "dimensions": [
+    {
+      "id": "prompt_task_fit",
+      "weight": 25,
+      "description": "The prompt encodes the actual objective, inputs, constraints, exclusions, and output contract without solving the fixture.",
+      "anchors": {
+        "0": "Absent or contradicts a hard task, evidence, or permission constraint.",
+        "1": "Major omissions or wrong decisions; the result cannot be used reliably.",
+        "2": "Partially satisfies this dimension but has a material unresolved defect.",
+        "3": "Satisfies all material obligations of this dimension; only minor nonblocking weaknesses.",
+        "4": "Complete, precise and proportionate support for this dimension, including applicable boundary behavior."
+      }
+    },
+    {
+      "id": "context_and_source_control",
+      "weight": 20,
+      "description": "Context boundaries, authority, untrusted content, conflicts, and missing evidence are handled explicitly and proportionally.",
+      "anchors": {
+        "0": "Absent or contradicts a hard task, evidence, or permission constraint.",
+        "1": "Major omissions or wrong decisions; the result cannot be used reliably.",
+        "2": "Partially satisfies this dimension but has a material unresolved defect.",
+        "3": "Satisfies all material obligations of this dimension; only minor nonblocking weaknesses.",
+        "4": "Complete, precise and proportionate support for this dimension, including applicable boundary behavior."
+      }
+    },
+    {
+      "id": "instruction_efficiency",
+      "weight": 20,
+      "description": "Instructions are clear, non-duplicative, and no more elaborate than the task requires.",
+      "anchors": {
+        "0": "Absent or contradicts a hard task, evidence, or permission constraint.",
+        "1": "Major omissions or wrong decisions; the result cannot be used reliably.",
+        "2": "Partially satisfies this dimension but has a material unresolved defect.",
+        "3": "Satisfies all material obligations of this dimension; only minor nonblocking weaknesses.",
+        "4": "Complete, precise and proportionate support for this dimension, including applicable boundary behavior."
+      }
+    },
+    {
+      "id": "model_tier_adaptation",
+      "weight": 20,
+      "description": "Structure and explicitness fit the named neutral tier while preserving the invariant task contract.",
+      "anchors": {
+        "0": "Absent or contradicts a hard task, evidence, or permission constraint.",
+        "1": "Major omissions or wrong decisions; the result cannot be used reliably.",
+        "2": "Partially satisfies this dimension but has a material unresolved defect.",
+        "3": "Satisfies all material obligations of this dimension; only minor nonblocking weaknesses.",
+        "4": "Complete, precise and proportionate support for this dimension, including applicable boundary behavior."
+      }
+    },
+    {
+      "id": "validation_and_recovery",
+      "weight": 15,
+      "description": "The prompt defines realistic output validation, failure behavior, and bounded repair or escalation where applicable.",
+      "anchors": {
+        "0": "Absent or contradicts a hard task, evidence, or permission constraint.",
+        "1": "Major omissions or wrong decisions; the result cannot be used reliably.",
+        "2": "Partially satisfies this dimension but has a material unresolved defect.",
+        "3": "Satisfies all material obligations of this dimension; only minor nonblocking weaknesses.",
+        "4": "Complete, precise and proportionate support for this dimension, including applicable boundary behavior."
+      }
+    }
+  ],
+  "threshold": 0.8,
+  "minimum_dimension_rating": 3,
+  "score_formula": "sum(weight * rating / 4) / 100",
+  "blind_exclusions": [
+    "target output",
+    "outcome judgment",
+    "eligibility result",
+    "peer outputs",
+    "model ranking",
+    "acceptance decision",
+    "acceptance threshold",
+    "dimension floors",
+    "weights",
+    "mechanical verdicts",
+    "expected answers"
+  ],
+  "required_evidence": [
+    "task contract",
+    "named target model and tier",
+    "generated prompt"
+  ],
+  "rubric_version": 2
+}

@@ -63,6 +63,11 @@ resubmit the action. Acknowledgement means the host handled the intent, not that
 the domain operation succeeded. Use a pending result until success is observed.
 Delivery failure remains an unknown outcome and needs an authoritative refresh.
 
+Keyboard submission keeps focus in the named surface while its control is
+disabled. Acknowledgement restores the corresponding enabled control, or keeps
+focus on the result surface. Updates never pull focus back after the person
+has moved to another part of the page.
+
 If adapting the example for effects, the existing action owner validates values
 against the current view and revision, checks actor/tenant/resource permissions,
 and deduplicates the action ID in that

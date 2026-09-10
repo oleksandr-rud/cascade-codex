@@ -10,7 +10,7 @@ describe("filesystem and process safety smoke", () => {
     expect(() => boundedPath("../../outside")).toThrow(CascadeError);
     expect(
       boundedPath("product-evals/campaigns", "product-evals/"),
-    ).toContain("product-evals/campaigns");
+    ).toBe(rootPath("product-evals/campaigns"));
   });
 
   test("bounded regular-file reads reject file and ancestor symlinks", async () => {
@@ -24,8 +24,11 @@ describe("filesystem and process safety smoke", () => {
       await mkdir(directory, { recursive: true });
       await writeFile(regular, "trusted");
       await writeFile(join(external, "value.txt"), "external");
-      await symlink(regular, linkedFile);
-      await symlink(external, linkedAncestor);
+      // Junctions exercise the same reparse-point rejection without requiring
+      // Windows Developer Mode or elevated file-symlink privileges.
+      await symlink(process.platform === "win32" ? directory : regular, linkedFile,
+        process.platform === "win32" ? "junction" : "file");
+      await symlink(external, linkedAncestor, process.platform === "win32" ? "junction" : "dir");
 
       await expect(readBoundedRegularFile(linkedFile, "linked file", { maxBytes: 64 }))
         .rejects.toThrow("must not be a symbolic link");
@@ -52,16 +55,27 @@ describe("filesystem and process safety smoke", () => {
       await writeFile(file, "trusted");
       await writeFile(join(external, "value.txt"), "external");
 
-      const outcomePending = readBoundedRegularFile(file, "race-adjacent file", {
+      let substitutionBlocked = false;
+      const outcome = await readBoundedRegularFile(file, "race-adjacent file", {
         maxBytes: 64,
+        readCheckpoint: async () => {
+          try { await rename(trustedAncestor, parkedAncestor); }
+          catch (error) {
+            if (process.platform !== "win32" || (error as NodeJS.ErrnoException).code !== "EPERM") throw error;
+            substitutionBlocked = true;
+            return;
+          }
+          await symlink(external, trustedAncestor, process.platform === "win32" ? "junction" : "dir");
+        },
       }).then(
         (value) => ({ status: "fulfilled" as const, value }),
         (reason) => ({ status: "rejected" as const, reason }),
       );
-      await rename(trustedAncestor, parkedAncestor);
-      await symlink(external, trustedAncestor);
-      const outcome = await outcomePending;
-
+      if (substitutionBlocked) {
+        // Windows may prevent replacing an ancestor while its file is open.
+        // Prove the protected read still returns only the original bytes.
+        expect(outcome.status).toBe("fulfilled");
+      }
       if (outcome.status === "fulfilled") {
         expect(outcome.value.toString("utf8")).toBe("trusted");
       } else {
@@ -86,24 +100,39 @@ describe("filesystem and process safety smoke", () => {
       await writeFile(file, "trusted");
       const original = await stat(file);
 
-      await expect(readBoundedRegularFile(file, "physically bounded file", {
+      let substitutionBlocked = false;
+      const outcome = await readBoundedRegularFile(file, "physically bounded file", {
         maxBytes: 64,
         physicalRoot,
         readCheckpoint: async (phase, openedPath) => {
           expect(phase).toBe("opened");
           expect(openedPath).toBe(file);
           checkpointReached = true;
-          await rename(source, parked);
+          try { await rename(source, parked); }
+          catch (error) {
+            if (process.platform !== "win32" || (error as NodeJS.ErrnoException).code !== "EPERM") throw error;
+            substitutionBlocked = true;
+            return;
+          }
           await mkdir(source);
           await link(join(parked, "value.txt"), file);
           const replacement = await stat(file);
           expect(replacement.dev).toBe(original.dev);
           expect(replacement.ino).toBe(original.ino);
         },
-      })).rejects.toThrow(
-        "escapes the permitted physical root after open",
+      }).then(
+        (value) => ({ status: "fulfilled" as const, value }),
+        (reason) => ({ status: "rejected" as const, reason }),
       );
       expect(checkpointReached).toBe(true);
+      if (substitutionBlocked) {
+        expect(outcome.status).toBe("fulfilled");
+        if (outcome.status === "fulfilled") expect(outcome.value.toString("utf8")).toBe("trusted");
+        expect((await stat(file)).ino).toBe(original.ino);
+      } else {
+        expect(outcome.status).toBe("rejected");
+        if (outcome.status === "rejected") expect(outcome.reason.message).toContain("escapes the permitted physical root after open");
+      }
     } finally {
       await rm(directory, { recursive: true, force: true });
     }

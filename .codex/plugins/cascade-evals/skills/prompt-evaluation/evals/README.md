@@ -9,8 +9,8 @@ It answers a bounded question: which eligible configuration is
 `best-observed-for-workload` on the named task and corpus versions? It does not
 establish a globally best model or a permanent provider ranking.
 
-The v5 quality corpus contains exactly 13 real-task fixtures: three product
-tasks, two business tasks, two coding tasks, one organization-specific
+The v6 quality corpus contains exactly 14 real-task fixtures: three product
+tasks, three business tasks, two coding tasks, one organization-specific
 brand-context task, and five preserved extraction, classification, conflict,
 diagnosis, and controlled-plan baselines. Catalog metadata records each task's
 `domain` and `context_profile`; validation enforces this coverage.
@@ -160,12 +160,15 @@ node scripts/run-interview-eval.mjs run \
 
 The runner executes the first turn, replays the ordered transcript plus the
 fixture answer when present, and checks state, question count, expected and
-forbidden intents, no exact repeats, final-prompt presence, and required
-coverage patterns. Add `--execute-judge --judge-model <model-id>` for the
+forbidden intents, final-prompt presence, and required
+coverage patterns. Exact repeated questions are retained as diagnostics; the
+independent answer-merge judge determines whether they were already resolved.
+Equivalent descriptive markers may use explicit alternative groups; exact data
+fields and placeholders remain literal. Add `--execute-judge --judge-model <model-id>` for the
 independent interview profile. For a fixture with a target contract, add
 `--execute-target --target-model <model-id>` to run the generated prompt.
-Use `--installed-plugin` after reinstall to test discovery from the installed
-package rather than directing the model to the source checkout.
+Use `--installed-plugin` after reinstall to resolve the installed package as
+the staged subject. This does not test normal app-side skill discovery.
 
 Intent patterns are mechanical eligibility aids, not a substitute for semantic
 judgment. Report first-turn and answer-turn token observations separately.
@@ -183,3 +186,79 @@ label for every frozen artifact. `evaluate` reports verdict agreement, false
 passes, false failures, and mean absolute dimension error. It deliberately
 returns `MEASURED_NOT_PROMOTED`; changing thresholds or profiles requires a new
 versioned profile and an evidence-backed decision.
+
+## Rule coverage and blinded judges (v3)
+
+The interview catalog adds 24 conditional-loading and rule-boundary cases to
+12 existing interaction cases (36 total). `rule-coverage.json` binds all 50 case
+IDs to rule groups. Cases include seven exact model adapters, unknown checkpoints,
+three context templates, long-context joins and budgets, multimodal limitations,
+realtime staleness, comparison uncertainty, explicit stateful contracts, and
+negative loading. Reference rules are evaluated through their active runtime
+consumers; loading every reference in every prompt is a failure of proportionality.
+
+The host serves a frozen subject snapshot through `read_paths` requests. Every
+model invocation is ephemeral with tools, plugins, host skills, web and project
+instructions disabled; unexpected tool/error events invalidate the response.
+This isolates gold files and peer outputs while recording actual conditional
+file requests. It tests staged subject consumption, not installed UI discovery.
+Only `LIVE_CODEX_TOOL_FREE` receipts support this isolation claim. External
+command adapters and supplied response files remain explicitly unverified and
+cannot receive ACCEPTED or REJECTED; both become UNVERIFIED, while semantic
+scores remain separate fixture observations.
+
+Judges see applicable frozen rules, user inputs and responses. They do not see
+expected states, gold answers, task-specific gold anchors, mechanical verdicts, thresholds,
+weights, floors or peer scores. V3 responses rate anchored dimensions from 0–4;
+the host applies threshold 0.8 and a floor of 3 for every dimension. BLOCKED
+requires an empty ratings array and named missing evidence; it has no score.
+Every rating includes JSON-pointer evidence references with verbatim excerpts; nonexistent pointers or invented quotes are INVALID. Malformed responses are INVALID. Neither becomes a semantic rejection or pass.
+V1/V2 profiles remain solely for historical diagnostic and calibration artifacts.
+
+Run directories are exclusive and disjoint from the subject. Each run freezes
+case, subject path/byte manifest, runner bundle and adapter configuration identity
+before invocation; each phase additionally binds the Simulation dependency and
+actual adapter. Cache keys include these identities; cached raw judgments are
+reparsed with the current profile and retain their source run ID. Disable caches
+for independent repetitions. Variance completion requires every requested run,
+and acceptance rate uses all requested repetitions as its denominator.
+
+A named-model authoring fixture does not execute that target model. Qwen, Gemma
+and Mistral execution requires separately bound real endpoints. Human calibration
+is `NOT_RUN` until actual human labels exist. Synthetic judge challenges, static
+coverage and one observed passing execution do not establish exhaustive correctness
+or a global model ranking. Token budgets remain diagnostic.
+
+The closed coverage inventory binds all 26 references/runtime files plus the
+entrypoint and three templates, 59 rule groups
+and all 18 source routing cases. It validates case/rule equality, all task and
+both-turn paths, source hashes and active consumers. `run-knowledge-audit.mjs`
+adds a separate static semantic audit for each of the ten model-system references;
+its results do not substitute for behavioral execution. Use `--reference` with an
+exact path from `rule-coverage.json` and `--output-dir` for immutable evidence.
+
+Execution receipts bind the resolved executable hash/version, OS, Node version,
+CLI isolation policy and Simulation source. Remote model revision is explicitly
+unavailable: results are scoped to the named model alias and observed execution
+date. Nondefault live quality configurations require a matching
+`--configuration-id` in `model-matrix.json`; the Sol-to-Astra coverage configuration
+is `sol-to-astra-coverage-v1`. Repetition reduction verifies run IDs, exit statuses,
+evidence grade and identical task/configuration/input/runner/profile/surface
+digests. Stable disagreement between two judge roles is not stochastic flakiness.
+
+`run-judge-challenges.mjs` exercises a correct response, material contract failures,
+an embedded request for a favorable score, and absent evidence. These labels are
+synthetic author expectations, not human calibration. The v3 parser also has
+mechanical regressions for fabricated quotes, missing references and missing data.
+
+
+For an interrupted judge phase, `--reuse-run-root /absolute/original/run` on the
+quality or interview runner verifies the original Codex transcript and Simulation
+journal before reusing completed subject/target responses. It requires the exact
+case version and subject digest, checks target prompt identity, and emits separate
+reuse receipts. New judges run under the new runner/profile/timeout identity;
+`--judge-timeout-ms` sets a positive bounded timeout (also supported by knowledge
+audits). Explicit response-file imports cannot be combined with verified reuse.
+Reuse is not a fresh stochastic repetition, cannot be recursively replayed, and
+has no new builder/target latency or usage measurement. Keep the original run root.
+Corrected fixtures require fresh authoring; never reuse their older responses.

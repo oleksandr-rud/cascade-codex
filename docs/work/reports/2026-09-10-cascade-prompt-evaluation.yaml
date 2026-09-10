@@ -1,0 +1,2119 @@
+report_id: cascade-prompt-evaluation-20260910
+generated_at: 2026-09-10T08:34:14.921693+00:00
+scope:
+  base_cases: 50
+  interviews: 36
+  quality_tasks: 14
+  reference_audits: 10
+  rule_groups: 59
+  routing_cases: 18
+  reference_runtime_files: 26
+  entrypoints: 1
+  templates: 3
+campaigns:
+  - id: prompt-evaluation-20260910-v4
+    requested: 65
+    completed: 65
+    counts:
+      REJECTED: 23
+      ACCEPTED: 19
+      NOT_RUN: 14
+      INVALID: 4
+      MISSING_SUMMARY: 5
+    results_sha256: cad0dc1da35f7c97423cd31fa5bdcdf5a37e55e995ff07cd0899df311aceaf9b
+    records:
+      - case_id: qwen38-history-v1
+        kind: interview
+        exit_code: 2
+        raw_acceptance: REJECTED
+        failed_checks:
+          - id: first:state
+            passed: false
+            detail: expected READY, received NEEDS_INPUT
+          - id: first:question-max
+            passed: false
+            detail: received 1
+          - id: first:has-final-prompt
+            passed: false
+          - id: first:required-pattern:Final Prompt
+            passed: false
+        source_findings: []
+        judgment_error: null
+        evidence:
+          - path: .artifacts/prompt-evaluation-20260910-v4/runs/qwen38-history-v1-2026-09-09T21-34-14-481Z/run-summary.json
+            sha256: 43d589100fb8b8ac4e83ade6b0fccaa683c03e51bfa0822c403c8b853253a92a
+          - path: .artifacts/prompt-evaluation-20260910-v4/runs/qwen38-history-v1-2026-09-09T21-34-14-481Z/run-contract.json
+            sha256: cd811e5ec4db848ada4a15e14e726eadf2b23d59d367e323b212b2f121cc4b9d
+          - path: .artifacts/prompt-evaluation-20260910-v4/qwen38-history-v1.stdout.log
+            sha256: 47c2a781718ade7404c90ab8ed7428a14e6a6b5c1b4602a50787f374137037e7
+          - path: .artifacts/prompt-evaluation-20260910-v4/qwen38-history-v1.stderr.log
+            sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+      - case_id: knowledge-context-acquisition
+        kind: knowledge-audit
+        exit_code: 0
+        raw_acceptance: ACCEPTED
+        failed_checks: []
+        source_findings: []
+        judgment_error: null
+        evidence:
+          - path: .artifacts/prompt-evaluation-20260910-v4/runs/knowledge-context-acquisition-md-2026-09-09T21-34-14-482Z/run-summary.json
+            sha256: 3b5325a42c6a9dd876a6b31989e1ad63ee7c49c52b6cf905978ed8b23e774ac9
+          - path: .artifacts/prompt-evaluation-20260910-v4/runs/knowledge-context-acquisition-md-2026-09-09T21-34-14-482Z/run-contract.json
+            sha256: 99f7058b43a20caec613335ede158f1e6d829058b6cd15a3355bbb65482535c5
+          - path: .artifacts/prompt-evaluation-20260910-v4/knowledge-context-acquisition.stdout.log
+            sha256: 8071d7aa05d91c9c6a4c0013905096b48de2fe3276d5dbf044333a3772b031c2
+          - path: .artifacts/prompt-evaluation-20260910-v4/knowledge-context-acquisition.stderr.log
+            sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+      - case_id: knowledge-clarification-policy
+        kind: knowledge-audit
+        exit_code: 2
+        raw_acceptance: REJECTED
+        failed_checks: []
+        source_findings:
+          - dimension: operative_rule_preservation
+            rating: 2
+            rationale: The core clarification lifecycle is largely preserved, but the
+              consumer turns bounded option offering into an unconditional
+              requirement, materially losing the rule against manufacturing
+              choices.
+          - dimension: usable_composition
+            rating: 2
+            rationale: Composition is generally workable, but mandating two or three
+              exclusive options for every question can force invented choices
+              when the task does not logically bound them.
+        judgment_error: null
+        evidence:
+          - path: .artifacts/prompt-evaluation-20260910-v4/runs/knowledge-clarification-policy-md-2026-09-09T21-34-14-481Z/run-summary.json
+            sha256: 5997e3d18d894226bbc5e7ed53fbd2849cb4381da916640ef96d00aca4a6969d
+          - path: .artifacts/prompt-evaluation-20260910-v4/runs/knowledge-clarification-policy-md-2026-09-09T21-34-14-481Z/run-contract.json
+            sha256: 734e001238b78aa34d669066f2369db5c94a5544d3994fcce7dc0257177c8cf7
+          - path: .artifacts/prompt-evaluation-20260910-v4/knowledge-clarification-policy.stdout.log
+            sha256: a01dd2cb765c94743caa95bb9e34e558db23d228119de27bd033c6e24e65c9e7
+          - path: .artifacts/prompt-evaluation-20260910-v4/knowledge-clarification-policy.stderr.log
+            sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+      - case_id: gemma4-roles-v1
+        kind: interview
+        exit_code: 2
+        raw_acceptance: REJECTED
+        failed_checks:
+          - id: first:state
+            passed: false
+            detail: expected READY, received NEEDS_INPUT
+          - id: first:question-max
+            passed: false
+            detail: received 2
+          - id: first:has-final-prompt
+            passed: false
+          - id: first:required-pattern:Final Prompt
+            passed: false
+        source_findings: []
+        judgment_error: null
+        evidence:
+          - path: .artifacts/prompt-evaluation-20260910-v4/runs/gemma4-roles-v1-2026-09-09T21-38-01-489Z/run-summary.json
+            sha256: bff3b673376419ca6721ab834d1e8c99724420f1d5ddc205624a022abd80ffaf
+          - path: .artifacts/prompt-evaluation-20260910-v4/runs/gemma4-roles-v1-2026-09-09T21-38-01-489Z/run-contract.json
+            sha256: 328ab4c13493a1c217ccd24c6395f66398e19481b4a5fb52f18f1b4228467261
+          - path: .artifacts/prompt-evaluation-20260910-v4/gemma4-roles-v1.stdout.log
+            sha256: 0fed7d1aa52a1391845f51d02fbf8aa3de31316c11cbc8678bc9d62e048ef660
+          - path: .artifacts/prompt-evaluation-20260910-v4/gemma4-roles-v1.stderr.log
+            sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+      - case_id: astra-surface-v1
+        kind: interview
+        exit_code: 3
+        raw_acceptance: NOT_RUN
+        failed_checks: []
+        source_findings: []
+        judgment_error: null
+        evidence:
+          - path: .artifacts/prompt-evaluation-20260910-v4/runs/astra-surface-v1-2026-09-09T21-34-14-481Z/execution-block.json
+            sha256: deef28358734649c5f549414064d83f2f765166d4ccc8a3cdca072e9c18f738e
+          - path: .artifacts/prompt-evaluation-20260910-v4/runs/astra-surface-v1-2026-09-09T21-34-14-481Z/run-contract.json
+            sha256: f59884798a95247e9ee2e5fa89ccb6ba61dbd51c507135600af65c934b0db52f
+          - path: .artifacts/prompt-evaluation-20260910-v4/astra-surface-v1.stdout.log
+            sha256: 174650abdc3ad5b4c0bff7952296488ffd573aea2ff026b93ddbec8fd8a3dbd6
+          - path: .artifacts/prompt-evaluation-20260910-v4/astra-surface-v1.stderr.log
+            sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+      - case_id: knowledge-model-registry
+        kind: knowledge-audit
+        exit_code: 3
+        raw_acceptance: INVALID
+        failed_checks: []
+        source_findings: []
+        judgment_error: TIMED_OUT
+        evidence:
+          - path: .artifacts/prompt-evaluation-20260910-v4/runs/knowledge-model-registry-yaml-2026-09-09T21-35-39-989Z/run-summary.json
+            sha256: e4fcc62a6fb53adfc33be415cf427dc9bc4dadb468197f9aa357e034a5d951ca
+          - path: .artifacts/prompt-evaluation-20260910-v4/runs/knowledge-model-registry-yaml-2026-09-09T21-35-39-989Z/run-contract.json
+            sha256: 8ac2345e56433cce0dbf1c0e77a74292bbc075946fa56944cf9fc3ed209373ce
+          - path: .artifacts/prompt-evaluation-20260910-v4/knowledge-model-registry.stdout.log
+            sha256: f547650e44cd4cd280a2230b205f41f582a48b0baf0195819f2dcddcd80c4b8d
+          - path: .artifacts/prompt-evaluation-20260910-v4/knowledge-model-registry.stderr.log
+            sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+      - case_id: qwen35-history-v1
+        kind: interview
+        exit_code: 3
+        raw_acceptance: NOT_RUN
+        failed_checks: []
+        source_findings: []
+        judgment_error: null
+        evidence:
+          - path: .artifacts/prompt-evaluation-20260910-v4/runs/qwen35-history-v1-2026-09-09T21-34-14-481Z/execution-block.json
+            sha256: 7bc8ef02f19068cb2de7a13eec98c1752f6ef3094cb0c080b39af2cd3f329e8c
+          - path: .artifacts/prompt-evaluation-20260910-v4/runs/qwen35-history-v1-2026-09-09T21-34-14-481Z/run-contract.json
+            sha256: 416b20869fcd4c64b894857dbf2dda182ac3ec59052603880394ddd0852086d5
+          - path: .artifacts/prompt-evaluation-20260910-v4/qwen35-history-v1.stdout.log
+            sha256: ee612769459c1def7d6a675d4f03a5d83c9db34def399e15e867a80c5e201d8a
+          - path: .artifacts/prompt-evaluation-20260910-v4/qwen35-history-v1.stderr.log
+            sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+      - case_id: qwen36-history-v1
+        kind: interview
+        exit_code: 3
+        raw_acceptance: NOT_RUN
+        failed_checks: []
+        source_findings: []
+        judgment_error: null
+        evidence:
+          - path: .artifacts/prompt-evaluation-20260910-v4/runs/qwen36-history-v1-2026-09-09T21-34-14-481Z/execution-block.json
+            sha256: 3614c0cab499746c07218f248b05a224d44782b26eedbeae90f8baa393b58a53
+          - path: .artifacts/prompt-evaluation-20260910-v4/runs/qwen36-history-v1-2026-09-09T21-34-14-481Z/run-contract.json
+            sha256: 5e7e6171969bee09bcc9b716bcd3dd9b29ec1f8bda4933488cd837f2744689eb
+          - path: .artifacts/prompt-evaluation-20260910-v4/qwen36-history-v1.stdout.log
+            sha256: 9bc71d3b6a587875160986deedbcf5a5f8799be47e20084db815cbddfc2924bb
+          - path: .artifacts/prompt-evaluation-20260910-v4/qwen36-history-v1.stderr.log
+            sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+      - case_id: gemma3-roles-v1
+        kind: interview
+        exit_code: 0
+        raw_acceptance: ACCEPTED
+        failed_checks: []
+        source_findings: []
+        judgment_error: null
+        evidence:
+          - path: .artifacts/prompt-evaluation-20260910-v4/runs/gemma3-roles-v1-2026-09-09T21-37-08-336Z/run-summary.json
+            sha256: e37626f00eb011af7c60a1147dbc386d539a31aebdbe6ee2c3d0e5a23f47ddd3
+          - path: .artifacts/prompt-evaluation-20260910-v4/runs/gemma3-roles-v1-2026-09-09T21-37-08-336Z/run-contract.json
+            sha256: 3c2301077ad9fb8d17ec0722dd7a620f111fd7c756b09a4380ed2e8852de2f9a
+          - path: .artifacts/prompt-evaluation-20260910-v4/gemma3-roles-v1.stdout.log
+            sha256: b194ec3910e258809b7603e653f9f8de5cf7f8fcd0289007d83edd37928213ec
+          - path: .artifacts/prompt-evaluation-20260910-v4/gemma3-roles-v1.stderr.log
+            sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+      - case_id: knowledge-prompt-composition
+        kind: knowledge-audit
+        exit_code: 3
+        raw_acceptance: INVALID
+        failed_checks: []
+        source_findings: []
+        judgment_error: TIMED_OUT
+        evidence:
+          - path: .artifacts/prompt-evaluation-20260910-v4/runs/knowledge-prompt-composition-md-2026-09-09T21-39-29-409Z/run-summary.json
+            sha256: 880ede3a1faaedadab3a2d4a058dd4413aea1b22dfb4611b290d7ecb33163c63
+          - path: .artifacts/prompt-evaluation-20260910-v4/runs/knowledge-prompt-composition-md-2026-09-09T21-39-29-409Z/run-contract.json
+            sha256: ed96ad9807742561b2dd27934829949e2e5962aaa8ec9a909beed3c17025ddf3
+          - path: .artifacts/prompt-evaluation-20260910-v4/knowledge-prompt-composition.stdout.log
+            sha256: aae6b24171f72225c128b14a76b6d6a0cf85c1988fb3161181974f52015d4758
+          - path: .artifacts/prompt-evaluation-20260910-v4/knowledge-prompt-composition.stderr.log
+            sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+      - case_id: knowledge-request-profile
+        kind: knowledge-audit
+        exit_code: 2
+        raw_acceptance: REJECTED
+        failed_checks: []
+        source_findings:
+          - dimension: operative_rule_preservation
+            rating: 2
+            rationale: Most contract and gap mechanics survive, but the active precedence
+              chain materially omits the reference's separate supporting-context
+              step.
+          - dimension: conditional_application
+            rating: 2
+            rationale: The detailed provenance-status rule is gated behind intake even
+              though the reference applies it to every field, leaving complete
+              Quick requests without that operative instruction.
+          - dimension: authority_and_trust
+            rating: 2
+            rationale: Untrusted-data and scoped-authority controls are strong, but the
+              active consumers never state that compiled request state must not
+              be persisted, leaving a material private-runtime boundary
+              implicit.
+        judgment_error: null
+        evidence:
+          - path: .artifacts/prompt-evaluation-20260910-v4/runs/knowledge-request-profile-md-2026-09-09T21-41-55-866Z/run-summary.json
+            sha256: 6c4a187e4dd6170ae9023e710ffb13cf134682a11a47a7ec712256c6a150c733
+          - path: .artifacts/prompt-evaluation-20260910-v4/runs/knowledge-request-profile-md-2026-09-09T21-41-55-866Z/run-contract.json
+            sha256: 292afce3e3c9667151c72ac301dd2f5a40d659bee9a33b341d4d66c2aaad8fc0
+          - path: .artifacts/prompt-evaluation-20260910-v4/knowledge-request-profile.stdout.log
+            sha256: 19dd079ce5c9e2e2e98bafbba67d94256cb393ae7ba7c5ec28d2d7d4839bd3a9
+          - path: .artifacts/prompt-evaluation-20260910-v4/knowledge-request-profile.stderr.log
+            sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+      - case_id: grounded-context-template-v1
+        kind: interview
+        exit_code: 3
+        raw_acceptance: NOT_RUN
+        failed_checks: []
+        source_findings: []
+        judgment_error: null
+        evidence:
+          - path: .artifacts/prompt-evaluation-20260910-v4/runs/grounded-context-template-v1-2026-09-09T21-42-34-749Z/execution-block.json
+            sha256: 0304de6c02c511897f76fc0aa61a759e8c32c82398b9617129223310d78dcd11
+          - path: .artifacts/prompt-evaluation-20260910-v4/runs/grounded-context-template-v1-2026-09-09T21-42-34-749Z/run-contract.json
+            sha256: 91ffb707d2edc0d1ac03ba467625424892d7ad96d4b86b7c4bff5ad90ac8a95e
+          - path: .artifacts/prompt-evaluation-20260910-v4/grounded-context-template-v1.stdout.log
+            sha256: af9d25d1a9fcbd937cd23d1a3cfdcca766ab7776e42aa71b0b348923967f6a1e
+          - path: .artifacts/prompt-evaluation-20260910-v4/grounded-context-template-v1.stderr.log
+            sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+      - case_id: unknown27b-v1
+        kind: interview
+        exit_code: 0
+        raw_acceptance: ACCEPTED
+        failed_checks: []
+        source_findings: []
+        judgment_error: null
+        evidence:
+          - path: .artifacts/prompt-evaluation-20260910-v4/runs/unknown27b-v1-2026-09-09T21-41-41-698Z/run-summary.json
+            sha256: a5e055b902217d2f54061ec868e7fdfcb86fb276c6c1e19d7153be58cf32ff71
+          - path: .artifacts/prompt-evaluation-20260910-v4/runs/unknown27b-v1-2026-09-09T21-41-41-698Z/run-contract.json
+            sha256: 2885a8cc10531158ae7ac384453374831b0df6c40378f0031dc3435635df2b4b
+          - path: .artifacts/prompt-evaluation-20260910-v4/unknown27b-v1.stdout.log
+            sha256: b40db6ed5ee3897c7800734317531439bcf88b08437aff0b6b29f08644baa088
+          - path: .artifacts/prompt-evaluation-20260910-v4/unknown27b-v1.stderr.log
+            sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+      - case_id: agent-context-template-v1
+        kind: interview
+        exit_code: 2
+        raw_acceptance: REJECTED
+        failed_checks:
+          - id: first:state
+            passed: false
+            detail: expected READY, received NEEDS_INPUT
+          - id: first:question-max
+            passed: false
+            detail: received 1
+          - id: first:has-final-prompt
+            passed: false
+          - id: first:required-read:runtime/safety-high-stakes.md
+            passed: false
+        source_findings: []
+        judgment_error: null
+        evidence:
+          - path: .artifacts/prompt-evaluation-20260910-v4/runs/agent-context-template-v1-2026-09-09T21-46-58-226Z/run-summary.json
+            sha256: 68be4946cf4532bb4f30884fc0f95d120bbf554973e7341e609a7f4efe1772da
+          - path: .artifacts/prompt-evaluation-20260910-v4/runs/agent-context-template-v1-2026-09-09T21-46-58-226Z/run-contract.json
+            sha256: dafb2cff5eba275f884b3953f915c0126878d5364e0def3cdcc7350131663b86
+          - path: .artifacts/prompt-evaluation-20260910-v4/agent-context-template-v1.stdout.log
+            sha256: 6993c1870e210a8183809592c086cf04a4d3de3baffa63e683f4858bc0f41d0e
+          - path: .artifacts/prompt-evaluation-20260910-v4/agent-context-template-v1.stderr.log
+            sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+      - case_id: long-context-joins-v1
+        kind: interview
+        exit_code: 2
+        raw_acceptance: REJECTED
+        failed_checks:
+          - id: first:state
+            passed: false
+            detail: expected READY, received NEEDS_INPUT
+          - id: first:question-max
+            passed: false
+            detail: received 3
+          - id: first:has-final-prompt
+            passed: false
+          - id: first:required-pattern:Final Prompt
+            passed: false
+        source_findings: []
+        judgment_error: null
+        evidence:
+          - path: .artifacts/prompt-evaluation-20260910-v4/runs/long-context-joins-v1-2026-09-09T21-47-36-447Z/run-summary.json
+            sha256: c204d0cf16611f0cdb4fb0b6a1fa9fa7991f848a3cb86ecdf861614008983fc5
+          - path: .artifacts/prompt-evaluation-20260910-v4/runs/long-context-joins-v1-2026-09-09T21-47-36-447Z/run-contract.json
+            sha256: c438fd5ff9b0c40e5f9fbd31911b5d72fc51f5f3d5e0e7ece2262bbe69944139
+          - path: .artifacts/prompt-evaluation-20260910-v4/long-context-joins-v1.stdout.log
+            sha256: cf15f80aec2fc5742a04a2fdbc310720e36fef51ccf42f9b37487e0379d3ed3c
+          - path: .artifacts/prompt-evaluation-20260910-v4/long-context-joins-v1.stderr.log
+            sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+      - case_id: mistral24-surface-v1
+        kind: interview
+        exit_code: 3
+        raw_acceptance: NOT_RUN
+        failed_checks: []
+        source_findings: []
+        judgment_error: null
+        evidence:
+          - path: .artifacts/prompt-evaluation-20260910-v4/runs/mistral24-surface-v1-2026-09-09T21-41-37-642Z/execution-block.json
+            sha256: deef28358734649c5f549414064d83f2f765166d4ccc8a3cdca072e9c18f738e
+          - path: .artifacts/prompt-evaluation-20260910-v4/runs/mistral24-surface-v1-2026-09-09T21-41-37-642Z/run-contract.json
+            sha256: 5ad2c1c1be6caa077d96d503ee2f2ee0e90adc4aee2936890396d12a9a77f794
+          - path: .artifacts/prompt-evaluation-20260910-v4/mistral24-surface-v1.stdout.log
+            sha256: 07940c86045de312971014c92a06517546db83e61b107a874f26ce26bb14242c
+          - path: .artifacts/prompt-evaluation-20260910-v4/mistral24-surface-v1.stderr.log
+            sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+      - case_id: knowledge-routing-cases
+        kind: knowledge-audit
+        exit_code: 2
+        raw_acceptance: REJECTED
+        failed_checks: []
+        source_findings:
+          - dimension: operative_rule_preservation
+            rating: 2
+            rationale: Broad routing survives, but material version-specific behaviors are
+              delegated generically and are not stated in the supplied active
+              text.
+          - dimension: exceptions_and_failures
+            rating: 2
+            rationale: General repair and blocking behavior is explicit, but
+              affected-summary invalidation and the non-authority of stale
+              history are not explicitly preserved.
+        judgment_error: null
+        evidence:
+          - path: .artifacts/prompt-evaluation-20260910-v4/runs/knowledge-routing-cases-yaml-2026-09-09T21-45-31-127Z/run-summary.json
+            sha256: f76ac75c23a80135f2f6e9970b5634d4c39daf47946a25dbeccd0df9321d5a69
+          - path: .artifacts/prompt-evaluation-20260910-v4/runs/knowledge-routing-cases-yaml-2026-09-09T21-45-31-127Z/run-contract.json
+            sha256: 52635f17c2d5a1c1fb3f20a9c2b1d277cde808b3e80c9c1b963dba8cc709d2d3
+          - path: .artifacts/prompt-evaluation-20260910-v4/knowledge-routing-cases.stdout.log
+            sha256: c57c732d50c181ca5d8dad75050c3f09296163b34e439d05081f7e20db50a85b
+          - path: .artifacts/prompt-evaluation-20260910-v4/knowledge-routing-cases.stderr.log
+            sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+      - case_id: multimodal-missing-v1
+        kind: interview
+        exit_code: 2
+        raw_acceptance: REJECTED
+        failed_checks:
+          - id: first:state
+            passed: false
+            detail: expected READY, received NEEDS_INPUT
+          - id: first:question-max
+            passed: false
+            detail: received 1
+          - id: first:has-final-prompt
+            passed: false
+          - id: first:required-pattern:Final Prompt
+            passed: false
+        source_findings: []
+        judgment_error: null
+        evidence:
+          - path: .artifacts/prompt-evaluation-20260910-v4/runs/multimodal-missing-v1-2026-09-09T21-49-01-973Z/run-summary.json
+            sha256: 34576ed8b8f36c4f8b66c3bb7890a22511172b3091589576d5699f3236916835
+          - path: .artifacts/prompt-evaluation-20260910-v4/runs/multimodal-missing-v1-2026-09-09T21-49-01-973Z/run-contract.json
+            sha256: a627154e278c7f37755bb7ba2de53542187e893b73e007921768487a859285ad
+          - path: .artifacts/prompt-evaluation-20260910-v4/multimodal-missing-v1.stdout.log
+            sha256: c1e94d6a0038b58e7374dd5cc5df0dfb668f0260a06a39844f25fbab57f0a407
+          - path: .artifacts/prompt-evaluation-20260910-v4/multimodal-missing-v1.stderr.log
+            sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+      - case_id: realtime-staleness-v1
+        kind: interview
+        exit_code: 2
+        raw_acceptance: REJECTED
+        failed_checks:
+          - id: first:state
+            passed: false
+            detail: expected READY, received NEEDS_INPUT
+          - id: first:question-max
+            passed: false
+            detail: received 2
+          - id: first:has-final-prompt
+            passed: false
+          - id: first:required-pattern:Final Prompt
+            passed: false
+        source_findings: []
+        judgment_error: null
+        evidence:
+          - path: .artifacts/prompt-evaluation-20260910-v4/runs/realtime-staleness-v1-2026-09-09T21-49-17-019Z/run-summary.json
+            sha256: 79cbbe3c1e570ba42f4da0f8e50be91458ee4a9927122eaedfaa2d8f3371c45c
+          - path: .artifacts/prompt-evaluation-20260910-v4/runs/realtime-staleness-v1-2026-09-09T21-49-17-019Z/run-contract.json
+            sha256: dc0929d3e3deacded7fde99b0188761d990afd4e92ed66cf3a87b83fcf740712
+          - path: .artifacts/prompt-evaluation-20260910-v4/realtime-staleness-v1.stdout.log
+            sha256: 7dc535a25ab683a8c381bc284c3ed20a4fe4479fe4f7449500abc10e04562595
+          - path: .artifacts/prompt-evaluation-20260910-v4/realtime-staleness-v1.stderr.log
+            sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+      - case_id: knowledge-routing-evaluation
+        kind: knowledge-audit
+        exit_code: 2
+        raw_acceptance: REJECTED
+        failed_checks: []
+        source_findings:
+          - dimension: operative_rule_preservation
+            rating: 2
+            rationale: Most evaluation rules survive, but exact decision statuses and
+              excluded-candidate reasons are materially absent from the active
+              routing record.
+          - dimension: conditional_application
+            rating: 2
+            rationale: The pack is narrowly scoped, but a standalone Test request may not
+              load it because the consumer includes tests while the entrypoint
+              trigger omits them.
+          - dimension: exceptions_and_failures
+            rating: 2
+            rationale: Failure ownership is largely preserved, but the required rerun of
+              affected cases and preservation of unaffected passing evidence are
+              materially omitted.
+        judgment_error: null
+        evidence:
+          - path: .artifacts/prompt-evaluation-20260910-v4/runs/knowledge-routing-evaluation-md-2026-09-09T21-47-48-302Z/run-summary.json
+            sha256: d69d42c6545f8b064fb5f71dd751442e02a50e5bd681926df336599482b27a74
+          - path: .artifacts/prompt-evaluation-20260910-v4/runs/knowledge-routing-evaluation-md-2026-09-09T21-47-48-302Z/run-contract.json
+            sha256: b59cf4ade1950fae5bdd7e9392e9ddad5989a1bb6af110b4a5bfae68590482c4
+          - path: .artifacts/prompt-evaluation-20260910-v4/knowledge-routing-evaluation.stdout.log
+            sha256: 5004b49645c2ce969b6b749799e16a7883e0202147c0d38be9fb80a94df73c69
+          - path: .artifacts/prompt-evaluation-20260910-v4/knowledge-routing-evaluation.stderr.log
+            sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+      - case_id: comparison-unknown-v1
+        kind: interview
+        exit_code: 2
+        raw_acceptance: REJECTED
+        failed_checks:
+          - id: first:state
+            passed: false
+            detail: expected READY, received NEEDS_INPUT
+          - id: first:question-max
+            passed: false
+            detail: received 2
+          - id: first:has-final-prompt
+            passed: false
+          - id: first:required-pattern:Final Prompt
+            passed: false
+          - id: first:required-read:runtime/evaluation.md
+            passed: false
+        source_findings: []
+        judgment_error: null
+        evidence:
+          - path: .artifacts/prompt-evaluation-20260910-v4/runs/comparison-unknown-v1-2026-09-09T21-49-50-650Z/run-summary.json
+            sha256: 60be14ab3e79a2c59d92e894e8ca8e0ad30132af16566ffc78e99cee8b1b976a
+          - path: .artifacts/prompt-evaluation-20260910-v4/runs/comparison-unknown-v1-2026-09-09T21-49-50-650Z/run-contract.json
+            sha256: cfbbcfd8de3ef75abf298a7844a012c624a92cd86e13a118097d4475437eebaa
+          - path: .artifacts/prompt-evaluation-20260910-v4/comparison-unknown-v1.stdout.log
+            sha256: ad46e7acfee3b61c0bf4061d6118cc469c92f94f56113e7329aa627778f2f6fe
+          - path: .artifacts/prompt-evaluation-20260910-v4/comparison-unknown-v1.stderr.log
+            sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+      - case_id: extraction-context-template-v1
+        kind: interview
+        exit_code: 3
+        raw_acceptance: NOT_RUN
+        failed_checks: []
+        source_findings: []
+        judgment_error: null
+        evidence:
+          - path: .artifacts/prompt-evaluation-20260910-v4/runs/extraction-context-template-v1-2026-09-09T21-44-38-437Z/execution-block.json
+            sha256: 3614c0cab499746c07218f248b05a224d44782b26eedbeae90f8baa393b58a53
+          - path: .artifacts/prompt-evaluation-20260910-v4/runs/extraction-context-template-v1-2026-09-09T21-44-38-437Z/run-contract.json
+            sha256: defc1bc394a2fdc142b44753668586e236477593364c55435a3ec8574df15d54
+          - path: .artifacts/prompt-evaluation-20260910-v4/extraction-context-template-v1.stdout.log
+            sha256: 52222a6610fd3b6341e7c44ae4d063950e1dab2a6508e1594a2595faf42d0f4d
+          - path: .artifacts/prompt-evaluation-20260910-v4/extraction-context-template-v1.stderr.log
+            sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+      - case_id: knowledge-specialization-overlays
+        kind: knowledge-audit
+        exit_code: 2
+        raw_acceptance: REJECTED
+        failed_checks: []
+        source_findings:
+          - dimension: operative_rule_preservation
+            rating: 2
+            rationale: Most overlay duties survive, but extraction materially omits explicit
+              span-or-citation, malformed-input, and representative-edge-case
+              requirements.
+          - dimension: conditional_application
+            rating: 2
+            rationale: The triggers and exclusions are proportional, but the hard
+              two-overlay limit can suppress additional applicable
+              nonconflicting overlays permitted by the reference.
+          - dimension: exceptions_and_failures
+            rating: 2
+            rationale: Missing and ambiguous extraction values are covered, but
+              malformed-input handling and representative failure cases remain
+              materially unspecified.
+          - dimension: usable_composition
+            rating: 2
+            rationale: The system promotes minimal composition, but its two-overlay ceiling
+              contradicts the reference for tasks needing three or more
+              compatible specializations.
+        judgment_error: null
+        evidence:
+          - path: .artifacts/prompt-evaluation-20260910-v4/runs/knowledge-specialization-overlays-md-2026-09-09T21-49-20-481Z/run-summary.json
+            sha256: 42a5af38c47a472a29295cfd977debac0e63862bd5ec01ea93cbaa6dc7288c33
+          - path: .artifacts/prompt-evaluation-20260910-v4/runs/knowledge-specialization-overlays-md-2026-09-09T21-49-20-481Z/run-contract.json
+            sha256: 8422b1b8385d02da20a84b036c4f8582644766673610e337e62aa663f7e334ce
+          - path: .artifacts/prompt-evaluation-20260910-v4/knowledge-specialization-overlays.stdout.log
+            sha256: 2c086f59a193064ecddb72d58a3bf70d9327a23d3a1196c149059758bec25352
+          - path: .artifacts/prompt-evaluation-20260910-v4/knowledge-specialization-overlays.stderr.log
+            sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+      - case_id: stateful-missing-contract-v1
+        kind: interview
+        exit_code: 0
+        raw_acceptance: ACCEPTED
+        failed_checks: []
+        source_findings: []
+        judgment_error: null
+        evidence:
+          - path: .artifacts/prompt-evaluation-20260910-v4/runs/stateful-missing-contract-v1-2026-09-09T21-50-38-717Z/run-summary.json
+            sha256: a8a9047e72d3d6773d91db82aba5f108aba984e9b4c27f5aab1c362d035dda40
+          - path: .artifacts/prompt-evaluation-20260910-v4/runs/stateful-missing-contract-v1-2026-09-09T21-50-38-717Z/run-contract.json
+            sha256: 251b5a79bcc9d7077ba4179c254decca9509dde11d39f6d347f72f60cb8c6de8
+          - path: .artifacts/prompt-evaluation-20260910-v4/stateful-missing-contract-v1.stdout.log
+            sha256: 26014dc7df98b1973ee687af0e0ae07849688a4af46b526daf573add04ea845a
+          - path: .artifacts/prompt-evaluation-20260910-v4/stateful-missing-contract-v1.stderr.log
+            sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+      - case_id: knowledge-task-profiling
+        kind: knowledge-audit
+        exit_code: 3
+        raw_acceptance: INVALID
+        failed_checks: []
+        source_findings:
+          - dimension: operative_rule_preservation
+            rating: 2
+            rationale: The active flow preserves capability-first and risk-sensitive routing
+              but omits the mandatory per-dimension LOW/MEDIUM/HIGH profile with
+              one-line evidence, a material loss of the core audit artifact.
+        judgment_error: judge response violates the bound evidence-reference contract
+        evidence:
+          - path: .artifacts/prompt-evaluation-20260910-v4/runs/knowledge-task-profiling-md-2026-09-09T21-50-51-007Z/run-summary.json
+            sha256: 32355ba7001bbdb7e8cec89ddf0ecb7736ddde359a0cefb49251c11955d09120
+          - path: .artifacts/prompt-evaluation-20260910-v4/runs/knowledge-task-profiling-md-2026-09-09T21-50-51-007Z/run-contract.json
+            sha256: b8c36ed779014d739c33ce37af3d1d23bd28a611c8b700114537dd12e9df7635
+          - path: .artifacts/prompt-evaluation-20260910-v4/knowledge-task-profiling.stdout.log
+            sha256: 8fe2af0080304ea8a6b4dffc4244d37b73c5ac23626349445e7ec1c82683e964
+          - path: .artifacts/prompt-evaluation-20260910-v4/knowledge-task-profiling.stderr.log
+            sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+      - case_id: quick-negative-load-v1
+        kind: interview
+        exit_code: 0
+        raw_acceptance: ACCEPTED
+        failed_checks: []
+        source_findings: []
+        judgment_error: null
+        evidence:
+          - path: .artifacts/prompt-evaluation-20260910-v4/runs/quick-negative-load-v1-2026-09-09T21-52-24-640Z/run-summary.json
+            sha256: 31a2f3bd0ac35ccd2856558f660b4566e9c6703a47503989ef9f7b947ac6a1e4
+          - path: .artifacts/prompt-evaluation-20260910-v4/runs/quick-negative-load-v1-2026-09-09T21-52-24-640Z/run-contract.json
+            sha256: 515e4b3776e35d07d2bc2280cc3256d669c03eb476d422a3731ee3117ea3a7a9
+          - path: .artifacts/prompt-evaluation-20260910-v4/quick-negative-load-v1.stdout.log
+            sha256: 054f3696413789d52878b66fa49f8337418afcf57c555f595e6dcccb9cd58f04
+          - path: .artifacts/prompt-evaluation-20260910-v4/quick-negative-load-v1.stderr.log
+            sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+      - case_id: stateful-issued-slice-v1
+        kind: interview
+        exit_code: 3
+        raw_acceptance: NOT_RUN
+        failed_checks: []
+        source_findings: []
+        judgment_error: null
+        evidence:
+          - path: .artifacts/prompt-evaluation-20260910-v4/runs/stateful-issued-slice-v1-2026-09-09T21-50-56-349Z/execution-block.json
+            sha256: 4b22b1e15409db42ad0aefd4475561d06e37787cf89ed8312baaa0d9fdc2a11f
+          - path: .artifacts/prompt-evaluation-20260910-v4/runs/stateful-issued-slice-v1-2026-09-09T21-50-56-349Z/run-contract.json
+            sha256: d10825581579ce08292f7c8c5afe87ce6844e215e7fad48b0b3643c1f79727c9
+          - path: .artifacts/prompt-evaluation-20260910-v4/stateful-issued-slice-v1.stdout.log
+            sha256: f508bddd30ed176abf5d6cdcaaaebc2d7090111025fc0a5e4ddfccf43ef6802d
+          - path: .artifacts/prompt-evaluation-20260910-v4/stateful-issued-slice-v1.stderr.log
+            sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+      - case_id: multimodal-creative-brief-v1
+        kind: interview
+        exit_code: 2
+        raw_acceptance: REJECTED
+        failed_checks:
+          - id: first:state
+            passed: false
+            detail: expected READY, received NEEDS_INPUT
+          - id: first:question-max
+            passed: false
+            detail: received 2
+          - id: first:has-final-prompt
+            passed: false
+          - id: first:required-pattern:Final Prompt
+            passed: false
+        source_findings: []
+        judgment_error: null
+        evidence:
+          - path: .artifacts/prompt-evaluation-20260910-v4/runs/multimodal-creative-brief-v1-2026-09-09T21-55-58-099Z/run-summary.json
+            sha256: 421b2772041e99872d3a95966db6f99c808c79e9dfb093be7dffe4fab8e1a9d2
+          - path: .artifacts/prompt-evaluation-20260910-v4/runs/multimodal-creative-brief-v1-2026-09-09T21-55-58-099Z/run-contract.json
+            sha256: 8e12bd0ab81492ec24c43d9664578fda9ee47566c3d0cd89dc4740a020fdeceb
+          - path: .artifacts/prompt-evaluation-20260910-v4/multimodal-creative-brief-v1.stdout.log
+            sha256: 133954314aa153e9385cc64a0b4a7a6f62d380bd01b1b11ee64ba1d6292bd30b
+          - path: .artifacts/prompt-evaluation-20260910-v4/multimodal-creative-brief-v1.stderr.log
+            sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+      - case_id: knowledge-tier-selection
+        kind: knowledge-audit
+        exit_code: 3
+        raw_acceptance: INVALID
+        failed_checks: []
+        source_findings: []
+        judgment_error: TIMED_OUT
+        evidence:
+          - path: .artifacts/prompt-evaluation-20260910-v4/runs/knowledge-tier-selection-md-2026-09-09T21-52-12-070Z/run-summary.json
+            sha256: cea4460e8578e15189dde69e37b3f71bc7ef529f29d923e9ca879a48ba6916b6
+          - path: .artifacts/prompt-evaluation-20260910-v4/runs/knowledge-tier-selection-md-2026-09-09T21-52-12-070Z/run-contract.json
+            sha256: e339c83f4dcc4a3a7ece3bf17cb1873f1cb16321bb841174200456d29962b236
+          - path: .artifacts/prompt-evaluation-20260910-v4/knowledge-tier-selection.stdout.log
+            sha256: eed08094eb1f654a09c339f7a0f8d48610e4a743f1cae6d3b19477f673282722
+          - path: .artifacts/prompt-evaluation-20260910-v4/knowledge-tier-selection.stderr.log
+            sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+      - case_id: kb-audit-honesty-v1
+        kind: interview
+        exit_code: 0
+        raw_acceptance: ACCEPTED
+        failed_checks: []
+        source_findings: []
+        judgment_error: null
+        evidence:
+          - path: .artifacts/prompt-evaluation-20260910-v4/runs/kb-audit-honesty-v1-2026-09-09T21-51-14-739Z/run-summary.json
+            sha256: be759c1f0ee17dbca98dc623b570c86507b5c4e653fd830af4fc9785ea8a35f1
+          - path: .artifacts/prompt-evaluation-20260910-v4/runs/kb-audit-honesty-v1-2026-09-09T21-51-14-739Z/run-contract.json
+            sha256: dcfdbf9a4d547489daf76a862635bd0b02ca4d0ce0c141f61d0cbec21db8056a
+          - path: .artifacts/prompt-evaluation-20260910-v4/kb-audit-honesty-v1.stdout.log
+            sha256: 193e12d6fb7fefc90e60c9f65098b0fcf9c181d78add6e6f168c0a0c59289838
+          - path: .artifacts/prompt-evaluation-20260910-v4/kb-audit-honesty-v1.stderr.log
+            sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+      - case_id: high-stakes-bounded-classification-v1
+        kind: interview
+        exit_code: 0
+        raw_acceptance: ACCEPTED
+        failed_checks: []
+        source_findings: []
+        judgment_error: null
+        evidence:
+          - path: .artifacts/prompt-evaluation-20260910-v4/runs/high-stakes-bounded-classification-v1-2026-09-09T21-55-49-298Z/run-summary.json
+            sha256: f4b92bc0e4da3b5060690f1f60c4e943757c460293baf8767a4f747f4f2f8d04
+          - path: .artifacts/prompt-evaluation-20260910-v4/runs/high-stakes-bounded-classification-v1-2026-09-09T21-55-49-298Z/run-contract.json
+            sha256: e9872b54c6969b97b1f05a3f96b9700edc321bdb7c417132147f58ed03146eb8
+          - path: .artifacts/prompt-evaluation-20260910-v4/high-stakes-bounded-classification-v1.stdout.log
+            sha256: 818e970bc28bbc39c8e653d331e0d0bfd3655132a85341d129df32d9544bdc39
+          - path: .artifacts/prompt-evaluation-20260910-v4/high-stakes-bounded-classification-v1.stderr.log
+            sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+      - case_id: explicit-efficient-complex-v1
+        kind: interview
+        exit_code: 2
+        raw_acceptance: REJECTED
+        failed_checks:
+          - id: first:required-read:runtime/safety-high-stakes.md
+            passed: false
+        source_findings: []
+        judgment_error: null
+        evidence:
+          - path: .artifacts/prompt-evaluation-20260910-v4/runs/explicit-efficient-complex-v1-2026-09-09T21-55-25-036Z/run-summary.json
+            sha256: 09a8f95918ffec63c447363772e41c1e4d1f8818dc547324e5bd4be2e1f4afe7
+          - path: .artifacts/prompt-evaluation-20260910-v4/runs/explicit-efficient-complex-v1-2026-09-09T21-55-25-036Z/run-contract.json
+            sha256: 0985236f0bb2291b7d4b6553c411127a680c29454d368f62265df55894b39ee5
+          - path: .artifacts/prompt-evaluation-20260910-v4/explicit-efficient-complex-v1.stdout.log
+            sha256: 468010507e1c3c1dd591a045c5280f1c1af85f763bb22026dd3a16d640fd6724
+          - path: .artifacts/prompt-evaluation-20260910-v4/explicit-efficient-complex-v1.stderr.log
+            sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+      - case_id: complete-quick-v1
+        kind: interview
+        exit_code: 0
+        raw_acceptance: ACCEPTED
+        failed_checks: []
+        source_findings: []
+        judgment_error: null
+        evidence:
+          - path: .artifacts/prompt-evaluation-20260910-v4/runs/complete-quick-v1-2026-09-09T21-58-13-778Z/run-summary.json
+            sha256: dbd88a3150e4b05f5751906fc31de015a7972412de9ee14a215e93f633ce0174
+          - path: .artifacts/prompt-evaluation-20260910-v4/runs/complete-quick-v1-2026-09-09T21-58-13-778Z/run-contract.json
+            sha256: 658014b54a5e019a756bf2170f814ceb59d4d97af678e22dfa99fdd8561618ca
+          - path: .artifacts/prompt-evaluation-20260910-v4/complete-quick-v1.stdout.log
+            sha256: 00a975d93dab72ada16084e5acaf07e6322e200973477df121b24a3f7201d41e
+          - path: .artifacts/prompt-evaluation-20260910-v4/complete-quick-v1.stderr.log
+            sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+      - case_id: current-research-no-sources-v1
+        kind: interview
+        exit_code: 0
+        raw_acceptance: ACCEPTED
+        failed_checks: []
+        source_findings: []
+        judgment_error: null
+        evidence:
+          - path: .artifacts/prompt-evaluation-20260910-v4/runs/current-research-no-sources-v1-2026-09-09T21-55-42-960Z/run-summary.json
+            sha256: ec7a7bbf374c56e5bd10fb2354539fab625564a614d8e640551e30a7a77e5c6f
+          - path: .artifacts/prompt-evaluation-20260910-v4/runs/current-research-no-sources-v1-2026-09-09T21-55-42-960Z/run-contract.json
+            sha256: 107a7f0abeb3bb42962a1b1d707928466cb74ef06142dea5f32b50bed21da0da
+          - path: .artifacts/prompt-evaluation-20260910-v4/current-research-no-sources-v1.stdout.log
+            sha256: 023a0481527585ace507f604b3689520d19ab5a388553f2fb4f10a1400a38121
+          - path: .artifacts/prompt-evaluation-20260910-v4/current-research-no-sources-v1.stderr.log
+            sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+      - case_id: missing-structured-schema-v1
+        kind: interview
+        exit_code: 2
+        raw_acceptance: REJECTED
+        failed_checks:
+          - id: first:question-max
+            passed: false
+            detail: received 3
+        source_findings: []
+        judgment_error: null
+        evidence:
+          - path: .artifacts/prompt-evaluation-20260910-v4/runs/missing-structured-schema-v1-2026-09-09T21-58-59-036Z/run-summary.json
+            sha256: 9dce18c2dc06928c055aa51b79c07dcb3d4682ec8798a5c8e1784f69891421f2
+          - path: .artifacts/prompt-evaluation-20260910-v4/runs/missing-structured-schema-v1-2026-09-09T21-58-59-036Z/run-contract.json
+            sha256: 43edcbb3b28d3af204d5088831d56e6251260b0877779ff90d8e7d3ddbf137a5
+          - path: .artifacts/prompt-evaluation-20260910-v4/missing-structured-schema-v1.stdout.log
+            sha256: c8db98a16961770652ada3e49b54aa6f5defcdf982c2fc8223bc9af5fa4cbef1
+          - path: .artifacts/prompt-evaluation-20260910-v4/missing-structured-schema-v1.stderr.log
+            sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+      - case_id: invoice-label-ambiguity-v1
+        kind: interview
+        exit_code: 2
+        raw_acceptance: REJECTED
+        failed_checks:
+          - id: first:question-max
+            passed: false
+            detail: received 3
+          - id: first:required-intent:label_policy
+            passed: false
+            detail: detected none
+          - id: second:state
+            passed: false
+            detail: expected READY, received NEEDS_INPUT
+          - id: second:question-max
+            passed: false
+            detail: received 2
+          - id: second:has-final-prompt
+            passed: false
+          - id: second:required-pattern:Final Prompt
+            passed: false
+          - id: second:no-exact-repeat
+            passed: false
+            detail: What evidence may identify `invoice_id`?
+        source_findings: []
+        judgment_error: null
+        evidence:
+          - path: .artifacts/prompt-evaluation-20260910-v4/runs/invoice-label-ambiguity-v1-2026-09-09T21-59-09-189Z/run-summary.json
+            sha256: 55e8a10652ee7873cb68011c5bbe7526bf0d28ba4db8a955dc795d2a5fa59db9
+          - path: .artifacts/prompt-evaluation-20260910-v4/runs/invoice-label-ambiguity-v1-2026-09-09T21-59-09-189Z/run-contract.json
+            sha256: 0be576691af60e8fbde7973c253da9f7a38e71116297ff1786f2027896d02b47
+          - path: .artifacts/prompt-evaluation-20260910-v4/invoice-label-ambiguity-v1.stdout.log
+            sha256: 9d5967ec291bffb7ac3681f53c27d8988f18ec9fe116bf6648c78c362c9f3495
+          - path: .artifacts/prompt-evaluation-20260910-v4/invoice-label-ambiguity-v1.stderr.log
+            sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+      - case_id: bounded-document-tool-workflow-v1
+        kind: interview
+        exit_code: 2
+        raw_acceptance: REJECTED
+        failed_checks:
+          - id: first:required-read:runtime/safety-high-stakes.md
+            passed: false
+        source_findings: []
+        judgment_error: null
+        evidence:
+          - path: .artifacts/prompt-evaluation-20260910-v4/runs/bounded-document-tool-workflow-v1-2026-09-09T21-58-10-478Z/run-summary.json
+            sha256: 79714227cb3efafd07b48bd7205a3651fd5744e6e68857be9c45ddce2660c057
+          - path: .artifacts/prompt-evaluation-20260910-v4/runs/bounded-document-tool-workflow-v1-2026-09-09T21-58-10-478Z/run-contract.json
+            sha256: 2f30d2cfaf33be05cad311b032af87564873652d23b871f4e9fddb74a48281b7
+          - path: .artifacts/prompt-evaluation-20260910-v4/bounded-document-tool-workflow-v1.stdout.log
+            sha256: 0f552888ee03c2fbc7676c075dbb13c3091acfb16e7755ae415e2b14d66c99c8
+          - path: .artifacts/prompt-evaluation-20260910-v4/bounded-document-tool-workflow-v1.stderr.log
+            sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+      - case_id: support-mixed-case-v1
+        kind: interview
+        exit_code: 2
+        raw_acceptance: REJECTED
+        failed_checks:
+          - id: first:question-max
+            passed: false
+            detail: received 2
+          - id: second:state
+            passed: false
+            detail: expected READY, received NEEDS_INPUT
+          - id: second:question-max
+            passed: false
+            detail: received 1
+          - id: second:has-final-prompt
+            passed: false
+          - id: second:required-pattern:Final Prompt
+            passed: false
+          - id: second:required-pattern:{{TICKET_TEXT}}
+            passed: false
+        source_findings: []
+        judgment_error: null
+        evidence:
+          - path: .artifacts/prompt-evaluation-20260910-v4/runs/support-mixed-case-v1-2026-09-09T21-59-21-038Z/run-summary.json
+            sha256: 85ea228dfd891a9d351cc41c410f9ca2b8cf799c6c2047ef4b2904208886d6ea
+          - path: .artifacts/prompt-evaluation-20260910-v4/runs/support-mixed-case-v1-2026-09-09T21-59-21-038Z/run-contract.json
+            sha256: 300fca0276031706230932f3058eb5c6fe98f4f0634157816437178c4ec795be
+          - path: .artifacts/prompt-evaluation-20260910-v4/support-mixed-case-v1.stdout.log
+            sha256: f4d670ec261ab99d73cf6f3b5d9e196851e4da9c11fe4f0537cb7e552cc30b30
+          - path: .artifacts/prompt-evaluation-20260910-v4/support-mixed-case-v1.stderr.log
+            sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+      - case_id: declined-hard-authority-v1
+        kind: interview
+        exit_code: 2
+        raw_acceptance: REJECTED
+        failed_checks:
+          - id: first:state
+            passed: false
+            detail: expected NEEDS_INPUT, received BLOCKED
+          - id: first:question-min
+            passed: false
+            detail: received 0
+          - id: first:required-intent:authority
+            passed: false
+            detail: detected none
+        source_findings: []
+        judgment_error: null
+        evidence:
+          - path: .artifacts/prompt-evaluation-20260910-v4/runs/declined-hard-authority-v1-2026-09-09T22-01-56-928Z/run-summary.json
+            sha256: 6453938f2209b9f91392c4b704fdaf30b8f39c3e6f81b5ef2ef6895706d65a7d
+          - path: .artifacts/prompt-evaluation-20260910-v4/runs/declined-hard-authority-v1-2026-09-09T22-01-56-928Z/run-contract.json
+            sha256: 5bc43b6b827eb621b41ca9b1b187a7b07e0fc4bd0ab370dada7e18f28bfd4eea
+          - path: .artifacts/prompt-evaluation-20260910-v4/declined-hard-authority-v1.stdout.log
+            sha256: f21d5697588c64cadc0c7b3ebdd0ea524b27f43d7f9555e991b9584ba9c1aa87
+          - path: .artifacts/prompt-evaluation-20260910-v4/declined-hard-authority-v1.stderr.log
+            sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+      - case_id: declined-nonblocking-choice-v1
+        kind: interview
+        exit_code: 0
+        raw_acceptance: ACCEPTED
+        failed_checks: []
+        source_findings: []
+        judgment_error: null
+        evidence:
+          - path: .artifacts/prompt-evaluation-20260910-v4/runs/declined-nonblocking-choice-v1-2026-09-09T22-01-46-853Z/run-summary.json
+            sha256: 61a37814adea0bc3fbf319d6047090a491ad48eea91fc24327d2615fb27993cb
+          - path: .artifacts/prompt-evaluation-20260910-v4/runs/declined-nonblocking-choice-v1-2026-09-09T22-01-46-853Z/run-contract.json
+            sha256: 9a1b1e61d3ecc894b5d0f0867f301c3c1fca5a5b8d7bf8b58ab4e54f9a3c64f8
+          - path: .artifacts/prompt-evaluation-20260910-v4/declined-nonblocking-choice-v1.stdout.log
+            sha256: a14ed4fe0edbed22bc46535aa80be2ab433189e83ae34e1fe56d60825dab9cf5
+          - path: .artifacts/prompt-evaluation-20260910-v4/declined-nonblocking-choice-v1.stderr.log
+            sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+      - case_id: safe-optional-preference-v1
+        kind: interview
+        exit_code: 0
+        raw_acceptance: ACCEPTED
+        failed_checks: []
+        source_findings: []
+        judgment_error: null
+        evidence:
+          - path: .artifacts/prompt-evaluation-20260910-v4/runs/safe-optional-preference-v1-2026-09-09T22-01-34-046Z/run-summary.json
+            sha256: 86db79ecc06bbf1a5cce8ca0caf8a7f88efaab29c524f7410c93b4ec89046679
+          - path: .artifacts/prompt-evaluation-20260910-v4/runs/safe-optional-preference-v1-2026-09-09T22-01-34-046Z/run-contract.json
+            sha256: 6feb6ff0527205dc51e1a0dee1568ab9dd1fc667218cfffb0bfc8bff99a7edf8
+          - path: .artifacts/prompt-evaluation-20260910-v4/safe-optional-preference-v1.stdout.log
+            sha256: 588b14127689c4f6eb728b1807a644ff9110ffc97ed5cda9e084297d5dd27020
+          - path: .artifacts/prompt-evaluation-20260910-v4/safe-optional-preference-v1.stderr.log
+            sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+      - case_id: migration-permission-v1
+        kind: interview
+        exit_code: 2
+        raw_acceptance: REJECTED
+        failed_checks:
+          - id: first:required-intent:permission
+            passed: false
+            detail: detected authority
+          - id: first:forbidden-intent:authority
+            passed: false
+            detail: detected authority
+          - id: second:required-pattern:PLAN_ONLY
+            passed: false
+        source_findings: []
+        judgment_error: null
+        evidence:
+          - path: .artifacts/prompt-evaluation-20260910-v4/runs/migration-permission-v1-2026-09-09T22-01-17-718Z/run-summary.json
+            sha256: fee9213a3a1d951a6950bcb4f12ebf848946d2884b5e0eca4f63939085723e23
+          - path: .artifacts/prompt-evaluation-20260910-v4/runs/migration-permission-v1-2026-09-09T22-01-17-718Z/run-contract.json
+            sha256: 13dcc97bbedaa8ad2cedae3afbad785ced657d94ca65b3cf6e93abf5294580b2
+          - path: .artifacts/prompt-evaluation-20260910-v4/migration-permission-v1.stdout.log
+            sha256: 067e46410b124259c2fc47e414d343c920b28b90ce60c58528edb02559f8648c
+          - path: .artifacts/prompt-evaluation-20260910-v4/migration-permission-v1.stderr.log
+            sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+      - case_id: explicit-source-authority-v1
+        kind: interview
+        exit_code: 0
+        raw_acceptance: ACCEPTED
+        failed_checks: []
+        source_findings: []
+        judgment_error: null
+        evidence:
+          - path: .artifacts/prompt-evaluation-20260910-v4/runs/explicit-source-authority-v1-2026-09-09T22-00-46-787Z/run-summary.json
+            sha256: a7344150b1b38b6cf4211a44ed9abbbc943179c9378575a5abb5284edb8a7686
+          - path: .artifacts/prompt-evaluation-20260910-v4/runs/explicit-source-authority-v1-2026-09-09T22-00-46-787Z/run-contract.json
+            sha256: 3f21638ee1927b01a737cb26770e8e744cbe48d7d9c2faf7355ed3d949198717
+          - path: .artifacts/prompt-evaluation-20260910-v4/explicit-source-authority-v1.stdout.log
+            sha256: d5eb3c59e08f779b976b2832d3ffeb5d66265a713f50a8c6bc6f4f932692dd12
+          - path: .artifacts/prompt-evaluation-20260910-v4/explicit-source-authority-v1.stderr.log
+            sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+      - case_id: new-instruction-invalidation-v1
+        kind: interview
+        exit_code: 2
+        raw_acceptance: REJECTED
+        failed_checks:
+          - id: second:required-pattern:JSON object
+            passed: false
+        source_findings: []
+        judgment_error: null
+        evidence:
+          - path: .artifacts/prompt-evaluation-20260910-v4/runs/new-instruction-invalidation-v1-2026-09-09T22-05-09-095Z/run-summary.json
+            sha256: 4382c73e702c0c3e02eacd37145e6e1716666fb4497d71fa9b67b9444b8c85fb
+          - path: .artifacts/prompt-evaluation-20260910-v4/runs/new-instruction-invalidation-v1-2026-09-09T22-05-09-095Z/run-contract.json
+            sha256: bfd1ae54b74d9846ad6773aef7c88f6c5e1d364d466cad76b4b83842276c1b67
+          - path: .artifacts/prompt-evaluation-20260910-v4/new-instruction-invalidation-v1.stdout.log
+            sha256: 7f5fd26e42a09bc23ff20f71f793997abd4a24afd940fb370966f020dbd508ce
+          - path: .artifacts/prompt-evaluation-20260910-v4/new-instruction-invalidation-v1.stderr.log
+            sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+      - case_id: builder-omission-repair-v1
+        kind: interview
+        exit_code: 0
+        raw_acceptance: ACCEPTED
+        failed_checks: []
+        source_findings: []
+        judgment_error: null
+        evidence:
+          - path: .artifacts/prompt-evaluation-20260910-v4/runs/builder-omission-repair-v1-2026-09-09T22-03-43-863Z/run-summary.json
+            sha256: 535d485504f4903a04e0a679fafe03ca7d95bfcb887b0c2ad90f3bd9b2c170c2
+          - path: .artifacts/prompt-evaluation-20260910-v4/runs/builder-omission-repair-v1-2026-09-09T22-03-43-863Z/run-contract.json
+            sha256: 9afa3eea4cec6d2e1ddc9bb8a4ffb90ea013ef42fc26092f750f6b5fd47b1fbe
+          - path: .artifacts/prompt-evaluation-20260910-v4/builder-omission-repair-v1.stdout.log
+            sha256: 821437caba4aa6145a8243237712af5b03d047454e7ae4bf6e22739726aa3309
+          - path: .artifacts/prompt-evaluation-20260910-v4/builder-omission-repair-v1.stderr.log
+            sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+      - case_id: answer-already-in-source-v1
+        kind: interview
+        exit_code: 0
+        raw_acceptance: ACCEPTED
+        failed_checks: []
+        source_findings: []
+        judgment_error: null
+        evidence:
+          - path: .artifacts/prompt-evaluation-20260910-v4/runs/answer-already-in-source-v1-2026-09-09T22-02-41-656Z/run-summary.json
+            sha256: d6a11312c4bb11a8aeea04b384b9d40c9cc83d664fa070d39dd166b4aba7b0ca
+          - path: .artifacts/prompt-evaluation-20260910-v4/runs/answer-already-in-source-v1-2026-09-09T22-02-41-656Z/run-contract.json
+            sha256: de41103f042953a918819f8b0eae388c065f7373097f795b3956f39f7a8334e2
+          - path: .artifacts/prompt-evaluation-20260910-v4/answer-already-in-source-v1.stdout.log
+            sha256: d7f01f40cb2db6bc77ff55de63674249392e4d9680c669bccba57780f2702958
+          - path: .artifacts/prompt-evaluation-20260910-v4/answer-already-in-source-v1.stderr.log
+            sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+      - case_id: support-triage-v1
+        kind: quality
+        exit_code: 2
+        raw_acceptance: REJECTED
+        failed_checks:
+          - id: exact-values
+            passed: false
+            actual:
+              category: access
+              urgency: high
+              needs_human_review: false
+            expected:
+              category: bug
+              urgency: high
+              needs_human_review: false
+        source_findings: []
+        judgment_error: null
+        evidence:
+          - path: .artifacts/prompt-evaluation-20260910-v4/runs/support-triage-v1-2026-09-09T22-06-44-001Z/run-summary.json
+            sha256: a0acfd425fa1b5f44087d2a18f5f0fbf7b795f216a49e027973b3cca879ab59a
+          - path: .artifacts/prompt-evaluation-20260910-v4/runs/support-triage-v1-2026-09-09T22-06-44-001Z/run-contract.json
+            sha256: fc9b911d88cdb5938ecd00fbdef965407d9acfd8e8fbd2c2202d7a0c593130ae
+          - path: .artifacts/prompt-evaluation-20260910-v4/support-triage-v1.stdout.log
+            sha256: 8818a6d7c2be064259a4ad816e119a700136791e164b74792176312115790774
+          - path: .artifacts/prompt-evaluation-20260910-v4/support-triage-v1.stderr.log
+            sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+      - case_id: structured-invoice-v1
+        kind: quality
+        exit_code: 0
+        raw_acceptance: ACCEPTED
+        failed_checks: []
+        source_findings: []
+        judgment_error: null
+        evidence:
+          - path: .artifacts/prompt-evaluation-20260910-v4/runs/structured-invoice-v1-2026-09-09T22-06-17-380Z/run-summary.json
+            sha256: 1d4958ba53dd02a047baf9ead0e3bb2ed564254d785ac1485f8f9248decb581e
+          - path: .artifacts/prompt-evaluation-20260910-v4/runs/structured-invoice-v1-2026-09-09T22-06-17-380Z/run-contract.json
+            sha256: 40d2261d8cd2c5d18f4c9b2a37e97cfbcc7fdb2015a277b8b21e2d2dec6bfa0a
+          - path: .artifacts/prompt-evaluation-20260910-v4/structured-invoice-v1.stdout.log
+            sha256: c7db139e03a4eaee288bf0c1b1bdb47d413ad82f2e2afe54bd63947b93e040ca
+          - path: .artifacts/prompt-evaluation-20260910-v4/structured-invoice-v1.stderr.log
+            sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+      - case_id: source-conflict-brief-v1
+        kind: quality
+        exit_code: 0
+        raw_acceptance: ACCEPTED
+        failed_checks: []
+        source_findings: []
+        judgment_error: null
+        evidence:
+          - path: .artifacts/prompt-evaluation-20260910-v4/runs/source-conflict-brief-v1-2026-09-09T22-06-49-452Z/run-summary.json
+            sha256: 08229b79546aadabba1fcd01713c259e8ab65883e4c62db063738c2e92c3a9e5
+          - path: .artifacts/prompt-evaluation-20260910-v4/runs/source-conflict-brief-v1-2026-09-09T22-06-49-452Z/run-contract.json
+            sha256: 6dce8f0a402a2c466fe306cf804792181697298bff34e6aa9ddf4c0459f3b214
+          - path: .artifacts/prompt-evaluation-20260910-v4/source-conflict-brief-v1.stdout.log
+            sha256: 882f8726533a5df1ec03f891a6d66c594132b9945f524f67247c7bdb3532fbf1
+          - path: .artifacts/prompt-evaluation-20260910-v4/source-conflict-brief-v1.stderr.log
+            sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+      - case_id: onboarding-experiment-v1
+        kind: quality
+        exit_code: 2
+        raw_acceptance: REJECTED
+        failed_checks:
+          - id: forbidden:20-point lift
+            passed: false
+        source_findings: []
+        judgment_error: null
+        evidence:
+          - path: .artifacts/prompt-evaluation-20260910-v4/runs/onboarding-experiment-v1-2026-09-09T22-10-10-019Z/run-summary.json
+            sha256: 01470685c3136f3991325a2e5ec458e9355396121d8311f8fba5f15f674a0c25
+          - path: .artifacts/prompt-evaluation-20260910-v4/runs/onboarding-experiment-v1-2026-09-09T22-10-10-019Z/run-contract.json
+            sha256: 58b2bfdb6de5493761dcca4604324bf65fdbcb46120d6ff09799b19ac99174ee
+          - path: .artifacts/prompt-evaluation-20260910-v4/onboarding-experiment-v1.stdout.log
+            sha256: d7af7b8623699d959a5bf192d3bec3a34237cb18c3eef2b93eac79256e56f28f
+          - path: .artifacts/prompt-evaluation-20260910-v4/onboarding-experiment-v1.stderr.log
+            sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+      - case_id: product-prioritization-v1
+        kind: quality
+        exit_code: 0
+        raw_acceptance: ACCEPTED
+        failed_checks: []
+        source_findings: []
+        judgment_error: null
+        evidence:
+          - path: .artifacts/prompt-evaluation-20260910-v4/runs/product-prioritization-v1-2026-09-09T22-09-34-614Z/run-summary.json
+            sha256: 48c1660f9e74c93a620c0c1f2ddf87c0638b9eab6c2b96d6e8bfe07e9cc6de8b
+          - path: .artifacts/prompt-evaluation-20260910-v4/runs/product-prioritization-v1-2026-09-09T22-09-34-614Z/run-contract.json
+            sha256: 90f3a6e309fa8811425bb8983a8af1c625b72d174c6a6b53168d7baa161f2772
+          - path: .artifacts/prompt-evaluation-20260910-v4/product-prioritization-v1.stdout.log
+            sha256: f8d73dfbc0440069d88c784889964f90dd256b5dc8e1dabfc3f04fd02d42decc
+          - path: .artifacts/prompt-evaluation-20260910-v4/product-prioritization-v1.stderr.log
+            sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+      - case_id: code-review-race-v1
+        kind: quality
+        exit_code: 3
+        raw_acceptance: NOT_RUN
+        failed_checks: []
+        source_findings: []
+        judgment_error: null
+        evidence:
+          - path: .artifacts/prompt-evaluation-20260910-v4/runs/code-review-race-v1-2026-09-09T22-14-24-417Z/execution-block.json
+            sha256: 9914dfc1235466bb0a478a8fed77d98b941d4c70fa6105262c47139c3b8acf7e
+          - path: .artifacts/prompt-evaluation-20260910-v4/runs/code-review-race-v1-2026-09-09T22-14-24-417Z/run-contract.json
+            sha256: 591be137197883a94b9ebc8f04628ba5bb53f4b212af7041d06a9374a271fe52
+          - path: .artifacts/prompt-evaluation-20260910-v4/code-review-race-v1.stdout.log
+            sha256: de9f3ef676ef4b8df1db082355f2d5e1fee9405e5798d0808bbebd2de70ca19f
+          - path: .artifacts/prompt-evaluation-20260910-v4/code-review-race-v1.stderr.log
+            sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+      - case_id: incident-root-cause-v1
+        kind: quality
+        exit_code: 3
+        raw_acceptance: NOT_RUN
+        failed_checks: []
+        source_findings: []
+        judgment_error: null
+        evidence:
+          - path: .artifacts/prompt-evaluation-20260910-v4/runs/incident-root-cause-v1-2026-09-09T22-08-04-034Z/execution-block.json
+            sha256: 462c0fd5649dea3fc3edfcdb1a700d6720da7f185507fbf5d918eefc65b4e526
+          - path: .artifacts/prompt-evaluation-20260910-v4/runs/incident-root-cause-v1-2026-09-09T22-08-04-034Z/run-contract.json
+            sha256: ef959f16bd8c15b1c3d3269c2e536076373c3ab93c470e61e4a539c609ce046f
+          - path: .artifacts/prompt-evaluation-20260910-v4/incident-root-cause-v1.stdout.log
+            sha256: dae2a3dcc33ff8216d1107e9da4715ea1d455da1581a3864dafe315f21589d49
+          - path: .artifacts/prompt-evaluation-20260910-v4/incident-root-cause-v1.stderr.log
+            sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+      - case_id: migration-control-plan-v1
+        kind: quality
+        exit_code: 3
+        raw_acceptance: NOT_RUN
+        failed_checks: []
+        source_findings: []
+        judgment_error: null
+        evidence:
+          - path: .artifacts/prompt-evaluation-20260910-v4/runs/migration-control-plan-v1-2026-09-09T22-08-20-707Z/execution-block.json
+            sha256: 01621103b6172332375b2b71b96109a01f84d66470a796fa4b4945195dc9d05c
+          - path: .artifacts/prompt-evaluation-20260910-v4/runs/migration-control-plan-v1-2026-09-09T22-08-20-707Z/run-contract.json
+            sha256: 88328c13efc57d89b1102444198b65a5d0ecf131d83fa78b1630fe3aa4d2e875
+          - path: .artifacts/prompt-evaluation-20260910-v4/migration-control-plan-v1.stdout.log
+            sha256: 4d281a9486666f49fbde476e70b93198679f10e5c1c0678b521d4c28369ebfe8
+          - path: .artifacts/prompt-evaluation-20260910-v4/migration-control-plan-v1.stderr.log
+            sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+      - case_id: plugin-workflow-plan-v1
+        kind: quality
+        exit_code: 3
+        raw_acceptance: NOT_RUN
+        failed_checks: []
+        source_findings: []
+        judgment_error: null
+        evidence:
+          - path: .artifacts/prompt-evaluation-20260910-v4/runs/plugin-workflow-plan-v1-2026-09-09T22-17-00-420Z/execution-block.json
+            sha256: b948ee18a3fe9095c26d34b128095dc758c797806af48b0f01ace213a371b2f8
+          - path: .artifacts/prompt-evaluation-20260910-v4/runs/plugin-workflow-plan-v1-2026-09-09T22-17-00-420Z/run-contract.json
+            sha256: 03f95678f6a4fe746ee0dda439ad7badd865286b77a9177e3a5d0ab2a7148e29
+          - path: .artifacts/prompt-evaluation-20260910-v4/plugin-workflow-plan-v1.stdout.log
+            sha256: 9971c73d07ea50de24a05779183a7d62687457b62b5db3f17073666990d82157
+          - path: .artifacts/prompt-evaluation-20260910-v4/plugin-workflow-plan-v1.stderr.log
+            sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+      - case_id: brand-context-copy-v1
+        kind: quality
+        exit_code: 0
+        raw_acceptance: ACCEPTED
+        failed_checks: []
+        source_findings: []
+        judgment_error: null
+        evidence:
+          - path: .artifacts/prompt-evaluation-20260910-v4/runs/brand-context-copy-v1-2026-09-09T22-18-27-902Z/run-summary.json
+            sha256: 285c410fe56cb96bd6edc3e1480defd7c18d983130ee6b3352814d7b8e4e5c95
+          - path: .artifacts/prompt-evaluation-20260910-v4/runs/brand-context-copy-v1-2026-09-09T22-18-27-902Z/run-contract.json
+            sha256: 30dd5a8440cfd69a542d6e23ba44a0dc57a0223dd2d393ff36c34dac0e08923e
+          - path: .artifacts/prompt-evaluation-20260910-v4/brand-context-copy-v1.stdout.log
+            sha256: 49cae9d612531cf53599c9c7e79fd8b12f164933f338da5112dd4d2a0bb01d27
+          - path: .artifacts/prompt-evaluation-20260910-v4/brand-context-copy-v1.stderr.log
+            sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+      - case_id: pricing-package-experiment-v1
+        kind: quality
+        exit_code: 3
+        raw_acceptance: NOT_RUN
+        failed_checks: []
+        source_findings: []
+        judgment_error: null
+        evidence:
+          - path: .artifacts/prompt-evaluation-20260910-v4/runs/pricing-package-experiment-v1-2026-09-09T22-21-16-318Z/execution-block.json
+            sha256: c3729f3f574fef61223bf708d3e0d40b2bc266640e1e76767bc4cfdb176dfc26
+          - path: .artifacts/prompt-evaluation-20260910-v4/runs/pricing-package-experiment-v1-2026-09-09T22-21-16-318Z/run-contract.json
+            sha256: 24ea22ce62207f4b077ed075152ad33cac6b9e5e3c48eaaf5668408e9956b4c5
+          - path: .artifacts/prompt-evaluation-20260910-v4/pricing-package-experiment-v1.stdout.log
+            sha256: 8d6eec9d3101287c8b1683c0018e7418c8a0d960315bff659ece5f7a6fd7bd2c
+          - path: .artifacts/prompt-evaluation-20260910-v4/pricing-package-experiment-v1.stderr.log
+            sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+      - case_id: structured-invoice-v1-astra
+        kind: quality-astra
+        exit_code: 0
+        raw_acceptance: ACCEPTED
+        failed_checks: []
+        source_findings: []
+        judgment_error: null
+        evidence:
+          - path: .artifacts/prompt-evaluation-20260910-v4/runs/structured-invoice-v1-2026-09-09T22-23-46-625Z/run-summary.json
+            sha256: d27affdbd77f445f5ed36ec26e0d261620d9949709a56d6ed86d630e3f215664
+          - path: .artifacts/prompt-evaluation-20260910-v4/runs/structured-invoice-v1-2026-09-09T22-23-46-625Z/run-contract.json
+            sha256: 1ba71d2e5b2d99703e8b9cebf841e40022a2d369d0647340c83d6049fd5b39cc
+          - path: .artifacts/prompt-evaluation-20260910-v4/structured-invoice-v1-astra.stdout.log
+            sha256: d317b8fc60050aec3734430ce9a1545cce34d1a5a216ea9a401f4e55bc48000e
+          - path: .artifacts/prompt-evaluation-20260910-v4/structured-invoice-v1-astra.stderr.log
+            sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+      - case_id: api-version-migration-plan-v1
+        kind: quality
+        exit_code: 3
+        raw_acceptance: NOT_RUN
+        failed_checks: []
+        source_findings: []
+        judgment_error: null
+        evidence:
+          - path: .artifacts/prompt-evaluation-20260910-v4/runs/api-version-migration-plan-v1-2026-09-09T22-15-38-336Z/execution-block.json
+            sha256: 5894a511295c70b14ee145f054d269e67edc53358b37fa2e8845e50b94e25b08
+          - path: .artifacts/prompt-evaluation-20260910-v4/runs/api-version-migration-plan-v1-2026-09-09T22-15-38-336Z/run-contract.json
+            sha256: ef038370e770220103621b21db7aa0dc707afc3b580aeea51986b3ef4b7f1bfb
+          - path: .artifacts/prompt-evaluation-20260910-v4/api-version-migration-plan-v1.stdout.log
+            sha256: 17d1ab91d6ac4dda7c5d1bcbe7d4656513f98792c4f6339265c2f08f89ac1124
+          - path: .artifacts/prompt-evaluation-20260910-v4/api-version-migration-plan-v1.stderr.log
+            sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+      - case_id: product-concept-scope-v1
+        kind: quality
+        exit_code: 3
+        raw_acceptance: NOT_RUN
+        failed_checks: []
+        source_findings: []
+        judgment_error: null
+        evidence:
+          - path: .artifacts/prompt-evaluation-20260910-v4/runs/product-concept-scope-v1-2026-09-09T22-19-39-438Z/execution-block.json
+            sha256: 64d3f76f5b50c0f23d85ba47de08f09efd31df1e3b75ccb45bb3a5b89fd31c27
+          - path: .artifacts/prompt-evaluation-20260910-v4/runs/product-concept-scope-v1-2026-09-09T22-19-39-438Z/run-contract.json
+            sha256: 710e48e48db54de43427539580997c5ecb9aa0572ef0e827cbb61c4f11ad767d
+          - path: .artifacts/prompt-evaluation-20260910-v4/product-concept-scope-v1.stdout.log
+            sha256: f641f48fd0d411a8f11c1d25ed592cc354c35b8b416bf10f56432cbdb4b918a2
+          - path: .artifacts/prompt-evaluation-20260910-v4/product-concept-scope-v1.stderr.log
+            sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+      - case_id: judge-challenges
+        kind: synthetic-judge-challenge
+        exit_code: 1073807364
+        raw_acceptance: MISSING_SUMMARY
+        failed_checks: []
+        source_findings: []
+        judgment_error: null
+        evidence:
+          - path: .artifacts/prompt-evaluation-20260910-v4/judge-challenges.stdout.log
+            sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+          - path: .artifacts/prompt-evaluation-20260910-v4/judge-challenges.stderr.log
+            sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+      - case_id: structured-invoice-v1-repeat-3
+        kind: repetition
+        exit_code: 1073807364
+        raw_acceptance: MISSING_SUMMARY
+        failed_checks: []
+        source_findings: []
+        judgment_error: null
+        evidence:
+          - path: .artifacts/prompt-evaluation-20260910-v4/structured-invoice-v1-repeat-3.stdout.log
+            sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+          - path: .artifacts/prompt-evaluation-20260910-v4/structured-invoice-v1-repeat-3.stderr.log
+            sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+      - case_id: structured-invoice-v1-repeat-2
+        kind: repetition
+        exit_code: 1
+        raw_acceptance: MISSING_SUMMARY
+        failed_checks: []
+        source_findings: []
+        judgment_error: null
+        evidence:
+          - path: .artifacts/prompt-evaluation-20260910-v4/structured-invoice-v1-repeat-2.stdout.log
+            sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+          - path: .artifacts/prompt-evaluation-20260910-v4/structured-invoice-v1-repeat-2.stderr.log
+            sha256: d2a2103b3aa5805919e50f58ba11ffed1b27f2d83ef24c64bc63b6a7248b69d8
+      - case_id: business-opportunity-screen-v1
+        kind: quality
+        exit_code: 1
+        raw_acceptance: MISSING_SUMMARY
+        failed_checks: []
+        source_findings: []
+        judgment_error: null
+        evidence:
+          - path: .artifacts/prompt-evaluation-20260910-v4/business-opportunity-screen-v1.stdout.log
+            sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+          - path: .artifacts/prompt-evaluation-20260910-v4/business-opportunity-screen-v1.stderr.log
+            sha256: d2a2103b3aa5805919e50f58ba11ffed1b27f2d83ef24c64bc63b6a7248b69d8
+      - case_id: source-conflict-brief-v1-astra
+        kind: quality-astra
+        exit_code: 1
+        raw_acceptance: MISSING_SUMMARY
+        failed_checks: []
+        source_findings: []
+        judgment_error: null
+        evidence:
+          - path: .artifacts/prompt-evaluation-20260910-v4/source-conflict-brief-v1-astra.stdout.log
+            sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+          - path: .artifacts/prompt-evaluation-20260910-v4/source-conflict-brief-v1-astra.stderr.log
+            sha256: f8d6f38ff23872b1dc08db37e09c27ec493c257700fa1955ce6a35c1851f0169
+  - id: prompt-fixture-repair-20260910
+    requested: 9
+    completed: 9
+    counts:
+      ACCEPTED: 9
+    results_sha256: 1f65721781a1f4fa8b7629edd1f66b59428b5ce331c2094647907b65a2a40567
+    records:
+      - case_id: astra-surface-v1
+        kind: corrected-fixture-v2
+        exit_code: 0
+        raw_acceptance: ACCEPTED
+        failed_checks: []
+        source_findings: []
+        judgment_error: null
+        evidence:
+          - path: .artifacts/prompt-fixture-repair-20260910/runs/astra-surface-v1-2026-09-09T22-01-27-559Z/run-summary.json
+            sha256: d4517dc5af088b8d58da0a6200082c27c5af1323972d4b614e32c52922a81219
+          - path: .artifacts/prompt-fixture-repair-20260910/runs/astra-surface-v1-2026-09-09T22-01-27-559Z/run-contract.json
+            sha256: 673f033c85979523f1b7bac3e04799b03dc9ceeabf8f54df32a022f5c469a1f5
+          - path: .artifacts/prompt-fixture-repair-20260910/astra-surface-v1.stdout.log
+            sha256: 0f1dad5501149008c62310a63a334410326798b6829a01e6a9ff77b7e45aebeb
+          - path: .artifacts/prompt-fixture-repair-20260910/astra-surface-v1.stderr.log
+            sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+      - case_id: qwen36-history-v1
+        kind: corrected-fixture-v2
+        exit_code: 0
+        raw_acceptance: ACCEPTED
+        failed_checks: []
+        source_findings: []
+        judgment_error: null
+        evidence:
+          - path: .artifacts/prompt-fixture-repair-20260910/runs/qwen36-history-v1-2026-09-09T22-01-27-560Z/run-summary.json
+            sha256: 593a4c8e94a4e680345dee54fede2ee21bfdfda2504784e3ff16b6e109e80c16
+          - path: .artifacts/prompt-fixture-repair-20260910/runs/qwen36-history-v1-2026-09-09T22-01-27-560Z/run-contract.json
+            sha256: 17f3328a43809a1571d4ee9188489cd190d7ff9904be64c107e974b0050e4436
+          - path: .artifacts/prompt-fixture-repair-20260910/qwen36-history-v1.stdout.log
+            sha256: d3a31111f04306523a422468c4875c31c8f21f18ee4c5f82e615eeb42eda8b7a
+          - path: .artifacts/prompt-fixture-repair-20260910/qwen36-history-v1.stderr.log
+            sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+      - case_id: qwen38-history-v1
+        kind: corrected-fixture-v2
+        exit_code: 0
+        raw_acceptance: ACCEPTED
+        failed_checks: []
+        source_findings: []
+        judgment_error: null
+        evidence:
+          - path: .artifacts/prompt-fixture-repair-20260910/runs/qwen38-history-v1-2026-09-09T22-01-27-562Z/run-summary.json
+            sha256: c96b96783208df9cb8b47ba56ef7ae72041f1920053a670e0998c43f4c458b4d
+          - path: .artifacts/prompt-fixture-repair-20260910/runs/qwen38-history-v1-2026-09-09T22-01-27-562Z/run-contract.json
+            sha256: ce234e033763db9306c23ff4e5e3028b667a24dac0ab8bd724f9e1d527526ac6
+          - path: .artifacts/prompt-fixture-repair-20260910/qwen38-history-v1.stdout.log
+            sha256: c0ba80698d526d417cc4d3fa21d0c109447a1f24410845f5b3a2379319f6f764
+          - path: .artifacts/prompt-fixture-repair-20260910/qwen38-history-v1.stderr.log
+            sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+      - case_id: qwen35-history-v1
+        kind: corrected-fixture-v2
+        exit_code: 0
+        raw_acceptance: ACCEPTED
+        failed_checks: []
+        source_findings: []
+        judgment_error: null
+        evidence:
+          - path: .artifacts/prompt-fixture-repair-20260910/runs/qwen35-history-v1-2026-09-09T22-07-34-898Z/run-summary.json
+            sha256: a709158b0667caaf0b7cba785cc64a9214f3f377d81ed8f33e917f0eac36243a
+          - path: .artifacts/prompt-fixture-repair-20260910/runs/qwen35-history-v1-2026-09-09T22-07-34-898Z/run-contract.json
+            sha256: 0d874bb765113c7b935fc0c51d56e8bfb32594558b0bafff31b040465d973385
+          - path: .artifacts/prompt-fixture-repair-20260910/qwen35-history-v1.stdout.log
+            sha256: a1e49456c2ba14aab78a066d8b1cf623b71b02ee1cb330718d130f8b11cc0c19
+          - path: .artifacts/prompt-fixture-repair-20260910/qwen35-history-v1.stderr.log
+            sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+      - case_id: gemma3-roles-v1
+        kind: corrected-fixture-v2
+        exit_code: 0
+        raw_acceptance: ACCEPTED
+        failed_checks: []
+        source_findings: []
+        judgment_error: null
+        evidence:
+          - path: .artifacts/prompt-fixture-repair-20260910/runs/gemma3-roles-v1-2026-09-09T22-08-57-592Z/run-summary.json
+            sha256: aba3951f77833634c75e21e8d1e809372730fa93bee8217ead4e855a2a100779
+          - path: .artifacts/prompt-fixture-repair-20260910/runs/gemma3-roles-v1-2026-09-09T22-08-57-592Z/run-contract.json
+            sha256: 799a6c6ecafda673e400ef0021ff43aae4de617dfa6be4d248edb9413b3955b4
+          - path: .artifacts/prompt-fixture-repair-20260910/gemma3-roles-v1.stdout.log
+            sha256: fc27fbc42289f5b019f62f07e7cf54af8088306c32c0427399c14a6bdd5d12d4
+          - path: .artifacts/prompt-fixture-repair-20260910/gemma3-roles-v1.stderr.log
+            sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+      - case_id: gemma4-roles-v1
+        kind: corrected-fixture-v2
+        exit_code: 0
+        raw_acceptance: ACCEPTED
+        failed_checks: []
+        source_findings: []
+        judgment_error: null
+        evidence:
+          - path: .artifacts/prompt-fixture-repair-20260910/runs/gemma4-roles-v1-2026-09-09T22-11-10-426Z/run-summary.json
+            sha256: 37d2400b29e74a883967f772a350c9302320779b0c31b1c1f23408899c0fc544
+          - path: .artifacts/prompt-fixture-repair-20260910/runs/gemma4-roles-v1-2026-09-09T22-11-10-426Z/run-contract.json
+            sha256: 1f00b1c29280e731e849d41e91f39ec90b7bdd485eb6b4a5e913ffb390a742ad
+          - path: .artifacts/prompt-fixture-repair-20260910/gemma4-roles-v1.stdout.log
+            sha256: 52cae6daf8235af61de83186a648f8dd30f94b24114c5f9ca2dbe3742b86c2e6
+          - path: .artifacts/prompt-fixture-repair-20260910/gemma4-roles-v1.stderr.log
+            sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+      - case_id: unknown27b-v1
+        kind: corrected-fixture-v2
+        exit_code: 0
+        raw_acceptance: ACCEPTED
+        failed_checks: []
+        source_findings: []
+        judgment_error: null
+        evidence:
+          - path: .artifacts/prompt-fixture-repair-20260910/runs/unknown27b-v1-2026-09-09T22-15-50-481Z/run-summary.json
+            sha256: e831360c039d34b65e3c9be4a918992a7c7572462c6356a967b19f97fb21e3e8
+          - path: .artifacts/prompt-fixture-repair-20260910/runs/unknown27b-v1-2026-09-09T22-15-50-481Z/run-contract.json
+            sha256: 6555d391ae9be472ef00f4c569e1e0d7ea8d0d325d185e6b2a31252556a9d4cf
+          - path: .artifacts/prompt-fixture-repair-20260910/unknown27b-v1.stdout.log
+            sha256: bc1c638e065348311d973033b7e0b19e39b0b672ebf8aca2e5a2163239be3558
+          - path: .artifacts/prompt-fixture-repair-20260910/unknown27b-v1.stderr.log
+            sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+      - case_id: mistral24-surface-v1
+        kind: corrected-fixture-v2
+        exit_code: 0
+        raw_acceptance: ACCEPTED
+        failed_checks: []
+        source_findings: []
+        judgment_error: null
+        evidence:
+          - path: .artifacts/prompt-fixture-repair-20260910/runs/mistral24-surface-v1-2026-09-09T22-13-55-955Z/run-summary.json
+            sha256: 907ee5a34c270eca98a4f3b4813915b438ea0e46f180d5aaabb51887cfb04139
+          - path: .artifacts/prompt-fixture-repair-20260910/runs/mistral24-surface-v1-2026-09-09T22-13-55-955Z/run-contract.json
+            sha256: f8744af958bee94d519332a631fb6581e70e5eea86a5f8f6f0d25512debe39d2
+          - path: .artifacts/prompt-fixture-repair-20260910/mistral24-surface-v1.stdout.log
+            sha256: f5767b014d87c8a5f92653bd916f3faf2be9989d49fc08c00c11327b2c8bf035
+          - path: .artifacts/prompt-fixture-repair-20260910/mistral24-surface-v1.stderr.log
+            sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+      - case_id: extraction-context-template-v1
+        kind: corrected-fixture-v2
+        exit_code: 0
+        raw_acceptance: ACCEPTED
+        failed_checks: []
+        source_findings: []
+        judgment_error: null
+        evidence:
+          - path: .artifacts/prompt-fixture-repair-20260910/runs/extraction-context-template-v1-2026-09-09T22-17-42-741Z/run-summary.json
+            sha256: ba1e1bde33b4e87bec5b8d6b1123f9a57dd4193f26a0d68f10c21531e997c03f
+          - path: .artifacts/prompt-fixture-repair-20260910/runs/extraction-context-template-v1-2026-09-09T22-17-42-741Z/run-contract.json
+            sha256: 948765625ebb12ef7a7cae2c1c6b63741a1725a3824dbc6032e23041607d4c5d
+          - path: .artifacts/prompt-fixture-repair-20260910/extraction-context-template-v1.stdout.log
+            sha256: 7b02b1bc14748beac728a35765f46e0246a1cb1b63c646a592192aa3bef43514
+          - path: .artifacts/prompt-fixture-repair-20260910/extraction-context-template-v1.stderr.log
+            sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  - id: prompt-runtime-repair-20260910
+    requested: 12
+    completed: 12
+    counts:
+      REJECTED: 7
+      ACCEPTED: 4
+      MISSING_SUMMARY: 1
+    results_sha256: 19901a1e1b470cc9a640f944ee0fb5d9708fb911e3fea87339aaaa6a3f8f49fa
+    records:
+      - case_id: knowledge-prompt-composition
+        kind: source-repair-audit
+        exit_code: 2
+        raw_acceptance: REJECTED
+        failed_checks: []
+        source_findings:
+          - dimension: operative_rule_preservation
+            rating: 2
+            rationale: The frozen consumers preserve tier selection only as a routing
+              dependency, while material autonomous state, gate, budget, retry,
+              cleanup, and durable-handoff rules are absent from the supplied
+              consumer content.
+          - dimension: exceptions_and_failures
+            rating: 2
+            rationale: Absent, stale, and conflicting sources are handled explicitly, but
+              the frozen consumers do not preserve the reference's material
+              autonomous stop, gate, budget, retry, cleanup, and
+              durable-recovery requirements.
+          - dimension: usable_composition
+            rating: 2
+            rationale: The layering and template rules are coherent and proportional, but
+              tier-dependent composition remains materially under-specified by
+              the supplied frozen consumers.
+        judgment_error: null
+        evidence:
+          - path: .artifacts/prompt-runtime-repair-20260910/runs/knowledge-prompt-composition-md-2026-09-09T22-06-04-636Z/run-summary.json
+            sha256: 7d9e7d865b8286f988b9513f742517723986e9bf69d44df14270893bb3ac33c6
+          - path: .artifacts/prompt-runtime-repair-20260910/runs/knowledge-prompt-composition-md-2026-09-09T22-06-04-636Z/run-contract.json
+            sha256: cb74d3dcf3e43ba00e9a16fb65f58af2b9681770e12da3cd6f1101076368b48b
+          - path: .artifacts/prompt-runtime-repair-20260910/knowledge-prompt-composition.stdout.log
+            sha256: 3b092c112b09c8ef5b7d4719efb95779c1f251f858780eb50eba02a93e1f75c2
+          - path: .artifacts/prompt-runtime-repair-20260910/knowledge-prompt-composition.stderr.log
+            sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+      - case_id: knowledge-clarification-policy
+        kind: source-repair-audit
+        exit_code: 0
+        raw_acceptance: ACCEPTED
+        failed_checks: []
+        source_findings: []
+        judgment_error: null
+        evidence:
+          - path: .artifacts/prompt-runtime-repair-20260910/runs/knowledge-clarification-policy-md-2026-09-09T22-06-04-636Z/run-summary.json
+            sha256: 1831410729997fa2031d2968a21fe9aa94f120394abf8d641d0f17550f28981a
+          - path: .artifacts/prompt-runtime-repair-20260910/runs/knowledge-clarification-policy-md-2026-09-09T22-06-04-636Z/run-contract.json
+            sha256: 34c174a1249c9e4cb736ffa509d8aa68284e7aa1823552f6e7bda196926977ad
+          - path: .artifacts/prompt-runtime-repair-20260910/knowledge-clarification-policy.stdout.log
+            sha256: dd44466a2287549233afae96471b67e5a0660efc53014661c57fdddd691882da
+          - path: .artifacts/prompt-runtime-repair-20260910/knowledge-clarification-policy.stderr.log
+            sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+      - case_id: knowledge-model-registry
+        kind: source-repair-audit
+        exit_code: 2
+        raw_acceptance: REJECTED
+        failed_checks: []
+        source_findings:
+          - dimension: operative_rule_preservation
+            rating: 2
+            rationale: Core routing mappings survive, but detailed provenance and evidence
+              rules are materially unreachable because the index locator
+              conflicts with the mandated SKILL-relative path convention.
+          - dimension: conditional_application
+            rating: 2
+            rationale: Named-model and adapter triggers are well bounded, but the provenance
+              and multi-candidate branch cannot reliably load its required
+              detailed registry through the supplied locator.
+          - dimension: usable_composition
+            rating: 2
+            rationale: Provenance-aware and multi-candidate composition is materially
+              unreliable because its detailed-registry dependency contradicts
+              the mandatory SKILL-relative path convention.
+        judgment_error: null
+        evidence:
+          - path: .artifacts/prompt-runtime-repair-20260910/runs/knowledge-model-registry-yaml-2026-09-09T22-06-04-638Z/run-summary.json
+            sha256: 455e18d0c6c69635d3375d276b790dd65bde6af54d5de018886179c1654ee469
+          - path: .artifacts/prompt-runtime-repair-20260910/runs/knowledge-model-registry-yaml-2026-09-09T22-06-04-638Z/run-contract.json
+            sha256: 49ebaf43bfda9bc5e2ee19c3338dc27b0366227a30022eb6cbc9234156c7f02e
+          - path: .artifacts/prompt-runtime-repair-20260910/knowledge-model-registry.stdout.log
+            sha256: 290348c1eef6c69f17baef4f5fcc71b79e8de3ed34d4cd90f719549711f23fe3
+          - path: .artifacts/prompt-runtime-repair-20260910/knowledge-model-registry.stderr.log
+            sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+      - case_id: knowledge-request-profile
+        kind: source-repair-audit
+        exit_code: 2
+        raw_acceptance: REJECTED
+        failed_checks: []
+        source_findings:
+          - dimension: operative_rule_preservation
+            rating: 2
+            rationale: The active rules preserve most profile semantics but omit explicit
+              requirements to split compound instructions and merge equivalent
+              repetition, leaving a material extraction defect.
+          - dimension: conditional_application
+            rating: 2
+            rationale: The loading scheme is generally proportional, but the required
+              evidence-precedence chain is confined to intake guidance that
+              complete Quick requests do not load.
+        judgment_error: null
+        evidence:
+          - path: .artifacts/prompt-runtime-repair-20260910/runs/knowledge-request-profile-md-2026-09-09T22-12-01-341Z/run-summary.json
+            sha256: 0e2e424c410b0958fe9ea9c427ca8a55ced0dc5fd7c71ff3ea9a33a32fa05cfd
+          - path: .artifacts/prompt-runtime-repair-20260910/runs/knowledge-request-profile-md-2026-09-09T22-12-01-341Z/run-contract.json
+            sha256: 9f8460229f53b56a8bf48ca047d5a45399518b6b4f1445d75ceaffe9f1d8027e
+          - path: .artifacts/prompt-runtime-repair-20260910/knowledge-request-profile.stdout.log
+            sha256: f809eed4815a6f6378a15e96bab53b3d0cee95cb282db311cc4d9295e883a583
+          - path: .artifacts/prompt-runtime-repair-20260910/knowledge-request-profile.stderr.log
+            sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+      - case_id: knowledge-routing-evaluation
+        kind: source-repair-audit
+        exit_code: 2
+        raw_acceptance: REJECTED
+        failed_checks: []
+        source_findings:
+          - dimension: operative_rule_preservation
+            rating: 2
+            rationale: Most routing-record, label, and repair rules survive, but the
+              reusable suite materially omits explicit-model, high-risk, and
+              cost/latency-sensitive cases required by the reference.
+        judgment_error: null
+        evidence:
+          - path: .artifacts/prompt-runtime-repair-20260910/runs/knowledge-routing-evaluation-md-2026-09-09T22-17-38-425Z/run-summary.json
+            sha256: e04e50729d3c6195620f5fe93072b522bd47ba6f0c00108f995437bc033c1664
+          - path: .artifacts/prompt-runtime-repair-20260910/runs/knowledge-routing-evaluation-md-2026-09-09T22-17-38-425Z/run-contract.json
+            sha256: 57a013cd4a6dd1f5f403866126217ee3660ad9f77367ffa520446e0db31bc77c
+          - path: .artifacts/prompt-runtime-repair-20260910/knowledge-routing-evaluation.stdout.log
+            sha256: 1fe402fa968fb44b7a5abcb27db191edd81981f8554fd2748b2b7c3e804be291
+          - path: .artifacts/prompt-runtime-repair-20260910/knowledge-routing-evaluation.stderr.log
+            sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+      - case_id: knowledge-routing-cases
+        kind: source-repair-audit
+        exit_code: 2
+        raw_acceptance: REJECTED
+        failed_checks: []
+        source_findings:
+          - dimension: operative_rule_preservation
+            rating: 2
+            rationale: Most routing cases are implemented, but the explicit Luna
+              complex-autonomy case lacks the required task-decomposition
+              instruction, leaving a material operative omission.
+        judgment_error: null
+        evidence:
+          - path: .artifacts/prompt-runtime-repair-20260910/runs/knowledge-routing-cases-yaml-2026-09-09T22-12-53-405Z/run-summary.json
+            sha256: 2db72ba7ca8c0010e96c010307fee5deed3695f9e2f524065eca494ca1317092
+          - path: .artifacts/prompt-runtime-repair-20260910/runs/knowledge-routing-cases-yaml-2026-09-09T22-12-53-405Z/run-contract.json
+            sha256: cd9580913a70798277cbad501be65f3d4f76a465d831aef2d64acac02c6a0072
+          - path: .artifacts/prompt-runtime-repair-20260910/knowledge-routing-cases.stdout.log
+            sha256: 0bf5458b9950eb27a5ef967303739171ed3858d9d3007bcfeb1e0981ed13fadc
+          - path: .artifacts/prompt-runtime-repair-20260910/knowledge-routing-cases.stderr.log
+            sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+      - case_id: knowledge-specialization-overlays
+        kind: source-repair-audit
+        exit_code: 2
+        raw_acceptance: REJECTED
+        failed_checks: []
+        source_findings:
+          - dimension: operative_rule_preservation
+            rating: 2
+            rationale: Coding coverage has a material gap because it does not explicitly
+              require current-source authority, inspection before editing, or
+              preservation of unrelated work.
+        judgment_error: null
+        evidence:
+          - path: .artifacts/prompt-runtime-repair-20260910/runs/knowledge-specialization-overlays-md-2026-09-09T22-19-14-092Z/run-summary.json
+            sha256: cd4f08161247e90717a55557c88270de55b0823a269e839071d809de5bff6cb4
+          - path: .artifacts/prompt-runtime-repair-20260910/runs/knowledge-specialization-overlays-md-2026-09-09T22-19-14-092Z/run-contract.json
+            sha256: 1240c27c4458bcd9dc7dd68424ca66e25e58bb58bf4c5f9b23544743de73c249
+          - path: .artifacts/prompt-runtime-repair-20260910/knowledge-specialization-overlays.stdout.log
+            sha256: 59a521a64274f2e7b0059a1a0af1fd3f694a7e76ea7dac0a275d824ca200bee3
+          - path: .artifacts/prompt-runtime-repair-20260910/knowledge-specialization-overlays.stderr.log
+            sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+      - case_id: knowledge-task-profiling
+        kind: source-repair-audit
+        exit_code: 0
+        raw_acceptance: ACCEPTED
+        failed_checks: []
+        source_findings: []
+        judgment_error: null
+        evidence:
+          - path: .artifacts/prompt-runtime-repair-20260910/runs/knowledge-task-profiling-md-2026-09-09T22-21-30-271Z/run-summary.json
+            sha256: a44d8ec706d03476f68cc72498f9c2cc6e4be348f13007f53f15f59dc716a32d
+          - path: .artifacts/prompt-runtime-repair-20260910/runs/knowledge-task-profiling-md-2026-09-09T22-21-30-271Z/run-contract.json
+            sha256: 462fa7f87b19acc176cb0bf18200bbb91ac41da7fad269955105677eaf332901
+          - path: .artifacts/prompt-runtime-repair-20260910/knowledge-task-profiling.stdout.log
+            sha256: fd53efcff32d6f7ebdc0d8087295281d7f8235ce8eca4e9b914509be9f7c8170
+          - path: .artifacts/prompt-runtime-repair-20260910/knowledge-task-profiling.stderr.log
+            sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+      - case_id: knowledge-tier-selection
+        kind: source-repair-audit
+        exit_code: 2
+        raw_acceptance: REJECTED
+        failed_checks: []
+        source_findings:
+          - dimension: operative_rule_preservation
+            rating: 2
+            rationale: Most routing logic survives, but the no-evidence branch omits the
+              operative requirement to choose a conservative candidate rather
+              than merely label the choice `INFERRED`.
+          - dimension: exceptions_and_failures
+            rating: 2
+            rationale: The active packs include representative-case escalation behavior, but
+              the balanced-tier rule does not preserve the reference’s mandatory
+              defect-elimination gate.
+        judgment_error: null
+        evidence:
+          - path: .artifacts/prompt-runtime-repair-20260910/runs/knowledge-tier-selection-md-2026-09-09T22-21-41-510Z/run-summary.json
+            sha256: d65f893be107927f251dae995b18898dd5d9b0935e54bf90c8b458a89023764e
+          - path: .artifacts/prompt-runtime-repair-20260910/runs/knowledge-tier-selection-md-2026-09-09T22-21-41-510Z/run-contract.json
+            sha256: 7ce253a4b453d3d3eb478429c52eb30ec0881b399391df3aabcac19940fe9245
+          - path: .artifacts/prompt-runtime-repair-20260910/knowledge-tier-selection.stdout.log
+            sha256: 5fa6fbec3859fc4eb398302a3420ab866fb870e0b328c2d3fc4985b4ddf6855c
+          - path: .artifacts/prompt-runtime-repair-20260910/knowledge-tier-selection.stderr.log
+            sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+      - case_id: complete-quick-v1
+        kind: focused-regression
+        exit_code: 0
+        raw_acceptance: ACCEPTED
+        failed_checks: []
+        source_findings: []
+        judgment_error: null
+        evidence:
+          - path: .artifacts/prompt-runtime-repair-20260910/runs/complete-quick-v1-2026-09-09T22-26-03-517Z/run-summary.json
+            sha256: 074481f618f1582f90b8e24afd4b00082e27a2b16473ca56e0dcf1e9ad81d680
+          - path: .artifacts/prompt-runtime-repair-20260910/runs/complete-quick-v1-2026-09-09T22-26-03-517Z/run-contract.json
+            sha256: cdddbcb0930d166fcf98df16613b8c7cd7c5c9ec8c88a4e6a32b9189d59b2a12
+          - path: .artifacts/prompt-runtime-repair-20260910/complete-quick-v1.stdout.log
+            sha256: dcfd8437e28e27361507ed575ed98f47184246718f8288be163431080b1d4990
+          - path: .artifacts/prompt-runtime-repair-20260910/complete-quick-v1.stderr.log
+            sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+      - case_id: high-stakes-bounded-classification-v1
+        kind: focused-regression
+        exit_code: 0
+        raw_acceptance: ACCEPTED
+        failed_checks: []
+        source_findings: []
+        judgment_error: null
+        evidence:
+          - path: .artifacts/prompt-runtime-repair-20260910/runs/high-stakes-bounded-classification-v1-2026-09-09T22-27-48-878Z/run-summary.json
+            sha256: 69e416f91b7d1921f33f66efd6afa4c72713d392e793889ae73e2ba4a9ef127d
+          - path: .artifacts/prompt-runtime-repair-20260910/runs/high-stakes-bounded-classification-v1-2026-09-09T22-27-48-878Z/run-contract.json
+            sha256: 64a979d94b0cc6ce1ef56b4b7e135ecd93fdd5ac9bd919ea5c9e1f2fe7747e1e
+          - path: .artifacts/prompt-runtime-repair-20260910/high-stakes-bounded-classification-v1.stdout.log
+            sha256: 079a4d6842b0d55086afb7c77f5d7542aefcac18a24f8e448186535d3efa5683
+          - path: .artifacts/prompt-runtime-repair-20260910/high-stakes-bounded-classification-v1.stderr.log
+            sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+      - case_id: answer-already-in-source-v1
+        kind: focused-regression
+        exit_code: 1073807364
+        raw_acceptance: MISSING_SUMMARY
+        failed_checks: []
+        source_findings: []
+        judgment_error: null
+        evidence:
+          - path: .artifacts/prompt-runtime-repair-20260910/answer-already-in-source-v1.stdout.log
+            sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+          - path: .artifacts/prompt-runtime-repair-20260910/answer-already-in-source-v1.stderr.log
+            sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  - id: prompt-oracle-repair-20260910
+    requested: 3
+    completed: 3
+    counts:
+      ACCEPTED: 2
+      REJECTED: 1
+    results_sha256: 5c7fc4b60e46109b2d5c517e90b67ef86b9f833ef5562888ba5d892589e6b860
+    records:
+      - case_id: invoice-label-ambiguity-v1
+        kind: corrected-interview
+        exit_code: 0
+        raw_acceptance: ACCEPTED
+        failed_checks: []
+        source_findings: []
+        judgment_error: null
+        evidence:
+          - path: .artifacts/prompt-oracle-repair-20260910/runs/invoice-label-ambiguity-v1-2026-09-09T22-15-06-151Z/run-summary.json
+            sha256: c1d3e64fb77cff2f39567fbd2896103be9e13fe9b96992cccdf7bc9401e22c5a
+          - path: .artifacts/prompt-oracle-repair-20260910/runs/invoice-label-ambiguity-v1-2026-09-09T22-15-06-151Z/run-contract.json
+            sha256: 982c9451a60ac2232a355ea49444f72184d555219d83c8aa83b2119d0e800a2f
+          - path: .artifacts/prompt-oracle-repair-20260910/invoice-label-ambiguity-v1.stdout.log
+            sha256: 160393aa46399487f21ba78dc5df96a2a61adbbfb3597cc36a21361073575617
+          - path: .artifacts/prompt-oracle-repair-20260910/invoice-label-ambiguity-v1.stderr.log
+            sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+      - case_id: support-mixed-case-v1
+        kind: corrected-interview
+        exit_code: 0
+        raw_acceptance: ACCEPTED
+        failed_checks: []
+        source_findings: []
+        judgment_error: null
+        evidence:
+          - path: .artifacts/prompt-oracle-repair-20260910/runs/support-mixed-case-v1-2026-09-09T22-15-06-152Z/run-summary.json
+            sha256: 9db67e7d478c5a71ed9cca78241661c70021f099526cf58a6b993b451092462b
+          - path: .artifacts/prompt-oracle-repair-20260910/runs/support-mixed-case-v1-2026-09-09T22-15-06-152Z/run-contract.json
+            sha256: 9eee5292a82ef4ad9bf66ec3ecf1e726d5ce7b6f2557e65ed125a19d61f56a11
+          - path: .artifacts/prompt-oracle-repair-20260910/support-mixed-case-v1.stdout.log
+            sha256: 6b939adb1f1afc3044b2b2ce59a3295cab1632da947a37f7618ef0b3f08b33fd
+          - path: .artifacts/prompt-oracle-repair-20260910/support-mixed-case-v1.stderr.log
+            sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+      - case_id: knowledge-prompt-composition
+        kind: corrected-evidence-scope
+        exit_code: 2
+        raw_acceptance: REJECTED
+        failed_checks: []
+        source_findings:
+          - dimension: operative_rule_preservation
+            rating: 2
+            rationale: The composition contract is mostly preserved, but the
+              efficient-structured consumer materially omits bounded
+              decomposition with visible intermediate artifacts for complex
+              work.
+        judgment_error: null
+        evidence:
+          - path: .artifacts/prompt-oracle-repair-20260910/runs/knowledge-prompt-composition-md-2026-09-09T22-23-47-954Z/run-summary.json
+            sha256: 259fbed8c1dab371557339e37258dc97a19e1eb7899e78c47c9f107951dfbe94
+          - path: .artifacts/prompt-oracle-repair-20260910/runs/knowledge-prompt-composition-md-2026-09-09T22-23-47-954Z/run-contract.json
+            sha256: 15aa497b344b99062366b28e00bb03ccfab93831fcbc1252519cef816ab1af58
+          - path: .artifacts/prompt-oracle-repair-20260910/knowledge-prompt-composition.stdout.log
+            sha256: df2663184999008c23a8b7000278a70fc363b8ddc0ea1631eba17df6524c68d8
+          - path: .artifacts/prompt-oracle-repair-20260910/knowledge-prompt-composition.stderr.log
+            sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  - id: prompt-final-source-audit-20260910
+    requested: 10
+    completed: 10
+    counts:
+      MISSING_SUMMARY: 10
+    results_sha256: 280fa0b6e2458bf00ccbfd51ab7788bb92bc30cd8f4bcb4dc8895096b92fbcc8
+    records:
+      - case_id: knowledge-context-acquisition
+        kind: final-source-audit
+        exit_code: 1
+        raw_acceptance: MISSING_SUMMARY
+        failed_checks: []
+        source_findings: []
+        judgment_error: null
+        evidence:
+          - path: .artifacts/prompt-final-source-audit-20260910/knowledge-context-acquisition.stdout.log
+            sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+          - path: .artifacts/prompt-final-source-audit-20260910/knowledge-context-acquisition.stderr.log
+            sha256: e363d29030271c4947b32c7a9cee336f173827d5859f76fc1dccc1b57293aed1
+      - case_id: knowledge-model-registry
+        kind: final-source-audit
+        exit_code: 1
+        raw_acceptance: MISSING_SUMMARY
+        failed_checks: []
+        source_findings: []
+        judgment_error: null
+        evidence:
+          - path: .artifacts/prompt-final-source-audit-20260910/knowledge-model-registry.stdout.log
+            sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+          - path: .artifacts/prompt-final-source-audit-20260910/knowledge-model-registry.stderr.log
+            sha256: e363d29030271c4947b32c7a9cee336f173827d5859f76fc1dccc1b57293aed1
+      - case_id: knowledge-specialization-overlays
+        kind: final-source-audit
+        exit_code: 3221226091
+        raw_acceptance: MISSING_SUMMARY
+        failed_checks: []
+        source_findings: []
+        judgment_error: null
+        evidence:
+          - path: .artifacts/prompt-final-source-audit-20260910/knowledge-specialization-overlays.stdout.log
+            sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+          - path: .artifacts/prompt-final-source-audit-20260910/knowledge-specialization-overlays.stderr.log
+            sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+      - case_id: knowledge-routing-evaluation
+        kind: final-source-audit
+        exit_code: 3221226091
+        raw_acceptance: MISSING_SUMMARY
+        failed_checks: []
+        source_findings: []
+        judgment_error: null
+        evidence:
+          - path: .artifacts/prompt-final-source-audit-20260910/knowledge-routing-evaluation.stdout.log
+            sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+          - path: .artifacts/prompt-final-source-audit-20260910/knowledge-routing-evaluation.stderr.log
+            sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+      - case_id: knowledge-task-profiling
+        kind: final-source-audit
+        exit_code: 3221226091
+        raw_acceptance: MISSING_SUMMARY
+        failed_checks: []
+        source_findings: []
+        judgment_error: null
+        evidence:
+          - path: .artifacts/prompt-final-source-audit-20260910/knowledge-task-profiling.stdout.log
+            sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+          - path: .artifacts/prompt-final-source-audit-20260910/knowledge-task-profiling.stderr.log
+            sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+      - case_id: knowledge-tier-selection
+        kind: final-source-audit
+        exit_code: 3221226091
+        raw_acceptance: MISSING_SUMMARY
+        failed_checks: []
+        source_findings: []
+        judgment_error: null
+        evidence:
+          - path: .artifacts/prompt-final-source-audit-20260910/knowledge-tier-selection.stdout.log
+            sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+          - path: .artifacts/prompt-final-source-audit-20260910/knowledge-tier-selection.stderr.log
+            sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+      - case_id: knowledge-request-profile
+        kind: final-source-audit
+        exit_code: 1073807364
+        raw_acceptance: MISSING_SUMMARY
+        failed_checks: []
+        source_findings: []
+        judgment_error: null
+        evidence:
+          - path: .artifacts/prompt-final-source-audit-20260910/knowledge-request-profile.stdout.log
+            sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+          - path: .artifacts/prompt-final-source-audit-20260910/knowledge-request-profile.stderr.log
+            sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+      - case_id: knowledge-routing-cases
+        kind: final-source-audit
+        exit_code: 1073807364
+        raw_acceptance: MISSING_SUMMARY
+        failed_checks: []
+        source_findings: []
+        judgment_error: null
+        evidence:
+          - path: .artifacts/prompt-final-source-audit-20260910/knowledge-routing-cases.stdout.log
+            sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+          - path: .artifacts/prompt-final-source-audit-20260910/knowledge-routing-cases.stderr.log
+            sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+      - case_id: knowledge-clarification-policy
+        kind: final-source-audit
+        exit_code: 1073807364
+        raw_acceptance: MISSING_SUMMARY
+        failed_checks: []
+        source_findings: []
+        judgment_error: null
+        evidence:
+          - path: .artifacts/prompt-final-source-audit-20260910/knowledge-clarification-policy.stdout.log
+            sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+          - path: .artifacts/prompt-final-source-audit-20260910/knowledge-clarification-policy.stderr.log
+            sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+      - case_id: knowledge-prompt-composition
+        kind: final-source-audit
+        exit_code: 1073807364
+        raw_acceptance: MISSING_SUMMARY
+        failed_checks: []
+        source_findings: []
+        judgment_error: null
+        evidence:
+          - path: .artifacts/prompt-final-source-audit-20260910/knowledge-prompt-composition.stdout.log
+            sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+          - path: .artifacts/prompt-final-source-audit-20260910/knowledge-prompt-composition.stderr.log
+            sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  - id: prompt-final-source-audit-retry-20260910
+    requested: 10
+    completed: 10
+    counts:
+      ACCEPTED: 3
+      INVALID: 4
+      REJECTED: 3
+    results_sha256: 77fc9757fe8b71f50d75c5cfa53d8d965262c2406ea402ed01c024e299e3f847
+    records:
+      - case_id: knowledge-request-profile
+        kind: final-source-audit
+        exit_code: 0
+        raw_acceptance: ACCEPTED
+        failed_checks: []
+        source_findings: []
+        judgment_error: null
+        evidence:
+          - path: .artifacts/prompt-final-source-audit-retry-20260910/runs/knowledge-request-profile-md-2026-09-10T08-21-28-334Z/run-summary.json
+            sha256: 576a60a795f722b1aa984e27073efd769e4e2f4390551b821c9c6c1682f041b5
+          - path: .artifacts/prompt-final-source-audit-retry-20260910/runs/knowledge-request-profile-md-2026-09-10T08-21-28-334Z/run-contract.json
+            sha256: a15c4d232778e9d3f992149b5219ca87908d465d4173b534bc2aabcfd5d857bf
+          - path: .artifacts/prompt-final-source-audit-retry-20260910/knowledge-request-profile.stdout.log
+            sha256: bdfb440be114062c815c70d4c4438e732f966d63e63c36314e7a2c39cbfe295c
+          - path: .artifacts/prompt-final-source-audit-retry-20260910/knowledge-request-profile.stderr.log
+            sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+      - case_id: knowledge-model-registry
+        kind: final-source-audit
+        exit_code: 0
+        raw_acceptance: ACCEPTED
+        failed_checks: []
+        source_findings: []
+        judgment_error: null
+        evidence:
+          - path: .artifacts/prompt-final-source-audit-retry-20260910/runs/knowledge-model-registry-yaml-2026-09-10T08-21-28-334Z/run-summary.json
+            sha256: 01e0bcea11bf60083b3a026b131bf1639eb5155f5291e58263b37b30e48589b2
+          - path: .artifacts/prompt-final-source-audit-retry-20260910/runs/knowledge-model-registry-yaml-2026-09-10T08-21-28-334Z/run-contract.json
+            sha256: 71311d23ac5db4e75bef862281cc1cb768ea5fc4e98ba7bf8e45b28e981f81d2
+          - path: .artifacts/prompt-final-source-audit-retry-20260910/knowledge-model-registry.stdout.log
+            sha256: 1be21f604cf6f5692229d27eda220d06ec90eb6f7d765f5f2e4457e67daede3c
+          - path: .artifacts/prompt-final-source-audit-retry-20260910/knowledge-model-registry.stderr.log
+            sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+      - case_id: knowledge-clarification-policy
+        kind: final-source-audit
+        exit_code: 3
+        raw_acceptance: INVALID
+        failed_checks: []
+        source_findings:
+          - dimension: operative_rule_preservation
+            rating: 2
+            rationale: The core ask priority survives, but the active intake policy
+              materially omits the explicit ban on asking users to select a
+              model tier and the instruction to ask for operational constraints
+              instead.
+        judgment_error: judge response violates the bound evidence-reference contract
+        evidence:
+          - path: .artifacts/prompt-final-source-audit-retry-20260910/runs/knowledge-clarification-policy-md-2026-09-10T08-21-28-334Z/run-summary.json
+            sha256: 36ff2cb7c44860b87eee18c0b59daf1149dc058c5453a5c34c632153f9c2e16d
+          - path: .artifacts/prompt-final-source-audit-retry-20260910/runs/knowledge-clarification-policy-md-2026-09-10T08-21-28-334Z/run-contract.json
+            sha256: 7aafe5d55fd1ee26cdf41c86ba61226c1448c2b09a8729fc070ed7f2e5e5069d
+          - path: .artifacts/prompt-final-source-audit-retry-20260910/knowledge-clarification-policy.stdout.log
+            sha256: 340d4dd657fc0d95ab069128d26d8e5cff6796cd12187460af0ba499276a62ff
+          - path: .artifacts/prompt-final-source-audit-retry-20260910/knowledge-clarification-policy.stderr.log
+            sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+      - case_id: knowledge-prompt-composition
+        kind: final-source-audit
+        exit_code: 2
+        raw_acceptance: REJECTED
+        failed_checks: []
+        source_findings:
+          - dimension: operative_rule_preservation
+            rating: 2
+            rationale: Most operative rules survive, but the efficient tier's required
+              visible intermediate artifacts are reduced to decomposition only,
+              leaving a material tier-specific omission.
+        judgment_error: null
+        evidence:
+          - path: .artifacts/prompt-final-source-audit-retry-20260910/runs/knowledge-prompt-composition-md-2026-09-10T08-21-28-334Z/run-summary.json
+            sha256: 5c6f199e1ed024ff46753597c1243cb844cde0126ce5ba2d9953126af73028b5
+          - path: .artifacts/prompt-final-source-audit-retry-20260910/runs/knowledge-prompt-composition-md-2026-09-10T08-21-28-334Z/run-contract.json
+            sha256: 2f1f654f4381a937819eddec9a2f4842da9ca3738b2f65c4709abd2d22e2e14b
+          - path: .artifacts/prompt-final-source-audit-retry-20260910/knowledge-prompt-composition.stdout.log
+            sha256: 0538b045bffa4878f02cb52d049c661f29b899a1f5cd4b154ddd4424992eb739
+          - path: .artifacts/prompt-final-source-audit-retry-20260910/knowledge-prompt-composition.stderr.log
+            sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+      - case_id: knowledge-routing-cases
+        kind: final-source-audit
+        exit_code: 0
+        raw_acceptance: ACCEPTED
+        failed_checks: []
+        source_findings: []
+        judgment_error: null
+        evidence:
+          - path: .artifacts/prompt-final-source-audit-retry-20260910/runs/knowledge-routing-cases-yaml-2026-09-10T08-21-28-334Z/run-summary.json
+            sha256: 225f7a8b6cd6d41cf437bdc8a884924781a1ce4618e165b16419e8f421a47029
+          - path: .artifacts/prompt-final-source-audit-retry-20260910/runs/knowledge-routing-cases-yaml-2026-09-10T08-21-28-334Z/run-contract.json
+            sha256: 672fc8878ec80a969aa926ca1f517e9e71a89b269a39dd63fc8b7d360ce0d548
+          - path: .artifacts/prompt-final-source-audit-retry-20260910/knowledge-routing-cases.stdout.log
+            sha256: f2e4b51e8ac04f244636f305eff1ea509e35fe6794bb622f9c422d3211ece479
+          - path: .artifacts/prompt-final-source-audit-retry-20260910/knowledge-routing-cases.stderr.log
+            sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+      - case_id: knowledge-context-acquisition
+        kind: final-source-audit
+        exit_code: 3
+        raw_acceptance: INVALID
+        failed_checks: []
+        source_findings:
+          - dimension: operative_rule_preservation
+            rating: 2
+            rationale: Most ordering, trust, targeting, auditability, stopping, and gap
+              rules survive, but the active mapping never requires an
+              acquisition method for each material requirement.
+          - dimension: conditional_application
+            rating: 2
+            rationale: The grounded-pack selector is materially narrower than the pack's own
+              trigger and can skip grounded rules for a single supplied-source
+              synthesis without citations.
+          - dimension: usable_composition
+            rating: 2
+            rationale: Composition is otherwise restrained and safe, but omitting a
+              per-requirement acquisition action can leave a generated context
+              plan non-executable.
+        judgment_error: judge response violates the bound evidence-reference contract
+        evidence:
+          - path: .artifacts/prompt-final-source-audit-retry-20260910/runs/knowledge-context-acquisition-md-2026-09-10T08-21-28-334Z/run-summary.json
+            sha256: 0b16bab14b0b63b3ab65f32bbf9384c5e065f2b73a0d927c0ca0c78d541a7ebc
+          - path: .artifacts/prompt-final-source-audit-retry-20260910/runs/knowledge-context-acquisition-md-2026-09-10T08-21-28-334Z/run-contract.json
+            sha256: 6cf5d45cd87c1e28721cce5507c492fdbb9457157fe4d0c2e8f75af2155f2dc7
+          - path: .artifacts/prompt-final-source-audit-retry-20260910/knowledge-context-acquisition.stdout.log
+            sha256: c2cf55beb621cdf318b33a1bc3e46877608e70b51f18e352f8e15511deb4e860
+          - path: .artifacts/prompt-final-source-audit-retry-20260910/knowledge-context-acquisition.stderr.log
+            sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+      - case_id: knowledge-task-profiling
+        kind: final-source-audit
+        exit_code: 3
+        raw_acceptance: INVALID
+        failed_checks: []
+        source_findings: []
+        judgment_error: judge response violates the bound evidence-reference contract
+        evidence:
+          - path: .artifacts/prompt-final-source-audit-retry-20260910/runs/knowledge-task-profiling-md-2026-09-10T08-26-36-140Z/run-summary.json
+            sha256: f2f7b0309ea2b8194860555d68ad875b6f489b1cccc4710237007e5c045288f3
+          - path: .artifacts/prompt-final-source-audit-retry-20260910/runs/knowledge-task-profiling-md-2026-09-10T08-26-36-140Z/run-contract.json
+            sha256: c7861610775ea678ee7e5d8461488883639cfe420da22466176770d28e8a6f98
+          - path: .artifacts/prompt-final-source-audit-retry-20260910/knowledge-task-profiling.stdout.log
+            sha256: 6fde039f2725d69f406353f683cb7cd164673dd1f329f8f72d7032c56329f997
+          - path: .artifacts/prompt-final-source-audit-retry-20260910/knowledge-task-profiling.stderr.log
+            sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+      - case_id: knowledge-tier-selection
+        kind: final-source-audit
+        exit_code: 2
+        raw_acceptance: REJECTED
+        failed_checks: []
+        source_findings:
+          - dimension: operative_rule_preservation
+            rating: 2
+            rationale: Most routing rules survive, but the active rules omit the required
+              conservative candidate choice when representative evidence is
+              absent, leaving a material selection gap.
+          - dimension: exceptions_and_failures
+            rating: 2
+            rationale: Failure handling is broad, but balanced-tier escalation does not
+              explicitly require ruling out instruction, schema, and tool
+              defects before escalation, so a material common prerequisite is
+              lost.
+        judgment_error: null
+        evidence:
+          - path: .artifacts/prompt-final-source-audit-retry-20260910/runs/knowledge-tier-selection-md-2026-09-10T08-27-49-179Z/run-summary.json
+            sha256: 95cf499b283feee808ad3eb8b95cefed422565ca5d28bf2c6c88e4cc6c50bc7d
+          - path: .artifacts/prompt-final-source-audit-retry-20260910/runs/knowledge-tier-selection-md-2026-09-10T08-27-49-179Z/run-contract.json
+            sha256: 22bfcda145ca2c5cc0601f1ccf68e2c67823e7a8585b99f863c6e34802aa712d
+          - path: .artifacts/prompt-final-source-audit-retry-20260910/knowledge-tier-selection.stdout.log
+            sha256: 5457a33b7adc74849a25182e83fc065c8b28c2afe394bd8c10c755eb8bc6f2bc
+          - path: .artifacts/prompt-final-source-audit-retry-20260910/knowledge-tier-selection.stderr.log
+            sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+      - case_id: knowledge-routing-evaluation
+        kind: final-source-audit
+        exit_code: 3
+        raw_acceptance: INVALID
+        failed_checks: []
+        source_findings: []
+        judgment_error: judge response violates the bound evidence-reference contract
+        evidence:
+          - path: .artifacts/prompt-final-source-audit-retry-20260910/runs/knowledge-routing-evaluation-md-2026-09-10T08-26-13-017Z/run-summary.json
+            sha256: 522802b19854cc361ce48879505e784a00c3bf4da7d5c62022979ab0f952a65f
+          - path: .artifacts/prompt-final-source-audit-retry-20260910/runs/knowledge-routing-evaluation-md-2026-09-10T08-26-13-017Z/run-contract.json
+            sha256: c69e95d08ed1c3d21257e8c4bb5e48a9421bea23bfc5985616670c71879088d2
+          - path: .artifacts/prompt-final-source-audit-retry-20260910/knowledge-routing-evaluation.stdout.log
+            sha256: 187f6a9f628d3073e930f9ebac8d6506332f6d3e590c5ff9c4c7f565e8baad62
+          - path: .artifacts/prompt-final-source-audit-retry-20260910/knowledge-routing-evaluation.stderr.log
+            sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+      - case_id: knowledge-specialization-overlays
+        kind: final-source-audit
+        exit_code: 2
+        raw_acceptance: REJECTED
+        failed_checks: []
+        source_findings:
+          - dimension: operative_rule_preservation
+            rating: 2
+            rationale: Most rules survive, but coding lacks explicit inspect-before-edit and
+              preserve-unrelated-work duties, while generic orchestration leaves
+              retry limits and idempotency indirect or high-risk-only.
+          - dimension: exceptions_and_failures
+            rating: 2
+            rationale: Generic orchestration covers errors and recovery but does not
+              explicitly preserve retry limits, idempotency, or a distinct
+              unavailable-tool branch, leaving a material failure-control gap.
+        judgment_error: null
+        evidence:
+          - path: .artifacts/prompt-final-source-audit-retry-20260910/runs/knowledge-specialization-overlays-md-2026-09-10T08-26-33-817Z/run-summary.json
+            sha256: e01ad312d08cbde9f46f50bd4007fd2a89df47e830948e700400d365cc62dfee
+          - path: .artifacts/prompt-final-source-audit-retry-20260910/runs/knowledge-specialization-overlays-md-2026-09-10T08-26-33-817Z/run-contract.json
+            sha256: fd1fe32794fde714cc1e59b861945cc55b09f1db39fc31105d84dbc4138a44ca
+          - path: .artifacts/prompt-final-source-audit-retry-20260910/knowledge-specialization-overlays.stdout.log
+            sha256: 1a5a2870468e36a0a786a82e8252c7b049d68058845e6106835f65d85e86c4e6
+          - path: .artifacts/prompt-final-source-audit-retry-20260910/knowledge-specialization-overlays.stderr.log
+            sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+limitations:
+  - Original and corrected cases/subjects have different identities; do not pool
+    acceptance into one quality rate.
+  - Model-specific authoring fixtures do not execute the named
+    Qwen/Gemma/Mistral checkpoints.
+  - Staged subject-file reads do not prove normal app-side skill discovery.
+  - Human calibration is NOT_RUN.
+  - A completed model invocation is not a quality pass.
+package_parity:
+  - plugin: cascade-prompt
+    version: 0.7.1+codex.20260909222626
+    file_count: 35
+    status: PASS
+  - plugin: cascade-evals
+    version: 0.3.1+codex.20260910083517
+    file_count: 109
+    status: PASS
+supplemental_results:
+  corrected_name_fixtures: ACCEPTED 9/9
+  corrected_invoice_and_support: ACCEPTED 2/2
+  synthetic_judge_challenges: PASS 4/4; not human calibration
+  astra_targets: ACCEPTED 2/2; one original target rejudged through verified replay
+  invoice_variance: PARTIAL 1/3; two interrupted repetitions
+  final_source_audit: ACCEPTED 3, REJECTED 3, INVALID 4; invalid ratings are diagnostic only

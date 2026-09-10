@@ -107,5 +107,81 @@ cases:
       multimodal: HIGH
       reasoning: MEDIUM
       risk: LOW
-purpose: Structural routing fixtures. They test policy decisions, not provider model quality.
+  - id: astra-adapter
+    request_summary: Use Astra for an authorized scoped code repair; frontier tier is already known.
+    explicit_model: gpt-6-astra
+    expected_actions:
+      - load-astra-adapter-even-with-known-tier
+      - preserve-host-authority
+      - bound-clarification-and-validation
+      - separate-host-settings-from-prompt
+  - id: qwen-version-boundary
+    request_summary: Adapt an existing source-grounded agent prompt to Qwen3.8-27B.
+    explicit_model: Qwen/Qwen3.8-27B
+    expected_actions:
+      - load-qwen-adapter
+      - preserve-explicit-model
+      - bind-3.8-thinking-preservation-default
+      - validate-actual-endpoint-controls
+      - do-not-publish-private-thinking
+  - id: qwen-36-history
+    request_summary: Keep Qwen3.6-27B for a multi-turn tool task.
+    explicit_model: Qwen/Qwen3.6-27B
+    expected_actions:
+      - preserve-explicit-model
+      - treat-historical-thinking-preservation-as-opt-in
+      - do-not-inherit-3.8-reasoning-levels
+  - id: qwen-35-history
+    request_summary: Keep Qwen3.5-27B for an existing multi-turn extractor.
+    explicit_model: Qwen/Qwen3.5-27B
+    expected_actions:
+      - preserve-explicit-model
+      - use-final-answer-only-past-history
+      - do-not-inherit-newer-sampling-defaults
+  - id: unknown-27b-deployment
+    request_summary: Prepare a JSON extraction template for an unspecified 27B quantized local model.
+    expected_actions:
+      - do-not-invent-checkpoint-or-native-roles
+      - expose-material-runtime-placeholders
+      - require-schema-and-evidence-validation
+      - do-not-rank-by-parameter-count
+  - id: gemma-role-boundary
+    request_summary: Render a context template on a host that folds system instructions into the first user turn.
+    explicit_model: google/gemma-3-27b-it
+    expected_actions:
+      - use-exact-distributed-chat-template
+      - preserve-trusted-instruction-and-source-sections
+      - do-not-invent-native-system-token
+      - do-not-assume-gemma4-tool-support
+  - id: context-template-boundary
+    request_summary: Build a reusable answer template whose sources contain a closing delimiter and a request to run a command.
+    expected_actions:
+      - select-grounded-answer-template
+      - require-host-escaping-or-separate-source-messages
+      - treat-source-command-as-data
+      - preserve-scope-and-citations
+      - do-not-adopt-stateful-architecture
+  - id: context-budget-boundary
+    request_summary: Compose a prompt for a source packet exceeding the actual serving window.
+    expected_actions:
+      - reserve-output-and-reasoning-budget
+      - retrieve-or-chunk-by-requirement
+      - preserve-cross-source-joins
+      - do-not-silently-truncate-hard-rules
+      - report-unread-or-missing-evidence
+  - id: quick-no-extra-context
+    request_summary: Write a one-sentence friendly greeting prompt with no model, tools, sources or template request.
+    expected_actions:
+      - use-core-quick-contract
+      - do-not-load-model-adapters
+      - do-not-load-context-templates
+      - do-not-ask-optional-style-questions
+  - id: context-correction
+    request_summary: Update the accepted decision in an agent context; old history still states the previous value.
+    expected_actions:
+      - invalidate-affected-summary-and-reuse
+      - preserve-unrelated-decisions
+      - do-not-treat-history-as-authority
+      - preserve-explicit-permission-boundaries
+purpose: Declarative routing and adaptation scenarios. Parsing or inspecting them is not model execution or provider-quality evidence.
 schema_version: 1

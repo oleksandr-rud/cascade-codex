@@ -243,7 +243,7 @@ describe("Cascade Workspace artifact persistence", () => {
     const outside = `${symlinkRoot}/outside`;
     await mkdir(outside);
     await mkdir(`${symlinkRoot}/docs`);
-    await symlink(outside, `${symlinkRoot}/docs/specs`);
+    await symlink(outside, `${symlinkRoot}/docs/specs`, process.platform === "win32" ? "junction" : "dir");
     const symlinkHub = new WorkspaceArtifactHub({ root: symlinkRoot });
     const symlinked = await symlinkHub.prepareArtifact({
       artifactKind: "specification",

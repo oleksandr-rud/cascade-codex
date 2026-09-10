@@ -67,7 +67,26 @@ const HARD_ACTION_NOUN = /\b(?:destruction|erasure|deletion|obliteration|purge)\
 const HARD_ACTION_START = /^(?:please\s+)?(?:delete|erase|destroy|wipe|purge|obliterate|eradicate|expunge|discard)\w*\b/i;
 const META_WORDING = /\b(?:parser|classifier|classification|detection|support|handling|tests?|docs?|documentation|wording|phrase|sentence|terms?)\b/i;
 const MUTATION_START = /^(?:please\s+)?(?:add|apply|adjust|alter|revise|rewrite|rework|rebuild|redesign|repair|overhaul|refresh|modernize|revamp|change|edit|modify|update|implement|build|create|document|remove|delete|erase|destroy|wipe|purge|refactor|write)\b/i;
-const UKRAINIAN_MUTATION_START = /^(?:(?:а|і|та)\s+)?(?:(?:тепер|зараз)\s+)?(?:(?:будь\s+ласка)\s+)?(?:(?:ми|ви)\s+)?(?:(?:можемо|можете|маємо|потрібно|треба)\s+)?(?:зробити|створити|реалізувати|додати|оновити|виправити|переробити|перебудувати|змінити|видалити|перейменувати|впровадити)(?=$|[\s,.;:!?])/iu;
+const UKRAINIAN_PREFIX = String.raw`(?:(?:а|і|й|та|але|потім|тепер|зараз|ми|ви|ти|можеш|можемо|можете|маємо|потрібно|треба|прошу|будь\s+ласка)[,\s]+)*`;
+const UKRAINIAN_MUTATION = String.raw`(?:зроб(?:и|іть|ити)|створ(?:и|іть|ити)|реалізу(?:й|йте|вати)|дода(?:й|йте|ти)|онов(?:и|іть|ити)|виправ(?:те|іть|ити)?|перероб(?:и|іть|ити)|перебуду(?:й|йте|вати)|змін(?:и|іть|ити)|переймену(?:й|йте|вати)|впровад(?:ь|ьте|ити))`;
+const UKRAINIAN_DESTRUCTIVE = String.raw`(?:видал(?:и|іть|ити)|знищ(?:и|іть|ити)|зітри|стерти)`;
+const UKRAINIAN_EXTERNAL = String.raw`(?:запуш(?:ити|те)?|пушни|опубліку(?:й|йте|вати)|надішли|надішліть|надіслати)`;
+const UKRAINIAN_VALIDATION = String.raw`(?:перевір(?:ити|те)?|протесту(?:й|йте|вати))`;
+const UKRAINIAN_ACTION = `${UKRAINIAN_MUTATION}|${UKRAINIAN_DESTRUCTIVE}|${UKRAINIAN_EXTERNAL}|${UKRAINIAN_VALIDATION}`;
+const UKRAINIAN_MUTATION_START = new RegExp(`^${UKRAINIAN_PREFIX}${UKRAINIAN_MUTATION}(?=$|[\\s,.;:!?])`, "iu");
+
+// Recognize bounded Ukrainian directives on retained clauses, without rewriting
+// the request or its provenance offsets. Negated, quoted and described actions
+// do not match this direct-command prefix.
+function ukrainianDirective(text: string): { intent: AdmissionClauseIntent; authority?: AdmissionAuthorityTag } | null {
+  const match = new RegExp(`^${UKRAINIAN_PREFIX}(${UKRAINIAN_ACTION})(?=$|[\\s,.;:!?])`, "iu").exec(text);
+  if (!match) return null;
+  const verb = match[1]!;
+  if (new RegExp(`^${UKRAINIAN_DESTRUCTIVE}$`, "iu").test(verb)) return { intent: "CHANGE", authority: "destructive" };
+  if (new RegExp(`^${UKRAINIAN_EXTERNAL}$`, "iu").test(verb)) return { intent: "OPERATE", authority: "external-write" };
+  if (new RegExp(`^${UKRAINIAN_VALIDATION}$`, "iu").test(verb)) return { intent: "VALIDATE" };
+  return { intent: "CHANGE" };
+}
 const OPERATION_START = /^(?:please\s+)?(?:run|execute(?:\s+(?:it|that|this))?|perform(?:\s+(?:it|that|that\s+action|the\s+requested\s+action))?|act\s+on\s+(?:it|that|this)|carry(?:\s+(?:it|that))?\s+out|do\s+(?:it|that)|take\s+(?:it|that|the\s+action|requested\s+action))\b/i;
 const VALIDATION_SUBJECT = /\b(?:checks?|tests?|validation|validators?|lint|typechecks?)\b/i;
 const NO_MUTATION_SUBJECT = /\b(?:repository(?:\s+(?:artifacts?|files?|contents?|changes?|edits?|writes?|modifications?|mutations?))?|repo(?:sitory)?\s+(?:files?|artifacts?|contents?|changes?|edits?|writes?)|files?|contents?|items?|artifacts?|changes?|edits?|writes?|modifications?|mutations?|generation|freezing)\b/i;
@@ -85,7 +104,7 @@ function isIntraWordApostrophe(text: string, index: number): boolean {
 
 function isOpeningQuote(text: string, index: number): boolean {
   const character = text[index] ?? "";
-  if (!["'", '"', "`", "“", "‘"].includes(character)) return false;
+  if (!["'", '"', "`", "“", "‘", "«"].includes(character)) return false;
   if (character === "'" && /[\p{L}\p{N}]/u.test(text[index - 1] ?? "")) return false;
   return true;
 }
@@ -110,19 +129,22 @@ function splitCoordinatedSegment(text: string): Array<{ text: string; offset: nu
   let cursor = 0;
   let pendingLink: "SENTENCE" | "COORDINATE" | null = null;
   const boundary = /(?:\s+(?:and\s+(?:then\s+)?|but\s+|then\s+)|(?<=application\s+source),\s+|\s+(?=after\s+(?:validating|validation|testing|checks?|verification)\b)|\s*(?:—|–|:)\s*)(?=(?:(?:then|afterwards?|subsequently)\s*,?\s*)?(?:please\s+)?(?:add|apply|adjust|alter|revise|rewrite|rework|rebuild|redesign|repair|overhaul|refresh|modernize|revamp|change|edit|modify|update|implement|build|create|document|remove|delete|erase|destroy|wipe|purge|refactor|write|continue|resume|do\s+it|run\s+it|execute\s+it|perform\s+it|carry\s+it\s+out|after\s+(?:validating|validation|testing|checks?|verification))\b)/giu;
-  let quote: "'" | '"' | "`" | "“" | "‘" | null = null;
+  let quote: "'" | '"' | "`" | "“" | "‘" | "«" | null = null;
   const searchable = [...text].map((character, index, characters) => {
     if (character === "\\") return quote ? " " : character;
     if (quote) {
-      if ((character === quote || quote === "“" && character === "”" || quote === "‘" && character === "’") && !isIntraWordApostrophe(text, index)) quote = null;
+      if ((character === quote || quote === "“" && character === "”" || quote === "‘" && character === "’" || quote === "«" && character === "»") && !isIntraWordApostrophe(text, index)) quote = null;
       return " ";
     }
     if (isOpeningQuote(text, index) && characters[index - 1] !== "\\") { quote = character as typeof quote; return " "; }
     return character;
   }).join("");
-  const assessmentFrame = /^(?:first\s+)?(?:assess|analy[sz]e|evaluate|review|audit|examine)\s+whether\b/i.test(text);
-  for (const match of searchable.matchAll(boundary)) {
-    if (assessmentFrame && /^\s+and\s+(?!then\b)/i.test(match[0]!)) continue;
+  const assessmentFrame = /^(?:first\s+)?(?:assess|analy[sz]e|evaluate|review|audit|examine)\s+whether\b/i.test(text)
+    || /^(?:перевір|оціни|проаналізуй|поясни|розглянь),?\s+чи(?=\s)/iu.test(text);
+  const ukrainianBoundary = new RegExp(`\\s+(?:і|й|та|але|потім)\\s+(?=${UKRAINIAN_PREFIX}(?:не\\s+)?(?:${UKRAINIAN_ACTION})(?=$|[\\s,.;:!?]))`, "giu");
+  const boundaries = [...searchable.matchAll(boundary), ...searchable.matchAll(ukrainianBoundary)].sort((a, b) => a.index! - b.index!);
+  for (const match of boundaries) {
+    if (assessmentFrame && /^(?:\s+and\s+(?!then\b)|\s+(?:і|й|та)\s+)/iu.test(match[0]!)) continue;
     const before = normalizedSegment(text.slice(cursor, match.index!));
     if (before) pieces.push({ text: before, offset: text.indexOf(before, cursor), link: pendingLink });
     pendingLink = /[—–:]/u.test(match[0]!) ? "SENTENCE" : "COORDINATE";
@@ -136,8 +158,8 @@ function splitCoordinatedSegment(text: string): Array<{ text: string; offset: nu
 function splitSentenceSegments(text: string): Array<{ text: string; offset: number }> {
   const pieces: Array<{ text: string; offset: number }> = [];
   let start = 0;
-  let quote: "'" | '"' | "`" | "“" | "‘" | null = null;
-  const closeQuote = (character: string): boolean => quote === character || quote === "“" && character === "”" || quote === "‘" && character === "’";
+  let quote: "'" | '"' | "`" | "“" | "‘" | "«" | null = null;
+  const closeQuote = (character: string): boolean => quote === character || quote === "“" && character === "”" || quote === "‘" && character === "’" || quote === "«" && character === "»";
   const retain = (end: number) => {
     const raw = text.slice(start, end);
     const value = normalizedSegment(raw);
@@ -393,9 +415,10 @@ export function deriveAdmissionClausePatches(request: string, spans: readonly Ad
     return clause.prior_link === "COORDINATE" && (prior?.action_class === "HARD_ACTION" || prior?.action_class === "LOCAL_MUTATION");
   })) patches.relation = "NEW";
 
+  const lastCancellation = Math.max(-1, ...userClauses.filter((clause) => clause.discourse_edge === "CANCEL").map((clause) => clause.index));
   const positiveWrites = userClauses.filter((clause) => clause.action_polarity === "POSITIVE" && clause.action_class === "LOCAL_MUTATION");
   const directUkrainianWrite = positiveWrites.some((clause) =>
-    UKRAINIAN_MUTATION_START.test(clause.text)
+    clause.index > lastCancellation && UKRAINIAN_MUTATION_START.test(clause.text)
   );
   const validationOperations = userClauses.filter((clause) => clause.action_polarity === "POSITIVE" && clause.action_class === "OPERATION" && clause.operation_subject === "VALIDATION");
   const noMutationConstraints = userClauses.filter(isNoMutationConstraint);
@@ -510,6 +533,17 @@ export function deriveAdmissionClausePatches(request: string, spans: readonly Ad
       const shellAction = shell ? classifyEnvGitAction(shell) : undefined;
       if (shellAction) patches.shell_action_class = shellAction;
     }
+  }
+  const ukrainianActions = userClauses.flatMap((clause) => {
+    const action = ukrainianDirective(clause.text);
+    return action && clause.operator === null && clause.index > lastCancellation ? [action] : [];
+  });
+  if (ukrainianActions.length) {
+    const writes = ukrainianActions.filter((action) => action.intent !== "VALIDATE");
+    if (writes.length) patches.intent = writes.some((action) => action.intent === "OPERATE") ? "OPERATE" : "CHANGE";
+    else if (!positiveWrites.length && !hardActions.length && !linkedExecutions.length && !patches.intent) patches.intent = "VALIDATE";
+    const authorityTags = ukrainianActions.flatMap((action) => action.authority ? [action.authority] : []);
+    if (authorityTags.length) patches.add_authority_tags = [...new Set([...(patches.add_authority_tags ?? []), ...authorityTags])];
   }
   return patches;
 }

@@ -123,8 +123,10 @@ export function mountSurface(container, { runId, surfaceId, allowedActions = [],
   const doc = container.ownerDocument;
   const group = `hy-gen-choice-${++mountNumber}`;
   let disposed = false;
+  let pendingFocusKey = null;
   const region = doc.createElement('section');
   region.className = 'hy-gen-surface';
+  region.tabIndex = -1;
   const announcer = doc.createElement('p');
   announcer.className = 'hy-gen-announcement hy-small hy-muted';
   announcer.setAttribute('role', 'status');
@@ -139,10 +141,24 @@ export function mountSurface(container, { runId, surfaceId, allowedActions = [],
   function render() {
     const state = model.read();
     const view = state.view;
-    const previousFocus = region.contains(doc.activeElement) ? doc.activeElement?.dataset.focusKey : null;
+    const focusWasInside = region.contains(doc.activeElement);
+    const previousFocus = focusWasInside ? doc.activeElement?.dataset.focusKey ?? pendingFocusKey : null;
+    pendingFocusKey = null;
+    function restoreFocus() {
+      if (!focusWasInside) return;
+      const target = [...region.querySelectorAll('[data-focus-key]')].find((node) => node.dataset.focusKey === previousFocus && !node.disabled);
+      if (target) target.focus();
+      else {
+        // Keep focus in a stable named region while the action is disabled.
+        // Restore its control on acknowledgement, unless the user moved away.
+        pendingFocusKey = previousFocus;
+        region.focus();
+      }
+    }
     region.replaceChildren();
     region.setAttribute('aria-busy', String(state.pending || view?.state === 'pending'));
-    if (!view) { region.append(element('p', 'hy-muted', 'Очікуємо дані…')); return; }
+    region.setAttribute('aria-label', view?.title ?? 'Очікуємо дані');
+    if (!view) { region.append(element('p', 'hy-muted', 'Очікуємо дані…')); restoreFocus(); return; }
     const body = element('div', 'hy-body');
     body.append(element('h2', 'hy-heading', view.title));
     region.append(body);
@@ -205,10 +221,7 @@ export function mountSurface(container, { runId, surfaceId, allowedActions = [],
       });
       bar.append(button); zone.append(bar); region.append(zone);
     }
-    if (previousFocus) {
-      const target = [...region.querySelectorAll('[data-focus-key]')].find((node) => node.dataset.focusKey === previousFocus && !node.disabled);
-      target?.focus();
-    }
+    restoreFocus();
   }
   render();
   return Object.freeze({

@@ -8,7 +8,7 @@
 - Coverage: `complete`
 - Catalog digest: `df37463e28d651950ec6e9146a1a1643cfa328ce44643baaf8d8ae608c09b110`
 - Manifest digest: `c2b59a1ce6e0fa15e2bb716fcc5ae2c89c84515a43facda9787d25a687994efc`
-- Selected-source digest: `c8da8bdf2a1d4d0259bcc1f18c8d41e474a5d7fa602861f016956de163e04d84`
+- Selected-source digest: `6eb5d53565672ca6570e4bd44712220b90c9706f0ad6f18d674879bedee74bf6`
 - Compiler-contract digest: `4cfeada5833d864235315bb41aa63acf157b08f15c247f2914c23fc84fd9acd1`
 
 ## Purpose And Audience
@@ -31,7 +31,7 @@ Assemble current admission, product-context, simulation-policy, and agent-handof
 | Path | SHA-256 |
 |---|---|
 | `docs/specs/simulation-intake-agent-bridge/contract.md` | `836dd2d588e22117fb0e5846b83aa09993c61a13422edb161de6548a4d90a95c` |
-| `docs/specs/task-admission-workload/contract.md` | `cc995fef352f3576da22d4e30f661cc61cb7aded5abc84930527147cfe80ebdd` |
+| `docs/specs/task-admission-workload/contract.md` | `56b50f23ff14ebe92b9fbe594d38454b35f7370bf84e3e5eb40bf0c767244f75` |
 | `docs/specs/product-context-briefs/contract.md` | `a0e5ad2910e3a475cf7ea9a306d4bacd52fe4ea4b0b3c86872562e6306f5e44e` |
 
 ## Requirements

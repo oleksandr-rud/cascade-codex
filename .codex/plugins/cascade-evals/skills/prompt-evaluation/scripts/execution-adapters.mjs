@@ -1,3 +1,4 @@
+import { createHash } from "node:crypto";
 import { spawnSync } from "node:child_process";
 import { readFileSync, writeFileSync } from "node:fs";
 import { isAbsolute, join, resolve } from "node:path";
@@ -47,20 +48,24 @@ function traceMetrics(jsonl) {
   return { command_executions: commandExecutions, tool_output_chars: toolOutputChars };
 }
 
-function extractCodex(jsonl) {
+export function extractCodex(jsonl) {
   let finalText = "";
   let usage = null;
+  let completed = false;
+  let violated = false;
   for (const line of jsonl.split(/\r?\n/)) {
     if (!line.trim()) continue;
     try {
       const event = JSON.parse(line);
+      if (event.type === "turn.failed" || event.type === "error") violated = true;
+      if (event.item?.type && !["agent_message", "reasoning"].includes(event.item.type)) violated = true;
       if (event.type === "item.completed" && event.item?.type === "agent_message") finalText = event.item.text ?? "";
-      if (event.type === "turn.completed") usage = event.usage ?? null;
+      if (event.type === "turn.completed") { usage = event.usage ?? null; completed = true; }
     } catch {
       // Ignore non-JSON diagnostics.
     }
   }
-  if (!finalText) throw new Error("Codex JSONL did not contain a completed agent message");
+  if (!completed || violated || !finalText) throw new Error("Codex phase lacks a complete tool-free response");
   return { finalText, usage: usageRecord(usage), traceMetrics: traceMetrics(jsonl) };
 }
 
@@ -87,7 +92,10 @@ export function runModel({ model, reasoningEffort = "max", prompt, cwd, timeoutM
   let identity;
   if (adapter === "codex-cli") {
     command = "codex";
-    commandArgs = ["exec", "--json", "--ephemeral", "--skip-git-repo-check", "--sandbox", "read-only", "-m", model, "-c", `model_reasoning_effort="${reasoningEffort}"`, "-"];
+    commandArgs = ["exec", "--json", "--ignore-user-config", "--disable", "plugins", "--disable", "remote_plugin",
+      "--disable", "apps", "--disable", "shell_tool", "--disable", "unified_exec", "--disable", "multi_agent",
+      "--enable", "skip_host_skill_discovery", "--ephemeral", "--skip-git-repo-check", "--sandbox", "read-only",
+      "-c", "project_doc_max_bytes=0", "-c", "suppress_unstable_features_warning=true", "-c", 'web_search="disabled"', "-m", model, "-c", `model_reasoning_effort="${reasoningEffort}"`, "-"];
     input = prompt;
     identity = "codex-cli";
   } else if (adapter === "command-json-v1") {
@@ -126,7 +134,7 @@ export function requireCompleted(run, { phase, runRoot }) {
     schema_version: 1,
     status: "BLOCKED",
     acceptance: "NOT_RUN",
-    root_cause: "environment-blocker",
+    root_cause: run.status === "INVALID_SUBJECT_READ" ? "subject-protocol-failure" : "environment-blocker",
     phase,
     execution: { status: run.status, model: run.model, adapter: run.adapter, adapter_identity: run.adapter_identity, timeout_ms: run.timeout_ms, duration_ms: run.duration_ms, error: run.error ?? null },
     preserved_artifacts: [`${phase}.stdout.log`, `${phase}.stderr.log`]
@@ -134,4 +142,22 @@ export function requireCompleted(run, { phase, runRoot }) {
   writeFileSync(join(runRoot, "execution-block.json"), `${JSON.stringify(block, null, 2)}\n`);
   console.log(JSON.stringify({ run_root: runRoot, phase, status: "BLOCKED", execution_status: run.status, acceptance: "NOT_RUN" }, null, 2));
   process.exit(3);
+}
+
+const surfaceCache = new Map();
+export function executionSurface(adapter = "codex-cli", adapterConfig, adapterId) {
+  const key = JSON.stringify({ adapter, adapterConfig, adapterId });
+  if (surfaceCache.has(key)) return surfaceCache.get(key);
+  let executable, version = null;
+  if (adapter === "codex-cli") {
+    const found = spawnSync(process.platform === "win32" ? "where.exe" : "which", ["codex"], { encoding: "utf8" });
+    if (found.status !== 0) throw new Error("cannot resolve the Codex execution surface");
+    executable = found.stdout.trim().split(/\r?\n/)[0];
+    const probe = spawnSync(executable, ["--version"], { encoding: "utf8" });
+    if (probe.status !== 0) throw new Error("cannot identify Codex executable version");
+    version = probe.stdout.trim();
+  } else executable = commandAdapter(adapterConfig, adapterId, "", "max").command;
+  const receipt = { adapter, adapter_id: adapterId ?? null, executable: resolve(executable), executable_sha256: createHash("sha256").update(readFileSync(executable)).digest("hex"), version, platform: process.platform, architecture: process.arch, node_version: process.version, remote_model_revision: "UNAVAILABLE_MODEL_ALIAS_ONLY", configuration_policy: adapter === "codex-cli" ? "ignore-user-config; no tools/plugins/web/project instructions" : "external-unverified" };
+  surfaceCache.set(key, receipt);
+  return receipt;
 }

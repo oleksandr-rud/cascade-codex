@@ -11,7 +11,7 @@ Use `Goal`, `Audience`, `Input.*`, `Source.*`, `Output.*`, `Labels.*`,
 `Target.*`; mark `[explicit]`, `[source]`, `[assumed]`, `[ask]`, `[conflict]`,
 or `[not applicable]`.
 
-Resolve: `current instruction -> compatible answer -> authority -> safe default
+Resolve: `current instruction -> compatible answer -> scoped authority -> supporting supplied context -> safe default
 -> unresolved`. Preserve values, negation, requirement/inference boundaries,
 and dependencies. Reconstruct each turn. Do not expose the map or emit runtime
 JSON/claim IDs.
@@ -47,8 +47,10 @@ Generate by field type; ground in task entities:
 - `Permissions.*`: prepare/execute; `Output.*`: fields, types, extra output.
 - `Target.*`: runtime/capabilities; `Success.*`/`Validation.*`: proof.
 
-Offer 2–3 grounded exclusive options plus free form. Recommend safe defaults
-with impact. Combine dependent gaps; ask at most three in one round. A second
+Offer 2–3 exclusive options only when supplied or logically bounded by the
+task; otherwise ask a free-form question. Always retain a free-form answer path.
+Never invent business policy to manufacture options. Recommend only safe
+defaults and state their operational impact. Combine dependent gaps; ask at most three in one round. A second
 round requires a new blocker.
 
 Confirm each is unanswered, material, resolving, answerable, safe, and does not

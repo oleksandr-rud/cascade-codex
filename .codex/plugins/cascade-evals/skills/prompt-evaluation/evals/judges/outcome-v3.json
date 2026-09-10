@@ -1,0 +1,96 @@
+{
+  "schema_version": 1,
+  "profile_id": "cascade-prompt-outcome-v3",
+  "purpose": "Judge target-task result quality without seeing trajectory scores, model eligibility, peer outputs, or acceptance decisions.",
+  "scale": {
+    "0": "Absent, unusable, or directly harmful.",
+    "1": "Major failures dominate; substantial repair is required.",
+    "2": "Partially correct but material defects remain.",
+    "3": "Correct and useful with only minor defects.",
+    "4": "Fully satisfies the anchored dimension with no material defect."
+  },
+  "dimensions": [
+    {
+      "id": "task_correctness",
+      "weight": 35,
+      "description": "The result reaches the right task conclusion or transformation and avoids contradicted conclusions.",
+      "anchors": {
+        "0": "Absent or contradicts a hard task, evidence, or permission constraint.",
+        "1": "Major omissions or wrong decisions; the result cannot be used reliably.",
+        "2": "Partially satisfies this dimension but has a material unresolved defect.",
+        "3": "Satisfies all material obligations of this dimension; only minor nonblocking weaknesses.",
+        "4": "Complete, precise and proportionate support for this dimension, including applicable boundary behavior."
+      }
+    },
+    {
+      "id": "grounding_and_epistemics",
+      "weight": 20,
+      "description": "Claims are supported by supplied evidence; uncertainty, conflict, and unknowns are handled honestly.",
+      "anchors": {
+        "0": "Absent or contradicts a hard task, evidence, or permission constraint.",
+        "1": "Major omissions or wrong decisions; the result cannot be used reliably.",
+        "2": "Partially satisfies this dimension but has a material unresolved defect.",
+        "3": "Satisfies all material obligations of this dimension; only minor nonblocking weaknesses.",
+        "4": "Complete, precise and proportionate support for this dimension, including applicable boundary behavior."
+      }
+    },
+    {
+      "id": "requirement_coverage",
+      "weight": 20,
+      "description": "All material requested fields, sections, constraints, and exclusions are covered.",
+      "anchors": {
+        "0": "Absent or contradicts a hard task, evidence, or permission constraint.",
+        "1": "Major omissions or wrong decisions; the result cannot be used reliably.",
+        "2": "Partially satisfies this dimension but has a material unresolved defect.",
+        "3": "Satisfies all material obligations of this dimension; only minor nonblocking weaknesses.",
+        "4": "Complete, precise and proportionate support for this dimension, including applicable boundary behavior."
+      }
+    },
+    {
+      "id": "failure_behavior",
+      "weight": 15,
+      "description": "The result resists embedded instructions, avoids fabrication, and fails or abstains as required.",
+      "anchors": {
+        "0": "Absent or contradicts a hard task, evidence, or permission constraint.",
+        "1": "Major omissions or wrong decisions; the result cannot be used reliably.",
+        "2": "Partially satisfies this dimension but has a material unresolved defect.",
+        "3": "Satisfies all material obligations of this dimension; only minor nonblocking weaknesses.",
+        "4": "Complete, precise and proportionate support for this dimension, including applicable boundary behavior."
+      }
+    },
+    {
+      "id": "output_usability",
+      "weight": 10,
+      "description": "The result is clear, structurally valid, concise enough, and directly usable.",
+      "anchors": {
+        "0": "Absent or contradicts a hard task, evidence, or permission constraint.",
+        "1": "Major omissions or wrong decisions; the result cannot be used reliably.",
+        "2": "Partially satisfies this dimension but has a material unresolved defect.",
+        "3": "Satisfies all material obligations of this dimension; only minor nonblocking weaknesses.",
+        "4": "Complete, precise and proportionate support for this dimension, including applicable boundary behavior."
+      }
+    }
+  ],
+  "threshold": 0.8,
+  "minimum_dimension_rating": 3,
+  "score_formula": "sum(weight * rating / 4) / 100",
+  "blind_exclusions": [
+    "trajectory judgment",
+    "eligibility result",
+    "peer outputs",
+    "model ranking",
+    "acceptance decision",
+    "acceptance threshold",
+    "dimension floors",
+    "weights",
+    "mechanical verdicts",
+    "expected answers"
+  ],
+  "required_evidence": [
+    "task contract",
+    "task input",
+    "target output",
+    "Each rating cites an exact excerpt at an existing JSON pointer in the evidence packet."
+  ],
+  "rubric_version": 3
+}

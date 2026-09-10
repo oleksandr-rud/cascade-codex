@@ -63,6 +63,12 @@ node scripts/run-variance-eval.mjs --task structured-invoice-v1 \
   --reasoning-effort max --repetitions 3
 ```
 
+For references/runtime coverage use `evals/rule-coverage.json` and all declared
+quality/interview cases. Required and forbidden reads are mechanical checks;
+applicable frozen rules go to blinded judges. Keep named-model authorship distinct
+from execution on that model. Run `scripts/run-judge-challenges.mjs` for synthetic
+judge discrimination checks; these are not human calibration.
+
 Read `evals/README.md` for the complete evidence, adapter, judge, timeout, and
 calibration contract.
 

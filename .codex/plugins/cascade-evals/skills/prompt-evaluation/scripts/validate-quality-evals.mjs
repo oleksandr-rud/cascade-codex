@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 
+import { snapshotSubject } from "./evaluation-integrity.mjs";
 import { readFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -55,11 +56,11 @@ async function absent(path, label) {
 const catalog = await readJson(join(evalRoot, "task-catalog.json"));
 const matrix = await readJson(join(evalRoot, "model-matrix.json"));
 const registry = await readModelRegistry(subjectSkillRoot);
-const outcome = await readJson(join(evalRoot, "judges/outcome-v1.json"));
-const trajectory = await readJson(join(evalRoot, "judges/trajectory-v1.json"));
-const interviewProfile = await readJson(join(evalRoot, "judges/interview-v1.json"));
+const outcome = await readJson(join(evalRoot, "judges/outcome-v3.json"));
+const trajectory = await readJson(join(evalRoot, "judges/trajectory-v3.json"));
+const interviewProfile = await readJson(join(evalRoot, "judges/interview-v3.json"));
 const interviewCatalog = await readJson(join(evalRoot, "interviews/catalog.json"));
-const responseSchema = await readJson(join(evalRoot, "judges/response.schema.json"));
+const responseSchema = await readJson(join(evalRoot, "judges/response-v3.schema.json"));
 const calibration = await readJson(join(evalRoot, "judges/calibration-cases.json"));
 const humanLabelSchema = await readJson(join(evalRoot, "judges/human-labels.schema.json"));
 const humanLabelTemplate = await readJson(join(evalRoot, "judges/human-labels.template.json"));
@@ -212,12 +213,13 @@ function validateProfile(profile, expectedId) {
   check(new Set(ids).size === ids.length, `${expectedId}: dimension ids must be unique`);
   check(dimensions.reduce((sum, dimension) => sum + dimension.weight, 0) === 100, `${expectedId}: weights must total 100`);
   check(profile.threshold === 0.8, `${expectedId}: threshold must remain 0.8 for v1`);
-  check(profile.minimum_dimension_rating === 2, `${expectedId}: dimension floor must remain 2 for v1`);
+  check(profile.minimum_dimension_rating === 3, `${expectedId}: dimension floor must be 3 for v3`);
 }
 
-validateProfile(outcome, "cascade-prompt-outcome-v1");
-validateProfile(trajectory, "cascade-prompt-trajectory-v1");
-validateProfile(interviewProfile, "cascade-prompt-interview-v1");
+validateProfile(outcome, "cascade-prompt-outcome-v3");
+validateProfile(trajectory, "cascade-prompt-trajectory-v3");
+validateProfile(interviewProfile, "cascade-prompt-interview-v3");
+validateProfile(await readJson(join(evalRoot, "judges/knowledge-coverage-v1.json")), "cascade-prompt-knowledge-coverage-v1");
 
 const allowedStates = new Set(["READY", "NEEDS_INPUT", "BLOCKED"]);
 const allowedModes = new Set(["Quick", "Guided", "Advanced"]);
@@ -238,6 +240,7 @@ for (const fixture of interviewCatalog.fixtures ?? []) {
     check(Number.isInteger(turn.max_questions) && turn.max_questions >= turn.min_questions && turn.max_questions <= 3, `${fixture.id}/${turnName}: invalid max_questions`);
     if (turn.state === "NEEDS_INPUT") check(turn.min_questions >= 1, `${fixture.id}/${turnName}: NEEDS_INPUT must ask at least one question`);
     if (turn.state === "READY") check(turn.max_questions === 0, `${fixture.id}/${turnName}: READY must ask zero questions`);
+    for (const group of turn.required_response_pattern_groups ?? []) check(Array.isArray(group) && group.length > 0 && group.every(p => typeof p === "string" && p.length > 0), `${fixture.id}/${turnName}: invalid equivalent response markers`);
     for (const intent of [...(turn.required_intents ?? []), ...(turn.forbidden_intents ?? [])]) check(allowedIntents.has(intent), `${fixture.id}/${turnName}: unknown intent ${intent}`);
   }
   check(Boolean(fixture.second_user_message) === Boolean(fixture.second_turn), `${fixture.id}: second_user_message and second_turn must appear together`);
@@ -249,6 +252,47 @@ for (const fixture of interviewCatalog.fixtures ?? []) {
     check(Array.isArray(fixture.target.forbidden_patterns), `${fixture.id}: target forbidden patterns must be an array`);
   }
 }
+const coverage = JSON.parse(await readFile(join(evalRoot, "rule-coverage.json"), "utf8"));
+const coveredCases = new Set(coverage.cases.map(item => item.id));
+check(coveredCases.size === coverage.cases.length, "rule coverage case IDs must be unique");
+for (const id of [...taskIds, ...fixtureIds]) check(coveredCases.has(id), `missing rule coverage case: ${id}`);
+for (const fixture of interviewCatalog.fixtures) {
+  for (const path of [...(fixture.judge_context_paths ?? []), ...(fixture.first_turn.required_subject_reads ?? []), ...(fixture.first_turn.forbidden_subject_reads ?? [])]) {
+    check(!path.startsWith("/") && !path.includes(".."), `${fixture.id}: unsafe subject path ${path}`);
+    await readable(join(subjectSkillRoot, path), `${fixture.id}: declared subject path`);
+  }
+  check((fixture.rule_ids ?? []).length > 0, `${fixture.id}: rule groups missing`);
+}
+
+const allCases = new Map([...catalog.tasks, ...interviewCatalog.fixtures].map(item => [item.id, item]));
+const sameSet = (a,b) => JSON.stringify([...new Set(a)].sort()) === JSON.stringify([...new Set(b)].sort());
+check(sameSet(coverage.cases.map(c => c.id), [...allCases.keys()]), "coverage contains missing or phantom cases");
+check(sameSet(coverage.rule_inventory ?? [], [...allCases.values()].flatMap(c => c.rule_ids ?? [])), "closed rule inventory mismatch");
+for (const mapped of coverage.cases) check(sameSet(mapped.rule_ids, allCases.get(mapped.id)?.rule_ids ?? []), `${mapped.id}: rule mapping drift`);
+for (const item of allCases.values()) {
+  const paths = [...(item.judge_context_paths ?? []), ...(item.required_subject_reads ?? []), ...(item.forbidden_subject_reads ?? []), ...[item.first_turn,item.second_turn].filter(Boolean).flatMap(t => [...(t.required_subject_reads ?? []), ...(t.forbidden_subject_reads ?? [])])];
+  for (const path of paths) {
+    check(!path.startsWith("/") && !path.includes(".."), `${item.id}: unsafe subject path`);
+    await readable(join(subjectSkillRoot,path), `${item.id}: all task/turn paths`);
+  }
+}
+const snapshot = await snapshotSubject(subjectSkillRoot);
+const modelIndex = parseYaml(snapshot.files["runtime/model-index.yaml"]);
+for (const path of [modelIndex.source, ...modelIndex.models.map(m => m.prompt_adapter).filter(Boolean)]) {
+  check(typeof path === "string" && !path.includes("..") && Object.hasOwn(snapshot.files, path), `model index has an unreachable skill-relative source or adapter: ${path}`);
+}
+
+const knowledgePaths = Object.keys(snapshot.files).filter(path => /^(references|runtime|assets)\/|^SKILL\.md$/.test(path));
+check(sameSet(knowledgePaths, (coverage.knowledge_inventory ?? []).map(item => item.path)), "closed knowledge file inventory mismatch");
+for (const item of coverage.knowledge_inventory ?? []) {
+  check(snapshot.manifest.find(f => f.path === item.path)?.sha256 === item.sha256, `${item.path}: source rule inventory is stale`);
+  check(item.consumers?.length > 0 && item.case_ids?.length > 0, `${item.path}: no operative consumer or case`);
+  for (const path of item.consumers ?? []) check(Object.hasOwn(snapshot.files,path), `${item.path}: missing consumer ${path}`);
+  for (const id of item.case_ids ?? []) check(item.consumers.some(path => allCases.get(id)?.judge_context_paths?.includes(path)), `${item.path}: case ${id} has no declared consumer`);
+}
+const routingCases = parseYaml(snapshot.files["references/model-system/routing-cases.yaml"]).cases;
+check(sameSet(routingCases.map(c=>c.id),Object.keys(coverage.routing_case_mapping ?? {})), "routing source cases must map exactly");
+for (const [id, mapped] of Object.entries(coverage.routing_case_mapping ?? {})) check(mapped.length > 0 && mapped.every(caseId=>allCases.has(caseId)), `${id}: missing routing execution case`);
 for (const requiredFixture of ["complete-quick-v1", "missing-structured-schema-v1", "invoice-label-ambiguity-v1", "support-mixed-case-v1", "explicit-source-authority-v1", "migration-permission-v1", "safe-optional-preference-v1", "declined-nonblocking-choice-v1", "declined-hard-authority-v1", "answer-already-in-source-v1", "builder-omission-repair-v1", "new-instruction-invalidation-v1"]) {
   check(fixtureIds.has(requiredFixture), `missing required interview fixture: ${requiredFixture}`);
 }
@@ -267,4 +311,4 @@ if (failures.length > 0) {
   process.exit(1);
 }
 
-console.log(`PASS: ${taskIds.size} real tasks, ${fixtureIds.size} interview fixtures, ${coveredTiers.size} tiers, ${configurationIds.size} model configurations, 3 independent judge profiles`);
+console.log(`PASS: ${taskIds.size} real tasks, ${fixtureIds.size} interview fixtures, ${coveredTiers.size} tiers, ${configurationIds.size} model configurations, 4 independent judge profiles`);

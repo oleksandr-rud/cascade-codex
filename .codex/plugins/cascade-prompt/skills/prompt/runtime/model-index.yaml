@@ -1,9 +1,46 @@
 checked_at: 2026-08-05
 # Undated entries retain the catalog review date; entry dates override it.
 models:
+  - id: Qwen/Qwen3.8-27B
+    checked_at: 2026-09-09
+    capabilities: [text, vision, tools, reasoning-controls, long-context]
+    status: current-candidate
+    prompt_adapter: runtime/model-qwen.md
+    tiers: [balanced-production, frontier-generalist]
+  - id: Qwen/Qwen3.6-27B
+    checked_at: 2026-09-09
+    capabilities: [text, vision, tools, long-context]
+    status: current-candidate
+    prompt_adapter: runtime/model-qwen.md
+    tiers: [balanced-production, frontier-generalist]
+  - id: Qwen/Qwen3.5-27B
+    checked_at: 2026-09-09
+    capabilities: [text, vision, tools, long-context]
+    status: current-candidate
+    prompt_adapter: runtime/model-qwen.md
+    tiers: [efficient-structured, balanced-production]
+  - id: google/gemma-3-27b-it
+    checked_at: 2026-09-09
+    capabilities: [text, vision, long-context]
+    status: current-candidate
+    prompt_adapter: runtime/model-open-weight.md
+    tiers: [efficient-structured, balanced-production]
+  - id: google/gemma-4-31B-it
+    checked_at: 2026-09-09
+    capabilities: [text, vision, tools, long-context]
+    status: current-candidate
+    prompt_adapter: runtime/model-open-weight.md
+    tiers: [balanced-production, frontier-generalist]
+  - id: mistralai/Mistral-Small-3.2-24B-Instruct-2506
+    checked_at: 2026-09-09
+    capabilities: [text, vision, tools, long-context]
+    status: current-candidate
+    prompt_adapter: runtime/model-open-weight.md
+    tiers: [efficient-structured, balanced-production]
   - id: gpt-6-astra
-    checked_at: 2026-09-08
-    capabilities: [text, tools, reasoning-controls]
+    checked_at: 2026-09-09
+    prompt_adapter: runtime/model-astra.md
+    capabilities: [text, vision, tools, reasoning-controls, structured-output, long-context]
     status: current-candidate
     tiers: [frontier-generalist, frontier-autonomous]
   - capabilities:
@@ -116,4 +153,4 @@ models:
       - frontier-generalist
 purpose: Compact candidate lookup for runtime routing. Detailed evidence and source URLs remain in the source registry.
 schema_version: 1
-source: ../references/model-system/model-registry.yaml
+source: references/model-system/model-registry.yaml

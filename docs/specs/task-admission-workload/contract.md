@@ -14,6 +14,21 @@ Contract IDs: `TA-001` through `TA-012`
 | Exact admission corpus | `981/981`; 16 revision-40 review-boundary, grounding, and continuation cases append after the preserved 965-row corpus | zero over-control, zero under-control; persistence `587/587`; claims `789/789` | local deterministic evidence only |
 | Clause semantics | `scripts/cascade/admission-clauses.ts` typed clause state/reducer | current admission/clause/hook/intake slice passes `209/209` with 3,121 assertions | does not grant host, tool, provider, deployment, or release authority |
 
+## Ukrainian direct-command routing
+
+The clause reducer recognizes common Ukrainian imperative and infinitive forms
+for local changes, deletion, publication/push, and validation, including polite
+prefixes and coordinated commands. For example, `Виправ README.md` requests a
+local write, `Видали README.md` is destructive, and `Запуш зміни` requests an
+external write. Negated or quoted mentions are not direct commands. This is
+bounded lexical support, not a general translation or semantic authority layer;
+the host still resolves unsupported phrasing from the direct request.
+
+Classification preserves the original request and provenance offsets. Lexical
+framing may mark more text as external, but cannot promote a host-labelled
+external span to user authority. Hard actions still require a host-verified
+direct-user attestation and a current signed, single-use tool receipt.
+
 ## Outcome
 
 Every request receives a small, explainable admission decision before a
