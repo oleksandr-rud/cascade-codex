@@ -4,6 +4,24 @@ plugin_skills:
   - cascade-design:design-system
   - cascade-design:accessibility-review
   - cascade-design:visual-qa
+  - cascade-product:define-product
+  - cascade-product:validate-product
+  - cascade-market:research-market
+  - cascade-market:brand-positioning
+  - cascade-market:design-market-experiments
+  - cascade-personas:build-persona
+  - cascade-personas:compile-persona
+  - cascade-project-management:define-work-item
+  - cascade-project-management:plan-project
+  - cascade-project-management:manage-project
+  - cascade-project-management:close-project
+  - cascade-prompt:prompt
+  - cascade-simulations:simulation-actor
+  - cascade-simulations:simulation-persona
+  - cascade-simulations:simulation-brief
+  - cascade-simulations:simulation-outcome
+  - cascade-simulations:simulation-adapter
+  - cascade-simulations:simulate
 skills:
   - name: context
     source: .codex/skills/context/SKILL.md

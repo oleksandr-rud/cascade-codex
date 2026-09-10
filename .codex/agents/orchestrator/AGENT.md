@@ -83,6 +83,11 @@ non-atomic.
   Keep one implementation owner per write scope. Independent review needs a
   separate context; local review is self-review. A bounded task can still run
   the implementation contract locally. Role selection never grants dispatch.
+- Route a scoped product-discovery or design brief to Product Designer, which
+  can use Product definition/validation, Market research/positioning/experiments,
+  Personas, Prompt and Project Management without becoming a new strategy owner.
+  Keep portfolio and growth strategy and cross-owner project coordination here.
+  Use only the requested methods; a simple mockup needs no discovery campaign.
 - Route design authoring to Product Designer through `cascade-design:create-design`;
   that role returns editable mockups, inspected previews and the version-bound
   handoff consumed by Frontend Engineer. Candidates do not self-approve.

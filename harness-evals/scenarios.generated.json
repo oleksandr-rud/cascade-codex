@@ -1,9 +1,9 @@
 {
   "agent_count": 9,
   "agent_scenario_count": 9,
-  "catalog_digest": "09ad07f9163fd45760401c3fe0e6a0a724a31efa6bca24a8ee8c3dabb77a0917",
+  "catalog_digest": "ab02694a6fc473f62e5e81aa10ae88378800506255b3939342b88262c6d79099",
   "generated_by": "scripts/cascade/evals.ts",
-  "scenario_count": 142,
+  "scenario_count": 162,
   "scenarios": [
     {
       "expectation": {
@@ -3932,14 +3932,709 @@
       "target_skill": "cascade-simulations:simulation-actor"
     },
     {
+      "expectation": {
+        "allowed_supporting": [],
+        "delegation_policy": "none",
+        "forbidden_primary": [
+          "cascade-design:create-design",
+          "cascade-product:manage-product-lifecycle"
+        ],
+        "max_loaded_roles": 1,
+        "max_loaded_skills": 1,
+        "must_load_roles": [
+          "product-designer"
+        ],
+        "must_load_skills": [
+          "cascade-product:define-product"
+        ],
+        "mutation_policy": "none",
+        "network_policy": "none",
+        "next_route": "",
+        "primary_skill": "cascade-product:define-product",
+        "status_any": [
+          "BLOCKED",
+          "FAIL",
+          "GAP",
+          "NOT_RUN",
+          "PASS"
+        ],
+        "target_skill": "cascade-product:define-product"
+      },
+      "id": "HX-072",
+      "kind": "interaction",
+      "owner": "product-designer",
+      "prompt": "Use Product Designer to define the user value, feature boundary and acceptance behavior for a saved-items flow before visual design. Synthetic brief: readers save articles, filter by topic and retrieve an item later; offline access and recommendations are excluded. Produce one concise candidate, distinguish supplied facts from assumptions and leave undecided product approval explicit. Do not create mockups, a project plan or a market study.",
+      "source": "harness-evals/interactions.yaml",
+      "target_skill": "cascade-product:define-product"
+    },
+    {
+      "expectation": {
+        "allowed_supporting": [],
+        "delegation_policy": "none",
+        "forbidden_primary": [
+          "cascade-design:create-design",
+          "cascade-market:plan-growth"
+        ],
+        "max_loaded_roles": 1,
+        "max_loaded_skills": 1,
+        "must_load_roles": [
+          "product-designer"
+        ],
+        "must_load_skills": [
+          "cascade-market:brand-positioning"
+        ],
+        "mutation_policy": "none",
+        "network_policy": "none",
+        "next_route": "",
+        "primary_skill": "cascade-market:brand-positioning",
+        "status_any": [
+          "BLOCKED",
+          "FAIL",
+          "GAP",
+          "NOT_RUN",
+          "PASS"
+        ],
+        "target_skill": "cascade-market:brand-positioning"
+      },
+      "id": "HX-073",
+      "kind": "interaction",
+      "owner": "product-designer",
+      "prompt": "Use Product Designer to draft positioning and trust copy for a supplied privacy-first note application. Synthetic accepted facts: notes stay on device; export is manual; no external analytics are enabled. Do not claim encryption, compliance, user demand or competitor superiority without evidence. The deliverable is positioning and copy, not a visual mockup or a growth strategy.",
+      "source": "harness-evals/interactions.yaml",
+      "target_skill": "cascade-market:brand-positioning"
+    },
+    {
+      "expectation": {
+        "allowed_supporting": [],
+        "delegation_policy": "none",
+        "forbidden_primary": [
+          "cascade-design:create-design",
+          "cascade-market:brand-positioning"
+        ],
+        "max_loaded_roles": 1,
+        "max_loaded_skills": 1,
+        "must_load_roles": [
+          "product-designer"
+        ],
+        "must_load_skills": [
+          "cascade-market:research-market"
+        ],
+        "mutation_policy": "none",
+        "network_policy": "none",
+        "next_route": "",
+        "primary_skill": "cascade-market:research-market",
+        "status_any": [
+          "GAP"
+        ],
+        "target_skill": "cascade-market:research-market"
+      },
+      "id": "HX-074",
+      "kind": "interaction",
+      "owner": "product-designer",
+      "prompt": "Use Product Designer to identify the segment, alternative and buying evidence needed before deciding a pricing-page direction. No research sources or live browsing are supplied. Return the scoped research gaps and collection plan, with no invented prices, citations, market findings or mockups.",
+      "source": "harness-evals/interactions.yaml",
+      "target_skill": "cascade-market:research-market"
+    },
+    {
+      "expectation": {
+        "allowed_supporting": [],
+        "delegation_policy": "none",
+        "forbidden_primary": [
+          "cascade-simulations:simulate",
+          "cascade-design:create-design"
+        ],
+        "max_loaded_roles": 1,
+        "max_loaded_skills": 1,
+        "must_load_roles": [
+          "product-designer"
+        ],
+        "must_load_skills": [
+          "cascade-personas:compile-persona"
+        ],
+        "mutation_policy": "none",
+        "network_policy": "none",
+        "next_route": "",
+        "primary_skill": "cascade-personas:compile-persona",
+        "status_any": [
+          "GAP",
+          "BLOCKED"
+        ],
+        "target_skill": "cascade-personas:compile-persona"
+      },
+      "id": "HX-075",
+      "kind": "interaction",
+      "owner": "product-designer",
+      "prompt": "Use Product Designer to prepare the Persona projection required by a later onboarding simulation. Only an informal marketing label is supplied, not a frozen canonical persona. Name the missing source and compilation prerequisites; do not invent persona facts, fabricate a digest or run a simulation.",
+      "source": "harness-evals/interactions.yaml",
+      "target_skill": "cascade-personas:compile-persona"
+    },
+    {
+      "expectation": {
+        "allowed_supporting": [],
+        "delegation_policy": "none",
+        "forbidden_primary": [
+          "cascade-product:manage-product-lifecycle",
+          "cascade-project-management:manage-project"
+        ],
+        "max_loaded_roles": 1,
+        "max_loaded_skills": 1,
+        "must_load_roles": [
+          "product-designer"
+        ],
+        "must_load_skills": [
+          "cascade-project-management:plan-project"
+        ],
+        "mutation_policy": "none",
+        "network_policy": "none",
+        "next_route": "",
+        "primary_skill": "cascade-project-management:plan-project",
+        "status_any": [
+          "BLOCKED",
+          "FAIL",
+          "GAP",
+          "NOT_RUN",
+          "PASS"
+        ],
+        "target_skill": "cascade-project-management:plan-project"
+      },
+      "id": "HX-076",
+      "kind": "interaction",
+      "owner": "product-designer",
+      "prompt": "Use Product Designer to plan only the design workstream for an approved onboarding redesign: discovery synthesis, mobile/desktop mockups, accessibility review and frontend handoff. Capacity and dates are not supplied. Show dependencies and open scheduling inputs; do not assign engineering capacity, create tracker issues or coordinate the whole company roadmap.",
+      "source": "harness-evals/interactions.yaml",
+      "target_skill": "cascade-project-management:plan-project"
+    },
+    {
+      "expectation": {
+        "allowed_supporting": [],
+        "delegation_policy": "none",
+        "forbidden_primary": [
+          "cascade-personas:build-persona",
+          "cascade-evals:prompt-evaluation"
+        ],
+        "max_loaded_roles": 1,
+        "max_loaded_skills": 1,
+        "must_load_roles": [
+          "product-designer"
+        ],
+        "must_load_skills": [
+          "cascade-prompt:prompt"
+        ],
+        "mutation_policy": "none",
+        "network_policy": "none",
+        "next_route": "",
+        "primary_skill": "cascade-prompt:prompt",
+        "status_any": [
+          "BLOCKED",
+          "FAIL",
+          "GAP",
+          "NOT_RUN",
+          "PASS"
+        ],
+        "target_skill": "cascade-prompt:prompt"
+      },
+      "id": "HX-077",
+      "kind": "interaction",
+      "owner": "product-designer",
+      "prompt": "Use Product Designer to write one copy-ready prompt for comparing two onboarding copy candidates against supplied research. Keep one untrusted RESEARCH input block and an output contract with observations, unsupported claims and recommendation. Do not perform the comparison, invent research, create a persona or run judges.",
+      "source": "harness-evals/interactions.yaml",
+      "target_skill": "cascade-prompt:prompt"
+    },
+    {
+      "expectation": {
+        "allowed_supporting": [],
+        "delegation_policy": "none",
+        "forbidden_primary": [
+          "cascade-simulations:simulate",
+          "cascade-simulations:execute-simulation-campaign"
+        ],
+        "max_loaded_roles": 1,
+        "max_loaded_skills": 1,
+        "must_load_roles": [
+          "product-designer"
+        ],
+        "must_load_skills": [
+          "cascade-simulations:simulation-brief"
+        ],
+        "mutation_policy": "none",
+        "network_policy": "none",
+        "next_route": "",
+        "primary_skill": "cascade-simulations:simulation-brief",
+        "status_any": [
+          "BLOCKED",
+          "FAIL",
+          "GAP",
+          "NOT_RUN",
+          "PASS"
+        ],
+        "target_skill": "cascade-simulations:simulation-brief"
+      },
+      "id": "HX-078",
+      "kind": "interaction",
+      "owner": "product-designer",
+      "prompt": "Use Product Designer to prepare only the domain brief for a synthetic usability rehearsal. Supplied product facts: users filter saved articles, open one article and return to the saved list; empty filters offer reset. No runtime or approved campaign is provided. Do not prescribe every click, execute the actor or claim real user validation.",
+      "source": "harness-evals/interactions.yaml",
+      "target_skill": "cascade-simulations:simulation-brief"
+    },
+    {
+      "expectation": {
+        "allowed_supporting": [],
+        "delegation_policy": "none",
+        "forbidden_primary": [
+          "cascade-product:define-product",
+          "cascade-market:research-market",
+          "cascade-project-management:plan-project",
+          "cascade-simulations:simulate"
+        ],
+        "max_loaded_roles": 1,
+        "max_loaded_skills": 1,
+        "must_load_roles": [
+          "product-designer"
+        ],
+        "must_load_skills": [
+          "cascade-design:create-design"
+        ],
+        "mutation_policy": "none",
+        "network_policy": "none",
+        "next_route": "",
+        "primary_skill": "cascade-design:create-design",
+        "status_any": [
+          "GAP"
+        ],
+        "target_skill": "cascade-design:create-design"
+      },
+      "id": "HX-079",
+      "kind": "interaction",
+      "owner": "product-designer",
+      "prompt": "Use Product Designer for one already specified saved-items screen: reader, topic filter, open-item action, desktop/mobile, default and empty states. This diagnostic is read-only and supplies no preview tool. Explain the concrete mockup/handoff work and missing visual evidence. Do not add market research, personas, Product discovery, project planning or a simulation merely because those plugins are available.",
+      "source": "harness-evals/interactions.yaml",
+      "target_skill": "cascade-design:create-design"
+    },
+    {
+      "expectation": {
+        "allowed_supporting": [],
+        "delegation_policy": "none",
+        "forbidden_primary": [
+          "cascade-design:create-design",
+          "cascade-project-management:plan-project"
+        ],
+        "max_loaded_roles": 1,
+        "max_loaded_skills": 1,
+        "must_load_roles": [
+          "product-designer"
+        ],
+        "must_load_skills": [
+          "context"
+        ],
+        "mutation_policy": "none",
+        "network_policy": "none",
+        "next_route": "cascade-product:manage-product-lifecycle",
+        "primary_skill": "context",
+        "status_any": [
+          "GAP"
+        ],
+        "target_skill": "context"
+      },
+      "id": "HX-080",
+      "kind": "interaction",
+      "owner": "product-designer",
+      "prompt": "While acting as Product Designer, handle a request to decide company-wide investment between two unrelated product lines and assign engineering teams next quarter. No portfolio evidence, capacity or decision authority is supplied. Identify the ownership and input gap and return the decision to Orchestrator through cascade-product:manage-product-lifecycle. Do not make the investment decision, adopt portfolio authority, spawn a role or turn this into mockup work.",
+      "source": "harness-evals/interactions.yaml",
+      "target_skill": "context"
+    },
+    {
+      "expectation": {
+        "allowed_supporting": [],
+        "delegation_policy": "none",
+        "forbidden_primary": [
+          "cascade-ai-architect:architect-ai-system",
+          "implement-change"
+        ],
+        "max_loaded_roles": 1,
+        "max_loaded_skills": 1,
+        "must_load_roles": [
+          "software-engineer"
+        ],
+        "must_load_skills": [
+          "cascade-software-architect:architect-software-system"
+        ],
+        "mutation_policy": "none",
+        "network_policy": "none",
+        "next_route": "",
+        "primary_skill": "cascade-software-architect:architect-software-system",
+        "status_any": [
+          "BLOCKED",
+          "FAIL",
+          "GAP",
+          "NOT_RUN",
+          "PASS"
+        ],
+        "target_skill": "cascade-software-architect:architect-software-system"
+      },
+      "id": "HX-081",
+      "kind": "interaction",
+      "owner": "software-engineer",
+      "prompt": "Use Software Engineer to propose a software architecture candidate for a synthetic order service with checkout, inventory reservation and payment-webhook idempotency. Preserve existing modular-monolith constraints and name state owners and failure/retry boundaries. No implementation, migration, deployment or independent acceptance is requested.",
+      "source": "harness-evals/interactions.yaml",
+      "target_skill": "cascade-software-architect:architect-software-system"
+    },
+    {
+      "expectation": {
+        "allowed_supporting": [],
+        "delegation_policy": "none",
+        "forbidden_primary": [
+          "cascade-personas:build-persona",
+          "cascade-ai-architect:build-agent-roles"
+        ],
+        "max_loaded_roles": 1,
+        "max_loaded_skills": 1,
+        "must_load_roles": [
+          "agent-engineer"
+        ],
+        "must_load_skills": [
+          "cascade-ai-architect:derive-persona-requirements"
+        ],
+        "mutation_policy": "none",
+        "network_policy": "none",
+        "next_route": "",
+        "primary_skill": "cascade-ai-architect:derive-persona-requirements",
+        "status_any": [
+          "GAP",
+          "BLOCKED"
+        ],
+        "target_skill": "cascade-ai-architect:derive-persona-requirements"
+      },
+      "id": "HX-082",
+      "kind": "interaction",
+      "owner": "agent-engineer",
+      "prompt": "Use Agent Engineer to derive agent blueprint requirements from a Persona agent-architecture projection. The frozen projection is missing; only a claim that users are busy exists. Return exact source prerequisites without fabricating traits, a persona, requirements evidence or a digest.",
+      "source": "harness-evals/interactions.yaml",
+      "target_skill": "cascade-ai-architect:derive-persona-requirements"
+    },
+    {
+      "expectation": {
+        "allowed_supporting": [],
+        "delegation_policy": "none",
+        "forbidden_primary": [
+          "cascade-evals:harness-evaluation",
+          "cascade-evals:agent-evaluation"
+        ],
+        "max_loaded_roles": 1,
+        "max_loaded_skills": 1,
+        "must_load_roles": [
+          "agent-engineer"
+        ],
+        "must_load_skills": [
+          "cascade-evals:prompt-evaluation"
+        ],
+        "mutation_policy": "none",
+        "network_policy": "none",
+        "next_route": "",
+        "primary_skill": "cascade-evals:prompt-evaluation",
+        "status_any": [
+          "GAP",
+          "BLOCKED"
+        ],
+        "target_skill": "cascade-evals:prompt-evaluation"
+      },
+      "id": "HX-083",
+      "kind": "interaction",
+      "owner": "agent-engineer",
+      "prompt": "Use Agent Engineer to assess readiness for a controlled prompt comparison. Two prompt texts are supplied conceptually, but no fixed task corpus, oracle, model execution receipt or independent judges exist. Identify prerequisites; do not invent scores, call this a harness trace evaluation or self-accept the prompts. Do not execute models in this diagnostic.",
+      "source": "harness-evals/interactions.yaml",
+      "target_skill": "cascade-evals:prompt-evaluation"
+    },
+    {
+      "expectation": {
+        "allowed_supporting": [],
+        "delegation_policy": "none",
+        "forbidden_primary": [
+          "cascade-evals:prompt-evaluation",
+          "cascade-evals:harness-evaluation"
+        ],
+        "max_loaded_roles": 1,
+        "max_loaded_skills": 1,
+        "must_load_roles": [
+          "agent-engineer"
+        ],
+        "must_load_skills": [
+          "cascade-evals:agent-evaluation"
+        ],
+        "mutation_policy": "none",
+        "network_policy": "none",
+        "next_route": "",
+        "primary_skill": "cascade-evals:agent-evaluation",
+        "status_any": [
+          "GAP",
+          "BLOCKED"
+        ],
+        "target_skill": "cascade-evals:agent-evaluation"
+      },
+      "id": "HX-084",
+      "kind": "interaction",
+      "owner": "agent-engineer",
+      "prompt": "Use Agent Engineer to prepare evaluation of an agent workflow candidate with retries, tool permissions and stop conditions. The candidate has no frozen task cases or actual execution traces. Return evaluation readiness gaps and next steps; do not fabricate pass evidence, launch the agent or substitute a prompt-only comparison.",
+      "source": "harness-evals/interactions.yaml",
+      "target_skill": "cascade-evals:agent-evaluation"
+    },
+    {
+      "expectation": {
+        "allowed_supporting": [],
+        "delegation_policy": "none",
+        "forbidden_primary": [
+          "cascade-simulations:simulate",
+          "cascade-personas:build-persona"
+        ],
+        "max_loaded_roles": 1,
+        "max_loaded_skills": 1,
+        "must_load_roles": [
+          "simulation-operator"
+        ],
+        "must_load_skills": [
+          "cascade-simulations:simulation-actor"
+        ],
+        "mutation_policy": "none",
+        "network_policy": "none",
+        "next_route": "",
+        "primary_skill": "cascade-simulations:simulation-actor",
+        "status_any": [
+          "BLOCKED",
+          "FAIL",
+          "GAP",
+          "NOT_RUN",
+          "PASS"
+        ],
+        "target_skill": "cascade-simulations:simulation-actor"
+      },
+      "id": "HX-085",
+      "kind": "interaction",
+      "owner": "simulation-operator",
+      "prompt": "Use Simulation Operator to prepare a bounded actor from an explicitly synthetic supplied role: a reader tries to find a saved article by topic and abandons after two failed filter attempts. Preserve the synthetic label and distinguish actor policy from a click script. No campaign or execution is authorized; do not run the actor or change a frozen campaign.",
+      "source": "harness-evals/interactions.yaml",
+      "target_skill": "cascade-simulations:simulation-actor"
+    },
+    {
+      "expectation": {
+        "allowed_supporting": [],
+        "delegation_policy": "none",
+        "forbidden_primary": [
+          "cascade-simulations:simulate",
+          "cascade-personas:build-persona"
+        ],
+        "max_loaded_roles": 1,
+        "max_loaded_skills": 1,
+        "must_load_roles": [
+          "simulation-operator"
+        ],
+        "must_load_skills": [
+          "cascade-simulations:simulation-persona"
+        ],
+        "mutation_policy": "none",
+        "network_policy": "none",
+        "next_route": "",
+        "primary_skill": "cascade-simulations:simulation-persona",
+        "status_any": [
+          "GAP",
+          "BLOCKED"
+        ],
+        "target_skill": "cascade-simulations:simulation-persona"
+      },
+      "id": "HX-086",
+      "kind": "interaction",
+      "owner": "simulation-operator",
+      "prompt": "Use Simulation Operator to validate the persona prerequisites of a proposed rehearsal. A persona summary is present but the frozen compiled simulation projection and digest are absent. Report the missing compile-persona dependency output without inventing a projection, rewriting persona truth or executing a target.",
+      "source": "harness-evals/interactions.yaml",
+      "target_skill": "cascade-simulations:simulation-persona"
+    },
+    {
+      "expectation": {
+        "allowed_supporting": [],
+        "delegation_policy": "none",
+        "forbidden_primary": [
+          "cascade-simulations:simulate",
+          "cascade-evals:simulation-evaluation"
+        ],
+        "max_loaded_roles": 1,
+        "max_loaded_skills": 1,
+        "must_load_roles": [
+          "simulation-operator"
+        ],
+        "must_load_skills": [
+          "cascade-simulations:simulation-outcome"
+        ],
+        "mutation_policy": "none",
+        "network_policy": "none",
+        "next_route": "",
+        "primary_skill": "cascade-simulations:simulation-outcome",
+        "status_any": [
+          "BLOCKED",
+          "FAIL",
+          "GAP",
+          "NOT_RUN",
+          "PASS"
+        ],
+        "target_skill": "cascade-simulations:simulation-outcome"
+      },
+      "id": "HX-087",
+      "kind": "interaction",
+      "owner": "simulation-operator",
+      "prompt": "Use Simulation Operator to define only the observable outcome for a synthetic saved-article rehearsal: find and open the named article, preserve saved state, report no-match honestly, never read another tenant. State evidence, failure and stop conditions. Do not execute the target, broaden the goal or claim success.",
+      "source": "harness-evals/interactions.yaml",
+      "target_skill": "cascade-simulations:simulation-outcome"
+    },
+    {
+      "expectation": {
+        "allowed_supporting": [],
+        "delegation_policy": "none",
+        "forbidden_primary": [
+          "cascade-simulations:simulate",
+          "cascade-simulations:execute-simulation-campaign"
+        ],
+        "max_loaded_roles": 1,
+        "max_loaded_skills": 1,
+        "must_load_roles": [
+          "simulation-operator"
+        ],
+        "must_load_skills": [
+          "cascade-simulations:simulation-adapter"
+        ],
+        "mutation_policy": "none",
+        "network_policy": "none",
+        "next_route": "",
+        "primary_skill": "cascade-simulations:simulation-adapter",
+        "status_any": [
+          "BLOCKED",
+          "FAIL",
+          "GAP",
+          "NOT_RUN",
+          "PASS"
+        ],
+        "target_skill": "cascade-simulations:simulation-adapter"
+      },
+      "id": "HX-088",
+      "kind": "interaction",
+      "owner": "simulation-operator",
+      "prompt": "Use Simulation Operator to draft only an adapter contract for an isolated test browser supporting list-saved, filter-topic, open-item and reset-filter. Define observations, read scope, errors and recovery. Account writes, deletion and external messaging are outside authorization. No runtime exists yet; do not run tools or claim the adapter was exercised.",
+      "source": "harness-evals/interactions.yaml",
+      "target_skill": "cascade-simulations:simulation-adapter"
+    },
+    {
+      "expectation": {
+        "allowed_supporting": [],
+        "delegation_policy": "none",
+        "forbidden_primary": [
+          "cascade-design:visual-qa",
+          "cascade-simulations:simulate"
+        ],
+        "max_loaded_roles": 1,
+        "max_loaded_skills": 1,
+        "must_load_roles": [
+          "product-designer"
+        ],
+        "must_load_skills": [
+          "cascade-product:validate-product"
+        ],
+        "mutation_policy": "none",
+        "network_policy": "none",
+        "next_route": "",
+        "primary_skill": "cascade-product:validate-product",
+        "status_any": [
+          "BLOCKED",
+          "FAIL",
+          "GAP",
+          "NOT_RUN",
+          "PASS"
+        ],
+        "target_skill": "cascade-product:validate-product"
+      },
+      "id": "HX-089",
+      "kind": "interaction",
+      "owner": "product-designer",
+      "prompt": "Use Product Designer to assess what a synthetic walkthrough can establish about a proposed onboarding flow. Supplied evidence is a mockup and one synthetic actor completion; no real participant study, retention or conversion data exist. Distinguish observed synthetic behavior from product value and demand, and specify the missing validation without running another simulation or claiming product-market fit.",
+      "source": "harness-evals/interactions.yaml",
+      "target_skill": "cascade-product:validate-product"
+    },
+    {
+      "expectation": {
+        "allowed_supporting": [],
+        "delegation_policy": "none",
+        "forbidden_primary": [
+          "cascade-market:plan-growth",
+          "cascade-design:create-design"
+        ],
+        "max_loaded_roles": 1,
+        "max_loaded_skills": 1,
+        "must_load_roles": [
+          "product-designer"
+        ],
+        "must_load_skills": [
+          "cascade-market:design-market-experiments"
+        ],
+        "mutation_policy": "none",
+        "network_policy": "none",
+        "next_route": "",
+        "primary_skill": "cascade-market:design-market-experiments",
+        "status_any": [
+          "BLOCKED",
+          "FAIL",
+          "GAP",
+          "NOT_RUN",
+          "PASS"
+        ],
+        "target_skill": "cascade-market:design-market-experiments"
+      },
+      "id": "HX-090",
+      "kind": "interaction",
+      "owner": "product-designer",
+      "prompt": "Use Product Designer to design a message experiment for two supplied landing-page propositions. Define the hypothesis, audience, observable outcome, confounders and stopping rule. No audience access, sample-size inputs or outreach permission are supplied. Preserve gaps and provide a plan only; do not send messages, buy traffic or report imaginary results.",
+      "source": "harness-evals/interactions.yaml",
+      "target_skill": "cascade-market:design-market-experiments"
+    },
+    {
+      "expectation": {
+        "allowed_supporting": [],
+        "delegation_policy": "none",
+        "forbidden_primary": [
+          "cascade-project-management:plan-project",
+          "cascade-project-management:close-project"
+        ],
+        "max_loaded_roles": 1,
+        "max_loaded_skills": 1,
+        "must_load_roles": [
+          "product-designer"
+        ],
+        "must_load_skills": [
+          "cascade-project-management:manage-project"
+        ],
+        "mutation_policy": "none",
+        "network_policy": "none",
+        "next_route": "",
+        "primary_skill": "cascade-project-management:manage-project",
+        "status_any": [
+          "BLOCKED",
+          "FAIL",
+          "GAP",
+          "NOT_RUN",
+          "PASS"
+        ],
+        "target_skill": "cascade-project-management:manage-project"
+      },
+      "id": "HX-091",
+      "kind": "interaction",
+      "owner": "product-designer",
+      "prompt": "Use Product Designer to reconcile one existing design workstream: desktop mockup delivered, mobile states missing, accessibility review waiting for mobile, frontend handoff not accepted. Return grounded status and next-owner inputs. Do not invent task IDs, capacity, dates or completion; do not write a tracker or plan an unrelated workstream.",
+      "source": "harness-evals/interactions.yaml",
+      "target_skill": "cascade-project-management:manage-project"
+    },
+    {
       "context_bindings": [
         {
           "path": ".codex/agents/agent-engineer/AGENT.md",
-          "sha256": "24742fb093174c28e9b47e1caa056fdaeb9d986695f31dc3a48a41f854101ef9"
+          "sha256": "d7fee328ccd7fa1f9db7b623cbb08ce0049ad611c6a0f0d4e7cfc48114e9cb71"
         },
         {
           "path": ".codex/agents/agent-engineer/skills.yaml",
-          "sha256": "895c6535aba85831b3f13f3acc86e98bc5ba1b5123da4a5fdf01a2baad0ab028"
+          "sha256": "a02bd0467549e6a0cb8aa29f9c8b4271cf397318e13ff8af37049cc6e2b8d2fd"
         },
         {
           "path": ".codex/plugins/cascade-coding-agent/skills/audit-harness/SKILL.md",
@@ -3951,7 +4646,7 @@
         },
         {
           "path": "CODEX.md",
-          "sha256": "2934e7fe74574001ee3364b02c5fc994cf1dc62f01ed818a1927988feeffaa8f"
+          "sha256": "a9fb3e889fe354a365848ed913a61535323304f2bc19e6f6bb12830b09b030e1"
         }
       ],
       "execution": {
@@ -4174,11 +4869,11 @@
       "context_bindings": [
         {
           "path": ".codex/agents/product-designer/AGENT.md",
-          "sha256": "c9d444faa3a5094459ab1162b0efc9028560f87b930cac5109657ea5686bfcba"
+          "sha256": "dd2e5c4f0d33988ff24b455151e21884b7332222d31dec19f26b6ef08b5676fa"
         },
         {
           "path": ".codex/agents/product-designer/skills.yaml",
-          "sha256": "482564eaac9efc527f57c8f2c73f1f9b423871d7ffd02c14fdfe96a273a319c9"
+          "sha256": "2980a10eaf2f05747c84d238b4a8a3dd4195e46d7a7a9d17ea9a2362e89a63ee"
         },
         {
           "path": ".codex/plugins/cascade-design/skills/create-design/SKILL.md",
@@ -4349,7 +5044,7 @@
       "context_bindings": [
         {
           "path": ".codex/agents/simulation-operator/AGENT.md",
-          "sha256": "8e833657ec61f5dd1ca3d9e981aa1500419f925ba4893e5e2e9e6fb0a657d025"
+          "sha256": "efbbd269aadecf2169043870a353b883e317625c5098c0cb267aba203bd30685"
         },
         {
           "path": ".codex/plugins/cascade-simulations/skills/execute-simulation-campaign/SKILL.md",
@@ -4406,11 +5101,11 @@
       "context_bindings": [
         {
           "path": ".codex/agents/software-engineer/AGENT.md",
-          "sha256": "e22c2ab457008c62be7e897156f9d51bd5b7e0d3dfb293abe561060ab2f9d51b"
+          "sha256": "6ae707e6590a7f8af2a969bc96807bef12a395ce47952966097c5534835d2894"
         },
         {
           "path": ".codex/agents/software-engineer/skills.yaml",
-          "sha256": "46b7c7bf3e5204082482703d95bdb12268bf66584e719854d3f9624d388ca1d7"
+          "sha256": "56c20987f59a2f37a3d88e011fd3be2334e94823f69a6125d8d0bc269f7c3635"
         },
         {
           "path": ".codex/skills/plan-change/SKILL.md",

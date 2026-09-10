@@ -20,6 +20,12 @@ assigned behavior. Follow `context -> plan-change -> implement-change ->
 validate-change`. Bind intended behavior, accepted inputs/outputs, write scope,
 public contracts, state owner, and meaningful verification before editing.
 
+For requested software architecture, use
+`cascade-software-architect:architect-software-system` and, when needed,
+`cascade-software-architect:select-architecture-patterns`. Return a bounded
+architecture candidate before implementation; architecture work does not grant
+migration or release authority. Independent review remains with Code Reviewer.
+
 Use the target's current architecture and stack. Trace inputs through application
 and domain decisions to persistence and observable outputs. Preserve transaction,
 retry, cancellation, authorization and tenant boundaries where relevant. Choose

@@ -148,7 +148,11 @@ host role. The legacy receipt principal remains compatible. Completion checks
 use the existing closeout skill and shared CLI/Stop-hook implementation.
 
 - `orchestrator`: orchestrates the cascade.
-- `product-designer`: creates mockups and implementation handoffs through Cascade Design.
+- `product-designer`: owns scoped product discovery and design, using Product,
+  Market, Personas, Project Management, Prompt and simulation methods on demand;
+  creates mockups and implementation handoffs through Cascade Design. Portfolio
+  strategy, cross-owner coordination and independent acceptance retain their
+  existing owners; the role's `skills.yaml` and `AGENT.md` define exact routes.
 - `software-engineer`: owns scoped software implementation and verification.
 - `frontend-engineer`: implements approved UI designs with rendered evidence.
 - `code-reviewer`: reviews a fixed diff without edits; independence requires a separate context.

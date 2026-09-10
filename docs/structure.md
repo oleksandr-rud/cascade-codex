@@ -19,7 +19,7 @@ config; keep reusable workflow rules in skills, agents, and patterns.
 | `docs/patterns/` | Reusable workflow, boundary, testing, context rules, and selectable context packs | `pattern-context`, `closeout`, `cascade-coding-agent:adapt-harness` |
 | `.codex/skills/` | Repository context, persistence, mutation, validation, target execution/repair, and closeout effects | Agent Engineer and Orchestrator host integration |
 | `.codex/agents/` | Role contracts and skill maps | Agent Engineer skills |
-| `.codex/agents/product-designer/` and sibling `.toml` | Mockup creation and frontend design handoff | Agent Engineer integration; Product Designer owns scoped design artifacts |
+| `.codex/agents/product-designer/` and sibling `.toml` | Scoped product discovery, supporting market/persona/prompt/project methods, mockups and frontend handoff | Agent Engineer integration; Product Designer owns the design brief and artifacts; strategy and independent acceptance retain separate owners |
 | `.codex/agents/software-engineer/` and sibling `.toml` | Application/domain/data/integration implementation | Agent Engineer integration; Software Engineer owns assigned target slice |
 | `.codex/agents/code-reviewer/` and sibling `.toml` | Read-only fixed-diff review | Agent Engineer integration; Code Reviewer owns scoped findings |
 | `.codex/agents/frontend-engineer/` and sibling `.toml` | Frontend implementation, responsive/state behavior and approved-mockup fidelity role | Agent Engineer integration; Frontend Engineer executes scoped target work |

@@ -2,6 +2,8 @@ plugin_skills:
   - cascade-software-architect:review-change
   - cascade-software-architect:review-architecture
   - cascade-qa:triage-defects
+  - cascade-software-architect:architect-software-system
+  - cascade-software-architect:select-architecture-patterns
 skills:
   - name: context
     source: .codex/skills/context/SKILL.md

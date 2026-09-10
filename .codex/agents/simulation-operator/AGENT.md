@@ -80,3 +80,14 @@ prompt as a fallback.
 - cleanup result and residual resources;
 - execution receipt, blockers, retry lineage, and exact next evaluator;
 - explicit statement of semantic and release claims not proven.
+
+## Preparation requests
+
+For an explicitly requested preparation task, use the matching
+`cascade-simulations:simulation-actor`, `simulation-persona`, `simulation-brief`,
+`simulation-outcome` or `simulation-adapter` skill. Bind the existing frozen
+persona and source facts; missing evidence is a gap, not a synthetic fact.
+Return candidate contracts without executing a target. During an approved run,
+these routes do not permit rewriting the frozen actor, outcome or adapter to
+rescue a failure. Return proposed revisions to the campaign owner for a new
+version; independent acceptance stays with Simulation Evaluator/Evals.

@@ -21,6 +21,9 @@ plugin_skills:
   - cascade-prompt:prompt
   - cascade-simulations:manage-simulation-campaign
   - cascade-security:secure-design
+  - cascade-ai-architect:derive-persona-requirements
+  - cascade-evals:prompt-evaluation
+  - cascade-evals:agent-evaluation
 skills:
   - name: create-spec
     source: .codex/skills/create-spec/SKILL.md

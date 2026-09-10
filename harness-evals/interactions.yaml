@@ -419,4 +419,262 @@ interactions:
       - cascade-simulations:simulate
     id: HX-070
     prompt: Use cascade-simulations:simulation-actor to derive one bounded actor contract from the supplied frozen persona projection and actor brief. Do not run the actor or plan a multi-plugin workflow.
+  - id: HX-072
+    owner: product-designer
+    expected_primary: cascade-product:define-product
+    forbidden_primary:
+    - cascade-design:create-design
+    - cascade-product:manage-product-lifecycle
+    prompt: 'Use Product Designer to define the user value, feature boundary and acceptance behavior for a saved-items
+      flow before visual design. Synthetic brief: readers save articles, filter by topic and retrieve an item later;
+      offline access and recommendations are excluded. Produce one concise candidate, distinguish supplied facts from
+      assumptions and leave undecided product approval explicit. Do not create mockups, a project plan or a market
+      study.'
+    max_loaded_roles: 1
+    max_loaded_skills: 1
+  - id: HX-073
+    owner: product-designer
+    expected_primary: cascade-market:brand-positioning
+    forbidden_primary:
+    - cascade-design:create-design
+    - cascade-market:plan-growth
+    prompt: 'Use Product Designer to draft positioning and trust copy for a supplied privacy-first note application.
+      Synthetic accepted facts: notes stay on device; export is manual; no external analytics are enabled. Do not
+      claim encryption, compliance, user demand or competitor superiority without evidence. The deliverable is positioning
+      and copy, not a visual mockup or a growth strategy.'
+    max_loaded_roles: 1
+    max_loaded_skills: 1
+  - id: HX-074
+    owner: product-designer
+    expected_primary: cascade-market:research-market
+    forbidden_primary:
+    - cascade-design:create-design
+    - cascade-market:brand-positioning
+    prompt: Use Product Designer to identify the segment, alternative and buying evidence needed before deciding a
+      pricing-page direction. No research sources or live browsing are supplied. Return the scoped research gaps and
+      collection plan, with no invented prices, citations, market findings or mockups.
+    max_loaded_roles: 1
+    max_loaded_skills: 1
+    status_any:
+    - GAP
+  - id: HX-075
+    owner: product-designer
+    expected_primary: cascade-personas:compile-persona
+    forbidden_primary:
+    - cascade-simulations:simulate
+    - cascade-design:create-design
+    prompt: Use Product Designer to prepare the Persona projection required by a later onboarding simulation. Only
+      an informal marketing label is supplied, not a frozen canonical persona. Name the missing source and compilation
+      prerequisites; do not invent persona facts, fabricate a digest or run a simulation.
+    max_loaded_roles: 1
+    max_loaded_skills: 1
+    status_any:
+    - GAP
+    - BLOCKED
+  - id: HX-076
+    owner: product-designer
+    expected_primary: cascade-project-management:plan-project
+    forbidden_primary:
+    - cascade-product:manage-product-lifecycle
+    - cascade-project-management:manage-project
+    prompt: 'Use Product Designer to plan only the design workstream for an approved onboarding redesign: discovery
+      synthesis, mobile/desktop mockups, accessibility review and frontend handoff. Capacity and dates are not supplied.
+      Show dependencies and open scheduling inputs; do not assign engineering capacity, create tracker issues or coordinate
+      the whole company roadmap.'
+    max_loaded_roles: 1
+    max_loaded_skills: 1
+  - id: HX-077
+    owner: product-designer
+    expected_primary: cascade-prompt:prompt
+    forbidden_primary:
+    - cascade-personas:build-persona
+    - cascade-evals:prompt-evaluation
+    prompt: Use Product Designer to write one copy-ready prompt for comparing two onboarding copy candidates against
+      supplied research. Keep one untrusted RESEARCH input block and an output contract with observations, unsupported
+      claims and recommendation. Do not perform the comparison, invent research, create a persona or run judges.
+    max_loaded_roles: 1
+    max_loaded_skills: 1
+  - id: HX-078
+    owner: product-designer
+    expected_primary: cascade-simulations:simulation-brief
+    forbidden_primary:
+    - cascade-simulations:simulate
+    - cascade-simulations:execute-simulation-campaign
+    prompt: 'Use Product Designer to prepare only the domain brief for a synthetic usability rehearsal. Supplied product
+      facts: users filter saved articles, open one article and return to the saved list; empty filters offer reset.
+      No runtime or approved campaign is provided. Do not prescribe every click, execute the actor or claim real user
+      validation.'
+    max_loaded_roles: 1
+    max_loaded_skills: 1
+  - id: HX-079
+    owner: product-designer
+    expected_primary: cascade-design:create-design
+    forbidden_primary:
+    - cascade-product:define-product
+    - cascade-market:research-market
+    - cascade-project-management:plan-project
+    - cascade-simulations:simulate
+    prompt: 'Use Product Designer for one already specified saved-items screen: reader, topic filter, open-item action,
+      desktop/mobile, default and empty states. This diagnostic is read-only and supplies no preview tool. Explain
+      the concrete mockup/handoff work and missing visual evidence. Do not add market research, personas, Product
+      discovery, project planning or a simulation merely because those plugins are available.'
+    max_loaded_roles: 1
+    max_loaded_skills: 1
+    status_any:
+    - GAP
+  - id: HX-080
+    owner: product-designer
+    expected_primary: context
+    forbidden_primary:
+    - cascade-design:create-design
+    - cascade-project-management:plan-project
+    prompt: While acting as Product Designer, handle a request to decide company-wide investment between two unrelated
+      product lines and assign engineering teams next quarter. No portfolio evidence, capacity or decision authority
+      is supplied. Identify the ownership and input gap and return the decision to Orchestrator through cascade-product:manage-product-lifecycle.
+      Do not make the investment decision, adopt portfolio authority, spawn a role or turn this into mockup work.
+    max_loaded_roles: 1
+    max_loaded_skills: 1
+    status_any:
+    - GAP
+    next_route: cascade-product:manage-product-lifecycle
+  - id: HX-081
+    owner: software-engineer
+    expected_primary: cascade-software-architect:architect-software-system
+    forbidden_primary:
+    - cascade-ai-architect:architect-ai-system
+    - implement-change
+    prompt: Use Software Engineer to propose a software architecture candidate for a synthetic order service with
+      checkout, inventory reservation and payment-webhook idempotency. Preserve existing modular-monolith constraints
+      and name state owners and failure/retry boundaries. No implementation, migration, deployment or independent
+      acceptance is requested.
+    max_loaded_roles: 1
+    max_loaded_skills: 1
+  - id: HX-082
+    owner: agent-engineer
+    expected_primary: cascade-ai-architect:derive-persona-requirements
+    forbidden_primary:
+    - cascade-personas:build-persona
+    - cascade-ai-architect:build-agent-roles
+    prompt: Use Agent Engineer to derive agent blueprint requirements from a Persona agent-architecture projection.
+      The frozen projection is missing; only a claim that users are busy exists. Return exact source prerequisites
+      without fabricating traits, a persona, requirements evidence or a digest.
+    max_loaded_roles: 1
+    max_loaded_skills: 1
+    status_any:
+    - GAP
+    - BLOCKED
+  - id: HX-083
+    owner: agent-engineer
+    expected_primary: cascade-evals:prompt-evaluation
+    forbidden_primary:
+    - cascade-evals:harness-evaluation
+    - cascade-evals:agent-evaluation
+    prompt: Use Agent Engineer to assess readiness for a controlled prompt comparison. Two prompt texts are supplied
+      conceptually, but no fixed task corpus, oracle, model execution receipt or independent judges exist. Identify
+      prerequisites; do not invent scores, call this a harness trace evaluation or self-accept the prompts. Do not
+      execute models in this diagnostic.
+    max_loaded_roles: 1
+    max_loaded_skills: 1
+    status_any:
+    - GAP
+    - BLOCKED
+  - id: HX-084
+    owner: agent-engineer
+    expected_primary: cascade-evals:agent-evaluation
+    forbidden_primary:
+    - cascade-evals:prompt-evaluation
+    - cascade-evals:harness-evaluation
+    prompt: Use Agent Engineer to prepare evaluation of an agent workflow candidate with retries, tool permissions
+      and stop conditions. The candidate has no frozen task cases or actual execution traces. Return evaluation readiness
+      gaps and next steps; do not fabricate pass evidence, launch the agent or substitute a prompt-only comparison.
+    max_loaded_roles: 1
+    max_loaded_skills: 1
+    status_any:
+    - GAP
+    - BLOCKED
+  - id: HX-085
+    owner: simulation-operator
+    expected_primary: cascade-simulations:simulation-actor
+    forbidden_primary:
+    - cascade-simulations:simulate
+    - cascade-personas:build-persona
+    prompt: 'Use Simulation Operator to prepare a bounded actor from an explicitly synthetic supplied role: a reader
+      tries to find a saved article by topic and abandons after two failed filter attempts. Preserve the synthetic
+      label and distinguish actor policy from a click script. No campaign or execution is authorized; do not run the
+      actor or change a frozen campaign.'
+    max_loaded_roles: 1
+    max_loaded_skills: 1
+  - id: HX-086
+    owner: simulation-operator
+    expected_primary: cascade-simulations:simulation-persona
+    forbidden_primary:
+    - cascade-simulations:simulate
+    - cascade-personas:build-persona
+    prompt: Use Simulation Operator to validate the persona prerequisites of a proposed rehearsal. A persona summary
+      is present but the frozen compiled simulation projection and digest are absent. Report the missing compile-persona
+      dependency output without inventing a projection, rewriting persona truth or executing a target.
+    max_loaded_roles: 1
+    max_loaded_skills: 1
+    status_any:
+    - GAP
+    - BLOCKED
+  - id: HX-087
+    owner: simulation-operator
+    expected_primary: cascade-simulations:simulation-outcome
+    forbidden_primary:
+    - cascade-simulations:simulate
+    - cascade-evals:simulation-evaluation
+    prompt: 'Use Simulation Operator to define only the observable outcome for a synthetic saved-article rehearsal:
+      find and open the named article, preserve saved state, report no-match honestly, never read another tenant.
+      State evidence, failure and stop conditions. Do not execute the target, broaden the goal or claim success.'
+    max_loaded_roles: 1
+    max_loaded_skills: 1
+  - id: HX-088
+    owner: simulation-operator
+    expected_primary: cascade-simulations:simulation-adapter
+    forbidden_primary:
+    - cascade-simulations:simulate
+    - cascade-simulations:execute-simulation-campaign
+    prompt: Use Simulation Operator to draft only an adapter contract for an isolated test browser supporting list-saved,
+      filter-topic, open-item and reset-filter. Define observations, read scope, errors and recovery. Account writes,
+      deletion and external messaging are outside authorization. No runtime exists yet; do not run tools or claim
+      the adapter was exercised.
+    max_loaded_roles: 1
+    max_loaded_skills: 1
+  - id: HX-089
+    owner: product-designer
+    expected_primary: cascade-product:validate-product
+    forbidden_primary:
+    - cascade-design:visual-qa
+    - cascade-simulations:simulate
+    prompt: Use Product Designer to assess what a synthetic walkthrough can establish about a proposed onboarding
+      flow. Supplied evidence is a mockup and one synthetic actor completion; no real participant study, retention
+      or conversion data exist. Distinguish observed synthetic behavior from product value and demand, and specify
+      the missing validation without running another simulation or claiming product-market fit.
+    max_loaded_roles: 1
+    max_loaded_skills: 1
+  - id: HX-090
+    owner: product-designer
+    expected_primary: cascade-market:design-market-experiments
+    forbidden_primary:
+    - cascade-market:plan-growth
+    - cascade-design:create-design
+    prompt: Use Product Designer to design a message experiment for two supplied landing-page propositions. Define
+      the hypothesis, audience, observable outcome, confounders and stopping rule. No audience access, sample-size
+      inputs or outreach permission are supplied. Preserve gaps and provide a plan only; do not send messages, buy
+      traffic or report imaginary results.
+    max_loaded_roles: 1
+    max_loaded_skills: 1
+  - id: HX-091
+    owner: product-designer
+    expected_primary: cascade-project-management:manage-project
+    forbidden_primary:
+    - cascade-project-management:plan-project
+    - cascade-project-management:close-project
+    prompt: 'Use Product Designer to reconcile one existing design workstream: desktop mockup delivered, mobile states
+      missing, accessibility review waiting for mobile, frontend handoff not accepted. Return grounded status and
+      next-owner inputs. Do not invent task IDs, capacity, dates or completion; do not write a tracker or plan an
+      unrelated workstream.'
+    max_loaded_roles: 1
+    max_loaded_skills: 1
 schema_version: 1

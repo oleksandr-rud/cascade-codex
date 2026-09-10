@@ -301,6 +301,13 @@ describe("Cascade lean target runtime bundle", () => {
       expect(await readFile(resolve(output, `.codex/agents/${role}/skills.yaml`), "utf8")).toContain(route!);
       if (role === "code-reviewer") expect(manifest.sandbox_mode).toBe("read-only");
     }
+    const designerMap = parseStrictYaml(await readFile(resolve(output, ".codex/agents/product-designer/skills.yaml"), "utf8")) as Record<string, any>;
+    for (const route of ["cascade-product:define-product", "cascade-market:brand-positioning", "cascade-personas:compile-persona", "cascade-project-management:plan-project", "cascade-prompt:prompt", "cascade-simulations:simulation-brief"]) {
+      expect(designerMap.plugin_skills).toContain(route);
+    }
+    for (const route of ["cascade-product:manage-product-lifecycle", "cascade-market:plan-growth", "cascade-simulations:execute-simulation-campaign", "cascade-evals:simulation-evaluation"]) {
+      expect(designerMap.plugin_skills).not.toContain(route);
+    }
     const design = catalog.plugins.find((item) => item.name === "cascade-design")!;
     expect(design.skills.some((item: Record<string, any>) => item.route === "cascade-design:create-design")).toBe(true);
     const bridge = await readFile(resolve(output, "CODEX.md"), "utf8");
