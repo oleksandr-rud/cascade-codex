@@ -80,3 +80,122 @@ brief, references, follow-up, acceptance code and judge profiles are in
 [`harness-evals/pilots/request-tracker-v1`](../../../harness-evals/pilots/request-tracker-v1/README.md).
 Paired controls, human calibration and broad model/production claims remain
 outside the demonstrated result.
+
+## Generated application and architecture references
+
+The preserved v3 and v4 sources have `src/server.js` and `src/store.js`. The server file
+combines HTTP request handling, creation of the concrete store, environment
+configuration, listening and signal handling. `store.js` contains validation and
+durable writes, but there is no app-owned `startup` directory or concrete
+`modules/requests` public entrypoint. This is a small application with a visible
+data owner, not evidence of adopting Cascade's prescribed module layout.
+
+The current [service API/worker default](../../patterns/architecture-defaults/service-api-worker.spec.md)
+puts composition and lifecycle in `src/<app-name>/startup` and concrete domain
+behavior behind a module public entrypoint under `src/<app-name>/modules`.
+Its internal folders remain optional. Shared technical code belongs in `src/libs`
+only when a stable mechanism has at least two actual consumers; absence of an
+empty `libs` directory is not a defect in this one-domain application.
+
+In v4's final frozen snapshot, `src/server.js:139` constructs the store and wires
+HTTP handlers; `src/server.js:206` also owns process startup and shutdown.
+The HTTP caller invokes `validateCreate` before `RequestStore.create`, and
+`parseImport` before `RequestStore.append`. The exported store mutations do not
+enforce those field rules themselves (`src/store.js:144`). Current HTTP paths
+pass independent validation checks, but this is not an invariant-enforcing
+public domain entrypoint: another in-process caller would have to repeat the
+same validation choreography. Moving files alone would not establish that boundary.
+
+The minimal correction would put process composition in
+`src/api/startup/main.js`, expose the request operations through
+`src/api/modules/requests/index.js`, and keep storage and CSV internals in that
+module. The follow-up's `src/csv.js:98` encodes request-specific fields, so it
+belongs to `requests`, not a shared technical library. No empty internal layers,
+generic repository, extra service or unused `libs` directory is warranted.
+This review preserves the generated snapshots; that product refactor was not
+performed during evaluation.
+
+The experiment did not supply this reference. Its R1–R4 pack contains synthetic
+operating constraints, and `scripts/build-runtime-bundle.ts` leaves architecture
+catalogs in optional packs. The frozen runtime inventory contains no
+`service-api-worker` reference. The builder applied the host implementation and
+design routes without loading the software architecture method. Consequently,
+this pilot can assess its supplied references and general architecture, but
+cannot establish compliance with our module/startup/shared-code standard.
+That claim needs the selected, versioned architecture sources in the builder
+input and in the independent rubric. Adding all pattern documents is unnecessary.
+The observed target validator result, `target_project_status=PASS` with
+`drift=NOT_CHECKED`, does not validate this application architecture. The remaining
+reference-handoff gap is in the experiment inputs and selected architecture
+context, not a reason to force source-checkout defaults into every core bundle.
+
+## Post-timeout test diagnosis
+
+The first diagnostic check on the preserved v3 output edited the wrong record:
+it filled the search field without submitting the app's native search form,
+then clicked the first edit action in the unfiltered list. The public brief
+does not require search-on-input. This was an evaluator assumption, not proof of
+an application editing defect.
+
+A separate oracle v2 diagnostic submits Enter, waits for one matching result and
+checks the selected title before editing. The source manifests of both diagnostic
+runs are identical; the corrected check passes all 10 groups, including browser
+creation/editing/filtering, failed-save recovery, concurrent writes and restart
+persistence. Original v3 remains TIMED_OUT and its original diagnostic remains
+FAIL. This later result is functional diagnosis, not a completed autonomous
+attempt or a semantic acceptance score. Exact inputs and both outcomes are
+preserved in the two `post-timeout-diagnostics*` directories under its artifact
+root. Attempt v4 retained its original frozen checks and reproduced the same
+test failure in both phases.
+
+## Completed v4 and corrected-oracle reevaluation
+
+Attempt v4 froze source `9f147c7` and completed both native builder turns in one
+`gpt-5.6-sol` / `max` session. Source/runtime integrity checks passed and no test
+server remained after either phase. Its original controller ended after
+1,858,661 ms with `FUNCTIONAL_OR_INTEGRITY_FAIL` because of the search test above;
+the original semantic judges correctly remained `NOT_RUN`.
+
+A separate oracle correction was frozen at `2026-09-10T14:25:11.826677Z` using
+the unchanged v3 control. After v4 completed, the host evaluated byte-identical
+copies of both v4 snapshots with this correction. No implementation feedback was
+given to the builder. Original failed receipts remain intact. The reevaluation
+completed at `2026-09-10T14:47:35.442Z`, 2,318,455 ms (38 minutes 38 seconds)
+after the first v4 dispatch, within its 60-minute overall bound.
+
+| Corrected-oracle evidence | Result |
+| --- | --- |
+| First snapshot: API, browser create/edit/filter/recovery, atomic concurrent writes and restart | PASS, 10 check groups |
+| CSV follow-up: retained behavior/data, real file import/download, independent CSV parser, invalid batch atomicity and restart | PASS, 13 check groups |
+| Product/code judge: scope and complexity; architecture and change; supplied references | PASS, 4/4 in all three dimensions; reduced score 1.00 |
+| Execution judge: efficiency; autonomy and evidence | PASS, 3/4 and 4/4; reduced score 0.85 |
+| Evals mechanical checks and conservative reduction | PASS; lowest required judge score 0.85 |
+
+The execution judge identified avoidable test-runner/proxy/static-HTML assertion
+repairs and one duplicate invocation of the same test suite. Its smaller
+alternative is the brief's direct loopback transport, a check at the actual
+dynamic action, and one run of each distinct validation set. The product judge
+found the implementation proportionate to R1–R4; those ratings do not cover the
+omitted module/startup architecture standard described above.
+
+Frozen `QA-REQUEST-TRACKER-SEARCH-ORACLE-V2` triage classifies `TEST_DRIFT` using
+the original passing HTTP edit/filter receipt and the independent corrected
+browser receipt on identical source. Its schema and ownership validation pass.
+The host repair changes only `acceptance.mjs`: submit the search/filter form,
+wait for the matching result, and verify its title before editing. All assertions
+and public behavior remain covered. The canonical test matches the executed
+candidate SHA-256 `df54c36c249989563e4a2727a7709f3495373ee0c1eca8991d950b45f35c0827`.
+
+Local evidence roots are `.artifacts/autonomous-project-pilot-v4/private` for
+the original inputs, snapshots and failures, and its sibling
+`reevaluation-oracle-v2` for corrected acceptance, both independent judge
+responses, the hash-bound bundle and `evaluation-receipt.json`. The triage and
+test-repair receipt remain in `.artifacts/autonomous-project-pilot-preflight`.
+
+Raw CLI usage counters are retained per emitted event. Whether the resumed
+turn's counters are cumulative was not independently established; they are not
+summed into a campaign token or cost claim. Human calibration, paired-control
+attribution, other model profiles and deployment remain `NOT_RUN`. This is a
+successful retrospective evaluation against the frozen pilot requirements,
+with a documented original oracle failure and an open architecture-reference
+coverage gap, not a general Harness acceptance result.

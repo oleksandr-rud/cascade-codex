@@ -1,10 +1,13 @@
 # Autonomous project Harness evaluation — pilot plan
 
-Status: **PREPARED FOR ATTEMPT V4**. The original design inspected `bf40c48`;
-attempt v3 froze repaired source `ad897e8` on
-`codex/autonomous-project-harness-eval`. This is an experiment plan, not a
-registered campaign or an acceptance receipt. The public brief, reference pack,
-execution profile, budgets and judge packets are frozen before dispatch.
+Status: **EXECUTED; ARCHITECTURE REFERENCE COVERAGE GAP**. The original design
+inspected `bf40c48`; v3 froze repaired source `ad897e8`, and v4 froze `9f147c7`
+on `codex/autonomous-project-harness-eval`. Both v4 builder turns completed.
+Its original acceptance failed on a test assumption; a separately frozen oracle
+correction passed on identical output, including two independent judges. This
+plan preserves the experiment design; the [results and limits](2026-09-10-contract-necessity-and-native-admission.md)
+distinguish those outcomes. The supplied references did not contain Cascade's
+module/startup architecture standard, so conformance to it remains unproven.
 
 ## Question and pilot project
 
@@ -128,13 +131,17 @@ Cascade Evals owns independent judging and reduction; simulation/controller
 verification owns execution integrity. Generic route diagnostics do not become
 product or architecture acceptance evidence.
 
-Current phases: design and exact bindings **PREPARED**; allowed/denied filesystem
-and network probes **PASS**; attempt v3 **TIMED_OUT** before a completed native
-turn, despite passing builder checks. Its prescribed independent acceptance and
-judgments remain **NOT_RUN**. A separate post-timeout functional diagnosis does
-not change that result. Attempt v4 receives 25 minutes for the initial build
-within the unchanged 60-minute overall limit; it starts from a fresh project.
-Human calibration remains **NOT_RUN**. The earlier controller and blocked native
+Final phases: allowed/denied filesystem and network probes **PASS**; attempt v3
+**TIMED_OUT**, with its prescribed acceptance and judgments **NOT_RUN**. Attempt
+v4 completed both native turns within the revised phase budgets but retained an
+original **FUNCTIONAL_OR_INTEGRITY_FAIL** from the unsupported search-on-input
+test assumption. Corrected-oracle reevaluation of unchanged v4 snapshots passed
+10 initial and 13 follow-up functional groups plus both independent judges;
+the conservative reduced score is **0.85**. It completed 38 minutes 38 seconds
+after the original v4 dispatch. This retrospective result does not rewrite the
+original failure. Human calibration, paired controls and conformance to the
+omitted architecture standard remain **NOT_RUN**; the manual source review found
+the startup/module layout absent. The earlier controller and blocked native
 attempts remain separate.
 See [contract findings and native admission repair](2026-09-10-contract-necessity-and-native-admission.md)
 for their evidence boundaries. Preserve reusable case/rubric sources; keep raw

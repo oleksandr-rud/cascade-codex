@@ -43,5 +43,18 @@ bodies, numeric thresholds, expected answers or peer responses. Ratings use
 the frozen 0–4 anchors, weighted reduction, per-dimension floors and lowest
 required-judge score. Calibration and paired control attribution remain NOT_RUN.
 
+The canonical acceptance includes oracle v2: explicitly submit the native search
+form and check the selected record before editing. Original v4 receipts retain
+the earlier test's wrong-row failure. The corrected test passed on byte-identical
+snapshots in a separate retrospective evaluation; do not relabel that as the
+original frozen acceptance result.
+
+Reference coverage in this version is limited to the supplied synthetic R1–R4.
+The core runtime does not supply Cascade's optional module/startup architecture
+references. A run intended to prove that standard must freeze the selected actual
+references in both builder inputs and the independent rubric before dispatch.
+The completed pilot and this coverage gap are documented in the
+[contract and outcome report](../../../docs/work/reports/2026-09-10-contract-necessity-and-native-admission.md).
+
 Do not turn one successful pilot into a claim that all Harness versions work,
 that Cascade caused the result, or that the target is ready for deployment.

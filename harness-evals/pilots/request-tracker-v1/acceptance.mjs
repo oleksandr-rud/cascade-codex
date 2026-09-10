@@ -183,9 +183,16 @@ export async function accept({ url, phase, evidenceRoot, chromium, previous = []
     assert((await list()).some(item => item.title === `Browser created ${phase}`));
     const search = page.getByLabel('Search requests', { exact: true });
     await search.fill(`Browser created ${phase}`);
+    await search.press('Enter');
+    for (let attempt = 0; attempt < 30; attempt++) {
+      if (await action('Edit request').count() === 1) break;
+      await sleep(100);
+    }
+    assert.equal(await action('Edit request').count(), 1, 'search must show only the matching request');
     await page.getByText(`Browser created ${phase}`, { exact: true }).first().waitFor();
     const beforeEdit = (await list()).find(item => item.title === `Browser created ${phase}`);
-    await action('Edit request').first().click();
+    await action('Edit request').click();
+    assert.equal(await page.getByLabel('Title', { exact: true }).inputValue(), `Browser created ${phase}`);
     await page.getByLabel('Description', { exact: true }).fill('Edited through the browser');
     await page.getByRole('button', { name: 'Save request', exact: true }).click();
     for (let attempt = 0; attempt < 30; attempt++) {
@@ -194,9 +201,11 @@ export async function accept({ url, phase, evidenceRoot, chromium, previous = []
     }
     assert.equal((await list()).find(item => item.id === beforeEdit.id)?.description, 'Edited through the browser');
     await page.getByLabel('Filter status', { exact: true }).selectOption('done');
+    await search.press('Enter');
     await page.getByText(`Browser created ${phase}`, { exact: true }).first().waitFor({ state: 'hidden' });
     await page.getByLabel('Filter status', { exact: true }).selectOption({ label: 'All statuses' });
     await search.fill('');
+    await search.press('Enter');
     await page.getByText(`Browser created ${phase}`, { exact: true }).first().waitFor();
     assert.equal(await page.evaluate(() => window.__pilotXss), undefined);
     await page.screenshot({ path: join(evidenceRoot, `phase-${phase}-list.png`), fullPage: true });
