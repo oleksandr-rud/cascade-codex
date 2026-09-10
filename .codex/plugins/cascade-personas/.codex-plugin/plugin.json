@@ -1,6 +1,6 @@
 {
   "name": "cascade-personas",
-  "version": "0.1.28+codex.20260910163504",
+  "version": "0.1.29+codex.20260910172549",
   "description": "Build, compile, and evaluate evidence-backed or explicitly synthetic human models with stable traits, dynamic state, provenance, privacy controls, and consumer-specific projections.",
   "author": {
     "name": "Cascade"

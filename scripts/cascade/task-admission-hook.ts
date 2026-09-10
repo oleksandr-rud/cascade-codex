@@ -2,7 +2,6 @@
 
 import {
   compileTaskEnvelope,
-  evaluateToolAdmission,
   readBoundedTaskEnvelope,
   type TaskEnvelope,
 } from "./admission";
@@ -184,30 +183,13 @@ async function clearSessionEnvelope(input: JsonObject): Promise<void> {
   }
 }
 
-function assertTrustedCurrentEnvelopeBinding(input: JsonObject, envelope: TaskEnvelope): void {
-  const binding = input.task_envelope_binding;
-  if (!binding || typeof binding !== "object" || Array.isArray(binding)) throw new Error("trusted current Task Envelope binding is required for mutation admission");
-  if (binding.revoked !== false) throw new Error("trusted current Task Envelope binding is revoked or lacks explicit non-revocation");
-  if (
-    binding.session_id !== input.session_id
-    || binding.envelope_id !== envelope.envelope_id
-    || binding.revision !== envelope.revision
-    || binding.request_digest !== envelope.request_digest
-    || binding.source_digest !== envelope.source_digest
-  ) throw new Error("trusted current Task Envelope binding does not match the current session, request, source, or revision");
-}
-
-async function currentEnvelope(input: JsonObject, requireTrustedBinding = false): Promise<EnvelopeResolution> {
-  const toolInput = input.tool_input;
-  // Tool input is model-controlled and can never supply authority.
-  void toolInput;
+async function currentEnvelope(input: JsonObject): Promise<EnvelopeResolution> {
   try {
     const path = currentEnvelopePath(input);
     if (!path) return {};
     if (!Bun.env.CASCADE_TASK_ENVELOPE && !(await exists(path))) return {};
     const envelope = await readBoundedTaskEnvelope(path, TASK_ENVELOPE_PREFIX);
     if (envelope.task_id !== input.session_id) throw new Error("Task Envelope task_id does not match the current hook session");
-    if (requireTrustedBinding) assertTrustedCurrentEnvelopeBinding(input, envelope);
     return { envelope };
   } catch (error) {
     return { error: error instanceof Error ? error.message : "Task Envelope resolution failed" };
@@ -251,48 +233,6 @@ export async function handleHook(input: JsonObject): Promise<JsonObject> {
   }
   if (input.hook_event_name === "Interrupt") {
     await clearSessionEnvelope(input);
-    return {};
-  }
-  if (input.hook_event_name === "PreToolUse") {
-    const current = await currentEnvelope(input, true);
-    const decision = evaluateToolAdmission({
-      tool_name: String(input.tool_name ?? ""),
-      tool_input: input.tool_input,
-      tool_call_id: typeof input.tool_call_id === "string" ? input.tool_call_id : undefined,
-      envelope: current.envelope,
-      envelope_error: current.error,
-      permission_mode: String(input.permission_mode ?? ""),
-    });
-    if (decision.behavior === "deny") {
-      return {
-        hookSpecificOutput: {
-          hookEventName: "PreToolUse",
-          permissionDecision: "deny",
-          permissionDecisionReason: decision.reason,
-        },
-      };
-    }
-    return {};
-  }
-  if (input.hook_event_name === "PermissionRequest") {
-    const current = await currentEnvelope(input, true);
-    const decision = evaluateToolAdmission({
-      tool_name: String(input.tool_name ?? ""),
-      tool_input: input.tool_input,
-      tool_call_id: typeof input.tool_call_id === "string" ? input.tool_call_id : undefined,
-      envelope: current.envelope,
-      envelope_error: current.error,
-      permission_mode: String(input.permission_mode ?? ""),
-    });
-    if (decision.behavior === "deny") {
-      return {
-        hookSpecificOutput: {
-          hookEventName: "PermissionRequest",
-          decision: { behavior: "deny", message: decision.reason },
-        },
-      };
-    }
-    // Never auto-approve. The normal Codex permission flow remains authority.
     return {};
   }
   throw new Error(`unsupported task admission hook event: ${String(input.hook_event_name)}`);

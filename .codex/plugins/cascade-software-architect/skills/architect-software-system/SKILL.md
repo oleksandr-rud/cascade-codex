@@ -1,6 +1,6 @@
 ---
 name: architect-software-system
-description: Design or revise a source-grounded software-system architecture, including boundaries, application units, interfaces, data and state ownership, runtime resources, delivery constraints, and validation seams; use before a cross-boundary implementation when the architecture itself is unresolved, not for ordinary code edits or AI-agent topology alone.
+description: Design or revise software architecture before building a new application without accepted boundaries or changing unresolved business, data, or dependency ownership. Ground modules, interfaces and validation in business scenarios; reuse settled architecture for ordinary edits and leave AI-agent topology to its owner.
 ---
 
 # Architect Software System
@@ -24,9 +24,12 @@ only with a host-supplied, versioned pattern catalog. Classify every applicable
 pattern `ADOPTED`, `ADAPTED`, `REJECTED`, or `GAP`; a reference default is not a
 mandate.
 
-Derive source modules from concrete domain entities, aggregates, or cohesive
-business capabilities and name them accordingly—for example `auth`, `users`,
-`customers`, `crm`, or `billing`. Require each module to own identifiable state
+Derive source modules from cohesive business capabilities. Map accepted scenarios,
+language, lifecycle, invariants, transaction boundaries and state owners before
+naming modules. An entity or aggregate can justify a module only when that
+business boundary is evidenced; never create one module per table or noun.
+Keep entities in one module when they serve one cohesive lifecycle. Require each
+module to own identifiable state
 or policy, invariants and use cases, one public entrypoint, and its
 domain-specific contracts. Reject top-level category buckets such as `core`,
 `common`, `services`, `business`, `managers`, `helpers`, `utils`, `application`,

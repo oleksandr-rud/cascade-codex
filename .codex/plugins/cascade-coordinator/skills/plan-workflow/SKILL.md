@@ -25,6 +25,12 @@ when binding the generated catalog. Read
 [references/plugin-plan.schema.json](references/plugin-plan.schema.json) when
 creating or reviewing a plan.
 
+Input identities describe available source types, not a requirement to create
+separate files or run their usual producers. A grounded user request can supply
+a `design-brief`, `brand-brief`, or `design-proposal`; accepted requirements,
+journeys and scenarios retain their original source and acceptance bindings.
+Do not relabel an unaccepted report as accepted behavior to satisfy a plan.
+
 ## Fail-closed preflight
 
 Before reading schemas, enumerating catalog routes, or opening any domain skill,
@@ -45,10 +51,18 @@ and catalog descriptors are sufficient planning inputs.
    absent unless the selection records why they materially improve the outcome.
    `consumes` are required inputs. A descriptor's `optional_consumes` lists
    additional permitted inputs; put only the relevant, available subset in a
-   plan node's `optional_consumes`. Omission means none. Selected optional
+   plan node's `optional_consumes`. A descriptor's `consumes_any_of` declares
+   supported alternative input types; select at least one available alternative
+   in that same node field. These alternatives are not permission to omit the
+   subject. Keep each artifact in only one descriptor input category.
+   Omission means none. Selected conditional
    inputs need the same source availability and explicit ordered artifact edges
    as required inputs. Do not run growth planning to satisfy an ordinary Product
    definition, or invent a product contract for a pre-product growth test.
+   Reuse valid frozen artifacts supplied by the host without scheduling their
+   producers again. Planning input sufficiency does not complete a method:
+   execution, calibration, acceptance, and closure still require the evidence
+   and authority defined by that skill's applicable phase.
 3. Topologically order the graph. Represent every selected producer-to-consumer
    artifact handoff with an explicit edge.
 4. Parallelize only `READ_ONLY` nodes with no direct or transitive dependency,

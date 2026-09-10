@@ -43,9 +43,18 @@ actual work.
    input artifacts.
 2. Compare plausible catalog candidates using their descriptions, triggers,
    anti-triggers, consumes, produces, authority, effect, and current version.
+   Evaluate each unresolved decision or required work product, including
+   prerequisites to a requested implementation. An anti-trigger about target
+   execution excludes using that method as the executor; it does not exclude
+   necessary design or review before the host executes. A bounded task or one
+   owner can still need a specialist method. Do not match isolated topic words.
 3. Select the smallest sufficient route set. Expand every required dependency;
    include an optional dependency only when the request or a missing artifact
    makes its contribution material.
+   Reuse accepted frozen inputs. An available producer is not automatically work
+   to execute again. `optional_consumes` are optional context for selection;
+   phase-specific evidence and authority requirements in the selected skill
+   still govern execution and acceptance.
 4. Record trigger evidence and the anti-trigger disposition for every selected
    route. Record plausible rejected routes and an exact exclusion reason.
 5. Keep `cascade-coordinator:select-capabilities` and

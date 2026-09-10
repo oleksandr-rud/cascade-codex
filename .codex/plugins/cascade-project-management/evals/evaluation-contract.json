@@ -2,7 +2,7 @@
   "schema_version": 2,
   "plugin_id": "cascade-project-management",
   "subject_kind": "agent",
-  "version": "0.1.8+codex.20260910163504",
+  "version": "0.1.9+codex.20260910172549",
   "expected_case_count": 12,
   "acceptance_threshold": 0.95,
   "minimum_dimension": 3,

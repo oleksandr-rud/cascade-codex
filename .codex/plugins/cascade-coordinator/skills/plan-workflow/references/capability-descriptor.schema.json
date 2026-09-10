@@ -73,6 +73,10 @@
         "anti_triggers": { "$ref": "#/$defs/textList" },
         "consumes": { "$ref": "#/$defs/slugList" },
         "optional_consumes": { "$ref": "#/$defs/slugList" },
+        "consumes_any_of": {
+          "type": "array", "minItems": 2, "uniqueItems": true,
+          "items": { "$ref": "#/$defs/slug" }
+        },
         "produces": {
           "type": "array",
           "minItems": 1,

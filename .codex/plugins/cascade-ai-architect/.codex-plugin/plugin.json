@@ -1,6 +1,6 @@
 {
   "name": "cascade-ai-architect",
-  "version": "0.1.6+codex.20260910162214",
+  "version": "0.1.7+codex.20260910172549",
   "description": "Designs source-grounded AI agents and agentic systems while delegating prompt authoring, evaluation execution, simulation, and harness integration to their owning plugins.",
   "author": {
     "name": "Cascade"

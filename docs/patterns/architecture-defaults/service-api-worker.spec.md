@@ -16,9 +16,14 @@ package boundaries merely to match the example tree.
 
 ## Module Selection Contract
 
-A top-level module must name a real domain entity, aggregate, or cohesive
-business capability. Examples include `auth`, `users`, `crm`, `customers`,
-`leads`, `opportunities`, `billing`, and `work-orders`. Each module must own:
+A top-level module owns a cohesive business capability. Derive its boundary
+from accepted actor scenarios, business language, lifecycle, invariants,
+transaction needs, and data ownership before naming folders. An entity or
+aggregate can name that boundary only when these facts justify it; a noun,
+table, CRUD endpoint, or aggregate alone does not require a separate module.
+Keep entities in the same module when they implement the same lifecycle and
+invariants. Names such as `auth`, `crm`, `billing`, or `work-orders` are examples,
+not a module inventory to scaffold. Each module must own:
 
 - identifiable state or data, or an explicit stateless domain policy;
 - the invariants and use cases that act on that state or policy;
@@ -37,6 +42,13 @@ If customers, leads, and opportunities have different state, permissions, or
 release pressure, use those narrower modules instead. `auth` and `users` remain
 separate when authentication/session policy and user profile lifecycle have
 different invariants, even if they share an identifier.
+
+For example, a request and its comments can belong to one request-intake
+capability; separate `requests` and `comments` modules need an actual ownership
+reason. For each selected boundary, record a concrete precondition, action,
+observable outcome, failure or transition, and the operation enforcing its
+invariant. Behavior examples inform the boundary and acceptance checks;
+Given/When/Then syntax alone does not establish a business boundary.
 
 ## Default Architecture
 

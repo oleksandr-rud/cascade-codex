@@ -1,7 +1,7 @@
 schema_version: 1
 plugin:
   name: cascade-design
-  version: 0.1.9+codex.20260910163504
+  version: 0.1.10+codex.20260910172549
 model_policy:
   model: gpt-6-astra
   planning_reasoning_effort: high
@@ -10,8 +10,10 @@ skills:
   - route: cascade-design:ux-flow-review
     description: Review product journeys, onboarding burden, useful outcomes, completion, recovery and observable UX states within supplied product intent.
     triggers: [a screen or user flow needs UX review]
-    anti_triggers: [only reusable tokens, accessibility, or screenshot parity is requested]
-    consumes: [product-contract, persona-projection, design-evidence]
+    anti_triggers: ["only reusable tokens, accessibility, or screenshot parity is requested"]
+    consumes: []
+    consumes_any_of: [product-contract, design-evidence]
+    optional_consumes: [persona-projection]
     produces: [ux-review]
     required_dependencies: []
     optional_dependencies: [cascade-product:define-product, cascade-personas:compile-persona]
@@ -23,7 +25,8 @@ skills:
     description: Define or audit the Hybrid outcome UI default, basic components, shared generative UI practice, tokens, states, responsive behavior, motion, accessibility, and content constraints.
     triggers: [a reusable design-system rule is missing or changing, generative UI templates or component catalogs need a reusable rule]
     anti_triggers: [a one-off feature flow or brand-positioning decision is requested]
-    consumes: [product-contract, marketing-positioning, design-evidence]
+    consumes: [design-evidence]
+    optional_consumes: [product-contract, marketing-positioning]
     produces: [design-system-contract]
     required_dependencies: []
     optional_dependencies: [cascade-market:brand-positioning, cascade-product:define-product]
@@ -35,7 +38,8 @@ skills:
     description: Review UI semantics, names, keyboard and focus behavior, contrast, targets, forms, status messages, motion, and narrow viewports.
     triggers: [a UI or design needs accessibility review]
     anti_triggers: [legal compliance certification or product invention is requested]
-    consumes: [design-evidence, design-system-contract]
+    consumes: [design-evidence]
+    optional_consumes: [design-system-contract]
     produces: [accessibility-review]
     required_dependencies: []
     optional_dependencies: [cascade-design:ux-flow-review, cascade-design:design-system]
@@ -47,7 +51,8 @@ skills:
     description: Validate visual evidence across viewports and states for layout, hierarchy, overflow, spacing, tokens, responsiveness, and brand fit.
     triggers: [runnable UI or screenshots need visual validation]
     anti_triggers: [functional acceptance or unsupported redesign is requested]
-    consumes: [visual-evidence, design-system-contract, marketing-positioning]
+    consumes: [visual-evidence]
+    optional_consumes: [design-system-contract, marketing-positioning]
     produces: [visual-qa-review]
     required_dependencies: []
     optional_dependencies: [cascade-design:design-system, cascade-market:brand-positioning]
@@ -58,8 +63,10 @@ skills:
   - route: cascade-design:create-design
     description: Create editable product and marketing mockups, inspected previews and a version-bound frontend handoff from grounded requirements.
     triggers: [create or revise concrete mockups or a design prototype]
-    anti_triggers: [review-only request, production frontend implementation]
-    consumes: [product-contract, design-evidence]
+    anti_triggers: [review-only request, only production implementation of an accepted design is needed]
+    consumes: []
+    consumes_any_of: [product-contract, design-brief]
+    optional_consumes: [design-evidence]
     produces: [design-candidate, frontend-design-handoff]
     required_dependencies: []
     optional_dependencies: [cascade-product:define-product, cascade-design:design-system, cascade-design:accessibility-review, cascade-design:visual-qa]

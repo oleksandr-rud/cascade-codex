@@ -15,6 +15,8 @@ routing:
     - "The task only needs current target facts, an atomic file edit, or a framework installation command."
     - "The target already has a coherent established architecture and no boundary change is proposed."
   load_when:
+    - route: cascade-software-architect:architect-software-system
+      use_when: "A new application or unresolved business boundary needs scenario-grounded module ownership before a file structure."
     - route: cascade-ai-architect:design-agent-blueprint
       use_when: "A stateful conversational agent needs the Analyzer, Policy Engine, Composer reference default and optional voice/research variants."
     - route: cascade-software-architect:review-architecture
@@ -32,6 +34,7 @@ routing:
     - "The proposed rule is target-specific and belongs in harness.config.yaml, target boundary docs, or a work lane."
     - "No repeated decision or supported profile has been demonstrated."
   primary_skills:
+    - cascade-software-architect:architect-software-system
     - cascade-software-architect:review-architecture
     - cascade-coding-agent:adapt-harness
     - plan-change
@@ -892,6 +895,15 @@ documents:
     trigger_when:
       - "An API/backend/worker draft needs real module names, ownership, interfaces, state, or an evidence-based service split."
     sections:
+      - id: service-module-selection
+        title: Module Selection Contract
+        anchor: "## Module Selection Contract"
+        summary: "Derives cohesive business boundaries from scenarios, lifecycle, invariants, transactions and state ownership; entities alone do not justify modules."
+        routing_description: "Load before selecting backend module names, startup wiring or file structure."
+        tags:
+          - backend
+          - modules
+          - ownership
       - id: service-default
         title: Default Architecture
         anchor: "## Default Architecture"

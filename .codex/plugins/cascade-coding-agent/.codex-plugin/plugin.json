@@ -1,6 +1,6 @@
 {
   "name": "cascade-coding-agent",
-  "version": "0.2.5+codex.20260910162214",
+  "version": "0.2.6+codex.20260910172549",
   "description": "Audits, adapts, integrates, and evolves Codex and coding-agent harnesses while preserving target-repository authority.",
   "author": {
     "name": "Cascade"

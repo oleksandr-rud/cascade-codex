@@ -16,7 +16,7 @@ nodes:
     owns: "Runtime initialization, concrete module assembly, public entrypoint registration, health, and shutdown for one application."
   - id: domain-module
     kind: domain-boundary
-    owns: "One named domain entity, aggregate, or cohesive business capability with its state, invariants, use cases, and contracts."
+    owns: "One cohesive business capability derived from accepted scenarios, lifecycle, invariants, transaction needs, and state ownership."
   - id: module-entrypoint
     kind: module-public-surface
     owns: "The owning domain module's intentionally exported calls, registrations, or event contracts."
@@ -62,7 +62,7 @@ edges:
     relation: optionally_reuses
 decisions:
   - id: app-owned-vertical-slices
-    default: "Name each module after a real domain entity, aggregate, or cohesive capability such as auth, users, customers, CRM, billing, or work-orders."
+    default: "Derive modules from cohesive business capabilities and their scenarios and invariants before naming folders; entities sharing that lifecycle stay together."
     exception_when: "The target already has an enforced domain package boundary with equivalent ownership."
   - id: startup-composition
     default: "Keep process initialization, dependency assembly, module registration, health, and shutdown in the application startup boundary."
@@ -92,7 +92,7 @@ decisions:
     default: "Allow a shared database while each module owns its tables, models, migrations, and writes; cross-module calls use the owner's public contract."
     exception_when: "A separate read-model owner consumes an explicitly governed projection without inheriting write authority."
 validation:
-  - "Every top-level module maps to an accepted domain entity or capability and owns identifiable state or policy."
+  - "Every top-level module has accepted business scenarios, invariant enforcement, and identifiable state or policy; a noun or table alone does not justify a split."
   - "Startup imports public module entrypoints; modules do not import another module's internal files or storage model."
   - "Shared technical capabilities have at least two real consumers and contain no entity-specific behavior."
   - "Contract and persistence tests prove module public behavior, state ownership, and invariants."

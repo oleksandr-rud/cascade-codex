@@ -1,9 +1,13 @@
-# Autonomous project Harness evaluation — proposed pilot
+# Autonomous project Harness evaluation — pilot plan
 
-Status: **DESIGNED; NOT_RUN**. Inspected harness revision: `bf40c48`.
-This is a reviewable experiment plan, not a registered campaign or an acceptance
-receipt. Target selection, exact reference pack, execution profile, budgets,
-and judge packets must be frozen before dispatch.
+Status: **EXECUTED; ARCHITECTURE REFERENCE COVERAGE GAP**. The original design
+inspected `bf40c48`; v3 froze repaired source `ad897e8`, and v4 froze `9f147c7`
+on `codex/autonomous-project-harness-eval`. Both v4 builder turns completed.
+Its original acceptance failed on a test assumption; a separately frozen oracle
+correction passed on identical output, including two independent judges. This
+plan preserves the experiment design; the [results and limits](2026-09-10-contract-necessity-and-native-admission.md)
+distinguish those outcomes. The supplied references did not contain Cascade's
+module/startup architecture standard, so conformance to it remains unproven.
 
 ## Question and pilot project
 
@@ -113,20 +117,32 @@ also denies network, so it cannot serve as an unchanged live model builder.
 Changing a prompt or calling a read-only trace a successful build would not
 close this gap.
 
-The next implementation slice is one bounded project-building execution
+The implemented slice is one bounded project-building execution
 profile: a fresh writable target, model connectivity, controlled dependency
 provisioning and localhost access, enforced denial of sealed evaluator inputs,
 streamed evidence, process cleanup, and timeout/cancellation handling. Verify
 those boundaries before the project run. Reuse existing execution and evidence
 components; do not introduce a general benchmark framework for this pilot.
 
-The public brief/reference pack, hidden checks and two judge profiles are the
-remaining subject-specific inputs. Product checks own application behavior;
+The public brief/reference pack, hidden checks and two judge profiles are in
+[`harness-evals/pilots/request-tracker-v1`](../../../harness-evals/pilots/request-tracker-v1/README.md).
+Product checks own application behavior;
 Cascade Evals owns independent judging and reduction; simulation/controller
 verification owns execution integrity. Generic route diagnostics do not become
 product or architecture acceptance evidence.
 
-Current phases: design **PREPARED**; exact bindings and runnable profile
-**PENDING**; target execution, product checks, independent judgments and human
-calibration **NOT_RUN**. Preserve reusable case/rubric sources; keep raw runs
-under ignored artifact roots according to the chosen adapter contract.
+Final phases: allowed/denied filesystem and network probes **PASS**; attempt v3
+**TIMED_OUT**, with its prescribed acceptance and judgments **NOT_RUN**. Attempt
+v4 completed both native turns within the revised phase budgets but retained an
+original **FUNCTIONAL_OR_INTEGRITY_FAIL** from the unsupported search-on-input
+test assumption. Corrected-oracle reevaluation of unchanged v4 snapshots passed
+10 initial and 13 follow-up functional groups plus both independent judges;
+the conservative reduced score is **0.85**. It completed 38 minutes 38 seconds
+after the original v4 dispatch. This retrospective result does not rewrite the
+original failure. Human calibration, paired controls and conformance to the
+omitted architecture standard remain **NOT_RUN**; the manual source review found
+the startup/module layout absent. The earlier controller and blocked native
+attempts remain separate.
+See [contract findings and native admission repair](2026-09-10-contract-necessity-and-native-admission.md)
+for their evidence boundaries. Preserve reusable case/rubric sources; keep raw
+runs under ignored artifact roots according to the chosen adapter contract.

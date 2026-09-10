@@ -1,7 +1,7 @@
 schema_version: 1
 plugin:
   name: cascade-project-management
-  version: 0.1.8+codex.20260910163504
+  version: 0.1.9+codex.20260910172549
 model_policy:
   model: gpt-6-astra
   planning_reasoning_effort: high
@@ -10,8 +10,9 @@ skills:
   - route: cascade-project-management:define-work-item
     description: Draft one grounded tracker-ready issue, bug, story, task, enabler, or experiment without filing or activating it.
     triggers: [a durable tracker-ready work-item body is requested]
-    anti_triggers: [validation, defect classification, project planning, or implementation is requested]
-    consumes: [user-report, accepted-behavior, frozen-findings]
+    anti_triggers: ["only validation, defect classification, project planning, or implementation is requested"]
+    consumes: []
+    consumes_any_of: [user-report, accepted-behavior, frozen-findings]
     produces: [work-item-definition]
     required_dependencies: []
     optional_dependencies: [cascade-product:manage-product-lifecycle, cascade-qa:triage-defects]
@@ -33,7 +34,7 @@ skills:
     evaluation_cases: [lean-plan, no-invented-owner]
   - route: cascade-project-management:manage-project
     description: Assess, coordinate, update, or reconcile an existing project plan from current artifacts, blockers, dependencies, and receipts.
-    triggers: [an existing project has blockers, collisions, stale state, or handoffs]
+    triggers: ["an existing project has blockers, collisions, stale state, or handoffs"]
     anti_triggers: [no durable project state exists]
     consumes: [project-plan, execution-receipts]
     produces: [project-status-proposal]
@@ -45,9 +46,10 @@ skills:
     evaluation_cases: [stale-state, no-auto-dispatch]
   - route: cascade-project-management:close-project
     description: Assess terminal project completion and propose evidence-preserving retention without archiving or rewriting history.
-    triggers: [an existing project may be complete, superseded, or abandoned]
+    triggers: ["an existing project may be complete, superseded, or abandoned"]
     anti_triggers: [target archival or ordinary bounded completion is requested]
-    consumes: [project-plan, execution-receipts, quality-assessment]
+    consumes: [project-plan, execution-receipts]
+    optional_consumes: [quality-assessment]
     produces: [project-closeout-proposal]
     required_dependencies: []
     optional_dependencies: [cascade-qa:assess-quality]

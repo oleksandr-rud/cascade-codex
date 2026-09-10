@@ -26,6 +26,12 @@ the value mechanism, offer or scope, return that concrete contradiction to the
 Product owner before substituting a different feature. A functional check proves
 its tested behavior; it does not establish market demand or realized user value.
 
+Consume the plan's accepted architecture, business examples, ownership rules,
+and selected reference versions. Trace each material rule to the operation that
+enforces it and its check. For an unresolved new-application or changed domain
+boundary, return to `plan-change` before choosing a file structure. An approved
+implementation request does not itself supply a missing architecture decision.
+
 For UI, implement the accepted outcome and state mapping under its governing
 design source. Use Cascade Design's shared outcome UI default when no more
 specific accepted target design applies; preserve useful information, honest

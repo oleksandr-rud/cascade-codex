@@ -1,7 +1,7 @@
 schema_version: 1
 plugin:
   name: cascade-simulations
-  version: 0.2.8+codex.20260910162214
+  version: 0.2.9+codex.20260910172549
 model_policy:
   model: gpt-6-astra
   planning_reasoning_effort: high
@@ -61,8 +61,8 @@ skills:
     anti_triggers: [persona creation or revision is requested]
     consumes: [persona-projection]
     produces: [simulation-persona-contract]
-    required_dependencies: [cascade-personas:compile-persona]
-    optional_dependencies: []
+    required_dependencies: []
+    optional_dependencies: [cascade-personas:compile-persona]
     policy_tags: [simulation, persona-consumption]
     effect: READ_ONLY
     authority: READ_ONLY
@@ -106,7 +106,7 @@ skills:
   - route: cascade-simulations:simulation-review
     description: Review one frozen dynamic simulation run against its actor, interface, brief, outcome, permissions, and limits.
     triggers: [a frozen simulation run needs controller review]
-    anti_triggers: [simulation execution, repair, or independent semantic evaluation is requested]
+    anti_triggers: ["only simulation execution, repair, or independent semantic evaluation is requested"]
     consumes: [frozen-simulation-run]
     produces: [simulation-review]
     required_dependencies: []

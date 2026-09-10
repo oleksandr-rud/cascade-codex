@@ -31,6 +31,28 @@ A growth recommendation supplies a hypothesis, not accepted product scope.
 Use accepted current requirements directly for ordinary fixes; do not rerun
 market or growth strategy unless the change challenges those decisions.
 
+Before choosing the implementation slice, resolve the decisions it depends on:
+
+- For a new application without an accepted architecture, or a change whose
+  business, state, or dependency boundaries are unresolved, use
+  `cascade-software-architect:architect-software-system` before code. Derive
+  module ownership from accepted business scenarios and invariants, not entity
+  names or a preferred directory tree. Reuse a current accepted architecture.
+- For unresolved AI-agent behavior, topology, or tool/state ownership, use
+  `cascade-ai-architect:architect-ai-system`. An ordinary implementation of an
+  accepted agent design does not need a new architecture packet.
+- For a new or changed trust boundary, authentication, tenant access, external
+  effect, or sensitive-data flow, use `cascade-security:secure-design` before
+  implementing that design; current implementation audits use its audit routes.
+
+These methods resolve prerequisites even when the final request is to build or
+fix something. Use the exact known route directly; use Coordinator only when
+the capability choice or cross-plugin ordering needs it. An atomic script or
+ordinary internal edit with settled boundaries does not trigger these methods.
+Bind only applicable target-adopted or explicitly selected references, including
+their concrete rules and source versions. Missing decision-critical sources are
+gaps; do not substitute source-checkout defaults or load every reference pack.
+
 For UI, map the intended outcome to necessary information, the primary action,
 and observable completion/recovery. Bind the accepted target design or Cascade
 Design's shared outcome UI default as the presentation source.
@@ -39,6 +61,10 @@ practice through `cascade-design:design-system`, `references/generative-ui.md`.
 Plan the accepted UI mapping; adopting the practice adds no backend work by itself.
 
 1. Restate the intended behavior, explicit non-goals, and success criteria.
+   Use concrete precondition/action/outcome examples for material business rules,
+   including failures and state changes. Carry each example to its owning
+   operation and acceptance check; Gherkin files or a separate BDD packet are
+   optional representations, not prerequisites.
 2. Inspect the current path through source, tests, persistence, interfaces, and
    rendered or observable outcomes as applicable.
 3. Identify public contracts and likely consumers of the change.
@@ -63,6 +89,7 @@ Implementation can begin when the chosen slice has:
 
 - clear behavior and non-goals,
 - named source and consumer boundaries,
+- resolved applicable domain decisions and references carried into the slice,
 - known permissions and mutation scope,
 - a focused validation command or observable check,
 - no unresolved question that would materially change the result.

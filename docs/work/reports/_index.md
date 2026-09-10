@@ -17,10 +17,12 @@ Use filenames like `YYYY-MM-DD-slug.md`.
 
 | Date | Report | Purpose |
 |---|---|---|
+| 2026-09-10 | [Cross-plugin prerequisite routing repair](2026-09-10-cross-plugin-routing-repair.md) | Audit of all 14 packages, architecture prerequisites, business-module derivation, lean input contracts, compatible handoffs, installed parity and routing diagnostics. |
+| 2026-09-10 | [Contract necessity and native admission](2026-09-10-contract-necessity-and-native-admission.md) | Native gate repair, completed build/change pilot, corrected-oracle results, and missing module/startup reference coverage. |
 | 2026-09-10 | [Astra plugin and judge pilot](2026-09-10-astra-plugin-and-judge-pilot.md) | Frozen 48-call judge comparison, seven-domain model-binding preflights, migration constraints, and retained production defaults. |
 | 2026-09-10 | [Concise prompts, retrieval, and model pilot](2026-09-10-concise-prompts-search-and-model-benchmark.md) | Conditional output, web/database controls, frozen Astra/high versus Sol/max observations, preserved failures, and unchanged model defaults. |
 | 2026-09-10 | [Harness admission and Prompt repairs](2026-09-10-harness-admission-and-prompt-repairs.md) | Ukrainian directive routing, Prompt readiness and context loading, CLI compatibility, oracle repairs, and preserved validation evidence. |
-| 2026-09-10 | [Autonomous project Harness evaluation plan](2026-09-10-autonomous-project-harness-evaluation-plan.md) | Proposed isolated build/run/change pilot, independent complexity and reference checks, control comparison, and the missing writable execution profile; NOT_RUN. |
+| 2026-09-10 | [Autonomous project Harness evaluation plan](2026-09-10-autonomous-project-harness-evaluation-plan.md) | Isolated build/run/change pilot, frozen complexity and reference checks, verified execution boundaries, and current attempt state. |
 | 2026-09-10 | [Prompt discovery and model audit](2026-09-10-cascade-prompt-discovery-and-model-audit.md) | Installed material loading, native trigger/search probes, campaign run-ID repair, Windows fixes, model-specific support, and preserved quality gaps. |
 | 2026-09-10 | [Evaluation simplification and installed plugins](2026-09-10-evaluation-simplification-and-plugin-update.md) | Published decisions and commits, exact installed versions, source/cache parity, historical canaries, and remaining proof limits. |
 | 2026-09-10 | [Prompt evaluation reliability](2026-09-10-cascade-prompt-evaluation-reliability.md) | Shared model-call limits, interruption evidence, versioned judge citations, and the bounded reliability pilot. |

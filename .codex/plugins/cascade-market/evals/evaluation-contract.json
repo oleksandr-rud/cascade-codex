@@ -2,7 +2,7 @@
   "schema_version": 2,
   "plugin_id": "cascade-market",
   "subject_kind": "agent",
-  "version": "0.2.8+codex.20260910163504",
+  "version": "0.2.9+codex.20260910172549",
   "expected_case_count": 20,
   "acceptance_threshold": 0.95,
   "minimum_dimension": 3,

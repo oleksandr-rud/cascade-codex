@@ -1,7 +1,7 @@
 schema_version: 1
 plugin:
   name: cascade-security
-  version: 0.1.9+codex.20260910164220
+  version: 0.1.10+codex.20260910172549
 model_policy:
   model: gpt-6-astra
   planning_reasoning_effort: high
@@ -33,9 +33,10 @@ skills:
     evaluation_cases: [tenant-boundary, revocation]
   - route: cascade-security:secure-design
     description: Review a proposed feature, architecture, workflow, integration, or agent-tool plan for trust boundaries and abuse cases.
-    triggers: [a proposed design needs security review before implementation]
-    anti_triggers: [runtime patching or penetration execution is requested]
-    consumes: [architecture-candidate, product-contract]
+    triggers: [a proposed design needs security review before implementation, new trust or authorization boundaries and external effects need controls]
+    anti_triggers: [only implementation of reviewed controls or penetration execution is needed]
+    consumes: []
+    consumes_any_of: [architecture-candidate, design-proposal, product-contract, agent-architecture-packet, agent-workflow]
     produces: [secure-design-findings]
     required_dependencies: []
     optional_dependencies: [cascade-software-architect:review-architecture, cascade-prompt:prompt, cascade-simulations:simulate, cascade-evals:evaluate, cascade-qa:design-tests]

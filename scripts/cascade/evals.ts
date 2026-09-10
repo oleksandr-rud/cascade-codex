@@ -588,6 +588,7 @@ function targetPrompt(scenario: JsonObject): string {
 
 Rules:
 - Work only with this repository and do not edit any file.
+${scenario.kind === "interaction" ? "- This is routing-only: identify the primary method, actual input gaps and first required handoff, then stop. Do not perform the underlying design, research, audit or implementation request.\n" : ""}
 - Do not access the network, external apps, connectors, or MCP servers.
 - Do not spawn or delegate to another agent.
 - Do not read harness-evals/, .artifacts/harness-evals/, prior runs, expected answers, or evaluator rubrics.
@@ -600,8 +601,11 @@ Rules:
   the sandbox uses restricted language mode, so avoid .NET file APIs. Use the
   installed Bun only when a repository command is strictly necessary.
 - For product-sensitive work, read and cite the current product, design, brand,
-  or specification sources routed by the repository. Do not infer product
-  behavior from workflow documents or simulation output alone.
+  or specification sources only when they belong to the scenario's target.
+  This Cascade checkout supplies harness policy, not business facts for a new
+  or hypothetical product. Use supplied scenario facts and report missing
+  target inputs; do not search Cascade product docs for that product or infer
+  its behavior from workflow documents or simulation output.
 - Select one primary Cascade skill. \`supporting_skills\` may contain only existing
   repository skills that you actually loaded and used for this response; put
   skills mentioned only as future handoffs in \`next_route\`, not in
@@ -964,7 +968,7 @@ async function checkEligibility(
     ![0, null, undefined].includes(trace.exit_code) ||
     trace.terminal_event === "turn.failed" ||
     [...(trace.errors ?? []), ...(trace.stderr_lines ?? [])].some((line) =>
-      /failed to spawn|requires a newer version|model .+ (?:is not supported|was not found)|authentication (?:failed|required)|code-mode host is disabled|CreateProcess.*Rejected.*blocked by policy/i.test(
+      /failed to spawn|requires a newer version|model .+ (?:is not supported|was not found)|authentication (?:failed|required)|code.mode (?:host is disabled|is unavailable)|CreateProcess.*Rejected.*blocked by policy/i.test(
         line,
       ),
     );

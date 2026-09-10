@@ -28,6 +28,12 @@ by this target; a generic agent/context task does not select a stateful profile.
 Current code outranks stale planning prose. Preserve unrelated dirty work and
 never infer authority from a work record, plugin, prompt, or passing check.
 
+The default admission hooks classify submitted requests and clear interrupted
+state. Native Codex permissions and its sandbox govern command execution.
+The standalone admission guard has no production trusted-host authority bridge;
+do not register it for `PreToolUse` or `PermissionRequest` in this runtime.
+Its synthetic guard tests do not establish a working native permission adapter.
+
 For repository searches in any role or skill, use `rg --files <root>` to locate
 files and `rg -n -e '<pattern>' <paths>` to search content. Start with the known
 owner's paths; use `--hidden` for `.codex` assets and `-g` for filename filters.
@@ -98,6 +104,16 @@ access, execution, persistence, and acceptance.
 The Orchestrator's [Coordinator host bridge](.codex/agents/orchestrator/AGENT.md#coordinator-host-bridge)
 owns serialized input preparation and deterministic selection/plan validation;
 prose summaries of admission or selected routes do not satisfy those inputs.
+
+Select methods for the decisions needed to complete the request, including
+prerequisites to implementation. An implementation verb, one owner, or a bounded
+slice does not resolve product behavior, architecture, design, security, or
+evaluation decisions. Apply descriptor triggers and anti-triggers to that
+specific work product, then follow `plan-change` for unresolved decisions.
+Reuse current accepted inputs; schedule a producer only when its output is missing
+or invalidated. Carry selected decisions and applicable references into the
+implementation and its validation. A catalog or installation check alone does
+not prove that a method was used.
 
 For product and marketing UI, consume the shared default owned by
 `cascade-design:design-system` at `references/outcome-ui-standard.md`.

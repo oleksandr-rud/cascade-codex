@@ -9,9 +9,10 @@ abstractions, state-machine changes, or major refactors.
 - [ ] Owning boundary is identified.
 - [ ] Change type is classified: additive, behavior-preserving, breaking,
       state-machine, integration-sensitive, user-visible, or internal.
-- [ ] Every top-level module names a real domain entity, aggregate, cohesive
-      capability, or selected infrastructure mechanism rather than a generic
-      category such as core, common, services, helpers, or utils.
+- [ ] Every domain module has a cohesive business capability justified by
+      scenarios, lifecycle, invariants and state ownership; neither an entity
+      name nor a table alone justifies a split. Entities sharing those rules
+      stay together. Technical modules need an evidenced reusable mechanism.
 - [ ] A separately deployed service has a current release, scale, data,
       security, availability, or failure-isolation reason; source modularity
       alone is not treated as deployment evidence.

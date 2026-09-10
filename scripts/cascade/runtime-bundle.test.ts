@@ -235,7 +235,9 @@ describe("Cascade lean target runtime bundle", () => {
       expect(accepted.stdout.toString()).toContain("plugin_plan_status=PASS");
       if (promptPair) {
         expect((await checkPlan({ ...plan, edges: [] })).stderr.toString()).toContain("required artifact edge is missing");
-        expect((await checkPlan({ ...plan, selected_nodes: [...nodes].reverse() })).stderr.toString()).toContain("required dependency must appear earlier");
+        const reversed = await checkPlan({ ...plan, selected_nodes: [...nodes].reverse() });
+        expect(reversed.exitCode).not.toBe(0);
+        expect(reversed.stderr.toString()).toContain("consumes unavailable artifact: prompt-candidate");
         expect((await checkPlan({ ...plan, dispatch_authorized: true })).exitCode).not.toBe(0);
         expect(nodes.map((node) => node.model)).toEqual([
           { id: "gpt-6-astra", reasoning_effort: "high" },
@@ -274,6 +276,34 @@ describe("Cascade lean target runtime bundle", () => {
         expect((await checkPlan({ ...plan, selected_nodes: [{ ...nodes[0], optional_consumes: ["growth-strategy"] }] })).stderr.toString()).toContain("consumes unavailable artifact");
         expect((await checkPlan({ ...plan, selected_nodes: [{ ...nodes[0], optional_consumes: ["undeclared-input"] }] })).stderr.toString()).toContain("undeclared optional input");
       }
+    }
+
+    // The distributed planner accepts either supported quality-planning subject,
+    // while still rejecting a plan that omits both or selects unavailable input.
+    const qaPlugin = catalog.plugins.find((item) => item.name === "cascade-qa")!;
+    const qa = qaPlugin.skills.find((item: Record<string, any>) => item.route === "cascade-qa:plan-quality")!;
+    const qaSelection = {
+      ...selection,
+      input_artifacts: ["task-envelope", "plugin-capability-catalog", "change-contract"],
+      selected_candidates: [{ ...selection.selected_candidates[0], route: qa.route, plugin_version: qaPlugin.version, required_dependencies: qa.required_dependencies, effect: qa.effect, authority: qa.authority }],
+    } as CapabilitySelection;
+    qaSelection.selection_digest = capabilitySelectionDigest(qaSelection);
+    await writeFile(resolve(artifacts, "envelope.json"), JSON.stringify(envelope));
+    await writeFile(resolve(artifacts, "selection.json"), JSON.stringify(qaSelection));
+    for (const selectedInput of ["change-contract", "", "product-contract"]) {
+      await writeFile(resolve(artifacts, "plan.json"), JSON.stringify({
+        schema_version: 1, artifact_type: "cascade-plugin-plan", status: "CANDIDATE",
+        task_envelope_id: envelope.envelope_id, request_digest: envelope.request_digest,
+        capability_catalog_digest: catalog.catalog_digest, capability_selection_digest: qaSelection.selection_digest,
+        planner: { route: "cascade-coordinator:plan-workflow", model: "gpt-6-astra", reasoning_effort: "high", prompt_sha256: "b".repeat(64) },
+        input_artifacts: qaSelection.input_artifacts,
+        selected_nodes: [{ node_id: "quality", route: qa.route, plugin_version: qaPlugin.version, claim_ids: [envelope.claims[0]!.claim_id], policy_tags: qa.policy_tags, consumes: qa.consumes, optional_consumes: selectedInput ? [selectedInput] : [], produces: qa.produces, effect: qa.effect, authority: qa.authority, model: { id: qaPlugin.model_policy.model, reasoning_effort: qaPlugin.model_policy.planning_reasoning_effort }, reason: "Plan evidence gates from accepted behavior in the change contract." }],
+        edges: [], parallel_groups: [], rejected_candidates: [], blockers: [], dispatch_authorized: false,
+        validation_gates: ["Verify accepted behavior before planning gates."], stop_conditions: ["Stop before execution."],
+      }));
+      const checked = runBundle(output, ["workflow", "validate-plan", "--plan", ".artifacts/runtime-bundle-test/plan.json", "--selection", ".artifacts/runtime-bundle-test/selection.json", "--envelope", ".artifacts/runtime-bundle-test/envelope.json"]);
+      if (selectedInput === "change-contract") expect(checked.exitCode).toBe(0);
+      else expect(checked.stderr.toString()).toContain(selectedInput ? "consumes unavailable artifact" : "requires an alternative input");
     }
 
     const hooks = JSON.parse(

@@ -1,6 +1,6 @@
 {
   "artifact_type": "cascade-plugin-capability-catalog",
-  "catalog_digest": "287923457c530336b8e21ae817da5618c32f776a7a337fdaa9a59d239c6c21d8",
+  "catalog_digest": "a316ea9e456eb416c05e350718dd2d27ef216b7b7cda83e9dbffeadebfc4861f",
   "marketplace": ".agents/plugins/marketplace.json",
   "plugins": [
     {
@@ -56,9 +56,9 @@
     },
     {
       "descriptor_path": ".codex/plugins/cascade-simulations/capabilities.yaml",
-      "descriptor_sha256": "c324953f6ae0e8f8df31ea62b2071c745989e77695fa660a2ecef4dc9aeeac45",
+      "descriptor_sha256": "b4ce2eee97e24e162cefead2bf5aa2331a7eaa60d1fb3089f5047ebceccbe602",
       "manifest_path": ".codex/plugins/cascade-simulations/.codex-plugin/plugin.json",
-      "manifest_sha256": "21a821669cd6e0f54cf1cbd6c47894d03571ad290dad2991aa97ae0655791d41",
+      "manifest_sha256": "3d46a717c332d7aa417041883ae4b1aa0f754a1634a604e9ff26c3b899d4a9a5",
       "model_policy": {
         "evaluation_reasoning_effort": "high",
         "model": "gpt-6-astra",
@@ -209,7 +209,9 @@
             "projection-digest",
             "no-persona-mutation"
           ],
-          "optional_dependencies": [],
+          "optional_dependencies": [
+            "cascade-personas:compile-persona"
+          ],
           "policy_tags": [
             "simulation",
             "persona-consumption"
@@ -217,9 +219,7 @@
           "produces": [
             "simulation-persona-contract"
           ],
-          "required_dependencies": [
-            "cascade-personas:compile-persona"
-          ],
+          "required_dependencies": [],
           "route": "cascade-simulations:simulation-persona",
           "triggers": [
             "a Persona-backed simulation needs projection validation"
@@ -313,9 +313,7 @@
         },
         {
           "anti_triggers": [
-            "simulation execution",
-            "repair",
-            "or independent semantic evaluation is requested"
+            "only simulation execution, repair, or independent semantic evaluation is requested"
           ],
           "authority": "READ_ONLY",
           "consumes": [
@@ -342,13 +340,13 @@
           ]
         }
       ],
-      "version": "0.2.8+codex.20260910162214"
+      "version": "0.2.9+codex.20260910172549"
     },
     {
       "descriptor_path": ".codex/plugins/cascade-evals/capabilities.yaml",
-      "descriptor_sha256": "60352bbad407cbc0497e7a0819b6b9a04ca92b5366a8894fc3ce0f8a028540f8",
+      "descriptor_sha256": "dc5dac0cd7584dfebd8ee24808794482daa91113fdbb88927668b46e8709229e",
       "manifest_path": ".codex/plugins/cascade-evals/.codex-plugin/plugin.json",
-      "manifest_sha256": "2f14778c2d0953b093a4a11f779734d1c7207c5708fa4275ae22da59023f2708",
+      "manifest_sha256": "a97d33e0f5cb04960c63280d976fc8c0e4658d68f992ceb28c66510baa861415",
       "model_policy": {
         "evaluation_reasoning_effort": "high",
         "model": "gpt-6-astra",
@@ -362,9 +360,7 @@
           ],
           "authority": "READ_ONLY",
           "consumes": [
-            "evaluation-subject",
-            "evaluation-cases",
-            "frozen-evidence"
+            "evaluation-subject"
           ],
           "description": "Design, validate, reduce, or audit a versioned evaluation with mechanical gates and independent semantic judges.",
           "effect": "READ_ONLY",
@@ -372,6 +368,10 @@
             "mechanical-before-semantic",
             "conservative-reduction",
             "sol-independent-contexts"
+          ],
+          "optional_consumes": [
+            "evaluation-cases",
+            "frozen-evidence"
           ],
           "optional_dependencies": [],
           "policy_tags": [
@@ -393,14 +393,16 @@
           ],
           "authority": "READ_ONLY",
           "consumes": [
-            "evaluation-claim",
-            "labeled-cases"
+            "evaluation-claim"
           ],
           "description": "Build or audit semantic judge profiles, anchored rubrics, schemas, labeled cases, and aggregation rules.",
           "effect": "CANDIDATE_WRITE",
           "evaluation_cases": [
             "blind-judge",
             "anchored-rubric"
+          ],
+          "optional_consumes": [
+            "labeled-cases"
           ],
           "optional_dependencies": [],
           "policy_tags": [
@@ -433,6 +435,7 @@
             "repeated-variance"
           ],
           "optional_dependencies": [
+            "cascade-prompt:prompt",
             "cascade-simulations:simulate"
           ],
           "policy_tags": [
@@ -442,9 +445,7 @@
           "produces": [
             "prompt-evaluation-receipt"
           ],
-          "required_dependencies": [
-            "cascade-prompt:prompt"
-          ],
+          "required_dependencies": [],
           "route": "cascade-evals:prompt-evaluation",
           "triggers": [
             "prompt quality or model fit must be measured"
@@ -544,13 +545,13 @@
           ]
         }
       ],
-      "version": "0.3.17+codex.20260910163504"
+      "version": "0.3.18+codex.20260910172549"
     },
     {
       "descriptor_path": ".codex/plugins/cascade-ai-architect/capabilities.yaml",
-      "descriptor_sha256": "0e7f058f58751581380b2a3bc1a8e84a3f50a0941d7afb67ae61f537073a42b3",
+      "descriptor_sha256": "5696e2d4f66cb05b74b240e006b43611b922547ca5e03a9164625b7ed4f0aa68",
       "manifest_path": ".codex/plugins/cascade-ai-architect/.codex-plugin/plugin.json",
-      "manifest_sha256": "593a15ef26da3e6a4fd3ccb479e0fb07898f7b235d9595b76771bcf5daff5e39",
+      "manifest_sha256": "db13b888b0cdc55d0f3551a8256d0d56fd106102e06db53600b421a0c347e965",
       "model_policy": {
         "evaluation_reasoning_effort": "high",
         "model": "gpt-6-astra",
@@ -560,9 +561,7 @@
       "skills": [
         {
           "anti_triggers": [
-            "only software boundaries",
-            "prompt wording",
-            "or ordinary harness maintenance is requested"
+            "only software boundaries, prompt wording, or maintenance within accepted agent behavior is needed"
           ],
           "authority": "READ_ONLY",
           "consumes": [
@@ -590,6 +589,7 @@
           "required_dependencies": [],
           "route": "cascade-ai-architect:architect-ai-system",
           "triggers": [
+            "agent behavior or state and tool ownership is unresolved",
             "agent system topology or complete AI architecture is unresolved"
           ]
         },
@@ -712,9 +712,7 @@
         },
         {
           "anti_triggers": [
-            "the behavior belongs in project facts",
-            "native capability",
-            "or target implementation"
+            "the behavior belongs in project facts, native capability, or target implementation"
           ],
           "authority": "READ_ONLY",
           "consumes": [
@@ -774,13 +772,11 @@
         },
         {
           "anti_triggers": [
-            "canonical persona work",
-            "simulation actor compilation",
-            "or simulation execution is requested"
+            "only canonical persona work, simulation actor compilation, or simulation execution is requested"
           ],
           "authority": "READ_ONLY",
           "consumes": [
-            "persona-architecture-projection"
+            "persona-projection"
           ],
           "description": "Translate a frozen Persona agent-architecture projection into evidence-bound user-model requirements for an AI-system blueprint.",
           "effect": "CANDIDATE_WRITE",
@@ -806,10 +802,7 @@
         },
         {
           "anti_triggers": [
-            "evaluation execution",
-            "judging",
-            "reduction",
-            "or only deterministic source validation is requested"
+            "only evaluation execution, judging, reduction, or deterministic source validation is requested"
           ],
           "authority": "READ_ONLY",
           "consumes": [
@@ -841,9 +834,7 @@
         },
         {
           "anti_triggers": [
-            "live online learning",
-            "direct active-artifact mutation",
-            "or production promotion is requested"
+            "live online learning, direct active-artifact mutation, or production promotion is requested"
           ],
           "authority": "READ_ONLY",
           "consumes": [
@@ -876,13 +867,13 @@
           ]
         }
       ],
-      "version": "0.1.6+codex.20260910162214"
+      "version": "0.1.7+codex.20260910172549"
     },
     {
       "descriptor_path": ".codex/plugins/cascade-software-architect/capabilities.yaml",
-      "descriptor_sha256": "4db635b7c7588b9e85508e83f5a29466c9235490588430bf241d70f5e85a4347",
+      "descriptor_sha256": "411bf157aada84b6a43f5d7f3bb8352686fe129903bfe6ec0da1e4267ba5cb8a",
       "manifest_path": ".codex/plugins/cascade-software-architect/.codex-plugin/plugin.json",
-      "manifest_sha256": "7a0ae1f86de1b9f5f8a1bc6089b219f41c18a52ade2968c9f7b37d747630a671",
+      "manifest_sha256": "bbdc846c5f193b49f1b88d341117aad059defe0b6b937e8939e3bd7d4010f96f",
       "model_policy": {
         "evaluation_reasoning_effort": "high",
         "model": "gpt-6-astra",
@@ -892,14 +883,14 @@
       "skills": [
         {
           "anti_triggers": [
-            "the request is an ordinary internal code edit or AI-agent topology decision"
+            "only an internal edit within accepted boundaries or an AI-agent topology decision is needed"
           ],
           "authority": "READ_ONLY",
           "consumes": [
             "accepted-requirements",
             "architecture-constraints"
           ],
-          "description": "Design a source-grounded software architecture, defaulting server-side systems to a modular monolith with concrete domain modules and explicit state owners.",
+          "description": "Design source-grounded architecture before implementing a new application with unresolved boundaries; derive cohesive business modules from scenarios and invariants with explicit state owners.",
           "effect": "CANDIDATE_WRITE",
           "evaluation_cases": [
             "boundary-ownership",
@@ -914,12 +905,13 @@
             "boundaries"
           ],
           "produces": [
-            "software-architecture-candidate"
+            "architecture-candidate"
           ],
           "required_dependencies": [],
           "route": "cascade-software-architect:architect-software-system",
           "triggers": [
-            "software system architecture is unresolved"
+            "a new application has no accepted architecture",
+            "business or data ownership and dependency boundaries are unresolved"
           ]
         },
         {
@@ -953,12 +945,14 @@
         },
         {
           "anti_triggers": [
-            "the request is only a domain acceptance decision or target implementation"
+            "only domain acceptance or implementation of an already reviewed architecture is needed"
           ],
           "authority": "READ_ONLY",
-          "consumes": [
+          "consumes": [],
+          "consumes_any_of": [
             "architecture-candidate",
-            "consumer-map"
+            "agent-architecture-packet",
+            "agent-workflow"
           ],
           "description": "Independently review software, plugin, workflow, or AI architecture for ownership, boundary, dependency, and evidence defects.",
           "effect": "READ_ONLY",
@@ -966,6 +960,9 @@
             "hidden-consumer",
             "authority-collision",
             "no-findings"
+          ],
+          "optional_consumes": [
+            "consumer-map"
           ],
           "optional_dependencies": [],
           "policy_tags": [
@@ -983,13 +980,13 @@
         },
         {
           "anti_triggers": [
-            "a tiny internal change has sufficient direct validation or implementation is requested"
+            "a tiny internal change has sufficient direct validation",
+            "no current diff exists to review"
           ],
           "authority": "READ_ONLY",
           "consumes": [
             "change-diff",
-            "change-contract",
-            "consumer-map"
+            "change-contract"
           ],
           "description": "Independently review a current diff against its request, architecture, public contracts, consumers, and regression surface.",
           "effect": "READ_ONLY",
@@ -997,6 +994,9 @@
             "introduced-defect",
             "unrelated-dirty-work",
             "no-findings"
+          ],
+          "optional_consumes": [
+            "consumer-map"
           ],
           "optional_dependencies": [],
           "policy_tags": [
@@ -1013,13 +1013,13 @@
           ]
         }
       ],
-      "version": "0.1.7+codex.20260910162214"
+      "version": "0.2.1+codex.20260910172549"
     },
     {
       "descriptor_path": ".codex/plugins/cascade-coding-agent/capabilities.yaml",
-      "descriptor_sha256": "24ee74211b32e4c8264d2dfd0e1ed147c628edf72284ce95bc6b6e367d4a548e",
+      "descriptor_sha256": "f2ac6510d5213a0e39ca6db4e91bfb15bd6e83906fa03ec50bdda56c14b6a067",
       "manifest_path": ".codex/plugins/cascade-coding-agent/.codex-plugin/plugin.json",
-      "manifest_sha256": "0d2c01b2d2115d9447dc1c2885cbc1519a263338abba1896670a69564afc8e26",
+      "manifest_sha256": "9002f07effaa6d572e0ee8b5b0041de06562e31782ae3186eca4b71ddc97253f",
       "model_policy": {
         "evaluation_reasoning_effort": "high",
         "model": "gpt-6-astra",
@@ -1096,7 +1096,6 @@
           ],
           "authority": "READ_ONLY",
           "consumes": [
-            "harness-audit",
             "harness-change-contract"
           ],
           "description": "Implement a scoped authorized change to an existing coding-agent harness while preserving source ownership and validation.",
@@ -1104,6 +1103,9 @@
           "evaluation_cases": [
             "source-not-cache",
             "preserve-permissions"
+          ],
+          "optional_consumes": [
+            "harness-audit"
           ],
           "optional_dependencies": [
             "cascade-ai-architect:architect-ai-system",
@@ -1164,13 +1166,13 @@
           ]
         }
       ],
-      "version": "0.2.5+codex.20260910162214"
+      "version": "0.2.6+codex.20260910172549"
     },
     {
       "descriptor_path": ".codex/plugins/cascade-personas/capabilities.yaml",
-      "descriptor_sha256": "f4f267ca1f508277934333604860f16daaa7cab87e7117315d1ef9d8a94d8777",
+      "descriptor_sha256": "f1bdaee862448e96c4f34814497fef3192377e7fc04cca2d3cdcaa50123db4da",
       "manifest_path": ".codex/plugins/cascade-personas/.codex-plugin/plugin.json",
-      "manifest_sha256": "928bee4471a4dcfd98320d237968e3804263bf60fa2da862f2149ab05e8a2d52",
+      "manifest_sha256": "9d659e7fb4c3bfb2e953ca768da8b9c49a4d3d913a5a375334750db40f828ed3",
       "model_policy": {
         "evaluation_reasoning_effort": "high",
         "model": "gpt-6-astra",
@@ -1235,21 +1237,16 @@
           "required_dependencies": [],
           "route": "cascade-personas:compile-persona",
           "triggers": [
-            "a product",
-            "market",
-            "architecture",
-            "evaluation",
-            "or simulation projection is required"
+            "a product, market, architecture, evaluation, or simulation persona projection is required"
           ]
         },
         {
           "anti_triggers": [
-            "persona creation",
-            "revision",
-            "or runtime simulation is requested"
+            "only persona creation, revision, or runtime simulation is requested"
           ],
           "authority": "READ_ONLY",
-          "consumes": [
+          "consumes": [],
+          "consumes_any_of": [
             "canonical-persona",
             "persona-projection"
           ],
@@ -1277,13 +1274,13 @@
           ]
         }
       ],
-      "version": "0.1.28+codex.20260910163504"
+      "version": "0.1.29+codex.20260910172549"
     },
     {
       "descriptor_path": ".codex/plugins/cascade-product/capabilities.yaml",
-      "descriptor_sha256": "cf0a4348dd80c3119b3df61e1b40adf5bb75f6d0b59184d39f7308559b94ee18",
+      "descriptor_sha256": "860407806389c4f74e347c9922e09d9490d165b8d0e152135421bcf7964edc67",
       "manifest_path": ".codex/plugins/cascade-product/.codex-plugin/plugin.json",
-      "manifest_sha256": "e0f465185ce1c5c1deb73e2431f46eb79c23a501dbabbb401684c8909063363a",
+      "manifest_sha256": "f42b7a2f2ee17343237fa5cbb3b8e22862cf2aeb3c1f85b4a890c20d1491705b",
       "model_policy": {
         "evaluation_reasoning_effort": "high",
         "model": "gpt-6-astra",
@@ -1293,12 +1290,10 @@
       "skills": [
         {
           "anti_triggers": [
-            "ordinary implementation or project scheduling is the task"
+            "only implementation of accepted product decisions or project scheduling is needed"
           ],
           "authority": "READ_ONLY",
           "consumes": [
-            "market-opportunity-assessment",
-            "persona-projection",
             "product-evidence"
           ],
           "description": "Manage value strategy, portfolio allocation, product priorities, owner-held gates and evidence-driven re-entry without implementation.",
@@ -1308,6 +1303,8 @@
             "no-project-status"
           ],
           "optional_consumes": [
+            "market-opportunity-assessment",
+            "persona-projection",
             "growth-strategy"
           ],
           "optional_dependencies": [
@@ -1338,9 +1335,7 @@
           ],
           "authority": "READ_ONLY",
           "consumes": [
-            "product-lifecycle-decision",
-            "market-opportunity-assessment",
-            "persona-projection"
+            "product-evidence"
           ],
           "description": "Model product value and offers, form and compare feature candidates, and define traceable requirements, acceptance behavior and the MVP.",
           "effect": "CANDIDATE_WRITE",
@@ -1351,6 +1346,9 @@
             "finite-job-offer"
           ],
           "optional_consumes": [
+            "product-lifecycle-decision",
+            "market-opportunity-assessment",
+            "persona-projection",
             "growth-strategy"
           ],
           "optional_dependencies": [
@@ -1410,13 +1408,13 @@
           ]
         }
       ],
-      "version": "0.1.32+codex.20260910163504"
+      "version": "0.1.33+codex.20260910172549"
     },
     {
       "descriptor_path": ".codex/plugins/cascade-market/capabilities.yaml",
-      "descriptor_sha256": "a7ea7d72258ac7173b70eb4b8c9d37e74a766d16dae3a83357f6bd54f07cebcb",
+      "descriptor_sha256": "747e4455786184a98cce6bdec9b7024966fc02cc00ef580a0d0dea53d7fac8e5",
       "manifest_path": ".codex/plugins/cascade-market/.codex-plugin/plugin.json",
-      "manifest_sha256": "6e840fbba84680707a5e9e167bdf2ee234f6fba60ae029baab8926fba3236b47",
+      "manifest_sha256": "e6ba81732835457fb11d2206a15e1d016689b743c93a36dc1fab49e42d54fcb6",
       "model_policy": {
         "evaluation_reasoning_effort": "high",
         "model": "gpt-6-astra",
@@ -1535,11 +1533,10 @@
             "fresh market research or product behavior definition is the real task"
           ],
           "authority": "READ_ONLY",
-          "consumes": [
-            "market-evidence-ledger",
-            "market-opportunity-assessment",
+          "consumes": [],
+          "consumes_any_of": [
             "product-contract",
-            "persona-projection"
+            "brand-brief"
           ],
           "description": "Create or audit positioning, messaging, naming, tone, proof language, trust language, and marketing direction from accepted evidence.",
           "effect": "CANDIDATE_WRITE",
@@ -1547,6 +1544,11 @@
             "source-bound-proof",
             "unsupported-claim-hypothesis",
             "product-boundary"
+          ],
+          "optional_consumes": [
+            "market-evidence-ledger",
+            "market-opportunity-assessment",
+            "persona-projection"
           ],
           "optional_dependencies": [
             "cascade-market:research-market",
@@ -1617,13 +1619,13 @@
           ]
         }
       ],
-      "version": "0.2.8+codex.20260910163504"
+      "version": "0.2.9+codex.20260910172549"
     },
     {
       "descriptor_path": ".codex/plugins/cascade-design/capabilities.yaml",
-      "descriptor_sha256": "bf61a8cd1834966bab5c3f2b15e444dfefd64dd31a835d5d40f3ff20c3137ae9",
+      "descriptor_sha256": "28485a624263abeb36e58bfd411549bea5d1ff493a88353a195d2e86db381bff",
       "manifest_path": ".codex/plugins/cascade-design/.codex-plugin/plugin.json",
-      "manifest_sha256": "26adafce59a3319e3aea6ccf481fc6913a5179a6bc3ca577b18e92737a6e2516",
+      "manifest_sha256": "9ea411bd8f1afdefc94cdb4de6a4fef242a59703230c45a2e71282613dff9375",
       "model_policy": {
         "evaluation_reasoning_effort": "high",
         "model": "gpt-6-astra",
@@ -1633,14 +1635,12 @@
       "skills": [
         {
           "anti_triggers": [
-            "only reusable tokens",
-            "accessibility",
-            "or screenshot parity is requested"
+            "only reusable tokens, accessibility, or screenshot parity is requested"
           ],
           "authority": "READ_ONLY",
-          "consumes": [
+          "consumes": [],
+          "consumes_any_of": [
             "product-contract",
-            "persona-projection",
             "design-evidence"
           ],
           "description": "Review product journeys, onboarding burden, useful outcomes, completion, recovery and observable UX states within supplied product intent.",
@@ -1648,6 +1648,9 @@
           "evaluation_cases": [
             "state-coverage",
             "recovery"
+          ],
+          "optional_consumes": [
+            "persona-projection"
           ],
           "optional_dependencies": [
             "cascade-product:define-product",
@@ -1672,8 +1675,6 @@
           ],
           "authority": "READ_ONLY",
           "consumes": [
-            "product-contract",
-            "marketing-positioning",
             "design-evidence"
           ],
           "description": "Define or audit the Hybrid outcome UI default, basic components, shared generative UI practice, tokens, states, responsive behavior, motion, accessibility, and content constraints.",
@@ -1681,6 +1682,10 @@
           "evaluation_cases": [
             "reusable-rule",
             "brand-boundary"
+          ],
+          "optional_consumes": [
+            "product-contract",
+            "marketing-positioning"
           ],
           "optional_dependencies": [
             "cascade-market:brand-positioning",
@@ -1706,14 +1711,16 @@
           ],
           "authority": "READ_ONLY",
           "consumes": [
-            "design-evidence",
-            "design-system-contract"
+            "design-evidence"
           ],
           "description": "Review UI semantics, names, keyboard and focus behavior, contrast, targets, forms, status messages, motion, and narrow viewports.",
           "effect": "READ_ONLY",
           "evaluation_cases": [
             "keyboard-focus",
             "semantic-controls"
+          ],
+          "optional_consumes": [
+            "design-system-contract"
           ],
           "optional_dependencies": [
             "cascade-design:ux-flow-review",
@@ -1738,15 +1745,17 @@
           ],
           "authority": "READ_ONLY",
           "consumes": [
-            "visual-evidence",
-            "design-system-contract",
-            "marketing-positioning"
+            "visual-evidence"
           ],
           "description": "Validate visual evidence across viewports and states for layout, hierarchy, overflow, spacing, tokens, responsiveness, and brand fit.",
           "effect": "READ_ONLY",
           "evaluation_cases": [
             "viewport-states",
             "no-pixel-proof-from-source"
+          ],
+          "optional_consumes": [
+            "design-system-contract",
+            "marketing-positioning"
           ],
           "optional_dependencies": [
             "cascade-design:design-system",
@@ -1768,12 +1777,13 @@
         {
           "anti_triggers": [
             "review-only request",
-            "production frontend implementation"
+            "only production implementation of an accepted design is needed"
           ],
           "authority": "READ_ONLY",
-          "consumes": [
+          "consumes": [],
+          "consumes_any_of": [
             "product-contract",
-            "design-evidence"
+            "design-brief"
           ],
           "description": "Create editable product and marketing mockups, inspected previews and a version-bound frontend handoff from grounded requirements.",
           "effect": "CANDIDATE_WRITE",
@@ -1781,6 +1791,9 @@
             "candidate-handoff",
             "missing-design-inputs",
             "required-tool-unavailable"
+          ],
+          "optional_consumes": [
+            "design-evidence"
           ],
           "optional_dependencies": [
             "cascade-product:define-product",
@@ -1803,13 +1816,13 @@
           ]
         }
       ],
-      "version": "0.1.9+codex.20260910163504"
+      "version": "0.1.10+codex.20260910172549"
     },
     {
       "descriptor_path": ".codex/plugins/cascade-security/capabilities.yaml",
-      "descriptor_sha256": "4066bc6de61667b0ae6700b82a93e2728f457b477fc5dc10e9fbcd249fc8d43b",
+      "descriptor_sha256": "73ffb16aba7f40b76550c1e6fcb650cd4dbad6cac285cb54552011041d975c01",
       "manifest_path": ".codex/plugins/cascade-security/.codex-plugin/plugin.json",
-      "manifest_sha256": "6440fa4a1cc69064ca2ebc9339c296a1bfaa2458bd03d7d989f3aea843163a3f",
+      "manifest_sha256": "d118bfca6a75b1f48f9f84e344ab8e3eab5675e01dc5abe9a474fa722eb399af",
       "model_policy": {
         "evaluation_reasoning_effort": "high",
         "model": "gpt-6-astra",
@@ -1883,12 +1896,16 @@
         },
         {
           "anti_triggers": [
-            "runtime patching or penetration execution is requested"
+            "only implementation of reviewed controls or penetration execution is needed"
           ],
           "authority": "READ_ONLY",
-          "consumes": [
+          "consumes": [],
+          "consumes_any_of": [
             "architecture-candidate",
-            "product-contract"
+            "design-proposal",
+            "product-contract",
+            "agent-architecture-packet",
+            "agent-workflow"
           ],
           "description": "Review a proposed feature, architecture, workflow, integration, or agent-tool plan for trust boundaries and abuse cases.",
           "effect": "READ_ONLY",
@@ -1913,17 +1930,18 @@
           "required_dependencies": [],
           "route": "cascade-security:secure-design",
           "triggers": [
-            "a proposed design needs security review before implementation"
+            "a proposed design needs security review before implementation",
+            "new trust or authorization boundaries and external effects need controls"
           ]
         }
       ],
-      "version": "0.1.9+codex.20260910164220"
+      "version": "0.1.10+codex.20260910172549"
     },
     {
       "descriptor_path": ".codex/plugins/cascade-project-management/capabilities.yaml",
-      "descriptor_sha256": "b0baac85f9eaadcba9da54b3a1c6d1d729404888a387a2e590c07ce68ef520c8",
+      "descriptor_sha256": "736696c8c0604d3905dce5ed087af3641ec43d365cc4e0a75c6f321434483cf0",
       "manifest_path": ".codex/plugins/cascade-project-management/.codex-plugin/plugin.json",
-      "manifest_sha256": "a881d5ae20bc9dd6dc95f0136e73d9329ffcdc2e34d56cc6b82d030cbe614ab5",
+      "manifest_sha256": "c79fceb266f65ed1bf1933ce7ee3c6cf1dc8a6e0b96fee0f2a8775d44ec76d20",
       "model_policy": {
         "evaluation_reasoning_effort": "high",
         "model": "gpt-6-astra",
@@ -1933,13 +1951,11 @@
       "skills": [
         {
           "anti_triggers": [
-            "validation",
-            "defect classification",
-            "project planning",
-            "or implementation is requested"
+            "only validation, defect classification, project planning, or implementation is requested"
           ],
           "authority": "READ_ONLY",
-          "consumes": [
+          "consumes": [],
+          "consumes_any_of": [
             "user-report",
             "accepted-behavior",
             "frozen-findings"
@@ -2028,10 +2044,7 @@
           "required_dependencies": [],
           "route": "cascade-project-management:manage-project",
           "triggers": [
-            "an existing project has blockers",
-            "collisions",
-            "stale state",
-            "or handoffs"
+            "an existing project has blockers, collisions, stale state, or handoffs"
           ]
         },
         {
@@ -2041,14 +2054,16 @@
           "authority": "READ_ONLY",
           "consumes": [
             "project-plan",
-            "execution-receipts",
-            "quality-assessment"
+            "execution-receipts"
           ],
           "description": "Assess terminal project completion and propose evidence-preserving retention without archiving or rewriting history.",
           "effect": "CANDIDATE_WRITE",
           "evaluation_cases": [
             "terminal-evidence",
             "no-archive-effect"
+          ],
+          "optional_consumes": [
+            "quality-assessment"
           ],
           "optional_dependencies": [
             "cascade-qa:assess-quality"
@@ -2063,19 +2078,17 @@
           "required_dependencies": [],
           "route": "cascade-project-management:close-project",
           "triggers": [
-            "an existing project may be complete",
-            "superseded",
-            "or abandoned"
+            "an existing project may be complete, superseded, or abandoned"
           ]
         }
       ],
-      "version": "0.1.8+codex.20260910163504"
+      "version": "0.1.9+codex.20260910172549"
     },
     {
       "descriptor_path": ".codex/plugins/cascade-qa/capabilities.yaml",
-      "descriptor_sha256": "010b6eebdb3643be3b1e317acfef970cae057d1a51b5c3e95ea6453404624da1",
+      "descriptor_sha256": "5000d9479219595d650b2db0cd0c9e61df4f5e091b53b205e9a15aaab0bb33f7",
       "manifest_path": ".codex/plugins/cascade-qa/.codex-plugin/plugin.json",
-      "manifest_sha256": "5f622cdc0f78542473fe05021aa63bfb1caae5220ef7246541028c49541db35e",
+      "manifest_sha256": "505717a36e7616994f8d212998ca31b7828f45548aea4df6237040bc789326df",
       "model_policy": {
         "evaluation_reasoning_effort": "high",
         "model": "gpt-6-astra",
@@ -2088,9 +2101,14 @@
             "no accepted behavior exists or ordinary validation is sufficient"
           ],
           "authority": "READ_ONLY",
-          "consumes": [
+          "consumes": [],
+          "consumes_any_of": [
             "product-contract",
-            "change-contract"
+            "change-contract",
+            "accepted-behavior",
+            "accepted-requirements",
+            "accepted-journeys",
+            "accepted-scenarios"
           ],
           "description": "Build a risk-based quality plan with evidence classes, contours, gates, and execution ownership from accepted behavior.",
           "effect": "CANDIDATE_WRITE",
@@ -2208,13 +2226,13 @@
           ]
         }
       ],
-      "version": "0.1.8+codex.20260910163504"
+      "version": "0.1.9+codex.20260910172549"
     },
     {
       "descriptor_path": ".codex/plugins/cascade-coordinator/capabilities.yaml",
-      "descriptor_sha256": "dd5ad94269b243d1c974d911a52c827a49f5f30cee8c9a17a9b5e7ebd6089222",
+      "descriptor_sha256": "3c46025164b9820da8acb78220f8da0ce0b0947e5016cbb501dba40e09d146db",
       "manifest_path": ".codex/plugins/cascade-coordinator/.codex-plugin/plugin.json",
-      "manifest_sha256": "9f1bed9437855f3b1dada036e39a0871d99df675025f982feb9727652eef2c3e",
+      "manifest_sha256": "c4fe4b986a220073ded529aa16a124d0c617147758ec186ffb1b069f221fd329",
       "model_policy": {
         "evaluation_reasoning_effort": "high",
         "model": "gpt-6-astra",
@@ -2258,7 +2276,7 @@
         },
         {
           "anti_triggers": [
-            "one ordinary implementation slice or project schedule is sufficient"
+            "the only unresolved work is one implementation slice or a project schedule"
           ],
           "authority": "READ_ONLY",
           "consumes": [
@@ -2293,14 +2311,11 @@
           ],
           "route": "cascade-coordinator:plan-workflow",
           "triggers": [
-            "two or more selected plugin capabilities require ordering",
-            "parallelization",
-            "an artifact handoff",
-            "or a join"
+            "two or more selected plugin capabilities require ordering, parallelization, an artifact handoff, or a join"
           ]
         }
       ],
-      "version": "0.1.5+codex.20260910203500"
+      "version": "0.2.2+codex.20260910182122"
     }
   ],
   "schema_version": 1

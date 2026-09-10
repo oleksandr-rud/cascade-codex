@@ -68,7 +68,12 @@ versioned catalog; reusable context retrieval remains the host
 `pattern-context` adapter.
 
 Capability descriptors may declare `optional_consumes` in addition to required
-`consumes`. Plan nodes select only a declared, relevant subset. The host checks
-availability, ownership and order for selected optional inputs; absent optional
-inputs do not create prerequisites. Existing descriptors and plans remain valid
-without the optional field.
+`consumes`. They may also declare `consumes_any_of` for supported alternative
+subject types. Plan nodes select relevant conditional inputs in
+`optional_consumes`, including at least one available alternative when that
+constraint exists. Each artifact belongs to only one descriptor input category.
+The host checks availability, ownership and order for every selected input;
+absent optional context does not create prerequisites. Existing descriptors
+remain valid without these fields. Reuse supplied frozen artifacts without
+selecting their producers as new work. Method-specific execution, calibration
+and acceptance gates still apply after planning.
