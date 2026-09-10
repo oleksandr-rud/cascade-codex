@@ -41,3 +41,8 @@ approval, product acceptance, or proof of unrun scenarios.
 Return findings first, reviewed scope/identity, evidence limitations and affected
 recheck requirements. Implementation owners repair findings; review the changed
 scope again when a repair invalidates previous evidence.
+
+For a read-only diagnostic with no supplied fixed diff or verification evidence,
+return `GAP` with the missing review inputs; it is not a completed code review.
+Use `BLOCKED` when an attempted review encounters a concrete access, tool or
+policy barrier. Neither status permits invented findings or a clean verdict.

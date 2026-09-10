@@ -1,9 +1,11 @@
-import { mkdir, readdir, rm, writeFile } from "node:fs/promises";
+import { mkdir, mkdtemp, readdir, rm, rmdir, writeFile } from "node:fs/promises";
 import { basename, dirname, resolve } from "node:path";
 
 import {
   CascadeError,
   ROOT,
+  assertJsonSchema,
+  boundedPath,
   boolFlag,
   exists,
   flag,
@@ -23,6 +25,7 @@ import {
   valueDigest,
   walkFiles,
   writeJson,
+  writeJsonAtomic,
 } from "./common";
 import { readStructured } from "./structured-data";
 import { scoreRatings } from "../../.codex/plugins/cascade-evals/scripts/judge-ratings.mjs";
@@ -742,6 +745,22 @@ async function normalizeTrace(
   const loadedSkills = new Set<string>();
   const loadedRoles = new Set<string>();
   const errors: string[] = [];
+  const sourceContents = new Map<string, string>();
+  const compact = (value: string): string => value.replace(/\r/g, "").replace(/\s+/g, " ").trim();
+  const confirmsRead = async (path: string, command: string, output: string): Promise<boolean> => {
+    // A path mention or file inventory is not a read. Require a reader and
+    // matching entrypoint content in its successful output, including the body.
+    if (!/(?:^|[\s'";|])(?:Get-Content|cat|sed|head|tail)\s/i.test(command)) return false;
+    let source = sourceContents.get(path);
+    if (source === undefined) {
+      try { source = await readText(rootPath(path)); } catch { return false; }
+      sourceContents.set(path, source);
+    }
+    const body = source.replace(/^---\r?\n[\s\S]*?\r?\n---\r?\n/, "");
+    const observed = compact(output.replace(/^\s*\d+[:|]\s?/gm, ""));
+    return observed.includes(compact(source).slice(0, 256)) &&
+      observed.includes(compact(body).slice(0, 160));
+  };
   let threadId = "";
   let terminalEvent = timedOut ? "timeout" : "";
   let usage: JsonObject = {};
@@ -764,19 +783,20 @@ async function normalizeTrace(
         result_bytes: new TextEncoder().encode(String(item.aggregated_output ?? "")).length,
         ...classifyCommand(command),
       });
-      // Failed commands are attempted reads, never evidence that a source loaded.
-      const readCommand = item.exit_code === 0 && item.status === "completed"
+      // Source output proves exposure even when a later command in the same
+      // shell group fails. An unsuccessful read without content proves nothing.
+      const readCommand = ["completed", "failed"].includes(item.status)
         ? command.replace(/\\+/g, "/") : "";
       for (const match of readCommand.matchAll(/\.codex\/skills\/([a-z0-9-]+)\/SKILL\.md/g)) {
-        loadedSkills.add(match[1]!);
+        if (await confirmsRead(match[0], readCommand, String(item.aggregated_output ?? ""))) loadedSkills.add(match[1]!);
       }
       for (const match of readCommand.matchAll(
         /\.codex\/plugins\/([a-z0-9-]+)\/skills\/([a-z0-9-]+)\/SKILL\.md/g,
       )) {
-        loadedSkills.add(`${match[1]}:${match[2]}`);
+        if (await confirmsRead(match[0], readCommand, String(item.aggregated_output ?? ""))) loadedSkills.add(`${match[1]}:${match[2]}`);
       }
       for (const match of readCommand.matchAll(/\.codex\/agents\/([a-z0-9-]+)\/AGENT\.md/g)) {
-        loadedRoles.add(match[1]!);
+        if (await confirmsRead(match[0], readCommand, String(item.aggregated_output ?? ""))) loadedRoles.add(match[1]!);
       }
     } else if (item.type === "agent_message" && event.type === "item.completed") {
       messages.push(String(item.text ?? ""));
@@ -1390,78 +1410,144 @@ Evidence:
 `;
 }
 
+async function recordedTrace(path: string, scenario: JsonObject): Promise<JsonObject> {
+  const prior = await readJson<JsonObject>(resolve(path, "normalized.json"));
+  const trace = await normalizeTrace(scenario, await readText(resolve(path, "stdout.jsonl")),
+    await readText(resolve(path, "stderr.log")), prior.exit_code,
+    Number(prior.duration_seconds) * 1000, prior.timed_out);
+  if (stableJson(trace) !== stableJson(prior)) throw new CascadeError(`raw trace differs from normalization: ${rel(path)}`);
+  return trace;
+}
+
+async function packetDigest(path: string): Promise<string> {
+  const files = ["prompt.txt", "command.json", "stdout.jsonl", "stderr.log", "normalized.json"];
+  return valueDigest(await Promise.all(files.map(async (name) => ({ name, sha256: await sha256File(resolve(path, name)) }))));
+}
+
+async function recordedTarget(runRoot: string, caseName: string, scenario: JsonObject, metadata: JsonObject): Promise<JsonObject> {
+  if (caseName !== basename(caseName)) throw new CascadeError("invalid evaluation case name");
+  const path = resolve(runRoot, "cases", caseName);
+  const execution = metadata.execution_bindings?.find((item: JsonObject) => item.scenario_id === scenario.id);
+  const expected = scenarioExecution(scenario, parseArgs([]));
+  if (!execution || execution.model !== expected.model || execution.reasoning_effort !== expected.reasoning_effort || metadata.sandbox !== "read-only") {
+    throw new CascadeError("target execution differs from the current scenario model/sandbox policy");
+  }
+  const prompt = targetPrompt(scenario);
+  if (await readText(resolve(path, "prompt.txt")) !== prompt) throw new CascadeError("target prompt differs from frozen scenario");
+  const command = codexCommand(execution.model, execution.reasoning_effort, "<prompt-in-prompt.txt>", OUTPUT_SCHEMA);
+  if (stableJson((await readJson<JsonObject>(resolve(path, "command.json"))).argv) !== stableJson(command)) throw new CascadeError("target command differs from frozen execution policy");
+  const trace = await recordedTrace(path, scenario);
+  const eligibility = await checkEligibility(scenario, trace);
+  eligibility.case_dir = rel(path);
+  return { trace, eligibility, digest: await packetDigest(path) };
+}
+
+async function recordedJudgments(runRoot: string, caseName: string, scenario: JsonObject, metadata: JsonObject,
+  target: JsonObject, required: JsonObject[]): Promise<JsonObject[]> {
+  const results: JsonObject[] = [];
+  const threads = new Set([target.trace.thread_id]);
+  for (const profile of required) {
+    const path = resolve(runRoot, "judgments", caseName, profile.id);
+    if (!(await exists(path))) continue;
+    const stored = await readJson<JsonObject>(resolve(path, "judgment.json"));
+    const definition = await rubric(profile);
+    const prompt = judgePrompt(runRoot, caseName, scenario, profile, definition);
+    if (stored.target_evidence_digest !== target.digest || await readText(resolve(path, "prompt.txt")) !== prompt) {
+      throw new CascadeError(`judge evidence binding differs: ${caseName}/${profile.id}`);
+    }
+    const command = codexCommand(JUDGE_MODEL, profile.reasoning_effort, "<prompt-in-prompt.txt>", JUDGE_SCHEMA);
+    if (stableJson((await readJson<JsonObject>(resolve(path, "command.json"))).argv) !== stableJson(command)) throw new CascadeError("judge command differs from pinned policy");
+    const trace = await recordedTrace(path, { id: `JUDGE-${scenario.id}` });
+    const unsafe = [...trace.commands, ...trace.tool_actions].some((item: JsonObject) => item.mutation || item.network || item.delegation || item.unknown);
+    if (!trace.thread_id || threads.has(trace.thread_id) || trace.terminal_event !== "turn.completed" || trace.exit_code !== 0 || trace.timed_out || unsafe || !trace.loaded_skills.includes("cascade-evals:harness-evaluation")) {
+      throw new CascadeError(`judge trace is incomplete, unsafe or not independent: ${caseName}/${profile.id}`);
+    }
+    threads.add(trace.thread_id);
+    assertJsonSchema(trace.final_response, await readJson<JsonObject>(JUDGE_SCHEMA), "judge response");
+    const validated = await validateJudgment(trace.final_response, profile, definition, metadata.run_id, scenario.id, metadata.repetitions);
+    validated.case_name = caseName;
+    validated.target_evidence_digest = target.digest;
+    if (stableJson(validated) !== stableJson(stored)) throw new CascadeError(`judge receipt differs from raw result: ${caseName}/${profile.id}`);
+    results.push(validated);
+  }
+  return results;
+}
+
 async function commandJudge(args: ReturnType<typeof parseArgs>): Promise<number> {
-  const runRoot = resolve(ROOT, flag(args, "run-dir") ?? "");
+  const requested = new Set(flags(args, "judge-profile"));
+  const required = await requiredProfiles();
+  if (!required.length || [...requested].some((id) => !required.some((profile) => profile.id === id))) {
+    throw new CascadeError("unknown or empty required judge profile selection");
+  }
+  if ((flag(args, "model") && flag(args, "model") !== JUDGE_MODEL) ||
+    (flag(args, "reasoning-effort") && required.some((profile) => flag(args, "reasoning-effort") !== profile.reasoning_effort))) {
+    throw new CascadeError("judge overrides must match the pinned independent-judge policy");
+  }
+  const runRoot = boundedPath(flag(args, "run-dir") ?? "");
   const metadata = await readJson<JsonObject>(resolve(runRoot, "run.json"));
+  if (metadata.harness_source_digest !== (await harnessSourceManifest()).digest) throw new CascadeError("judge run sources are stale");
   const selected = await readJson<JsonObject[]>(resolve(runRoot, "selected-scenarios.json"));
   const scenarioMap = new Map(selected.map((item) => [item.id, item]));
   const summary = await readJson<JsonObject>(resolve(runRoot, "summary.json"));
-  const requested = new Set(flags(args, "judge-profile"));
-  const required = (summary.eligibilities ?? []).some((item: JsonObject) => item.verdict === "PASS") ? await requiredProfiles() : [];
-  const definitions = await Promise.all(required
-    .filter((profile) => !requested.size || requested.has(profile.id))
+  const definitions = await Promise.all(required.filter((profile) => !requested.size || requested.has(profile.id))
     .map(async (profile) => ({ profile, definition: await rubric(profile) })));
-  const judgments: JsonObject[] = [];
-  for (const eligibility of summary.eligibilities ?? []) {
-    if (eligibility.verdict !== "PASS") continue;
-    const caseName = basename(eligibility.case_dir);
-    const scenario = scenarioMap.get(eligibility.scenario_id);
-    if (!scenario) continue;
-    for (const { profile, definition } of definitions) {
-      const outputRoot = resolve(runRoot, "judgments", caseName, profile.id);
-      if (await exists(outputRoot)) throw new CascadeError(`judgment exists: ${rel(outputRoot)}`);
-      await mkdir(outputRoot, { recursive: true });
-      const prompt = judgePrompt(runRoot, caseName, scenario, profile, definition);
-      await writeFile(resolve(outputRoot, "prompt.txt"), prompt, "utf8");
-      const model = flag(args, "model") ?? JUDGE_MODEL;
-      const effort = flag(args, "reasoning-effort") ?? profile.reasoning_effort;
-      const command = codexCommand(model, effort, prompt, JUDGE_SCHEMA);
-      await writeJson(resolve(outputRoot, "command.json"), {
-        argv: [...command.slice(0, -1), "<prompt-in-prompt.txt>"],
-      });
-      const result = await runCommand(command, {
-        timeoutMs: Number(flag(args, "timeout", "300")) * 1000,
-        env: { NO_COLOR: "1", TERM: "xterm-256color" },
-      });
-      await Promise.all([
-        writeFile(resolve(outputRoot, "stdout.jsonl"), result.stdout, "utf8"),
-        writeFile(resolve(outputRoot, "stderr.log"), result.stderr, "utf8"),
-      ]);
-      const trace = await normalizeTrace(
-        { id: `JUDGE-${scenario.id}` },
-        result.stdout,
-        result.stderr,
-        result.exitCode,
-        result.durationMs,
-        result.timedOut,
-      );
-      await writeJson(resolve(outputRoot, "normalized.json"), trace);
-      const raw = trace.final_response ?? {};
-      const validated = await validateJudgment(
-        raw,
-        profile,
-        definition,
-        metadata.run_id,
-        scenario.id,
-        metadata.repetitions,
-      );
-      validated.case_name = caseName;
-      await writeJson(resolve(outputRoot, "judgment.json"), validated);
-      judgments.push(validated);
-    }
+  const targets: JsonObject[] = [];
+  for (const item of summary.eligibilities ?? []) {
+    const scenario = scenarioMap.get(item.scenario_id);
+    if (!scenario) throw new CascadeError("unknown scenario in target summary");
+    const caseName = basename(item.case_dir);
+    const target = await recordedTarget(runRoot, caseName, scenario, metadata);
+    if (target.eligibility.verdict === "PASS") targets.push({ scenario, caseName, target });
   }
-  await writeJson(resolve(runRoot, "judgments", "summary.json"), {
-    run_id: metadata.run_id,
-    judgments,
-  });
-  console.log(`judge_status=PASS judgments=${judgments.length}`);
-  return judgments.some((item) => item.accepted !== true) ? 1 : 0;
+  if (!targets.length) throw new CascadeError("no mechanically eligible targets; judging was not run");
+  // One writer per run. Separate profile invocations resume validated results,
+  // and cannot overwrite each other's aggregate or launch duplicate judges.
+  const lock = resolve(runRoot, ".judge-lock");
+  await mkdir(lock);
+  try {
+    const judgments: JsonObject[] = [];
+    for (const { scenario, caseName, target } of targets) {
+      await recordedJudgments(runRoot, caseName, scenario, metadata, target, required);
+      for (const { profile, definition } of definitions) {
+        const outputRoot = resolve(runRoot, "judgments", caseName, profile.id);
+        if (await exists(outputRoot)) continue;
+        await mkdir(outputRoot, { recursive: true });
+        const prompt = judgePrompt(runRoot, caseName, scenario, profile, definition);
+        await writeFile(resolve(outputRoot, "prompt.txt"), prompt, "utf8");
+        const command = codexCommand(JUDGE_MODEL, profile.reasoning_effort, prompt, JUDGE_SCHEMA);
+        await writeJson(resolve(outputRoot, "command.json"), { argv: [...command.slice(0, -1), "<prompt-in-prompt.txt>"] });
+        const result = await runCommand(command, { timeoutMs: Number(flag(args, "timeout", "300")) * 1000, env: { NO_COLOR: "1", TERM: "xterm-256color" } });
+        await Promise.all([
+          writeFile(resolve(outputRoot, "stdout.jsonl"), result.stdout, "utf8"),
+          writeFile(resolve(outputRoot, "stderr.log"), result.stderr, "utf8"),
+        ]);
+        const trace = await normalizeTrace({ id: `JUDGE-${scenario.id}` }, result.stdout, result.stderr, result.exitCode, result.durationMs, result.timedOut);
+        await writeJson(resolve(outputRoot, "normalized.json"), trace);
+        const validated = await validateJudgment(trace.final_response ?? {}, profile, definition, metadata.run_id, scenario.id, metadata.repetitions);
+        validated.case_name = caseName;
+        validated.target_evidence_digest = target.digest;
+        await writeJson(resolve(outputRoot, "judgment.json"), validated);
+      }
+      // Reduce every stored profile from raw evidence, never just this invocation.
+      judgments.push(...await recordedJudgments(runRoot, caseName, scenario, metadata, target, required));
+    }
+    if (metadata.harness_source_digest !== (await harnessSourceManifest()).digest) throw new CascadeError("sources changed during judging");
+    const complete = judgments.length === targets.length * required.length;
+    const accepted = judgments.length > 0 && judgments.every((item) => item.accepted === true);
+    await writeJsonAtomic(resolve(runRoot, "judgments", "summary.json"), { run_id: metadata.run_id, judgments });
+    const status = !accepted ? "FAIL" : complete ? "PASS" : "INCOMPLETE";
+    console.log(`judge_status=${status} judgments=${judgments.length}`);
+    return accepted && complete ? 0 : 1;
+  } finally {
+    await rmdir(lock);
+  }
 }
 
 async function commandCoverage(args: ReturnType<typeof parseArgs>): Promise<number> {
   const catalog = await generateCatalog();
   const manifest = await harnessSourceManifest();
   const required = await requiredProfiles();
+  if (!required.length) throw new CascadeError("required judge profiles are empty");
   const rows = new Map(
     catalog.scenarios.map((scenario: JsonObject) => [
       scenario.id,
@@ -1482,13 +1568,6 @@ async function commandCoverage(args: ReturnType<typeof parseArgs>): Promise<numb
         const selected = await readJson<JsonObject[]>(resolve(runRoot, "selected-scenarios.json"));
         const selectedScenarios = new Map(selected.map((scenario) => [scenario.id, scenario]));
         if (source.digest !== manifest.digest || metadata.harness_source_digest !== manifest.digest) continue;
-        const judgmentPath = resolve(runRoot, "judgments", "summary.json");
-        const judgmentsByCase: Record<string, Record<string, JsonObject>> = {};
-        if (await isFile(judgmentPath)) {
-          for (const judgment of (await readJson<JsonObject>(judgmentPath)).judgments ?? []) {
-            (judgmentsByCase[judgment.case_name] ??= {})[judgment.judge_profile_id] = judgment;
-          }
-        }
         for (const eligibility of summary.eligibilities ?? []) {
           const row = rows.get(eligibility.scenario_id);
           if (!row) continue;
@@ -1506,14 +1585,18 @@ async function commandCoverage(args: ReturnType<typeof parseArgs>): Promise<numb
             });
             continue;
           }
-          row.executed = true;
-          const [accepted, acceptance] = acceptedCandidate(
-            eligibility,
-            judgmentsByCase[basename(eligibility.case_dir)] ?? {},
-            required,
-          );
-          row.covered ||= accepted;
-          row.candidates.push({ run_id: metadata.run_id, accepted, acceptance });
+          try {
+            const caseName = basename(eligibility.case_dir);
+            const target = await recordedTarget(runRoot, caseName, currentScenario, metadata);
+            row.executed ||= target.trace.terminal_event === "turn.completed" && !target.trace.timed_out;
+            const rawJudgments = await recordedJudgments(runRoot, caseName, currentScenario, metadata, target, required);
+            const judgments = Object.fromEntries(rawJudgments.map((item) => [item.judge_profile_id, item]));
+            const [accepted, acceptance] = acceptedCandidate(target.eligibility, judgments, required);
+            row.covered ||= accepted;
+            row.candidates.push({ run_id: metadata.run_id, accepted, acceptance });
+          } catch (error) {
+            row.candidates.push({ run_id: metadata.run_id, accepted: false, acceptance: `invalid-evidence: ${String(error)}` });
+          }
         }
       } catch {}
     }
@@ -1596,6 +1679,94 @@ function syntheticTrace(
     errors: [],
     stderr_lines: [],
   };
+}
+
+// Frozen synthetic packets exercise the real judge lifecycle without a model call.
+async function judgeLifecycleSelfTest(scenario: JsonObject, required: JsonObject[]): Promise<[boolean, string][]> {
+  const parent = rootPath(".artifacts/eval-fixtures");
+  await mkdir(parent, { recursive: true });
+  const runRoot = await mkdtemp(resolve(parent, "judge-lifecycle-"));
+  const assertions: [boolean, string][] = [];
+  const rejects = async (action: () => Promise<unknown>): Promise<boolean> => {
+    try { await action(); return false; } catch { return true; }
+  };
+  try {
+    const execution = scenarioExecution(scenario, parseArgs([]));
+    const metadata = { run_id: basename(runRoot), repetitions: 1, sandbox: "read-only",
+      harness_source_digest: (await harnessSourceManifest()).digest,
+      execution_bindings: [{ scenario_id: scenario.id, ...execution }] };
+    const caseName = scenario.id;
+    const casePath = resolve(runRoot, "cases", caseName);
+    const makeTrace = async (path: string, id: string, thread: string, final: JsonObject, skillPath: string) => {
+      const stdout = [
+        { type: "thread.started", thread_id: thread },
+        { type: "item.completed", item: { type: "command_execution", command: `cat ${skillPath}`, status: "completed", exit_code: 0, aggregated_output: await readText(rootPath(skillPath)) } },
+        { type: "item.completed", item: { type: "agent_message", text: JSON.stringify(final) } },
+        { type: "turn.completed", usage: {} },
+      ].map((event) => JSON.stringify(event)).join("\n");
+      await mkdir(path, { recursive: true });
+      await writeFile(resolve(path, "stdout.jsonl"), stdout);
+      await writeFile(resolve(path, "stderr.log"), "");
+      await writeJson(resolve(path, "normalized.json"), await normalizeTrace({ id }, stdout, "", 0, 1, false));
+    };
+    await makeTrace(casePath, scenario.id, "fixture-target", syntheticTrace(scenario, "context", ["context"]).final_response, ".codex/skills/context/SKILL.md");
+    await writeFile(resolve(casePath, "prompt.txt"), targetPrompt(scenario));
+    await writeJson(resolve(casePath, "command.json"), { argv: codexCommand(execution.model, execution.reasoning_effort, "<prompt-in-prompt.txt>", OUTPUT_SCHEMA) });
+    await writeJson(resolve(runRoot, "run.json"), metadata);
+    await writeJson(resolve(runRoot, "selected-scenarios.json"), [scenario]);
+    await writeJson(resolve(runRoot, "summary.json"), { eligibilities: [{ scenario_id: scenario.id, verdict: "PASS", case_dir: rel(casePath) }] });
+    const target = await recordedTarget(runRoot, caseName, scenario, metadata);
+    const saveJudge = async (profile: JsonObject, pass = true, thread = `fixture-${profile.id}`) => {
+      const definition = await rubric(profile);
+      const final = { run_id: metadata.run_id, scenario_id: scenario.id, judge_profile_id: profile.id,
+        judge_type: profile.judge_type, rubric_id: definition.rubric_id, rubric_version: definition.version,
+        verdict: pass ? "PASS" : "FAIL", root_cause: pass ? "none" : "target-behavior", earliest_failing_event: "",
+        dimensions: definition.dimensions.map((item: JsonObject) => ({ id: item.id, score: pass ? 4 : 0, rationale: "Synthetic fixture rating", evidence: [{ path: "normalized.json", observation: "Synthetic fixture" }] })),
+        confidence: 1, summary: "Synthetic fixture", evidence: [], replay_command: "synthetic fixture only",
+        regression_recommendation: "", residual_uncertainty: [] };
+      const path = resolve(runRoot, "judgments", caseName, profile.id);
+      await makeTrace(path, `JUDGE-${scenario.id}`, thread, final, ".codex/plugins/cascade-evals/skills/harness-evaluation/SKILL.md");
+      await writeFile(resolve(path, "prompt.txt"), judgePrompt(runRoot, caseName, scenario, profile, definition));
+      await writeJson(resolve(path, "command.json"), { argv: codexCommand(JUDGE_MODEL, profile.reasoning_effort, "<prompt-in-prompt.txt>", JUDGE_SCHEMA) });
+      await writeJson(resolve(path, "judgment.json"), { ...await validateJudgment(final, profile, definition, metadata.run_id, scenario.id), case_name: caseName, target_evidence_digest: target.digest });
+    };
+    const invoke = (id: string) => commandJudge(parseArgs(["--run-dir", runRoot, "--judge-profile", id]));
+    await saveJudge(required[0]!);
+    assertions.push([await invoke(required[0]!.id) === 1, "partial judging is INCOMPLETE, never PASS"]);
+    const summaryPath = resolve(runRoot, "judgments", "summary.json");
+    const before = await readText(summaryPath);
+    assertions.push([await rejects(() => invoke("unknown-profile")) && await readText(summaryPath) === before, "unknown profile cannot erase existing judgments"]);
+    for (const profile of required.slice(1)) await saveJudge(profile);
+    assertions.push([await invoke(required.at(-1)!.id) === 0 && (await readJson<JsonObject>(summaryPath)).judgments.length === required.length, "separate profile runs preserve the complete aggregate"]);
+    await mkdir(resolve(runRoot, ".judge-lock"));
+    assertions.push([await rejects(() => invoke(required[0]!.id)), "concurrent judge writer cannot overwrite a run"]);
+    await rmdir(resolve(runRoot, ".judge-lock"));
+    await saveJudge(required[0]!, false);
+    assertions.push([await invoke(required[0]!.id) === 1, "failed semantic judgments never produce a passing command"]);
+    await saveJudge(required[0]!, true, "fixture-target");
+    assertions.push([await rejects(() => invoke(required[0]!.id)), "judge cannot reuse the target context"]);
+    await saveJudge(required[0]!);
+    const receiptPath = resolve(runRoot, "judgments", caseName, required[0]!.id, "judgment.json");
+    const receipt = await readJson<JsonObject>(receiptPath);
+    await writeJson(receiptPath, { ...receipt, computed_score: 1 });
+    assertions.push([await rejects(() => recordedJudgments(runRoot, caseName, scenario, metadata, target, required)), "changed score receipt is rejected against raw judge output"]);
+    await saveJudge(required[0]!);
+    const stdoutPath = resolve(casePath, "stdout.jsonl");
+    const original = await readText(stdoutPath);
+    await writeFile(stdoutPath, "");
+    assertions.push([await rejects(() => recordedTarget(runRoot, caseName, scenario, metadata)), "missing raw target evidence cannot be replaced by cached PASS flags"]);
+    await writeFile(stdoutPath, original);
+    const priorSummary = await readText(summaryPath);
+    await writeJson(resolve(runRoot, "summary.json"), { eligibilities: [] });
+    assertions.push([await rejects(() => invoke(required[0]!.id)) && await readText(summaryPath) === priorSummary, "zero eligible targets cannot pass or erase prior results"]);
+    await rm(resolve(runRoot, "judgments", caseName, required[0]!.id, "stdout.jsonl"));
+    assertions.push([await rejects(() => recordedJudgments(runRoot, caseName, scenario, metadata, target, required)), "missing raw judge evidence cannot establish coverage"]);
+    return assertions;
+  } finally {
+    // Only the freshly created, bounded fixture directory is disposable.
+    boundedPath(runRoot, ".artifacts/eval-fixtures/judge-lifecycle-");
+    await rm(runRoot, { recursive: true, force: true });
+  }
 }
 
 async function commandSelfTest(): Promise<number> {
@@ -1785,15 +1956,28 @@ async function commandSelfTest(): Promise<number> {
     try { interactionScenario({ ...roleCase, ...changes }, roleContracts); return false; }
     catch (error) { return error instanceof CascadeError; }
   };
-  const readTrace = async (exitCode: number) => normalizeTrace(scenario, JSON.stringify({
+  const readOutput = await readText(rootPath(".codex/agents/orchestrator/AGENT.md")) + "\n" + await readText(rootPath(".codex/skills/context/SKILL.md"));
+  const readTrace = async (exitCode: number, reader = "Get-Content", output = readOutput) => normalizeTrace(scenario, JSON.stringify({
     type: "item.completed", item: { type: "command_execution", exit_code: exitCode,
       status: exitCode === 0 ? "completed" : "failed",
-      command: String.raw`Get-Content .codex\agents\orchestrator\AGENT.md, .codex\skills\context\SKILL.md`,
-      aggregated_output: exitCode === 0 ? "Source contents" : "Access denied" },
+      command: String.raw`${reader} .codex\agents\orchestrator\AGENT.md, .codex\skills\context\SKILL.md`,
+      aggregated_output: exitCode === 0 ? output : "Access denied" },
   }), "", 0, 1, false);
   const successfulRead = await readTrace(0);
   const failedRead = await readTrace(1);
+  const echoedPath = await readTrace(0, "Write-Output", ".codex/agents/orchestrator/AGENT.md .codex/skills/context/SKILL.md");
+  const emptyRead = await readTrace(0, "Get-Content", "");
+  const inventory = await readTrace(0, "rg --files", readOutput);
+  const mixedRead = await normalizeTrace(scenario, JSON.stringify({ type: "item.completed", item: {
+    type: "command_execution", exit_code: 1, status: "failed",
+    command: "Get-Content .codex/skills/context/SKILL.md; rg --files missing-directory",
+    aggregated_output: readOutput + "\nrg: missing-directory: not found",
+  } }), "", 0, 1, false);
+  const lifecycleAssertions = await judgeLifecycleSelfTest(scenario, required);
   const assertions: [boolean, string][] = [
+    ...lifecycleAssertions,
+    [mixedRead.loaded_skills.includes("context"), "a later failed search cannot erase an observed source read"],
+    [[echoedPath, emptyRead, inventory].every((trace) => !trace.loaded_roles.length && !trace.loaded_skills.length), "echoes, empty output and inventories cannot establish source loads"],
     [successfulRead.loaded_roles.includes("orchestrator") && successfulRead.loaded_skills.includes("context"), "native Windows paths establish source loads"],
     [failedRead.loaded_roles.length === 0 && failedRead.loaded_skills.length === 0, "failed reads cannot establish source loads"],
     [targetPrompt({ ...scenario, owner: "orchestrator" }).includes("Read .codex/agents/orchestrator/AGENT.md"), "target receives its assigned role without expected route answers"],

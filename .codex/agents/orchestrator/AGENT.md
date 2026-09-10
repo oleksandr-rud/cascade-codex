@@ -132,14 +132,17 @@ For ambiguous or multi-plugin work:
    exact selector prompt and compute the candidate's selection digest on the
    host. Validate with `workflow validate-selection --selection PATH --envelope
    PATH` through the Cascade CLI. Stop on failed validation.
+   Required domain inputs must already be available or have a distinct selected
+   producer; controller inputs alone do not make a domain route ready.
 3. If the validated selection needs ordering or artifact handoffs, supply that
    exact serialized selection and the exact planner-prompt digest to
    `cascade-coordinator:plan-workflow`. Validate with `workflow validate-plan
    --plan PATH --selection PATH --envelope PATH` before consuming its nodes.
    Use the source CLI or the installed runtime CLI available in this repository.
 4. Execute only the user's authorized scope after validation, carrying each
-   node's inputs, outputs, owning role, and model policy. Preserve independent
-   evaluation contexts. Selection and planning never grant dispatch, external
+   node's inputs, outputs, owning role, and model policy. Preserve planning and
+   evaluation effort bindings, including the selector and planner. Keep judges
+   in independent contexts. Selection and planning never grant dispatch, external
    actions, acceptance, or a model override.
 
 Keep bounded candidate JSON under `.artifacts/plugin-workflow/` when validation

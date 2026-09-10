@@ -250,6 +250,23 @@ describe("Cascade lean target runtime bundle", () => {
         const wrongEffortJudge = structuredClone(plan);
         wrongEffortJudge.selected_nodes[1]!.model.reasoning_effort = "max";
         expect((await checkPlan(wrongEffortJudge)).stderr.toString()).toContain("evaluation reasoning effort differs from its capability policy");
+        const wrongEffortAuthor = structuredClone(plan);
+        wrongEffortAuthor.selected_nodes[0]!.model.reasoning_effort = "max";
+        expect((await checkPlan(wrongEffortAuthor)).stderr.toString()).toContain("planning reasoning effort differs from its capability policy");
+        const wrongPlanner = structuredClone(plan);
+        wrongPlanner.planner.reasoning_effort = "max";
+        expect((await checkPlan(wrongPlanner)).stderr.toString()).toContain("planner reasoning effort differs from its capability policy");
+        const missingInputs = structuredClone(featureSelection);
+        missingInputs.input_artifacts = ["task-envelope", "plugin-capability-catalog"];
+        missingInputs.selection_digest = capabilitySelectionDigest(missingInputs);
+        await writeFile(resolve(artifacts, "selection.json"), JSON.stringify(missingInputs));
+        expect(runBundle(output, ["workflow", "validate-selection", "--selection", ".artifacts/runtime-bundle-test/selection.json", "--envelope", ".artifacts/runtime-bundle-test/envelope.json"]).stderr.toString()).toContain("consumes unavailable artifact");
+        const wrongSelector = structuredClone(featureSelection);
+        wrongSelector.selector.reasoning_effort = "max";
+        wrongSelector.selection_digest = capabilitySelectionDigest(wrongSelector);
+        await writeFile(resolve(artifacts, "selection.json"), JSON.stringify(wrongSelector));
+        expect(runBundle(output, ["workflow", "validate-selection", "--selection", ".artifacts/runtime-bundle-test/selection.json", "--envelope", ".artifacts/runtime-bundle-test/envelope.json"]).stderr.toString()).toContain("selector reasoning effort differs from its capability policy");
+        await writeFile(resolve(artifacts, "selection.json"), JSON.stringify(featureSelection));
       } else if (includeGrowth) {
         expect((await checkPlan({ ...plan, edges: [] })).stderr.toString()).toContain("required artifact edge is missing");
         expect((await checkPlan({ ...plan, selected_nodes: [...nodes].reverse() })).stderr.toString()).toContain("consumes unavailable artifact");

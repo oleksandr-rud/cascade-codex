@@ -59,6 +59,9 @@ Usage:
   cascade closeout <snapshot|check|path>
   cascade validate
   cascade eval <catalog|audit|run|evaluate|judge|coverage|self-test>
+    judge --run-dir <path> [--judge-profile <required-profile-id>]
+    Judge results are PASS only when every required profile accepts; partial
+    profiles are INCOMPLETE. Existing valid judgments are retained on resume.
   cascade patterns <options>
   cascade policy validate [--scope admission|product|all]
   cascade policy list [--scope admission|product|all] [--format json|yaml]

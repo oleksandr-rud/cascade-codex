@@ -364,6 +364,10 @@ export function validateCapabilitySelection(
   }
 
   const skills = catalogSkillMap(catalog);
+  const selectorPolicy = skills.get(SELECT_CAPABILITIES_ROUTE)!.model_policy;
+  if (selection.selector.reasoning_effort !== selectorPolicy.planning_reasoning_effort) {
+    throw new CascadeError("selector reasoning effort differs from its capability policy");
+  }
   const claims = new Set(envelope.claims.map((claim) => claim.claim_id));
   const selectedByRoute = new Map<string, JsonRecord>();
   for (const candidate of selection.selected_candidates) {
@@ -400,6 +404,14 @@ export function validateCapabilitySelection(
     for (const dependency of candidate.required_dependencies as string[]) {
       if (!selectedByRoute.has(dependency)) {
         throw new CascadeError(`${route} required dependency is not selected: ${dependency}`);
+      }
+    }
+    for (const input of skills.get(route)!.consumes as string[]) {
+      const supplied = selection.input_artifacts.includes(input);
+      const produced = [...selectedByRoute.keys()].some((producer) =>
+        producer !== route && skills.get(producer)!.produces.includes(input));
+      if (!supplied && !produced) {
+        throw new CascadeError(`${route} consumes unavailable artifact: ${input}`);
       }
     }
   }
@@ -468,9 +480,11 @@ export function validatePluginPlan(
   if (!exactStringSet(planRejections, selectionRejections)) {
     throw new CascadeError("plugin plan rejected routes differ from the capability selection");
   }
-  if (plan.status === "BLOCKED") return;
-
   const skills = catalogSkillMap(catalog);
+  if (plan.planner.reasoning_effort !== skills.get(PLAN_WORKFLOW_ROUTE)!.model_policy.planning_reasoning_effort) {
+    throw new CascadeError("planner reasoning effort differs from its capability policy");
+  }
+  if (plan.status === "BLOCKED") return;
   const claims = new Set(envelope.claims.map((claim) => claim.claim_id));
   const nodeById = new Map<string, JsonRecord>();
   const routeIndex = new Map<string, number>();
@@ -523,6 +537,9 @@ export function validatePluginPlan(
     }
     if (node.route.startsWith("cascade-evals:") && node.model.reasoning_effort !== descriptor.model_policy.evaluation_reasoning_effort) {
       throw new CascadeError(`${node.route} evaluation reasoning effort differs from its capability policy`);
+    }
+    if (!node.route.startsWith("cascade-evals:") && node.model.reasoning_effort !== descriptor.model_policy.planning_reasoning_effort) {
+      throw new CascadeError(`${node.route} planning reasoning effort differs from its capability policy`);
     }
     for (const claimId of node.claim_ids as string[]) {
       if (!claims.has(claimId)) throw new CascadeError(`${node.route} references unknown claim ${claimId}`);

@@ -81,6 +81,16 @@ manifest, and summary reports. The `judge` command selects every eligible case,
 runs required outcome and trajectory profiles independently through the
 read-only Cascade Evals harness subject profile (no registered host role), and writes one judgment trace per case/profile.
 
+`judge --judge-profile <id>` may run one required profile at a time. Unknown
+profiles and runs without eligible targets fail before modifying judgments.
+Validated existing profiles are reused and merged from their raw evidence;
+the aggregate is `INCOMPLETE` (exit 1) until every required profile is present,
+`FAIL` (exit 1) for a rejected judgment, and `PASS` (exit 0) only for complete
+acceptance. One writer is allowed per run. An interrupted or damaged judgment
+remains evidence of that attempt; use a fresh diagnostic run instead of deleting
+it to manufacture a passing history. Judge model/effort overrides must match
+the pinned profile; change the frozen profile for a different experiment.
+
 Each run or re-evaluation batch resolves its route inventory once; each judging
 or coverage batch reads its required profiles once. A later command resolves
 current sources again, so this reuse cannot hide edits between commands.
@@ -90,6 +100,12 @@ current catalog and exact harness source digest. It verifies raw, normalized,
 and eligibility artifacts, then rejects stale sources, unsupported models,
 blocked or failed traces, missing judges, invalid ratings, and any required
 judge failure before claiming accepted coverage.
+Coverage recomputes eligibility and ratings from the raw target and judge
+records; cached summary flags cannot establish acceptance. Judge receipts bind
+the exact target evidence packet. Missing or changed raw evidence, mismatched
+normalization, altered receipts, non-independent contexts and unsafe judge
+traces invalidate the case. The source snapshot must remain current throughout
+judging; older diagnostics remain historical.
 It reports trace-complete execution separately from diagnostic acceptance so
 confirmed regressions remain counted as executed without being converted into
 passes. Accepted coverage is a property of that exact disposable run; it is not
@@ -101,6 +117,13 @@ Skill, role, command, output-detail, and extra-supporting-route bounds remain
 diagnostic so context efficiency is visible without turning reasonable model
 variation into a hard admission gate. These measurements are not release proof
 and are not a reason to create a work graph.
+
+A loaded skill or role requires a file-reading command whose output
+matches the current entrypoint's opening and body. Echoed paths, inventories,
+empty output and failed reads without source content do not qualify. A later
+failed search in the same shell group does not erase an already observed read.
+This establishes observed source
+exposure; the independent semantic judges assess how the instructions were used.
 
 The deterministic `self-test` also copies
 `fixtures/onboarding/basic-project/` into a temporary target and proves project
