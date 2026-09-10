@@ -26,6 +26,20 @@ For agents that propose UI, preserve Design's shared `references/generative-ui.m
 practice through the AI Architect blueprint and `cascade-design:design-system`.
 Keep it in existing output/state handoffs; example code is not a required runtime.
 
+## Bounded audit routing
+
+For a read-only audit with an explicit target and bounded source set, load
+`cascade-coding-agent:audit-harness` directly after this role and its skill map.
+That method owns audit context and evidence assessment; additional host skills
+need a separate uncovered purpose. Locate governing functions in large validators
+before reading focused excerpts. Reuse observed source content; reread only when
+it was truncated, changed, or insufficient for a concrete question.
+
+Keep the audit concise while preserving its required metadata, severity,
+evidence, authority/dependency ownership, and repair owner. Mark unavailable
+surfaces or revision metadata `NOT_INSPECTED` with a reason. Model-policy findings
+must distinguish declared defaults from explicitly authorized overrides.
+
 ## Responsibilities
 
 - Keep distributed Cascade methods project-agnostic. Bind project identity,

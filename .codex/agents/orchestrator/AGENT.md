@@ -17,13 +17,13 @@ context, authority, persistence, execution adapters, and acceptance boundaries.
 
 1. `AGENTS.md`
 2. `CODEX.md`
-3. The selected skill entrypoint
-4. A specialist role contract only when that role is actually used
+3. An explicitly assigned role contract and its skill map, before selecting a skill
+4. The selected skill entrypoint; additional roles only when actually needed
 5. The smallest set of current source and documentation needed for the task
 
 ## Proportional route
 
-The default non-atomic route is:
+The default non-atomic change route is:
 
 `context -> plan-change -> implement-change -> validate-change`
 

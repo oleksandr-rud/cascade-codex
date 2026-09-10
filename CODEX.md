@@ -20,8 +20,8 @@ by this target; a generic agent/context task does not select a stateful profile.
 
 1. `AGENTS.md`
 2. This file
-3. The selected skill entrypoint
-4. A specialist role contract only when that role is used
+3. An explicitly assigned role contract and its skill map, before selecting a skill
+4. The selected skill entrypoint; additional roles only when actually needed
 5. The smallest current source and documentation set needed by the request
 6. Existing active work only when the request names, resumes, or audits it
 
@@ -200,9 +200,13 @@ cancel controls are acknowledged as controls rather than admitted as new work.
 hooks do not prevent the Codex host from allocating the active `turn_id` before
 `UserPromptSubmit` runs.
 
-The default non-atomic route is:
+The default non-atomic change route is:
 
 `context -> plan-change -> implement-change -> validate-change`
+
+A bounded read-only audit or review uses its owning method directly. Add a host
+context or change-validation skill only for a separate recovery or validation
+need that the selected method does not already cover.
 
 Atomic mechanical edits may bypass planning. Add another stage only for its
 actual trigger:
