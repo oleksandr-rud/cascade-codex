@@ -1,7 +1,7 @@
 schema_version: 1
 plugin:
   name: cascade-market
-  version: 0.2.0+codex.20260909141644
+  version: 0.2.1+codex.20260910171300
 model_policy:
   model: gpt-5.6-sol
   planning_reasoning_effort: high
@@ -48,7 +48,9 @@ skills:
     description: Create or audit positioning, messaging, naming, tone, proof language, trust language, and marketing direction from accepted evidence.
     triggers: [brand positioning or marketing language must be created or revised]
     anti_triggers: [fresh market research or product behavior definition is the real task]
-    consumes: [market-evidence-ledger, market-opportunity-assessment, product-contract, persona-projection]
+    consumes: []
+    consumes_any_of: [product-contract, brand-brief]
+    optional_consumes: [market-evidence-ledger, market-opportunity-assessment, persona-projection]
     produces: [marketing-positioning]
     required_dependencies: []
     optional_dependencies: [cascade-market:research-market, cascade-market:evaluate-market-opportunity, cascade-market:plan-growth, cascade-product:define-product, cascade-personas:compile-persona, cascade-design:design-system, cascade-prompt:prompt]

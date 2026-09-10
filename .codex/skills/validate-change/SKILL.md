@@ -27,6 +27,13 @@ results into a pass.
 7. Classify failures as product defect, test drift, environment or dependency
    issue, unrelated baseline failure, or insufficient evidence.
 
+For a claim about architecture or reference use, verify the accepted business
+examples, invariants, state owners and selected source rules against actual code
+and checks. Folder names, installed plugins, read events and structural validator
+passes are insufficient. Give independent evaluators the same applicable
+reference versions and decision criteria; an omitted requirement remains outside
+their demonstrated coverage. Do not impose an unselected default after a run.
+
 ## Evidence states
 
 For UI work governed by an approved mockup, include matched reference/current

@@ -10,6 +10,10 @@ Personas exclusively owns canonical human-model evidence and purpose-limited
 projections. This skill validates the projection payload against the local
 runtime schema and cross-field rules. `simulation-actor` later selects the
 small task-relevant subset and compiles executable behavior.
+Reuse a valid supplied projection without rerunning `cascade-personas:compile-persona`.
+The compiler remains the provenance owner; dependency availability is distinct
+from selecting compilation as new work. Missing or stale projection evidence
+still blocks consumption.
 
 ## Source order
 

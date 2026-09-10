@@ -1,4 +1,87 @@
 interactions:
+  - id: HX-072
+    expected_primary: cascade-software-architect:architect-software-system
+    allowed_supporting: [context, plan-change, pattern-context, cascade-software-architect:select-architecture-patterns]
+    forbidden_primary: [implement-change, cascade-personas:compile-persona]
+    prompt: "Produce the architecture decision for a new local service handling maintenance requests and their comments. Accepted behavior is submit, add notes, assign, resolve and reopen; notes have no independent lifecycle. No architecture has been accepted. First decide business ownership and the smallest structure from those scenarios and invariants, including startup and any justified shared code. Do not equate one entity with one module or implement code in this diagnostic."
+  - id: HX-073
+    expected_primary: cascade-ai-architect:architect-ai-system
+    allowed_supporting: [context, plan-change]
+    forbidden_primary: [cascade-prompt:prompt, implement-change]
+    prompt: "Define the architecture needed to implement an assistant that receives requests, proposes state changes and can call tools. Its decision authority, state owner, tool boundaries, stop rules and single-agent versus multiple-agent design are still undecided. Resolve those prerequisites before preparing implementation; prompt wording is already adequate."
+  - id: HX-074
+    expected_primary: cascade-coding-agent:maintain-harness
+    allowed_supporting: [context, plan-change, validate-change]
+    forbidden_primary: [cascade-ai-architect:architect-ai-system]
+    prompt: "Apply the explicit local harness change to stop a known route from reading unrelated historical reports. The accepted change contract and validation target are supplied, and the current agent architecture remains valid. There is no separate audit packet. Classify the owning method without expanding this into architecture redesign or a whole-harness audit."
+  - id: HX-075
+    expected_primary: cascade-coordinator:select-capabilities
+    forbidden_primary: [cascade-coordinator:plan-workflow]
+    status_any: [BLOCKED]
+    prompt: "Choose the smallest capabilities needed to research a market, turn accepted evidence into a product definition and evaluate a frozen prompt. Reuse inputs already available and explain exclusions; do not order or execute work. This request has no serialized Task Envelope or digest-bound catalog attached, so expose that input gap rather than inventing identities."
+  - id: HX-076
+    expected_primary: cascade-design:accessibility-review
+    forbidden_primary: [cascade-design:design-system, cascade-market:brand-positioning]
+    prompt: "Review the existing screen's keyboard order, focus restoration and accessible names. A current rendered screen and markup are the intended subjects; this project has no design-system or marketing packet. Do not require those optional packages before selecting the review, and report any screen evidence actually missing from this diagnostic."
+  - id: HX-077
+    expected_primary: cascade-evals:evaluate
+    allowed_supporting: [cascade-evals:prompt-evaluation]
+    forbidden_primary: [cascade-prompt:prompt]
+    prompt: "Design only the generic evaluation protocol for a controlled comparison. The subject is an already frozen prompt with accepted cases. Preserve its exact wording. We need the evaluation method, required measurements and missing evidence before any run; creating or revising the prompt is outside the request."
+  - id: HX-078
+    expected_primary: cascade-market:brand-positioning
+    forbidden_primary: [cascade-market:research-market, cascade-product:define-product]
+    prompt: "Revise the product's error-copy and naming rules from accepted behavior and an existing tone guide. The audience, promise and product decisions remain accepted. We have no separate market assessment or persona projection, and no new market claim needs support. Return only the language-work route and its source needs."
+  - id: HX-079
+    expected_primary: cascade-personas:evaluate-persona
+    forbidden_primary: [cascade-personas:compile-persona, cascade-personas:build-persona]
+    prompt: "Independently assess grounding, privacy and internal consistency of one frozen canonical human persona. Its source ledger is part of the subject. No consumer projection is requested or available. Prepare the evaluation without inventing a projection, revising the persona or claiming human fidelity from synthetic judgments."
+  - id: HX-080
+    expected_primary: cascade-product:define-product
+    forbidden_primary: [cascade-market:research-market, cascade-personas:build-persona]
+    prompt: "Define accepted behavior for a local request-intake MVP from the named owner's brief, actors, useful outcome, constraints and evidence. Compare only the supplied feature candidates and give observable examples and exclusions. This is not a new investment, market-research or canonical-persona decision; separate lifecycle, market and persona packets do not exist."
+  - id: HX-081
+    expected_primary: cascade-project-management:define-work-item
+    forbidden_primary: [cascade-qa:triage-defects, implement-change]
+    prompt: "Draft a tracker issue from this user report: reopening a resolved request shows the old resolved badge until refresh; expected behavior is immediate display of the persisted open state. A screenshot can support the observation. Do not reproduce, classify root cause, fix or file it. Preserve missing evidence; there is no frozen triage finding."
+  - id: HX-082
+    expected_primary: cascade-prompt:prompt
+    forbidden_primary: [cascade-ai-architect:architect-ai-system, cascade-evals:prompt-evaluation]
+    prompt: "Clarify the wording and output schema of an existing instruction prompt. The role, workflow, state ownership and tool permissions are accepted and unchanged. No experiment or quality comparison is requested."
+  - id: HX-083
+    expected_primary: cascade-qa:plan-quality
+    forbidden_primary: [cascade-product:define-product, run-qa-plan]
+    prompt: "Define risk-based evidence gates for an accepted change contract containing actors, states, expected behavior, failure paths and decision ownership. A standalone PRD does not exist. No product decision is open and no tests should run during this planning diagnostic."
+  - id: HX-084
+    expected_primary: cascade-security:secure-design
+    allowed_supporting: [context, plan-change]
+    forbidden_primary: [implement-change, cascade-security:auth-analysis]
+    prompt: "Review security controls for a proposed tenant-document sharing feature before implementation. Resolve the new trust boundary: a signed link may expose one document to an external recipient, must expire, and must never expose another tenant's data. No existing auth implementation is under audit. Review controls and missing proposal details as the prerequisite to implementation."
+  - id: HX-085
+    expected_primary: cascade-simulations:simulation-persona
+    forbidden_primary: [cascade-personas:compile-persona, cascade-personas:build-persona, cascade-simulations:simulate]
+    prompt: "Validate and consume an already frozen simulation persona projection with compiler mapping, canonical and target-schema digests, privacy destination and transfer authority. Do not compile it again or execute an actor. Identify the consumer method and any actual missing payload evidence."
+  - id: HX-086
+    expected_primary: plan-change
+    allowed_supporting: [context, pattern-context, cascade-software-architect:architect-software-system]
+    forbidden_primary: [implement-change]
+    next_route: cascade-software-architect:architect-software-system
+    prompt: "Prepare the smallest implementation plan for a new backend application owned by one developer. Business behavior is accepted but module ownership, transaction boundaries and architecture are unresolved. Stop at the prerequisite handoff before choosing implementation files; one owner is not evidence that those decisions are settled."
+  - id: HX-087
+    expected_primary: plan-change
+    allowed_supporting: [context, cascade-security:secure-design]
+    forbidden_primary: [implement-change]
+    next_route: cascade-security:secure-design
+    prompt: "Prepare an implementation plan for adding public expiring document links to an existing tenant application. Software ownership and feature behavior are accepted, but the new external recipient, authorization and revocation controls are undecided. Stop at the prerequisite review handoff before coding."
+  - id: HX-088
+    expected_primary: plan-change
+    allowed_supporting: [context]
+    forbidden_primary: [cascade-software-architect:architect-software-system, cascade-coordinator:select-capabilities]
+    prompt: "Plan one small internal refactor within an accepted module. Behavior, invariants, public interfaces, architecture and tests remain defined; only duplicate local parsing is being removed. There is no new product, design, trust or state boundary and no durable project plan."
+  - id: HX-089
+    expected_primary: cascade-market:research-market
+    forbidden_primary: [cascade-personas:compile-persona, cascade-software-architect:architect-software-system]
+    prompt: "Research current market alternatives for architecture diagramming tools. We need attributable external evidence about existing products, not a human persona projection or a design for our own software architecture. In this read-only routing diagnostic identify the method and the evidence that cannot be collected without network access."
   - expected_primary: cascade-evals:harness-evaluation
     forbidden_primary: [closeout]
     id: HX-071

@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "plugin_id": "cascade-security",
-  "plugin_version": "0.1.0+codex.20260909141647",
+  "plugin_version": "0.1.1+codex.20260910171300",
   "source_revision": "d34754f350d3b94e91373ff7f0b7f066cb69f011",
   "source_state": "LISTED_PATHS_MATCH_SOURCE_REVISION_BEFORE_CUTOVER",
   "artifacts": [

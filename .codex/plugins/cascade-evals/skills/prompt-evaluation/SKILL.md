@@ -34,6 +34,9 @@ return cases, mechanical gates, judge needs, missing evidence, and phase states.
 Preserve any supplied frozen prompt. Do not dispatch the execution workflow or
 load integration schemas merely to describe a plan. Read the detailed execution
 references only when the requested design needs their exact contract.
+Resolving `cascade-prompt:prompt` as the subject dependency does not schedule
+prompt authoring again. Reuse the supplied frozen candidate; select authoring
+only when the accepted campaign explicitly requires a new or revised candidate.
 
 1. Resolve the subject plugin and exact skill root. Use
    `--subject-skill-root` only for an intentional source checkout; otherwise

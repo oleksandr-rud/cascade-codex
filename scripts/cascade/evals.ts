@@ -298,6 +298,8 @@ export async function generateCatalog(): Promise<JsonObject> {
       expectation: expectation(item.expected_primary, item.expected_primary, {
         forbiddenPrimary: item.forbidden_primary ?? [],
         allowedSupporting: item.allowed_supporting ?? [],
+        nextRoute: item.next_route,
+        statuses: item.status_any,
       }),
       source: "harness-evals/interactions.yaml",
     });
@@ -560,6 +562,7 @@ function targetPrompt(scenario: JsonObject): string {
 
 Rules:
 - Work only with this repository and do not edit any file.
+${scenario.kind === "interaction" ? "- This is routing-only: identify the primary method, actual input gaps and first required handoff, then stop. Do not perform the underlying design, research, audit or implementation request.\n" : ""}
 - Do not access the network, external apps, connectors, or MCP servers.
 - Do not spawn or delegate to another agent.
 - Do not read harness-evals/, .artifacts/harness-evals/, prior runs, expected answers, or evaluator rubrics.
@@ -571,8 +574,11 @@ Rules:
 - Bun is not on PATH in this environment. If a repository command is strictly
   necessary, invoke it through npx --offline --yes bun@1.3.3.
 - For product-sensitive work, read and cite the current product, design, brand,
-  or specification sources routed by the repository. Do not infer product
-  behavior from workflow documents or simulation output alone.
+  or specification sources only when they belong to the scenario's target.
+  This Cascade checkout supplies harness policy, not business facts for a new
+  or hypothetical product. Use supplied scenario facts and report missing
+  target inputs; do not search Cascade product docs for that product or infer
+  its behavior from workflow documents or simulation output.
 - Select one primary Cascade skill. \`supporting_skills\` may contain only existing
   repository skills that you actually loaded and used for this response; put
   skills mentioned only as future handoffs in \`next_route\`, not in
@@ -914,7 +920,7 @@ async function checkEligibility(
     ![0, null, undefined].includes(trace.exit_code) ||
     trace.terminal_event === "turn.failed" ||
     [...(trace.errors ?? []), ...(trace.stderr_lines ?? [])].some((line) =>
-      /failed to spawn|requires a newer version|model .+ (?:is not supported|was not found)|authentication (?:failed|required)/i.test(
+      /failed to spawn|requires a newer version|model .+ (?:is not supported|was not found)|authentication (?:failed|required)|code.mode (?:host is disabled|is unavailable)/i.test(
         line,
       ),
     );
@@ -944,7 +950,7 @@ function codexCommand(model: string, effort: string, prompt: string, schema: str
     "computer_use",
     "--disable",
     "image_generation",
-    "--disable",
+    "--enable",
     "code_mode_host",
     "-m",
     model,
@@ -1648,6 +1654,10 @@ async function commandSelfTest(): Promise<number> {
     scenario,
     syntheticTrace(scenario, "context", ["context"], { terminal: "turn.failed" }),
   );
+  const unavailableReader = await checkEligibility(scenario, {
+    ...syntheticTrace(scenario, "context", []),
+    errors: ["Code Mode is unavailable because code-mode host is disabled."],
+  });
   const supporting = await checkEligibility(
     scenario,
     syntheticTrace(scenario, "context", ["context"], { supporting: ["plan-change"] }),
@@ -1755,6 +1765,7 @@ async function commandSelfTest(): Promise<number> {
       "agent detail budget must remain diagnostic",
     ],
     [incomplete.verdict === "BLOCKED", "failed terminal must block"],
+    [unavailableReader.verdict === "BLOCKED" && unavailableReader.failure_class === "environment", "unavailable source reader must be an environment blocker"],
     [!classifyCommand("rg token . 2>/dev/null").mutation, "dev-null redirect safe"],
     [!classifyCommand("rg 'placeholder|<[^>]+>' docs").mutation, "quoted redirect safe"],
     [classifyCommand("printf result > result.txt").mutation, "write redirect detected"],

@@ -43,9 +43,10 @@ architecture or create source scaffolds without a plan and validation contract.
 Server-side application source defaults to a modular monolith, with in-process
 public module calls, acyclic dependencies, and module-owned data even in a
 shared database. `architecture-defaults/service-api-worker.spec.md` owns the
-detailed contract and evidence-based service-split exceptions. Use names such
-as `auth`, `users`, `customers`, `crm`, or `billing`, each with owned state or
-policy and one public entrypoint. Do not create top-level `core`, `common`,
+detailed contract and evidence-based service-split exceptions. Derive cohesive
+business modules from scenarios, lifecycle, invariants, and data ownership;
+do not split by nouns or tables alone. Name each evidenced capability, with
+owned state or policy and one public entrypoint. Do not create top-level `core`, `common`,
 `services`, `helpers`, or layer-named modules. The layers below are optional
 responsibilities inside a concrete module, not required source modules.
 

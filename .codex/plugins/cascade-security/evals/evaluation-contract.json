@@ -2,7 +2,7 @@
   "schema_version": 2,
   "plugin_id": "cascade-security",
   "subject_kind": "agent",
-  "version": "0.1.0+codex.20260909141647",
+  "version": "0.1.1+codex.20260910171300",
   "expected_case_count": 9,
   "acceptance_threshold": 0.95,
   "minimum_dimension": 3,

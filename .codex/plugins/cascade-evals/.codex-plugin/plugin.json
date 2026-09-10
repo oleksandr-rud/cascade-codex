@@ -1,6 +1,6 @@
 {
   "name": "cascade-evals",
-  "version": "0.3.5+codex.20260910123140",
+  "version": "0.3.6+codex.20260910171300",
   "description": "Designs and runs versioned evaluations for prompts, agents, simulations, and coding-agent harnesses with deterministic eligibility, calibrated independent judges, conservative reduction, and immutable evidence receipts.",
   "author": {
     "name": "Cascade"

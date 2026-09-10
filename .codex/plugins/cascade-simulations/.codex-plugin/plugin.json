@@ -1,6 +1,6 @@
 {
   "name": "cascade-simulations",
-  "version": "0.2.4+codex.20260909081821",
+  "version": "0.2.5+codex.20260910171300",
   "description": "Compile actors, manage versioned campaigns, execute bounded goal-directed simulations through Codex-host tools, and review frozen runs against fixed contracts.",
   "author": {
     "name": "Cascade"

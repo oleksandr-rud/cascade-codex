@@ -1,6 +1,6 @@
 {
   "name": "cascade-coordinator",
-  "version": "0.1.0+codex.20260908124959",
+  "version": "0.2.0+codex.20260910171300",
   "description": "Selects the smallest sufficient Cascade plugin capabilities and compiles validated, non-dispatching cross-plugin workflow plans.",
   "author": {
     "name": "Cascade"

@@ -55,6 +55,8 @@ Add a stage only when its trigger is present:
 A bounded change completed by one owner stays inline. Do not create a spec, lane,
 Coordination Graph, report, receipt, or archive entry merely because the task is
 non-atomic.
+Apply `plan-change`'s unresolved-decision routes before implementation: one owner
+does not remove a needed product, software/AI architecture, or security method.
 
 ## Specialist routing
 

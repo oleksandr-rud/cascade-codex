@@ -1,18 +1,18 @@
 schema_version: 1
 plugin:
   name: cascade-software-architect
-  version: 0.1.3+codex.20260909141641
+  version: 0.2.0+codex.20260910171300
 model_policy:
   model: gpt-5.6-sol
   planning_reasoning_effort: high
   evaluation_reasoning_effort: max
 skills:
   - route: cascade-software-architect:architect-software-system
-    description: Design a source-grounded software architecture, defaulting server-side systems to a modular monolith with concrete domain modules and explicit state owners.
-    triggers: [software system architecture is unresolved]
-    anti_triggers: [the request is an ordinary internal code edit or AI-agent topology decision]
+    description: Design source-grounded architecture before implementing a new application with unresolved boundaries; derive cohesive business modules from scenarios and invariants with explicit state owners.
+    triggers: [a new application has no accepted architecture, business or data ownership and dependency boundaries are unresolved]
+    anti_triggers: [only an internal edit within accepted boundaries or an AI-agent topology decision is needed]
     consumes: [accepted-requirements, architecture-constraints]
-    produces: [software-architecture-candidate]
+    produces: [architecture-candidate]
     required_dependencies: []
     optional_dependencies: [cascade-software-architect:select-architecture-patterns, cascade-design:design-system]
     policy_tags: [software-architecture, boundaries]
@@ -34,8 +34,10 @@ skills:
   - route: cascade-software-architect:review-architecture
     description: Independently review software, plugin, workflow, or AI architecture for ownership, boundary, dependency, and evidence defects.
     triggers: [an architecture candidate needs independent review]
-    anti_triggers: [the request is only a domain acceptance decision or target implementation]
-    consumes: [architecture-candidate, consumer-map]
+    anti_triggers: [only domain acceptance or implementation of an already reviewed architecture is needed]
+    consumes: []
+    consumes_any_of: [architecture-candidate, agent-architecture-packet, agent-workflow]
+    optional_consumes: [consumer-map]
     produces: [architecture-review-findings]
     required_dependencies: []
     optional_dependencies: []
@@ -46,8 +48,9 @@ skills:
   - route: cascade-software-architect:review-change
     description: Independently review a current diff against its request, architecture, public contracts, consumers, and regression surface.
     triggers: [a risky or requested change needs fixed-point review]
-    anti_triggers: [a tiny internal change has sufficient direct validation or implementation is requested]
-    consumes: [change-diff, change-contract, consumer-map]
+    anti_triggers: [a tiny internal change has sufficient direct validation, no current diff exists to review]
+    consumes: [change-diff, change-contract]
+    optional_consumes: [consumer-map]
     produces: [change-review-findings]
     required_dependencies: []
     optional_dependencies: []

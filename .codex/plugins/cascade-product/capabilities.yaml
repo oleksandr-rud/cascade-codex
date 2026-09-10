@@ -1,7 +1,7 @@
 schema_version: 1
 plugin:
   name: cascade-product
-  version: 0.1.24+codex.20260909141642
+  version: 0.1.25+codex.20260910171300
 model_policy:
   model: gpt-5.6-sol
   planning_reasoning_effort: high
@@ -10,9 +10,9 @@ skills:
   - route: cascade-product:manage-product-lifecycle
     description: Manage value strategy, portfolio allocation, product priorities, owner-held gates and evidence-driven re-entry without implementation.
     triggers: [product strategy or investment allocation is requested, product lifecycle or evidence-driven gate routing is requested]
-    anti_triggers: [ordinary implementation or project scheduling is the task]
-    consumes: [market-opportunity-assessment, persona-projection, product-evidence]
-    optional_consumes: [growth-strategy]
+    anti_triggers: [only implementation of accepted product decisions or project scheduling is needed]
+    consumes: [product-evidence]
+    optional_consumes: [market-opportunity-assessment, persona-projection, growth-strategy]
     produces: [product-lifecycle-decision]
     required_dependencies: []
     optional_dependencies: [cascade-market:research-market, cascade-market:evaluate-market-opportunity, cascade-market:plan-growth, cascade-personas:compile-persona, cascade-project-management:plan-project]
@@ -24,8 +24,8 @@ skills:
     description: Model product value and offers, form and compare feature candidates, and define traceable requirements, acceptance behavior and the MVP.
     triggers: [a product value or offer model needs definition, features must be generated or compared, the product definition or accepted behavior is the work product]
     anti_triggers: [fresh market evidence is required, implementation of an already specified change is the task]
-    consumes: [product-lifecycle-decision, market-opportunity-assessment, persona-projection]
-    optional_consumes: [growth-strategy]
+    consumes: [product-evidence]
+    optional_consumes: [product-lifecycle-decision, market-opportunity-assessment, persona-projection, growth-strategy]
     produces: [product-contract]
     required_dependencies: []
     optional_dependencies: [cascade-prompt:prompt, cascade-market:plan-growth, cascade-design:ux-flow-review, cascade-design:design-system, cascade-ai-architect:design-agent-blueprint]

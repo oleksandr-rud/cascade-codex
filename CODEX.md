@@ -102,6 +102,16 @@ than one node, a dependency, an artifact handoff, parallel branches, or a join.
 Both are non-dispatching controllers; the active host role retains repository
 access, execution, persistence, and acceptance.
 
+Select methods for the decisions needed to complete the request, including
+prerequisites to implementation. An implementation verb, one owner, or a bounded
+slice does not resolve product behavior, architecture, design, security, or
+evaluation decisions. Apply descriptor triggers and anti-triggers to that
+specific work product, then follow `plan-change` for unresolved decisions.
+Reuse current accepted inputs; schedule a producer only when its output is missing
+or invalidated. Carry selected decisions and applicable references into the
+implementation and its validation. A catalog or installation check alone does
+not prove that a method was used.
+
 For product and marketing UI, consume the shared default owned by
 `cascade-design:design-system` at `references/outcome-ui-standard.md`.
 Product supplies the useful outcome and behavior, Marketing the supported

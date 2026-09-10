@@ -229,8 +229,9 @@ export async function buildPluginCapabilityCatalog(): Promise<PluginCapabilityCa
       if (!route.startsWith(`${name}:`)) {
         throw new CascadeError(`${name} descriptor contains foreign route: ${route}`);
       }
-      if (sortedStrings(skill.optional_consumes).some((artifact) => skill.consumes.includes(artifact))) {
-        throw new CascadeError(`${route} declares the same artifact as required and optional`);
+      const conditionalInputs = [...sortedStrings(skill.optional_consumes), ...sortedStrings(skill.consumes_any_of)];
+      if (conditionalInputs.some((artifact) => skill.consumes.includes(artifact)) || new Set(conditionalInputs).size !== conditionalInputs.length) {
+        throw new CascadeError(`${route} declares an artifact in multiple input categories`);
       }
       declared.set(route, skill);
       allSkills.set(route, skill);
@@ -508,9 +509,13 @@ export function validatePluginPlan(
       }
     }
     const selectedOptional = sortedStrings(node.optional_consumes);
-    const declaredOptional = new Set(sortedStrings(descriptor.optional_consumes));
+    const alternatives = sortedStrings(descriptor.consumes_any_of);
+    const declaredOptional = new Set([...sortedStrings(descriptor.optional_consumes), ...alternatives]);
     if (selectedOptional.some((artifact) => !declaredOptional.has(artifact))) {
       throw new CascadeError(`${node.route} selects an undeclared optional input`);
+    }
+    if (alternatives.length && !alternatives.some((artifact) => selectedOptional.includes(artifact))) {
+      throw new CascadeError(`${node.route} requires an alternative input: ${alternatives.join(" or ")}`);
     }
     if (node.effect !== descriptor.effect || node.authority !== descriptor.authority) {
       throw new CascadeError(`${node.route} effect or authority differs from its capability descriptor`);
