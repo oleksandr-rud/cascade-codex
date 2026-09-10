@@ -1,0 +1,7 @@
+id: codex-independent-v2
+model: gpt-6-astra
+provider: codex
+reasoning_effort: high
+rubric_file: product-evals/rubrics/simulation-evaluator-v1.yaml
+schema_version: 1
+timeout_ms: 300000

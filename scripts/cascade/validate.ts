@@ -1018,9 +1018,9 @@ async function validateConfigToml(
   if (config.model !== "gpt-6-astra") errors.push("default model must be gpt-6-astra");
   if (config.model_reasoning_effort !== "high") errors.push("default reasoning effort must be high");
   const evals = config.harness_evals ?? {};
-  if (evals.planning_model !== "gpt-5.6-sol") errors.push("planning model mismatch");
-  if (evals.execution_model !== "gpt-5.6-sol") errors.push("execution model mismatch");
-  if (evals.judge_model !== "gpt-5.6-sol") errors.push("judge model mismatch");
+  if (evals.planning_model !== "gpt-6-astra") errors.push("planning model mismatch");
+  if (evals.execution_model !== "gpt-6-astra") errors.push("execution model mismatch");
+  if (evals.judge_model !== "gpt-6-astra") errors.push("judge model mismatch");
   if (evals.runner !== "scripts/cascade/evals.ts") {
     errors.push("harness eval runner must point to scripts/cascade/evals.ts");
   }

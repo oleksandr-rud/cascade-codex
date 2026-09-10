@@ -303,8 +303,8 @@ test("campaign and challenge model overrides are bound before dispatch", async (
     assert.equal(JSON.parse(result.stdout).jobs_finished, 0);
     const challenge = (await import("node:url")).fileURLToPath(new URL("./run-judge-challenges.mjs", import.meta.url));
     for (const [id, options, model, effort, comparison] of [
-      ["default", [], "gpt-5.6-sol", "max", false],
-      ["astra", ["--judge-model", "gpt-6-astra", "--judge-reasoning-effort", "high"], "gpt-6-astra", "high", true],
+      ["default", [], "gpt-6-astra", "high", false],
+      ["sol-comparison", ["--judge-model", "gpt-5.6-sol", "--judge-reasoning-effort", "max"], "gpt-5.6-sol", "max", true],
     ]) {
       const result = await runCommand({ command: process.execPath, args: [challenge, "--cases", "j01",
         "--output-dir", output, "--run-id", id, ...options], input: "", timeoutMs: 10000, acceptedExitCodes: [3] });

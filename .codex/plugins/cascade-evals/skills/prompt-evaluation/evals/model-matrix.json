@@ -1,12 +1,12 @@
 {
   "schema_version": 1,
-  "matrix_id": "cascade-prompt-model-matrix-v1",
+  "matrix_id": "cascade-prompt-model-matrix-v2",
   "comparison_unit": "prompt_builder_model + generated_prompt + target_model + context_plan + output_controls",
   "defaults": {
-    "prompt_model": "gpt-5.6-sol",
-    "target_model": "gpt-5.6-sol",
-    "judge_model": "gpt-5.6-sol",
-    "reasoning_effort": "max"
+    "prompt_model": "gpt-6-astra",
+    "target_model": "gpt-6-astra",
+    "judge_model": "gpt-6-astra",
+    "reasoning_effort": "high"
   },
   "same_version_requirements": [
     "task_catalog",
@@ -28,7 +28,10 @@
         "structured-invoice-v1",
         "support-triage-v1",
         "brand-context-copy-v1"
-      ]
+      ],
+      "reasoning_effort": "max",
+      "judge_model": "gpt-5.6-sol",
+      "judge_reasoning_effort": "max"
     },
     {
       "id": "openai-terra-balanced",
@@ -48,7 +51,10 @@
         "business-opportunity-screen-v1",
         "product-concept-scope-v1",
         "pricing-package-experiment-v1"
-      ]
+      ],
+      "reasoning_effort": "max",
+      "judge_model": "gpt-5.6-sol",
+      "judge_reasoning_effort": "max"
     },
     {
       "id": "openai-sol-generalist",
@@ -66,7 +72,10 @@
         "business-opportunity-screen-v1",
         "product-concept-scope-v1",
         "pricing-package-experiment-v1"
-      ]
+      ],
+      "reasoning_effort": "max",
+      "judge_model": "gpt-5.6-sol",
+      "judge_reasoning_effort": "max"
     },
     {
       "id": "openai-sol-autonomous",
@@ -79,7 +88,10 @@
         "migration-control-plan-v1",
         "api-version-migration-plan-v1",
         "plugin-workflow-plan-v1"
-      ]
+      ],
+      "reasoning_effort": "max",
+      "judge_model": "gpt-5.6-sol",
+      "judge_reasoning_effort": "max"
     },
     {
       "id": "anthropic-haiku-efficient",
@@ -92,7 +104,10 @@
         "structured-invoice-v1",
         "support-triage-v1",
         "brand-context-copy-v1"
-      ]
+      ],
+      "reasoning_effort": "max",
+      "judge_model": "gpt-5.6-sol",
+      "judge_reasoning_effort": "max"
     },
     {
       "id": "anthropic-opus-generalist",
@@ -110,7 +125,10 @@
         "business-opportunity-screen-v1",
         "product-concept-scope-v1",
         "pricing-package-experiment-v1"
-      ]
+      ],
+      "reasoning_effort": "max",
+      "judge_model": "gpt-5.6-sol",
+      "judge_reasoning_effort": "max"
     },
     {
       "id": "anthropic-fable-autonomous",
@@ -122,7 +140,10 @@
       "tasks": [
         "migration-control-plan-v1",
         "api-version-migration-plan-v1"
-      ]
+      ],
+      "reasoning_effort": "max",
+      "judge_model": "gpt-5.6-sol",
+      "judge_reasoning_effort": "max"
     },
     {
       "id": "sol-to-astra-coverage-v1",
@@ -136,7 +157,8 @@
       "tasks": [
         "structured-invoice-v1",
         "source-conflict-brief-v1"
-      ]
+      ],
+      "judge_reasoning_effort": "max"
     },
     {
       "id": "astra-high-pilot-v1",
@@ -148,7 +170,10 @@
       "tier": "frontier-generalist",
       "execution_adapter": "codex-cli",
       "availability": "AVAILABLE_IN_CURRENT_RUNTIME",
-      "tasks": ["code-review-race-v1", "plugin-workflow-plan-v1"]
+      "tasks": [
+        "code-review-race-v1",
+        "plugin-workflow-plan-v1"
+      ]
     }
   ]
 }

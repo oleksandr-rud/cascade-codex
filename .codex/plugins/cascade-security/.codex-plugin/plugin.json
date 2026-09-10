@@ -1,6 +1,6 @@
 {
   "name": "cascade-security",
-  "version": "0.1.2+codex.20260910151027",
+  "version": "0.1.3+codex.20260910152813",
   "description": "Audit codebases, authentication boundaries, and proposed systems through evidence-bound security reviews without exposing secrets or mutating target runtime code.",
   "author": {
     "name": "Cascade"

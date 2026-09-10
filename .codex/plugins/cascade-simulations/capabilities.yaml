@@ -1,11 +1,11 @@
 schema_version: 1
 plugin:
   name: cascade-simulations
-  version: 0.2.5+codex.20260910143021
+  version: 0.2.6+codex.20260910152813
 model_policy:
-  model: gpt-5.6-sol
+  model: gpt-6-astra
   planning_reasoning_effort: high
-  evaluation_reasoning_effort: max
+  evaluation_reasoning_effort: high
 skills:
   - route: cascade-simulations:manage-simulation-campaign
     description: Design, version, register, govern, and aggregate a multi-case or multi-contour simulation campaign without executing targets.

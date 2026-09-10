@@ -120,11 +120,11 @@ def validate(root: Path) -> list[str]:
 
     models = contract.get("models", {})
     if (
-        any(models.get(role) != "gpt-5.6-sol" for role in ("builder", "target", "judge"))
-        or models.get("reasoning_effort") != "max"
+        any(models.get(role) != "gpt-6-astra" for role in ("builder", "target", "judge"))
+        or models.get("reasoning_effort") != "high"
         or models.get("explicit_comparison_override") is not False
     ):
-        errors.append("evaluation model matrix must bind gpt-5.6-sol with max reasoning")
+        errors.append("evaluation model matrix must bind gpt-6-astra with high reasoning")
     if contract.get("acceptance_threshold") != 0.95 or contract.get("minimum_dimension") != 3:
         errors.append("evaluation acceptance policy must remain 0.95 with dimension floor 3")
 
@@ -141,8 +141,8 @@ def validate(root: Path) -> list[str]:
     if (
         adapter.get("id") != "cascade-evals-agent-runner-v1"
         or adapter.get("runner") != "cascade-evals/scripts/run_agent_evaluation.py"
-        or adapter.get("model") != "gpt-5.6-sol"
-        or adapter.get("reasoning_effort") != "max"
+        or adapter.get("model") != "gpt-6-astra"
+        or adapter.get("reasoning_effort") != "high"
         or adapter.get("target_batching") != "contiguous-balanced-parallel-v1"
         or adapter.get("target_invocations") != 3
         or adapter.get("case_count") != 9
@@ -195,7 +195,7 @@ def validate(root: Path) -> list[str]:
         errors.append("exactly two independent judge profiles are required")
     for path in profiles:
         profile = load_json(path)
-        if profile.get("model") != "gpt-5.6-sol" or profile.get("threshold") != 0.95 or profile.get("minimum_dimension") != 3:
+        if profile.get("model") != "gpt-6-astra" or profile.get("threshold") != 0.95 or profile.get("minimum_dimension") != 3:
             errors.append(f"{path.name}: model or acceptance policy mismatch")
         dimensions = profile.get("dimensions", [])
         if not dimensions or abs(sum(float(item.get("weight", 0)) for item in dimensions) - 1.0) > 1e-9:

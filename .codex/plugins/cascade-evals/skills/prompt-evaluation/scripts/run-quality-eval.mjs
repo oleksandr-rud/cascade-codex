@@ -252,11 +252,11 @@ if (command === "list") {
 }
 
 if (command !== "run") fail(`unknown command: ${command}`);
-args["prompt-model"] ??= matrix.defaults?.prompt_model ?? "gpt-5.6-sol";
-args["target-model"] ??= matrix.defaults?.target_model ?? "gpt-5.6-sol";
-args["reasoning-effort"] ??= matrix.defaults?.reasoning_effort ?? "max";
+args["prompt-model"] ??= matrix.defaults?.prompt_model ?? "gpt-6-astra";
+args["target-model"] ??= matrix.defaults?.target_model ?? "gpt-6-astra";
+args["reasoning-effort"] ??= matrix.defaults?.reasoning_effort ?? "high";
 const judgeReasoningEffort = args["judge-reasoning-effort"] ?? args["reasoning-effort"];
-if (args["execute-judges"]) args["judge-model"] ??= matrix.defaults?.judge_model ?? "gpt-5.6-sol";
+if (args["execute-judges"]) args["judge-model"] ??= matrix.defaults?.judge_model ?? "gpt-6-astra";
 for (const required of ["task"]) {
   if (!args[required]) fail(`--${required} is required`);
 }

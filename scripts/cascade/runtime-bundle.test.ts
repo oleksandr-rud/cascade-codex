@@ -98,7 +98,7 @@ describe("Cascade lean target runtime bundle", () => {
       selection_digest: "0".repeat(64),
       selector: {
         route: "cascade-coordinator:select-capabilities",
-        model: "gpt-5.6-sol",
+        model: "gpt-6-astra",
         reasoning_effort: "high",
         prompt_sha256: "a".repeat(64),
       },
@@ -203,7 +203,7 @@ describe("Cascade lean target runtime bundle", () => {
         ...(includeGrowth && item.route === "cascade-product:define-product" ? { optional_consumes: ["growth-strategy"] } : {}),
         effect: item.effect,
         authority: item.authority,
-        model: { id: item.model_policy.model, reasoning_effort: item.route.startsWith("cascade-evals:") ? "max" : "high" },
+        model: { id: item.model_policy.model, reasoning_effort: item.route.startsWith("cascade-evals:") ? item.model_policy.evaluation_reasoning_effort : item.model_policy.planning_reasoning_effort },
         reason: "Use available evidence to form an accountable feature proposal.",
       }));
       const plan = {
@@ -214,7 +214,7 @@ describe("Cascade lean target runtime bundle", () => {
         request_digest: featureEnvelope.request_digest,
         capability_catalog_digest: catalog.catalog_digest,
         capability_selection_digest: featureSelection.selection_digest,
-        planner: { route: "cascade-coordinator:plan-workflow", model: "gpt-5.6-sol", reasoning_effort: "high", prompt_sha256: "b".repeat(64) },
+        planner: { route: "cascade-coordinator:plan-workflow", model: "gpt-6-astra", reasoning_effort: "high", prompt_sha256: "b".repeat(64) },
         input_artifacts: featureSelection.input_artifacts,
         selected_nodes: nodes,
         edges: promptPair ? [{ from: "prompt", to: "eval", artifact: "prompt-candidate" }] : includeGrowth ? [{ from: "growth", to: "product", artifact: "growth-strategy" }] : [],
@@ -236,17 +236,17 @@ describe("Cascade lean target runtime bundle", () => {
       if (promptPair) {
         expect(nodes.map((node) => node.model)).toEqual([
           { id: "gpt-6-astra", reasoning_effort: "high" },
-          { id: "gpt-5.6-sol", reasoning_effort: "max" },
+          { id: "gpt-6-astra", reasoning_effort: "high" },
         ]);
         const wrongAuthor = structuredClone(plan);
         wrongAuthor.selected_nodes[0]!.model.id = "gpt-5.6-sol";
         expect((await checkPlan(wrongAuthor)).stderr.toString()).toContain("model differs from its capability policy");
         const wrongJudge = structuredClone(plan);
-        wrongJudge.selected_nodes[1]!.model.id = "gpt-6-astra";
+        wrongJudge.selected_nodes[1]!.model.id = "gpt-5.6-sol";
         expect((await checkPlan(wrongJudge)).stderr.toString()).toContain("model differs from its capability policy");
-        const weakJudge = structuredClone(plan);
-        weakJudge.selected_nodes[1]!.model.reasoning_effort = "high";
-        expect((await checkPlan(weakJudge)).stderr.toString()).toContain("evaluation reasoning effort must be max");
+        const wrongEffortJudge = structuredClone(plan);
+        wrongEffortJudge.selected_nodes[1]!.model.reasoning_effort = "max";
+        expect((await checkPlan(wrongEffortJudge)).stderr.toString()).toContain("evaluation reasoning effort differs from its capability policy");
       } else if (includeGrowth) {
         expect((await checkPlan({ ...plan, edges: [] })).stderr.toString()).toContain("required artifact edge is missing");
         expect((await checkPlan({ ...plan, selected_nodes: [...nodes].reverse() })).stderr.toString()).toContain("consumes unavailable artifact");

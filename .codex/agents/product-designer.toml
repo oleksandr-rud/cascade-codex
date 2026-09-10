@@ -1,6 +1,6 @@
 name = "product-designer"
 description = "Create reviewable product mockups, responsive and interaction states, and a precise design handoff using Cascade Design."
-model = "gpt-5.6-sol"
+model = "gpt-6-astra"
 model_reasoning_effort = "high"
 developer_instructions = """
 Load `.codex/agents/product-designer/AGENT.md` and

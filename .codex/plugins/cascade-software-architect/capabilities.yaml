@@ -1,11 +1,11 @@
 schema_version: 1
 plugin:
   name: cascade-software-architect
-  version: 0.1.4+codex.20260910143021
+  version: 0.1.5+codex.20260910152813
 model_policy:
-  model: gpt-5.6-sol
+  model: gpt-6-astra
   planning_reasoning_effort: high
-  evaluation_reasoning_effort: max
+  evaluation_reasoning_effort: high
 skills:
   - route: cascade-software-architect:architect-software-system
     description: Design a source-grounded software architecture, defaulting server-side systems to a modular monolith with concrete domain modules and explicit state owners.

@@ -37,7 +37,7 @@ BUILDER_RESPONSE_SCHEMA = PLUGIN_ROOT / "skills" / "evaluate" / "references" / "
 JUDGE_RESPONSE_SCHEMA = PLUGIN_ROOT / "skills" / "build-judge" / "references" / "judge-response.schema.json"
 JUDGE_PACKET_SCHEMA = PLUGIN_ROOT / "skills" / "evaluate" / "references" / "judge-packet.schema.json"
 MODEL_POLICY = PLUGIN_ROOT / "skills" / "evaluate" / "references" / "model-policy.json"
-DEFAULT_MODEL = "gpt-5.6-sol"
+DEFAULT_MODEL = "gpt-6-astra"
 REASONING_EFFORTS = {"low", "medium", "high", "xhigh", "max", "ultra"}
 SHA256_HEX = re.compile(r"^[0-9a-f]{64}$")
 FINALIZATION_MODE = "digest-only-json-response-v1"
@@ -743,7 +743,7 @@ def execute(args: argparse.Namespace) -> dict[str, Any]:
     )
     require(models.get("reasoning_effort") == args.reasoning_effort, "contract reasoning effort does not match")
     require(
-        models.get("explicit_comparison_override") is (args.model != DEFAULT_MODEL or args.reasoning_effort != "max"),
+        models.get("explicit_comparison_override") is (args.model != DEFAULT_MODEL or args.reasoning_effort != "high"),
         "explicit comparison declaration does not match model policy",
     )
     model_policy = json.loads(MODEL_POLICY.read_text(encoding="utf-8"))
@@ -755,10 +755,10 @@ def execute(args: argparse.Namespace) -> dict[str, Any]:
         defaults.get("builder_model") == DEFAULT_MODEL
         and defaults.get("target_model") == DEFAULT_MODEL
         and defaults.get("judge_model") == DEFAULT_MODEL
-        and defaults.get("builder_reasoning_effort") == "max"
-        and defaults.get("target_reasoning_effort") == "max"
-        and defaults.get("judge_reasoning_effort") == "max",
-        "model policy defaults drifted from Sol max",
+        and defaults.get("builder_reasoning_effort") == "high"
+        and defaults.get("target_reasoning_effort") == "high"
+        and defaults.get("judge_reasoning_effort") == "high",
+        "model policy defaults drifted from Astra high",
     )
     require(all(profile["model"] == args.model for profile in profiles), "judge profile model must match the selected model")
     require(len({profile["profile_id"] for profile in profiles}) == len(profiles), "judge profile IDs must be unique")
@@ -873,7 +873,7 @@ def execute(args: argparse.Namespace) -> dict[str, Any]:
     require(builder_response.get("subject_digest") == args.subject_digest, "builder subject_digest mismatch")
     require(
         builder_response.get("status") == "READY",
-        "Sol Max builder rejected the frozen evaluation design: "
+        "Evaluation builder rejected the frozen evaluation design: "
         + json.dumps(builder_response.get("findings", []), sort_keys=True),
     )
 
@@ -1205,7 +1205,7 @@ def execute(args: argparse.Namespace) -> dict[str, Any]:
         "target_reasoning_effort": args.reasoning_effort,
         "judge_model": args.model,
         "judge_reasoning_effort": args.reasoning_effort,
-        "explicit_comparison": args.model != DEFAULT_MODEL or args.reasoning_effort != "max",
+        "explicit_comparison": args.model != DEFAULT_MODEL or args.reasoning_effort != "high",
     }
     bundle = {
         "schema_version": 1,
@@ -1241,7 +1241,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--evaluation-id", required=True)
     parser.add_argument("--output-dir", type=Path, required=True)
     parser.add_argument("--model", default=DEFAULT_MODEL)
-    parser.add_argument("--reasoning-effort", default="max")
+    parser.add_argument("--reasoning-effort", default="high")
     parser.add_argument("--timeout-seconds", type=int, default=1800)
     parser.add_argument("--execute", action="store_true")
     args = parser.parse_args(argv)

@@ -67,8 +67,8 @@ normal gap, and do not upgrade a partial or timed-out run to evidence.
    joint status, case-status mapping, and RFC 8785 digest recomputation. It
    still emits
    `semantic_status=NOT_RUN`; only the independent judges can produce semantic
-   scores. Sol Max comparison runs bind builder, target, and judges separately
-   to `gpt-5.6-sol` with reasoning effort `max`.
+   scores. Astra High comparison runs bind builder, target, and judges separately
+   to `gpt-6-astra` with reasoning effort `high`.
    The tool-free target uses lowercase 64-character placeholders for
    cryptographic leaves. The manifest-bound adapter's `finalize_target` hook
    recomputes only `sha256` and `*_sha256` values, while Cascade Evals proves

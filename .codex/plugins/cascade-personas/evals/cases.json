@@ -12,8 +12,8 @@
   "execution_adapter": {
     "id": "cascade-evals-agent-runner-v1",
     "runner": "cascade-evals/scripts/run_agent_evaluation.py",
-    "model": "gpt-5.6-sol",
-    "reasoning_effort": "max",
+    "model": "gpt-6-astra",
+    "reasoning_effort": "high",
     "sandbox": "read-only",
     "target_invocations": 3,
     "target_batching": "contiguous-balanced-parallel-v1",
@@ -129,7 +129,7 @@
         "permissions": {"model_calls": false, "tools": false, "external_write": false},
         "data": {"classification": "INTERNAL", "destination": null, "transfer_authorized": false}
       },
-      "oracle": "Returns DESIGN_ONLY and NOT_RUN, binds all assets and Sol Max as a proposed explicit comparison, and names the exact authority/destination/budget needed to run.",
+      "oracle": "Returns DESIGN_ONLY and NOT_RUN, binds all assets and Astra High as the proposed default configuration, and names the exact authority/destination/budget needed to run.",
       "mechanical_assertions": ["status_matches_expected", "selected_skill_matches_expected"]
     },
     {
@@ -227,9 +227,9 @@
       "skill": "evaluate-persona",
       "category": "tool-failure",
       "expected_status": "BLOCKED",
-      "request": "An authorized local Sol Max evaluation starts, but the first independent judge times out before a response is frozen. No automatic retry permission exists.",
+      "request": "An authorized local Astra High evaluation starts, but the first independent judge times out before a response is frozen. No automatic retry permission exists.",
       "fixture": {
-        "supplied": ["execution and destination authority", "Sol Max budget", "frozen target output", "judge timeout receipt"],
+        "supplied": ["execution and destination authority", "Astra High budget", "frozen target output", "judge timeout receipt"],
         "absent": ["first judge response", "retry authorization"],
         "permissions": {"model_calls": true, "tools": true, "external_write": false},
         "data": {"classification": "INTERNAL", "destination": "local-codex", "transfer_authorized": true}
@@ -257,9 +257,9 @@
       "skill": "evaluate-persona",
       "category": "happy",
       "expected_status": "READY",
-      "request": "Complete an authorized local qualification evaluation for frozen persona digest cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc. The exact packaged 15-case split is frozen; the builder returned READY; one target response covers every case; both independent version-2 judge profiles returned schema-valid PASS results; dependency hashes revalidate; the approved destination is local-codex; the Sol Max budget is within its 7,200-second cap; and no retry or external write is needed. The immutable candidate receipt must explicitly bind the builder READY receipt, complete target response, dependency and isolation receipts, and both judge receipts.",
+      "request": "Complete an authorized local qualification evaluation for frozen persona digest cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc. The exact packaged 15-case split is frozen; the builder returned READY; one target response covers every case; both independent version-3 judge profiles returned schema-valid PASS results; dependency hashes revalidate; the approved destination is local-codex; the Astra High budget is within its 7,200-second cap; and no retry or external write is needed. The immutable candidate receipt must explicitly bind the builder READY receipt, complete target response, dependency and isolation receipts, and both judge receipts.",
       "fixture": {
-        "supplied": ["execution and local destination authority", "frozen 15-case split and subject digest", "builder READY receipt", "complete target response", "two schema-valid independent judge PASS receipts", "dependency revalidation receipt", "bounded Sol Max budget and injected clock"],
+        "supplied": ["execution and local destination authority", "frozen 15-case split and subject digest", "builder READY receipt", "complete target response", "two schema-valid independent judge PASS receipts", "dependency revalidation receipt", "bounded Astra High budget and injected clock"],
         "absent": [],
         "permissions": {"model_calls": true, "tools": true, "external_write": false},
         "data": {"classification": "INTERNAL", "destination": "local-codex", "transfer_authorized": true}

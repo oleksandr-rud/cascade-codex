@@ -68,7 +68,7 @@ stays blocked even when a checkout or another cached version is present.
 
 ## Model policy
 
-`gpt-5.6-sol` with `max` reasoning is the default builder, target, and judge
+`gpt-6-astra` with `high` reasoning is the default builder, target, and judge
 configuration. A versioned evaluation may declare another
 supported model or reasoning effort only as an explicit comparison
 configuration. Every model and reasoning-effort value is frozen into the

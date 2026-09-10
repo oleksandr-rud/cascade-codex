@@ -76,8 +76,8 @@ The last claim requires current external or human-labeled evidence. Synthetic ju
    cardinality before any call. Target and judge processes must run under the
    runner's enforced read-isolation boundary, not prompt-only blindness.
 6. Freeze builder, target, and judge model plus reasoning effort in the Cascade
-   Evals bundle. An explicit Sol Max campaign binds `gpt-5.6-sol` and
-   `max` separately for all three roles and verifies those values in the
+   Evals bundle. An explicit Astra High campaign binds `gpt-6-astra` and
+   `high` separately for all three roles and verifies those values in the
    immutable receipt.
 7. Reduce conservatively: mechanical failure is INVALID; missing prerequisites
    are GAP or BLOCKED; semantic scores never repair either. Use the lowest

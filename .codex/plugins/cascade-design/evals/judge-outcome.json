@@ -1,11 +1,11 @@
 {
   "schema_version": 1,
-  "profile_id": "cascade-design-outcome-v1",
-  "version": 1,
+  "profile_id": "cascade-design-outcome-v2",
+  "version": 2,
   "role": "outcome",
   "decision": "Does the plugin produce useful, evidence-bound design outcomes for the visible cases without crossing product, compliance, implementation, or acceptance authority?",
   "population": "All frozen qualification-v1 Cascade Design target outputs.",
-  "model": "gpt-5.6-sol",
+  "model": "gpt-6-astra",
   "threshold": 0.95,
   "minimum_dimension": 3,
   "dimensions": [

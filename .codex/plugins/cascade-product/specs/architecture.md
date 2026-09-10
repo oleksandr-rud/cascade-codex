@@ -59,8 +59,8 @@ validates the case status plus the emitted typed Product work product, decision,
 handoffs, cross-field and joint-state rules, selected skill, and RFC 8785
 digests before semantic judgment.
 Acceptance policy remains controller-only and is never copied into
-target-visible subject assets. An explicit Sol Max campaign binds
-`gpt-5.6-sol` and `max` separately for builder, target, and judges.
+target-visible subject assets. An explicit Astra High campaign binds
+`gpt-6-astra` and `high` separately for builder, target, and judges.
 
 ## Feature formation and growth feedback
 

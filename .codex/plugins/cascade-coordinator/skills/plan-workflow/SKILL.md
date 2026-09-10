@@ -60,7 +60,7 @@ and catalog descriptors are sufficient planning inputs.
    domain decision.
 6. Bind each work node to its owning plugin's catalog `model_policy.model` and
    planning effort; use `evaluation_reasoning_effort` for Evals nodes. The
-   Coordinator's own Sol planning model does not replace a node's policy.
+   Coordinator's own Astra planning model does not replace a node's policy.
    Preserve the separate builder, target and judge bindings of any frozen
    evaluation contract; do not infer them from the prompt author's model.
    Judges run in separate contexts. A plan records configuration, not an

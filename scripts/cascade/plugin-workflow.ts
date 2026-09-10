@@ -521,8 +521,8 @@ export function validatePluginPlan(
     if (node.model.id !== descriptor.model_policy.model) {
       throw new CascadeError(`${node.route} model differs from its capability policy`);
     }
-    if (node.route.startsWith("cascade-evals:") && node.model.reasoning_effort !== "max") {
-      throw new CascadeError(`${node.route} evaluation reasoning effort must be max`);
+    if (node.route.startsWith("cascade-evals:") && node.model.reasoning_effort !== descriptor.model_policy.evaluation_reasoning_effort) {
+      throw new CascadeError(`${node.route} evaluation reasoning effort differs from its capability policy`);
     }
     for (const claimId of node.claim_ids as string[]) {
       if (!claims.has(claimId)) throw new CascadeError(`${node.route} references unknown claim ${claimId}`);

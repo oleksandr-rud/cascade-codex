@@ -1,6 +1,6 @@
 name = "orchestrator"
 description = "Normal Cascade task routing across context, planning, implementation, review, validation, repair, and closeout."
-model = "gpt-5.6-sol"
+model = "gpt-6-astra"
 model_reasoning_effort = "high"
 developer_instructions = """
 Load `.codex/agents/orchestrator/AGENT.md` and

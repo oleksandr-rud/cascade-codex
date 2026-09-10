@@ -1,6 +1,6 @@
 name = "frontend-engineer"
 description = "Frontend implementation from approved designs: components, responsive layouts, UI states, accessibility and screenshot-backed mockup fidelity."
-model = "gpt-5.6-sol"
+model = "gpt-6-astra"
 model_reasoning_effort = "high"
 developer_instructions = """
 Load `.codex/agents/frontend-engineer/AGENT.md` and

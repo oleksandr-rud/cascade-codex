@@ -11,7 +11,7 @@ agents:
     max_loaded_roles: 1
     max_loaded_skills: 2
     max_output_chars: 6000
-    model: gpt-5.6-sol
+    model: gpt-6-astra
     next_route: ""
     primary_skill: plan-change
     product_context_required: false
@@ -34,7 +34,7 @@ agents:
     max_loaded_roles: 1
     max_loaded_skills: 3
     max_output_chars: 7000
-    model: gpt-5.6-sol
+    model: gpt-6-astra
     next_route: ""
     primary_skill: plan-change
     product_context_required: true
@@ -59,7 +59,7 @@ agents:
     max_loaded_roles: 1
     max_loaded_skills: 1
     max_output_chars: 7000
-    model: gpt-5.6-sol
+    model: gpt-6-astra
     next_route: ""
     primary_skill: cascade-coding-agent:audit-harness
     product_context_required: false
@@ -82,7 +82,7 @@ agents:
     max_loaded_roles: 1
     max_loaded_skills: 2
     max_output_chars: 7000
-    model: gpt-5.6-sol
+    model: gpt-6-astra
     next_route: ""
     primary_skill: cascade-security:secure-design
     product_context_required: true
@@ -106,12 +106,12 @@ agents:
     max_loaded_roles: 1
     max_loaded_skills: 1
     max_output_chars: 5000
-    model: gpt-5.6-sol
+    model: gpt-6-astra
     next_route: ""
     primary_skill: cascade-simulations:execute-simulation-campaign
     product_context_required: false
     prompt: Preflight the simulation-contract-smoke campaign for execution, but treat approval and resolved runtime intake as unavailable. Do not execute, widen permissions, judge results, or edit artifacts; report the precise blocking inputs.
-    reasoning_effort: medium
+    reasoning_effort: high
     required_evidence_paths:
       - .codex/agents/simulation-operator/AGENT.md
       - .codex/plugins/cascade-simulations/skills/execute-simulation-campaign/SKILL.md
@@ -131,7 +131,7 @@ agents:
     max_loaded_roles: 1
     max_loaded_skills: 2
     max_output_chars: 5000
-    model: gpt-5.6-sol
+    model: gpt-6-astra
     next_route: ""
     primary_skill: cascade-evals:simulation-evaluation
     product_context_required: false
@@ -155,7 +155,7 @@ agents:
     max_loaded_roles: 1
     max_loaded_skills: 2
     max_output_chars: 6000
-    model: gpt-5.6-sol
+    model: gpt-6-astra
     next_route: ""
     primary_skill: cascade-design:create-design
     product_context_required: false
@@ -176,7 +176,7 @@ agents:
     max_loaded_roles: 1
     max_loaded_skills: 2
     max_output_chars: 6000
-    model: gpt-5.6-sol
+    model: gpt-6-astra
     next_route: ""
     primary_skill: plan-change
     product_context_required: false
@@ -197,7 +197,7 @@ agents:
     max_loaded_roles: 1
     max_loaded_skills: 2
     max_output_chars: 6000
-    model: gpt-5.6-sol
+    model: gpt-6-astra
     next_route: ""
     primary_skill: cascade-software-architect:review-change
     product_context_required: false

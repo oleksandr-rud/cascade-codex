@@ -33,10 +33,10 @@ project:
 
 models:
   default: "gpt-6-astra"
-  planning: "gpt-5.6-sol"
-  judged_evaluation: "gpt-5.6-sol"
-  subagent_execution: "gpt-5.6-sol"
-  read_heavy: "gpt-5.6-sol"
+  planning: "gpt-6-astra"
+  judged_evaluation: "gpt-6-astra"
+  subagent_execution: "gpt-6-astra"
+  read_heavy: "gpt-6-astra"
 
 plugin_architecture:
   mode: "plugin-first"

@@ -68,9 +68,9 @@ node scripts/validate-quality-evals.mjs
 node scripts/run-quality-eval.mjs list
 node scripts/run-quality-eval.mjs run \
   --task structured-invoice-v1 \
-  --prompt-model gpt-5.6-sol \
-  --target-model gpt-5.6-sol \
-  --reasoning-effort max
+  --prompt-model gpt-6-astra \
+  --target-model gpt-6-astra \
+  --reasoning-effort high
 ```
 
 By default the runners resolve the enabled `cascade-prompt` plugin through
@@ -83,9 +83,9 @@ override that cache with an existing Cascade Prompt response:
 ```bash
 node scripts/run-quality-eval.mjs run \
   --task structured-invoice-v1 \
-  --prompt-model gpt-5.6-sol \
-  --target-model gpt-5.6-sol \
-  --reasoning-effort max \
+  --prompt-model gpt-6-astra \
+  --target-model gpt-6-astra \
+  --reasoning-effort high \
   --prompt-response-file /absolute/path/to/response.md
 ```
 
@@ -105,10 +105,10 @@ reusing only the digest-bound builder and trajectory caches:
 ```bash
 node scripts/run-variance-eval.mjs \
   --task structured-invoice-v1 \
-  --prompt-model gpt-5.6-sol \
-  --target-model gpt-5.6-sol \
-  --reasoning-effort max \
-  --execute-judges --judge-model gpt-5.6-sol \
+  --prompt-model gpt-6-astra \
+  --target-model gpt-6-astra \
+  --reasoning-effort high \
+  --execute-judges --judge-model gpt-6-astra \
   --repetitions 3
 ```
 
@@ -158,8 +158,8 @@ state only.
 node scripts/run-interview-eval.mjs list
 node scripts/run-interview-eval.mjs run \
   --fixture support-mixed-case-v1 \
-  --model gpt-5.6-sol \
-  --reasoning-effort max
+  --model gpt-6-astra \
+  --reasoning-effort high
 ```
 
 The runner executes the first turn, replays the ordered transcript plus the
@@ -256,9 +256,9 @@ an embedded request for a favorable score, and absent evidence. These labels are
 synthetic author expectations, not human calibration. The historical v3 parser retains
 mechanical regressions for fabricated quotes, missing references and missing data.
 
-The challenge runner defaults to Sol/max. For an explicit comparison use
-`--judge-model gpt-6-astra --judge-reasoning-effort high` (or `max`); Sol/high is
-also supported. The run contract and each execution receipt bind these values.
+The challenge runner defaults to Astra/high. For an explicit comparison use
+`--judge-model gpt-5.6-sol --judge-reasoning-effort max`; Astra/max and Sol/high
+are also supported. The run contract and each execution receipt bind these values.
 Use a new run ID for every repetition and keep corpus, rubric and runtime fixed.
 Passing these synthetic challenges does not qualify a different domain rubric
 or change any production model default.
@@ -320,7 +320,8 @@ assign a new pool per campaign to bypass the shared limit.
 
 The 600/720-second authoring/judge limits add headroom to observed 235/301-second
 successful phases. They remain provisional; measure a bounded pilot before a
-large campaign. Target tier budgets and Sol/max model policy remain unchanged.
+large campaign. Target tier budgets remain unchanged; new runs default to
+Astra/high. Named comparison configurations keep their explicit model/effort tuples.
 `--case-timeout-ms` bounds a launcher child (default one hour), including queueing.
 
 V4 numbers source lines once in the evidence view; null evidence remains null.

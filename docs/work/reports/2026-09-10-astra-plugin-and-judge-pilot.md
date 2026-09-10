@@ -5,6 +5,11 @@ pilot. This experiment does not justify moving every plugin or production
 judge. Keep the existing domain Sol/high and evaluation Sol/max defaults;
 Prompt authoring and the primary host retain Astra/high.
 
+Subsequent user decision (2026-09-10): adopt Astra/high for all Cascade plugin
+recommendations, custom agents and new evaluation/judge defaults. That explicit
+selection supersedes the default-retention recommendation above; the measured
+results, historical run settings and cross-domain evidence limits remain unchanged.
+
 ## Measured judge results
 
 On 2026-09-10, each configuration judged the same eight frozen

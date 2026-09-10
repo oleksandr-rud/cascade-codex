@@ -29,7 +29,7 @@
             "properties": {
               "model": { "enum": ["gpt-5.6-sol", "gpt-6-astra"] },
               "planning_reasoning_effort": { "enum": ["high", "max"] },
-              "evaluation_reasoning_effort": { "const": "max" }
+              "evaluation_reasoning_effort": { "enum": ["high", "max"] }
             }
           },
           "skills": { "type": "array", "minItems": 1, "items": { "type": "object" } }

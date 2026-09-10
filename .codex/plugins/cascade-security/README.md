@@ -23,4 +23,4 @@ bun skills/codebase-audit/scripts/security_stack_scan.ts . --max-files 20
 
 The model-backed qualification suite under `evals/` runs through the installed
 `cascade-evals:agent-evaluation` adapter. Its frozen model policy uses
-`gpt-5.6-sol` with `max` reasoning for builder, target, and independent judges.
+`gpt-6-astra` with `high` reasoning for builder, target, and independent judges.

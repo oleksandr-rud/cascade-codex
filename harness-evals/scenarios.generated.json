@@ -1,7 +1,7 @@
 {
   "agent_count": 9,
   "agent_scenario_count": 9,
-  "catalog_digest": "37f2ba8fbd689d1e891f4d45efcf54ee7e326a8192b1a5b413455dd276d3d341",
+  "catalog_digest": "09ad07f9163fd45760401c3fe0e6a0a724a31efa6bca24a8ee8c3dabb77a0917",
   "generated_by": "scripts/cascade/evals.ts",
   "scenario_count": 142,
   "scenarios": [
@@ -3951,11 +3951,11 @@
         },
         {
           "path": "CODEX.md",
-          "sha256": "27e4805952478e3c1d78ef872709270804cbdb32c2e682fd448e680a9e19315c"
+          "sha256": "2934e7fe74574001ee3364b02c5fc994cf1dc62f01ed818a1927988feeffaa8f"
         }
       ],
       "execution": {
-        "model": "gpt-5.6-sol",
+        "model": "gpt-6-astra",
         "reasoning_effort": "high",
         "sandbox_mode": "default"
       },
@@ -4010,7 +4010,7 @@
         }
       ],
       "execution": {
-        "model": "gpt-5.6-sol",
+        "model": "gpt-6-astra",
         "reasoning_effort": "high",
         "sandbox_mode": "read-only"
       },
@@ -4071,7 +4071,7 @@
         }
       ],
       "execution": {
-        "model": "gpt-5.6-sol",
+        "model": "gpt-6-astra",
         "reasoning_effort": "high",
         "sandbox_mode": "default"
       },
@@ -4128,7 +4128,7 @@
         }
       ],
       "execution": {
-        "model": "gpt-5.6-sol",
+        "model": "gpt-6-astra",
         "reasoning_effort": "high",
         "sandbox_mode": "default"
       },
@@ -4186,7 +4186,7 @@
         }
       ],
       "execution": {
-        "model": "gpt-5.6-sol",
+        "model": "gpt-6-astra",
         "reasoning_effort": "high",
         "sandbox_mode": "default"
       },
@@ -4243,7 +4243,7 @@
         }
       ],
       "execution": {
-        "model": "gpt-5.6-sol",
+        "model": "gpt-6-astra",
         "reasoning_effort": "high",
         "sandbox_mode": "read-only"
       },
@@ -4290,7 +4290,7 @@
       "context_bindings": [
         {
           "path": ".codex/agents/simulation-evaluator/AGENT.md",
-          "sha256": "76148f7a81e9c85a908f8cd7cc4ecadabe17c56981ba8904355fc926a5afabd0"
+          "sha256": "f2d3530a7ab192aa8d204ac7962f375a8bad221fdd6646d096848262cb15efdd"
         },
         {
           "path": ".codex/plugins/cascade-evals/skills/simulation-evaluation/SKILL.md",
@@ -4302,7 +4302,7 @@
         }
       ],
       "execution": {
-        "model": "gpt-5.6-sol",
+        "model": "gpt-6-astra",
         "reasoning_effort": "high",
         "sandbox_mode": "read-only"
       },
@@ -4361,8 +4361,8 @@
         }
       ],
       "execution": {
-        "model": "gpt-5.6-sol",
-        "reasoning_effort": "medium",
+        "model": "gpt-6-astra",
+        "reasoning_effort": "high",
         "sandbox_mode": "workspace-write"
       },
       "expectation": {
@@ -4418,7 +4418,7 @@
         }
       ],
       "execution": {
-        "model": "gpt-5.6-sol",
+        "model": "gpt-6-astra",
         "reasoning_effort": "high",
         "sandbox_mode": "default"
       },

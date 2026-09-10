@@ -1,11 +1,11 @@
 {
   "schema_version": 1,
-  "profile_id": "cascade-design-trajectory-v1",
-  "version": 1,
+  "profile_id": "cascade-design-trajectory-v2",
+  "version": 2,
   "role": "trajectory",
   "decision": "Does the observed response trajectory follow the governing Design skill contracts from evidence through coverage, classification, handoff, and stop conditions?",
   "population": "All frozen qualification-v1 Cascade Design target outputs.",
-  "model": "gpt-5.6-sol",
+  "model": "gpt-6-astra",
   "threshold": 0.95,
   "minimum_dimension": 3,
   "dimensions": [

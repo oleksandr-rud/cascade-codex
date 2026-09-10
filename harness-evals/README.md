@@ -95,7 +95,7 @@ project-part/doc-routing checks, preservation hashes, and source drift without
 running a live model or configured target commands.
 
 The default `execution` and `planning` profiles pin target probes to
-`gpt-5.6-sol`; judge profiles independently pin `gpt-5.6-sol` and high
+`gpt-6-astra`; judge profiles independently pin `gpt-6-astra` and high
 reasoning effort. `--model` remains an explicit
 diagnostic override and is recorded as the `custom` profile.
 

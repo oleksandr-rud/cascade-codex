@@ -67,10 +67,10 @@ const tokenBudgets = await readJson(join(evalRoot, "token-budgets.json"));
 
 check(catalog.schema_version === 2, "task catalog schema_version must be 2");
 check(matrix.schema_version === 1, "model matrix schema_version must be 1");
-check(matrix.defaults?.prompt_model === "gpt-5.6-sol", "default prompt model must be gpt-5.6-sol");
-check(matrix.defaults?.target_model === "gpt-5.6-sol", "default target model must be gpt-5.6-sol");
-check(matrix.defaults?.judge_model === "gpt-5.6-sol", "default judge model must be gpt-5.6-sol");
-check(matrix.defaults?.reasoning_effort === "max", "default reasoning effort must be max");
+check(matrix.defaults?.prompt_model === "gpt-6-astra", "default prompt model must be gpt-6-astra");
+check(matrix.defaults?.target_model === "gpt-6-astra", "default target model must be gpt-6-astra");
+check(matrix.defaults?.judge_model === "gpt-6-astra", "default judge model must be gpt-6-astra");
+check(matrix.defaults?.reasoning_effort === "high", "default reasoning effort must be high");
 check(responseSchema.type === "object", "judge response schema must define an object");
 check(calibration.calibration_status === "NOT_RUN", "synthetic fixtures must not claim calibration");
 check(calibration.human_labeled === false, "synthetic fixtures must not claim human labels");

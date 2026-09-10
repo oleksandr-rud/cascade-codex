@@ -186,11 +186,11 @@ if (command === "list") {
 }
 if (command !== "run") fail(`unknown command: ${command}`);
 if (!args.fixture) fail("--fixture is required");
-args.model ??= "gpt-5.6-sol";
-args["reasoning-effort"] ??= "max";
+args.model ??= "gpt-6-astra";
+args["reasoning-effort"] ??= "high";
 const judgeReasoningEffort = args["judge-reasoning-effort"] ?? args["reasoning-effort"];
-if (args["execute-judge"]) args["judge-model"] ??= "gpt-5.6-sol";
-if (args["execute-target"]) args["target-model"] ??= "gpt-5.6-sol";
+if (args["execute-judge"]) args["judge-model"] ??= "gpt-6-astra";
+if (args["execute-target"]) args["target-model"] ??= "gpt-6-astra";
 
 const fixture = catalog.fixtures.find((candidate) => candidate.id === args.fixture);
 if (!fixture) fail(`unknown fixture: ${args.fixture}`);

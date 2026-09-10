@@ -2,7 +2,7 @@ claim_files:
   - product-evals/claims/fixture-state-transition.yaml
   - product-evals/claims/fixture-population-coverage.yaml
   - product-evals/claims/fixture-release-eligibility.yaml
-evaluation_profile_file: product-evals/rubrics/codex-independent-v1.yaml
+evaluation_profile_file: product-evals/rubrics/codex-independent-v2.yaml
 id: simulation-codex-evaluation-smoke
 oracle_files:
   - product-evals/oracles/account-resolved-v1.yaml

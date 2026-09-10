@@ -1,11 +1,11 @@
 {
   "schema_version": 1,
-  "profile_id": "cascade-project-management-outcome-v3",
-  "version": 3,
+  "profile_id": "cascade-project-management-outcome-v4",
+  "version": 4,
   "role": "outcome",
   "decision": "Does the plugin produce useful, evidence-bound project artifacts without taking product, quality, execution, or archival authority?",
   "population": "All frozen qualification-v3 Cascade Project Management target outputs.",
-  "model": "gpt-5.6-sol",
+  "model": "gpt-6-astra",
   "threshold": 0.95,
   "minimum_dimension": 3,
   "dimensions": [

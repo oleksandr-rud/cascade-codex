@@ -48,7 +48,7 @@ def profile(profile_id: str) -> dict:
         "role": "outcome",
         "decision": "whether the response meets the contract",
         "population": "one fixture case",
-        "model": "gpt-5.6-sol",
+        "model": "gpt-6-astra",
         "threshold": 0.95,
         "minimum_dimension": 3,
         "dimensions": [{
@@ -83,8 +83,8 @@ class AgentEvaluationRunnerTests(unittest.TestCase):
             "execution_adapter": {
                 "id": "cascade-evals-agent-runner-v1",
                 "runner": "cascade-evals/scripts/run_agent_evaluation.py",
-                "model": "gpt-5.6-sol",
-                "reasoning_effort": "max",
+                "model": "gpt-6-astra",
+                "reasoning_effort": "high",
                 "target_invocations": 1,
                 "target_batching": "contiguous-balanced-parallel-v1",
                 "case_count": 1,
@@ -129,10 +129,10 @@ class AgentEvaluationRunnerTests(unittest.TestCase):
             "acceptance_threshold": 0.95,
             "minimum_dimension": 3,
             "models": {
-                "builder": "gpt-5.6-sol",
-                "target": "gpt-5.6-sol",
-                "judge": "gpt-5.6-sol",
-                "reasoning_effort": "max",
+                "builder": "gpt-6-astra",
+                "target": "gpt-6-astra",
+                "judge": "gpt-6-astra",
+                "reasoning_effort": "high",
                 "explicit_comparison_override": False,
             },
         }), encoding="utf-8")
@@ -186,8 +186,8 @@ class AgentEvaluationRunnerTests(unittest.TestCase):
             assertion_adapter=self.adapter,
             evaluation_id="fixture-eval",
             output_dir=output,
-            model="gpt-5.6-sol",
-            reasoning_effort="max",
+            model="gpt-6-astra",
+            reasoning_effort="high",
             timeout_seconds=60,
             execute=False,
         )

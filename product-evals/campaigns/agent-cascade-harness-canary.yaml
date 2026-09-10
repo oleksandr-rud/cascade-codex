@@ -1,6 +1,6 @@
 claim_files:
   - product-evals/claims/agent-cascade-harness-coverage.yaml
-evaluation_profile_file: product-evals/rubrics/codex-independent-v1.yaml
+evaluation_profile_file: product-evals/rubrics/codex-independent-v2.yaml
 id: agent-cascade-harness-canary
 oracle_files:
   - product-evals/oracles/agent-response-contract-valid-v1.yaml

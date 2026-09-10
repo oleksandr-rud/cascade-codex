@@ -109,19 +109,18 @@ flowchart TB
 
 ## Model And Delivery Defaults
 
-The primary Codex session and Prompt authoring recommendation use Astra/high.
-The other domain-plugin recommendations remain Sol/high; Evals nodes and
-independent judges retain Sol/max. The simulation operator's explicit
-Sol/medium role profile is separate from a plugin recommendation. These are
-selected defaults, not a claim that every plugin has a comparative benchmark.
+The primary Codex session, custom agents, all Cascade plugin recommendations
+and new Evals builder, target and independent judges use Astra/high. These are
+user-selected defaults, not a claim that every plugin has a comparative benchmark.
 
 Each plan node must use its owning plugin's catalog `model_policy.model`.
-Coordinator keeps its own Sol planner identity; its model does not overwrite
-the Prompt node's Astra binding. Evals nodes require max reasoning. Existing
-frozen evaluations preserve their own builder, target and judge tuples, and a
-user-selected target model is distinct from the model authoring its prompt.
-Descriptor/catalog and node schemas admit Sol and Astra, while the host rejects
-a node that differs from its current descriptor. Catalog changes invalidate
+Coordinator uses Astra/high for its own selector and planner. Evals nodes bind
+the descriptor's `evaluation_reasoning_effort`; descriptor/catalog schemas also
+support max for a separately versioned policy. Existing frozen evaluations
+preserve their builder, target and judge tuples, and a user-selected target
+model is distinct from the model authoring its prompt. Descriptor/catalog and
+node schemas admit Sol and Astra; the host rejects a node that differs from
+its current descriptor. Catalog changes invalidate
 old plan bindings. No skill or validated plan switches an in-flight model or
 authorizes dispatch; the host applies settings when starting execution.
 

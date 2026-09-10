@@ -54,7 +54,7 @@ actual work.
 6. Preserve the Task Envelope authority ceiling. A selection never grants
    permission, dispatches an agent, executes a tool, mutates a target, schedules
    project work, or accepts its own result.
-7. Use `gpt-5.6-sol` with the current planning effort and a non-null digest of
+7. Use `gpt-6-astra` with the current planning effort and a non-null digest of
    the exact selection prompt. Emit `dispatch_authorized: false`.
 
 ## Route disposition

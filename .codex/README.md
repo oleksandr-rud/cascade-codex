@@ -165,8 +165,9 @@ use the existing closeout skill and shared CLI/Stop-hook implementation.
 
 Agent TOML files use the current Codex custom-agent schema with top-level
 `name`, `description`, `model`, and `developer_instructions`. Planning,
-synthesis, execution, and judged-evaluation roles pin `gpt-5.6-sol`; prompt and
-evaluation campaigns additionally freeze `max` reasoning. Detailed Cascade scope,
+synthesis, execution, and judged-evaluation roles default to `gpt-6-astra` with
+`high` reasoning, as do new prompt and evaluation campaigns. Explicit model
+choices and frozen comparison settings retain their recorded configurations. Detailed Cascade scope,
 delegation, workflow, and skill mapping stay in the companion `AGENT.md` and
 `skills.yaml` files.
 

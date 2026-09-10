@@ -1,11 +1,11 @@
 schema_version: 1
 plugin:
   name: cascade-prompt
-  version: 0.7.7+codex.20260910144422
+  version: 0.7.8+codex.20260910152813
 model_policy:
   model: gpt-6-astra
   planning_reasoning_effort: high
-  evaluation_reasoning_effort: max
+  evaluation_reasoning_effort: high
 skills:
   - route: cascade-prompt:prompt
     description: Create, refine, diagnose, compare, convert, or test a source-aware prompt and context plan.

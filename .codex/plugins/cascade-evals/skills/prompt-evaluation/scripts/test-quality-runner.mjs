@@ -59,7 +59,7 @@ await writeFile(adapterConfig, JSON.stringify({ adapters: { fixture: { command: 
 const adapterArgs = ["--adapter-config", adapterConfig, ...["prompt", "target", "judge", "model"].flatMap(phase => [`--${phase}-adapter`, "command-json-v1", `--${phase}-adapter-id`, "fixture"])];
 
 function run(extraEnv = {}, extraArgs = []) {
-  const result = spawnSync(process.execPath, [runner, "run", ...adapterArgs, "--task", "structured-invoice-v1", "--prompt-model", "gpt-5.6-terra", "--target-model", "gpt-5.6-terra", "--execute-judges", "--judge-model", "gpt-5.6-terra", "--subject-skill-root", subjectSkillRoot, "--output-dir", outputRoot, ...extraArgs], {
+  const result = spawnSync(process.execPath, [runner, "run", ...adapterArgs, "--task", "structured-invoice-v1", "--execute-judges", "--subject-skill-root", subjectSkillRoot, "--output-dir", outputRoot, ...extraArgs], {
     encoding: "utf8",
     env: { ...process.env, CASCADE_SIMULATIONS_SKILL_ROOT: join(root, "unavailable-simulations"), ...extraEnv }
   });
@@ -109,6 +109,10 @@ assert(firstSummary.execution.prompt_builder.receipts?.length === 1, "builder mu
 assert(Boolean(firstSummary.execution.target.receipt?.sha256), "target must have a bound direct execution receipt");
 assert(firstSummary.execution.outcome_judge.status === "DETERMINISTIC", "exact task must use deterministic outcome");
 assert(firstSummary.execution.trajectory_judge.status === "EXECUTED", "first trajectory judge must execute");
+for (const receipt of [...firstSummary.execution.prompt_builder.receipts, firstSummary.execution.target.receipt, firstSummary.execution.trajectory_judge.receipt]) {
+  const bound = JSON.parse(await readFile(join(first.output.run_root, receipt.path), "utf8"));
+  assert(bound.model === "gpt-6-astra" && bound.reasoning_effort === "high", "omitted phase options must dispatch and record Astra/high");
+}
 assert(firstSummary.acceptance === "UNVERIFIED" && firstSummary.semantic_acceptance === "ACCEPTED", "fixture ratings may pass but external evidence must remain unverified");
 
 const untrustedReplay = run({}, ["--reuse-run-root", first.output.run_root]);
@@ -121,14 +125,14 @@ assert(secondSummary.execution.prompt_builder.status === "REUSED_AUTOMATIC_CACHE
 assert(secondSummary.execution.trajectory_judge.status === "REUSED_PROMPT_CACHE", "second trajectory must use prompt cache");
 assert(secondSummary.execution.total_usage.input_tokens === 1000, "second run must bill only the target fixture call");
 
-const otherJudgeEffort = run({}, ["--judge-reasoning-effort", "high"]);
+const otherJudgeEffort = run({}, ["--judge-reasoning-effort", "max"]);
 const otherJudgeSummary = await summary(otherJudgeEffort);
 assert(otherJudgeSummary.execution.prompt_builder.status === "REUSED_AUTOMATIC_CACHE", "changing only judge effort must retain the identical builder");
 assert(otherJudgeSummary.execution.trajectory_judge.status === "EXECUTED", "a judge-effort change must not reuse an incompatible judgment");
 const judgeReceipt = JSON.parse(await readFile(join(otherJudgeEffort.output.run_root, "judge-trajectory.execution.json"), "utf8"));
 const targetReceipt = JSON.parse(await readFile(join(otherJudgeEffort.output.run_root, "target.execution.json"), "utf8"));
-assert(judgeReceipt.reasoning_effort === "high" && targetReceipt.reasoning_effort === "max", "phase receipts must bind the distinct judge and target efforts");
-assert(otherJudgeSummary.configuration.judge_reasoning_effort === "high", "comparison identity must retain judge effort");
+assert(judgeReceipt.reasoning_effort === "max" && targetReceipt.reasoning_effort === "high", "phase receipts must bind the distinct judge and target efforts");
+assert(otherJudgeSummary.configuration.judge_reasoning_effort === "max", "comparison identity must retain judge effort");
 
 const third = run({ FAKE_INELIGIBLE: "1" });
 assert(third.result.status === 3, `unverified ineligible run must exit 3, got ${third.result.status}`);

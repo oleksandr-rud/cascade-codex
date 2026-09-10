@@ -98,7 +98,7 @@ remains `NOT_RUN`. Keep sealed expectations outside target-visible material.
 
 When selecting a model configuration or preparing execution, read
 `references/model-policy.json`. Default builder, target, and judge
-invocations to `gpt-5.6-sol` with `max` reasoning effort.
+invocations to `gpt-6-astra` with `high` reasoning effort.
 Explicit comparison configurations may bind a different supported model and
 reasoning effort, but every value must be frozen in the evaluation bundle and
 preserved in the receipt. Never silently change the default or reuse the target

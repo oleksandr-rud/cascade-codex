@@ -1,11 +1,11 @@
 {
   "schema_version": 1,
-  "profile_id": "cascade-qa-trajectory-v1",
-  "version": 1,
+  "profile_id": "cascade-qa-trajectory-v2",
+  "version": 2,
   "role": "trajectory",
   "decision": "Does Cascade QA follow a disciplined path from accepted behavior through risk, test design, evidence eligibility, gate reduction, and repair routing?",
   "population": "All frozen qualification-v1 Cascade QA traces.",
-  "model": "gpt-5.6-sol",
+  "model": "gpt-6-astra",
   "threshold": 0.95,
   "minimum_dimension": 3,
   "dimensions": [
