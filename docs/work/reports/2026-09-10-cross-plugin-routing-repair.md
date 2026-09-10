@@ -153,7 +153,7 @@ application has not been rewritten or retroactively judged against newly selecte
 references. The native CLI also reported shortened skill descriptions; the architecture
 method remained visible and loaded. This diagnostic did not change unrelated
 plugin enablement or claim that global context pressure was eliminated.
-This branch has not been integrated into master by this repair.
+At that repair's completion, the branch had not been integrated into master.
 
 ## Subsequent master synchronization
 
@@ -189,6 +189,41 @@ configuration diagnostic confirmed Astra; its full doctor command reports a
 noninteractive `TERM=dumb` terminal limitation, not a model configuration failure.
 
 Evidence is under `.artifacts/astra-master-sync-20260910/` and
-`.artifacts/harness-evals/astra-master-sync-20260910-v2/`. This synchronization
-updates the experimental branch and installed packages; it does not push the
+`.artifacts/harness-evals/astra-master-sync-20260910-v2/`. That synchronization
+updated the experimental branch and installed packages; it did not push the
 experiment into master.
+
+## Authorized master publication preflight
+
+The subsequent request explicitly authorized publication to master. A fresh fetch
+found `d1da8c2`, which adds the Coordinator's serialized host handoff and Windows
+evaluation runner fixes. The merge retains those changes, the prerequisite/input
+repairs above and Astra/high defaults. Coordinator's combined source and installed
+package identity is `0.2.2+codex.20260910182122`; all three catalogs were regenerated.
+
+The incoming bundle test assumed that evaluating a supplied frozen prompt always
+requires an authoring producer. The merged runtime correctly rejects a reversed
+plan because its prompt artifact is unavailable. A frozen QA triage classified the
+stale expectation as TEST_DRIFT after 40 independent planner tests and actual CLI
+checks confirmed that a supplied prompt succeeds and a missing prompt fails. The
+test-only repair checks the current rejection message and explicitly requires a
+nonzero exit code; missing-edge and forbidden-dispatch assertions remain intact.
+
+| Check | Publication preflight result |
+|---|---|
+| Integrated runtime safety and planner/bundle regressions | PASS: 81 tests, 472 assertions. |
+| Repository validator and harness self-tests | PASS; 42 self-checks. |
+| Plugin package/manifest checks | PASS: all 7 owning manifests. |
+| Installed package parity | PASS: 14 packages, 639 files, 166 dependency bindings; 18 unrelated packages preserved. |
+| Fresh Astra/high routing | PASS: HX-106 architecture prerequisite and HX-068 missing Coordinator inputs. |
+
+The live cases use default model settings and the updated successful-source-read
+checks. They preceded the final test assertion repair; their runtime, role and
+skill sources are unchanged. These are scoped routing eligibility checks. Native
+Windows execution, a new autonomous application build and all-method semantic
+qualification were not run as part of this publication preflight.
+
+Evidence is under `.artifacts/master-push-20260910/` and
+`.artifacts/harness-evals/master-push-20260910/`. The triage artifact is
+`defect-triage.json`, the public CLI receipt is `public-cli-receipt.json`, and the
+final integrated test log is `runtime-tests-final.log` in the preflight directory.

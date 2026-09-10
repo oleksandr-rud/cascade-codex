@@ -1,7 +1,7 @@
 {
   "agent_count": 9,
   "agent_scenario_count": 9,
-  "catalog_digest": "90ce651240d98b47de1aad2ca05ecc0533c5cf189e970ed2aef25fd3dc7f8595",
+  "catalog_digest": "c2bea06419aaea150ab973cbef37337efd411b9386c4849832fd0689e09d900a",
   "generated_by": "scripts/cascade/evals.ts",
   "scenario_count": 180,
   "scenarios": [
@@ -4357,6 +4357,9 @@
           "cascade-coordinator:select-capabilities",
           "cascade-coordinator:plan-workflow"
         ],
+        "must_load_roles": [
+          "orchestrator"
+        ],
         "must_load_skills": [
           "cascade-market:research-market"
         ],
@@ -4390,6 +4393,9 @@
           "cascade-coordinator:plan-workflow",
           "cascade-project-management:manage-project"
         ],
+        "must_load_roles": [
+          "orchestrator"
+        ],
         "must_load_skills": [
           "cascade-coordinator:select-capabilities"
         ],
@@ -4398,11 +4404,7 @@
         "next_route": "",
         "primary_skill": "cascade-coordinator:select-capabilities",
         "status_any": [
-          "BLOCKED",
-          "FAIL",
-          "GAP",
-          "NOT_RUN",
-          "PASS"
+          "BLOCKED"
         ],
         "target_skill": "cascade-coordinator:select-capabilities"
       },
@@ -4422,6 +4424,9 @@
           "cascade-software-architect:architect-software-system",
           "cascade-project-management:manage-project"
         ],
+        "must_load_roles": [
+          "orchestrator"
+        ],
         "must_load_skills": [
           "cascade-coordinator:plan-workflow"
         ],
@@ -4430,11 +4435,7 @@
         "next_route": "",
         "primary_skill": "cascade-coordinator:plan-workflow",
         "status_any": [
-          "BLOCKED",
-          "FAIL",
-          "GAP",
-          "NOT_RUN",
-          "PASS"
+          "BLOCKED"
         ],
         "target_skill": "cascade-coordinator:plan-workflow"
       },
@@ -5222,7 +5223,7 @@
         },
         {
           "path": "CODEX.md",
-          "sha256": "11fada828c30722e8f66ba74b1ed0eabfe33204c518f5d578a7f4422cf8e519c"
+          "sha256": "c4b7bcdd36098dce6c3e58d87bf88d0a30a604259bd2e4dc39fcc92d31d31fd0"
         }
       ],
       "execution": {
@@ -5445,7 +5446,7 @@
       "context_bindings": [
         {
           "path": ".codex/agents/product-designer/AGENT.md",
-          "sha256": "dd2e5c4f0d33988ff24b455151e21884b7332222d31dec19f26b6ef08b5676fa"
+          "sha256": "c3a7a4e082289211b64141daf9ae80ba424b48c79f81751d7f7df5316ceebc56"
         },
         {
           "path": ".codex/agents/product-designer/skills.yaml",

@@ -101,6 +101,9 @@ claim-bound selected set and explicit rejections. Use
 than one node, a dependency, an artifact handoff, parallel branches, or a join.
 Both are non-dispatching controllers; the active host role retains repository
 access, execution, persistence, and acceptance.
+The Orchestrator's [Coordinator host bridge](.codex/agents/orchestrator/AGENT.md#coordinator-host-bridge)
+owns serialized input preparation and deterministic selection/plan validation;
+prose summaries of admission or selected routes do not satisfy those inputs.
 
 Select methods for the decisions needed to complete the request, including
 prerequisites to implementation. An implementation verb, one owner, or a bounded

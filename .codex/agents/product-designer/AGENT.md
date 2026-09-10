@@ -45,6 +45,11 @@ owners or approve a product change. A scoped plan never assigns another owner's
 capacity or activates work without authority. Tracker filing, external outreach
 and experiment execution require their own existing task authorization.
 
+When the whole request belongs outside this role, use the host `context` skill
+to identify the ownership gap and return `GAP` with the next owning route.
+Do not load or claim an out-of-role skill as work performed merely to describe
+that future handoff; Orchestrator activates the destination contract when used.
+
 For a multi-case or multi-contour campaign, return prepared contracts to
 Orchestrator for campaign planning and Simulation Operator for authorized
 execution. Independent persona, prompt or simulation acceptance goes through
