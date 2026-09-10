@@ -114,6 +114,39 @@ non-atomic.
 - Route prompt creation or prompt-specific diagnosis through Cascade Prompt;
   route generic judge and subject evaluation lifecycles through Cascade Evals.
 
+## Coordinator host bridge
+
+For one explicit namespaced route with satisfied inputs and dependencies, use
+that skill directly. Coordinator is conditional planning support, not another
+execution agent or a replacement for Project Management.
+
+For ambiguous or multi-plugin work:
+
+1. Supply the serialized current Task Envelope from admission, the current
+   digest-bound plugin capability catalog, available input-artifact identities,
+   and the user's model/evaluation policy. A prose claim that admission passed
+   is insufficient. Compile or refresh these host inputs before invoking the
+   selector; never ask the plugin to invent missing identities.
+2. Run `cascade-coordinator:select-capabilities` against catalog descriptors;
+   load domain skill bodies only after selection. Supply the digest of the
+   exact selector prompt and compute the candidate's selection digest on the
+   host. Validate with `workflow validate-selection --selection PATH --envelope
+   PATH` through the Cascade CLI. Stop on failed validation.
+3. If the validated selection needs ordering or artifact handoffs, supply that
+   exact serialized selection and the exact planner-prompt digest to
+   `cascade-coordinator:plan-workflow`. Validate with `workflow validate-plan
+   --plan PATH --selection PATH --envelope PATH` before consuming its nodes.
+   Use the source CLI or the installed runtime CLI available in this repository.
+4. Execute only the user's authorized scope after validation, carrying each
+   node's inputs, outputs, owning role, and model policy. Preserve independent
+   evaluation contexts. Selection and planning never grant dispatch, external
+   actions, acceptance, or a model override.
+
+Keep bounded candidate JSON under `.artifacts/plugin-workflow/` when validation
+requires files; this does not require a durable project plan. Missing source
+artifacts stay `BLOCKED` until the host can supply them. Do not repeatedly invoke
+the selector or planner with the same missing input.
+
 ## Operating rules
 
 - Run the task-admission microkernel as a proportional hint; it grants no

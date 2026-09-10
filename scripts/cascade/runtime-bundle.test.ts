@@ -234,6 +234,9 @@ describe("Cascade lean target runtime bundle", () => {
       expect(accepted.exitCode).toBe(0);
       expect(accepted.stdout.toString()).toContain("plugin_plan_status=PASS");
       if (promptPair) {
+        expect((await checkPlan({ ...plan, edges: [] })).stderr.toString()).toContain("required artifact edge is missing");
+        expect((await checkPlan({ ...plan, selected_nodes: [...nodes].reverse() })).stderr.toString()).toContain("required dependency must appear earlier");
+        expect((await checkPlan({ ...plan, dispatch_authorized: true })).exitCode).not.toBe(0);
         expect(nodes.map((node) => node.model)).toEqual([
           { id: "gpt-6-astra", reasoning_effort: "high" },
           { id: "gpt-6-astra", reasoning_effort: "high" },

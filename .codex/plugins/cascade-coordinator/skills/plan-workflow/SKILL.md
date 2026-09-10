@@ -1,6 +1,6 @@
 ---
 name: plan-workflow
-description: Compile a multi-plugin Cascade request and its validated Task Envelope into an ordered, dependency-safe, policy-preserving workflow plan. Use when two or more plugin capabilities must be selected, excluded, sequenced, parallelized, or joined; do not use for ordinary implementation slicing, project scheduling, target execution, or self-dispatch.
+description: Compile an already validated Cascade capability selection into an ordered, dependency-safe, policy-preserving workflow plan. Use when selected capabilities require sequencing, parallelization, an artifact handoff, or a join; route selection or exclusion to select-capabilities first. Do not use for ordinary implementation slicing, project scheduling, target execution, or self-dispatch.
 ---
 
 # Plan Workflow
@@ -52,7 +52,7 @@ and catalog descriptors are sufficient planning inputs.
 3. Topologically order the graph. Represent every selected producer-to-consumer
    artifact handoff with an explicit edge.
 4. Parallelize only `READ_ONLY` nodes with no direct or transitive dependency,
-   dependency, artifact, authority, or write conflict; name one deterministic
+   artifact, authority, or write conflict; name one deterministic
    merge owner for every join.
 5. Preserve admission controls and authority exactly. A plugin plan never grants
    permission, weakens policy, executes a tool, dispatches an agent, mutates a

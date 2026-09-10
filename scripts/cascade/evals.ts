@@ -593,8 +593,9 @@ Rules:
   admission commands, or inspect task-admission implementation.
 - Do not inspect unrelated worktree changes. Stop source discovery once the primary
   route, material status, and required evidence are supported.
-- Bun is not on PATH in this environment. If a repository command is strictly
-  necessary, invoke it through npx --offline --yes bun@1.3.3.
+- On Windows, read files with PowerShell cmdlets such as Get-Content -LiteralPath;
+  the sandbox uses restricted language mode, so avoid .NET file APIs. Use the
+  installed Bun only when a repository command is strictly necessary.
 - For product-sensitive work, read and cite the current product, design, brand,
   or specification sources routed by the repository. Do not infer product
   behavior from workflow documents or simulation output alone.
@@ -606,6 +607,7 @@ Rules:
 - Return only JSON matching the supplied output schema.
 
 Scenario ID: ${scenario.id}
+${scenario.owner ? `\nAssigned role: ${scenario.owner}. Read .codex/agents/${scenario.owner}/AGENT.md before routing.\n` : ""}
 
 User request:
 ${scenario.prompt}
@@ -762,15 +764,18 @@ async function normalizeTrace(
         result_bytes: new TextEncoder().encode(String(item.aggregated_output ?? "")).length,
         ...classifyCommand(command),
       });
-      for (const match of command.matchAll(/\.codex\/skills\/([a-z0-9-]+)\/SKILL\.md/g)) {
+      // Failed commands are attempted reads, never evidence that a source loaded.
+      const readCommand = item.exit_code === 0 && item.status === "completed"
+        ? command.replace(/\\+/g, "/") : "";
+      for (const match of readCommand.matchAll(/\.codex\/skills\/([a-z0-9-]+)\/SKILL\.md/g)) {
         loadedSkills.add(match[1]!);
       }
-      for (const match of command.matchAll(
+      for (const match of readCommand.matchAll(
         /\.codex\/plugins\/([a-z0-9-]+)\/skills\/([a-z0-9-]+)\/SKILL\.md/g,
       )) {
         loadedSkills.add(`${match[1]}:${match[2]}`);
       }
-      for (const match of command.matchAll(/\.codex\/agents\/([a-z0-9-]+)\/AGENT\.md/g)) {
+      for (const match of readCommand.matchAll(/\.codex\/agents\/([a-z0-9-]+)\/AGENT\.md/g)) {
         loadedRoles.add(match[1]!);
       }
     } else if (item.type === "agent_message" && event.type === "item.completed") {
@@ -952,12 +957,15 @@ async function checkEligibility(
   };
 }
 
-function codexCommand(model: string, effort: string, prompt: string, schema: string): string[] {
+function codexCommand(model: string, effort: string, prompt: string, schema: string, platform = process.platform): string[] {
   return [
     "codex",
     "exec",
     "--ephemeral",
     "--ignore-user-config",
+    // Ignoring user config also removes the Windows sandbox implementation.
+    // Select the supported restricted implementation; retain read-only policy.
+    ...(platform === "win32" ? ["-c", 'windows.sandbox="unelevated"'] : []),
     "--json",
     "--disable",
     "plugins",
@@ -1777,7 +1785,20 @@ async function commandSelfTest(): Promise<number> {
     try { interactionScenario({ ...roleCase, ...changes }, roleContracts); return false; }
     catch (error) { return error instanceof CascadeError; }
   };
+  const readTrace = async (exitCode: number) => normalizeTrace(scenario, JSON.stringify({
+    type: "item.completed", item: { type: "command_execution", exit_code: exitCode,
+      status: exitCode === 0 ? "completed" : "failed",
+      command: String.raw`Get-Content .codex\agents\orchestrator\AGENT.md, .codex\skills\context\SKILL.md`,
+      aggregated_output: exitCode === 0 ? "Source contents" : "Access denied" },
+  }), "", 0, 1, false);
+  const successfulRead = await readTrace(0);
+  const failedRead = await readTrace(1);
   const assertions: [boolean, string][] = [
+    [successfulRead.loaded_roles.includes("orchestrator") && successfulRead.loaded_skills.includes("context"), "native Windows paths establish source loads"],
+    [failedRead.loaded_roles.length === 0 && failedRead.loaded_skills.length === 0, "failed reads cannot establish source loads"],
+    [targetPrompt({ ...scenario, owner: "orchestrator" }).includes("Read .codex/agents/orchestrator/AGENT.md"), "target receives its assigned role without expected route answers"],
+    [codexCommand(PLANNING_MODEL, "high", "probe", OUTPUT_SCHEMA, "win32").includes('windows.sandbox="unelevated"') && codexCommand(PLANNING_MODEL, "high", "probe", OUTPUT_SCHEMA, "win32").includes("read-only"), "Windows source reads retain a configured read-only sandbox"],
+    [!codexCommand(PLANNING_MODEL, "high", "probe", OUTPUT_SCHEMA, "linux").some((arg) => arg.includes("windows.sandbox")), "non-Windows execution preserves its native sandbox"],
     [wiredInteraction.owner === "product-designer" && wiredInteraction.expectation.must_load_roles.includes("product-designer"), "role usage requires the wired specialist contract"],
     [rejectsInteraction({ expected_primary: "cascade-coding-agent:maintain-harness" }), "unwired primary must fail before execution"],
     [rejectsInteraction({ allowed_supporting: ["cascade-coding-agent:maintain-harness"] }), "unwired supporting skill must fail before execution"],

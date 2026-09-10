@@ -95,6 +95,9 @@ claim-bound selected set and explicit rejections. Use
 than one node, a dependency, an artifact handoff, parallel branches, or a join.
 Both are non-dispatching controllers; the active host role retains repository
 access, execution, persistence, and acceptance.
+The Orchestrator's [Coordinator host bridge](.codex/agents/orchestrator/AGENT.md#coordinator-host-bridge)
+owns serialized input preparation and deterministic selection/plan validation;
+prose summaries of admission or selected routes do not satisfy those inputs.
 
 For product and marketing UI, consume the shared default owned by
 `cascade-design:design-system` at `references/outcome-ui-standard.md`.
