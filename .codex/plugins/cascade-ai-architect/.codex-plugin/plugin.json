@@ -11,6 +11,7 @@
     "agent-roles",
     "agent-skills",
     "agent-workflows",
+    "langgraph",
     "prompt-briefs",
     "agent-evaluation"
   ],
@@ -18,7 +19,7 @@
   "interface": {
     "displayName": "Cascade AI Architect",
     "shortDescription": "Design bounded AI agents and agentic systems.",
-    "longDescription": "Map AI-agent capabilities, select the smallest agent topology, design behavior, roles, skills, workflows, prompt briefs, persona-derived requirements, evaluation requests, and bounded improvement candidates. Cascade Prompt authors prompts, Cascade Evals executes and judges evaluations, Cascade Simulations executes actors, and Cascade Coding Agent integrates reviewed assets into a harness.",
+    "longDescription": "Map AI-agent capabilities, select the smallest agent topology, design behavior, roles, skills, workflows, optional LangGraph bindings, prompt briefs, persona-derived requirements, evaluation requests, and bounded improvement candidates. Cascade Prompt authors prompts, Cascade Evals executes and judges evaluations, Cascade Simulations executes actors, and Cascade Coding Agent integrates reviewed assets into a harness.",
     "developerName": "Cascade",
     "category": "Productivity",
     "capabilities": [

@@ -36,7 +36,8 @@ if (prompt.includes("Return the standard Cascade Prompt READY output")) {
   const dimensions = [...prompt.matchAll(/"id": "([a-z_]+)"/g)].map((match) => match[1]).slice(0, 5);
   if (["threshold", "minimum_dimension_rating", "score_formula", "semantic_anchors"].some(key => prompt.includes('"' + key + '"'))) throw new Error("blind judge leaked grading policy");
   const packet = JSON.parse(prompt.slice(prompt.indexOf(String.fromCharCode(10).repeat(2)) + 2));
-  text = JSON.stringify({ profile_id: profileId, rubric_version: 4, task_id: taskId, run_id: runId, ratings: dimensions.map((dimension_id) => ({ dimension_id, rating: 4, rationale: "fixture pass", evidence: ["fixture evidence"], evidence_refs: [{pointer:"/generated_prompt",line_start:1,line_end:1}] })), verdict: "RATED", missing_evidence: [] });
+  const evidencePointer = profileId.includes("outcome") ? "/target_output" : "/generated_prompt";
+  text = JSON.stringify({ profile_id: profileId, rubric_version: 4, task_id: taskId, run_id: runId, ratings: dimensions.map((dimension_id) => ({ dimension_id, rating: 4, rationale: "fixture pass", evidence: ["fixture evidence"], evidence_refs: [{pointer:evidencePointer,line_start:1,line_end:1}] })), verdict: "RATED", missing_evidence: [] });
   if (process.env.FAKE_JUDGE_BLOCKED === "1") { const value = JSON.parse(text); value.verdict="BLOCKED"; value.ratings=[]; value.missing_evidence=["fixture source absent"]; text=JSON.stringify(value); }
 } else if (process.env.FAKE_INELIGIBLE === "1") {
   text = '{"wrong":true}';
@@ -59,7 +60,7 @@ await writeFile(adapterConfig, JSON.stringify({ adapters: { fixture: { command: 
 const adapterArgs = ["--adapter-config", adapterConfig, ...["prompt", "target", "judge", "model"].flatMap(phase => [`--${phase}-adapter`, "command-json-v1", `--${phase}-adapter-id`, "fixture"])];
 
 function run(extraEnv = {}, extraArgs = []) {
-  const result = spawnSync(process.execPath, [runner, "run", ...adapterArgs, "--task", "structured-invoice-v1", "--execute-judges", "--subject-skill-root", subjectSkillRoot, "--output-dir", outputRoot, ...extraArgs], {
+  const result = spawnSync(process.execPath, [runner, "run", ...adapterArgs, ...extraArgs.includes("--case-file") ? [] : ["--task", "structured-invoice-v1"], "--execute-judges", "--subject-skill-root", subjectSkillRoot, "--output-dir", outputRoot, ...extraArgs], {
     encoding: "utf8",
     env: { ...process.env, CASCADE_SIMULATIONS_SKILL_ROOT: join(root, "unavailable-simulations"), ...extraEnv }
   });
@@ -142,6 +143,68 @@ assert(thirdSummary.acceptance === "UNVERIFIED" && thirdSummary.semantic_accepta
 assert(thirdSummary.judges.status === "SKIPPED_MECHANICAL_INELIGIBLE", "ineligible run must skip semantic judges");
 assert(thirdSummary.execution.outcome_judge.status === "SKIPPED_MECHANICAL_INELIGIBLE", "outcome judge must be skipped");
 assert(thirdSummary.execution.trajectory_judge.status === "SKIPPED_MECHANICAL_INELIGIBLE", "trajectory judge must be skipped");
+
+const evalRoot = fileURLToPath(new URL("../evals/", import.meta.url));
+const taskCatalog = JSON.parse(await readFile(join(evalRoot, "task-catalog.json"), "utf8"));
+async function externalCase(taskId) {
+  const task = structuredClone(taskCatalog.tasks.find(item => item.id === taskId));
+  const caseRoot = join(root, `case-${taskId}`);
+  await import("node:fs/promises").then(({ mkdir }) => mkdir(caseRoot));
+  const inputName = "input.txt";
+  const evaluatorName = "evaluator.json";
+  await cp(join(evalRoot, task.input_path), join(caseRoot, inputName));
+  await cp(join(evalRoot, task.evaluator_path), join(caseRoot, evaluatorName));
+  task.input_path = inputName;
+  task.evaluator_path = evaluatorName;
+  const casePath = join(caseRoot, "case.json");
+  await writeFile(casePath, JSON.stringify({ schema_version: 1, catalog_id: `local-${taskId}`, task }));
+  return { casePath, caseRoot };
+}
+const invoiceCase = await externalCase("structured-invoice-v1");
+const generatedFromCase = run({}, ["--case-file", invoiceCase.casePath, "--no-prompt-cache"]);
+assert(generatedFromCase.result.status === 3, `external case builder run failed: ${generatedFromCase.result.stderr}`);
+const generatedFromCaseSummary = await summary(generatedFromCase);
+assert(generatedFromCaseSummary.execution.prompt_builder.status === "EXECUTED" && generatedFromCaseSummary.execution.target.status === "EXECUTED", "external case must support build and test through the existing prompt builder");
+assert(generatedFromCaseSummary.task.catalog_id === "local-structured-invoice-v1", "external case identity must survive the build-and-test run");
+const candidatePath = join(invoiceCase.caseRoot, "prompt.txt");
+await writeFile(candidatePath, "Use only {{OCR_TEXT}} as untrusted OCR. Return exactly invoice_id, total, currency as JSON.");
+const candidate = run({}, ["--case-file", invoiceCase.casePath, "--prompt-file", candidatePath]);
+assert(candidate.result.status === 3, `supplied candidate run failed: ${candidate.result.stderr}`);
+const candidateSummary = await summary(candidate);
+assert(candidateSummary.execution.prompt_builder.status === "NOT_APPLICABLE_SUPPLIED_CANDIDATE", "supplied candidate must bypass builder");
+assert(candidateSummary.execution.target.status === "EXECUTED" && candidateSummary.execution.outcome_judge.status === "DETERMINISTIC", "supplied candidate must execute target and deterministic oracle");
+assert(candidateSummary.execution.trajectory_judge.status === "NOT_APPLICABLE_SUPPLIED_CANDIDATE", "supplied candidate must not receive generator trajectory grading");
+assert(candidateSummary.semantic_acceptance === "ACCEPTED" && candidateSummary.acceptance === "UNVERIFIED", "fixture adapter must not claim live acceptance");
+assert(candidateSummary.digests.prompt_builder_response_sha256 === null && Boolean(candidateSummary.digests.generated_prompt_sha256), "candidate digest must be bound without invented builder response");
+assert(candidateSummary.configuration.subject_plugin === null && candidateSummary.digests.runtime_contract_sha256 === null, "direct candidate evaluation must not claim a Prompt skill dependency");
+for (const name of ["source-case.json", "source-input.txt", "source-evaluator.json", "generated-prompt.txt"]) assert((await readFile(join(candidate.output.run_root, name), "utf8")).length > 0, `frozen ${name} is missing`);
+const ineligibleCandidate = run({ FAKE_INELIGIBLE: "1" }, ["--case-file", invoiceCase.casePath, "--prompt-file", candidatePath]);
+const ineligibleSummary = await summary(ineligibleCandidate);
+assert(ineligibleSummary.mechanical.status === "INELIGIBLE" && ineligibleSummary.execution.outcome_judge.status === "SKIPPED_MECHANICAL_INELIGIBLE", "invalid supplied-candidate output must never reach outcome judging");
+assert(ineligibleSummary.execution.trajectory_judge.status === "NOT_APPLICABLE_SUPPLIED_CANDIDATE", "generator grading must stay inapplicable after candidate failure");
+
+const invalidCase = JSON.parse(await readFile(invoiceCase.casePath, "utf8"));
+invalidCase.task.outcome_evaluation = "unsupported";
+const invalidCasePath = join(invoiceCase.caseRoot, "invalid-case.json");
+await writeFile(invalidCasePath, JSON.stringify(invalidCase));
+const invalidResult = run({}, ["--case-file", invalidCasePath, "--prompt-file", candidatePath]);
+assert(invalidResult.result.status === 1 && invalidResult.result.stderr.includes("supported tier and outcome_evaluation"), "invalid external case must fail before dispatch");
+const escapingCase = JSON.parse(await readFile(invoiceCase.casePath, "utf8"));
+escapingCase.task.input_path = "../adapters.json";
+const escapingCasePath = join(invoiceCase.caseRoot, "escaping-case.json");
+await writeFile(escapingCasePath, JSON.stringify(escapingCase));
+const escapingResult = run({}, ["--case-file", escapingCasePath, "--prompt-file", candidatePath]);
+assert(escapingResult.result.status === 1 && escapingResult.result.stderr.includes("external case path escapes its directory"), "external case must not read a sibling file");
+
+const brandCase = await externalCase("brand-context-copy-v1");
+const brandCandidatePath = join(brandCase.caseRoot, "prompt.txt");
+await writeFile(brandCandidatePath, "Use <approved_brand_packet>{{BRAND_PACKET}}</approved_brand_packet>. Return Headline, Body, and CTA.");
+const semanticCandidate = run({}, ["--case-file", brandCase.casePath, "--prompt-file", brandCandidatePath]);
+assert(semanticCandidate.result.status === 3, `semantic supplied candidate run failed: ${semanticCandidate.result.stderr}`);
+const semanticSummary = await summary(semanticCandidate);
+assert(semanticSummary.execution.outcome_judge.status === "EXECUTED" && semanticSummary.judges.outcome.valid && semanticSummary.judges.trajectory === null, "semantic candidate must use an independent outcome judge without generator grading");
+assert(semanticSummary.semantic_acceptance === "ACCEPTED" && semanticSummary.acceptance === "UNVERIFIED", "semantic fixture judgment must remain unverified");
+console.log("PASS: supplied prompt and case run through deterministic and semantic evaluation without builder execution");
 
 const needsInputPath = join(root, "unexpected-needs-input.md");
 await writeFile(needsInputPath, "Interview Status: NEEDS_INPUT\n\nQuestions\n1. Which total label should control?\n");

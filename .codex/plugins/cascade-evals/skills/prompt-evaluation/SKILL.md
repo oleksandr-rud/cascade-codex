@@ -37,10 +37,19 @@ references only when the requested design needs their exact contract.
 Resolving `cascade-prompt:prompt` as the subject dependency does not schedule
 prompt authoring again. Reuse the supplied frozen candidate; select authoring
 only when the accepted campaign explicitly requires a new or revised candidate.
+For caller-owned cases, use `run-quality-eval.mjs run --case-file CASE` with
+`--prompt-file PROMPT` to test a raw reusable candidate without running the
+builder, or omit `--prompt-file` to build and test through the installed
+Cascade Prompt skill. The case file supplies its own versioned task, input,
+and evaluator paths. Direct candidates receive mechanical and outcome
+evaluation; builder trajectory judgment is inapplicable. Keep this path
+separate from the bundled generator benchmark and do not score a supplied
+candidate as if Evals authored it.
 
-1. Resolve the subject plugin and exact skill root. Use
+1. Resolve the subject plugin and exact skill root when running a builder. Use
    `--subject-skill-root` only for an intentional source checkout; otherwise
    resolve the enabled installed plugin through `codex plugin list --json`.
+   A supplied candidate does not require the Prompt plugin.
 2. Validate the versioned catalog, task, evaluator, model matrix, budgets,
    interview fixtures, and judge profiles.
 3. Use `scripts/run-prompt-campaign.mjs` for multi-case execution. Its declared

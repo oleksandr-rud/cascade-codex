@@ -41,3 +41,8 @@ Bind [schema/value issuance](../../design-agent-blueprint/references/executable-
 to each admitted step: `issue(request, snapshot)` then `assemble(slice, request)`,
 with current host admission at both boundaries. Preserve one snapshot, schema
 order, complete-input token accounting and cancellation/dispatch rechecks.
+When LangGraph is selected for the target, bind the optional
+[LangGraph integration profile](../../design-agent-blueprint/references/langgraph-integration.md)
+to the workflow phases. Specify the target checkpointer, authenticated thread
+binding, node replay/idempotency, policy route and fresh context issuance; a
+graph checkpoint does not replace authoritative state or admission.

@@ -1,6 +1,6 @@
 {
   "artifact_type": "cascade-plugin-capability-catalog",
-  "catalog_digest": "a316ea9e456eb416c05e350718dd2d27ef216b7b7cda83e9dbffeadebfc4861f",
+  "catalog_digest": "42a4e6f6df571ae8422b3bbb04521b1b2394fb59cd61cf9705947d7f23554994",
   "marketplace": ".agents/plugins/marketplace.json",
   "plugins": [
     {
@@ -549,9 +549,9 @@
     },
     {
       "descriptor_path": ".codex/plugins/cascade-ai-architect/capabilities.yaml",
-      "descriptor_sha256": "5696e2d4f66cb05b74b240e006b43611b922547ca5e03a9164625b7ed4f0aa68",
+      "descriptor_sha256": "d6d4922fcbeea11e0399d2b0d1b2cfcfb54a4ffc8918d66b21a9c567256cf1dd",
       "manifest_path": ".codex/plugins/cascade-ai-architect/.codex-plugin/plugin.json",
-      "manifest_sha256": "db13b888b0cdc55d0f3551a8256d0d56fd106102e06db53600b421a0c347e965",
+      "manifest_sha256": "2e122b71221b068e0ef6d728c1e12c69a6edd246e60e850b55f9fd3af142dd02",
       "model_policy": {
         "evaluation_reasoning_effort": "high",
         "model": "gpt-6-astra",
@@ -660,7 +660,7 @@
           "consumes": [
             "agent-blueprint"
           ],
-          "description": "Design a typed agent behavior flow with deterministic routes, bounded loops, recovery, budgets, and stop rules.",
+          "description": "Design a typed agent behavior flow with deterministic routes, bounded loops, recovery, budgets, stop rules, and an optional LangGraph binding for a selected stateful architecture.",
           "effect": "CANDIDATE_WRITE",
           "evaluation_cases": [
             "bounded-loop",
@@ -678,7 +678,8 @@
           "required_dependencies": [],
           "route": "cascade-ai-architect:design-agent-workflow",
           "triggers": [
-            "an agent or multi-agent behavior flow must be designed"
+            "an agent or multi-agent behavior flow must be designed",
+            "a selected stateful agent workflow needs a LangGraph binding"
           ]
         },
         {

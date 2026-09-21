@@ -64,8 +64,12 @@ Load only the smallest conditional material:
   runtime coverage audit. It maps reference rules to their active consumers.
 - `runtime/evaluation.md` for audit, comparison, tests, or effectiveness claims.
   This skill designs evaluation cases but owns no campaign runtime or state.
-  When `cascade-evals:prompt-evaluation` is separately installed, offer it as
-  an optional evaluation handoff; otherwise label execution `NOT_RUN`.
+  When measured testing is requested and `cascade-evals:prompt-evaluation` is
+  installed, hand a frozen candidate and versioned cases to that skill. Use
+  its direct `--case-file` and `--prompt-file` path for a supplied prompt;
+  omit `--prompt-file` when the same request asks Cascade Prompt to build a
+  candidate from the case. Keep evaluation evidence and scoring in Evals.
+  If Evals or executable cases are unavailable, label execution `NOT_RUN`.
 
 Do not load every runtime pack. Simple requests normally need zero to two
 conditional files; explicit model adaptation and reusable templates may need
@@ -223,6 +227,13 @@ material, retain tier/model, `MEASURED`, `INFERRED`, or `USER_SELECTED`, decisiv
 factor, and applicable fallback or exclusion. Add test cases only when requested
 or when they resolve a real boundary; do not generate a fixed minimum.
 Describing the deliverable as reusable or production does not rename `Final Prompt`.
+
+When the user asks to build and test, freeze the candidate before execution,
+run only the agreed cases through Evals, and report their individual outcomes
+and evidence limits. Revise from observed failures only within the requested
+scope and budget; give each revised candidate a new identity and rerun its
+affected cases. Do not treat the builder's self-review or a fixture result as
+measured target quality.
 
 For diagnosis/audit, lead with the verdict and actionable findings. Preserve
 priority, problem, evidence, effect, and correction as information, not five

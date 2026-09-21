@@ -321,6 +321,9 @@ ahead of dynamic context with a supported cache boundary. Apply the extension's
 authoring checklist when generating roles, workflows or prompt briefs.
 The [simple modular/vertical-slice profile](simple-modular-agent.md) is the default;
 CQRS, persisted read views and event sourcing are explicit optional extensions.
+When a target selects LangGraph, apply the optional
+[LangGraph integration profile](langgraph-integration.md) without transferring
+policy, context selection or cache authority to graph routing.
 
 Read the [coverage and implementation assessment](implementation-and-completeness.md)
 for all fourteen behavior blocks, remaining target adapters, adoption scenarios

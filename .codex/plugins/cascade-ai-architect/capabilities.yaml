@@ -44,8 +44,8 @@ skills:
     authority: READ_ONLY
     evaluation_cases: [behavior-block-coverage]
   - route: cascade-ai-architect:design-agent-workflow
-    description: Design a typed agent behavior flow with deterministic routes, bounded loops, recovery, budgets, and stop rules.
-    triggers: [an agent or multi-agent behavior flow must be designed]
+    description: Design a typed agent behavior flow with deterministic routes, bounded loops, recovery, budgets, stop rules, and an optional LangGraph binding for a selected stateful architecture.
+    triggers: [an agent or multi-agent behavior flow must be designed, a selected stateful agent workflow needs a LangGraph binding]
     anti_triggers: [a cross-plugin capability plan or project delivery schedule is requested]
     consumes: [agent-blueprint]
     produces: [agent-workflow]

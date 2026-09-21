@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 
 import { createHash } from "node:crypto";
-import { mkdir, readFile, readdir, writeFile } from "node:fs/promises";
-import { dirname, isAbsolute, join, resolve } from "node:path";
+import { mkdir, readFile, readdir, realpath, stat, writeFile } from "node:fs/promises";
+import { dirname, isAbsolute, join, relative, resolve, sep } from "node:path";
 import { fileURLToPath } from "node:url";
 import { DEFAULT_TIMEOUTS_MS, positiveTimeout, requireCompleted, executionSurface, EXECUTION_RUNTIME_SHA256 } from "./execution-adapters.mjs";
 import { resolveSubjectSkill } from "./subject-plugin.mjs";
@@ -53,8 +53,14 @@ async function writeJson(path, value) {
   await writeFile(path, `${JSON.stringify(value, null, 2)}\n`);
 }
 
-function absoluteFromEval(path) {
-  return isAbsolute(path) ? path : join(evalRoot, path);
+async function pathFromCase(path, base, external) {
+  if (!external) return isAbsolute(path) ? path : join(base, path);
+  if (isAbsolute(path)) fail("external case paths must stay relative to the case directory");
+  const root = await realpath(base);
+  const file = await realpath(join(base, path));
+  const within = relative(root, file);
+  if (!within || within === ".." || within.startsWith(`..${sep}`) || isAbsolute(within) || !(await stat(file)).isFile()) fail("external case path escapes its directory or is not a regular file");
+  return file;
 }
 
 function usageRecord(usage) {
@@ -241,7 +247,8 @@ function budgetResult(execution, budget, includeCommands = false) {
 
 const args = parseArgs(process.argv.slice(2));
 const command = args._[0] ?? "list";
-const catalogText = await readFile(join(evalRoot, "task-catalog.json"), "utf8");
+const caseFile = args["case-file"] ? resolve(args["case-file"]) : null;
+const catalogText = await readFile(caseFile ?? join(evalRoot, "task-catalog.json"), "utf8");
 const matrixText = await readFile(join(evalRoot, "model-matrix.json"), "utf8");
 const catalog = JSON.parse(catalogText);
 const matrix = JSON.parse(matrixText);
@@ -252,21 +259,41 @@ if (command === "list") {
 }
 
 if (command !== "run") fail(`unknown command: ${command}`);
+if (caseFile) {
+  const task = catalog.task;
+  if (catalog.schema_version !== 1 || typeof catalog.catalog_id !== "string" || !catalog.catalog_id || !task || typeof task !== "object") fail("--case-file requires a versioned case with catalog_id and task");
+  if (!/^[a-zA-Z0-9][a-zA-Z0-9._-]*$/.test(task.id ?? "") || !Number.isInteger(task.version) || task.version < 1) fail("case task requires a valid id and positive version");
+  if (!Object.hasOwn(DEFAULT_TIMEOUTS_MS, task.tier) || !["deterministic", "semantic"].includes(task.outcome_evaluation)) fail("case task requires a supported tier and outcome_evaluation");
+  for (const field of ["target_task_contract", "input_path", "evaluator_path", "input_placeholder"]) {
+    if (typeof task[field] !== "string" || !task[field].trim()) fail(`case task requires ${field}`);
+  }
+  if (args.task && args.task !== task.id) fail("--task differs from --case-file task id");
+  if (!args["prompt-file"] && (task.builder_mode !== "ONE_SHOT" || task.trajectory_evaluation !== "once-per-prompt" || typeof task.prompt_build_request !== "string" || !task.prompt_build_request.trim())) fail("build-and-test case requires ONE_SHOT builder_mode, once-per-prompt trajectory_evaluation, and prompt_build_request");
+}
+if (args["prompt-file"] && !caseFile) fail("--prompt-file requires --case-file");
+const suppliedCandidate = Boolean(args["prompt-file"]);
 args["prompt-model"] ??= matrix.defaults?.prompt_model ?? "gpt-6-astra";
 args["target-model"] ??= matrix.defaults?.target_model ?? "gpt-6-astra";
 args["reasoning-effort"] ??= matrix.defaults?.reasoning_effort ?? "high";
 const judgeReasoningEffort = args["judge-reasoning-effort"] ?? args["reasoning-effort"];
 if (args["execute-judges"]) args["judge-model"] ??= matrix.defaults?.judge_model ?? "gpt-6-astra";
-for (const required of ["task"]) {
+for (const required of caseFile ? [] : ["task"]) {
   if (!args[required]) fail(`--${required} is required`);
 }
 
-const task = catalog.tasks.find((candidate) => candidate.id === args.task);
+const task = caseFile ? catalog.task : catalog.tasks.find((candidate) => candidate.id === args.task);
 if (!task) fail(`unknown task: ${args.task}`);
-const subjectSkillRoot = await resolveSubjectSkill({ explicitPath: args["subject-skill-root"], pluginName: args["subject-plugin"] ?? "cascade-prompt", skillName: args["subject-skill"] ?? "prompt" });
-const input = await readFile(absoluteFromEval(task.input_path), "utf8");
-const evaluatorText = await readFile(absoluteFromEval(task.evaluator_path), "utf8");
+const subjectSkillRoot = suppliedCandidate ? null : await resolveSubjectSkill({ explicitPath: args["subject-skill-root"], pluginName: args["subject-plugin"] ?? "cascade-prompt", skillName: args["subject-skill"] ?? "prompt" });
+const caseRoot = caseFile ? dirname(caseFile) : evalRoot;
+const input = await readFile(await pathFromCase(task.input_path, caseRoot, Boolean(caseFile)), "utf8");
+const evaluatorText = await readFile(await pathFromCase(task.evaluator_path, caseRoot, Boolean(caseFile)), "utf8");
 const evaluator = JSON.parse(evaluatorText);
+if (caseFile) {
+  if (evaluator.schema_version !== 1 || !["exact_json", "text_contract"].includes(evaluator.mechanical_type)) fail("case evaluator requires schema_version 1 and a supported mechanical_type");
+  if (task.outcome_evaluation === "deterministic" && evaluator.mechanical_type !== "exact_json") fail("deterministic case requires an exact_json evaluator");
+  if (evaluator.mechanical_type === "exact_json" && (!Array.isArray(evaluator.exact_keys) || !evaluator.exact_keys.length || !evaluator.expected || typeof evaluator.expected !== "object" || JSON.stringify(Object.keys(evaluator.expected).sort()) !== JSON.stringify([...evaluator.exact_keys].sort()))) fail("exact_json evaluator requires matching expected and exact_keys");
+  if (evaluator.mechanical_type === "text_contract" && ![...(evaluator.required_headings ?? []), ...(evaluator.required_patterns ?? []), ...(evaluator.forbidden_patterns ?? [])].length && !Number.isInteger(evaluator.max_words)) fail("text_contract evaluator needs at least one mechanical check");
+}
 const budgets = await readJson(join(evalRoot, "token-budgets.json"));
 const outcomeProfileText = await readFile(join(evalRoot, "judges/outcome-v4.json"), "utf8");
 const trajectoryProfileText = await readFile(join(evalRoot, "judges/trajectory-v4.json"), "utf8");
@@ -275,7 +302,7 @@ const trajectoryProfile = JSON.parse(trajectoryProfileText);
 const runId = args["run-id"] ?? `${task.id}-${new Date().toISOString().replace(/[:.]/g, "-")}`;
 if (!/^[a-zA-Z0-9][a-zA-Z0-9._-]*$/.test(runId)) fail("--run-id may contain only letters, numbers, dots, underscores, and hyphens");
 const outputRoot = resolve(args["output-dir"] ?? join(process.cwd(), ".artifacts/prompt-quality"));
-assertDisjointRoots(subjectSkillRoot, outputRoot);
+if (subjectSkillRoot) assertDisjointRoots(subjectSkillRoot, outputRoot);
 const runnerText = await readFile(fileURLToPath(import.meta.url), "utf8");
 const runRoot = join(outputRoot, runId);
 const targetWorkspace = join(runRoot, "target-workspace");
@@ -286,6 +313,11 @@ await mkdir(runRoot); // Evidence identities are write-once.
 await mkdir(targetWorkspace);
 await mkdir(promptCacheRoot, { recursive: true });
 await mkdir(trajectoryCacheRoot, { recursive: true });
+if (caseFile) {
+  await writeFile(join(runRoot, "source-case.json"), catalogText);
+  await writeFile(join(runRoot, "source-input.txt"), input);
+  await writeFile(join(runRoot, "source-evaluator.json"), evaluatorText);
+}
 
 const timeouts = {
   prompt_builder: positiveTimeout(args["builder-timeout-ms"], DEFAULT_TIMEOUTS_MS.prompt_builder, "--builder-timeout-ms"),
@@ -296,27 +328,31 @@ async function executePhase({ phase, model, prompt, timeoutMs, adapter, adapterI
   return requireCompleted(await runModelPhase({ phase, runId, runRoot, model, reasoningEffort: phase.startsWith("judge-") ? judgeReasoningEffort : args["reasoning-effort"], prompt, cwd: targetWorkspace, timeoutMs, adapter, adapterConfig: args["adapter-config"], adapterId }), { phase, runRoot });
 }
 
-const subjectSnapshot = await snapshotSubject(subjectSkillRoot);
-const contractDigest = subjectSnapshot.sha256;
-await writeJson(join(runRoot, "subject-manifest.json"), subjectSnapshot.manifest);
-const builderRequest = `${task.prompt_build_request}\n\n<target_task_contract>\n${task.target_task_contract}\n</target_task_contract>\n\nBuilder mode is ${task.builder_mode}. This contract is authoritative and complete: do not ask clarification questions or invent missing policy. The target model is ${args["target-model"]}; preserve this explicit model when capable and tailor the prompt to the ${task.tier} tier. Return the standard Cascade Prompt READY output. Use the frozen subject SKILL.md and request any required subject files through the host read protocol.`;
+const subjectSnapshot = subjectSkillRoot ? await snapshotSubject(subjectSkillRoot) : null;
+const contractDigest = subjectSnapshot?.sha256 ?? null;
+if (subjectSnapshot) await writeJson(join(runRoot, "subject-manifest.json"), subjectSnapshot.manifest);
+const builderRequest = suppliedCandidate ? null : `${task.prompt_build_request}\n\n<target_task_contract>\n${task.target_task_contract}\n</target_task_contract>\n\nBuilder mode is ${task.builder_mode}. This contract is authoritative and complete: do not ask clarification questions or invent missing policy. The target model is ${args["target-model"]}; preserve this explicit model when capable and tailor the prompt to the ${task.tier} tier. Return the standard Cascade Prompt READY output. Use the frozen subject SKILL.md and request any required subject files through the host read protocol.`;
 const surfaceReceipts = Object.fromEntries(["prompt", "target", "judge"].map(phase => [phase, executionSurface(args[`${phase}-adapter`] ?? "codex-cli", args["adapter-config"], args[`${phase}-adapter-id`])]));
 const surfaceDigest = sha256(JSON.stringify(surfaceReceipts));
 const runnerBundleDigest = await runnerDigest(dirname(fileURLToPath(import.meta.url)));
 const adapterConfigDigest = args["adapter-config"] ? sha256(await readFile(resolve(args["adapter-config"]), "utf8")) : null;
 await writeJson(join(runRoot, "run-contract.json"), { task, execution_runtime_sha256: EXECUTION_RUNTIME_SHA256, subject_sha256: contractDigest, execution_surface_sha256: surfaceDigest, runner_bundle_sha256: runnerBundleDigest, adapter_config_sha256: adapterConfigDigest, args, outcome_profile: outcomeProfile, trajectory_profile: trajectoryProfile });
 const defaultTuple = args["reasoning-effort"] === matrix.defaults.reasoning_effort && args["prompt-model"] === matrix.defaults.prompt_model && args["target-model"] === matrix.defaults.target_model && (!args["execute-judges"] || (args["judge-model"] === matrix.defaults.judge_model && judgeReasoningEffort === matrix.defaults.reasoning_effort));
-const selectedConfiguration = matrix.configurations.find(c => c.id === args["configuration-id"] && c.prompt_model === args["prompt-model"] && c.target_model === args["target-model"] && c.tasks.includes(task.id) && args["reasoning-effort"] === (c.reasoning_effort ?? matrix.defaults.reasoning_effort) && (!args["execute-judges"] || (args["judge-model"] === (c.judge_model ?? matrix.defaults.judge_model) && judgeReasoningEffort === (c.judge_reasoning_effort ?? c.reasoning_effort ?? matrix.defaults.reasoning_effort))) && c.execution_adapter === (args["target-adapter"] ?? "codex-cli"));
+const selectedConfiguration = matrix.configurations.find(c => c.id === args["configuration-id"] && (suppliedCandidate || c.prompt_model === args["prompt-model"]) && c.target_model === args["target-model"] && (caseFile ? c.tier === task.tier : c.tasks.includes(task.id)) && args["reasoning-effort"] === (c.reasoning_effort ?? matrix.defaults.reasoning_effort) && (!args["execute-judges"] || (args["judge-model"] === (c.judge_model ?? matrix.defaults.judge_model) && judgeReasoningEffort === (c.judge_reasoning_effort ?? c.reasoning_effort ?? matrix.defaults.reasoning_effort))) && c.execution_adapter === (args["target-adapter"] ?? "codex-cli"));
 const liveAdapters = ["prompt", "target", "judge"].every(p => !args[`${p}-adapter`] || args[`${p}-adapter`] === "codex-cli");
 if (liveAdapters && !defaultTuple && !selectedConfiguration) fail("nondefault live execution requires a matching --configuration-id from model-matrix.json");
 const configurationId = defaultTuple ? "default-astra-high" : selectedConfiguration?.id ?? "unverified-external-fixture";
-const builderCacheKey = sha256(JSON.stringify({ execution_surface_sha256: surfaceDigest, runner_bundle_sha256: runnerBundleDigest, adapter_config_sha256: adapterConfigDigest, execution_policy: "tool-free-staged-subject-v1", reasoning_effort: args["reasoning-effort"], adapter: args["prompt-adapter"] ?? "codex-cli", adapter_id: args["prompt-adapter-id"] ?? null, task_id: task.id, task_version: task.version, builder_mode: task.builder_mode, target_task_contract: task.target_task_contract, builder_request: builderRequest, prompt_model: args["prompt-model"], target_model: args["target-model"], tier: task.tier, runtime_contract_digest: contractDigest }));
-const builderCachePath = join(promptCacheRoot, `${builderCacheKey}.json`);
+const builderCacheKey = suppliedCandidate ? null : sha256(JSON.stringify({ execution_surface_sha256: surfaceDigest, runner_bundle_sha256: runnerBundleDigest, adapter_config_sha256: adapterConfigDigest, execution_policy: "tool-free-staged-subject-v1", reasoning_effort: args["reasoning-effort"], adapter: args["prompt-adapter"] ?? "codex-cli", adapter_id: args["prompt-adapter-id"] ?? null, task_id: task.id, task_version: task.version, builder_mode: task.builder_mode, target_task_contract: task.target_task_contract, builder_request: builderRequest, prompt_model: args["prompt-model"], target_model: args["target-model"], tier: task.tier, runtime_contract_digest: contractDigest }));
+const builderCachePath = builderCacheKey ? join(promptCacheRoot, `${builderCacheKey}.json`) : null;
 
 let builderRun = null;
 let builderResponse;
 let builderExecution;
-if (args["reuse-run-root"]) {
+if (suppliedCandidate) {
+  if (args["reuse-run-root"] || args["prompt-response-file"]) fail("--prompt-file cannot be combined with builder replay or response reuse");
+  builderResponse = null;
+  builderExecution = phaseExecution("NOT_APPLICABLE_SUPPLIED_CANDIDATE", null, { source: resolve(args["prompt-file"]) });
+} else if (args["reuse-run-root"]) {
   if (args["prompt-response-file"]) fail("cannot combine verified replay with an explicit response file");
   builderRun = await replaySubject({sourceRoot:args["reuse-run-root"],phase:"prompt-builder",request:builderRequest,currentCase:task,snapshot:subjectSnapshot,model:args["prompt-model"],reasoningEffort:args["reasoning-effort"],runRoot});
   builderResponse=builderRun.final_text;
@@ -357,16 +393,16 @@ if (args["reuse-run-root"]) {
   }
 }
 
-const generatedPrompt = tryExtractFinalPrompt(builderResponse);
-if (/Interview Status:\s*(?:NEEDS_INPUT|BLOCKED)/i.test(builderResponse.replace(/```[^\n]*\r?\n[\s\S]*?\r?\n```/g, ""))) {
+const generatedPrompt = suppliedCandidate ? (await readFile(resolve(args["prompt-file"]), "utf8")).trim() : tryExtractFinalPrompt(builderResponse);
+if (!suppliedCandidate && /Interview Status:\s*(?:NEEDS_INPUT|BLOCKED)/i.test(builderResponse.replace(/```[^\n]*\r?\n[\s\S]*?\r?\n```/g, ""))) {
   fail(`one-shot builder returned an unexpected interview state for ${task.id}`);
 }
-if (!generatedPrompt) fail("could not extract a fenced Final Prompt from the builder response");
+if (!generatedPrompt) fail(suppliedCandidate ? "--prompt-file must contain nonempty prompt text" : "could not extract a fenced Final Prompt from the builder response");
 if (!generatedPrompt.includes(task.input_placeholder)) fail(`generated prompt is missing required placeholder ${task.input_placeholder}`);
 const renderedPrompt = generatedPrompt.split(task.input_placeholder).join(input.trim());
 if (renderedPrompt.includes(task.input_placeholder)) fail("input placeholder replacement was incomplete");
 
-await writeFile(join(runRoot, "prompt-builder-response.md"), builderResponse);
+if (builderResponse !== null) await writeFile(join(runRoot, "prompt-builder-response.md"), builderResponse);
 await writeFile(join(runRoot, "generated-prompt.txt"), generatedPrompt);
 const targetRun = args["reuse-run-root"] ? await replayTarget({sourceRoot:args["reuse-run-root"],currentCase:task,snapshot:subjectSnapshot,model:args["target-model"],reasoningEffort:args["reasoning-effort"],prompt:renderedPrompt,runRoot}) : await executePhase({ phase: "target", model: args["target-model"], prompt: renderedPrompt, timeoutMs: timeouts.target, adapter: args["target-adapter"] ?? "codex-cli", adapterId: args["target-adapter-id"] });
 const targetExecution = phaseExecution(targetRun.replay ? "REUSED_VERIFIED_RUN" : "EXECUTED", targetRun, {replay:targetRun.replay ?? null});
@@ -375,17 +411,17 @@ await writeFile(join(runRoot, "target.stderr.log"), targetRun.stderr);
 await writeFile(join(runRoot, "target-output.md"), targetRun.final_text);
 
 const mechanical = mechanicalGrade(targetRun.final_text, evaluator);
-mechanical.checks.push(...subjectReadChecks(task, builderExecution, "builder"));
+if (!suppliedCandidate) mechanical.checks.push(...subjectReadChecks(task, builderExecution, "builder"));
 mechanical.eligible = mechanical.checks.every(check => check.passed);
 await writeJson(join(runRoot, "mechanical-grade.json"), mechanical);
 
 let outcomeExecution = phaseExecution("NOT_RUN");
-let trajectoryExecution = phaseExecution("NOT_RUN");
+let trajectoryExecution = phaseExecution(suppliedCandidate ? "NOT_APPLICABLE_SUPPLIED_CANDIDATE" : "NOT_RUN");
 let judges = { status: "NOT_RUN", outcome_mode: task.outcome_evaluation, outcome: null, trajectory: null };
 
 if (args["execute-judges"] && !mechanical.eligible) {
   outcomeExecution = phaseExecution("SKIPPED_MECHANICAL_INELIGIBLE");
-  trajectoryExecution = phaseExecution("SKIPPED_MECHANICAL_INELIGIBLE");
+  trajectoryExecution = phaseExecution(suppliedCandidate ? "NOT_APPLICABLE_SUPPLIED_CANDIDATE" : "SKIPPED_MECHANICAL_INELIGIBLE");
   judges = { status: "SKIPPED_MECHANICAL_INELIGIBLE", outcome_mode: task.outcome_evaluation, outcome: null, trajectory: null };
 } else if (args["execute-judges"]) {
   let outcomeResult;
@@ -402,43 +438,48 @@ if (args["execute-judges"] && !mechanical.eligible) {
     await writeFile(join(runRoot, "judge-outcome.stderr.log"), outcomeRun.stderr);
   }
 
-  const builderTask = { id: task.id, version: task.version, builder_mode: task.builder_mode, tier: task.tier, task_family: task.task_family, prompt_build_request: task.prompt_build_request, target_task_contract: task.target_task_contract };
-  const trajectoryEvidence = ({ task: builderTask, target_model: args["target-model"], target_tier: task.tier, builder_response: builderResponse, generated_prompt: generatedPrompt, rule_contracts: interviewEvidence({ judge_context_paths: task.judge_context_paths ?? ["SKILL.md", `runtime/tier-${task.tier}.md`] }, null, null, subjectSnapshot).rule_contracts });
-  const trajectoryCacheKey = sha256(JSON.stringify({ execution_surface_sha256: surfaceDigest, runner_bundle_sha256: runnerBundleDigest, execution_runtime_sha256: EXECUTION_RUNTIME_SHA256, subject_sha256: contractDigest, task_contract_sha256: sha256(task.target_task_contract), adapter: args["judge-adapter"] ?? "codex-cli", adapter_id: args["judge-adapter-id"] ?? null, adapter_config_sha256: adapterConfigDigest, reasoning_effort: judgeReasoningEffort, isolation: "tool-free-staged-subject-v1", task_id: task.id, task_version: task.version, target_model: args["target-model"], target_tier: task.tier, judge_model: args["judge-model"], profile_sha256: sha256(trajectoryProfileText), builder_response_sha256: sha256(builderResponse), generated_prompt_sha256: sha256(generatedPrompt) }));
-  const trajectoryCachePath = join(trajectoryCacheRoot, `${trajectoryCacheKey}.json`);
-  const cachedTrajectory = args["no-trajectory-cache"] ? null : await readTrajectoryCache(trajectoryCachePath, trajectoryCacheKey, trajectoryProfile, task.id, trajectoryEvidence);
-  let trajectoryResult;
-  if (cachedTrajectory) {
-    trajectoryResult = cachedTrajectory.result;
-    trajectoryExecution = phaseExecution("REUSED_PROMPT_CACHE", null, { cache_key: trajectoryCacheKey, source_run_id: cachedTrajectory.source_run_id });
-  } else {
-    const trajectoryRun = await executePhase({ phase: "judge-trajectory", model: args["judge-model"], prompt: judgePrompt({ profile: trajectoryProfile, task, runId, evidence: trajectoryEvidence }), timeoutMs: timeouts.judge, adapter: args["judge-adapter"] ?? "codex-cli", adapterId: args["judge-adapter-id"] });
-    trajectoryResult = parseJudgeResponse(trajectoryRun.final_text, trajectoryProfile, task.id, runId, trajectoryEvidence);
-    trajectoryExecution = phaseExecution("EXECUTED", trajectoryRun, { cache_key: trajectoryCacheKey });
-    await writeFile(join(runRoot, "judge-trajectory.jsonl"), trajectoryRun.stdout);
-    await writeFile(join(runRoot, "judge-trajectory.stderr.log"), trajectoryRun.stderr);
-    if (trajectoryResult.valid) {
-      await writeJson(trajectoryCachePath, {
-        schema_version: 1,
-        cache_key: trajectoryCacheKey,
-        profile_id: trajectoryProfile.profile_id,
-        source_run_id: runId,
-        created_at: new Date().toISOString(),
-        result_sha256: sha256(JSON.stringify(trajectoryResult)),
-        result: trajectoryResult,
-        evidence_digests: { builder_response_sha256: sha256(builderResponse), generated_prompt_sha256: sha256(generatedPrompt) },
-        excludes: ["target input", "target output", "evaluator", "gold answer", "outcome judgment"]
-      });
+  let trajectoryResult = null;
+  if (!suppliedCandidate) {
+    const builderTask = { id: task.id, version: task.version, builder_mode: task.builder_mode, tier: task.tier, task_family: task.task_family, prompt_build_request: task.prompt_build_request, target_task_contract: task.target_task_contract };
+    const trajectoryEvidence = ({ task: builderTask, target_model: args["target-model"], target_tier: task.tier, builder_response: builderResponse, generated_prompt: generatedPrompt, rule_contracts: interviewEvidence({ judge_context_paths: task.judge_context_paths ?? ["SKILL.md", `runtime/tier-${task.tier}.md`] }, null, null, subjectSnapshot).rule_contracts });
+    const trajectoryCacheKey = sha256(JSON.stringify({ execution_surface_sha256: surfaceDigest, runner_bundle_sha256: runnerBundleDigest, execution_runtime_sha256: EXECUTION_RUNTIME_SHA256, subject_sha256: contractDigest, task_contract_sha256: sha256(task.target_task_contract), adapter: args["judge-adapter"] ?? "codex-cli", adapter_id: args["judge-adapter-id"] ?? null, adapter_config_sha256: adapterConfigDigest, reasoning_effort: judgeReasoningEffort, isolation: "tool-free-staged-subject-v1", task_id: task.id, task_version: task.version, target_model: args["target-model"], target_tier: task.tier, judge_model: args["judge-model"], profile_sha256: sha256(trajectoryProfileText), builder_response_sha256: sha256(builderResponse), generated_prompt_sha256: sha256(generatedPrompt) }));
+    const trajectoryCachePath = join(trajectoryCacheRoot, `${trajectoryCacheKey}.json`);
+    const cachedTrajectory = args["no-trajectory-cache"] ? null : await readTrajectoryCache(trajectoryCachePath, trajectoryCacheKey, trajectoryProfile, task.id, trajectoryEvidence);
+    if (cachedTrajectory) {
+      trajectoryResult = cachedTrajectory.result;
+      trajectoryExecution = phaseExecution("REUSED_PROMPT_CACHE", null, { cache_key: trajectoryCacheKey, source_run_id: cachedTrajectory.source_run_id });
+    } else {
+      const trajectoryRun = await executePhase({ phase: "judge-trajectory", model: args["judge-model"], prompt: judgePrompt({ profile: trajectoryProfile, task, runId, evidence: trajectoryEvidence }), timeoutMs: timeouts.judge, adapter: args["judge-adapter"] ?? "codex-cli", adapterId: args["judge-adapter-id"] });
+      trajectoryResult = parseJudgeResponse(trajectoryRun.final_text, trajectoryProfile, task.id, runId, trajectoryEvidence);
+      trajectoryExecution = phaseExecution("EXECUTED", trajectoryRun, { cache_key: trajectoryCacheKey });
+      await writeFile(join(runRoot, "judge-trajectory.jsonl"), trajectoryRun.stdout);
+      await writeFile(join(runRoot, "judge-trajectory.stderr.log"), trajectoryRun.stderr);
+      if (trajectoryResult.valid) {
+        await writeJson(trajectoryCachePath, {
+          schema_version: 1,
+          cache_key: trajectoryCacheKey,
+          profile_id: trajectoryProfile.profile_id,
+          source_run_id: runId,
+          created_at: new Date().toISOString(),
+          result_sha256: sha256(JSON.stringify(trajectoryResult)),
+          result: trajectoryResult,
+          evidence_digests: { builder_response_sha256: sha256(builderResponse), generated_prompt_sha256: sha256(generatedPrompt) },
+          excludes: ["target input", "target output", "evaluator", "gold answer", "outcome judgment"]
+        });
+      }
     }
+  } else {
+    trajectoryExecution = phaseExecution("NOT_APPLICABLE_SUPPLIED_CANDIDATE");
   }
 
+  const applicableResults = suppliedCandidate ? [outcomeResult] : [outcomeResult, trajectoryResult];
   judges = {
-    status: !outcomeResult.valid || !trajectoryResult.valid ? "INVALID" : [outcomeResult, trajectoryResult].some(r => r.harness_verdict === "BLOCKED") ? "BLOCKED" : "JUDGED",
+    status: applicableResults.some(r => !r.valid) ? "INVALID" : applicableResults.some(r => r.harness_verdict === "BLOCKED") ? "BLOCKED" : "JUDGED",
     outcome_mode: task.outcome_evaluation,
     judge_model: args["judge-model"],
     outcome: outcomeResult,
     trajectory: trajectoryResult,
-    conservative_effectiveness_score: outcomeResult.valid && trajectoryResult.valid && Number.isFinite(outcomeResult.score) && Number.isFinite(trajectoryResult.score) ? Math.min(outcomeResult.score, trajectoryResult.score) : null
+    conservative_effectiveness_score: applicableResults.every(r => r.valid && Number.isFinite(r.score)) ? Math.min(...applicableResults.map(r => r.score)) : null
   };
   await writeJson(join(runRoot, "judge-results.json"), judges);
 }
@@ -455,19 +496,19 @@ const budgetChecks = {
 const measuredBudgetStatuses = Object.values(budgetChecks).filter((value) => typeof value === "object" && value?.status && value.status !== "NOT_MEASURED").map((value) => value.status);
 budgetChecks.overall = measuredBudgetStatuses.includes("EXCEEDED") ? "EXCEEDED" : measuredBudgetStatuses.length ? "PASS" : "NOT_MEASURED";
 
-const accepted = mechanical.eligible && judges.status === "JUDGED" && judges.outcome.harness_verdict === "PASS" && judges.trajectory.harness_verdict === "PASS";
+const accepted = mechanical.eligible && judges.status === "JUDGED" && judges.outcome.harness_verdict === "PASS" && (suppliedCandidate || judges.trajectory.harness_verdict === "PASS");
 const semanticAcceptance = !mechanical.eligible ? "REJECTED" : ["NOT_RUN", "INVALID", "BLOCKED"].includes(judges.status) ? judges.status : accepted ? "ACCEPTED" : "REJECTED";
 const evidenceGrade = [args["prompt-adapter"], args["target-adapter"], args["judge-adapter"]].every(a => !a || a === "codex-cli") && !args["prompt-response-file"] ? "LIVE_CODEX_TOOL_FREE" : "UNVERIFIED_EXTERNAL_OR_FIXTURE";
 const acceptance = ["ACCEPTED", "REJECTED"].includes(semanticAcceptance) && evidenceGrade !== "LIVE_CODEX_TOOL_FREE" ? "UNVERIFIED" : semanticAcceptance;
-const pluginManifestText = await readFile(join(dirname(dirname(subjectSkillRoot)), ".codex-plugin/plugin.json"), "utf8");
+const pluginManifestText = subjectSkillRoot ? await readFile(join(dirname(dirname(subjectSkillRoot)), ".codex-plugin/plugin.json"), "utf8") : null;
 const summary = {
   schema_version: 2,
   run_id: runId,
-  task: { id: task.id, version: task.version, builder_mode: task.builder_mode, tier: task.tier, catalog_id: catalog.catalog_id, outcome_evaluation: task.outcome_evaluation, trajectory_evaluation: task.trajectory_evaluation },
+  task: { id: task.id, version: task.version, builder_mode: suppliedCandidate ? "SUPPLIED_CANDIDATE" : task.builder_mode, tier: task.tier, catalog_id: catalog.catalog_id, outcome_evaluation: task.outcome_evaluation, trajectory_evaluation: suppliedCandidate ? "NOT_APPLICABLE" : task.trajectory_evaluation },
   configuration: {
     configuration_id: configurationId, execution_surface: surfaceReceipts,
-    subject_plugin: args["subject-plugin"] ?? "cascade-prompt", subject_skill: args["subject-skill"] ?? "prompt", subject_skill_root: subjectSkillRoot,
-    prompt_model: args["prompt-model"], target_model: args["target-model"], judge_model: args["judge-model"] ?? null, reasoning_effort: args["reasoning-effort"],
+    subject_plugin: suppliedCandidate ? null : args["subject-plugin"] ?? "cascade-prompt", subject_skill: suppliedCandidate ? null : args["subject-skill"] ?? "prompt", subject_skill_root: subjectSkillRoot,
+    prompt_model: suppliedCandidate ? null : args["prompt-model"], target_model: args["target-model"], judge_model: args["judge-model"] ?? null, reasoning_effort: args["reasoning-effort"],
     judge_reasoning_effort: judgeReasoningEffort,
     adapters: { prompt: args["prompt-adapter"] ?? "codex-cli", target: args["target-adapter"] ?? "codex-cli", judge: args["judge-adapter"] ?? "codex-cli" },
     adapter_ids: { prompt: args["prompt-adapter-id"] ?? null, target: args["target-adapter-id"] ?? null, judge: args["judge-adapter-id"] ?? null },
@@ -476,7 +517,7 @@ const summary = {
   digests: {
     input_sha256: sha256(input), evaluator_sha256: sha256(evaluatorText), target_task_contract_sha256: sha256(task.target_task_contract), task_catalog_sha256: sha256(catalogText), model_matrix_sha256: sha256(matrixText),
     execution_surface_sha256: surfaceDigest, runner_bundle_sha256: runnerBundleDigest, adapter_config_sha256: adapterConfigDigest, runtime_contract_sha256: contractDigest, runner_sha256: sha256(runnerText), outcome_profile_sha256: sha256(outcomeProfileText), trajectory_profile_sha256: sha256(trajectoryProfileText),
-    plugin_manifest_sha256: sha256(pluginManifestText), prompt_builder_response_sha256: sha256(builderResponse), generated_prompt_sha256: sha256(generatedPrompt), target_output_sha256: sha256(targetRun.final_text)
+    plugin_manifest_sha256: pluginManifestText === null ? null : sha256(pluginManifestText), prompt_builder_response_sha256: builderResponse === null ? null : sha256(builderResponse), generated_prompt_sha256: sha256(generatedPrompt), target_output_sha256: sha256(targetRun.final_text)
   },
   cache_policy: { builder_cache_key: builderCacheKey, target_inputs_cached: false, evaluators_cached: false, gold_answers_cached: false },
   execution: executions,

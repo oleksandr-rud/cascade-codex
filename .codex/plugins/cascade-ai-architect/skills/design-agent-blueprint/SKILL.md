@@ -1,6 +1,6 @@
 ---
 name: design-agent-blueprint
-description: Turn a grounded capability map into a complete AI agent or agentic-system behavior blueprint. Use when selecting a single-agent versus multi-agent topology, defining per-agent missions and ownership, or specifying loops, state, context, memory, tools, permissions, skills, prompts, handoffs, recovery, observability, evaluation, rollout, and rollback before implementation.
+description: Turn a grounded capability map into a complete AI agent or agentic-system behavior blueprint. Use when selecting a single-agent versus multi-agent topology, defining per-agent missions and ownership, or specifying loops, state, context, memory, tools, permissions, skills, prompts, handoffs, recovery, observability, evaluation, rollout, and rollback before implementation, including an optional LangGraph runtime binding for a selected stateful architecture.
 ---
 
 # Design Agent Blueprint

@@ -77,6 +77,55 @@ By default the runners resolve the enabled `cascade-prompt` plugin through
 `codex plugin list --json`. Use `--subject-skill-root /absolute/path` only for
 an intentional source-checkout test.
 
+To test a supplied reusable prompt against a caller-owned case, put these
+files together. Paths in `case.json` must resolve to regular files inside its
+directory. The input is substituted only at the named prompt
+placeholder, while the evaluator stays outside the target request.
+
+```json
+{
+  "schema_version": 1,
+  "catalog_id": "my-prompt-cases-v1",
+  "task": {
+    "id": "invoice-example-v1",
+    "version": 1,
+    "tier": "efficient-structured",
+    "outcome_evaluation": "deterministic",
+    "target_task_contract": "Return the exact three-key invoice object from the supplied OCR.",
+    "input_path": "input.txt",
+    "evaluator_path": "evaluator.json",
+    "input_placeholder": "{{OCR_TEXT}}"
+  }
+}
+```
+
+For `exact_json`, `evaluator.json` has `schema_version: 1`,
+`mechanical_type: "exact_json"`, matching `exact_keys` and `expected` fields.
+For a prose task use `mechanical_type: "text_contract"` with at least one
+`required_headings`, `required_patterns`, `forbidden_patterns`, or `max_words`
+check, and set `outcome_evaluation` to `semantic`. Semantic quality still
+requires an independent outcome judge. A caller-supplied case is the oracle
+chosen by that caller; this runner does not certify that the oracle is correct.
+
+```bash
+node scripts/run-quality-eval.mjs run \
+  --case-file /absolute/path/to/case.json \
+  --prompt-file /absolute/path/to/prompt.txt \
+  --execute-judges
+```
+
+The prompt file contains raw prompt text and the named input placeholder.
+The runner never invokes a prompt builder for this command. It freezes the
+case, input, evaluator, and prompt under a single-use run directory and binds
+their digests in `run-summary.json`. Its trajectory judge is `NOT_APPLICABLE`
+because no generator ran. To build and test through Cascade Prompt instead,
+add `builder_mode: "ONE_SHOT"`, `trajectory_evaluation: "once-per-prompt"`,
+and `prompt_build_request` to the task, then omit `--prompt-file`; that mode
+resolves the installed Prompt skill and judges both outcome and trajectory.
+Each command runs one case. Execute a versioned case set as separate runs and
+keep every result, including blocked or failed cases. Local fixture adapters
+remain `UNVERIFIED`; human calibration remains `NOT_RUN` unless performed.
+
 The runner caches builder responses automatically under the output root. To
 override that cache with an existing Cascade Prompt response:
 

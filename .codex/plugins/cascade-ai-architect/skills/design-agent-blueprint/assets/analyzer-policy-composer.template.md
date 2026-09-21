@@ -18,6 +18,7 @@ do not treat example fields as a registered runtime schema or deployment.
 - Voice: `<disabled | add Voice Composer after canonical-answer validation>`.
 - Research: `<disabled | optional policy-admitted web/KB requests>`.
 - Deployment and model reuse: `<logical boundaries do not require services>`.
+- Graph runtime: `<existing target loop | optional LangGraph binding>`; if LangGraph, use [its integration profile](../references/langgraph-integration.md) and name checkpointer, thread authority and replay guards.
 - Why selected, rejected alternatives, and reassessment evidence:
 - Final semantic owner: Main Composer.
 - State, policy, context, dispatch, and memory commit owner: `<runtime module>`.

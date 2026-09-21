@@ -20,3 +20,10 @@ dependencies; fixture callbacks are not target permission checks.
 Map the simple profile to existing vertical use-case slices and current-state
 storage. Do not scaffold event journals, CQRS models, emitters, publishers or
 handler/processor/service chains unless a selected requirement needs them.
+If the accepted packet selects LangGraph, consume the AI Architect
+[LangGraph integration profile](../../../../cascade-ai-architect/skills/design-agent-blueprint/references/langgraph-integration.md).
+Bind its graph callbacks to target-owned policy/state transactions, the
+admitted issuer/compiler, model adapter, canonical release and a durable
+checkpointer. Verify replay and STOP/revocation paths with target authorization
+and persistence; the packaged graph binding and fixture callbacks are candidate
+reference code, not an activated service or provider-cache implementation.

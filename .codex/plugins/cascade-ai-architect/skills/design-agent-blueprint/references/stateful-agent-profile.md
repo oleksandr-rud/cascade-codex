@@ -60,3 +60,7 @@ for the default representation and wiring: trusted YAML/JSON profiles, admitted
 role/task slices, compact object/schema/value blocks and scoped local block reuse.
 Bind the supplied issuer to current host admission and token accounting. Use its
 four-role fixtures as examples; raw formatter success is not admission evidence.
+If the target explicitly selects LangGraph, also use the
+[LangGraph integration profile](langgraph-integration.md) to bind graph nodes to
+the same policy, context and cache ownership. LangGraph is an optional execution
+adapter, not a prerequisite for this architecture.

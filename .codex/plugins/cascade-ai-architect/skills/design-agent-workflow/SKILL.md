@@ -1,6 +1,6 @@
 ---
 name: design-agent-workflow
-description: Design or audit the executable behavior flow for an AI agent or agentic system, including act-observe-update loops, explicit state, deterministic routing, typed handoffs, recovery, budgets, and stop rules. Use when an agent blueprint needs a workflow contract, when multi-agent orchestration or delegation must be made reviewable, or when an existing agent loop is incomplete, unsafe, or prone to cycling.
+description: Design or audit the executable behavior flow for an AI agent or agentic system, including act-observe-update loops, explicit state, deterministic routing, typed handoffs, recovery, budgets, and stop rules. Use when an agent blueprint needs a workflow contract, when a selected stateful agent needs a LangGraph binding, when multi-agent orchestration or delegation must be made reviewable, or when an existing agent loop is incomplete, unsafe, or prone to cycling.
 ---
 
 # Design Agent Workflow
