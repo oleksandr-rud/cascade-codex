@@ -52,8 +52,15 @@ claims until their current producer and authority are established.
 
 ## Defect classes
 
+Inspect text-to-decision paths for regex/keyword/phrase-based semantic inference,
+including advisory classifiers, prefilters and fallbacks. LLM interpretation
+must emit defined enums/claims; code validates and consumes them. A typed wrapper
+around lexical inference still violates the boundary. Report semantic shortcuts
+separately from permitted exact format parsing and structural validation.
+
 - `AUTHORITY_COLLISION`: more than one source claims the same runtime policy.
-- `ROUTING_GAP`: a valid request has no deterministic skill or role route.
+- `ROUTING_GAP`: a valid structured request has no validated skill or role route,
+  or a route is inferred from free-text regexes/keywords instead of semantic interpretation.
 - `DEPENDENCY_DRIFT`: installed identity, source, version, or digest disagrees.
 - `FAIL_OPEN`: unavailable authority or evidence silently falls back.
 - `MODEL_POLICY_DRIFT`: configured model conflicts with current declared use.

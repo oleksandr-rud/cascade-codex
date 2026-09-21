@@ -1,7 +1,7 @@
 schema_version: 1
 plugin:
   name: cascade-coordinator
-  version: 0.2.2+codex.20260910182122
+  version: 0.2.3+codex.20260910200733
 model_policy:
   model: gpt-6-astra
   planning_reasoning_effort: high

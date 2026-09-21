@@ -41,6 +41,22 @@ Respect ignore rules; add `--no-ignore` only for an explicitly needed ignored
 source, never for a whole cache or artifact inventory. Prefer exact file reads
 when the path is known. If ripgrep is unavailable, use the available equivalent.
 
+## Semantic Interpretation Boundary
+
+For all agent, prompt/context, implementation, review and evaluation work, use
+LLMs to interpret free text into defined enums, claims or proposals. Code
+validates and consumes those fields. Do not use regexes, keyword/phrase tables
+or lexical scoring to infer meaning, intent, relevance, approval, routing or
+semantic quality, including preprocessing and fallback paths.
+See [the shared authoring contract](.codex/plugins/cascade-ai-architect/skills/design-agent-blueprint/references/semantic-decision-boundary.md).
+Exact structured-format/command parsing, field syntax validation and file search
+remain mechanical operations. Model output never grants runtime authority.
+
+The existing lexical admission implementation is a known migration gap.
+Its classifications may be inspected as legacy diagnostics; do not treat them
+as semantic decisions or use them in place of current LLM interpretation and
+host-bound structured validation. Guidance adoption does not migrate that code.
+
 ## Plugin-First Capability Routing
 
 Plugins own portable methods, schemas, templates, and generic evaluation
@@ -54,6 +70,7 @@ durable paths, target commands, campaign state, and acceptance.
 | Software, plugin, and workflow architecture, patterns, and independent review | `cascade-software-architect:<skill>` | Software Engineer for software design; Code Reviewer for independent review; Agent Engineer for host integration |
 | AI-agent topology, behavior, roles, skills, prompt briefs, persona requirements, and evaluation briefs | `cascade-ai-architect:<skill>` | Requesting role; Agent Engineer for host integration |
 | Harness audit, maintenance, and asset integration | `cascade-coding-agent:<skill>` | Agent Engineer |
+| Git pull, upstream synchronization, merge/rebase conflicts and preparing changes for push | `cascade-coding-agent:pull-and-integrate`; `cascade-software-architect:review-change` for applicable review | Active implementation owner; host executes authorized Git effects |
 | Market research, selection, differentiation and experiments | `cascade-market:<skill>` | Orchestrator; Product Designer for scoped design research |
 | Channel selection, growth strategy, cohort economics and product feedback | `cascade-market:plan-growth` | Orchestrator |
 | Positioning, messaging, naming, tone, proof, and trust language | `cascade-market:brand-positioning` | Orchestrator; Product Designer within the design brief |
@@ -101,6 +118,19 @@ claim-bound selected set and explicit rejections. Use
 than one node, a dependency, an artifact handoff, parallel branches, or a join.
 Both are non-dispatching controllers; the active host role retains repository
 access, execution, persistence, and acceptance.
+
+For a requested or already authorized Git pull, upstream integration, or conflict
+resolution, load `cascade-coding-agent:pull-and-integrate` before mutation, even
+when Git predicts a clean merge. Interpret intent semantically, including
+requests in other languages; do not use lexical trigger tables. This exact route
+applies to target product repositories as well as the harness. Bind the user's
+or repository's branch authority separately from commit chronology and report
+all material adaptations after execution. Read-only comparisons and requests to
+author the skill do not authorize running an integration. Push preparation also
+selects this route. Unless an explicit base or repository policy overrides it,
+integrate `develop` when present, otherwise the remote's verified primary branch.
+Every run prepares and reports push readiness, including an already-current
+base, while keeping the push destination separate and honoring push authority.
 The Orchestrator's [Coordinator host bridge](.codex/agents/orchestrator/AGENT.md#coordinator-host-bridge)
 owns serialized input preparation and deterministic selection/plan validation;
 prose summaries of admission or selected routes do not satisfy those inputs.
@@ -178,9 +208,11 @@ No retired 5.5 model belongs in active routing.
 
 Run the cheap task-admission microkernel for every request. Its Task Envelope is
 a proportional routing hint: it does not grant permission, create work,
-dispatch an agent, or establish a pass. Correct an obvious lexical
-misclassification in-process from the direct request and current repository
-evidence.
+dispatch an agent, or establish a pass. Existing lexical classifications are
+nonconforming legacy diagnostics, not an acceptable semantic decision path.
+Resolve meaning through LLM interpretation and structured host validation;
+an unavailable structured intake path is a gap, never permission to use lexical
+inference. Keep actual runtime migration separately scoped and evidenced.
 
 Normal admission loads only the versioned policy, control catalog, and Task
 Envelope schema. The 981-case admission corpus is source-checkout regression

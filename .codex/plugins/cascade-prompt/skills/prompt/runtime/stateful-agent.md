@@ -3,6 +3,20 @@
 Load only for an explicitly requested or already adopted Analyzer–Policy Engine–Composer
 architecture. Require its supplied, resolvable contracts; this pack does not choose a topology.
 
+Analyzer interprets free text into defined claims/enums with uncertainty. Code
+validates and admits those fields; no regex/keyword semantic prefilter, shortcut
+or fallback is permitted. Composer's prose is not parsed for approval, completion
+or routing decisions; use its declared structured proposals and runtime receipts.
+
+When the brief selects graph workflow authoring, bind the step prompt and its
+context slice together: Analyzer has proposal-only output; Composer uses admitted
+findings and required unresolved work. Runtime owns slice issuance, joins,
+routing, commits and release. Research branch results remain evidence until the
+existing analysis/admission path accepts them. Missing or stale context returns
+through the supplied gap contract, never direct retrieval by Composer or renderer.
+The optional graph representation preserves the synchronous baseline and does
+not prescribe extra model calls, services, or a graph framework.
+
 For a supplied Analyzer–Policy Engine–Composer architecture brief, consume
 its frozen `event-projections-and-context-format` contract and authoring rules.
 Preserve checkpoint/attempt bindings in the private runtime manifest, proposal-only multi-policy JSON output

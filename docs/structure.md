@@ -334,8 +334,11 @@ overwrite target files.
 
 ## Harness Evaluation Paths
 
-- Source cases: `harness-evals/skill-cases.yaml`
-- Cross-skill collisions: `harness-evals/interactions.yaml`
+- Risk-based core cases: `harness-evals/core-cases.yaml`
+- Fixed role baselines: `harness-evals/agent-outcomes.yaml`
+- Task draft schema: `harness-evals/task-suite.schema.json`
+- Frozen temporary suites: `.artifacts/harness-evals/suites/<task>-<digest>.json`
+- Temporary runs: `.artifacts/harness-evals/suites/<task>-<digest>/runs/<run-id>/`
 - Generated catalog: `harness-evals/scenarios.generated.json`
 - Target response schema: `harness-evals/response.schema.json`
 - Judgment schema: `harness-evals/judge-response.schema.json`

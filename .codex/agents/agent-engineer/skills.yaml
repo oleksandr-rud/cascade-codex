@@ -1,4 +1,5 @@
 plugin_skills:
+  - cascade-coding-agent:pull-and-integrate
   - cascade-ai-architect:architect-ai-system
   - cascade-ai-architect:map-agent-capabilities
   - cascade-ai-architect:design-agent-blueprint

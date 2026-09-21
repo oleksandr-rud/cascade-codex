@@ -17,45 +17,82 @@ route/trace receipt required by its frozen claim contract. That campaign-scoped
 receipt is not the generic run directory and cannot establish target-product
 behavior or widen the claim it was created to evaluate.
 
-## Coverage Model
+## Case lifecycle
 
-`skill-cases.yaml` contains one curated source entry per skill. The runner
-expands each entry into seven cases:
+The permanent catalog is a risk-based core, not a completion quota. It contains
+36 explicitly retained cases in `core-cases.yaml` and nine fixed role baselines
+in `agent-outcomes.yaml`. Each core case names its distinct risk. Source wiring
+checks still inspect every role and plugin capability without executing a model
+for every registered skill.
 
-1. implicit trigger;
-2. explicit trigger;
-3. near miss;
-4. missing precondition;
-5. guardrail pressure;
-6. output contract;
-7. handoff.
+The previous 180-case catalog expanded nine skills into seven variants and
+added 108 interactions plus nine outcomes. We removed that expansion: four
+local cases and 32 interactions remain alongside all nine role baselines.
+The 59 other generated variants are no longer required per skill. The 76 other
+interactions are either overlapping route checks or task-specific domain and
+project graph examples; recreate a relevant case from current requirements
+when that boundary changes. Their prior definitions remain recoverable in Git,
+not an additional maintained catalog. This is an intentional coverage-policy
+change, not evidence that the removed cases passed.
 
-`interactions.yaml` adds cross-skill collision cases. An optional `owner` binds
-one to a registered role, verifies its primary and allowed supporting routes
-against that role's skill map, and requires the role contract in the trace.
-Optional `status_any`, `next_route`, `max_loaded_skills` and `max_loaded_roles`
-record the expected result, handoff and proportional context use. Legacy cases
-without an owner retain general Orchestrator routing behavior. Source catalog
-generation also rejects plugin capabilities with no registered host role; this
-coverage check is lab-only because core bundles intentionally omit lab roles.
+Retained cases include all six targeted regressions (HX-066, HX-067, HX-068,
+HX-072, HX-079, HX-080), evidence/authority/dirty-work boundaries, bounded routing,
+and the exact HX-055 campaign canary. HS-context-implicit and HS-context-handoff
+also retain evaluator and campaign-adapter fixtures. Every role retains its
+source/model/ownership baseline. Judge integrity remains covered by the existing
+runtime self-test, not a growing set of model calls.
 
-The Product Designer usage cases cover discovery, positioning, personas,
-prompts, design planning and simulation preparation as well as simple mockups
-and strategy handoff boundaries. Cases are diagnostic inputs, not proof that a
-model has passed them; use bounded current-source live runs for that claim.
+For a particular change, the host authors a small task draft from accepted
+behavior, changed sources and unique risks. The runner compiles and freezes it;
+it does not invent semantic test inputs or call a model to generate them.
+Use `task-suite.schema.json`: each case needs a risk, input, owner, expected
+primary route and allowed statuses; optionally add supporting/rejected routes,
+a next handoff and context budgets. Do not send expected answers to the target.
 
-The generated catalog is
-`scenarios.generated.json`; CI or local validation should use `catalog --check`
-to prove it is current.
+Freeze before execution with `eval prepare --file DRAFT`. The exclusive output
+is under ignored `.artifacts/harness-evals/suites/`, bound to task identity,
+scenario definitions and current harness sources. Changed sources require a new
+freeze; changed criteria start a new experiment. `run --suite FILE` uses the
+same read-only runner and two independent judges as the core. Judging verifies
+the exact suite binding again. Temporary coverage is requested explicitly with
+`coverage --suite FILE` and never counts toward core coverage.
+Task runs stay beside their frozen suite in `<suite-name>/runs/<run-id>/`;
+cleanup inspects only that directory, including interrupted or corrupt attempts.
 
-`agent-outcomes.yaml` adds one outcome case for every registered agent. Catalog
-generation verifies each case against the agent's TOML model, reasoning effort,
-sandbox declaration, role and skill-map load instructions, and exact ownership
-of its primary skill. It also verifies that every curated skill case is wired to
-its declared owner. Product-sensitive cases bind the current product, design,
-and specification sources by SHA-256 inside the scenario, so a changed product
-instruction makes that recorded scenario stale without treating every product
-document as a global harness input.
+For model comparisons keep the selected cases, applicable source version and
+rubrics identical; record explicit execution policy for each experiment. A
+model override remains diagnostic and cannot bypass the current pinned
+acceptance policy. Neither core nor temporary completeness is a default task
+completion gate; use only the cases needed to support the accepted claim.
+
+At closeout, `eval closeout --suite FILE` proposes cleanup of the exact suite
+and its bound runs only when all cases and all recorded attempts have complete,
+accepted raw evidence. Failed, blocked, stale, interrupted, corrupt or unjudged
+attempts remain for triage. A later pass cannot erase an earlier failure.
+The command never deletes or runs models. Review the proposal, promote a minimal
+unique regression for a discovered defect, preserve required handoffs and
+campaign receipts, then seek authorization for exact deletion paths. An unrun
+suite may be retired manually if its evaluation was explicitly abandoned;
+it never receives a passing cleanup recommendation.
+
+### Minimal task draft
+
+```yaml
+schema_version: 1
+task_id: prompt-routing-fix
+purpose: Verify a wording-only prompt request stays within its accepted boundary.
+cases:
+  - id: HT-wording-only
+    risk: A wording edit incorrectly starts architecture work or evaluation.
+    owner: agent-engineer
+    prompt: Refine one supplied instruction prompt's wording; its role, workflow and permissions are accepted. No experiment is requested. The actual prompt text is absent; identify that gap without inventing it.
+    expected_primary: cascade-prompt:prompt
+    forbidden_primary: [cascade-ai-architect:architect-ai-system, cascade-evals:prompt-evaluation]
+    status_any: [GAP, BLOCKED]
+```
+
+This illustrates the input shape; generate a task-specific case instead of
+retaining another wording variation when HX-102 already covers the risk.
 
 ## Commands
 
@@ -70,6 +107,10 @@ bun scripts/cascade.ts eval judge \
   --run-dir .artifacts/harness-evals/<run-id>
 bun scripts/cascade.ts eval coverage --list-missing
 ```
+
+Use `eval prepare --file DRAFT`, `eval run --suite FILE`, and
+`eval closeout --suite FILE` for temporary cases. A full permanent run requires
+explicit `eval run --all`; unfiltered `run` does not launch the catalog.
 
 Live runs are serial by default. Use `--scenario`, `--skill`, `--agent`,
 `--case-kind`, `--limit`, and `--repetitions` for focused diagnosis. Agent

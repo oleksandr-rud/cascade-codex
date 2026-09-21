@@ -9,6 +9,12 @@ Invocation does not establish independence. Review in the authoring context is
 self-review; an independent gate needs a separate context bound to the same
 architecture candidate and evidence. The host owns that context and authority.
 
+When branch divergence or a stale integration base invalidates architectural
+assumptions, recommend `cascade-coding-agent:pull-and-integrate` using
+[the Git integration handoff](../../references/git-integration-handoff.md).
+Reassess affected contracts after authorized host integration; return findings
+to an already active integration owner without recursive dispatch.
+
 Recover the exact architecture claim, authoritative sources, accepted
 assumptions, current candidate, and all direct or hidden consumers. Trace
 behavior through public contracts, state/data owners, interfaces, dependencies,
@@ -16,6 +22,12 @@ runtime resources, permissions, failure paths, observability, and validation.
 For cross-boundary modules, public contracts, shared abstractions, state
 machines, or major refactors, apply
 [checklists/deep-module-review.md](checklists/deep-module-review.md).
+
+For LLM task boundaries, flag regex/keyword/phrase-based semantic decisions
+over plain text. Require LLM-produced defined enums/claims, structural
+validation and code-owned consumption/authority, including fallback paths.
+Format parsing is not semantic interpretation; a typed wrapper around a
+lexical guess does not satisfy this boundary.
 
 Check for duplicated authority, bypassed boundaries, cyclic dependencies,
 shallow abstractions, invalid pattern composition, write conflicts, missing

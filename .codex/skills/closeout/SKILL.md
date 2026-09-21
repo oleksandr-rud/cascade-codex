@@ -1,12 +1,12 @@
 ---
 name: closeout
-description: Finalize durable work state or a reusable handoff after implementation and validation. Ordinary completed tasks may close in the final response without loading this skill.
+description: Finalize durable work state, a reusable handoff, or a task-local evaluation cleanup proposal after implementation and validation. Ordinary completed tasks may close in the final response without loading this skill.
 ---
 
 # Closeout
 
 Use this skill when completion must update an existing lane or graph, preserve a
-cross-task handoff, record a durable lesson, or synchronize governed
+cross-task handoff, propose cleanup of task-local evaluations, record a durable lesson, or synchronize governed
 documentation. It is not a mandatory final phase for every bounded change.
 
 ## Close
@@ -43,6 +43,24 @@ No separate check-closeout skill, task journal or mandatory report is needed.
    exact `RETIRE_PROPOSED` records when the user or active-state contract grants
    current host mutation authority; revalidate indexes and preserve the source
    artifact, failed history, and rehydration path. Retention is never automatic.
+
+## Temporary evaluation cleanup
+
+When this task created a temporary harness evaluation suite, run
+`cascade eval closeout --suite <exact-frozen-suite-path>` and include a short
+cleanup proposal in the final response. Inspect only the named task's suite and
+its bound runs; do not scan or delete unrelated artifacts. The command proposes
+paths but never deletes files, starts evaluations or grants deletion authority.
+Missing, failed, blocked, stale, incomplete or unjudged evidence must remain for
+triage. A later passing attempt does not erase a failed attempt.
+
+Before approving cleanup, consider each discovered defect for promotion to a
+minimal permanent regression with an explicit risk and expected behavior. Do
+not preserve every generated case or raw report. Keep core regression cases,
+unresolved failures, required handoffs and registered campaign receipts outside
+the temporary cleanup scope. Apply deletion only with user authorization for
+the reviewed paths, after rechecking their identity and state. No temporary
+suite means no cleanup step or new artifact.
 
 ## Validated artifact persistence
 

@@ -6,6 +6,12 @@ interview policy, model tiers, or model-specific instructions.
 
 ## Required mapping
 
+Bind free-text semantic work to LLM interpretation with a declared structured
+output and explicit uncertainty. Code consumes validated enums/claims under
+existing authority. Neither lexical preprocessing nor regex extraction of a
+verdict from narrative may replace this boundary; invalid output follows the
+supplied repair/gap contract.
+
 Before delegation, map each material architecture decision into exactly one of:
 
 - an operative objective or behavior;
@@ -37,6 +43,15 @@ low-level formatter. Shared approved policy blocks preserve exact text; local
 render-cache evidence and provider-prefix evidence remain distinct.
 
 ## Delegation request
+
+For a selected graph workflow, bind one model step's purpose, required predecessor
+results, issued evidence, acceptance/done condition and missing/stale-input
+behavior. Carry the architecture's deterministic versus semantic decision split
+and dependency invalidation rules. Keep executable routing, joins, permission
+checks and commits in the runtime; do not turn them into prompt-only enforcement.
+No prompt is required for a deterministic node. Workflow identity and revision
+checks stay in the private manifest. Prompt technique selection remains with
+Cascade Prompt; graph authoring does not automatically select a stateful profile.
 
 Send one target and one operation with the prompt brief. Require the resolved
 `cascade-prompt:prompt` skill to produce a prompt for the target rather than

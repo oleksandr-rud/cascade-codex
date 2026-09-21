@@ -1,0 +1,65 @@
+{
+  "artifact_kind": "context_section_authoring_template",
+  "version": 2,
+  "wire_schema": false,
+  "owner": "target Policy Engine and admission",
+  "sections": [
+    {
+      "id": "role",
+      "source": "trusted role and output contract",
+      "required": true
+    },
+    {
+      "id": "current_input",
+      "source": "accepted message and admitted interpretation when available",
+      "required": true
+    },
+    {
+      "id": "domain_state",
+      "source": "current scoped domain records",
+      "required": true
+    },
+    {
+      "id": "evidence",
+      "source": "selected claims, contradictions and original source passages",
+      "required": true
+    },
+    {
+      "id": "continuity",
+      "source": "bounded recent messages with declared coverage",
+      "required": false
+    },
+    {
+      "id": "memory",
+      "source": "valid summaries and permitted durable notes",
+      "required": false
+    },
+    {
+      "id": "pending_work",
+      "source": "admitted obligations, dependencies and observed receipts",
+      "required": true
+    },
+    {
+      "id": "clarification",
+      "source": "admitted typed reason, references and permitted display attributes",
+      "required": "when an unresolved clarification is admitted"
+    },
+    {
+      "id": "response_requirements",
+      "source": "current policy effects, coverage and gap rules",
+      "required": true
+    }
+  ],
+  "bind_per_section_before_use": [
+    "role_and_purpose",
+    "registered_selector",
+    "scope_and_authority",
+    "freshness_and_dependencies",
+    "required_data",
+    "budget_and_priority",
+    "missing_or_stale_behavior"
+  ],
+  "default_overflow": "CONTEXT_GAP for missing required capacity; optional omission only under declared policy",
+  "source_selection": "host-owned; semantic relevance supplied through admitted LLM assessments",
+  "renderer": "format issued data only; no retrieval, permission decisions or silent truncation"
+}

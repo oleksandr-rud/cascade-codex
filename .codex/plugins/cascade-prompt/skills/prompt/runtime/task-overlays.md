@@ -17,6 +17,10 @@ this whole pack into the generated prompt.
   Resolve allowed labels, decision boundaries, priority for mixed cases,
   insufficient/conflicting evidence, abstention or human review, and exact
   output shape.
+  Meaning is interpreted by the LLM into the declared labels/claims. Do not
+  classify free text with regexes, keyword tables or phrase heuristics before
+  the model, after it, or as a fallback. Code validates enums and consumes
+  structured outcomes; it cannot resolve semantic ambiguity from word matches.
 - **Research/retrieval** — triggers: research, search, cite, current, compare
   sources, specialized web search, database or hybrid retrieval. Resolve
   authority, freshness/version, source/domain restrictions, query and tool
@@ -30,6 +34,15 @@ this whole pack into the generated prompt.
 - **Tool orchestration** — triggers: tools, agent, execute, automate, workflow.
   Resolve available tools, selection rules, permissions and confirmations,
   budgets, tool-error behavior, recovery/cleanup, and terminal proof.
+  For an adopted workflow with separable steps, recommend a focused step prompt:
+  one responsibility, required evidence/predecessor results, permitted actions,
+  typed output, completion condition and explicit missing/stale-input behavior.
+  Retain a direct single-call prompt when splitting adds no useful boundary.
+  Bind code-owned retrieval, validation, joins, routing and commits as host
+  obligations, not prose enforcement. Model classification may propose a route;
+  deterministic host admission still decides dispatch. Coordinate the selected
+  technique with the context slice and architecture brief; never invent a graph
+  runtime, a new agent, or additional authority from prompt wording.
   Only for an explicitly requested or already adopted Analyzer–Policy Engine–Composer
   architecture (including `schema-values-text@1`), read [stateful-agent.md](stateful-agent.md).
   Generic tool use or the word "agent" does not activate that profile.

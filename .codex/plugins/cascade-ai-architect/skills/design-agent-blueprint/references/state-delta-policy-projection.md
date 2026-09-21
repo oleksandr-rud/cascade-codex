@@ -99,6 +99,12 @@ and delivery progress do not require rewriting semantic state. A no-op input
 can advance its processing checkpoint while leaving `state_revision` and
 memory content unchanged.
 
+Choose whether an item needs a claim rather than making every field one. Domain
+status and observed receipts stay domain-owned; uncertain or revisable assertions
+retain claim provenance. The optional [selective storage example](selective-state-claims-memory.md)
+implements this distinction with derived graph links and section-based context,
+without changing the wire contracts above.
+
 Checkpoint is the processing aggregate. It owns the input-to-delta-to-commit and
 context bindings; `HistoryTurn` is a derived grouping over root/child checkpoints,
 messages and response receipts. Existing wire turn IDs are runtime grouping aliases,

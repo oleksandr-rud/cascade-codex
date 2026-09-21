@@ -25,6 +25,13 @@ whose answer materially changes the authorized result.
 
 ## Workflow
 
+Across LLM task boundaries, implement semantic interpretation through LLM output
+with defined enums/claims and explicit uncertainty, then code-owned validation
+and consumption. Do not add regex/keyword intent, claim, relevance, approval or
+route inference, even as preprocessing or fallback. Keep syntax parsing and
+authority checks deterministic. Guidance changes must report existing runtime
+violations separately from any authorized migration.
+
 1. Freeze a change envelope: intended behavior, assumptions, non-goals,
    touched owners, likely regressions, validation commands, and rollback.
 2. Trace the current path before editing. Prefer current code over prose and
@@ -36,6 +43,11 @@ whose answer materially changes the authorized result.
    return `BLOCKED` if a required dependency is unavailable or invalid.
 5. Implement a narrow behavior slice. Update all real consumers and generated
    artifacts controlled by that source; never patch only an installed cache.
+   For adopted state/claims/memory assets, preserve the owning AI architecture's
+   domain/claim/source/memory distinction and context-section contracts. Reuse
+   registered operations; reject unsupported subsets explicitly. Package prepared
+   data with its synthetic provenance and keep backend, installed and semantic
+   evidence separate. Never treat a runnable example as a full runtime migration.
 6. Preserve permission, confirmation, idempotency, retry, timeout, stop,
    observability, redaction, evidence, and rollback contracts when affected.
 7. Validate from cheapest to strongest: syntax/schema, focused tests, target

@@ -95,6 +95,11 @@ const supportedModes: [string, string[], string[]?][] = [
 ];
 
 describe("source-supported plugin input modes", () => {
+  test("Git integration cannot borrow read-only planning authority even with a supplied subject", () => {
+    const route = "cascade-coding-agent:pull-and-integrate";
+    expect(fixture([route], ["git-integration-request"]).check).toThrow("exceeds Task Envelope authority");
+  });
+
   test.each(supportedModes)("%s accepts its sufficient input mode", (route, inputs, selected = []) => {
     expect(fixture([route], inputs, { [route]: selected }).check).not.toThrow();
     // Optional context must not become permission to plan without a subject.

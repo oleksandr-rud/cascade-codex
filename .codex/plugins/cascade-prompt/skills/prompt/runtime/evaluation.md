@@ -23,6 +23,13 @@ permissions, and mutation boundaries. Use blind semantic judgment only for
 quality that deterministic checks cannot decide. A self-check is not
 independent evidence.
 
+Never use keyword presence, regexes or phrase lists to infer semantic quality,
+grounding, intent, refusal or completion from prose. LLM/human semantic judgments
+produce structured ratings/claims; code validates and reduces those fields.
+Literal assertions are appropriate only when exact syntax is itself the accepted
+requirement. Invalid judge output remains invalid or receives bounded repair;
+do not reconstruct its verdict with text heuristics.
+
 For reusable prompts cover happy path, boundary, missing input, conflicting
 evidence/instructions, adversarial source content, output-format pressure, and
 tool/retrieval failure when applicable. Reusable routing also covers explicit

@@ -7,6 +7,21 @@ adaptation, integration, repair, and maintenance guidance. A target repository
 remains authoritative for its own instructions, configuration, skill and role
 contracts, hooks, tools, validators, scenarios, and release policy.
 
+The plugin also owns the portable `pull-and-integrate` method for Git branch
+synchronization in any target repository. It binds branch authority separately
+from chronology, reconciles textual and semantic conflicts, preserves local
+intent and requires an integration report. Its default base is `develop` when
+present on the authoritative remote, otherwise that remote's actual primary
+branch; explicit user choices and repository policy take precedence. Every run
+prepares push readiness, including no-op integrations. Integration base and push
+destination are distinct. The existing Software Architect `review-change` method
+supplies conditional read-only review; Coding Agent owns repairs, final evidence
+and readiness. Readiness never grants push authority. The active host owns Git execution,
+repository permissions, commits and validation; the descriptor declares
+`HOST_EFFECT` / `LOCAL_WRITE` without granting that authority. Native implicit
+skill discovery and the capability catalog expose this method before conflict
+markers appear. Harness asset installation remains a separate capability.
+
 It does not own:
 
 - general AI-agent architecture, which belongs to Cascade AI Architect;
@@ -32,11 +47,15 @@ cascade-coding-agent
   -> cascade-simulations (only when an approved dynamic run is required)
 
 cascade-ai-architect -> cascade-evals, cascade-prompt, cascade-personas, cascade-simulations
-cascade-software-architect -> cascade-ai-architect and domain plugins only as artifact consumers
+cascade-software-architect -> cascade-ai-architect and domain plugins as artifact consumers
+  -> cascade-coding-agent:pull-and-integrate (conditional host handoff, not dispatch)
 cascade-evals -> cascade-simulations (only for dynamic execution adapters)
 ```
 
-No dependency points back to Cascade Coding Agent. Resolve every optional
+No required dependency points back to Cascade Coding Agent. Software Architect
+may recommend integration and consume its report; optional reverse links are
+host-managed sequences with read-only review and no recursive integration.
+Resolve every optional
 dependency from the exact installed-and-enabled plugin inventory, bind its
 version and skill digest into the receipt, and fail closed when required.
 
