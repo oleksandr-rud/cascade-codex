@@ -25,6 +25,8 @@ Apply [the semantic decision boundary](../design-agent-blueprint/references/sema
 LLMs interpret free text; code consumes validated enums/claims. Do not derive
 route, relevance, intent or approval from regex/keyword matches, including
 prefilters and fallback paths. Keep known-state and authority checks in code.
+Never offer these substitutions as defaults, examples, prototypes or workflow
+optimizations, regardless of the selected topology.
 
 When dependencies, branches or joins make execution structure material, use
 [graph workflow authoring](../design-agent-blueprint/references/graph-workflow-authoring.md).

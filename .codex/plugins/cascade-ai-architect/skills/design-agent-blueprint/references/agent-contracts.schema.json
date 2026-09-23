@@ -1,8 +1,278 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "urn:cascade:agent-contracts:2.0",
-  "title": "Analyzer Policy Composer reference contracts 2.0",
+  "$id": "urn:cascade:agent-contracts:2.2",
+  "title": "Analyzer Policy Composer reference contracts 2.2",
   "$defs": {
+    "AnalyzerClaimFinding": {
+      "type": "object",
+      "properties": {
+        "local_ref": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64,
+          "pattern": "^[a-z][a-z0-9_-]*$"
+        },
+        "subject_ref": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 240
+        },
+        "predicate": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 240
+        },
+        "value": {
+          "$ref": "#/$defs/JsonValue"
+        },
+        "literal_quote": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 16000
+        },
+        "support": {
+          "enum": [
+            "reported",
+            "observed",
+            "inferred"
+          ]
+        },
+        "evidence_refs": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 240
+          },
+          "minItems": 1,
+          "maxItems": 16
+        },
+        "supersedes_ref": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 240
+            }
+          ]
+        }
+      },
+      "required": [
+        "local_ref",
+        "subject_ref",
+        "predicate",
+        "value",
+        "literal_quote",
+        "support",
+        "evidence_refs",
+        "supersedes_ref"
+      ],
+      "additionalProperties": false
+    },
+    "AnalyzerIntentFinding": {
+      "type": "object",
+      "properties": {
+        "target_ref": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 240
+        },
+        "value": {
+          "$ref": "#/$defs/JsonValue"
+        },
+        "support": {
+          "enum": [
+            "reported",
+            "observed",
+            "inferred"
+          ]
+        },
+        "evidence_refs": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 240
+          },
+          "minItems": 1,
+          "maxItems": 16
+        }
+      },
+      "required": [
+        "target_ref",
+        "value",
+        "support",
+        "evidence_refs"
+      ],
+      "additionalProperties": false
+    },
+    "AnalyzerGapFinding": {
+      "type": "object",
+      "properties": {
+        "target_ref": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 240
+        },
+        "status": {
+          "enum": [
+            "unknown",
+            "ambiguous",
+            "conflicting"
+          ]
+        },
+        "detail": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 16000
+        },
+        "support": {
+          "enum": [
+            "reported",
+            "observed",
+            "inferred"
+          ]
+        },
+        "evidence_refs": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 240
+          },
+          "minItems": 1,
+          "maxItems": 16
+        }
+      },
+      "required": [
+        "target_ref",
+        "status",
+        "detail",
+        "support",
+        "evidence_refs"
+      ],
+      "additionalProperties": false
+    },
+    "AnalyzerPlanFinding": {
+      "type": "object",
+      "properties": {
+        "add_steps": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/PlanStepProposal"
+          },
+          "minItems": 0,
+          "maxItems": 16
+        },
+        "supersede_steps": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "step_ref": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 240
+              },
+              "replacement_local_ref": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 240
+              }
+            },
+            "required": [
+              "step_ref",
+              "replacement_local_ref"
+            ],
+            "additionalProperties": false
+          },
+          "minItems": 0,
+          "maxItems": 16
+        },
+        "cancel_step_refs": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 240
+          },
+          "minItems": 0,
+          "maxItems": 16
+        },
+        "evidence_refs": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 240
+          },
+          "minItems": 1,
+          "maxItems": 16
+        }
+      },
+      "required": [
+        "add_steps",
+        "supersede_steps",
+        "cancel_step_refs",
+        "evidence_refs"
+      ],
+      "additionalProperties": false
+    },
+    "AnalyzerFindings": {
+      "type": "object",
+      "properties": {
+        "schema_version": {
+          "const": "analyzer-findings.v1"
+        },
+        "claims": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/AnalyzerClaimFinding"
+          },
+          "minItems": 0,
+          "maxItems": 16
+        },
+        "intent": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/$defs/AnalyzerIntentFinding"
+            }
+          ]
+        },
+        "gaps": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/AnalyzerGapFinding"
+          },
+          "minItems": 0,
+          "maxItems": 8
+        },
+        "plan": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/$defs/AnalyzerPlanFinding"
+            }
+          ]
+        }
+      },
+      "required": [
+        "schema_version",
+        "claims",
+        "intent",
+        "gaps",
+        "plan"
+      ],
+      "additionalProperties": false
+    },
     "JsonValue": {
       "oneOf": [
         {"type": "null"},
@@ -986,14 +1256,14 @@
     "ResponseContract": {
       "type": "object",
       "properties": {
-        "answer_mode": {"enum": ["answer", "ask", "acknowledge", "refuse", "status", "request_confirmation", "handoff"]},
+        "answer_mode": {"enum": ["compose", "answer", "ask", "acknowledge", "refuse", "status", "request_confirmation", "handoff"]},
         "channel": {"enum": ["text", "voice"]},
         "language": {"type": "string", "minLength": 1, "maxLength": 240},
         "response_intents": {"type": "array", "items": {"type": "string", "minLength": 1, "maxLength": 240}, "minItems": 0, "maxItems": 128},
         "format": {
           "type": "object",
           "properties": {
-            "structure": {"enum": ["plain", "steps", "bullets", "structured"]},
+            "structure": {"enum": ["composer_choice", "plain", "steps", "bullets", "structured"]},
             "schema_ref": {"type": "string", "minLength": 3, "maxLength": 240, "pattern": "^.+@[^@]+$"},
             "max_characters": {"type": "integer", "minimum": 0},
             "max_sentences": {"type": "integer", "minimum": 0},
@@ -1026,7 +1296,7 @@
         "required_disclosures": {"type": "array", "items": {"type": "string", "minLength": 1, "maxLength": 240}, "minItems": 0, "maxItems": 128},
         "allowed_response_acts": {"type": "array", "items": {"type": "string", "minLength": 1, "maxLength": 240}, "minItems": 0, "maxItems": 128},
         "claim_usage": {"const": "admitted_only"},
-        "missing_information": {"enum": ["ask", "state_limitation", "return_context_gap"]}
+        "missing_information": {"enum": ["composer_choice", "ask", "state_limitation", "return_context_gap"]}
       },
       "required": [
         "answer_mode",

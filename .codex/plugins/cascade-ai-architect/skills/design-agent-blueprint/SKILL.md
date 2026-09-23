@@ -27,6 +27,8 @@ pattern-selection procedure or treat a default as a mandate.
 Apply [the semantic decision boundary](references/semantic-decision-boundary.md)
 for meaning-dependent text interpretation: LLM-produced typed proposals, then
 deterministic validation and consumption; no keyword/regex semantic shortcuts.
+Never implement or recommend these substitutions in defaults, examples,
+prototypes or fallbacks, regardless of the selected topology.
 
 For separable work, dependencies, branching or a requested graph option, apply
 [graph workflow authoring](references/graph-workflow-authoring.md) as a
@@ -73,6 +75,11 @@ Choose domain records versus claims by authority/provenance needs, keep deltas
 as proposals, and define each context section's sources, dependencies and gaps.
 Its runnable prepared-data example is optional backend evidence, not a full
 StateDelta runtime or measured LLM quality. Do not turn every property into a claim.
+
+Within an explicitly selected stateful profile, prefer
+[semantic Analyzer findings](references/analyzer-findings.md) for its compact
+claims/intent/gaps/optional-plan subset. Bind model output through the supplied
+adapter into internal StateDelta; richer operation profiles stay conditional.
 
 ## Check completeness
 

@@ -9,10 +9,17 @@ Compile one reviewable architecture candidate from the request and its authorita
 
 ## Workflow
 
+Apply [the semantic decision boundary](../design-agent-blueprint/references/semantic-decision-boundary.md)
+to every candidate, regardless of topology. Never implement or recommend keyword
+matching or regex as substitutes for LLM-interpreted claims, including defaults,
+examples and fallbacks. Preserve this constraint in downstream role, skill and
+prompt briefs.
+
 1. **Freeze the design claim.** State the requested outcome, represented users, non-goals, autonomy, risk, target environment, and observable completion condition. Record each source by an exact locator. Mark inferences and assumptions.
 2. **Draft before interviewing.** Sketch the likely capabilities and identify only material gaps. Ask a question only when its answer could change safety, permissions, topology, source authority, success criteria, or feasibility. Batch at most three decision-ready questions; otherwise continue with an explicit assumption or return `GAP`/`BLOCKED`.
 3. **Map capabilities.** Invoke `$map-agent-capabilities`. Require atomic, outcome-oriented capability records, semantic slugs, source locators, evidence status, success oracles, recovery routes, and responsibility clusters.
-4. **Choose the boundary.** Prefer deterministic code, then one agent with a
+4. **Choose the boundary.** Prefer deterministic code for mechanical operations;
+   meaning-dependent interpretation requires an LLM. Prefer one agent with a
    focused prompt, then justified skills or specialists. A simple agent does
    not require a separate skill. Read the
    [stateful-agent profile](../design-agent-blueprint/references/stateful-agent-profile.md)

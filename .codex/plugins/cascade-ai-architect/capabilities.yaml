@@ -32,7 +32,7 @@ skills:
     authority: READ_ONLY
     evaluation_cases: [capability-grounding, no-opaque-claims]
   - route: cascade-ai-architect:design-agent-blueprint
-    description: Design a bounded agent blueprint with incremental product value, outcome closure, claims, memory, authorized actions, recovery and the smallest justified topology.
+    description: Design a bounded agent blueprint with outcome closure, semantic Analyzer findings, optional task plans, claims, memory, authorized actions, recovery and the smallest justified topology.
     triggers: [an agent capability map needs a behavior blueprint]
     anti_triggers: [the capability map is still unresolved]
     consumes: [agent-capability-map]

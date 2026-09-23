@@ -1,16 +1,18 @@
 # State projections, multi-policy deltas and optional event profiles
 
 Contract: `event-projections-and-context-format@1.7`
-Pattern: `analyzer-policy-composer@2.4`\
+Pattern: `analyzer-policy-composer@2.5`\
 Status: `reference-design`; accepted architecture extension, 2026-09-08.
 
 This extends [state and policy semantics](state-delta-policy-projection.md).
 The JSON Schema bundle describes logical values, independently of their transport.
-Pattern 2.4 retains the 2.0 logical schema bundle and StateDelta v3; the new
-transport, checkpoint storage grouping and event-store obligations do not silently
-change those logical payloads. Target storage/event schemas are separate bindings.
-Analyzer output defaults to **JSON**, with YAML as an explicitly configured
-alternative. Both represent the same StateDelta. Model input is **compact block
+Pattern 2.5 retains StateDelta v3 and adds Composer choice through the
+versioned logical schema bundle. Transport, checkpoint storage grouping and
+event-store obligations do not silently change StateDelta. Target storage/event schemas are
+separate bindings.
+Analyzer output defaults to **JSON**. Compact findings are JSON-only; the richer
+operation profile also supports explicitly configured YAML. The host binds
+either selected semantic profile to StateDelta. Model input is **compact block
 text**, compiled from the role/task policy-state slice issued by Policy Engine
 and admission. Optional read-model projections are a separate storage mechanism.
 The output transport does not determine downstream input structure or authority.
@@ -261,6 +263,11 @@ share the commit boundary; use the existing event-driven outbox/inbox contracts
 when durable delivery is required.
 
 ## Analyzer output profiles
+
+For compact claims, intent, gaps and optional task plans, prefer
+[analyzer-findings@1](analyzer-findings.md) with its executable reference binder.
+The internal delta remains v3. The operation-oriented profile below remains
+available for richer target requirements and existing adopted adapters.
 
 Distinguish the model's semantic proposal from the bound runtime delta. The target
 adapter supplies a versioned advertised schema for semantic operations, groups,

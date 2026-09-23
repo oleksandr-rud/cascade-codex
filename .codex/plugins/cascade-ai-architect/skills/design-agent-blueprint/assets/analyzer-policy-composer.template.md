@@ -1,6 +1,6 @@
 # Agent architecture: <target>
 
-Pattern: `analyzer-policy-composer@2.4`
+Pattern: `analyzer-policy-composer@2.5`
 Contract: [Analyzer, Policy Engine, and Composer](../references/analyzer-policy-composer.md)\
 Disposition: `<ADOPTED | ADAPTED | REJECTED | GAP>`\
 Target status: `CANDIDATE`\
@@ -13,7 +13,8 @@ do not treat example fields as a registered runtime schema or deployment.
 
 ## Selected variant
 
-- Text: Analyzer → JSON delta → admission/selection → current-state transaction → direct context builder → Main Composer → validated canonical answer.
+- Text: Analyzer → semantic findings → host-bound delta → admission/selection → current-state transaction → direct context builder → Main Composer → validated canonical answer.
+- Analyzer output: `<analyzer-findings@1 for its supported subset | existing/richer semantic operation profile>`; bind [the selected model schema and adapter](../references/analyzer-findings.md).
 - Machine packet topology: `model_pipeline`; policy/runtime functions are workflows.
 - Voice: `<disabled | add Voice Composer after canonical-answer validation>`.
 - Research: `<disabled | optional policy-admitted web/KB requests>`.
@@ -25,7 +26,7 @@ do not treat example fields as a registered runtime schema or deployment.
   use [its integration profile](../references/langgraph-integration.md) and name
   checkpointer, thread authority and replay guards.
 - Why selected, rejected alternatives, and reassessment evidence:
-- Final semantic owner: Main Composer.
+- Final semantic and ordinary answer-strategy owner: Main Composer.
 - State, policy, context, dispatch, and memory commit owner: `<runtime module>`.
 
 ## Contract bindings
@@ -37,7 +38,7 @@ features need an explicit activation decision; a filled template is not a runtim
 | Contract | Required binding |
 |---|---|
 | Accepted event | Schema, authenticated scope, ID, sequence, finalized transcript/source references |
-| StateDelta | Logical v3 schema via analyzer-json@1 (optional analyzer-yaml@1), checkpoint/base revision, direct multi-policy groups, blocks/parts/candidates, typed refs and evidence |
+| Analyzer findings / StateDelta | Selected semantic model schema, private reference binding and v3 delta; findings use one atomic group, richer operation profiles may use blocks/parts/candidates |
 | Checkpoint group | Root/child input lineage, attempts, delta/receipt refs, state revision bindings and immutable role context refs; no duplicate TurnState |
 | Implementation profile | [Simple modular vertical slices](../references/simple-modular-agent.md); current state is authoritative, context is built directly; record reasons for optional extensions |
 | CommittedEventBatch (optional) | Only for a selected journal/event-sourced profile: accepted payloads, stream ordering, policy bindings and local-to-canonical mapping |
@@ -64,13 +65,13 @@ features need an explicit activation decision; a filled template is not a runtim
 | Selective storage and context | Domain-record/claim/source/memory ownership; derived graph links; per-section source, scope, freshness, dependency, budget and gap rules; optional [worked example](selective-memory/README.md) |
 | PolicyDecision | Versioned rule matches, effects, obligations, reasons, accepted/rejected operations |
 | ComposerContext | State/policy/source identities, allowed facts/acts, uncertainty, redaction, expiry, budget |
-| ResponseContract | Answer mode, language/channel, intent, structure/schema, size, citations, style, required/forbidden content and missing-data behavior |
+| ResponseContract | Broad `compose` mode by default, eligible response acts, channel/language, optional structure and missing-data choice, and source-bound hard limits |
 | ResponseCandidate | Context identity, answer/spoken text, claim references, requested response act |
 | Canonical response | Validated response ID/revision/digest, current-policy check, publication receipt |
 | ResearchRequest | Gap, query, allowed web/KB sources, ACL, revision, budget/deadline, cancellation, dedupe |
 | ResearchResult | Status, evidence spans/chunks/digests, freshness, limitations, parent request identity |
 | Memory proposal | Source/claim refs, purpose/scope, sensitivity, consent/policy, TTL/invalidation |
-| TurnDecision | Explicit compose/research wait/input/action/status/stop route and admitted dependencies |
+| TurnDecision | Explicit compose/research wait/input/action/status/stop workflow route and admitted dependencies; no ordinary answer outline |
 | ExecutionCommand / ExecutionReceipt | Action contract, authority, confirmation, idempotency, outcome and reconciliation |
 | Voice delivery | Turn/response revision, text digest, epoch, segment order, client playback acknowledgement |
 
@@ -78,7 +79,7 @@ Use [the versioned wire schema bundle](../references/agent-contracts.schema.json
 and [implementation/completeness assessment](../references/implementation-and-completeness.md).
 Run the packaged contract validator and negative regression suite before target
 adoption. For every row supply the concrete schema and enforcing runtime entrypoint, or
-mark `GAP`. Analyzer emits only StateDelta. Researcher and composers have no
+mark `GAP`. Analyzer emits only proposals; the host binds StateDelta. Researcher and composers have no
 state-write authority. ResearchResult returns to analysis as evidence.
 
 ## Policy and context choices
@@ -99,7 +100,7 @@ field IDs and record instance resolution; never use display names as write keys.
 | Projection policies | Role/task/step/purpose registry, selectors, transforms, redaction, budgets and precedence; Policy Engine/admission owns issuance |
 | AnalyzerContext | Builder, separate identity/background/continuity/next-step blocks, writable targets and StateDelta limits |
 | ComposerContext | Builder, separate identity/policy/background/continuity/next-step/knowledge projection and expiry |
-| ResponseContract | Answer modes, channel/language, format/style enums, hard constraints and validator |
+| ResponseContract | Default `compose` mode and Composer choice, channel/language, guidance versus hard constraints, and candidate validator |
 
 | Policy family | Source/version | Deterministic enforcement and conflict rule |
 |---|---|---|
@@ -121,14 +122,15 @@ field IDs and record instance resolution; never use display names as write keys.
 - Separate client/task slice for frontend progress, controls and reconnect; gateway transports issued data only:
 - Analyzer projection and token ceiling:
 - Analyzer background, continuity/next-step blocks, writable target catalog, omitted-data limitations and expiry:
-- Registered Analyzer blocks/parts, selection policies, candidate schemas and per-envelope ceilings:
+- For a richer operation profile: registered Analyzer blocks/parts, selection policies, candidate schemas and per-envelope ceilings:
 - Main Composer projection and token ceiling:
 - Composer background, compact formatted history and short recent-memory fields:
 - Twenty-turn definition, lower role-specific limits, compaction/deduplication and `CONTEXT_GAP` behavior:
 - Current-task next-step completeness, lifecycle statuses, confirmation references and completion receipts:
 - Identity projection and `minimal | personalization | identity_answer | introduction | capability_disclosure` activation for Analyzer, Composer, Researcher and Voice Composer:
 - Policy definition/data/evaluation locations and independent version bindings:
-- ResponseContract answer modes, format schema, style enums, hard precedence and candidate validation:
+- ResponseContract default broad `compose` mode, permitted acts, Composer-selected structure/missing-data path, source-bound hard constraints and candidate validation:
+- Reason and source for each fixed answer mode or mandatory response element; ordinary style and answer strategy remain Composer choices:
 - Policy-derived Composer reminders mapped to typed ResponseContract fields and source dependencies:
 - Researcher request projection and ACL enforcement:
 - Voice projection (canonical text plus delivery controls only):

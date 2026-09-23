@@ -5,7 +5,7 @@ architecture. These obligations specialize that architecture, not every agent sy
 Resolve links relative to this reference; commands run from the skill directory.
 
 For an [Analyzer–Policy Engine–Composer blueprint](../../design-agent-blueprint/references/analyzer-policy-composer.md),
-bind separate briefs to the selected model roles: StateDelta-only Analyzer,
+bind separate briefs to the selected model roles: proposal-only Analyzer,
 context-only Main Composer, optional canonical-text Voice Composer, and
 request-only Researcher. Policy enforcement remains runtime code. Do not copy
 full state, policy authority, or research tools into the voice brief.
@@ -19,11 +19,22 @@ detect new facts, corrections, answers, intent and gaps without responding to
 the user. For Main Composer, bind `ComposerContext` and its `ResponseContract`;
 explain how to use admitted background, compact history, recent memory and the
 complete current-task step projection authorized for that role while following
-the selected answer mode, language, structure, limits, tone, required/forbidden
-elements and missing-data behavior.
+the permitted response acts, language, hard limits and required/forbidden
+elements. In ordinary `compose` mode, Main Composer selects the answer act,
+structure, emphasis and missing-data treatment from the admitted context;
+style preferences guide it without becoming a policy-authored answer plan.
+Use a fixed mode or format only for a source-bound hard requirement.
 Source these contracts from
 [StateDelta, policy data, and role projections](../../design-agent-blueprint/references/state-delta-policy-projection.md);
 do not reconstruct them as untyped prompt prose.
+
+Prefer [analyzer-findings@1](../../design-agent-blueprint/references/analyzer-findings.md)
+when its compact subset covers the target. Supply its exported semantic schema,
+issued evidence/target handles and supported target value schemas. Claims retain
+source/support and correction identity; intent and gaps remain data; plan is
+null unless task dependencies warrant steps. Ordinary answer strategy stays
+with Composer. The private host binder produces StateDelta; the model does not
+author transaction groups, runtime revisions or execution statuses in this profile.
 
 Keep `IdentityContext` as a separate input block in both prompt briefs. Use
 `minimal` for ordinary turns, `personalization` only for approved presentation or
@@ -51,7 +62,7 @@ trusted rule IDs into the typed `ResponseContract` fields and retain their sourc
 dependencies. Never place arbitrary memory or policy-data text into the prompt's
 instruction hierarchy.
 
-For StateDelta v3, instruct Analyzer to emit all grounded unambiguous slot
+For the richer operation-oriented StateDelta v3 profile, instruct Analyzer to emit all grounded unambiguous slot
 changes as direct groups and preserve genuine alternatives as registered blocks,
 parts, and candidates. Each part may have multiple candidates and each candidate
 may contain multiple atomic update groups. It must not collapse distinct parts
@@ -59,14 +70,16 @@ into one whole-state guess, invent block/selection rules, or put mutually
 exclusive scalar values into direct updates. Policy Engine owns candidate
 selection and unresolved-ambiguity outcomes.
 
-For pattern 2.4, the brief must include the source-bound
+For pattern 2.5, the brief must include the source-bound
 [event/projection/text contract](../../design-agent-blueprint/references/event-projections-and-context-format.md).
-Default to JSON as Analyzer output; permit YAML only as a configured output alternative.
+Default to JSON as Analyzer output; YAML is available only for the configured
+richer operation profile, not the compact findings adapter.
 Compile the selected semantic view as readable text sections, preserving meaning,
 exact literals and necessary evidence/target handles. Checkpoint and reference
 bindings belong in the private runtime manifest, not model text. Do not serialize
 the runtime envelope into the prompt or repeat irrelevant empty collections.
-Describe multi-policy groups and alternatives without granting model write authority.
+Describe multi-policy groups and alternatives only when the richer operation
+profile is selected, without granting model write authority.
 Bind each input section to a Policy Engine projection rule: approved catalog,
 accepted state/policy effects, current input, or relevant earlier checkpoint input.
 Reusing Analyzer input requires current role/source authorization; never forward

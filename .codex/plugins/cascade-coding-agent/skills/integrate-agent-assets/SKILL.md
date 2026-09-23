@@ -23,6 +23,11 @@ architecture inside this skill.
 
 ## Workflow
 
+Apply the [semantic interpretation rule](../maintain-harness/SKILL.md#workflow)
+to every candidate and consumer, regardless of topology. Reject keyword/regex
+substitutes for LLM-interpreted claims or semantic decisions, including generated
+code, recommendations, examples, defaults and fallback paths.
+
 1. Validate packet identity, references, digests, approval state, and target
    compatibility. Reject ambiguous owners and unresolved high-risk gaps.
 2. Build an integration map from each accepted artifact to one target-owned
@@ -35,7 +40,8 @@ architecture inside this skill.
    work, graph state when one already exists, and validation commands. Bind
    every designed capability to one existing owner or an explicit gap; never
    invent a dynamic role or local fallback for an unavailable plugin.
-5. Keep deterministic routing outside prompts where the target supports it.
+5. Keep routing over validated structured fields in code where the target supports it;
+   free-text meaning must first be interpreted by an LLM, never lexical matching.
    Preserve typed inputs/outputs, tool permissions, confirmation, state,
    budgets, recovery, observability, and done conditions.
    Only for an explicitly requested or already adopted stateful-agent packet,

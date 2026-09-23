@@ -15,6 +15,11 @@ Retain a separate role only when it has an independently goal-directed and evalu
 
 ## Build the contracts
 
+Apply [the semantic decision boundary](../design-agent-blueprint/references/semantic-decision-boundary.md)
+to every role contract. Assign free-text interpretation to an LLM producing typed,
+source-bound claims with uncertainty, and validation/authority to code. Reject
+keyword/regex substitutes in responsibilities, examples, defaults and fallbacks.
+
 Only when the user explicitly requests the Analyzer–Policy Engine–Composer
 family (including `schema-values-text@1`) or an accepted target architecture
 already adopts it, read [the stateful-agent profile](references/stateful-agent-profile.md).

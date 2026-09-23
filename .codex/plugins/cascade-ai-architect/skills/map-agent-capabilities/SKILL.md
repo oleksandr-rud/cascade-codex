@@ -32,6 +32,11 @@ Ask only when the missing answer can materially change the design and cannot be 
 
 ## Classify and cluster
 
+Apply [the semantic decision boundary](../design-agent-blueprint/references/semantic-decision-boundary.md)
+before assigning owners. Claim extraction and meaning-dependent decisions belong
+to LLM interpretation; never classify keyword/regex substitutes as deterministic
+capabilities or recommend them as defaults, examples or fallbacks.
+
 Classify each capability boundary as:
 
 - `deterministic`: stable rules, parsing, validation, permissions, accounting, state transitions, or reducers;

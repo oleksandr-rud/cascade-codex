@@ -57,6 +57,8 @@ including advisory classifiers, prefilters and fallbacks. LLM interpretation
 must emit defined enums/claims; code validates and consumes them. A typed wrapper
 around lexical inference still violates the boundary. Report semantic shortcuts
 separately from permitted exact format parsing and structural validation.
+Apply this check to recommendations, generated assets, defaults, examples and
+prototypes too; none may offer lexical matching as a substitute for real claims.
 
 - `AUTHORITY_COLLISION`: more than one source claims the same runtime policy.
 - `ROUTING_GAP`: a valid structured request has no validated skill or role route,

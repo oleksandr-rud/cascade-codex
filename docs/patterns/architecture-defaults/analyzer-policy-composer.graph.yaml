@@ -23,10 +23,10 @@ do_not_use_when:
 nodes:
   - id: analyzer
     kind: model-boundary
-    owns: "Checkpoint-bound JSON StateDelta proposals from scoped compact block-text input."
+    owns: "Semantic findings or selected operation proposals from scoped compact text; host binds the internal StateDelta."
   - id: policy-runtime
     kind: application-policy
-    owns: "Deterministic admission/selection, current-state transactions, lifecycle guards, role/task policy-state slice issuance, and eligible direct work calls."
+    owns: "Deterministic admission/selection, current-state transactions, lifecycle guards, role/task policy-state slice issuance, eligible direct work calls and hard effect gates; not ordinary answer strategy."
   - id: state-memory
     kind: data-boundary
     owns: "Claims/state/memory and checkpoint-owned delta, state/context bindings and receipts; derived turn views."
@@ -35,7 +35,7 @@ nodes:
     owns: "Format only Policy Engine/admission-issued role/task slices and approved prompt assets as compact text; no independent state selection or access."
   - id: main-composer
     kind: model-boundary
-    owns: "Canonical response candidates from compiled ComposerContext."
+    owns: "Canonical response candidates and ordinary answer strategy from compiled ComposerContext within admitted facts and hard constraints."
   - id: response-gate
     kind: application-policy
     owns: "Candidate validation and one canonical response commit before publication."
@@ -94,5 +94,6 @@ decisions:
     exception_when: "The target has no voice or research requirement; omit that component entirely."
 validation:
   - "Bind the owning plugin version/digest and preserve proposal-only Analyzer and deterministic state authority."
+  - "Preserve broad Composer choice for ordinary replies; require a source-bound rule for each fixed answer mode or structure."
   - "Compile and review the target blueprint against the plugin acceptance table."
   - "Prove no-request/no-research, state/context isolation, stale-result handling, and voice interruption when enabled."

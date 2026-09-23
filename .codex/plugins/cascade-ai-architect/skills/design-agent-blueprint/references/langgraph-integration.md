@@ -14,13 +14,20 @@ implements the minimal route:
 analyzer -> policy -> COMPOSE ? composer : END
 ```
 
-The Analyzer node obtains a fresh admitted Analyzer slice, calls the model, and
-returns only a proposed `StateDelta`. The target's `applyPolicy` callback must
+The Analyzer node obtains a fresh admitted Analyzer slice and calls the model.
+For [semantic findings](analyzer-findings.md), supply `bindAnalysis` to convert
+the result against that same issued invocation before returning a proposed
+`StateDelta`. A binding error stops before policy; raw findings and private
+bindings are not added to graph state. Existing adapters that already return
+bound deltas omit this optional hook. The target's `applyPolicy` callback must
 validate the delta, apply a revision-checked, idempotent state transaction, and
 return a small `COMPOSE` or `STOP` receipt. The Composer node obtains a new slice
 from the committed revision and calls the model. The target's `release` callback
-must validate and commit the canonical response. A denied or unresolved decision
-stops before Composer. Errors in context issuance or release fail closed. Research, voice,
+must validate and commit the canonical response. `COMPOSE` means a response may
+be built, not that policy has selected its answer mode. An unresolved question can
+still take `COMPOSE` so Main Composer can ask or explain a limitation; use `STOP`
+only when no user-facing response may be issued through this path. Errors in
+context issuance or release fail closed. Research, voice,
 interim status and tool execution require separately admitted branches; this
 small graph does not silently add them.
 
@@ -33,6 +40,7 @@ const graph = createLangGraphPipeline({
   checkpointer: targetDurableCheckpointer,
   issueContext: targetIssueAndAssemble,
   analyze: targetAnalyzer,
+  bindAnalysis: targetBindFindings, // Omit only when analyze already returns a bound delta.
   applyPolicy: targetValidateReduceAndCommit,
   compose: targetComposer,
   release: targetValidateAndCommitResponse,
@@ -41,6 +49,14 @@ await graph.invoke({requestRef: admittedRequestRef}, {
   configurable: {thread_id: authenticatedThreadId},
 });
 ```
+
+`bindAnalysis(findings, {requestRef, manifest, config})` is a host callback.
+Resolve the exact issued AnalyzerContext and private reference bindings from
+the same invocation, then use the Python findings adapter or a parity-tested
+target-language port. Do not bind to a newer context after a concurrent update;
+policy must reject stale proposals and the host must reissue/reanalyze. The
+JavaScript graph does not itself launch Python. The binding hook adds no model
+call, state commit, authorization or provider-cache implementation.
 
 `issueContext` must call the reviewed `schema-values-text@1` engine's
 `issue(request, snapshot)` and `assemble(slice, request)` under live host

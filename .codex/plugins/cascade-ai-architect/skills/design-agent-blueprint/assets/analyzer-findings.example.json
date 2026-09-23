@@ -1,0 +1,72 @@
+{
+  "schema_version": "analyzer-findings.v1",
+  "claims": [
+    {
+      "local_ref": "reported_budget",
+      "subject_ref": "project",
+      "predicate": "budget",
+      "value": {
+        "amount_minor": 500000,
+        "currency": "USD"
+      },
+      "literal_quote": "Atlas's budget is $5,000",
+      "support": "reported",
+      "evidence_refs": [
+        "e1"
+      ],
+      "supersedes_ref": null
+    }
+  ],
+  "intent": {
+    "target_ref": "requested_outcome",
+    "value": "confirm_budget",
+    "support": "reported",
+    "evidence_refs": [
+      "e1"
+    ]
+  },
+  "gaps": [
+    {
+      "target_ref": "budget_confirmation",
+      "status": "unknown",
+      "detail": "Alex has not confirmed the reported budget.",
+      "support": "inferred",
+      "evidence_refs": [
+        "e1"
+      ]
+    }
+  ],
+  "plan": {
+    "add_steps": [
+      {
+        "local_ref": "ask",
+        "title": "Ask Alex to confirm the reported budget",
+        "kind": "question",
+        "owner_ref": "assistant",
+        "dependency_refs": [],
+        "precondition_refs": [],
+        "evidence_refs": [
+          "e1"
+        ]
+      },
+      {
+        "local_ref": "wait",
+        "title": "Wait for Alex's answer",
+        "kind": "wait",
+        "owner_ref": "runtime",
+        "dependency_refs": [
+          "ask"
+        ],
+        "precondition_refs": [],
+        "evidence_refs": [
+          "e1"
+        ]
+      }
+    ],
+    "supersede_steps": [],
+    "cancel_step_refs": [],
+    "evidence_refs": [
+      "e1"
+    ]
+  }
+}

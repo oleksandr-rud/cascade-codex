@@ -1,7 +1,7 @@
 # Simple modular agent with vertical slices
 
 Contract: `simple-modular-agent@1.4`; default implementation profile for
-`analyzer-policy-composer@2.4`, accepted 2026-09-08.
+`analyzer-policy-composer@2.5`, originally accepted 2026-09-08.
 This replaces the earlier baseline requirement for an accepted-event journal
 and reusable read models. Role authority and logical delta/context schemas stay
 unchanged. This is a target design recipe, not new application source in Cascade.

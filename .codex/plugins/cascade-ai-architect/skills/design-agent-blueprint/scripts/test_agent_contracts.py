@@ -5,7 +5,7 @@ import json
 import unittest
 from validate_agent_contracts import (ROOT, SCHEMA, KEYWORDS, check, validate_contract,
                                       validate_delta, validate_fixture, validate_projection,
-                                      validate_receipt)
+                                      validate_receipt, validate_response_candidate)
 
 FIXTURE=json.loads((ROOT/'assets/state-delta-policy-projection.example.json').read_text())
 
@@ -167,5 +167,28 @@ class AgentContractsTests(unittest.TestCase):
     def test_composer_cannot_receive_incomplete_plan(self):
         c=self.data['composer_context'];c['next_steps']['completeness']='partial'
         self.reject(validate_contract('ComposerContext',c),'complete projection')
+    def test_composer_selects_ordinary_response_act(self):
+        c=self.data['composer_context'];contract=c['response_contract']
+        contract['answer_mode']='compose';contract['format']['structure']='composer_choice'
+        contract['missing_information']='composer_choice'
+        contract['allowed_response_acts']=['answer','ask','state_limitation']
+        candidate={'schema_version':'response-candidate.v1','context_id':c['context_id'],
+                   'response_act':'answer','text':'I can explain the supported part.','claim_refs':[]}
+        self.assertEqual(validate_response_candidate(candidate,c),[])
+        candidate['response_act']='ask'
+        self.assertEqual(validate_response_candidate(candidate,c),[])
+        candidate['response_act']='dispatch_action'
+        self.reject(validate_response_candidate(candidate,c),'response act not allowed')
+        candidate['response_act']='answer';candidate['context_id']='stale-context'
+        self.reject(validate_response_candidate(candidate,c),'response context mismatch')
+    def test_fixed_mode_requires_matching_candidate(self):
+        c=self.data['composer_context']
+        candidate={'schema_version':'response-candidate.v1','context_id':c['context_id'],
+                   'response_act':'answer','text':'An answer.','claim_refs':[]}
+        self.reject(validate_response_candidate(candidate,c),'fixed answer mode mismatch')
+        c['response_contract']['allowed_response_acts']=[]
+        self.reject(validate_contract('ComposerContext',c),'requires an allowed act')
+        c['response_contract']['allowed_response_acts']=['answer']
+        self.reject(validate_contract('ComposerContext',c),'fixed answer mode must be allowed')
 
 if __name__=='__main__':unittest.main(verbosity=2)

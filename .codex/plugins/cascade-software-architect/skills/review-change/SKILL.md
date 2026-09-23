@@ -26,6 +26,8 @@ keywords, phrase tables or lexical scores, including partial-task shortcuts
 and fallbacks. Require LLM interpretation into defined enums/claims followed
 by code validation and consumption. Exact format parsing remains mechanical;
 an enum produced by lexical guessing is still a violation.
+Reject these substitutions in recommendations, defaults, examples, prototypes
+and optimization proposals as well as executable implementations.
 
 Find correctness defects, regressions, unsafe edge cases, contract or ownership
 drift, stale consumers/documentation, and missing proof. Separate introduced

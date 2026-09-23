@@ -27,6 +27,11 @@ them to Prompt.
 
 ## Workflow
 
+Carry [the semantic decision boundary](../design-agent-blueprint/references/semantic-decision-boundary.md)
+into every prompt brief that interprets free text: LLM-produced, source-bound
+claims and explicit uncertainty, then code validation and consumption. Never
+request keyword/regex substitutes, including examples, defaults and fallbacks.
+
 Only when the user explicitly requests the Analyzer–Policy Engine–Composer
 family (including `schema-values-text@1`) or an accepted target architecture
 already adopts it, read [the stateful-agent profile](references/stateful-agent-profile.md).

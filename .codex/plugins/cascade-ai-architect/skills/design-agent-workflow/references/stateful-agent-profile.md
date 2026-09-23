@@ -11,6 +11,11 @@ research return through analysis, and voice epoch/order rules to concrete
 workflow phases. Do not substitute a direct Analyzer tool call or pass raw
 deltas to a Composer. The generic loop below must preserve these boundaries.
 
+For [semantic findings](../../design-agent-blueprint/references/analyzer-findings.md),
+bind model output to the issued context before the internal delta enters policy.
+Use the existing Analyzer node, not another model role. Binding failure stops
+that attempt; empty findings still reach policy for runtime transitions.
+
 Use [event projections and authoring rules](../../design-agent-blueprint/references/event-projections-and-context-format.md)
 for checkpoint-owned processing groups, direct current-state context builders,
 and optional accepted-event batches/projection cursors. Distinguish semantic replay from live

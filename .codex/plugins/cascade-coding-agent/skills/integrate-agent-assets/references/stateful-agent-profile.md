@@ -10,6 +10,16 @@ limited to issued inputs, and release/delivery gates. Keep prompt metadata
 private and revalidate projected/cache content before reuse. Optional interim
 status or voice assets cannot acquire completion or playback authority. Mark
 missing target adapters as gaps; never activate a reference fixture as runtime.
+
+For compact Analyzer outputs, consume the AI Architect
+[semantic findings adapter](../../../../cascade-ai-architect/skills/design-agent-blueprint/references/analyzer-findings.md).
+Bind its schema, target field/predicate schemas and private scoped reference maps
+to the same issued AnalyzerContext. Reuse the Python adapter or parity-test the
+target-language port. Feed its internal delta through live admission and the
+target transaction; its prepared-data tests do not establish semantic quality
+or production permissions. When LangGraph is selected, wire `bindAnalysis`
+before `applyPolicy`; keep the private binding data outside graph checkpoints.
+
 For `schema-values-text@1`, bind reviewed profile YAML/JSON, source snapshots,
 the issuer's current admission callback, target tokenizer and bounded block
 cache. Route production context through issue/assemble, not the low-level

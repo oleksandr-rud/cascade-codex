@@ -24,6 +24,12 @@ outputs to the target or candidate generator.
 
 ## Workflow
 
+Apply [the semantic decision boundary](../design-agent-blueprint/references/semantic-decision-boundary.md)
+to candidate behavior and evaluation design, regardless of topology. Keyword or
+regex matches cannot stand in for claims or semantic claim-support judgments.
+Include paraphrase, negation and quoted-text cases where relevant; require
+semantic review of interpretation, including examples and fallback paths.
+
 Only when the user explicitly requests the Analyzer–Policy Engine–Composer
 family (including `schema-values-text@1`) or an accepted target architecture
 already adopts it, read [the stateful-agent profile](references/stateful-agent-profile.md).

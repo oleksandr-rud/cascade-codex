@@ -1,7 +1,7 @@
 # Implementation and completeness of Analyzer Policy Composer
 
-Pattern: `analyzer-policy-composer@2.4`
-Assessment scope: reference architecture and offline contract checks; extended 2026-09-08.
+Pattern: `analyzer-policy-composer@2.5`
+Assessment scope: reference architecture and offline contract checks; extended 2026-09-22.
 
 The architecture is implementable as a single application module with several
 model calls. Its useful property is the explicit separation of semantic proposals,
@@ -13,7 +13,8 @@ establish that two calls outperform one; that requires a target-specific baselin
 ```text
 accepted event + authenticated scope
   -> Policy Engine/admission issues initial Analyzer task slice -> compile
-  -> Analyzer adapter -> JSON StateDelta v3 -> safe parse/schema validation
+  -> Analyzer findings/selected semantic profile -> parse/schema validation
+  -> host reference binding -> StateDelta v3 validation
   -> admission + candidate selection + staged reduction
   -> cross-group invariants -> one transaction/CAS + current state + receipt + pending work
   -> checkpoint-grouped current state -> Policy Engine/admission issues next role/task slice
@@ -36,7 +37,9 @@ portable JSON schemas remain independent of that implementation language.
 
 Use named entrypoints: `acceptEvent`, `issueRoleTaskSlice`, `compileContext`, `admitDelta`,
 `stageChanges`, `commitChangeSet`, `decideTurn`,
-`validateResponse`, and `recordDelivery`. These are responsibility names, not a
+`validateResponse`, and `recordDelivery`. `decideTurn` selects workflow eligibility;
+Main Composer selects the ordinary response act and answer strategy inside its
+admitted contract. These are responsibility names, not a
 requirement for separate classes, files, services or a generic workflow framework.
 Only committed dispatch intents can reach a provider or action adapter.
 
@@ -89,7 +92,7 @@ source review is not independent model evaluation or a numerical quality score.
 | Finding | Source correction | Remaining evidence boundary |
 | --- | --- | --- |
 | Projection issuer and context formatter were conflated | Executable schema/value engine separates trusted profiles/values, issues opaque role/task-bound slices, rechecks host admission and formats only selected blocks | Offline mismatch/revocation/budget/cache tests exist; live domain rules, database snapshots and real tokenizer/provider integration remain target work |
-| Analyzer model output and full runtime delta were described inconsistently | Transport and role contracts distinguish advertised semantic schema, runtime binding and complete-delta validation | The target still must implement the advertised schema/handle resolver/binder and adversarial adapter tests |
+| Analyzer model output and full runtime delta were described inconsistently | Transport contracts distinguish semantic output from runtime delta; [findings adapter](analyzer-findings.md) implements the compact subset | Bind scoped target maps, current admission and transaction; richer operations or a target-language port require additional implementation and parity tests |
 | Core flow obscured whether projections precede commit | Explicit stage -> atomic commit -> direct context build; projection failure cannot undo committed state | Database rollback and pending-work recovery; lag tests only for persisted async views |
 | Voice role was credited with playback events | Model owns presentation; adapter/client owns observations and runtime owns receipts | Physical playback, barge-in and reconnect evidence |
 | Changed catalogs could be put in the data suffix | Changed definitions rebuild a trusted role profile; accepted policy effects remain data | Provider authority mapping and role-specific semantic tests |

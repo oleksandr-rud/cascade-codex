@@ -32,6 +32,11 @@ and destructive replacement require their own authority.
 
 ## Workflow
 
+Apply the [semantic interpretation rule](../maintain-harness/SKILL.md#workflow)
+to every adaptation. Preserve LLM-interpreted typed claims and code-owned
+validation; never add or recommend keyword/regex substitutes for meaning in
+target instructions, roles, skills, examples, defaults or fallbacks.
+
 1. Consume the host-supplied target inventory and treat it as a source map,
    not semantic product truth.
    Bind the real target name, kind, users, stack, source roots and commands from

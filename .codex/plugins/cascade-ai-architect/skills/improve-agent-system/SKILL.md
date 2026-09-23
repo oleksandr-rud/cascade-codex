@@ -30,6 +30,9 @@ instructions, search caches, or substitute an unbound evaluator.
 
 ## Non-negotiable boundary
 
+- Apply [the semantic decision boundary](../design-agent-blueprint/references/semantic-decision-boundary.md).
+  Reject keyword/regex replacements for semantic claims or judgments, even as
+  cost/latency optimizations, candidate examples, defaults or fallbacks.
 - Work offline against a frozen baseline and versioned candidate copies.
 - Keep build, validation, sealed-promotion, and shadow-regression partitions
   digest-bound and semantically deduplicated.

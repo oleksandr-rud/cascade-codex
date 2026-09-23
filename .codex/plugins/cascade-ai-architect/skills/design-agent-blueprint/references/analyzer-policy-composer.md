@@ -1,7 +1,7 @@
 # Analyzer, Policy Engine, and Composer
 
 Pattern ID: `analyzer-policy-composer`\
-Version: `2.4`
+Version: `2.5`
 Status: `reference-default`\
 Owner: Cascade AI Architect
 
@@ -37,7 +37,8 @@ flowchart TD
     S[(Authoritative state)] --> X
     X --> F[Compile issued slice]
     F --> A[Analyzer]
-    A --> D[StateDelta only]
+    A --> B[Semantic findings or selected operation profile]
+    B --> D[Host binds StateDelta proposal]
     D --> P[Policy Engine: validate, reduce, compile]
     P --> S
     P --> C[Issue and compile Composer task slice]
@@ -60,9 +61,9 @@ Composer, Researcher, Voice and separately authorized frontend views.
 
 | Component | Reads | Produces | Authority |
 |---|---|---|---|
-| Analyzer | Accepted event, scoped state, evidence, extraction contract | `StateDelta` | Proposals only; no user answer, persistence, direct research call, or domain tool execution |
-| Policy Engine / runtime | Delta, authoritative state, versioned policy, authenticated scope | Accepted state revision, decision receipt, context projections, authorized work requests | Sole state commit, memory write, routing, and authorization owner |
-| Main Composer | `ComposerContext` | `ResponseCandidate` | Sole model author of canonical meaning; approved fixed runtime status phrases are the narrow documented exception; no state/memory writes or tools |
+| Analyzer | Accepted event, scoped state, evidence, extraction contract | Semantic findings or selected operation profile; host binds `StateDelta` | Proposals only; no user answer, persistence, direct research call, or domain tool execution |
+| Policy Engine / runtime | Delta, authoritative state, versioned policy, authenticated scope | Accepted state revision, decision receipt, context projections, authorized work requests | Sole state commit, memory write, workflow eligibility, and effect authorization owner; does not author the answer or choose its ordinary presentation strategy |
+| Main Composer | `ComposerContext` | `ResponseCandidate` | Sole model author of canonical meaning and ordinary answer strategy within admitted facts and hard constraints; approved fixed runtime status phrases are the narrow documented exception; no state/memory writes or tools |
 | Voice Composer | Validated canonical answer and delivery controls | Presentation/segmentation output for the voice adapter | Presentation only; no independent facts, delivery confirmation, policy decisions, research, or tools |
 | Researcher | One authorized `ResearchRequest` | `ResearchResult` evidence | Read-only retrieval inside the supplied scope; no answer publication or state commit |
 
@@ -85,7 +86,13 @@ route enforcement and release enforcement as runtime-owned steps. Required
 semantic interpretation and evidence-support checks remain explicit LLM or
 qualified-reviewer assessments; deterministic validation alone cannot prove them.
 Analyzer proposes;
-Composer produces a candidate; neither owns the edges that authorize effects.
+Composer produces a candidate; neither model owns the edges that authorize effects.
+Workflow routing decides whether an invocation may compose, wait, dispatch or
+stop. It does not decide whether an eligible ordinary reply must be an answer,
+question or explanation of a limitation. Issue a broad `compose` response
+contract by default and let Main Composer select among permitted response acts.
+Restrict that choice only for a source-bound hard requirement, such as a required
+confirmation, mandatory disclosure, status-only purpose or prohibited claim.
 Compile a separate current context for each model step. Composer receives
 admitted findings and required unresolved work, not raw Analyzer proposals as
 accepted facts. A missing input returns to the issuer through the existing gap
@@ -101,10 +108,16 @@ invalidate affected context. Dynamic research expansion is
 optional and bounded by the same admission and shared budgets.
 
 Carry these selected decisions together into workflow, context and prompt briefs.
-Keep pattern 2.4 and existing wire contracts; this is an authoring option, not
+Keep pattern 2.5 and existing StateDelta contracts; this is an authoring option, not
 an additional registered transport profile or a measured performance claim.
 
 ## Claims and the Analyzer boundary
+
+Prefer [semantic Analyzer findings](analyzer-findings.md) for the compact
+supported subset: claims, intent, gaps and optional task plans. The host adapter
+converts these into the existing internal StateDelta before policy. Richer
+operation/candidate profiles remain explicit alternatives. Task plans do not
+take ordinary answer strategy away from Main Composer.
 
 Apply [the semantic decision boundary](semantic-decision-boundary.md).
 Analyzer interprets text into typed proposals; code consumes admitted fields.
@@ -202,6 +215,12 @@ affected operation. Use typed rules for conditions, not prose interpreted by a
 model at enforcement time. Semantic assessments may be observations, never the
 final permission authority. Record matched rules and reasons; invalidate their
 dependent decisions/context when source, state, permission, or policy changes.
+Do not encode a complete dialogue tree in policy rules. The Policy Engine may
+deny an effect, require input or confirmation, withhold an unsupported fact, or
+set a necessary output obligation. Otherwise it should pass admitted evidence,
+uncertainty and user preferences to Main Composer without prescribing an answer
+outline or selecting a single ordinary response act. A preference is guidance,
+not a hard gate unless the user or channel made it a requirement.
 
 ## Context compilation
 
@@ -228,8 +247,10 @@ unresolved conflicts when compacting; if they cannot fit, return a bounded gap
 instead of silently dropping them. Use the same policy rules for the initial
 Analyzer context and for result-triggered re-analysis.
 
-The Main Composer can express only permitted response acts using admitted
-claims. Missing information returns a typed composition gap to the runtime; it
+The Main Composer selects an answer, question, or limitation when the response
+contract permits those acts, and builds the final answer from admitted claims.
+Missing information may be stated or queried when permitted; a genuinely missing
+required context section returns a typed composition gap to the runtime. Composer
 does not trigger direct retrieval or invent a value. Context or policy expiry
 requires revalidation before publication. Schema and reference checks establish
 structural eligibility; factual entailment and faithful phrasing still require
@@ -350,7 +371,7 @@ or schema pass proves none of those runtime outcomes.
 
 ## Implementation and completeness
 
-Pattern 2.4 adopts [event projections, checkpoint grouping and compact model text](event-projections-and-context-format.md).
+Pattern 2.5 retains [event projections, checkpoint grouping and compact model text](event-projections-and-context-format.md).
 Analyzer emits JSON StateDelta; deterministic admission commits accepted changes,
 Policy Engine/admission issues role/task policy-state slices under access,
 freshness and budget rules, and Context Compiler formats only those issued inputs.

@@ -28,6 +28,8 @@ over plain text. Require LLM-produced defined enums/claims, structural
 validation and code-owned consumption/authority, including fallback paths.
 Format parsing is not semantic interpretation; a typed wrapper around a
 lexical guess does not satisfy this boundary.
+Reject these substitutions in recommendations, defaults, examples, prototypes
+and optimization proposals as well as executable implementations.
 
 Check for duplicated authority, bypassed boundaries, cyclic dependencies,
 shallow abstractions, invalid pattern composition, write conflicts, missing

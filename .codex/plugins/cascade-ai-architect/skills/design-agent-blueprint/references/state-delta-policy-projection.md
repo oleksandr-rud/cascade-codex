@@ -1,7 +1,7 @@
 # StateDelta, policy data, and role projections
 
 Contract ID: `state-delta-policy-projection`\
-Version: `2.4`
+Version: `2.5`
 Status: `reference-design`\
 Parent: [Analyzer–Policy Engine–Composer](analyzer-policy-composer.md)
 
@@ -13,7 +13,7 @@ the field identities and before/delta/after/context relationship.
 ## Wire authority and validation
 
 [agent-contracts.schema.json](agent-contracts.schema.json) owns the versioned
-logical shapes. This document owns lifecycle and enforcement semantics. Pattern 2.4
+logical shapes. This document owns lifecycle and enforcement semantics. Pattern 2.5
 uses `state-delta.v3`, `analyzer-context.v2` and `composer-context.v2`; all other
 wire IDs are declared by their definitions. Unknown versions and fields fail
 closed. Do not reinterpret old payloads as the new version; rebuild contexts from
@@ -190,6 +190,11 @@ Analyzer responsibilities are bounded:
    no field edit. Return an empty delta when nothing changed.
 
 ## StateDelta wire contract
+
+StateDelta is the internal proposal contract. The compact
+[Analyzer findings profile](analyzer-findings.md) supplies a simpler model
+schema and executable binding into one atomic v3 group; the operation-oriented
+profile below retains multi-group and alternative-selection capabilities.
 
 Wire definitions: `StateDelta`, `AnalysisBlock`, `PolicyFieldChange`. See the corresponding `$defs` in
 [agent-contracts.schema.json](agent-contracts.schema.json).
@@ -399,7 +404,13 @@ Question wording and a model saying “done” cannot satisfy an action oracle.
 ## Scheduling, failure and context resolution
 
 A turn decision explicitly chooses `compose`, `wait_for_research`, `request_input`,
-`dispatch_action`, `status`, or `stop` under registered rules. Research requests
+`dispatch_action`, `status`, or `stop` under registered rules. This is workflow
+eligibility, not an answer outline. Use `request_input` only when a missing answer
+blocks the task; otherwise route to `compose` with the available facts and gaps.
+The Composer may answer what is supported, ask a useful question, or explain a
+limitation within its response contract. A mandatory input route still asks its
+user-facing question through Main Composer or a separately approved fixed phrase;
+the policy decision itself is not answer text. Research requests
 mark `response_dependency: blocking | nonblocking`. Blocking research prevents a
 substantive canonical answer until its result is admitted or its deadline selects
 a fallback. A bounded acknowledgement can precede it under a separate response
@@ -665,29 +676,35 @@ and status needed for the answer. These blocks exclude writable field catalogs,
 rejected raw deltas, unrelated policy data and hidden chain-of-thought. The
 Composer uses them to answer consistently, not to derive new state.
 
-`ResponseContract` tells the Composer both *what response act is permitted* and
-*how to render it*. Policy Engine constructs it from admitted policy evaluations
-and channel constraints. The Composer chooses wording within that boundary and
-returns a `ResponseCandidate` tied to `context_id`. It cannot silently change
-`answer_mode`, add a forbidden action, omit a required disclosure, exceed a hard
-format limit, initiate research, or rewrite state. Candidate validation checks
-schema, required/forbidden elements, claim references and current context before
-canonical commit.
+`ResponseContract` supplies the permitted acts and hard output obligations.
+For an ordinary reply, Policy Engine sets `answer_mode: compose`, leaves
+`format.structure` and `missing_information` at `composer_choice` when no
+source-bound requirement fixes them, and offers all eligible acts in
+`allowed_response_acts`. Main Composer chooses the response act, structure,
+emphasis and wording needed to answer the user; it returns a `ResponseCandidate`
+tied to `context_id`. Use a fixed answer mode, structure or missing-information
+path only when a registered rule, explicit user requirement or channel contract
+requires it. Composer cannot add a forbidden action, omit a required disclosure,
+exceed a hard format limit, initiate research, or rewrite state. Candidate
+validation checks the chosen act against the allowed set, plus schema, hard
+obligations, claim references and current context before canonical commit.
 
 Composer reminders or response guidance are policy output, not conversational
 memory. The engine compiles trusted rule IDs into `response_intents`, style and
-format enums, required/forbidden elements, disclosures and allowed response acts;
-their versioned rule/evaluation references remain in the context dependencies.
+format guidance, required/forbidden elements, disclosures and allowed response
+acts; their versioned rule/evaluation references remain in the context dependencies.
 Do not copy arbitrary free text from memory or `PolicyData` into an instruction
 position. This keeps guidance enforceable while `recent_memory` remains factual
 continuity data.
 
 Formatting and style use registered enums or schema references, not arbitrary
-prompt fragments stored in policy data. If two style rules conflict, Policy
-Engine resolves them before composition using declared precedence and records the
-decision. Hard safety, truthfulness, confirmation and accessibility obligations
+prompt fragments stored in policy data. Explicit user preferences are passed as
+guidance unless their source makes them mandatory. Policy Engine resolves only
+conflicting hard constraints; it need not pick a tone or structure for every
+reply. Hard safety, truthfulness, confirmation and accessibility obligations
 outrank tone preferences. A missing required response constraint yields
-`CONTEXT_GAP`; the runtime does not pass a vague “respond appropriately” fallback.
+`CONTEXT_GAP`; an optional style hint does not. The runtime does not pass a vague
+“respond appropriately” fallback in place of a required constraint.
 
 ## Tone, emotion, and response intent
 

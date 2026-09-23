@@ -27,6 +27,11 @@ into policy, permission, or persona facts.
 
 ## Workflow
 
+Apply [the semantic decision boundary](../design-agent-blueprint/references/semantic-decision-boundary.md)
+when interpreting source claims and deriving requirements. Never substitute
+keyword/regex matches for meaning, or recommend such agent behavior in generated
+requirements, examples, defaults or fallbacks.
+
 1. Verify the projection's canonical Persona ID/version/JCS digest, mapping
    digest, consumer=`agent-architecture`, privacy destination/authorization,
    synthetic disclosure, and validation receipt. Missing or mismatched

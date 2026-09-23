@@ -20,6 +20,9 @@ that emits defined enums/claims and explicit uncertainty. Code validates and
 consumes that structure under existing domain authority. Reject regex/keyword
 intent, relevance, approval or routing inference, including prefilters and
 fallbacks; declared syntax parsing is a separate mechanical concern.
+Never recommend or generate these substitutes in defaults, examples, prototypes
+or cost/latency optimizations. A keyword match wrapped in a claim schema remains
+a violation; unavailable model interpretation yields an explicit gap.
 
 For UI architecture, consume the shared Generative UI practice through
 `cascade-design:design-system`, `references/generative-ui.md`. Map supported

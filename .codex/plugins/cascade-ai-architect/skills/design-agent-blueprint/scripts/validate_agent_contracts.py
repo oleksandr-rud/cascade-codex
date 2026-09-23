@@ -169,6 +169,25 @@ def validate_contract(name, value):
         if value['status'] in ('NOOP','REJECTED') and (value['semantic_changed'] or value['record_changes'] or value['dispatch_intent_refs']):
             errors.append('noop/rejected receipt cannot commit effects')
         if value['status'] == 'REJECTED' and any(g['status'] == 'applied' for g in value['group_outcomes']): errors.append('rejected receipt cannot apply groups')
+    if name == 'ResponseContract':
+        acts = value['allowed_response_acts']
+        if not acts: errors.append('response contract requires an allowed act')
+        if value['answer_mode'] != 'compose' and value['answer_mode'] not in acts:
+            errors.append('fixed answer mode must be allowed')
+    if name == 'ComposerContext':
+        errors += validate_contract('ResponseContract', value['response_contract'])
+    return errors
+
+
+def validate_response_candidate(candidate, context):
+    errors = validate_contract('ResponseCandidate', candidate) + validate_contract('ComposerContext', context)
+    if errors: return errors
+    contract = context['response_contract']
+    if candidate['context_id'] != context['context_id']: errors.append('response context mismatch')
+    if candidate['response_act'] not in contract['allowed_response_acts']:
+        errors.append('response act not allowed')
+    if contract['answer_mode'] != 'compose' and candidate['response_act'] != contract['answer_mode']:
+        errors.append('fixed answer mode mismatch')
     return errors
 
 

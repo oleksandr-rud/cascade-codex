@@ -14,7 +14,7 @@ target evidence still determines adoption, adaptation, or rejection.
 
 ## Default Architecture
 
-`Use-case handler/processor → Analyzer → JSON delta → Policy Engine → current-state transaction → direct context builder → Main Composer → response gate`
+`Use-case handler/processor → Analyzer → semantic findings → host-bound delta → Policy Engine → current-state transaction → direct context builder → Main Composer → response gate`
 
 Default to a modular monolith with vertical use-case slices, current records and
 ordinary calls. Context projection does not require CQRS, an event journal or
@@ -27,6 +27,10 @@ admission of a research request. The
 owns claims, state, memory, policies, context, and voice semantics; use its
 [design template](../../../.codex/plugins/cascade-ai-architect/skills/design-agent-blueprint/assets/analyzer-policy-composer.template.md).
 This host pair owns catalog selection and deployment fit.
+The policy runtime decides whether work may compose, wait, dispatch or stop and
+enforces source-bound hard constraints. Main Composer owns the ordinary answer:
+whether to answer, ask or state a limitation, and how to structure the response
+within the permitted acts. Policy rules must not encode a full dialogue tree.
 
 ## State And Role Context Contracts
 
@@ -36,6 +40,10 @@ for typed changes, policy-specific records, context selection, and checkpointed
 message memory. Its worked trace shows before/delta/after and Composer context.
 The plugin also owns [machine wire schemas](../../../.codex/plugins/cascade-ai-architect/skills/design-agent-blueprint/references/agent-contracts.schema.json)
 and the [implementation/completeness assessment](../../../.codex/plugins/cascade-ai-architect/skills/design-agent-blueprint/references/implementation-and-completeness.md).
+For the compact supported subset, use its
+[semantic findings schema and adapter](../../../.codex/plugins/cascade-ai-architect/skills/design-agent-blueprint/references/analyzer-findings.md).
+The plugin owns this model-to-delta contract; target code owns live admission
+and transactions. Existing richer operation profiles remain available.
 
 ## Reference File Structure
 
@@ -100,7 +108,7 @@ role, prompt-brief, and evaluation skills. Keep deterministic enforcement in the
 target runtime. A missing dependency is a gap, not permission to recreate its
 behavior in the host catalog.
 
-Pattern 2.4 additionally binds the owning plugin's
+Pattern 2.5 additionally binds the owning plugin's
 [event/projection/text contract](../../../.codex/plugins/cascade-ai-architect/skills/design-agent-blueprint/references/event-projections-and-context-format.md):
 checkpoint-grouped delta/state/context references, direct Context Compiler,
 JSON Analyzer output (optional YAML) and compact block-text role input. Event

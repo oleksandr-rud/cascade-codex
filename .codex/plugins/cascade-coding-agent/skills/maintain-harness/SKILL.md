@@ -28,7 +28,11 @@ whose answer materially changes the authorized result.
 Across LLM task boundaries, implement semantic interpretation through LLM output
 with defined enums/claims and explicit uncertainty, then code-owned validation
 and consumption. Do not add regex/keyword intent, claim, relevance, approval or
-route inference, even as preprocessing or fallback. Keep syntax parsing and
+route inference, even as preprocessing or fallback. Never recommend or ship
+these substitutes in generated roles, skills, prompts, defaults, examples,
+prototypes or cost/latency optimizations. A lexical match wrapped in a claim
+schema is still a violation; missing model output requires bounded repair or an
+explicit unresolved result. Keep syntax parsing and
 authority checks deterministic. Guidance changes must report existing runtime
 violations separately from any authorized migration.
 

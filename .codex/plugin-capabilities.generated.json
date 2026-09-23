@@ -1,6 +1,6 @@
 {
   "artifact_type": "cascade-plugin-capability-catalog",
-  "catalog_digest": "5b174ee22e361199b333f16a6364f01d356924b492c5e279d5d1033bdf76670f",
+  "catalog_digest": "5346981ab1a04c2d97226c2aed3fb57d29a7979937bb4b3c757041625d07d828",
   "marketplace": ".agents/plugins/marketplace.json",
   "plugins": [
     {
@@ -549,7 +549,7 @@
     },
     {
       "descriptor_path": ".codex/plugins/cascade-ai-architect/capabilities.yaml",
-      "descriptor_sha256": "3febe3b698587c4f38b125c75ed9e66a76e772ab0b27e29d027d0fbd906ebea2",
+      "descriptor_sha256": "33cb7e2f741a1f4534afabd229e75392a67091908755ee316834e77577cd3d86",
       "manifest_path": ".codex/plugins/cascade-ai-architect/.codex-plugin/plugin.json",
       "manifest_sha256": "0a642f274d2a819c7be7c51ad77cf924e6506c7ac78ccaf289be8d74f5fae9e4",
       "model_policy": {
@@ -630,7 +630,7 @@
           "consumes": [
             "agent-capability-map"
           ],
-          "description": "Design a bounded agent blueprint with incremental product value, outcome closure, claims, memory, authorized actions, recovery and the smallest justified topology.",
+          "description": "Design a bounded agent blueprint with outcome closure, semantic Analyzer findings, optional task plans, claims, memory, authorized actions, recovery and the smallest justified topology.",
           "effect": "CANDIDATE_WRITE",
           "evaluation_cases": [
             "behavior-block-coverage"

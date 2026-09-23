@@ -1,8 +1,9 @@
 # Semantic interpretation and deterministic consumption
 
 Status: required authoring rule, adopted from the maintainer's 2026-09-10
-instruction. This governs agent design, prompts/context, software implementation,
-routing, review and evaluation. It does not claim existing runtimes conform.
+instruction, reinforced on 2026-09-22. This governs agent design, prompts/context,
+software implementation, routing, review and evaluation. It does not claim
+existing runtimes conform.
 
 ## Boundary
 
@@ -14,12 +15,22 @@ phrase lists. The ban applies to prefilters, shortcuts, fallbacks and validators
 as well as the primary classifier. More patterns, a confidence label, or passing
 phrase fixtures do not make lexical heuristics semantic interpretation.
 
+Never implement, recommend, or offer such substitutions as defaults, optional
+optimizations, templates, examples, demos, prototypes, or offline fallbacks.
+This is a mandatory constraint for every agent-authoring route, independent of
+topology or adoption of the stateful-agent profile. Carry it into generated role,
+skill, prompt and integration contracts wherever they interpret free text.
+Cost, latency, model unavailability and apparent task simplicity do not create
+exceptions. Return an explicit gap, bounded repair or unresolved outcome instead.
+
 Produce a defined structured result: allowed enums, typed claims or proposals,
 source references, scope, and explicit unknown/ambiguous/conflicting outcomes.
 Code validates and consumes those fields through the existing domain contract.
 Do not invent a new schema when the target already supplies one.
 
 A code-generated enum is not compliant if its value came from keyword inference.
+Calling a lexical match a `claim`, attaching a source ID or wrapping it in the
+claim schema does not make it a semantically interpreted, source-grounded claim.
 Likewise, extracting a verdict from an LLM's narrative with regex is not a
 structured-output boundary. Ask for schema-constrained output where supported,
 parse it with the declared format parser, validate it, and reject malformed,
@@ -63,6 +74,8 @@ Trace every text-to-decision boundary through producer, schema validation and
 consumer. Flag free-text semantic heuristics even when they are called advisory,
 high confidence, cheap admission, preprocessing or a fast path. Retain existing
 security and authorization gates during any separately scoped migration.
+Reject new candidate designs and recommendations that substitute lexical matches
+for semantic claims; check their examples and recovery paths as well as defaults.
 Guidance adoption and source/installed parity do not establish runtime migration
 or model correctness. Report remaining runtime violations explicitly.
 

@@ -2,11 +2,12 @@
  * The host supplies policy, context issuance, model calls and a checkpointer.
  */
 export function createLangGraphPipeline({
-  langgraph, checkpointer, issueContext, analyze, applyPolicy, compose, release,
+  langgraph, checkpointer, issueContext, analyze, bindAnalysis, applyPolicy, compose, release,
 }) {
   const { Annotation, StateGraph, START, END } = langgraph ?? {};
   if (!Annotation?.Root || !StateGraph || !START || !END || !checkpointer ||
-      [issueContext, analyze, applyPolicy, compose, release].some(fn => typeof fn !== 'function')) {
+      [issueContext, analyze, applyPolicy, compose, release].some(fn => typeof fn !== 'function') ||
+      (bindAnalysis !== undefined && typeof bindAnalysis !== 'function')) {
     throw Error('LANGGRAPH_BINDING_GAP: graph, checkpointer and host callbacks required');
   }
 
@@ -24,7 +25,14 @@ export function createLangGraphPipeline({
       }
       const context = await issueContext({role:'analyzer',requestRef:state.requestRef,config});
       if (!Array.isArray(context?.messages)) throw Error('CONTEXT_GAP: analyzer slice');
-      return {delta:await analyze(context.messages,{manifest:context.manifest,config})};
+      const findings = await analyze(context.messages,{manifest:context.manifest,config});
+      // Bind against the same issued invocation before checkpointing a proposal.
+      // Existing adapters that already return a bound delta remain compatible.
+      const delta = bindAnalysis === undefined ? findings : await bindAnalysis(findings,{
+        requestRef:state.requestRef,manifest:context.manifest,config,
+      });
+      if (delta == null) throw Error('ANALYSIS_GAP: bound proposal required');
+      return {delta};
     })
     .addNode('policy', async (state, config) => {
       const decision = await applyPolicy({requestRef:state.requestRef,delta:state.delta,config});

@@ -15,6 +15,12 @@ Do not use a skill to hold project facts that belong in configuration, product d
 
 ## Produce a design brief
 
+Apply [the semantic decision boundary](../design-agent-blueprint/references/semantic-decision-boundary.md)
+to every brief and generated package. Never implement or recommend keyword/regex
+substitutes for semantic triggers, claims or judgments, including helper scripts,
+examples, defaults and fallbacks. Carry this constraint into the native
+skill-creator handoff; exact syntax validation remains a code task.
+
 For every proposed skill, use [assets/skill-brief.yaml](assets/skill-brief.yaml) and define:
 
 - a verb-led semantic name and exact trigger language;

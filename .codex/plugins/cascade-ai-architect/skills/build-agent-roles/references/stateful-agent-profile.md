@@ -15,7 +15,8 @@ exception to model composition, not another general-purpose semantic owner.
 Do not invent tool access to make a tool-free role appear more agentic.
 
 Apply the [agent authoring rules](../../design-agent-blueprint/references/event-projections-and-context-format.md):
-bind JSON delta output to checkpoint/attempt identity, compact block-text input
+bind the selected semantic model output through the host adapter to internal
+delta/checkpoint identity, compact block-text input
 to the validated role projection, multi-policy reference scope, and a stable
 role/catalog prefix. Each role/task input slice is issued by Policy Engine and
 admission, including initial Analyzer input. Roles and their context formatters

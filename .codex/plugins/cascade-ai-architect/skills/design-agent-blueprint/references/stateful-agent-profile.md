@@ -24,6 +24,12 @@ It reuses existing Operation values for a bounded persistence slice, supplies
 prepared data and context/evaluation templates, and preserves domain authority.
 Treat its tests as backend evidence; provider and semantic evaluation are separate.
 
+For a new Analyzer adapter within the compact supported subset, prefer
+[semantic findings](analyzer-findings.md): claims/corrections, intent, gaps and
+optional task-plan proposals. Bind the result to internal StateDelta v3 before
+policy admission. Keep richer operation/candidate profiles when needed and
+retain Composer ownership of ordinary answer strategy.
+
 When specifying delta updates, policy data, memory or downstream context, read
 [the state and projection contract](state-delta-policy-projection.md).
 Use [the machine schema bundle](agent-contracts.schema.json) as the
