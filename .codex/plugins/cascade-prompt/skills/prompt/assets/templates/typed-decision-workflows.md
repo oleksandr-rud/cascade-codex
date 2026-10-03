@@ -130,3 +130,33 @@ into an actionable middle value.
 | Bare Qwen/GGUF generation replaces Intern/Imajev scoring | Require a reviewed native adapter and artifact identity; otherwise report the missing adapter. |
 | Unknown is discarded because a known Choice exists | Preserve native unknown/status and the qualified host unresolved path. |
 | Retry repeatedly until an expected semantic answer appears | Retain failures; revise the responsible layer as a new arm and test on separate cases. |
+
+## Department certainty does not authorize a refund
+
+The ByteMonk tutorial at 9:18 shows Billing at 100% while retaining human
+review. Use it as an observed workflow example, not a production threshold.
+A fictional ticket, "Please return the duplicate payment," permits separate
+department Choice, refund-request Noul and frustration Score questions.
+Request detection establishes neither refund eligibility nor the amount.
+Code retrieves the order, computes any refund and enforces current permission.
+Generation produces the reply only after the relevant admitted results exist.
+
+Synthetic four-option Jev response, not a recovered API response:
+
+```json
+{
+  "type": "choice",
+  "choice": "sales",
+  "probabilities": {"sales": 0.70, "billing": 0.23, "account": 0.07, "technical": 0.0},
+  "confidence": 0.60
+}
+```
+
+The native Choice statistic is `(p_max - 1/n)/(1 - 1/n)`, hence 0.60 here.
+The actual 9:43 frame displays 70% Sales and 61% confidence; its rounded
+display is not evidence that these exact synthetic values were returned.
+Preserve the full vector and native statistic separately. Ask Prompt/Evals
+to bind the event, measured gate and action policy instead of copying 0.90.
+
+Source: [video](https://www.youtube.com/watch?v=77owx_9zLvY&t=558s),
+[native confidence](https://docs.typesafe.ai/confidence).

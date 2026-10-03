@@ -74,6 +74,18 @@ remain errors or unresolved outcomes. Do not fall back to free-form generation
 and label it equivalent Intern inference. A new compiler, backend, quantization
 or temperature is a separate evaluation arm.
 
+
+## Published 4B candidate
+
+The [official project](https://github.com/InternLM/Intern-Decision) also
+publishes Intern-Decision-4B results as of the 2026-10-03 source check. Treat
+4B as a distinct candidate; this reference's inspected HF wrapper and limits
+remain scoped to 2B. Verify 4B weights/revision, native compiler, processor,
+backend and calibration before a runnable recommendation. Its reported
+benchmark and RTX 4090 measurements are not Cascade workload qualification.
+The 4B HF card and inference artifact could not be retrieved in this review;
+retain that inspection gap instead of inheriting the 2B preset or limits.
+
 ## Primary sources
 
 - [2B model card](https://huggingface.co/internlm/Intern-Decision-2B), inspected

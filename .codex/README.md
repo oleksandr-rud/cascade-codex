@@ -85,10 +85,15 @@ auto-approve a tool. Project hooks in `.codex/hooks.json` require normal Codex
 trust review; the full chain below is a conditional non-atomic fallback, not
 the default for direct answers or atomic edits.
 
+The hook prepares pending intake; the active LLM interprets a bounded plain-text
+request/prior projection through the [semantic intake contract](task-admission/semantic-intake.md).
+The normal compiler requires that typed interpretation and exact digest binding.
+Missing, malformed or uncertain meaning remains unresolved without lexical fallback.
+
 The runtime compiler loads only its policy, control catalog, and envelope
 schema. `harness-evals/task-admission/cases.yaml` is a 981-case source
 regression corpus and is never read during normal request admission. The core
-target profile blocks the corpus command as source-only.
+target profile blocks the corpus and legacy-assess commands as source-only diagnostics.
 
 Core non-atomic fallback:
 

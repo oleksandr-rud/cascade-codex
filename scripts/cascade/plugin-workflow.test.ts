@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
 
-import { compileTaskEnvelope } from "./admission";
+import { compileTaskEnvelope, semanticAdmissionRequest, type AdmissionRequest } from "./admission";
 import {
   buildPluginCapabilityCatalog,
   capabilitySelectionDigest,
@@ -9,8 +9,23 @@ import {
   validateCapabilitySelection,
 } from "./plugin-workflow";
 
+function fixtureInterpretation(request: string) {
+  return {
+    schema_version: 1, artifact_type: "cascade-admission-interpretation", status: "RESOLVED",
+    request_digest: semanticAdmissionRequest(request).request_digest, prior_envelope_id: null,
+    model_id: "authored-routing-fixture-NOT_MODEL_INFERENCE", relation: "NEW", intent: "REVIEW",
+    policy_tags: ["review"], workload: { topology: "ATOMIC", effort: "SMALL", authority: "READ_ONLY", duration: "TURN" },
+    local_write_scope: { mode: "TARGETS", targets: [] },
+    claims: [{ kind: "OUTCOME", statement: request, confidence: 0.8, policy_tags: ["review"] }], uncertainty: [],
+  };
+}
+
+function compileFixture(input: AdmissionRequest) {
+  return compileTaskEnvelope({ ...input, semantic_interpretation: fixtureInterpretation(input.request) });
+}
+
 const catalog = await buildPluginCapabilityCatalog();
-const envelope = await compileTaskEnvelope({
+const envelope = await compileFixture({
   request: "Plan the requested work using accepted inputs and current plugin contracts.",
   task_id: "plugin-input-regressions",
   produced_at: "2026-09-10T00:00:00+00:00",

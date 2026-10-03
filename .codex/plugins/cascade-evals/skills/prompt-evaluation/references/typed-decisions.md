@@ -141,6 +141,19 @@ invalid results yield no midpoint candidate.
    keys and normalization, Score level range/legend, and Noul's single
    probability. Invalid or absent output stays invalid/unresolved. No lexical
    fallback may infer a semantic verdict from the state or error text.
+   Bind the returned model to the frozen expected identity before accepting
+   values. Jev defaults to the requested exact ID; requesting an alias requires
+   an explicit frozen `--resolved-model` binding. Laya binds its Router key/repo
+   in addition to the generic adapter name. Vision binds loaded and returned
+   checkpoint IDs/revisions and checks an explicit revision before creating a
+   run. Text Laya checkpoint revision remains UNPINNED in this adapter.
+   Check Score expectation against the full distribution and bind every legend
+   description. The runner freezes serialization quanta (Jev documented 2dp,
+   inspected Laya decoders 4dp) and checks possible normalized distributions
+   within those rounding bounds; it never silently renormalizes raw responses.
+   Jev confidence is checked against its native Choice/Score formulas. Local
+   confidence has only range validation here; it is not assigned Jev semantics.
+   Changed numerical/identity contracts need a new reviewed adapter and receipt.
 4. Compare valid answers to independent gold. Report exact Choice accuracy and
    confusion; Score ordinal MAE and threshold errors; Noul discrimination and
    threshold precision/recall. Where enough labeled data exists, report a

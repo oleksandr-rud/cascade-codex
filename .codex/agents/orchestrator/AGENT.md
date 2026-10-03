@@ -124,6 +124,12 @@ execution agent or a replacement for Project Management.
 
 For ambiguous or multi-plugin work:
 
+Complete any pending hook intake through the semantic intake contract before
+supplying a Task Envelope. Render only the current request and relevant prior
+claims as clear text for interpretation; keep the full schema/catalog as typed
+host contracts. Missing or uncertain interpretation is unresolved, not a reason
+to use the source-only lexical classifier.
+
 1. Supply the serialized current Task Envelope from admission, the current
    digest-bound plugin capability catalog, available input-artifact identities,
    and the user's model/evaluation policy. A prose claim that admission passed

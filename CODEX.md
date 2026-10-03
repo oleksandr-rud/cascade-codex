@@ -28,7 +28,7 @@ by this target; a generic agent/context task does not select a stateful profile.
 Current code outranks stale planning prose. Preserve unrelated dirty work and
 never infer authority from a work record, plugin, prompt, or passing check.
 
-The default admission hooks classify submitted requests and clear interrupted
+The default admission hooks prepare semantic intake and clear interrupted
 state. Native Codex permissions and its sandbox govern command execution.
 The standalone admission guard has no production trusted-host authority bridge;
 do not register it for `PreToolUse` or `PermissionRequest` in this runtime.
@@ -52,10 +52,12 @@ See [the shared authoring contract](.codex/plugins/cascade-ai-architect/skills/d
 Exact structured-format/command parsing, field syntax validation and file search
 remain mechanical operations. Model output never grants runtime authority.
 
-The existing lexical admission implementation is a known migration gap.
-Its classifications may be inspected as legacy diagnostics; do not treat them
-as semantic decisions or use them in place of current LLM interpretation and
-host-bound structured validation. Guidance adoption does not migrate that code.
+Normal admission requires a digest-bound LLM interpretation and validates its
+typed claims before applying code-owned policy. Follow the
+[semantic intake contract](.codex/task-admission/semantic-intake.md). Missing,
+invalid or uncertain interpretation remains unresolved. The retained lexical
+classifier is available only through explicit source diagnostics; its corpus
+does not establish semantic qualification or a trusted permission adapter.
 
 ## Plugin-First Capability Routing
 
@@ -208,29 +210,28 @@ No retired 5.5 model belongs in active routing.
 
 Run the cheap task-admission microkernel for every request. Its Task Envelope is
 a proportional routing hint: it does not grant permission, create work,
-dispatch an agent, or establish a pass. Existing lexical classifications are
-nonconforming legacy diagnostics, not an acceptable semantic decision path.
-Resolve meaning through LLM interpretation and structured host validation;
-an unavailable structured intake path is a gap, never permission to use lexical
-inference. Keep actual runtime migration separately scoped and evidenced.
+dispatch an agent, or establish a pass. The active LLM supplies the versioned
+interpretation from scoped current request/prior evidence. Code validates exact
+bindings, enums and claims; it never fills missing meaning with lexical rules.
+Use the semantic intake contract for the plain-text projection and bounded
+output. Independent semantic qualification is separate from structural tests.
 
 Normal admission loads only the versioned policy, control catalog, and Task
-Envelope schema. The 981-case admission corpus is source-checkout regression
+Envelope schema. The 981-case lexical admission corpus is source diagnostic
 data and must not be read, copied, or validated on every target request. The
-core runtime exposes `admission validate`, but keeps `admission corpus`
-source-only.
+core runtime exposes `admission validate`, but keeps `admission corpus` and
+`legacy-assess` source-only.
 
-`UserPromptSubmit` atomically writes the full claim-bearing envelope to a
-session-keyed file under ignored `.artifacts/task-admission/` and exposes only
-its path, identity, request digest, and claim count in hook context. Coordinator
-or a future read-only resource provider may consume that validated file; the
-summary itself is never an envelope, authority binding, or durable evidence.
-Exact non-semantic transcription markers and filler-only prompts are blocked
-before model or tool work and do not produce an envelope. Standalone stop or
-cancel controls are acknowledged as controls rather than admitted as new work.
-`Interrupt` removes only the interrupted session's ephemeral envelope. These
-hooks do not prevent the Codex host from allocating the active `turn_id` before
-`UserPromptSubmit` runs.
+`UserPromptSubmit` atomically stores a pending intake under ignored
+`.artifacts/task-admission/` and clears only that session's old current envelope.
+Use `admission intake --file PATH` for a small plain-text projection, then
+`admission assess --intake PATH --interpretation PATH` to validate the LLM
+proposal and write its claim-bearing envelope. A host-provided typed
+interpretation may also complete that path directly. The hook summary is never
+an envelope, authority binding or durable evidence. Free-text filler, quoted
+actions and cancellation meaning follow LLM interpretation; only the exact
+native `Interrupt` event is a mechanical control. These hooks do not prevent
+Codex from allocating `turn_id` before `UserPromptSubmit`.
 
 The default non-atomic change route is:
 

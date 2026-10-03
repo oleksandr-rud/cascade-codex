@@ -42,6 +42,27 @@ omission behavior. Prompt generation cannot bypass the issuer by calling the
 low-level formatter. Shared approved policy blocks preserve exact text; local
 render-cache evidence and provider-prefix evidence remain distinct.
 
+
+For a typed-decision target, carry the host's exact metric/event and units,
+native result meaning, requested/resolved model binding, applicable calibration
+artifact and qualification evidence, and separate outcomes for insufficient
+evidence, semantic uncertainty, invalid output and transport failure. Bind
+which questions are independent and which require an admitted predecessor.
+Name the schema, freshness, permission and precondition consumers before an
+effect. A numeric result cannot supply missing evidence or authority.
+These are architecture-to-prompt bindings; native authoring mechanics remain
+with Cascade Prompt and measured qualification with Cascade Evals. Extend an
+existing target contract rather than imposing a new universal packet schema.
+
+Render the human-readable instruction and evidence projection mainly as clear
+text, with explicit relevant cases and anti-cases. Keep each model step focused
+on one action and compose larger work through declared inputs, outputs and true
+dependencies. Include only the context needed by the current step; expand it
+when a concrete gap requires another source. Typed transport/output schemas
+remain exact and validated. Preserve an adopted schema-values-text profile and
+the exact trained Intern/Imajev compiler/template; a prose preference does not
+authorize rewriting those native inference formats.
+
 ## Delegation request
 
 For a selected graph workflow, bind one model step's purpose, required predecessor

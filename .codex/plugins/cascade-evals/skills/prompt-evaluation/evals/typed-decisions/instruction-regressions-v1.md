@@ -12,6 +12,14 @@ reversed candidate order while preserving the question boundary. Pack/request
 validation and existing mocked runner tests are mechanical evidence only.
 No arm has independently adjudicated labels or target execution in this change.
 
+`support-triage-video-boundaries-development-v1.json` adds twelve fictional
+tickets with independent department Choice, refund-request Noul and frustration
+Score questions, plus a reversed department-order arm. It separates routing,
+requestedness and tone from host eligibility/permission. Its labels are authored
+development examples; all native executions and action thresholds remain
+NOT_RUN/UNQUALIFIED. Seventy-two proposed judgments are twelve repeated tickets,
+not seventy-two independent observations.
+
 | Scenario/input | Required authored behavior and target/host observation |
 |---|---|
 | User selects hosted Jev for an image containing a label | Preserve text-only eligibility; require attributed derived observations or propose a declared visual target. Do not call a filename/base64 value visual inspection. |

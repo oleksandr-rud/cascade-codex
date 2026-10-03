@@ -63,6 +63,98 @@ class TypedDecisionEvalTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "missing state field"):
             runner.validate_pack(bad)
 
+    def score_response(self):
+        questions = {"severity": {"type": "score", "instructions": "How severe?",
+                                  "criteria": ["low", "medium", "high"]}}
+        response = {"model": "jev-1.13.0", "answers": {"severity": {
+            "type": "score", "score": 1.43, "confidence": 0.35,
+            "legend": {"0": "low", "1": "medium", "2": "high"},
+            "probabilities": {"0": 0.0, "1": 0.57, "2": 0.43},
+        }}}
+        return questions, response
+
+    def test_score_requires_expectation_and_exact_legend_binding(self):
+        questions, response = self.score_response()
+        self.assertEqual(runner.validate_answer(response, questions, provider="jev"), {"severity": 1.43})
+        bad = copy.deepcopy(response)
+        bad["answers"]["severity"]["probabilities"] = {"0": 1.0, "1": 0.0, "2": 0.0}
+        bad["answers"]["severity"]["score"] = 2.0
+        with self.assertRaisesRegex(ValueError, "probability-weighted expectation"):
+            runner.validate_answer(bad, questions, provider="jev")
+        bad = copy.deepcopy(response)
+        bad["answers"]["severity"]["legend"] = {"0": "high", "1": "medium", "2": "low"}
+        with self.assertRaisesRegex(ValueError, "legend description"):
+            runner.validate_answer(bad, questions, provider="jev")
+
+    def test_native_serialization_bounds_accept_rounding_and_reject_wrong_mass(self):
+        questions, response = self.score_response()
+        answer = response["answers"]["severity"]
+        answer.update(score=1.0, confidence=0.0, probabilities={"0": 0.33, "1": 0.33, "2": 0.33})
+        self.assertEqual(runner.validate_answer(response, questions, provider="jev"), {"severity": 1.0})
+        with self.assertRaisesRegex(ValueError, "sum to one"):
+            runner.validate_answer(response, questions, provider="laya")
+        answer["probabilities"] = {"0": 0.30, "1": 0.30, "2": 0.30}
+        with self.assertRaisesRegex(ValueError, "sum to one"):
+            runner.validate_answer(response, questions, provider="jev")
+
+    def test_native_confidence_is_not_selected_probability(self):
+        questions = {"route": {"type": "choice", "criteria": dict.fromkeys("abcd", "candidate")}}
+        response = {"answers": {"route": {"type": "choice", "choice": "a", "confidence": 0.6,
+                   "probabilities": {"a": 0.70, "b": 0.23, "c": 0.07, "d": 0.0}}}}
+        self.assertEqual(runner.validate_answer(response, questions, provider="jev"), {"route": "a"})
+        response["answers"]["route"]["confidence"] = 0.70
+        with self.assertRaisesRegex(ValueError, "Choice confidence"):
+            runner.validate_answer(response, questions, provider="jev")
+        questions, response = self.score_response()
+        response["answers"]["severity"]["confidence"] = 0.57
+        with self.assertRaisesRegex(ValueError, "Score confidence"):
+            runner.validate_answer(response, questions, provider="jev")
+
+    def test_model_pin_requires_exact_returned_identity(self):
+        questions, response = self.score_response()
+        for actual in ("jev-1.12.0", "jev", None):
+            response["model"] = actual
+            with self.assertRaisesRegex(ValueError, "model binding"):
+                runner.validate_answer(response, questions, expected_model="jev-1.13.0")
+        with tempfile.TemporaryDirectory() as tmp:
+            with self.assertRaisesRegex(ValueError, "cannot override an exact Jev pin"):
+                runner.run(pack_path, "jev", "jev-1.13.0", Path(tmp) / "run", 1, 200,
+                           resolved_model="jev-1.12.0")
+
+    def test_mismatched_model_stays_invalid_in_run_receipts_and_metrics(self):
+        with tempfile.TemporaryDirectory() as tmp, patch.dict(os.environ, {"TYPESAFE_API_KEY": "test"}):
+            directory = Path(tmp)
+            pack = self.vision_pack(directory)
+            data = json.loads(pack.read_text())
+            data["arms"][0]["state_fields"] = ["note"]
+            del data["cases"][0]["state"]["image"]
+            pack.write_text(json.dumps(data))
+            response = {"model": "jev-1.12.0", "answers": {"damaged": {"type": "noul", "noul": 0.8}}}
+            with patch.object(runner, "jev_predict", return_value=response):
+                result = runner.run(pack, "jev", "jev-1.13.0", directory / "run", 1, 2)
+            self.assertEqual(result["invalid_results"], 1)
+            self.assertEqual(result["metrics"]["image-and-note"]["questions"]["damaged"]["count"], 0)
+            receipt = json.loads((directory / "run/0000-result.json").read_text())
+            self.assertEqual(receipt["returned_model"], "jev-1.12.0")
+            self.assertEqual(receipt["values"], {})
+            with patch.object(runner, "jev_predict", return_value=response):
+                result = runner.run(pack, "jev", "jev", directory / "alias-run", 1, 2,
+                                    resolved_model="jev-1.12.0")
+            self.assertEqual(result["invalid_results"], 0)
+            self.assertEqual(result["manifest"]["expected_returned_model"], "jev-1.12.0")
+
+    def test_local_adapter_identity_requires_checkpoint_evidence(self):
+        route = {"model": "english", "repo": "convaiinnovations/laya"}
+        runner.validate_local_identity({"routing": route}, "laya", route=route)
+        for actual in ({"model": "multilingual", "repo": route["repo"]},
+                       {"model": "english", "repo": "different/checkpoint"}, None):
+            with self.assertRaisesRegex(ValueError, "frozen checkpoint binding"):
+                runner.validate_local_identity({"routing": actual}, "laya", route=route)
+        expected = {"id": "thaitea/laya-vision", "revision": "abc123"}
+        with self.assertRaisesRegex(ValueError, "loaded checkpoint binding"):
+            runner.validate_local_identity({"provenance": {"checkpoint": {**expected, "revision": "changed"}}},
+                                           "laya-vision", checkpoint=expected)
+
     def test_development_separation_is_diagnostic_and_requires_complete_valid_cases(self):
         pack = copy.deepcopy(self.pack)
         pack["arms"] = [next(arm for arm in pack["arms"] if arm["id"] == "concise-ticket-only")]
@@ -136,9 +228,9 @@ class TypedDecisionEvalTests(unittest.TestCase):
             def predict(state, questions, *, strict):
                 seen.append((state, questions, strict))
                 return {"model": "laya-vlm", "answers": {"damaged": {"type": "noul", "noul": 0.8}},
-                        "provenance": {"checkpoint": {"revision": "abc123"}}}
+                        "provenance": {"checkpoint": {"id": "thaitea/laya-vision", "revision": "abc123"}}}
 
-            agent = SimpleNamespace(predict=predict, source={"revision": "abc123"})
+            agent = SimpleNamespace(predict=predict, source={"id": "thaitea/laya-vision", "revision": "abc123"})
             loads = []
 
             def load_vlm(model, *, revision):

@@ -31,6 +31,15 @@ lexical guess does not satisfy this boundary.
 Reject these substitutions in recommendations, defaults, examples, prototypes
 and optimization proposals as well as executable implementations.
 
+For a typed-decision consumer, trace native adapter/revision and full output
+through structural validation, the named statistic/event, qualified host gate,
+and observed effect. Flag concentration treated as correctness probability,
+Score expectation inconsistent with its distribution, dropped unknown status,
+same-call predecessor dependence, and automatic effects without fresh state
+or permission. Require a simpler same-case baseline before accepting extra
+decision/review calls. Leave model mechanics with Prompt, behavior ownership
+with AI Architect and qualification with Evals.
+
 Check for duplicated authority, bypassed boundaries, cyclic dependencies,
 shallow abstractions, invalid pattern composition, write conflicts, missing
 recovery or stop behavior, stale consumers, and evidence stronger than the run

@@ -238,7 +238,7 @@ validation_commands:
 
 routing:
   model_policy: "Use gpt-6-astra with high reasoning for the primary session, custom agents, Cascade plugins and new evaluation builder, target and independent judges. Bind nodes to the owning plugin catalog policy. Preserve explicit target-model choices, named comparison configurations and frozen evaluation settings. Loading a skill cannot switch the active model."
-  admission: "Compile every request through the task-admission microkernel; the Task Envelope selects proportional controls without granting authority or dispatching work."
+  admission: "Prepare bounded intake, then validate the active LLM's structured interpretation through the task-admission microkernel; the Task Envelope selects proportional controls without granting authority or dispatching work."
   non_atomic_fallback_path:
     - "context"
     - "plan-change"

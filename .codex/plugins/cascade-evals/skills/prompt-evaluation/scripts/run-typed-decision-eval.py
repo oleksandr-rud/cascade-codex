@@ -8,6 +8,7 @@ import hashlib
 import json
 import math
 import os
+import re
 import sys
 import time
 import urllib.error
@@ -19,6 +20,12 @@ from typing import Any
 
 
 API_URL = "https://api.typesafe.ai/v1/systemone"
+
+# Serialization bounds, not semantic error tolerances. Jev's documented JSON
+# examples use two decimal places; the inspected Laya decoders round to four.
+# Freeze this assumption in each receipt; a changed adapter needs a new contract.
+NUMERICAL_CONTRACTS = {"jev": 0.01, "laya": 0.0001, "laya-vision": 0.0001}
+FLOAT_SLACK = 1e-8
 
 
 def canonical(value: Any) -> bytes:
@@ -132,8 +139,33 @@ def validate_image_assets(pack: dict[str, Any], pack_path: Path) -> None:
             image_asset(pack_path, case["state"]["image"])
 
 
-def validate_answer(response: Any, questions: dict[str, Any], *, reject_truncation: bool = False) -> dict[str, Any]:
+def expectation_bounds(probabilities: list[float], weights: list[float], half_width: float) -> tuple[float, float]:
+    """Bounds over normalized distributions consistent with rounded values."""
+    lower = [max(0.0, p - half_width) for p in probabilities]
+    upper = [min(1.0, p + half_width) for p in probabilities]
+    require(sum(lower) <= 1 + FLOAT_SLACK and sum(upper) >= 1 - FLOAT_SLACK,
+            "probabilities do not sum to one within the serialization contract")
+
+    def extreme(reverse: bool) -> float:
+        allocation = lower.copy()
+        remaining = max(0.0, 1 - sum(allocation))
+        for index in sorted(range(len(weights)), key=weights.__getitem__, reverse=reverse):
+            added = min(remaining, upper[index] - allocation[index])
+            allocation[index] += added
+            remaining -= added
+        return sum(p * weight for p, weight in zip(allocation, weights))
+
+    return extreme(False), extreme(True)
+
+
+def validate_answer(response: Any, questions: dict[str, Any], *, reject_truncation: bool = False,
+                    provider: str | None = None, expected_model: str | None = None) -> dict[str, Any]:
     require(isinstance(response, dict) and isinstance(response.get("answers"), dict), "answers object missing")
+    require(provider is None or provider in NUMERICAL_CONTRACTS, "unsupported numerical contract")
+    if expected_model is not None:
+        require(isinstance(expected_model, str) and expected_model, "expected model binding is required")
+        require(response.get("model") == expected_model, "returned model differs from expected model binding")
+    half_width = NUMERICAL_CONTRACTS.get(provider, 0.0) / 2
     answers = response["answers"]
     require(set(answers) == set(questions), "answer IDs differ from question IDs")
     values = {}
@@ -151,13 +183,21 @@ def validate_answer(response: Any, questions: dict[str, Any], *, reject_truncati
         require(set(probabilities) == expected, f"{qid}: probability keys differ from criteria")
         for key, value in probabilities.items():
             probability(value, f"{qid}/probabilities/{key}")
-        require(abs(sum(probabilities.values()) - 1) <= 0.03, f"{qid}: probabilities do not sum to one")
-        probability(answer.get("confidence"), f"{qid}/confidence")
+        distribution = [float(probabilities[key]) for key in question["criteria"]] if kind == "choice" else [
+            float(probabilities[str(i)]) for i in range(len(expected))]
+        # This also rejects impossible mass without renormalizing the raw answer.
+        expectation_bounds(distribution, [0.0] * len(distribution), half_width)
+        confidence = probability(answer.get("confidence"), f"{qid}/confidence")
         if kind == "choice":
             choice = answer.get("choice")
             require(choice in expected, f"{qid}: Choice label outside criteria")
-            require(probabilities[choice] >= max(probabilities.values()) - 0.02,
+            require(probabilities[choice] >= max(probabilities.values()) - 2 * half_width - FLOAT_SLACK,
                     f"{qid}: Choice label conflicts with probabilities")
+            if provider == "jev":
+                n = len(distribution)
+                native = (float(probabilities[choice]) - 1 / n) / (1 - 1 / n)
+                tolerance = half_width / (1 - 1 / n) + half_width + FLOAT_SLACK
+                require(abs(confidence - native) <= tolerance, f"{qid}: Choice confidence conflicts with probabilities")
             values[qid] = choice
         else:
             score = answer.get("score")
@@ -165,8 +205,49 @@ def validate_answer(response: Any, questions: dict[str, Any], *, reject_truncati
                     f"{qid}: Score outside rubric")
             require(isinstance(answer.get("legend"), dict) and set(answer["legend"]) == expected,
                     f"{qid}: Score legend mismatch")
+            for i, criterion in enumerate(question["criteria"]):
+                legend = answer["legend"][str(i)]
+                # Official Laya renders structured levels as JSON text. Other
+                # adapters return their native criteria value directly.
+                if provider == "laya" and not isinstance(criterion, str) and isinstance(legend, str):
+                    try:
+                        legend = json.loads(legend)
+                    except json.JSONDecodeError:
+                        pass
+                require(canonical(legend) == canonical(criterion), f"{qid}: Score legend description mismatch")
+            low, high = expectation_bounds(distribution, list(range(len(expected))), half_width)
+            require(low - half_width - FLOAT_SLACK <= score <= high + half_width + FLOAT_SLACK,
+                    f"{qid}: Score conflicts with probability-weighted expectation")
+            if provider == "jev":
+                n = len(distribution)
+                uniform_spread = sum(abs(i - (n - 1) / 2) for i in range(n)) / n
+                possible = []
+                for mode in range(n):
+                    if distribution[mode] + 2 * half_width + FLOAT_SLACK < max(distribution):
+                        continue
+                    spread_low, spread_high = expectation_bounds(
+                        distribution, [abs(i - mode) for i in range(n)], half_width)
+                    possible.append((max(0.0, 1 - spread_high / uniform_spread),
+                                     max(0.0, 1 - spread_low / uniform_spread)))
+                require(any(low - half_width - FLOAT_SLACK <= confidence <= high + half_width + FLOAT_SLACK
+                            for low, high in possible), f"{qid}: Score confidence conflicts with probabilities")
             values[qid] = float(score)
     return values
+
+
+def validate_local_identity(response: Any, provider: str, *, route: dict[str, Any] | None = None,
+                            checkpoint: dict[str, Any] | None = None) -> None:
+    """A local adapter's generic model name is not its checkpoint identity."""
+    if provider == "laya":
+        actual = response.get("routing") if isinstance(response, dict) else None
+        require(isinstance(actual, dict) and isinstance(route, dict) and
+                all(actual.get(key) == route[key] for key in ("model", "repo")),
+                "returned Laya routing differs from frozen checkpoint binding")
+    elif provider == "laya-vision":
+        actual = response.get("provenance", {}).get("checkpoint") if isinstance(response, dict) else None
+        require(isinstance(actual, dict) and isinstance(checkpoint, dict) and
+                all(actual.get(key) == checkpoint.get(key) for key in ("id", "revision")),
+                "returned Laya Vision checkpoint differs from loaded checkpoint binding")
 
 
 def jev_predict(request: dict[str, Any], timeout: float) -> dict[str, Any]:
@@ -257,10 +338,15 @@ def metrics(rows: list[dict[str, Any]], pack: dict[str, Any]) -> dict[str, Any]:
 
 
 def run(pack_path: Path, provider: str, model: str, output: Path, timeout: float, max_calls: int,
-        revision: str | None = None) -> dict[str, Any]:
+        revision: str | None = None, resolved_model: str | None = None) -> dict[str, Any]:
     pack_bytes = pack_path.read_bytes()
     pack = validate_pack(json.loads(pack_bytes))
     require(provider in ("laya", "laya-vision", "jev"), "provider must be laya, laya-vision, or jev")
+    require(isinstance(model, str) and model.strip(), "model binding is required")
+    require(resolved_model is None or (provider == "jev" and isinstance(resolved_model, str) and resolved_model.strip()),
+            "resolved_model is an explicit Jev alias binding only")
+    if provider == "jev" and re.fullmatch(r"jev-\d+\.\d+\.\d+", model):
+        require(resolved_model is None or resolved_model == model, "resolved_model cannot override an exact Jev pin")
     require(revision is None or (provider == "laya-vision" and isinstance(revision, str) and revision),
             "revision is supported only for laya-vision")
     require(timeout > 0, "timeout must be positive")
@@ -285,7 +371,10 @@ def run(pack_path: Path, provider: str, model: str, output: Path, timeout: float
             raise ValueError("Laya is not installed in this Python environment") from error
         router = Router(max_loaded=2)
         try:
-            laya_model_key = router.route({}, model=model)["model"]
+            laya_route = dict(router.route({}, model=model))
+            require(isinstance(laya_route.get("model"), str) and isinstance(laya_route.get("repo"), str),
+                    "Laya route must identify the checkpoint key and repo")
+            laya_model_key = laya_route["model"]
         except (KeyError, ValueError) as error:
             raise ValueError(f"unknown Laya checkpoint: {model}") from error
     else:
@@ -296,10 +385,20 @@ def run(pack_path: Path, provider: str, model: str, output: Path, timeout: float
         require(callable(getattr(laya, "load_vlm", None)),
                 "installed laya lacks load_vlm; install the independent Laya Vision fork")
         vision_agent = laya.load_vlm(model, revision=revision)
+        loaded_source = getattr(vision_agent, "source", None)
+        require(isinstance(loaded_source, dict) and loaded_source.get("id") == model,
+                "loaded Laya Vision checkpoint differs from requested model")
+        require(revision is None or loaded_source.get("revision") == revision,
+                "loaded Laya Vision revision differs from requested pin")
+    expected_model = (resolved_model or model) if provider == "jev" else (
+        "laya-rl-agent" if provider == "laya" else "laya-vlm")
     output.mkdir(parents=True, exist_ok=False)
     started_at = datetime.now(timezone.utc).isoformat()
     manifest = {"schema_version": 1, "status": "RUNNING", "started_at": started_at,
-                "provider": provider, "requested_model": model,
+                "provider": provider, "requested_model": model, "expected_returned_model": expected_model,
+                "numerical_contract": {"probability_quantum": NUMERICAL_CONTRACTS[provider],
+                                       "score_quantum": NUMERICAL_CONTRACTS[provider],
+                                       "confidence_coherence": "jev-native-formulas" if provider == "jev" else "range-only"},
                 "sdk_version": (getattr(laya, "__version__", None) if provider == "laya-vision" else
                                 package_version("laya") if provider == "laya" else None),
                 "corpus_id": pack["corpus_id"], "corpus_version": pack["corpus_version"],
@@ -315,6 +414,8 @@ def run(pack_path: Path, provider: str, model: str, output: Path, timeout: float
                                   "strict_truncation": True}
         manifest["image_sha256"] = {case["id"]: case["state"]["image"]["sha256"]
                                     for case in pack["cases"]}
+    elif provider == "laya":
+        manifest["expected_routing"] = laya_route
     (output / "manifest.json").write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
     rows = []
     for arm in pack["arms"]:
@@ -333,7 +434,11 @@ def run(pack_path: Path, provider: str, model: str, output: Path, timeout: float
                     response = vision_predict(vision_agent, request, pack_path)
                 else:
                     response = jev_predict(request, timeout)
-                values = validate_answer(response, request["questions"], reject_truncation=provider == "laya-vision")
+                validate_local_identity(response, provider,
+                    route=laya_route if provider == "laya" else None,
+                    checkpoint=loaded_source if provider == "laya-vision" else None)
+                values = validate_answer(response, request["questions"], reject_truncation=provider == "laya-vision",
+                                         provider=provider, expected_model=expected_model)
                 status, error = "VALID", None
             except Exception as failure:
                 values, status, error = {}, "INVALID", f"{type(failure).__name__}: {failure}"
@@ -377,6 +482,7 @@ def main() -> int:
     execute.add_argument("--provider", choices=("laya", "laya-vision", "jev"), required=True)
     execute.add_argument("--model", required=True)
     execute.add_argument("--revision", help="Optional pinned Hub checkpoint revision for laya-vision")
+    execute.add_argument("--resolved-model", help="Frozen returned Jev model ID when requesting an alias")
     execute.add_argument("--output", type=Path, required=True)
     execute.add_argument("--timeout", type=float, default=30)
     execute.add_argument("--max-calls", type=int, default=200)
@@ -389,7 +495,7 @@ def main() -> int:
                               "cases": len(pack["cases"]), "arms": len(pack["arms"])}))
         else:
             summary = run(args.pack, args.provider, args.model, args.output, args.timeout, args.max_calls,
-                          args.revision)
+                          args.revision, args.resolved_model)
             print(json.dumps({"status": summary["manifest"]["status"], "output": str(args.output.resolve()),
                               "metrics": summary["metrics"], "invalid_results": summary["invalid_results"]}))
             if summary["invalid_results"]:

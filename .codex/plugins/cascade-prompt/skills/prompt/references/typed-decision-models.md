@@ -96,6 +96,15 @@ a threshold from one provider, model revision or question type to another.
 
 ## Frame and decompose the judgment
 
+Use clear text for human-readable instructions and relevant evidence by
+default, with explicit positive/negative cases for the intended boundary.
+Keep typed JSON transport and output validation separate from that rendering.
+Compose large prompts as smaller targeted actions with scoped inputs, declared
+outputs and real dependencies; add context progressively for a concrete need.
+Do not paste a full schema or history solely because it exists. Preserve the
+exact selected native compiler, trained template and an adopted schema-values-
+text contract; changing an Intern/Imajev serialization starts another candidate.
+
 Resolve the subject/entity, observation time, allowed evidence, one semantic
 axis, candidate inclusion/exclusion, mixed-case precedence, uncertainty and
 the cost of each wrong host action. Split topic, requested resolution,
@@ -171,6 +180,15 @@ not immunity. Test option permutations, source injection and distractors on
 the pinned target. Keep exact numeric/date calculations in code; express the
 literal condition for semantic comparisons. These are Jev-specific reported
 limitations; test rather than assume the same behavior for every family.
+
+
+A peaked distribution does not establish that the supplied evidence can
+answer the question. For a source-dependent judgment, carry missing or
+insufficient evidence through the accepted unknown/review path. An optional
+evidence-sufficiency question is another model proposal: evaluate its failures
+and added cost before adopting it. Do not treat a model's self-reported
+familiarity or a research-derived uncertainty correction as verified knowledge
+or a native result field.
 
 ## Compile the evidence slice
 

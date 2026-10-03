@@ -133,16 +133,24 @@ campaign execution, and source self-tests remain source-checkout commands.
 
 ## Workload Admission And Workflow Model
 
-Cascade first compiles every request into a versioned Task Envelope. The
+Cascade first prepares a bounded intake, then validates the active LLM's
+structured interpretation into a versioned Task Envelope. The
 admission layer keeps direct answers and atomic edits lightweight while adding
 independent security, scan, evidence, persistence, and program controls only
 when their claims match. It recommends durable work but never dispatches it.
 
 ```bash
 bun scripts/cascade.ts admission validate
-bun scripts/cascade.ts admission assess --request "Implement a bounded CLI change"
+bun scripts/cascade.ts admission intake --file .artifacts/task-admission/INTAKE.json
+bun scripts/cascade.ts admission assess --intake .artifacts/task-admission/INTAKE.json --interpretation .artifacts/task-admission/INTERPRETATION.json
 bun scripts/cascade.ts admission corpus
 ```
+
+The [semantic intake contract](.codex/task-admission/semantic-intake.md) uses
+plain-text context and exact typed output. Missing, malformed or uncertain
+interpretation remains unresolved; no lexical fallback is used. `corpus` and
+`legacy-assess` retain source-only historical diagnostics, not semantic
+qualification. Native host permissions still own every effect.
 
 Markdown remains the format for prose. Human-authored structured sources such
 as policies, rules, registries, evaluation cases, campaigns, tasks, claims,

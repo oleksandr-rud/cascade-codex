@@ -2,6 +2,7 @@
 
 import {
   compileTaskEnvelope,
+  semanticAdmissionRequest,
   readBoundedTaskEnvelope,
   type TaskEnvelope,
 } from "./admission";
@@ -61,97 +62,6 @@ async function readInput(): Promise<JsonObject> {
 type EnvelopeResolution = { envelope?: TaskEnvelope; error?: string };
 const TASK_ENVELOPE_PREFIX = ".artifacts/task-admission/";
 
-type NonTaskPrompt = "NOISE_OR_FILLER" | "STANDALONE_CONTROL";
-
-const NON_SEMANTIC_PROMPTS = new Set([
-  "[background noise]",
-  "(background noise)",
-  "<background noise>",
-  "background noise",
-  "[noise]",
-  "(noise)",
-  "<noise>",
-  "noise",
-  "[silence]",
-  "(silence)",
-  "<silence>",
-  "silence",
-  "[inaudible]",
-  "(inaudible)",
-  "<inaudible>",
-  "inaudible",
-  "[music]",
-  "(music)",
-  "<music>",
-  "[фоновий шум]",
-  "(фоновий шум)",
-  "<фоновий шум>",
-  "фоновий шум",
-  "[шум]",
-  "(шум)",
-  "<шум>",
-  "шум",
-  "[тиша]",
-  "(тиша)",
-  "<тиша>",
-  "тиша",
-  "[нерозбірливо]",
-  "(нерозбірливо)",
-  "<нерозбірливо>",
-  "нерозбірливо",
-]);
-
-const NON_SEMANTIC_FILLERS = new Set([
-  "ah",
-  "eh",
-  "er",
-  "err",
-  "hm",
-  "hmm",
-  "mm",
-  "mmm",
-  "uh",
-  "um",
-  "umm",
-  "аа",
-  "ааа",
-  "ее",
-  "еее",
-  "ем",
-  "мм",
-  "ммм",
-  "хм",
-]);
-
-const STANDALONE_CONTROL_PROMPTS = new Set([
-  "abort",
-  "cancel",
-  "stop",
-  "зупини",
-  "зупинись",
-  "припини",
-  "скасуй",
-  "стоп",
-]);
-
-function normalizeStandalonePrompt(prompt: string): string {
-  return prompt
-    .normalize("NFKC")
-    .toLowerCase()
-    .trim()
-    .replace(/[.!?,;:\u2026]+$/gu, "")
-    .trim();
-}
-
-function classifyNonTaskPrompt(prompt: string): NonTaskPrompt | null {
-  const normalized = normalizeStandalonePrompt(prompt);
-  if (NON_SEMANTIC_PROMPTS.has(normalized)) return "NOISE_OR_FILLER";
-  const filler = normalized.replace(/[\p{P}\p{S}\s_]+/gu, "");
-  if (NON_SEMANTIC_FILLERS.has(filler)) return "NOISE_OR_FILLER";
-  if (STANDALONE_CONTROL_PROMPTS.has(normalized)) return "STANDALONE_CONTROL";
-  return null;
-}
-
 function sessionEnvelopePath(input: JsonObject): string | undefined {
   if (typeof input.session_id !== "string" || !input.session_id) return undefined;
   const sessionKey = sha256Text(input.session_id).slice(0, 24);
@@ -172,14 +82,17 @@ function currentEnvelopePath(input: JsonObject): string | undefined {
   return sessionEnvelopePath(input);
 }
 
-async function clearSessionEnvelope(input: JsonObject): Promise<void> {
-  if (Bun.env.CASCADE_TASK_ENVELOPE) return;
-  const path = sessionEnvelopePath(input);
-  if (!path) return;
-  try {
-    await unlink(path);
-  } catch (error) {
-    if (!(error && typeof error === "object" && "code" in error && error.code === "ENOENT")) throw error;
+async function clearSessionEnvelope(input: JsonObject, includeIntake = false): Promise<void> {
+  const paths = [Bun.env.CASCADE_TASK_ENVELOPE ? undefined : sessionEnvelopePath(input)];
+  if (includeIntake && typeof input.session_id === "string" && input.session_id) {
+    paths.push(boundedPath(`${TASK_ENVELOPE_PREFIX}intake-${sha256Text(input.session_id).slice(0, 24)}.json`, TASK_ENVELOPE_PREFIX));
+  }
+  for (const path of paths) {
+    if (!path) continue;
+    try { await unlink(path); }
+    catch (error) {
+      if (!(error && typeof error === "object" && "code" in error && error.code === "ENOENT")) throw error;
+    }
   }
 }
 
@@ -200,22 +113,30 @@ export async function handleHook(input: JsonObject): Promise<JsonObject> {
   if (input.hook_event_name === "UserPromptSubmit") {
     if (typeof input.prompt !== "string" || !input.prompt.trim()) throw new Error("UserPromptSubmit prompt is required");
     if (typeof input.session_id !== "string" || !input.session_id) throw new Error("UserPromptSubmit session_id is required to persist the current Task Envelope");
-    const nonTaskPrompt = classifyNonTaskPrompt(input.prompt);
-    if (nonTaskPrompt) {
-      await clearSessionEnvelope(input);
-      return {
-        decision: "block",
-        reason: nonTaskPrompt === "STANDALONE_CONTROL"
-          ? "Standalone stop or cancel control acknowledged; no new Cascade task was admitted."
-          : "No actionable prompt was detected; submitted noise or filler was not admitted to Cascade.",
-      };
-    }
+    if (input.session_id.length > 200) throw new Error("UserPromptSubmit session_id is oversized");
     const prior = await currentEnvelope(input);
+    if (input.admission_interpretation === undefined) {
+      const request = semanticAdmissionRequest(input.prompt);
+      const envelopePath = currentEnvelopePath(input)!;
+      const intakePath = boundedPath(`${TASK_ENVELOPE_PREFIX}intake-${sha256Text(input.session_id).slice(0, 24)}.json`, TASK_ENVELOPE_PREFIX);
+      // Preserve the prior inside the pending intake, then clear only this
+      // session's old current envelope. It must not represent the new request.
+      await writeJsonAtomic(intakePath, {
+        schema_version: 1, artifact_type: "cascade-admission-intake", status: "REQUIRES_INTERPRETATION",
+        task_id: input.session_id, ...request, envelope_path: rel(envelopePath),
+        prior_envelope: prior.envelope ?? null,
+      }, { fileMode: 0o600, directoryMode: 0o700 });
+      await clearSessionEnvelope(input);
+      return { hookSpecificOutput: { hookEventName: "UserPromptSubmit",
+        additionalContext: `Semantic task intake requires LLM interpretation: intake_path=${rel(intakePath)}; request_digest=${request.request_digest}; prior_envelope=${prior.envelope?.envelope_id ?? "none"}. Read admission intake --file PATH for the plain-text request/prior projection and .codex/task-admission/semantic-intake.md for the bounded authoring contract. Submit the typed interpretation with admission assess --intake PATH --interpretation PATH. Missing, invalid or uncertain interpretation remains unresolved; no lexical fallback. This advisory cannot grant permission or dispatch work.${prior.error ? " Prior envelope invalid; not consumed." : ""}`,
+      } };
+    }
     const envelope = await compileTaskEnvelope({
       request: input.prompt,
       task_id: input.session_id,
       produced_at: new Date().toISOString(),
       prior_envelope: prior.envelope,
+      semantic_interpretation: input.admission_interpretation,
     });
     const envelopePath = currentEnvelopePath(input)!;
     await writeJsonAtomic(envelopePath, envelope, {
@@ -232,7 +153,7 @@ export async function handleHook(input: JsonObject): Promise<JsonObject> {
     };
   }
   if (input.hook_event_name === "Interrupt") {
-    await clearSessionEnvelope(input);
+    await clearSessionEnvelope(input, true);
     return {};
   }
   throw new Error(`unsupported task admission hook event: ${String(input.hook_event_name)}`);

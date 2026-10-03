@@ -76,6 +76,21 @@ need held-out task evidence and must not reuse another family's confidence
 threshold. Transport failure, bad readout binding and overlength input require
 correction or an unresolved result, not a generic-generation fallback.
 
+
+## 4B release gate and source conflict
+
+The [4B release specification](https://huggingface.co/mohit67890/imajev-4b/raw/main/RELEASE-SPEC.md)
+identifies phase-3 checkpoint `r2-s000291` and revision
+`c9e5f132465da85d31735ec502d5557982671a7d`. It discloses an overridden
+14/14 unknown-case abstention gate. Its prose says 11 unknown cases were
+answered; the [model card](https://huggingface.co/mohit67890/imajev-4b/raw/main/README.md)
+instead says 11 abstained and three were answered. Both disclose a failed
+gate, but the miss count is unresolved. Do not promote a trained unknown
+channel into a safety guarantee or transfer this release to the inspected 2B
+arm. Verify the actual 4B artifacts, including calibration, and independently
+test unknown cases before automatic handling. These mutable source documents
+establish a release claim, not a reproduced target result.
+
 ## Primary sources
 
 - [2B card](https://huggingface.co/mohit67890/imajev-2b), inspected revision

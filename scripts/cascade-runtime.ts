@@ -26,7 +26,7 @@ const DEFAULT_LOADERS: Record<CoreRuntimeCommand, CommandLoader> = {
 };
 
 const SOURCE_ONLY_SUBCOMMANDS = new Map<string, Set<string>>([
-  ["admission", new Set(["corpus"])],
+  ["admission", new Set(["corpus", "legacy-assess"])],
   ["workflow", new Set(["catalog"])],
   ["target", new Set(["self-test"])],
 ]);
@@ -36,7 +36,7 @@ export function coreRuntimeHelpText(): string {
 
 Usage:
   cascade closeout <snapshot|check|path>
-  cascade admission <validate|assess|explain|check-envelope>
+  cascade admission <validate|intake|assess|explain|check-envelope>
   cascade workflow <validate-selection|validate-plan>
   cascade target <inventory|init-manifest|refresh-manifest|validate|drift|probe-commands>
   cascade patterns <options>

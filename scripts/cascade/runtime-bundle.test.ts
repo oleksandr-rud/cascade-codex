@@ -13,7 +13,7 @@ import { resolve } from "node:path";
 import { tmpdir } from "node:os";
 
 import { buildRuntimeBundle } from "../build-runtime-bundle";
-import { compileTaskEnvelope } from "./admission";
+import { compileTaskEnvelope, semanticAdmissionRequest, type AdmissionRequest } from "./admission";
 import {
   capabilitySelectionDigest,
   readPluginCapabilityCatalog,
@@ -22,6 +22,21 @@ import {
 import { rootPath } from "./common";
 import { parseStrictYaml, stringifyYaml } from "./structured-data";
 import { validateConfig } from "./target";
+
+function fixtureInterpretation(request: string) {
+  return {
+    schema_version: 1, artifact_type: "cascade-admission-interpretation", status: "RESOLVED",
+    request_digest: semanticAdmissionRequest(request).request_digest, prior_envelope_id: null,
+    model_id: "authored-routing-fixture-NOT_MODEL_INFERENCE", relation: "NEW", intent: "REVIEW",
+    policy_tags: ["review"], workload: { topology: "ATOMIC", effort: "SMALL", authority: "READ_ONLY", duration: "TURN" },
+    local_write_scope: { mode: "TARGETS", targets: [] },
+    claims: [{ kind: "OUTCOME", statement: request, confidence: 0.8, policy_tags: ["review"] }], uncertainty: [],
+  };
+}
+
+function compileFixture(input: AdmissionRequest) {
+  return compileTaskEnvelope({ ...input, semantic_interpretation: fixtureInterpretation(input.request) });
+}
 
 const outputs: string[] = [];
 
@@ -75,11 +90,21 @@ describe("Cascade lean target runtime bundle", () => {
       "--request",
       "Explain the installed plugin boundary.",
     ]);
-    expect(explain.exitCode).toBe(0);
-    expect(explain.stdout.toString()).toContain("route=NO_WORKFLOW");
+    expect(explain.exitCode).toBe(1);
+    expect(explain.stderr.toString()).toContain("requires --interpretation");
+    const semanticArtifacts = resolve(output, ".artifacts/task-admission");
+    await mkdir(semanticArtifacts, { recursive: true });
+    const request = "Explain the installed plugin boundary.";
+    await writeFile(resolve(semanticArtifacts, "interpretation.json"), JSON.stringify(fixtureInterpretation(request)));
+    const interpreted = runBundle(output, ["admission", "explain", "--request", request, "--interpretation", ".artifacts/task-admission/interpretation.json"]);
+    expect(interpreted.exitCode).toBe(0);
+    expect(interpreted.stdout.toString()).toContain("route=DIRECT_READ");
+    const diagnostics = runBundle(output, ["admission", "legacy-assess", "--request", request]);
+    expect(diagnostics.exitCode).toBe(1);
+    expect(diagnostics.stderr.toString()).toContain("source-checkout-only");
 
     const catalog = await readPluginCapabilityCatalog();
-    const envelope = await compileTaskEnvelope({
+    const envelope = await compileFixture({
       request: "Research this market opportunity.",
       task_id: "lean-runtime-routing",
       produced_at: "2026-09-02T00:00:00+00:00",
@@ -152,7 +177,7 @@ describe("Cascade lean target runtime bundle", () => {
     );
 
     // Exercise the real bundled planner boundary with and without growth feedback.
-    const growthEnvelope = await compileTaskEnvelope({
+    const growthEnvelope = await compileFixture({
       request: "Plan growth and use the evidence to define a product feature.",
       task_id: "lean-runtime-growth-product",
       produced_at: "2026-09-08T00:00:00+00:00",
@@ -160,7 +185,7 @@ describe("Cascade lean target runtime bundle", () => {
     for (const variant of ["growth", "product", "prompt-evals"]) {
       const includeGrowth = variant === "growth";
       const promptPair = variant === "prompt-evals";
-      const featureEnvelope = promptPair ? await compileTaskEnvelope({
+      const featureEnvelope = promptPair ? await compileFixture({
         request: "Create and independently evaluate a reusable prompt.",
         task_id: "lean-runtime-prompt-models", produced_at: "2026-09-10T00:00:00+00:00",
       }) : growthEnvelope;

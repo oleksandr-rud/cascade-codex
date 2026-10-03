@@ -333,7 +333,7 @@ export function validateCapabilitySelection(
   envelope: TaskEnvelope,
   catalog: PluginCapabilityCatalog,
 ): void {
-  validateTaskEnvelope(envelope);
+  validateTaskEnvelope(envelope, { require_semantic_interpretation: true });
   validateCatalogDigest(catalog);
   assertJsonSchema(selection, SELECTION_SCHEMA, "capability selection");
   validateSelectionDigest(selection);

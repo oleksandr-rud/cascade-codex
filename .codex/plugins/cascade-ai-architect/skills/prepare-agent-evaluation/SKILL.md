@@ -66,6 +66,17 @@ A generic agent, tool, memory, or conversational request does not select this pr
    `cascade-simulations:simulate`; controller review is not independent
    semantic acceptance.
 
+
+For typed-decision consumers, include same-label cases with absent evidence,
+high confidence but missing permission, stale observations, actual predecessor
+dependencies, invalid distributions, a Score inconsistent with its vector,
+and a returned revision outside the accepted binding. Test the full host path
+as well as each answer. Separate native confidence from event probabilities
+and equal-mean Score distributions with different spread. A trained unknown
+channel needs unknown-case recall and false-abstention evidence on the target
+domain; a provider's overridden release gate does not qualify this target.
+Keep these subject cases in the existing evaluation lifecycle.
+
 ## Evidence states
 
 - `AUTHORED`: request and cases exist.

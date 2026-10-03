@@ -163,6 +163,47 @@ export interface AdmissionRequest {
   source_segments?: AdmissionSourceSegment[];
   trusted_direct_user_attestation?: TrustedDirectUserAttestation;
   prior_envelope?: TaskEnvelope;
+  semantic_interpretation?: unknown;
+}
+
+export interface AdmissionInterpretation {
+  schema_version: 1;
+  artifact_type: "cascade-admission-interpretation";
+  status: "RESOLVED" | "UNRESOLVED";
+  request_digest: string;
+  prior_envelope_id: string | null;
+  model_id: string;
+  relation: Relation;
+  intent: Intent;
+  policy_tags: string[];
+  workload: {
+    topology: typeof TOPOLOGY[number];
+    effort: typeof EFFORT[number];
+    authority: AuthorityClass;
+    duration: typeof DURATION[number];
+  };
+  local_write_scope: TaskEnvelope["authority"]["local_write_scope"];
+  claims: Array<{ kind: TaskClaim["kind"]; statement: string; confidence: number; policy_tags: string[] }>;
+  uncertainty: string[];
+}
+
+export function validateAdmissionInterpretation(value: unknown): asserts value is AdmissionInterpretation {
+  assertJsonSchema(value, { $schema: ENVELOPE_SCHEMA.$schema, $defs: ENVELOPE_SCHEMA.$defs, $ref: "#/$defs/admissionInterpretation" }, "$");
+  const proposal = value as AdmissionInterpretation;
+  if (proposal.status !== "RESOLVED" || proposal.uncertainty.length) throw new CascadeError("semantic admission is unresolved; repair or clarify before compiling an envelope");
+  requireString(proposal.model_id, "semantic admission model_id");
+  proposal.claims.forEach((claim) => requireString(claim.statement, "semantic admission claim"));
+  for (const tag of [...proposal.policy_tags, ...proposal.claims.flatMap((claim) => claim.policy_tags)]) {
+    if (tag === "always" || tag.startsWith("requested-")) throw new CascadeError("model admission tags cannot establish requested authority");
+  }
+  const represented = new Set(proposal.claims.flatMap((claim) => claim.policy_tags));
+  if (proposal.policy_tags.some((tag) => !represented.has(tag)) || [...represented].some((tag) => !proposal.policy_tags.includes(tag))) throw new CascadeError("semantic admission policy tags must be bound to declared claims");
+  if (proposal.claims.some((claim) => containsRawSecret(claim.statement))) throw new CascadeError("semantic admission claims contain unredacted secret material");
+  const scope = proposal.local_write_scope;
+  if (scope.targets.some((target) => canonicalLocalWriteTarget(target) !== target)) throw new CascadeError("semantic admission write targets must be canonical repository-relative paths");
+  if (scope.mode === "REPOSITORY" && scope.targets.length) throw new CascadeError("repository write scope cannot also name targets");
+  if (proposal.workload.authority !== "LOCAL_WRITE" && (scope.mode !== "TARGETS" || scope.targets.length)) throw new CascadeError("non-local admission cannot declare a local write scope");
+  if (["ANSWER", "DISCOVER", "DIAGNOSE", "REVIEW", "VALIDATE"].includes(proposal.intent) && proposal.workload.authority !== "READ_ONLY") throw new CascadeError("read-only semantic intent cannot declare mutation authority");
 }
 
 export interface TaskClaim {
@@ -228,6 +269,7 @@ export interface TaskEnvelopeValidationBindings {
   expected_request_digest?: string;
   expected_source_digest?: string;
   require_source_digest?: boolean;
+  require_semantic_interpretation?: boolean;
 }
 
 interface PriorDerivationSnapshot {
@@ -237,19 +279,20 @@ interface PriorDerivationSnapshot {
   request_digest: string;
   source_digest: string | null;
   intent: Intent;
-  provenance_mode: "TRUSTED_SOURCE_SEGMENTS" | "LEXICAL_FALLBACK";
+  provenance_mode: "TRUSTED_SOURCE_SEGMENTS" | "LEXICAL_FALLBACK" | "STRUCTURED_PROPOSAL";
   direct_user_attestation: TrustedDirectUserAttestationExpected | null;
   claims: TaskClaim[];
 }
 
 interface TaskDerivationInput extends JsonObject {
   schema_version: 41;
-  classifier_id: "cascade-task-admission-v41";
+  classifier_id: "cascade-task-admission-v41" | "cascade-task-admission-semantic-v1";
+  semantic_interpretation?: AdmissionInterpretation;
   canonical_request: string;
   classification_request: string;
   classification_digest: string;
   provenance_version: 2;
-  provenance_mode: "TRUSTED_SOURCE_SEGMENTS" | "LEXICAL_FALLBACK";
+  provenance_mode: "TRUSTED_SOURCE_SEGMENTS" | "LEXICAL_FALLBACK" | "STRUCTURED_PROPOSAL";
   source_segments_digest: string;
   direct_user_attestation: TrustedDirectUserAttestationExpected | null;
   request_spans: RequestSpan[];
@@ -262,7 +305,7 @@ interface TaskDerivationInput extends JsonObject {
   authority_candidates: string[];
   candidate_tags: string[];
   prior: PriorDerivationSnapshot | null;
-  authenticity: "TRUSTED_DIRECT_USER_ATTESTATION" | "UNVERIFIED_LEXICAL_FALLBACK";
+  authenticity: "TRUSTED_DIRECT_USER_ATTESTATION" | "UNVERIFIED_LEXICAL_FALLBACK" | "UNVERIFIED_MODEL_PROPOSAL";
 }
 
 interface RequestSpan {
@@ -1609,6 +1652,9 @@ export function validateTaskEnvelope(envelope: unknown, bindings: TaskEnvelopeVa
   if (isObject(envelope) && envelope.policy_bundle_version !== ADMISSION_POLICY_BUNDLE) throw new CascadeError("task envelope policy bundle is stale or unsupported");
   assertJsonSchema(envelope, ENVELOPE_SCHEMA, "$");
   const value = envelope as TaskEnvelope;
+  if (bindings.require_semantic_interpretation && value.derivation_input.classifier_id !== "cascade-task-admission-semantic-v1") throw new CascadeError("normal admission requires a semantic interpretation; lexical envelopes are diagnostics only");
+  const semanticClassifier = value.derivation_input.classifier_id === "cascade-task-admission-semantic-v1";
+  if (semanticClassifier !== (value.derivation_input.provenance_mode === "STRUCTURED_PROPOSAL") || semanticClassifier !== (value.derivation_input.semantic_interpretation !== undefined)) throw new CascadeError("task envelope classifier and semantic interpretation binding differ");
   if (parseRfc3339Instant(value.produced_at) === null || parseRfc3339Instant(value.derivation_input.produced_at) === null) throw new CascadeError("task envelope produced_at is not a valid date-time");
   if (value.policy_bundle_digest !== POLICY_BUNDLE_DIGEST || value.control_catalog_digest !== CONTROL_CATALOG_DIGEST) throw new CascadeError("task envelope policy or control source digest is stale");
   const digest = sha256Text(stableJson(envelopePayload(value)));
@@ -1624,13 +1670,15 @@ export function validateTaskEnvelope(envelope: unknown, bindings: TaskEnvelopeVa
       value.derivation_input.direct_user_attestation.request_digest !== value.request_digest ||
       value.derivation_input.direct_user_attestation.source_segments_digest !== value.derivation_input.source_segments_digest
     ) throw new CascadeError("task envelope trusted request provenance is invalid");
+  } else if (value.derivation_input.provenance_mode === "STRUCTURED_PROPOSAL") {
+    if (value.derivation_input.classifier_id !== "cascade-task-admission-semantic-v1" || value.derivation_input.authenticity !== "UNVERIFIED_MODEL_PROPOSAL" || value.derivation_input.direct_user_attestation !== null || stableJson(value.derivation_input.request_spans) !== stableJson([{ start: 0, end: value.derivation_input.canonical_request.length, source: "EXTERNAL_SOURCE" }])) throw new CascadeError("task envelope model proposal provenance is invalid");
   } else if (
     value.derivation_input.provenance_mode !== "LEXICAL_FALLBACK" ||
     value.derivation_input.authenticity !== "UNVERIFIED_LEXICAL_FALLBACK" ||
     value.derivation_input.direct_user_attestation !== null ||
     stableJson(value.derivation_input.request_spans) !== stableJson(refinedLexicalRequestSpans(value.derivation_input.canonical_request))
   ) throw new CascadeError("task envelope lexical request provenance is invalid");
-  const expectedClassificationRequest = classificationRequestFromSpans(value.derivation_input.canonical_request, value.derivation_input.request_spans);
+  const expectedClassificationRequest = value.derivation_input.provenance_mode === "STRUCTURED_PROPOSAL" ? value.derivation_input.canonical_request : classificationRequestFromSpans(value.derivation_input.canonical_request, value.derivation_input.request_spans);
   if (value.derivation_input.classification_request !== expectedClassificationRequest || value.derivation_input.classification_digest !== sha256Text(value.derivation_input.classification_request)) throw new CascadeError("task envelope exact classification input is not bound to the user-authored request spans");
   if (value.source_digest !== value.derivation_input.source_digest) throw new CascadeError("task envelope source digest is not bound to the derivation input");
   if (containsRawSecret(value.derivation_input.canonical_request)) throw new CascadeError("task envelope canonical derivation input contains unredacted secret material");
@@ -1916,26 +1964,8 @@ function shellCommandFromRequest(request: string, allowBare = false): string | n
   return command;
 }
 
-function deriveTaskEnvelopePayload(input: TaskDerivationInput): JsonObject {
-  validateRequestSpans(input.canonical_request, input.request_spans);
-  if (input.provenance_version !== 2 || input.source_segments_digest !== sourceSegmentsDigest(input.request_spans)) throw new CascadeError("task derivation request provenance is not canonical");
-  const directUserAttested = input.provenance_mode === "TRUSTED_SOURCE_SEGMENTS";
-  if (directUserAttested) {
-    if (
-      input.authenticity !== "TRUSTED_DIRECT_USER_ATTESTATION" ||
-      !input.direct_user_attestation ||
-      input.direct_user_attestation.request_digest !== input.request_digest ||
-      input.direct_user_attestation.source_segments_digest !== input.source_segments_digest
-    ) throw new CascadeError("task derivation trusted request provenance is invalid");
-  } else if (
-    input.provenance_mode !== "LEXICAL_FALLBACK" ||
-    input.authenticity !== "UNVERIFIED_LEXICAL_FALLBACK" ||
-    input.direct_user_attestation !== null ||
-    stableJson(input.request_spans) !== stableJson(refinedLexicalRequestSpans(input.canonical_request))
-  ) throw new CascadeError("task derivation lexical request provenance is invalid");
-  const expectedClassificationRequest = classificationRequestFromSpans(input.canonical_request, input.request_spans);
-  if (input.classification_request !== expectedClassificationRequest || input.classification_digest !== sha256Text(expectedClassificationRequest)) throw new CascadeError("task derivation classification input is not bound to user-authored spans");
-  const taskId = input.task_id;
+/** Source-only historical diagnostic; not the semantic intake path. */
+function deriveLegacyInterpretation(input: TaskDerivationInput, directUserAttested: boolean) {
   // Lexical framing may downgrade a trusted user span to quoted material, but
   // it must never promote host-labelled external content into a user directive.
   const lexicalSpans = refinedLexicalRequestSpans(input.canonical_request);
@@ -2003,7 +2033,60 @@ function deriveTaskEnvelopePayload(input: TaskDerivationInput): JsonObject {
     .filter((tag) => !removedAuthorityTags.has(tag as "destructive" | "external-write" | "privileged"))
     .filter((tag) => directUserAttested || !tag.startsWith("requested-"));
   const tags = new Set([...inferredTags, ...externalTags, ...candidateTags]);
-  let claims = atomicClaims(input.canonical_request, input.request_spans, intent, relation, tags, input.authority_candidates, candidateTags, directUserAttested, clausePatches);
+  const claims = atomicClaims(input.canonical_request, input.request_spans, intent, relation, tags, input.authority_candidates, candidateTags, directUserAttested, clausePatches);
+  return { relation, intent, tags, inferredTags, claims, clausePatches, referencedExternalAction, externalRequest };
+}
+
+function deriveStructuredInterpretation(input: TaskDerivationInput) {
+  const proposal = input.semantic_interpretation;
+  validateAdmissionInterpretation(proposal);
+  if (proposal.request_digest !== input.request_digest || proposal.prior_envelope_id !== (input.prior?.envelope_id ?? null)) throw new CascadeError("semantic admission request or prior-envelope binding is stale");
+  if (proposal.relation === "CONTINUE" && !input.prior) throw new CascadeError("semantic continuation requires the bound prior envelope");
+  const tags = new Set(["always", ...proposal.policy_tags]);
+  const claims: TaskClaim[] = proposal.claims.map((claim, index) => ({
+    ...claim,
+    claim_id: `CL-${String(index + 1).padStart(3, "0")}`,
+    source: "MODEL_INFERENCE",
+    status: "INFERRED",
+    policy_tags: unique([...(index === 0 ? ["always"] : []), ...claim.policy_tags]).sort(),
+    verification: "LLM proposal; verify against current scoped evidence and native host authority",
+    consumers: claimConsumers(claim.kind),
+    invalidation: claimInvalidation(claim.kind),
+  }));
+  return { relation: proposal.relation, intent: proposal.intent, tags,
+    inferredTags: proposal.policy_tags, claims, clausePatches: {} as AdmissionClausePatches,
+    referencedExternalAction: false, externalRequest: "" };
+}
+
+function deriveTaskEnvelopePayload(input: TaskDerivationInput): JsonObject {
+  const semanticClassifier = input.classifier_id === "cascade-task-admission-semantic-v1";
+  if (semanticClassifier !== (input.provenance_mode === "STRUCTURED_PROPOSAL") || semanticClassifier !== (input.semantic_interpretation !== undefined)) throw new CascadeError("task derivation classifier and semantic interpretation binding differ");
+  validateRequestSpans(input.canonical_request, input.request_spans);
+  if (input.provenance_version !== 2 || input.source_segments_digest !== sourceSegmentsDigest(input.request_spans)) throw new CascadeError("task derivation request provenance is not canonical");
+  const directUserAttested = input.provenance_mode === "TRUSTED_SOURCE_SEGMENTS";
+  if (directUserAttested) {
+    if (
+      input.authenticity !== "TRUSTED_DIRECT_USER_ATTESTATION" ||
+      !input.direct_user_attestation ||
+      input.direct_user_attestation.request_digest !== input.request_digest ||
+      input.direct_user_attestation.source_segments_digest !== input.source_segments_digest
+    ) throw new CascadeError("task derivation trusted request provenance is invalid");
+  } else if (input.provenance_mode === "STRUCTURED_PROPOSAL") {
+    if (input.classifier_id !== "cascade-task-admission-semantic-v1" || input.authenticity !== "UNVERIFIED_MODEL_PROPOSAL" || input.direct_user_attestation !== null || stableJson(input.request_spans) !== stableJson([{ start: 0, end: input.canonical_request.length, source: "EXTERNAL_SOURCE" }])) throw new CascadeError("task derivation model proposal provenance is invalid");
+  } else if (
+    input.provenance_mode !== "LEXICAL_FALLBACK" ||
+    input.authenticity !== "UNVERIFIED_LEXICAL_FALLBACK" ||
+    input.direct_user_attestation !== null ||
+    stableJson(input.request_spans) !== stableJson(refinedLexicalRequestSpans(input.canonical_request))
+  ) throw new CascadeError("task derivation lexical request provenance is invalid");
+  const expectedClassificationRequest = input.provenance_mode === "STRUCTURED_PROPOSAL" ? input.canonical_request : classificationRequestFromSpans(input.canonical_request, input.request_spans);
+  if (input.classification_request !== expectedClassificationRequest || input.classification_digest !== sha256Text(expectedClassificationRequest)) throw new CascadeError("task derivation classification input is not bound to user-authored spans");
+  const taskId = input.task_id;
+  const semantic = input.classifier_id === "cascade-task-admission-semantic-v1";
+  const interpretation = semantic ? deriveStructuredInterpretation(input) : deriveLegacyInterpretation(input, directUserAttested);
+  const { relation, intent, tags, inferredTags, clausePatches, referencedExternalAction, externalRequest } = interpretation;
+  const requestDigest = input.request_digest;
+  let claims = interpretation.claims;
   const preservedClaimIds: string[] = [];
   const supersededClaimIds: string[] = [];
   const reopenedConsumers: string[] = [];
@@ -2019,7 +2102,7 @@ function deriveTaskEnvelopePayload(input: TaskDerivationInput): JsonObject {
         ? input.prior!.claims.find((candidate) => candidate.status !== "SUPERSEDED"
           && !matchedPrior.has(candidate.claim_id)
           && !(sourceIdentityChanged && candidate.invalidation.includes("source"))
-          && canonicalClaimSemantics(candidate) === canonicalClaimSemantics(claim))
+          && (semantic ? stableJson({ ...candidate, claim_id: null }) === stableJson({ ...claim, claim_id: null }) : canonicalClaimSemantics(candidate) === canonicalClaimSemantics(claim)))
         : undefined;
       if (prior) {
         matchedPrior.add(prior.claim_id);
@@ -2093,17 +2176,17 @@ function deriveTaskEnvelopePayload(input: TaskDerivationInput): JsonObject {
   }
   if (conflicts.length) route = "DIRECT_READ";
   const controls = [...controlSet].sort((left, right) => CONTROL_PACKS.indexOf(left) - CONTROL_PACKS.indexOf(right));
-  const userTags = new Set([...inferredTags, ...candidateTags]);
-  const topology = inferTopology(userTags, intent);
-  const effort = inferEffort(userTags, topology, input.classification_request);
-  const inferredAuthorityClass = inferAuthority(userTags, intent);
+  const userTags = new Set([...inferredTags, ...input.candidate_tags]);
+  const topology = semantic ? input.semantic_interpretation!.workload.topology : inferTopology(userTags, intent);
+  const effort = semantic ? input.semantic_interpretation!.workload.effort : inferEffort(userTags, topology, input.classification_request);
+  const inferredAuthorityClass = semantic ? input.semantic_interpretation!.workload.authority : inferAuthority(userTags, intent);
   const authorityClass = clausePatches.shell_action_class === "READ_ONLY" && inferredAuthorityClass === "LOCAL_WRITE"
     ? "READ_ONLY"
     : inferredAuthorityClass;
-  const localWriteScopeRequest = authorityClass === "LOCAL_WRITE" && referencedExternalAction && hasImperativeMutation(externalRequest)
+  const localWriteScopeRequest = !semantic && authorityClass === "LOCAL_WRITE" && referencedExternalAction && hasImperativeMutation(externalRequest)
     ? externalRequest
     : input.classification_request;
-  const baselineLocalWriteScope = deriveLocalWriteScope(localWriteScopeRequest, authorityClass);
+  const baselineLocalWriteScope = semantic ? input.semantic_interpretation!.local_write_scope : deriveLocalWriteScope(localWriteScopeRequest, authorityClass);
   const localWriteScope = authorityClass === "LOCAL_WRITE" && clausePatches.boundary_targets?.length
     ? { mode: "TARGETS" as const, targets: clausePatches.boundary_targets }
     : authorityClass === "LOCAL_WRITE" && clausePatches.boundary_present && clausePatches.conflicts?.length && !clausePatches.boundary_targets?.length
@@ -2111,7 +2194,7 @@ function deriveTaskEnvelopePayload(input: TaskDerivationInput): JsonObject {
       : authorityClass === "LOCAL_WRITE" && baselineLocalWriteScope.mode === "TARGETS" && !baselineLocalWriteScope.targets.length && clausePatches.repository_scope === "REPOSITORY"
         ? { mode: "REPOSITORY" as const, targets: [] }
         : baselineLocalWriteScope;
-  const duration = inferDuration(userTags, topology, input.classification_request);
+  const duration = semantic ? input.semantic_interpretation!.workload.duration : inferDuration(userTags, topology, input.classification_request);
   const context = inferContext(controls, tags, topology, route);
   const allGaps = unique([...missingAuthority.map((item) => `missing authority: ${item}`), ...gaps]).sort();
   const blockers = unique([
@@ -2187,7 +2270,7 @@ function deriveTaskEnvelopePayload(input: TaskDerivationInput): JsonObject {
     conflicts: unique(conflicts).sort(),
     gaps: allGaps,
     blockers,
-    non_goals: ["admission does not execute work", "admission does not dispatch agents or create worklines", "lexical provenance is advisory and cannot establish hard-action authority"],
+    non_goals: ["admission does not execute work", "admission does not dispatch agents or create worklines", "semantic interpretation and lexical diagnostics cannot establish hard-action authority"],
     invalidation: ["request meaning", "request or source digest", "source identity", "policy bundle", "permission", "scope", "hard-action target", "tool identity"],
   };
   return payload;
@@ -2246,8 +2329,9 @@ function buildTaskDerivationInput(input: AdmissionRequest): TaskDerivationInput 
   };
 }
 
-export async function compileTaskEnvelope(input: AdmissionRequest): Promise<TaskEnvelope> {
+export async function compileLegacyTaskEnvelope(input: AdmissionRequest): Promise<TaskEnvelope> {
   assertAdmissionRequestBound(input.request);
+  if (input.semantic_interpretation !== undefined) throw new CascadeError("legacy diagnostics cannot consume a semantic interpretation");
   // Normal runtime compilation validates only the policy, control, and envelope
   // contracts loaded by this process. The 981-case corpus is a source-checkout
   // regression suite and must never become a per-request runtime dependency.
@@ -2257,6 +2341,61 @@ export async function compileTaskEnvelope(input: AdmissionRequest): Promise<Task
   const envelope = sealEnvelope(deriveTaskEnvelopePayload(derivationInput));
   validateTaskEnvelope(envelope);
   return envelope;
+}
+
+export async function compileTaskEnvelope(input: AdmissionRequest): Promise<TaskEnvelope> {
+  assertAdmissionRequestBound(input.request);
+  validateAdmissionRuntime();
+  validateAdmissionInterpretation(input.semantic_interpretation);
+  if (input.relation || input.intent || input.candidate_tags?.length || input.source_segments || input.trusted_direct_user_attestation) throw new CascadeError("semantic intake cannot be combined with legacy overrides or a synthetic provenance bridge");
+  if (input.prior_envelope) validateTaskEnvelope(input.prior_envelope, { require_semantic_interpretation: true });
+  const canonicalRequest = redactSensitive(input.request);
+  if (!canonicalRequest.trim() || canonicalRequest.length > MAX_REDACTED_REQUEST_CHARACTERS) throw new CascadeError("semantic admission canonical request is empty or oversized");
+  const requestSpans: RequestSpan[] = [{ start: 0, end: canonicalRequest.length, source: "EXTERNAL_SOURCE" }];
+  const sourceDigest = input.source_digest ?? null;
+  if (sourceDigest !== null && !/^[a-f0-9]{64}$/.test(sourceDigest)) throw new CascadeError("admission source_digest must be a lowercase SHA-256 digest");
+  const taskId = input.task_id ?? input.prior_envelope?.task_id ?? "adhoc";
+  if (input.prior_envelope && taskId !== input.prior_envelope.task_id) throw new CascadeError("prior task envelope belongs to a different task_id");
+  const derivation: TaskDerivationInput = {
+    schema_version: ADMISSION_SCHEMA_VERSION,
+    classifier_id: "cascade-task-admission-semantic-v1",
+    semantic_interpretation: structuredClone(input.semantic_interpretation),
+    canonical_request: canonicalRequest,
+    classification_request: canonicalRequest,
+    classification_digest: sha256Text(canonicalRequest),
+    provenance_version: 2,
+    provenance_mode: "STRUCTURED_PROPOSAL",
+    source_segments_digest: sourceSegmentsDigest(requestSpans),
+    direct_user_attestation: null,
+    request_spans: requestSpans,
+    request_digest: sha256Text(canonicalRequest),
+    source_digest: sourceDigest,
+    task_id: taskId,
+    produced_at: input.produced_at ?? utcNow(),
+    relation_override: null,
+    intent_override: null,
+    authority_candidates: unique(input.authority ?? []).sort(),
+    candidate_tags: [],
+    prior: input.prior_envelope ? {
+      envelope_id: input.prior_envelope.envelope_id, revision: input.prior_envelope.revision,
+      task_id: input.prior_envelope.task_id, request_digest: input.prior_envelope.request_digest,
+      source_digest: input.prior_envelope.source_digest, intent: input.prior_envelope.intent,
+      provenance_mode: input.prior_envelope.derivation_input.provenance_mode,
+      direct_user_attestation: input.prior_envelope.derivation_input.direct_user_attestation,
+      claims: structuredClone(input.prior_envelope.claims),
+    } : null,
+    authenticity: "UNVERIFIED_MODEL_PROPOSAL",
+  };
+  const envelope = sealEnvelope(deriveTaskEnvelopePayload(derivation));
+  validateTaskEnvelope(envelope);
+  return envelope;
+}
+
+export function semanticAdmissionRequest(request: string): { request: string; request_digest: string } {
+  assertAdmissionRequestBound(request);
+  const canonical = redactSensitive(request);
+  if (!canonical.trim()) throw new CascadeError("semantic admission request is empty after redaction");
+  return { request: canonical, request_digest: sha256Text(canonical) };
 }
 
 function toolText(input: unknown): string {
@@ -3357,7 +3496,7 @@ export async function runAdmissionCorpus(): Promise<JsonObject> {
   validateAdmissionCaseBundle(source);
   const results: JsonObject[] = [];
   for (const item of source.cases as JsonObject[]) {
-    const envelope = await compileTaskEnvelope({ request: item.request, task_id: item.id, authority: item.authority, produced_at: "2026-08-04T00:00:00Z" });
+    const envelope = await compileLegacyTaskEnvelope({ request: item.request, task_id: item.id, authority: item.authority, produced_at: "2026-08-04T00:00:00Z" });
     const missing = item.required_controls.filter((control: string) => !envelope.control_packs.includes(control as ControlPack));
     const unexpected = envelope.control_packs.filter((control) => !item.required_controls.includes(control));
     const forbidden = item.forbidden_controls.filter((control: string) => envelope.control_packs.includes(control as ControlPack));
@@ -3463,7 +3602,7 @@ export async function readBoundedTaskEnvelope(path: string, prefix?: string, bin
   let envelope: unknown;
   try { envelope = JSON.parse(text); }
   catch { throw new CascadeError("Task Envelope is not valid JSON"); }
-  validateTaskEnvelope(envelope, bindings);
+  validateTaskEnvelope(envelope, { require_semantic_interpretation: true, ...bindings });
   return envelope;
 }
 
@@ -3482,6 +3621,33 @@ async function readBoundedAdmissionRequest(path: string): Promise<string> {
   return request;
 }
 
+async function readAdmissionJson(file: string, maxBytes = 65_536): Promise<JsonObject> {
+  const path = boundedPath(file, ".artifacts/task-admission/");
+  const bytes = await readBoundedRegularFile(path, "semantic admission artifact", { maxBytes, physicalRoot: rootPath(".artifacts/task-admission") });
+  let value: unknown;
+  try { value = JSON.parse(new TextDecoder("utf-8", { fatal: true }).decode(bytes)); }
+  catch { throw new CascadeError("semantic admission artifact must be valid UTF-8 JSON"); }
+  if (!isObject(value)) throw new CascadeError("semantic admission artifact must be an object");
+  return value;
+}
+
+async function readAdmissionIntake(file: string): Promise<JsonObject> {
+  const value = await readAdmissionJson(file, 262_144);
+  const expected = ["schema_version", "artifact_type", "status", "task_id", "request", "request_digest", "envelope_path", "prior_envelope"].sort();
+  if (stableJson(Object.keys(value).sort()) !== stableJson(expected) || value.schema_version !== 1 || value.artifact_type !== "cascade-admission-intake" || value.status !== "REQUIRES_INTERPRETATION") throw new CascadeError("unsupported semantic admission intake");
+  requireString(value.task_id, "semantic intake task_id");
+  if (value.task_id.length > 200) throw new CascadeError("semantic intake task_id is oversized");
+  const canonical = semanticAdmissionRequest(value.request);
+  if (canonical.request !== value.request || canonical.request_digest !== value.request_digest) throw new CascadeError("semantic admission intake request binding is invalid");
+  requireString(value.envelope_path, "semantic intake envelope_path");
+  boundedPath(value.envelope_path, ".artifacts/task-admission/");
+  if (value.prior_envelope !== null) {
+    validateTaskEnvelope(value.prior_envelope, { require_semantic_interpretation: true });
+    if (value.prior_envelope.task_id !== value.task_id) throw new CascadeError("semantic admission prior belongs to a different task");
+  }
+  return value;
+}
+
 export async function main(argv: string[]): Promise<number> {
   const [command, ...rest] = argv;
   const args = parseArgs(rest);
@@ -3490,20 +3656,39 @@ export async function main(argv: string[]): Promise<number> {
     console.log(`admission_status=PASS policies=${result.policy_count} controls=${result.control_count} cases=${result.case_count} bundle=${ADMISSION_POLICY_BUNDLE}`);
     return 0;
   }
-  if (command === "assess" || command === "explain") {
+  if (command === "intake") {
     const file = flag(args, "file");
-    const request = file ? await readBoundedAdmissionRequest(file) : flag(args, "request") ?? args.positionals.join(" ");
+    if (!file) throw new CascadeError("admission intake requires --file PATH");
+    const intake = await readAdmissionIntake(file);
+    console.log(`Request (${intake.request_digest}):\n${intake.request}\n\nPrior envelope: ${intake.prior_envelope?.envelope_id ?? "none"}`);
+    if (intake.prior_envelope) {
+      console.log(`Prior intent: ${intake.prior_envelope.intent}; relation: ${intake.prior_envelope.relation}`);
+      for (const claim of intake.prior_envelope.claims.filter((claim: TaskClaim) => claim.status !== "SUPERSEDED")) console.log(`- ${claim.claim_id} [${claim.kind}/${claim.status}]: ${claim.statement}`);
+    }
+    return 0;
+  }
+  if (command === "assess" || command === "explain" || command === "legacy-assess") {
+    const intakePath = flag(args, "intake");
+    if (intakePath && (command === "legacy-assess" || flag(args, "file") || flag(args, "request") || flag(args, "prior-envelope") || flag(args, "task-id") || args.positionals.length)) throw new CascadeError("semantic intake cannot be combined with legacy diagnostics or request/prior/task overrides");
+    const intake = intakePath ? await readAdmissionIntake(intakePath) : undefined;
+    const file = flag(args, "file");
+    const request = intake?.request ?? (file ? await readBoundedAdmissionRequest(file) : flag(args, "request") ?? args.positionals.join(" "));
     const priorPath = flag(args, "prior-envelope");
-    const prior = priorPath ? await readBoundedTaskEnvelope(priorPath, ".artifacts/task-admission/") : undefined;
+    const prior = intake?.prior_envelope ?? (priorPath ? await readBoundedTaskEnvelope(priorPath, ".artifacts/task-admission/") : undefined);
     const relationFlag = flag(args, "relation");
     const intentFlag = flag(args, "intent");
     if (relationFlag) requireEnum(relationFlag, RELATIONS, "--relation");
     if (intentFlag) requireEnum(intentFlag, INTENTS, "--intent");
     if (flags(args, "hard-action-grant").length) throw new CascadeError("--hard-action-grant is unsupported: only the trusted host runtime can issue and atomically consume hard-action receipts");
     if (boolFlag(args, "dispatch-authorized")) throw new CascadeError("--dispatch-authorized is unsupported: task admission can recommend persistence but cannot authorize dispatch");
-    const envelope = await compileTaskEnvelope({
+    const interpretationPath = flag(args, "interpretation");
+    if (command !== "legacy-assess" && !interpretationPath) throw new CascadeError("semantic admission requires --interpretation PATH; no lexical fallback is permitted");
+    if (command === "legacy-assess" && interpretationPath) throw new CascadeError("legacy diagnostics cannot consume a semantic interpretation");
+    const interpretation = interpretationPath ? await readAdmissionJson(interpretationPath) : undefined;
+    const envelope = await (command === "legacy-assess" ? compileLegacyTaskEnvelope : compileTaskEnvelope)({
       request,
-      task_id: flag(args, "task-id", prior?.task_id ?? "adhoc"),
+      semantic_interpretation: interpretation,
+      task_id: intake?.task_id ?? flag(args, "task-id", prior?.task_id ?? "adhoc"),
       relation: relationFlag as Relation | undefined,
       intent: intentFlag as Intent | undefined,
       authority: flags(args, "authority"),
@@ -3511,7 +3696,7 @@ export async function main(argv: string[]): Promise<number> {
       source_digest: flag(args, "source-digest"),
       prior_envelope: prior,
     });
-    const output = flag(args, "output");
+    const output = flag(args, "output") ?? intake?.envelope_path;
     if (output) {
       const path = boundedPath(output, ".artifacts/task-admission/");
       await writeJsonAtomic(path, envelope);
@@ -3535,6 +3720,6 @@ export async function main(argv: string[]): Promise<number> {
     console.log(stableJson(result, true));
     return result.status === "PASS" ? 0 : 1;
   }
-  console.log("Usage: bun scripts/cascade.ts admission <validate|assess|explain|check-envelope|corpus> [--prior-envelope PATH] [--authority CANDIDATE] [--source-digest SHA256] [--expected-request-digest SHA256] [--expected-source-digest SHA256] [--output .artifacts/task-admission/FILE.json]");
+  console.log("Usage: bun scripts/cascade.ts admission <validate|intake|assess|explain|check-envelope|corpus|legacy-assess> [--intake .artifacts/task-admission/FILE.json] [--interpretation .artifacts/task-admission/FILE.json] [--prior-envelope PATH] [--authority CANDIDATE] [--source-digest SHA256] [--expected-request-digest SHA256] [--expected-source-digest SHA256] [--output .artifacts/task-admission/FILE.json]");
   return command ? 1 : 0;
 }
