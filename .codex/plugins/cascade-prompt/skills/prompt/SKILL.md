@@ -1,6 +1,6 @@
 ---
 name: prompt
-description: Create, refine, diagnose, convert, compare, and test reliable prompts and context plans for language models or tool-using AI systems. Use for copy-ready production prompts, incomplete prompt briefs needing focused clarification, prompt audits, variants or tests, structured-output or tool-use prompts, source-grounded context plans, provider-neutral model-tier recommendations, or prompt adaptation across capability tiers and AI surfaces.
+description: Create, refine, diagnose, convert, compare, and test prompts, typed decision questions, and context plans for AI systems. Use for copy-ready production prompts, Laya/Jev/Intern-Decision/Imajev typed questions, incomplete briefs needing focused clarification, prompt audits, variants or tests, structured-output or tool-use prompts, source-grounded context plans, provider-neutral model-tier recommendations, or prompt adaptation across capability tiers and AI surfaces.
 ---
 
 # Cascade Prompt
@@ -40,11 +40,16 @@ Load only the smallest conditional material:
   Analyzer–Policy Engine–Composer family (including `schema-values-text@1`) or
   the supplied target architecture adopts it. Ordinary prompts, context plans,
   or tool use do not select that architecture or load its policies.
-- Exactly one material tier pack: `runtime/tier-efficient-structured.md`,
+- For generative targets, exactly one material tier pack: `runtime/tier-efficient-structured.md`,
   `runtime/tier-balanced-production.md`, `runtime/tier-frontier-generalist.md`,
   or `runtime/tier-frontier-autonomous.md`.
-- `runtime/model-index.yaml` for a named model or model-specific adaptation,
-  even when its tier is already known. Load only that entry's `prompt_adapter`
+- [Typed-decision models](references/typed-decision-models.md) for Laya,
+  Laya Vision, hosted Jev, Intern-Decision, Imajev, or a bounded typed-decision
+  target. Load only its selected model-specific reference when linked there.
+  Shared `choice`/`score`/`noul` names do not establish inference or confidence
+  compatibility. Do not assign a generative tier to these decision targets.
+- `runtime/model-index.yaml` for a named generative model or model-specific
+  adaptation, even when its tier is already known. Load only that entry's `prompt_adapter`
   when present; paths are relative to this skill. An unknown version requires
   current provider evidence, not the nearest family's settings.
   Preserve an explicit capable model/tier. Use the detailed registry only for
@@ -167,7 +172,7 @@ overlay and context-composition pack when relevant. Keep predictable retrieval,
 validation, joins, routing and commits in the host. This option does not select
 an architecture or justify splitting an otherwise sufficient single prompt.
 
-Use provider-neutral operating envelopes:
+For generative targets, use provider-neutral operating envelopes:
 
 - `efficient-structured`: bounded/fast work with explicit schemas.
 - `balanced-production`: moderate reasoning, retrieval, tools, or autonomy.
@@ -194,12 +199,36 @@ Among configurations meeting the same accepted quality threshold, prefer the
 one that meets the workload's cost and latency constraints with less overhead.
 Do not invent a measured cost, latency or quality advantage.
 
-Compose only needed layers:
+For generative targets, compose only needed layers:
 
 `Core Task Contract + Task Overlay + Risk Overlay + Tier Overlay + Surface Adapter`
 
 Tier changes explicitness and structure, never resolved meaning, permissions,
 source authority, safety, or output behavior.
+
+### Typed decision profile
+
+Use this profile for a named decision model or a requested typed question set.
+First distinguish observation/extraction, bounded semantic judgment,
+generation/planning, and authorized execution. A decision model can select
+among supplied candidates; it does not thereby implement OCR, coordinate
+grounding, free-form plans or tool execution. Read
+[typed-decision models](references/typed-decision-models.md) for target
+eligibility, task decomposition, evidence composition, criteria, examples and
+native result meaning. Define the entity, as-of state, one decision axis,
+accepted candidates, conflicting/missing evidence, and failure cost before
+serializing questions. Put the operative boundary in model-visible instructions
+and criteria; source excerpts belong in the evidence slice that needs them.
+Separate independent judgments from genuine predecessor dependencies, and
+leave policy admission and effects in the host. Preserve explicit model choices
+and never call an unmeasured candidate the correct or best model.
+When target results show errors that violate the requested host action bound,
+mark that model/question combination unqualified for automatic handling. A
+synthetic score gap or exploratory midpoint is a diagnostic, never a host
+default. Deliver an experimental question set only with a review/unresolved
+path; if the user requires automatic action and permits no review, return
+`BLOCKED` with the observed failure evidence.
+For tests or effectiveness claims, also read `runtime/evaluation.md`.
 
 ### 4. Construct and audit once
 

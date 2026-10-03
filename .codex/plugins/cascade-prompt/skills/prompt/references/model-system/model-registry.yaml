@@ -4,13 +4,28 @@ catalog_labels:
   - tier-candidate
   - best-observed-for-workload
   - pinned-baseline
-checked_at: 2026-08-05
-# Undated entries retain this review date; scoped entry updates do not reverify other models.
+checked_at: 2026-09-22
+# Catalog review marker; scoped entry updates do not reverify other models or provider availability.
 evidence_statuses:
   - provider_claim
   - inferred_requires_eval
   - measured
 models:
+  - id: Qwen/Qwen3.5-2B
+    checked_at: 2026-10-03
+    capabilities: [text, vision, tools, reasoning-controls, long-context]
+    status: current-candidate
+    prompt_adapter: runtime/model-qwen-small.md
+    provider: Qwen
+    catalog_labels: [tier-candidate]
+    runtime_controls: [chat template, deployment context limit, output parser, tool availability]
+    sources: [https://huggingface.co/Qwen/Qwen3.5-2B]
+    prompting_notes:
+      - Ordinary generative VLM; decision-tuned descendants require distinct native scoring adapters.
+    tier_candidates:
+      - tier: efficient-structured
+        conditions: Bounded generation/extraction only; exact deployment passes representative language, modality, schema and failure-path validation.
+        evidence_status: inferred_requires_eval
   - id: Qwen/Qwen3.8-27B
     checked_at: 2026-09-09
     capabilities: [text, vision, tools, reasoning-controls, long-context]

@@ -8,9 +8,9 @@ model_policy:
   evaluation_reasoning_effort: high
 skills:
   - route: cascade-prompt:prompt
-    description: Create, refine, diagnose, compare, convert, or test a source-aware prompt and context plan.
-    triggers: [a prompt or context plan is the requested work product]
-    anti_triggers: [the user wants the target task performed instead of a prompt]
+    description: Create, refine, diagnose, compare, convert, or test prompts, context plans, and Laya/Jev/Intern-Decision/Imajev typed questions with model-specific evidence and result semantics.
+    triggers: [a prompt, context plan, or typed-decision question set is the requested work product]
+    anti_triggers: [the user wants the target task performed instead of a prompt or question set]
     consumes: [prompt-brief, authoritative-sources]
     produces: [prompt-candidate]
     required_dependencies: []

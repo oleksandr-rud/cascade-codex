@@ -1,7 +1,8 @@
 # Knowledge base coverage map
 
 Scope: this package's `references` and `runtime`, confirmed by the maintainer.
-Reviewed 2026-09-10. This maps operative rules to loading paths; it is not a
+Typed-decision coverage updated 2026-10-03; other rows retain their 2026-09-10
+review. This maps operative rules to loading paths; it is not a
 claim that every rule belongs in every prompt or that model adherence was tested.
 Relative links below resolve from this file. Load this index for coverage audits
 only; ordinary authoring follows SKILL.md's conditional routing.
@@ -32,6 +33,19 @@ only; ordinary authoring follows SKILL.md's conditional routing.
   slices, private manifests, schema-values-text, caching, interim response and
   release rules require the supplied architecture contracts. A generic context
   template must not import them or invent missing issuer contracts.
+- [Typed-decision models](typed-decision-models.md) owns task framing,
+  decomposition, source selection/order/freshness, one-axis criteria,
+  unknowns, multimodal context, orchestration, native output interpretation
+  and recovery for Laya/Laya Vision, hosted Jev, Intern-Decision and Imajev.
+  It conditionally loads only the selected
+  [Intern](typed-decision-intern.md) or [Imajev](typed-decision-imajev.md)
+  adapter and [examples](../assets/templates/typed-decision-workflows.md)
+  when needed. SKILL, classification/tool/multimodal overlays, context
+  composition and evaluation consume these rules; primitive compatibility
+  is not assumed. Evals owns regression designs and execution evidence.
+  Source adoption does not qualify task-domain accuracy or choose a
+  generative tier. The [Qwen3.5-2B adapter](../runtime/model-qwen-small.md)
+  is separately reachable through its registry/index entry.
 - [Astra](../runtime/model-astra.md), [Qwen](../runtime/model-qwen.md), and
   [other open weights](../runtime/model-open-weight.md) separate dated provider
   facts from Cascade's inferred composition advice. Dates do not establish

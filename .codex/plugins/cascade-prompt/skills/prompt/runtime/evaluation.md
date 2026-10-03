@@ -77,3 +77,49 @@ may use Cascade Simulations for bounded dynamic execution. If Evals is not
 installed or cases cannot be made executable, mark execution `NOT_RUN`.
 Do not recreate campaign assets or execution state inside Cascade Prompt, or
 score an unexpected interview response as a one-shot prompt.
+
+For Laya/Jev, Intern-Decision or Imajev typed questions, including image-capable
+targets, freeze the `state` mapping, each question and criteria, selected
+provider/model or Laya checkpoint, host admission rule, and case labels before
+target execution. For Laya Vision also freeze image identities, preparation,
+and any text supplied with them. Test the actual typed-decision API on a
+held-out set for each primitive and the composed host behavior. Check response
+shape mechanically; assess semantic decisions against independent labels, with
+uncertain cases and error/abstention kept visible. Measure calibration and
+decision thresholds on separate data before allowing automated effects.
+Compare Laya and Jev only on the same task, state, questions, labels, and host
+policy, while recording each model's configuration and limitations. Neither a
+provider benchmark nor one high-confidence answer qualifies the new domain.
+The standard `run-quality-eval.mjs` target path is for generative prompts; it
+does not by itself execute a Laya/Jev or Laya Vision typed question map. When
+Evals is installed, use its `prompt-evaluation/references/typed-decisions.md` handoff
+and a declared typed-decision adapter or an existing scoped target runner.
+Otherwise report execution `NOT_RUN`.
+
+Also freeze entity/as-of scope, candidate order/aliases, question batching,
+native compiler/layout, image roles/preparation, and host fallback/retry rules.
+Intern requires checkpoint, processor/template, backend/dtype and calibration
+identity; Imajev requires base/LoRA/readout/codebook, native unknown, rotations,
+layout and modality-specific calibration. A generative Qwen adapter cannot
+stand in for either decision scorer. The current bundled typed runner supports
+Laya, Laya Vision and Jev only: Intern/Imajev need separately reviewed target
+adapters; absent adapters are `BLOCKED`, not a reason to switch providers.
+
+Test nearest boundaries, missing/conflicting/stale evidence, candidate
+omission, irrelevant state/fields, entity joins, order permutations,
+single-versus-batch, image role swaps, blur/crop and instructions in OCR/records.
+Measure the intended host action, not merely a plausible label. Keep authored
+development examples distinct from independently labeled test groups; split
+related conversations, documents and image pairs together to avoid leakage.
+Separate question/model selection, probability calibration and final tests.
+
+Define the statistic before reporting calibration: maximum probability,
+Jev concentration, ordinal-spread confidence, Imajev known-mass confidence
+and Noul probability are different quantities. Do not compare their ECE values
+as interchangeable correctness probabilities. Where the task supports it,
+compare full candidate distributions with proper scores such as NLL/Brier;
+for known stochastic references report distribution distance/excess Brier,
+sample count and dependence. Preserve unknown mass for Imajev, and report
+coverage/error among automatic actions separately from overall accuracy.
+Public development benchmarks and paired pilot rows are diagnostic evidence.
+Neither benchmark ranking nor a calibration preset qualifies a new domain.

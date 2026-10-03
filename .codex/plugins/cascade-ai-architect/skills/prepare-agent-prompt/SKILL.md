@@ -21,6 +21,14 @@ slice that defines:
 - typed tools, permissions, confirmations, side effects, and error behavior;
 - output schema, model capability constraints, and evaluation cases.
 
+For a decision-model target, carry the actual operation boundary: observation
+or OCR/grounding producer, one semantic axis and candidate set, entity/as-of
+evidence scope, native unknown/result meaning, predecessor dependencies,
+and code-owned admission/effects. Preserve the selected checkpoint/adapter
+and unresolved qualification; shared primitive names or a Qwen backbone do
+not establish inference compatibility. Model-specific prompt and context
+construction remains with Cascade Prompt, and validation with Cascade Evals.
+
 Missing topology, ownership, authority, tool, state, or success decisions are
 `BLOCKING_ARCHITECTURE_GAP`. Do not fill them from model memory or delegate
 them to Prompt.

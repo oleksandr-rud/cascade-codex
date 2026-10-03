@@ -62,6 +62,18 @@ passages, but matching words alone cannot establish relevance or support.
    evidence. Invalidate summaries/reuse when source authority, permissions or
    accepted decisions change. Freshness outranks reuse.
 
+For typed-decision targets, apply
+[the shared evidence profile](../references/typed-decision-models.md) and
+the selected native adapter. Compile entity/as-of scope, necessary record
+joins, material counterevidence and the operative boundary before serializing
+state. Keep source authority separate from freshness; a newer unauthoritative
+record cannot silently override the governing source. Attribute OCR, captions
+and predecessor answers as derived observations with their gaps.
+Use ordered arrays for events and image roles; sorted object keys cannot
+encode chronology. Follow trained layouts rather than imposing this pack's
+generic stable-before-volatile convention on a native decision compiler.
+Test order and evidence extent as controlled variants when material.
+
 For schema output, validate the final answer against the supplied schema and
 claim/evidence rules. A schema-valid unsupported answer still fails. One bounded
 repair may consume concrete validation errors; unavailable tools or missing

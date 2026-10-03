@@ -1,6 +1,6 @@
 ---
 name: prompt-evaluation
-description: Run controlled prompt and adaptive-interview evaluations through bounded model execution. Use when prompt quality, model-tier fit, repeated variance, interview behavior, independent judgment, or human calibration must be measured against versioned tasks and frozen evidence rather than merely authored or discussed.
+description: Run controlled prompt and adaptive-interview evaluations through bounded model execution, and design Laya/Jev/Intern-Decision/Imajev typed-decision evaluations. Use when prompt quality, typed question accuracy, model-tier fit, repeated variance, interview behavior, independent judgment, or human calibration must be measured against versioned tasks and frozen evidence rather than merely authored or discussed.
 ---
 
 # Prompt Evaluation
@@ -45,6 +45,20 @@ and evaluator paths. Direct candidates receive mechanical and outcome
 evaluation; builder trajectory judgment is inapplicable. Keep this path
 separate from the bundled generator benchmark and do not score a supplied
 candidate as if Evals authored it.
+
+For a Laya, Laya Vision, Jev, Intern-Decision or Imajev typed question set, read
+[typed-decision evaluation](references/typed-decisions.md). Its target protocol is separate
+from the generative target path above; do not pass a question map to
+`run-quality-eval.mjs` and describe that as a typed-decision execution.
+For Laya/Jev text or Laya Vision image target runs, use
+`scripts/run-typed-decision-eval.py` with a versioned case pack. Vision packs
+bind each image to a pack-local path and SHA-256 digest; the runner supplies
+verified bytes to the independent fork with strict truncation. The included
+support-ticket packs are synthetic development evidence.
+The bundled runner has no Intern-Decision or Imajev adapter. Design their
+model-specific cases here, but mark target execution `BLOCKED` until a reviewed
+adapter binds native scoring, complete output and deployment identity. Do not
+use a Jev HTTP call, generic Qwen generation or a fixture as substitute evidence.
 
 1. Resolve the subject plugin and exact skill root when running a builder. Use
    `--subject-skill-root` only for an intentional source checkout; otherwise

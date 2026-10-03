@@ -1,11 +1,11 @@
 {
   "artifact_type": "cascade-plugin-capability-catalog",
-  "catalog_digest": "5346981ab1a04c2d97226c2aed3fb57d29a7979937bb4b3c757041625d07d828",
+  "catalog_digest": "fa775e067ac7bb7f8c9744ce468862bd3e2ea5c2d0603304e16003902ea3baf0",
   "marketplace": ".agents/plugins/marketplace.json",
   "plugins": [
     {
       "descriptor_path": ".codex/plugins/cascade-prompt/capabilities.yaml",
-      "descriptor_sha256": "68a5799e04ceab354be31910692b135050be45c568bdc72a5da09ba1d86fedf1",
+      "descriptor_sha256": "396be0811c3bf986a85efed1df78b95bc56871d9779dd13d86a18cd2027bb366",
       "manifest_path": ".codex/plugins/cascade-prompt/.codex-plugin/plugin.json",
       "manifest_sha256": "94aa21523faa667e45761fa23724b0caaf9da6406d39d078742ce00d2102f2ec",
       "model_policy": {
@@ -17,14 +17,14 @@
       "skills": [
         {
           "anti_triggers": [
-            "the user wants the target task performed instead of a prompt"
+            "the user wants the target task performed instead of a prompt or question set"
           ],
           "authority": "READ_ONLY",
           "consumes": [
             "prompt-brief",
             "authoritative-sources"
           ],
-          "description": "Create, refine, diagnose, compare, convert, or test a source-aware prompt and context plan.",
+          "description": "Create, refine, diagnose, compare, convert, or test prompts, context plans, and Laya/Jev/Intern-Decision/Imajev typed questions with model-specific evidence and result semantics.",
           "effect": "CANDIDATE_WRITE",
           "evaluation_cases": [
             "complete-contract",
@@ -48,7 +48,9 @@
           "required_dependencies": [],
           "route": "cascade-prompt:prompt",
           "triggers": [
-            "a prompt or context plan is the requested work product"
+            "a prompt",
+            "context plan",
+            "or typed-decision question set is the requested work product"
           ]
         }
       ],
@@ -344,7 +346,7 @@
     },
     {
       "descriptor_path": ".codex/plugins/cascade-evals/capabilities.yaml",
-      "descriptor_sha256": "e2051fa291a3bc9c99a8658fc5ec545d2b83a93c832d43047a7a0381b1ae22df",
+      "descriptor_sha256": "09487f8f50bf6b8471e51d48a992a5813c182dca91ce3220a33695b418291b06",
       "manifest_path": ".codex/plugins/cascade-evals/.codex-plugin/plugin.json",
       "manifest_sha256": "08205f8cead8df5df2a0dcdc3f3b3a7e973842e97c90d4ade572c730dbf49533",
       "model_policy": {
@@ -427,7 +429,7 @@
             "prompt-candidate",
             "prompt-evaluation-cases"
           ],
-          "description": "Run controlled prompt and interview evaluations with versioned tasks, repetitions, and independent judges.",
+          "description": "Run controlled prompt and interview evaluations, and design native typed-decision evaluations with versioned evidence, model-specific adapters, repetitions, and independent judgments.",
           "effect": "READ_ONLY",
           "evaluation_cases": [
             "prompt-quality",

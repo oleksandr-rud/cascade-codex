@@ -766,6 +766,97 @@
         "assets/templates/structured-extraction.md",
         "assets/templates/contextual-agent.md"
       ]
+    },
+    {
+      "id": "intern-native-evidence-framing-v1",
+      "runner": "interview",
+      "rule_ids": [
+        "core-contract",
+        "source-authority",
+        "typed-decision-routing",
+        "typed-decision-native-intern",
+        "evaluation-honesty"
+      ],
+      "required_reads": [
+        "runtime/intake-interview.md",
+        "references/typed-decision-models.md",
+        "references/typed-decision-intern.md",
+        "runtime/task-overlays.md",
+        "runtime/evaluation.md"
+      ],
+      "forbidden_reads": [
+        "runtime/model-index.yaml",
+        "runtime/stateful-agent.md"
+      ]
+    },
+    {
+      "id": "imajev-native-unknown-visual-v1",
+      "runner": "interview",
+      "rule_ids": [
+        "core-contract",
+        "typed-decision-routing",
+        "typed-decision-native-imajev",
+        "classification-abstention",
+        "evaluation-honesty"
+      ],
+      "required_reads": [
+        "runtime/intake-interview.md",
+        "references/typed-decision-models.md",
+        "references/typed-decision-imajev.md",
+        "assets/templates/typed-decision-workflows.md",
+        "runtime/task-overlays.md",
+        "runtime/evaluation.md"
+      ],
+      "forbidden_reads": [
+        "runtime/model-index.yaml",
+        "runtime/stateful-agent.md"
+      ]
+    },
+    {
+      "id": "jev-model-visible-axes-v1",
+      "runner": "interview",
+      "rule_ids": [
+        "core-contract",
+        "source-authority",
+        "typed-decision-routing",
+        "typed-decision-jev-visible-boundary",
+        "evaluation-honesty"
+      ],
+      "required_reads": [
+        "runtime/intake-interview.md",
+        "references/typed-decision-models.md",
+        "runtime/task-overlays.md",
+        "runtime/context-composition.md",
+        "runtime/evaluation.md"
+      ],
+      "forbidden_reads": [
+        "runtime/model-index.yaml",
+        "runtime/stateful-agent.md"
+      ]
+    },
+    {
+      "id": "qwen35-2b-generative-extraction-v1",
+      "runner": "interview",
+      "rule_ids": [
+        "core-contract",
+        "structured-output",
+        "named-model-adapter",
+        "qwen35-2b-adapter",
+        "evaluation-honesty"
+      ],
+      "required_reads": [
+        "runtime/intake-interview.md",
+        "runtime/model-index.yaml",
+        "runtime/model-qwen-small.md",
+        "runtime/tier-efficient-structured.md",
+        "runtime/task-overlays.md",
+        "runtime/evaluation.md"
+      ],
+      "forbidden_reads": [
+        "references/typed-decision-intern.md",
+        "references/typed-decision-imajev.md",
+        "runtime/stateful-agent.md"
+      ]
     }
   ],
   "external_target_execution": {
@@ -841,12 +932,19 @@
     "tier-frontier-autonomous",
     "tier-frontier-generalist",
     "tool-authority",
-    "unknown-capability"
+    "unknown-capability",
+    "typed-decision-routing",
+    "typed-decision-native-intern",
+    "typed-decision-native-imajev",
+    "typed-decision-jev-visible-boundary",
+    "structured-output",
+    "named-model-adapter",
+    "qwen35-2b-adapter"
   ],
   "knowledge_inventory": [
     {
       "path": "references/knowledge-coverage.md",
-      "sha256": "cd1b65a1b233c06ec2834b4669f4afa00d1c167e428156cab910a02bb969a67a",
+      "sha256": "07d21fe8b21c48c387834a38ff3c96076321a4f1e419dd7e3379c0395d3551a9",
       "consumers": [
         "references/knowledge-coverage.md"
       ],
@@ -929,7 +1027,7 @@
     },
     {
       "path": "references/model-system/model-registry.yaml",
-      "sha256": "0b05e7837957f3a42a566490c6ae0ede7e8bd6f5518e3a11860664f17c6e4a74",
+      "sha256": "216a9dd71398ac93e03dbad52b5abb2e9bcca087401af1ae816ba8c0f272c9c1",
       "consumers": [
         "runtime/model-index.yaml",
         "runtime/model-astra.md",
@@ -1338,7 +1436,7 @@
     },
     {
       "path": "runtime/context-composition.md",
-      "sha256": "44cf20866bf2b377d47675ddc1a07334c7ffd446eb2ec07f9b3fd47752fc145f",
+      "sha256": "59b187556dd7758e14dbb1af4cd05d40360baced96071351c7967893cb5883c7",
       "consumers": [
         "runtime/context-composition.md"
       ],
@@ -1349,19 +1447,24 @@
         "long-context-joins-v1",
         "specialized-web-search-prompt-v1",
         "web-search-prompt-v1",
-        "hybrid-web-database-prompt-v1"
+        "hybrid-web-database-prompt-v1",
+        "jev-model-visible-axes-v1"
       ],
       "coverage_level": "direct-rule-contract"
     },
     {
       "path": "runtime/evaluation.md",
-      "sha256": "2a972f03af45cb4a94b484aa308bb957113d154374aba932dba2bae46dc487fe",
+      "sha256": "9640d2078318b65001886351af27e24e000b2d5e81a72edba7942974e5cab3a4",
       "consumers": [
         "runtime/evaluation.md"
       ],
       "case_ids": [
         "comparison-unknown-v1",
-        "kb-audit-honesty-v1"
+        "kb-audit-honesty-v1",
+        "intern-native-evidence-framing-v1",
+        "imajev-native-unknown-visual-v1",
+        "jev-model-visible-axes-v1",
+        "qwen35-2b-generative-extraction-v1"
       ],
       "coverage_level": "direct-rule-contract"
     },
@@ -1430,7 +1533,11 @@
         "pricing-package-experiment-v1",
         "specialized-web-search-prompt-v1",
         "web-search-prompt-v1",
-        "hybrid-web-database-prompt-v1"
+        "hybrid-web-database-prompt-v1",
+        "intern-native-evidence-framing-v1",
+        "imajev-native-unknown-visual-v1",
+        "jev-model-visible-axes-v1",
+        "qwen35-2b-generative-extraction-v1"
       ],
       "coverage_level": "direct-rule-contract"
     },
@@ -1450,7 +1557,7 @@
     },
     {
       "path": "runtime/model-index.yaml",
-      "sha256": "8e7b1abc71f7d8598eb13d5f98c6db3246610ae35297d0987de75f194d1accc3",
+      "sha256": "f146fa651541fe7adf380b730348a534658c64f76aea7583bace45e1418f5539",
       "consumers": [
         "runtime/model-index.yaml"
       ],
@@ -1466,7 +1573,8 @@
         "explicit-efficient-complex-v1",
         "specialized-web-search-prompt-v1",
         "web-search-prompt-v1",
-        "hybrid-web-database-prompt-v1"
+        "hybrid-web-database-prompt-v1",
+        "qwen35-2b-generative-extraction-v1"
       ],
       "coverage_level": "direct-rule-contract"
     },
@@ -1518,7 +1626,7 @@
     },
     {
       "path": "runtime/stateful-agent.md",
-      "sha256": "651c6e73dc5a61f8b366e5f8d8db72f3089dcac089c4e5673d286e5804106312",
+      "sha256": "15f6a55b96e6aad31b7d32d342f89e8ab81e40351c31c703fdfd1a2aeae0a8ce",
       "consumers": [
         "runtime/stateful-agent.md"
       ],
@@ -1530,7 +1638,7 @@
     },
     {
       "path": "runtime/task-overlays.md",
-      "sha256": "8ab40325e51a50fdf5a804260d55963c9cdeebe0a900a3519defa4d63618b595",
+      "sha256": "0518eea74d46785f9d426a2aa650bdab930593cc13e9adbd916fc6b051f11a6a",
       "consumers": [
         "runtime/task-overlays.md"
       ],
@@ -1571,7 +1679,11 @@
         "pricing-package-experiment-v1",
         "specialized-web-search-prompt-v1",
         "web-search-prompt-v1",
-        "hybrid-web-database-prompt-v1"
+        "hybrid-web-database-prompt-v1",
+        "intern-native-evidence-framing-v1",
+        "imajev-native-unknown-visual-v1",
+        "jev-model-visible-axes-v1",
+        "qwen35-2b-generative-extraction-v1"
       ],
       "coverage_level": "direct-rule-contract"
     },
@@ -1632,7 +1744,8 @@
         "high-stakes-bounded-classification-v1",
         "structured-invoice-v1",
         "support-triage-v1",
-        "brand-context-copy-v1"
+        "brand-context-copy-v1",
+        "qwen35-2b-generative-extraction-v1"
       ],
       "coverage_level": "direct-rule-contract"
     },
@@ -1669,7 +1782,7 @@
     },
     {
       "path": "SKILL.md",
-      "sha256": "ace4bbcdeb2563d03269c68c40a41186f8c20ce8f730dbca0084133923d63a91",
+      "sha256": "21fc9cc47a14c107ba185a870313f557a515de684a0aba450b03847dcdc13a8c",
       "consumers": [
         "SKILL.md"
       ],
@@ -1726,7 +1839,11 @@
         "bounded-document-tool-workflow-v1",
         "specialized-web-search-prompt-v1",
         "web-search-prompt-v1",
-        "hybrid-web-database-prompt-v1"
+        "hybrid-web-database-prompt-v1",
+        "intern-native-evidence-framing-v1",
+        "imajev-native-unknown-visual-v1",
+        "jev-model-visible-axes-v1",
+        "qwen35-2b-generative-extraction-v1"
       ],
       "coverage_level": "entrypoint-or-template-contract"
     },
@@ -1766,6 +1883,74 @@
         "agent-context-template-v1"
       ],
       "coverage_level": "entrypoint-or-template-contract"
+    },
+    {
+      "path": "references/typed-decision-models.md",
+      "sha256": "32a680adf8b52fe936fb2b2d0f09f28fe40dff997271a3544ced037916fc9f1c",
+      "consumers": [
+        "references/typed-decision-models.md"
+      ],
+      "case_ids": [
+        "intern-native-evidence-framing-v1",
+        "imajev-native-unknown-visual-v1",
+        "jev-model-visible-axes-v1"
+      ],
+      "coverage_level": "direct-rule-contract"
+    },
+    {
+      "path": "references/typed-decision-intern.md",
+      "sha256": "cc29aeca428695c9af8ffd797f988e73280b9b5a74b25aee59a434799df7306b",
+      "consumers": [
+        "references/typed-decision-intern.md"
+      ],
+      "case_ids": [
+        "intern-native-evidence-framing-v1"
+      ],
+      "coverage_level": "direct-rule-contract"
+    },
+    {
+      "path": "references/typed-decision-imajev.md",
+      "sha256": "d8172d3de3491cc6b19062ff5e7427a998465dbb3f8c75c3f4c37249e21f9547",
+      "consumers": [
+        "references/typed-decision-imajev.md"
+      ],
+      "case_ids": [
+        "imajev-native-unknown-visual-v1"
+      ],
+      "coverage_level": "direct-rule-contract"
+    },
+    {
+      "path": "assets/templates/typed-decision-workflows.md",
+      "sha256": "57380887ec6a741e7029206cfc5b7a4354f3b97211bbafbbc2c58ae3de4fb562",
+      "consumers": [
+        "assets/templates/typed-decision-workflows.md"
+      ],
+      "case_ids": [
+        "imajev-native-unknown-visual-v1"
+      ],
+      "coverage_level": "direct-rule-contract"
+    },
+    {
+      "path": "runtime/model-qwen-small.md",
+      "sha256": "e919466ae0c7e8822a45ad1635a386af3a580b6c9867a1812312a672c62c1703",
+      "consumers": [
+        "runtime/model-qwen-small.md"
+      ],
+      "case_ids": [
+        "qwen35-2b-generative-extraction-v1"
+      ],
+      "coverage_level": "direct-rule-contract"
+    },
+    {
+      "path": "assets/templates/selective-state-context.md",
+      "sha256": "b51c6ed6d1a9967657c9c0a2a2df90f1d100a49c4984952697c0eccaef3413af",
+      "consumers": [
+        "runtime/stateful-agent.md"
+      ],
+      "case_ids": [
+        "stateful-issued-slice-v1"
+      ],
+      "coverage_level": "consumer-contract"
     }
   ],
   "routing_case_mapping": {

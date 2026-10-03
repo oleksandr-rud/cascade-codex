@@ -1,6 +1,14 @@
-checked_at: 2026-08-05
-# Undated entries retain the catalog review date; entry dates override it.
+checked_at: 2026-09-22
+# Catalog review marker; scoped entry updates do not reverify other models or provider availability.
 models:
+  - id: Qwen/Qwen3.5-2B
+    checked_at: 2026-10-03
+    capabilities: [ text, vision, tools, reasoning-controls, long-context ]
+    status: current-candidate
+    prompt_adapter: runtime/model-qwen-small.md
+    tiers: [ efficient-structured ]
+    tier_conditions:
+      efficient-structured: Bounded generation/extraction only; exact deployment passes representative language, modality, schema and failure-path validation.
   - id: Qwen/Qwen3.8-27B
     checked_at: 2026-09-09
     capabilities: [text, vision, tools, reasoning-controls, long-context]

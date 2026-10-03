@@ -34,7 +34,7 @@ skills:
     authority: READ_ONLY
     evaluation_cases: [blind-judge, anchored-rubric]
   - route: cascade-evals:prompt-evaluation
-    description: Run controlled prompt and interview evaluations with versioned tasks, repetitions, and independent judges.
+    description: Run controlled prompt and interview evaluations, and design native typed-decision evaluations with versioned evidence, model-specific adapters, repetitions, and independent judgments.
     triggers: [prompt quality or model fit must be measured]
     anti_triggers: [the prompt has not been frozen or only authoring is requested]
     consumes: [prompt-candidate, prompt-evaluation-cases]

@@ -21,6 +21,11 @@ this whole pack into the generated prompt.
   classify free text with regexes, keyword tables or phrase heuristics before
   the model, after it, or as a fallback. Code validates enums and consumes
   structured outcomes; it cannot resolve semantic ambiguity from word matches.
+  For a typed-decision target, read `../references/typed-decision-models.md`
+  and its selected adapter. Resolve entity/as-of scope and one axis per
+  question before writing criteria; keep topic, urgency, resolution and tone
+  separate. Candidate fit, absent evidence and native abstention have distinct
+  meanings. Shared primitive names do not imply compatible confidence gates.
 - **Research/retrieval** — triggers: research, search, cite, current, compare
   sources, specialized web search, database or hybrid retrieval. Resolve
   authority, freshness/version, source/domain restrictions, query and tool
@@ -43,6 +48,14 @@ this whole pack into the generated prompt.
   deterministic host admission still decides dispatch. Coordinate the selected
   technique with the context slice and architecture brief; never invent a graph
   runtime, a new agent, or additional authority from prompt wording.
+  Distinguish acquiring evidence, semantic action selection, argument binding,
+  planning, execution admission and effect verification. The host supplies
+  current eligible candidates and validates permissions/preconditions before
+  effects; the model's choice supplies no authority. Batch independent judgments
+  only when the adapter permits it. A field that needs a predecessor's actual
+  result requires a validated later step, not a speculative same-call reference.
+  Specify transport retries separately from semantic revision, reobservation
+  after stale state, and fallback that preserves the accepted task and unknowns.
   Only for an explicitly requested or already adopted Analyzer–Policy Engine–Composer
   architecture (including `schema-values-text@1`), read [stateful-agent.md](stateful-agent.md).
   Generic tool use or the word "agent" does not activate that profile.
@@ -57,9 +70,15 @@ this whole pack into the generated prompt.
   mapping, conflict policy, coverage, and stopping condition. Preserve exact
   facts across chunks and cross-source joins; window capacity does not prove
   recall. Use `context-composition.md` for the requested context layout.
-- **Multimodal** — triggers: image, audio, video, screenshot, diagram. Resolve
+- **Multimodal** - triggers: image, audio, video, screenshot, diagram. Resolve
   which modality supports each claim, unreadable/missing-region behavior, and
   evidence references, inspection order, and required precision.
+  Bind asset identity, capture time, original versus crop/resize, reference/target
+  role and derived-text provenance. Separate OCR text, coordinate grounding,
+  bounded judgment and authorized action. Preserve image/text conflict and
+  reobserve stale control state. A caption or encoded image supplied to a
+  text-only target is not direct visual evidence. Optional image input does
+  not establish audio/video understanding or a working control loop.
 - **Realtime** — triggers: streaming, voice, live, interruption, low latency.
   Resolve latency/length bounds, incremental state, interruption handling, and
   handoff boundaries, event order, stale observations, state reconciliation,
