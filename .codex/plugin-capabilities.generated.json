@@ -1,6 +1,6 @@
 {
   "artifact_type": "cascade-plugin-capability-catalog",
-  "catalog_digest": "4c116dd93507e8896627444308747f170a86e99022d965efb5183ad15ac7606c",
+  "catalog_digest": "ced3f5176196dc1b70af3ce9dde2e8b01018dc0c5addac1140ae385a2efffa6d",
   "marketplace": ".agents/plugins/marketplace.json",
   "plugins": [
     {
@@ -378,9 +378,9 @@
     },
     {
       "descriptor_path": ".codex/plugins/cascade-quality/capabilities.yaml",
-      "descriptor_sha256": "24e51aaa64fcfccead9d54c4a5deced3a4b6e7ed13b69d6b205538537ec52fd7",
+      "descriptor_sha256": "6824938ba730f9bef66b3d83678d43316471f816b3ff1835c67b7364732d2cbf",
       "manifest_path": ".codex/plugins/cascade-quality/.codex-plugin/plugin.json",
-      "manifest_sha256": "0050222ec2e7c4e6a14fed0cb651aa45fea7e10bd1c2cb832f0dc5362137611b",
+      "manifest_sha256": "83697c2b209e0a3477f0e88d6b47e978ea9e22ae04adbe96f65aa3982d7adf7e",
       "model_policy": {
         "evaluation_reasoning_effort": "high",
         "model": "gpt-6-astra",
@@ -433,9 +433,11 @@
           ],
           "authority": "READ_ONLY",
           "component": "qa",
-          "consumes": [
-            "quality-plan",
-            "product-contract"
+          "consumes": [],
+          "consumes_any_of": [
+            "accepted-behavior",
+            "product-contract",
+            "change-contract"
           ],
           "description": "Design traceable test cases, data, oracles, and execution requests from accepted behavior and quality scope.",
           "effect": "CANDIDATE_WRITE",
@@ -443,6 +445,9 @@
           "evaluation_cases": [
             "traceable-oracle",
             "no-execution"
+          ],
+          "optional_consumes": [
+            "quality-plan"
           ],
           "optional_dependencies": [
             "cascade-prompt:prompt",
@@ -738,7 +743,7 @@
           ]
         }
       ],
-      "version": "1.0.0+codex.20261006.1"
+      "version": "1.0.1+codex.20261007.1"
     },
     {
       "descriptor_path": ".codex/plugins/cascade-ai-architect/capabilities.yaml",
@@ -1520,9 +1525,9 @@
     },
     {
       "descriptor_path": ".codex/plugins/cascade-discovery/capabilities.yaml",
-      "descriptor_sha256": "6967f762c49e797797d38c6c5a5a4d9aed9625b8649acbeef58c345bf03b2959",
+      "descriptor_sha256": "db1ec8c2cde7cc62c1d8b6ba3e28c39223bece2b8d56a5b66d8298bb60c7c028",
       "manifest_path": ".codex/plugins/cascade-discovery/.codex-plugin/plugin.json",
-      "manifest_sha256": "728708970b4217ff4757f01c89f91037dc9cc610c1a704750dcbbeaf42178f6d",
+      "manifest_sha256": "08bc3d512ff4648b8d1a4054ac813023ea10ae7f505f26ba4ede4b37c5afca27",
       "model_policy": {
         "evaluation_reasoning_effort": "high",
         "model": "gpt-6-astra",
@@ -1538,8 +1543,7 @@
           "authority": "READ_ONLY",
           "component": "market",
           "consumes": [
-            "market-research-brief",
-            "external-sources"
+            "market-research-brief"
           ],
           "description": "Discover or refresh markets, competitors and alternative workflows using current evidence of jobs, demand, pricing, buying behavior and entrant reachability.",
           "effect": "CANDIDATE_WRITE",
@@ -1547,6 +1551,9 @@
           "evaluation_cases": [
             "source-attribution",
             "no-synthetic-proof"
+          ],
+          "optional_consumes": [
+            "external-sources"
           ],
           "optional_dependencies": [
             "cascade-discovery:compile-persona",
@@ -1977,7 +1984,7 @@
           ]
         }
       ],
-      "version": "1.0.0+codex.20261006.1"
+      "version": "1.0.1+codex.20261007.1"
     },
     {
       "descriptor_path": ".codex/plugins/cascade-design/capabilities.yaml",

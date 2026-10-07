@@ -1,7 +1,7 @@
 schema_version: 1
 plugin:
   name: cascade-discovery
-  version: 1.0.0+codex.20261006.1
+  version: 1.0.1+codex.20261007.1
 model_policy:
   model: gpt-6-astra
   planning_reasoning_effort: high
@@ -20,6 +20,7 @@ skills:
         requested
     consumes:
       - market-research-brief
+    optional_consumes:
       - external-sources
     produces:
       - market-evidence-ledger

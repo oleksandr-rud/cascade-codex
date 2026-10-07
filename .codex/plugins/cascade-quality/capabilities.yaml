@@ -1,7 +1,7 @@
 schema_version: 1
 plugin:
   name: cascade-quality
-  version: 1.0.0+codex.20261006.1
+  version: 1.0.1+codex.20261007.1
 model_policy:
   model: gpt-6-astra
   planning_reasoning_effort: high
@@ -44,9 +44,13 @@ skills:
       - test design rather than execution is requested
     anti_triggers:
       - tests must be run or product behavior is unresolved
-    consumes:
-      - quality-plan
+    consumes: []
+    consumes_any_of:
+      - accepted-behavior
       - product-contract
+      - change-contract
+    optional_consumes:
+      - quality-plan
     produces:
       - test-plan
     required_dependencies: []

@@ -285,6 +285,7 @@ function fixture(routes: string[], inputs: string[], alternatives: Record<string
 
 // These inputs come from supported SKILL.md modes, independently of descriptor.consumes.
 const supportedModes: [string, string[], string[]?][] = [
+  ["cascade-discovery:research-market", ["market-research-brief"]],
   ["cascade-engineering:review-change", ["change-diff", "change-contract"]],
   ["cascade-discovery:define-product", ["product-evidence"]],
   ["cascade-discovery:manage-product-lifecycle", ["product-evidence"]],
@@ -334,6 +335,9 @@ describe("source-supported plugin input modes", () => {
     ["cascade-discovery:evaluate-persona", "persona-projection"],
     ["cascade-quality:plan-quality", "product-contract"],
     ["cascade-quality:plan-quality", "change-contract"],
+    ["cascade-quality:design-tests", "accepted-behavior"],
+    ["cascade-quality:design-tests", "product-contract"],
+    ["cascade-quality:design-tests", "change-contract"],
     ["cascade-workflows:define-work-item", "user-report"],
     ["cascade-workflows:define-work-item", "accepted-behavior"],
     ["cascade-workflows:define-work-item", "frozen-findings"],
@@ -344,6 +348,38 @@ describe("source-supported plugin input modes", () => {
     expect(() => validateCapabilitySelection(fixture([route], []).selection, envelope, catalog)).toThrow("requires an alternative input");
     expect(fixture([route], []).check).toThrow("requires an alternative input");
     expect(fixture([route], [], { [route]: [input] }).check).toThrow("consumes unavailable artifact");
+  });
+
+  test("research starts from a brief while supplied sources remain optional and bound", () => {
+    const route = "cascade-discovery:research-market";
+    const fresh = fixture([route], ["market-research-brief"]);
+    expect(() => validateCapabilitySelection(fresh.selection, envelope, catalog)).not.toThrow();
+    expect(fresh.check).not.toThrow();
+    const supplied = fixture([route], ["market-research-brief", "external-sources"], { [route]: ["external-sources"] });
+    expect(supplied.check).not.toThrow();
+    expect(fixture([route], ["external-sources"]).check).toThrow("consumes unavailable artifact");
+    expect(fixture([route], ["market-research-brief"], { [route]: ["external-sources"] }).check).toThrow("consumes unavailable artifact");
+  });
+
+  test("a quality plan adds traceability without replacing accepted behavior", () => {
+    const route = "cascade-quality:design-tests";
+    const supplied = fixture([route], ["accepted-behavior", "quality-plan"], { [route]: ["accepted-behavior", "quality-plan"] });
+    expect(supplied.check).not.toThrow();
+    expect(() => validateCapabilitySelection(fixture([route], ["quality-plan"]).selection, envelope, catalog)).toThrow("requires an alternative input");
+    expect(fixture([route], ["quality-plan"], { [route]: ["quality-plan"] }).check).toThrow("requires an alternative input");
+    expect(fixture([route], ["accepted-behavior"], { [route]: ["accepted-behavior", "quality-plan"] }).check).toThrow("consumes unavailable artifact");
+  });
+
+  test("an upstream quality plan reaches test design only through an explicit edge", () => {
+    const route = "cascade-quality:design-tests";
+    const { plan, check } = fixture(["cascade-quality:plan-quality", route], ["accepted-behavior"], {
+      "cascade-quality:plan-quality": ["accepted-behavior"],
+      [route]: ["accepted-behavior", "quality-plan"],
+    });
+    plan.edges = [{ from: "node-1", to: "node-2", artifact: "quality-plan" }];
+    expect(check).not.toThrow();
+    plan.edges = [];
+    expect(check).toThrow("required artifact edge is missing");
   });
 
   test("architecture output reaches review and secure design through explicit edges", () => {

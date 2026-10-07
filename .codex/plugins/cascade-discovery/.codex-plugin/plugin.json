@@ -1,6 +1,6 @@
 {
   "name": "cascade-discovery",
-  "version": "1.0.0+codex.20261006.1",
+  "version": "1.0.1+codex.20261007.1",
   "description": "Portable discovery methods with separate component ownership.",
   "author": {
     "name": "Cascade"
