@@ -53,11 +53,11 @@ or mandatory generative surface is needed for every screen.
 
 | Consumer | Apply in the existing work product |
 |---|---|
-| Product — `cascade-product:define-product` | Define the useful outcome, decision information, allowed action and recognizable result in requirements and journeys. Identify where a structured view helps. |
-| Marketing — `cascade-market:brand-positioning`, `plan-growth` | Match promise, proof, conditions and call to action to the real UI states. Use structured choices or summaries when they improve understanding or activation. |
+| Product — `cascade-discovery:define-product` | Define the useful outcome, decision information, allowed action and recognizable result in requirements and journeys. Identify where a structured view helps. |
+| Marketing — `cascade-discovery:brand-positioning`, `plan-growth` | Match promise, proof, conditions and call to action to the real UI states. Use structured choices or summaries when they improve understanding or activation. |
 | Design — `cascade-design:create-design`, `design-system` | Select component/template anatomy, composition, states and accessible behavior under the accepted design system. |
 | AI Architect — `cascade-ai-architect:design-agent-blueprint` | When an agent proposes UI, constrain its output to the supported catalog and data; keep proposal and observed state distinct in its existing behavior contract. |
-| Software Architect — `cascade-software-architect:architect-software-system` | Place the catalog and UI state in the current frontend architecture; map relevant data and action ownership using existing project boundaries. |
+| Software Architect — `cascade-engineering:architect-software-system` | Place the catalog and UI state in the current frontend architecture; map relevant data and action ownership using existing project boundaries. |
 | Implementing agent / Frontend Engineer | Consume the accepted mapping and reuse project components and interfaces within the assigned implementation scope. |
 
 These are contributions from existing roles and skills, not extra agents to

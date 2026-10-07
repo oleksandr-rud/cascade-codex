@@ -25,14 +25,14 @@ personas, project plans or simulation work to use every installed plugin.
 
 | Trigger within this design brief | Route and bounded result |
 | --- | --- |
-| User value, offer, feature behavior or acceptance is unresolved | `cascade-product:define-product` for a grounded candidate before visual design |
-| The question is whether the proposed flow achieves the intended user outcome | `cascade-product:validate-product` for a validation plan or assessment of supplied evidence |
-| Design decisions need segment, alternative, pricing or buying evidence | `cascade-market:research-market`; preserve source dates and missing evidence |
-| Positioning, naming, promise, proof or trust copy is requested | `cascade-market:brand-positioning` |
-| A message, onboarding or pricing hypothesis needs a real-world test design | `cascade-market:design-market-experiments`; designing a test does not run it |
-| User evidence must become a canonical human model | `cascade-personas:build-persona`; label synthetic hypotheses explicitly |
-| A frozen persona needs a purpose-limited view for product work or simulation | `cascade-personas:compile-persona`; consume a supported projection, never invent a new Design schema |
-| A design issue, milestone plan, dependency update or completed design workstream needs assessment | The matching `cascade-project-management:define-work-item`, `plan-project`, `manage-project` or `close-project`; scope it to the owned design work |
+| User value, offer, feature behavior or acceptance is unresolved | `cascade-discovery:define-product` for a grounded candidate before visual design |
+| The question is whether the proposed flow achieves the intended user outcome | `cascade-discovery:validate-product` for a validation plan or assessment of supplied evidence |
+| Design decisions need segment, alternative, pricing or buying evidence | `cascade-discovery:research-market`; preserve source dates and missing evidence |
+| Positioning, naming, promise, proof or trust copy is requested | `cascade-discovery:brand-positioning` |
+| A message, onboarding or pricing hypothesis needs a real-world test design | `cascade-discovery:design-market-experiments`; designing a test does not run it |
+| User evidence must become a canonical human model | `cascade-discovery:build-persona`; label synthetic hypotheses explicitly |
+| A frozen persona needs a purpose-limited view for product work or simulation | `cascade-discovery:compile-persona`; consume a supported projection, never invent a new Design schema |
+| A design issue, milestone plan, dependency update or completed design workstream needs assessment | The matching `cascade-workflows:define-work-item`, `plan-project`, `manage-project` or `close-project`; scope it to the owned design work |
 | The deliverable is a reusable instruction or context plan | `cascade-prompt:prompt`; supplying an actor role is not by itself prompt authoring |
 | A requested rehearsal needs actor, persona, brief, observable outcome or interface contracts | The matching `cascade-simulations:simulation-actor`, `simulation-persona`, `simulation-brief`, `simulation-outcome` or `simulation-adapter` |
 | One bounded rehearsal is explicitly requested and its contracts, tools and permissions are ready | `cascade-simulations:simulate`; identify synthetic evidence and retain its limited meaning |

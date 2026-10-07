@@ -63,18 +63,18 @@ handoff; this skill defines the rule while the host implements it.
    interactive states, content rules, responsive behavior, accessibility,
    tokens, and visual/functional checks.
 6. Separate ownership:
-   - missing product behavior -> `cascade-product:define-product` when
+   - missing product behavior -> `cascade-discovery:define-product` when
      installed;
-   - persona/user-model evidence -> `cascade-personas:compile-persona` when
+   - persona/user-model evidence -> `cascade-discovery:compile-persona` when
      installed;
    - missing brand positioning or message authority ->
-     `cascade-market:brand-positioning` when installed;
+     `cascade-discovery:brand-positioning` when installed;
    - feature-specific UX -> `cascade-design:ux-flow-review`;
    - accessibility evidence -> `cascade-design:accessibility-review`;
    - screenshot proof -> `cascade-design:visual-qa`;
    - prompt behavior -> `cascade-prompt:prompt` only when the rule governs a
      model-facing interface contract;
-   - semantic evaluation -> `cascade-evals:evaluate` only for a versioned
+   - semantic evaluation -> `cascade-quality:evaluate` only for a versioned
      evaluation claim;
    - code change -> host planning and implementation.
 7. Build each handoff directionally. `required_input` contains only the
@@ -82,7 +82,7 @@ handoff; this skill defines the rule while the host implements it.
    decision/gap ledger that the next owner will consume. `expected_output`
    names the new artifact or decision that owner must produce. Never repeat a
    missing desired output as its own required input. In particular, a
-   `cascade-product:define-product` handoff consumes the current request,
+   `cascade-discovery:define-product` handoff consumes the current request,
    observed UI/primitive context, and unresolved actor/decision/state/
    permission/audit fields; it produces the accepted product definition.
    Missing desired artifacts belong in evidence requirements, never in

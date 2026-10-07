@@ -79,12 +79,12 @@ trigger is present. Route portable forecasting, coordination, reconciliation,
 and completion assessment through Cascade Project Management. Route quality
 planning, test design, evidence assessment, and defect triage through Cascade
 QA only when accepted behavior has a relevant quality gate. The harness retains
-target execution through `run-qa-plan`, proven test-only repair through
-`repair-tests`, and authorized durable state mutation through `closeout`. A
+target execution through `run-qa-plan`, evidence-bound validation recovery through
+`resolve-validation-failure`, and authorized durable state mutation through `closeout`. A
 bounded change completed by one owner does not need a spec, lane, work graph,
 report, receipt, or archive entry.
 
-`cascade-project-management:define-work-item` is the explicit exception path
+`cascade-workflows:define-work-item` is the explicit exception path
 for issue bodies or tracker-ready work items. Human review is an explicit
 open-question or exception path, not a
 standalone workflow router. Worklines and work graphs do not auto-dispatch; use

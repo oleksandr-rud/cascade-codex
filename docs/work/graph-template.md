@@ -11,7 +11,7 @@ Next Gate: `<PLUGIN_SKILL_HOST_ADAPTER_OR_COMMAND>`
 Use this host projection only when at least two meaningful worklines have a
 real dependency, evidence join, materialization boundary, invalidation
 relationship, or partial-repair route. First obtain the portable project
-artifact from `cascade-project-management:manage-project`.
+artifact from `cascade-workflows:manage-project`.
 
 ## Goal And Applicability
 

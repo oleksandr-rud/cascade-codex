@@ -7,10 +7,10 @@
     "DES-001", "DES-002", "DES-003", "DES-004", "DES-005", "DES-006",
     "DES-007", "DES-008", "DES-009", "DES-010", "DES-011", "DES-012", "DES-013", "DES-014", "DES-015", "DES-016", "DES-017", "DES-018", "DES-019"
   ],
-  "subject_adapter": "cascade-evals:agent-evaluation",
+  "subject_adapter": "cascade-quality:agent-evaluation",
   "execution_adapter": {
     "id": "cascade-evals-agent-runner-v1",
-    "runner": "cascade-evals/scripts/run_agent_evaluation.py",
+    "runner": "cascade-quality/skills/evals/scripts/run_agent_evaluation.py",
     "model": "gpt-6-astra",
     "reasoning_effort": "high",
     "sandbox": "read-only+os-read-isolation",
@@ -21,8 +21,8 @@
   "packet_contract": {
     "target_fields": ["case_id", "request", "fixture"],
     "sealed_fields": ["skill", "expected_status", "oracle", "mechanical_assertions"],
-    "judge_builder": "cascade-evals/scripts/build_blind_packets.py",
-    "judge_schema": "cascade-evals/skills/evaluate/references/judge-packet.schema.json"
+    "judge_builder": "cascade-quality/skills/evals/scripts/build_blind_packets.py",
+    "judge_schema": "cascade-quality/skills/evals/skills/evaluate/references/judge-packet.schema.json"
   },
   "assertion_catalog": {
     "status_matches_expected": {
@@ -103,7 +103,7 @@
       "category": "missing-evidence",
       "expected_status": "GAP",
       "request": "Review our new wizard and tell engineering exactly what flow to build.",
-      "oracle": "Selects UX flow review but returns GAP because actor, job, product behavior, screens, states, and current UI are absent; records the request as a source, does not invent a flow, and hands missing product intent to cascade-product:define-product or the host product owner.",
+      "oracle": "Selects UX flow review but returns GAP because actor, job, product behavior, screens, states, and current UI are absent; records the request as a source, does not invent a flow, and hands missing product intent to cascade-discovery:define-product or the host product owner.",
       "mechanical_assertions": ["status_matches_expected", "selected_skill_matches_expected", "design_artifact_validates"],
       "fixture": {
         "output_contract": {"response_encoding": "json", "schema": "schemas/design-review.schema.json", "required_response_fields": ["schema_version", "artifact_id", "selected_skill", "status", "subject", "sources", "scope", "coverage", "findings", "evidence_plan", "handoffs", "boundaries"]},
@@ -263,7 +263,7 @@
       "category": "handoff",
       "expected_status": "GAP",
       "request": "Create a reusable approval-card component, but the product has not decided who may approve, what approval means, which states exist, or what completion does. Separate the missing product contract from the reusable design work and return the exact next owner.",
-      "oracle": "Selects design-system, returns GAP rather than inventing approval behavior, binds the unresolved fields, routes product intent to cascade-product:define-product, leaves component rule status unapproved, and specifies the accepted product artifact required to resume design-system work.",
+      "oracle": "Selects design-system, returns GAP rather than inventing approval behavior, binds the unresolved fields, routes product intent to cascade-discovery:define-product, leaves component rule status unapproved, and specifies the accepted product artifact required to resume design-system work.",
       "mechanical_assertions": ["status_matches_expected", "selected_skill_matches_expected", "design_artifact_validates"],
       "fixture": {
         "output_contract": {"response_encoding": "json", "schema": "schemas/design-review.schema.json", "required_response_fields": ["schema_version", "artifact_id", "selected_skill", "status", "subject", "sources", "scope", "coverage", "findings", "evidence_plan", "handoffs", "boundaries"]},

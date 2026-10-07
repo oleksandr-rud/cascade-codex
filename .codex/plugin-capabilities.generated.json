@@ -1,13 +1,13 @@
 {
   "artifact_type": "cascade-plugin-capability-catalog",
-  "catalog_digest": "14d744e11f5faed97f46762ddc113439257c98b05087a9f7f52fc95f0657b098",
+  "catalog_digest": "4c116dd93507e8896627444308747f170a86e99022d965efb5183ad15ac7606c",
   "marketplace": ".agents/plugins/marketplace.json",
   "plugins": [
     {
       "descriptor_path": ".codex/plugins/cascade-prompt/capabilities.yaml",
-      "descriptor_sha256": "99431d0bb8500e522e9635b3eab6629951c891591794f7ebcc0c1fd91cb4ff8c",
+      "descriptor_sha256": "cf98f821a0a36ad9848316ef876a7eec79f299e28b3d028af2d1bfc76ae0dbf7",
       "manifest_path": ".codex/plugins/cascade-prompt/.codex-plugin/plugin.json",
-      "manifest_sha256": "db7c7c36f8906ef7b60d3147d32fabebbb44741d700c0d5373c202fc1da25320",
+      "manifest_sha256": "d70c7de57a0811596bf9740a1d44f710a2fff2ce001f7ca7dbf0c6227daa225c",
       "model_policy": {
         "evaluation_reasoning_effort": "high",
         "model": "gpt-6-astra",
@@ -20,12 +20,14 @@
             "the user wants the target task performed instead of a prompt or question set"
           ],
           "authority": "READ_ONLY",
+          "component": "prompt",
           "consumes": [
             "prompt-brief",
             "authoritative-sources"
           ],
           "description": "Create, refine, diagnose, compare, convert, or test prompts, context plans, and Laya/Jev/Intern-Decision/Imajev typed questions with model-specific evidence and result semantics.",
           "effect": "CANDIDATE_WRITE",
+          "entrypoint": "skills/prompt/SKILL.md",
           "evaluation_cases": [
             "complete-contract",
             "missing-input-interview",
@@ -36,7 +38,7 @@
             "context-template-boundary"
           ],
           "optional_dependencies": [
-            "cascade-evals:prompt-evaluation"
+            "cascade-quality:prompt-evaluation"
           ],
           "policy_tags": [
             "prompt-authoring",
@@ -47,6 +49,7 @@
           ],
           "required_dependencies": [],
           "route": "cascade-prompt:prompt",
+          "skill_sha256": "abcd15f84c9027f63f510df804ba7d519358ec6a1bfc125b2c7c6a48c0f3f61d",
           "triggers": [
             "a prompt",
             "context plan",
@@ -54,13 +57,13 @@
           ]
         }
       ],
-      "version": "0.7.14+codex.20261003232324"
+      "version": "0.7.18+codex.20261007.prerequisite.1"
     },
     {
       "descriptor_path": ".codex/plugins/cascade-simulations/capabilities.yaml",
-      "descriptor_sha256": "b4ce2eee97e24e162cefead2bf5aa2331a7eaa60d1fb3089f5047ebceccbe602",
+      "descriptor_sha256": "0fc52d25799d62b2ead3316bf9b2842614740846774c6d8bf4f152c15938d46b",
       "manifest_path": ".codex/plugins/cascade-simulations/.codex-plugin/plugin.json",
-      "manifest_sha256": "3d46a717c332d7aa417041883ae4b1aa0f754a1634a604e9ff26c3b899d4a9a5",
+      "manifest_sha256": "7e13b821f7884a1a01e968cc0c523f38905657eac6c96e6f60639f24ee038741",
       "model_policy": {
         "evaluation_reasoning_effort": "high",
         "model": "gpt-6-astra",
@@ -73,20 +76,22 @@
             "one bounded actor run or independent frozen-run evaluation is requested"
           ],
           "authority": "READ_ONLY",
+          "component": "simulations",
           "consumes": [
             "simulation-decision",
             "simulation-contracts"
           ],
           "description": "Design, version, register, govern, and aggregate a multi-case or multi-contour simulation campaign without executing targets.",
           "effect": "CANDIDATE_WRITE",
+          "entrypoint": "skills/manage-simulation-campaign/SKILL.md",
           "evaluation_cases": [
             "fixed-contracts",
             "non-dispatching-campaign"
           ],
           "optional_dependencies": [
-            "cascade-personas:compile-persona",
-            "cascade-qa:design-tests",
-            "cascade-evals:simulation-evaluation"
+            "cascade-discovery:compile-persona",
+            "cascade-quality:design-tests",
+            "cascade-quality:simulation-evaluation"
           ],
           "policy_tags": [
             "simulation",
@@ -97,29 +102,34 @@
           ],
           "required_dependencies": [],
           "route": "cascade-simulations:manage-simulation-campaign",
+          "skill_sha256": "899af9f5bd9b51f48c2eb0b32ae63f93fb08bb0236d6c40cb6b289ef933777f4",
           "triggers": [
             "an explicit versioned simulation campaign or controlled comparison is required"
           ]
         },
         {
           "anti_triggers": [
+            "only one actor simulation is needed",
             "campaign design or independent semantic judgment is requested"
           ],
           "authority": "LOCAL_WRITE",
+          "component": "simulations",
           "consumes": [
             "simulation-campaign",
             "host-runtime-contract"
           ],
-          "description": "Preflight and execute one approved campaign through host-authorized adapters, freeze immutable evidence, clean up, and emit an execution receipt.",
+          "description": "Run a frozen authorized campaign through host adapters, preserve observations, freeze evidence and verify cleanup before independent evaluation.",
           "effect": "HOST_EFFECT",
+          "entrypoint": "skills/run-simulation-campaign/SKILL.md",
           "evaluation_cases": [
             "preflight-block",
-            "immutable-evidence",
-            "cleanup"
+            "unknown-effect-stop",
+            "cleanup-finally",
+            "immutable-evidence"
           ],
           "optional_dependencies": [
             "cascade-simulations:simulate",
-            "cascade-qa:design-tests"
+            "cascade-quality:simulation-evaluation"
           ],
           "policy_tags": [
             "simulation",
@@ -129,9 +139,10 @@
             "frozen-simulation-campaign-run"
           ],
           "required_dependencies": [],
-          "route": "cascade-simulations:execute-simulation-campaign",
+          "route": "cascade-simulations:run-simulation-campaign",
+          "skill_sha256": "2a93e5e362b9a88865c7daeb1a1e919f0ddd6afa16212fe1136856edde8557e8",
           "triggers": [
-            "an approved resolved simulation campaign must be executed"
+            "an authorized frozen multi-case simulation campaign requires actual host execution"
           ]
         },
         {
@@ -139,6 +150,7 @@
             "a multi-campaign portfolio or independent evaluation is requested"
           ],
           "authority": "LOCAL_WRITE",
+          "component": "simulations",
           "consumes": [
             "simulation-actor",
             "simulation-brief",
@@ -147,6 +159,7 @@
           ],
           "description": "Prepare or run one bounded goal-directed actor simulation through a declared interface and observable outcome contract.",
           "effect": "HOST_EFFECT",
+          "entrypoint": "skills/simulate/SKILL.md",
           "evaluation_cases": [
             "bounded-loop",
             "authority-preservation",
@@ -162,6 +175,7 @@
           ],
           "required_dependencies": [],
           "route": "cascade-simulations:simulate",
+          "skill_sha256": "b1de019d74c424e941a19b46bbfb720d8ce2d09ac783f755f8ee886cb40fe738",
           "triggers": [
             "a real or synthetic actor should perform meaningful bounded work"
           ]
@@ -171,18 +185,20 @@
             "canonical persona creation or target execution is requested"
           ],
           "authority": "READ_ONLY",
+          "component": "simulations",
           "consumes": [
             "persona-projection",
             "actor-brief"
           ],
           "description": "Derive an executable simulation actor from grounded persona evidence, a supplied role, or an explicit synthetic hypothesis.",
           "effect": "CANDIDATE_WRITE",
+          "entrypoint": "skills/simulation-actor/SKILL.md",
           "evaluation_cases": [
             "knowledge-boundary",
             "synthetic-honesty"
           ],
           "optional_dependencies": [
-            "cascade-personas:compile-persona"
+            "cascade-discovery:compile-persona"
           ],
           "policy_tags": [
             "simulation",
@@ -193,6 +209,7 @@
           ],
           "required_dependencies": [],
           "route": "cascade-simulations:simulation-actor",
+          "skill_sha256": "9597c4459f16ffd719ec68eb6936b3666d74118c6783413e0f0252a1f6777e17",
           "triggers": [
             "a simulation needs an actor contract"
           ]
@@ -202,17 +219,19 @@
             "persona creation or revision is requested"
           ],
           "authority": "READ_ONLY",
+          "component": "simulations",
           "consumes": [
             "persona-projection"
           ],
           "description": "Validate and consume a frozen Persona simulation projection as the immutable runtime persona contract.",
           "effect": "READ_ONLY",
+          "entrypoint": "skills/simulation-persona/SKILL.md",
           "evaluation_cases": [
             "projection-digest",
             "no-persona-mutation"
           ],
           "optional_dependencies": [
-            "cascade-personas:compile-persona"
+            "cascade-discovery:compile-persona"
           ],
           "policy_tags": [
             "simulation",
@@ -223,6 +242,7 @@
           ],
           "required_dependencies": [],
           "route": "cascade-simulations:simulation-persona",
+          "skill_sha256": "1c2f913720fded26798616aecae7a06357152d7723aea656243d65dababcb2ab",
           "triggers": [
             "a Persona-backed simulation needs projection validation"
           ]
@@ -232,12 +252,14 @@
             "the simulation outcome or interface is the missing contract"
           ],
           "authority": "READ_ONLY",
+          "component": "simulations",
           "consumes": [
             "product-contract",
             "domain-evidence"
           ],
           "description": "Compile a grounded domain and feature brief for an actor without prescribing a click-by-click script.",
           "effect": "CANDIDATE_WRITE",
+          "entrypoint": "skills/simulation-brief/SKILL.md",
           "evaluation_cases": [
             "grounded-brief",
             "no-scripted-solution"
@@ -252,6 +274,7 @@
           ],
           "required_dependencies": [],
           "route": "cascade-simulations:simulation-brief",
+          "skill_sha256": "154891d7c37f54738ba261ee2cf77e87a7ced263395a537420cdc6f5acb6f814",
           "triggers": [
             "a simulation actor needs domain and feature context"
           ]
@@ -261,11 +284,13 @@
             "run review or target execution is requested"
           ],
           "authority": "READ_ONLY",
+          "component": "simulations",
           "consumes": [
             "simulation-goal"
           ],
           "description": "Define observable success, evidence, failure, and prohibited-shortcut conditions for a simulation.",
           "effect": "CANDIDATE_WRITE",
+          "entrypoint": "skills/simulation-outcome/SKILL.md",
           "evaluation_cases": [
             "observable-success",
             "prohibited-shortcut"
@@ -280,6 +305,7 @@
           ],
           "required_dependencies": [],
           "route": "cascade-simulations:simulation-outcome",
+          "skill_sha256": "11f89be1b2575948800aa805fc2f8804556cb4dd4dd814f4b2bcd5bbd90fb97c",
           "triggers": [
             "a simulation needs an outcome contract"
           ]
@@ -289,12 +315,14 @@
             "campaign execution is already frozen and only review is requested"
           ],
           "authority": "READ_ONLY",
+          "component": "simulations",
           "consumes": [
             "interface-contract",
             "permission-policy"
           ],
           "description": "Define or audit an action-level interface adapter with permissions, confirmations, idempotency, errors, recovery, and cleanup.",
           "effect": "CANDIDATE_WRITE",
+          "entrypoint": "skills/simulation-adapter/SKILL.md",
           "evaluation_cases": [
             "permission-boundary",
             "cleanup"
@@ -309,6 +337,7 @@
           ],
           "required_dependencies": [],
           "route": "cascade-simulations:simulation-adapter",
+          "skill_sha256": "11a5de3a1c4e9b1f7b7f545ee8e879c11d78366fe34120bdc1b380193ac901b5",
           "triggers": [
             "a simulation interface adapter is missing or unsafe"
           ]
@@ -318,11 +347,13 @@
             "only simulation execution, repair, or independent semantic evaluation is requested"
           ],
           "authority": "READ_ONLY",
+          "component": "simulations",
           "consumes": [
             "frozen-simulation-run"
           ],
           "description": "Review one frozen dynamic simulation run against its actor, interface, brief, outcome, permissions, and limits.",
           "effect": "READ_ONLY",
+          "entrypoint": "skills/simulation-review/SKILL.md",
           "evaluation_cases": [
             "run-contract",
             "no-target-repair"
@@ -337,35 +368,179 @@
           ],
           "required_dependencies": [],
           "route": "cascade-simulations:simulation-review",
+          "skill_sha256": "d1c1222dffac64a48e3e34fc4d9ce09fcabdd07cfbde2759f5ac5c2b6cf11dee",
           "triggers": [
             "a frozen simulation run needs controller review"
           ]
         }
       ],
-      "version": "0.2.9+codex.20260910172549"
+      "version": "0.3.0+codex.20261006.1"
     },
     {
-      "descriptor_path": ".codex/plugins/cascade-evals/capabilities.yaml",
-      "descriptor_sha256": "7ccdcf5f43d2c4ba3261982cb0b06b5a45ef4d5b1ed3648e6ed39831512be65b",
-      "manifest_path": ".codex/plugins/cascade-evals/.codex-plugin/plugin.json",
-      "manifest_sha256": "9abbc1e24483ba5712e8f58e9bfb96e543d1f0514560482cacaeb68c7634bb4a",
+      "descriptor_path": ".codex/plugins/cascade-quality/capabilities.yaml",
+      "descriptor_sha256": "24e51aaa64fcfccead9d54c4a5deced3a4b6e7ed13b69d6b205538537ec52fd7",
+      "manifest_path": ".codex/plugins/cascade-quality/.codex-plugin/plugin.json",
+      "manifest_sha256": "0050222ec2e7c4e6a14fed0cb651aa45fea7e10bd1c2cb832f0dc5362137611b",
       "model_policy": {
         "evaluation_reasoning_effort": "high",
         "model": "gpt-6-astra",
         "planning_reasoning_effort": "high"
       },
-      "name": "cascade-evals",
+      "name": "cascade-quality",
       "skills": [
+        {
+          "anti_triggers": [
+            "no accepted behavior exists or ordinary validation is sufficient"
+          ],
+          "authority": "READ_ONLY",
+          "component": "qa",
+          "consumes": [],
+          "consumes_any_of": [
+            "product-contract",
+            "change-contract",
+            "accepted-behavior",
+            "accepted-requirements",
+            "accepted-journeys",
+            "accepted-scenarios"
+          ],
+          "description": "Build a risk-based quality plan with evidence classes, contours, gates, and execution ownership from accepted behavior.",
+          "effect": "CANDIDATE_WRITE",
+          "entrypoint": "skills/qa/skills/plan-quality/SKILL.md",
+          "evaluation_cases": [
+            "risk-based-scope",
+            "evidence-classes"
+          ],
+          "optional_dependencies": [
+            "cascade-discovery:define-product"
+          ],
+          "policy_tags": [
+            "quality",
+            "planning"
+          ],
+          "produces": [
+            "quality-plan"
+          ],
+          "required_dependencies": [],
+          "route": "cascade-quality:plan-quality",
+          "skill_sha256": "0e6e0b1d0c55015ed933a525811fbf165e267ef1a566ff38521de1e554546d35",
+          "triggers": [
+            "quality scope or acceptance gates must be planned"
+          ]
+        },
+        {
+          "anti_triggers": [
+            "tests must be run or product behavior is unresolved"
+          ],
+          "authority": "READ_ONLY",
+          "component": "qa",
+          "consumes": [
+            "quality-plan",
+            "product-contract"
+          ],
+          "description": "Design traceable test cases, data, oracles, and execution requests from accepted behavior and quality scope.",
+          "effect": "CANDIDATE_WRITE",
+          "entrypoint": "skills/qa/skills/design-tests/SKILL.md",
+          "evaluation_cases": [
+            "traceable-oracle",
+            "no-execution"
+          ],
+          "optional_dependencies": [
+            "cascade-prompt:prompt",
+            "cascade-simulations:simulate",
+            "cascade-quality:evaluate"
+          ],
+          "policy_tags": [
+            "quality",
+            "test-design"
+          ],
+          "produces": [
+            "test-plan"
+          ],
+          "required_dependencies": [],
+          "route": "cascade-quality:design-tests",
+          "skill_sha256": "e65b5e5adec7b8b2904bfc1fb4925d96b8b790f3b6441fd2241ba8d9b63cd2b5",
+          "triggers": [
+            "test design rather than execution is requested"
+          ]
+        },
+        {
+          "anti_triggers": [
+            "missing checks must be executed or defects repaired"
+          ],
+          "authority": "READ_ONLY",
+          "component": "qa",
+          "consumes": [
+            "quality-plan",
+            "frozen-evidence"
+          ],
+          "description": "Assess frozen evidence against a fixed quality plan and acceptance gate without executing missing checks or approving release.",
+          "effect": "READ_ONLY",
+          "entrypoint": "skills/qa/skills/assess-quality/SKILL.md",
+          "evaluation_cases": [
+            "pass-fail-blocked-not-run",
+            "no-release-approval"
+          ],
+          "optional_dependencies": [
+            "cascade-quality:triage-defects"
+          ],
+          "policy_tags": [
+            "quality",
+            "assessment"
+          ],
+          "produces": [
+            "quality-assessment"
+          ],
+          "required_dependencies": [],
+          "route": "cascade-quality:assess-quality",
+          "skill_sha256": "40bdf2f0907a3bf4cda82244b0d21d8cfe9bd1639c730c3fb06aa1f238547d16",
+          "triggers": [
+            "quality status or a gate recommendation is requested"
+          ]
+        },
+        {
+          "anti_triggers": [
+            "the failure class is already proven and only repair is requested"
+          ],
+          "authority": "READ_ONLY",
+          "component": "qa",
+          "consumes": [
+            "failure-evidence",
+            "public-boundary-evidence"
+          ],
+          "description": "Classify observed failures as product defect, test drift, environment failure, flake, or ambiguity from current boundary evidence.",
+          "effect": "READ_ONLY",
+          "entrypoint": "skills/qa/skills/triage-defects/SKILL.md",
+          "evaluation_cases": [
+            "test-drift-proof",
+            "environment-failure"
+          ],
+          "optional_dependencies": [],
+          "policy_tags": [
+            "quality",
+            "defect-triage"
+          ],
+          "produces": [
+            "defect-disposition"
+          ],
+          "required_dependencies": [],
+          "route": "cascade-quality:triage-defects",
+          "skill_sha256": "90544ed8b2dbed8dfaff707d7db9a5586a698f582077d2e5b3894062e5e47c9a",
+          "triggers": [
+            "failure ownership is uncertain before source or test repair"
+          ]
+        },
         {
           "anti_triggers": [
             "only target execution or subject repair is requested"
           ],
           "authority": "READ_ONLY",
+          "component": "evals",
           "consumes": [
             "evaluation-subject"
           ],
           "description": "Design, validate, reduce, or audit a versioned evaluation with mechanical gates and independent semantic judges.",
           "effect": "READ_ONLY",
+          "entrypoint": "skills/evals/skills/evaluate/SKILL.md",
           "evaluation_cases": [
             "mechanical-before-semantic",
             "conservative-reduction",
@@ -384,7 +559,8 @@
             "evaluation-receipt"
           ],
           "required_dependencies": [],
-          "route": "cascade-evals:evaluate",
+          "route": "cascade-quality:evaluate",
+          "skill_sha256": "2862260ec5daf750da995dc1c2c29323eb1fac26b1c0b814dcb41c3f6729d50e",
           "triggers": [
             "a versioned evaluation or evidence receipt is required"
           ]
@@ -394,11 +570,13 @@
             "the decision is completely deterministic"
           ],
           "authority": "READ_ONLY",
+          "component": "evals",
           "consumes": [
             "evaluation-claim"
           ],
           "description": "Build or audit semantic judge profiles, anchored rubrics, schemas, labeled cases, and aggregation rules.",
           "effect": "CANDIDATE_WRITE",
+          "entrypoint": "skills/evals/skills/build-judge/SKILL.md",
           "evaluation_cases": [
             "blind-judge",
             "anchored-rubric"
@@ -415,7 +593,8 @@
             "judge-contract"
           ],
           "required_dependencies": [],
-          "route": "cascade-evals:build-judge",
+          "route": "cascade-quality:build-judge",
+          "skill_sha256": "31a074689c6b539181d620401b41a678b05eaaae8407a8ae859b3545dfc82f2c",
           "triggers": [
             "semantic quality needs a judge contract"
           ]
@@ -425,12 +604,14 @@
             "the prompt has not been frozen or only authoring is requested"
           ],
           "authority": "READ_ONLY",
+          "component": "evals",
           "consumes": [
             "prompt-candidate",
             "prompt-evaluation-cases"
           ],
           "description": "Run controlled prompt and interview evaluations, and design native typed-decision evaluations with versioned evidence, model-specific adapters, repetitions, and independent judgments.",
           "effect": "READ_ONLY",
+          "entrypoint": "skills/evals/skills/prompt-evaluation/SKILL.md",
           "evaluation_cases": [
             "prompt-quality",
             "interview-behavior",
@@ -448,7 +629,8 @@
             "prompt-evaluation-receipt"
           ],
           "required_dependencies": [],
-          "route": "cascade-evals:prompt-evaluation",
+          "route": "cascade-quality:prompt-evaluation",
+          "skill_sha256": "2f3c4a12072d21f8d53c3d081475d6bf30e0427b350bde0d600b213682946da6",
           "triggers": [
             "prompt quality or model fit must be measured"
           ]
@@ -458,12 +640,14 @@
             "only prompt composition or simulation review is requested"
           ],
           "authority": "READ_ONLY",
+          "component": "evals",
           "consumes": [
             "agent-evaluation-request",
             "agent-evaluation-cases"
           ],
           "description": "Adapt the generic evaluation lifecycle to an agent, role, skill, workflow, tool loop, or architecture packet.",
           "effect": "READ_ONLY",
+          "entrypoint": "skills/evals/skills/agent-evaluation/SKILL.md",
           "evaluation_cases": [
             "route-selection",
             "trace-eligibility",
@@ -480,7 +664,8 @@
             "agent-evaluation-receipt"
           ],
           "required_dependencies": [],
-          "route": "cascade-evals:agent-evaluation",
+          "route": "cascade-quality:agent-evaluation",
+          "skill_sha256": "10465ed0a9d348badbb5f7ba9138c9d792db6c2993c7cc856f6a3bf5d130d51c",
           "triggers": [
             "agent behavior or routing needs controlled evaluation"
           ]
@@ -490,12 +675,14 @@
             "simulation execution or repair is requested"
           ],
           "authority": "READ_ONLY",
+          "component": "evals",
           "consumes": [
             "controller-verification",
             "frozen-simulation-run"
           ],
           "description": "Independently evaluate semantic outcome, policy support, or claim support for one frozen simulation run.",
           "effect": "READ_ONLY",
+          "entrypoint": "skills/evals/skills/simulation-evaluation/SKILL.md",
           "evaluation_cases": [
             "claim-support",
             "policy-support"
@@ -511,7 +698,8 @@
             "simulation-evaluation-receipt"
           ],
           "required_dependencies": [],
-          "route": "cascade-evals:simulation-evaluation",
+          "route": "cascade-quality:simulation-evaluation",
+          "skill_sha256": "f383eb05a8f593d24087bd344d789d0d89f155741b714b33beff997ae9fc5327",
           "triggers": [
             "a frozen simulation run needs independent semantic judgment"
           ]
@@ -521,12 +709,14 @@
             "ordinary target code validation is sufficient"
           ],
           "authority": "READ_ONLY",
+          "component": "evals",
           "consumes": [
             "harness-evaluation-cases",
             "harness-traces"
           ],
           "description": "Adapt evaluation to bounded, disposable diagnostics of coding-agent harness skills, routes, roles, outputs, and execution traces.",
           "effect": "READ_ONLY",
+          "entrypoint": "skills/evals/skills/harness-evaluation/SKILL.md",
           "evaluation_cases": [
             "trigger-collision",
             "route-order",
@@ -541,19 +731,20 @@
             "harness-evaluation-receipt"
           ],
           "required_dependencies": [],
-          "route": "cascade-evals:harness-evaluation",
+          "route": "cascade-quality:harness-evaluation",
+          "skill_sha256": "22bb887ba2b88380082b8f689ffd67d459714db72aa49d2f57e30ace967f7e44",
           "triggers": [
             "coding-agent harness behavior needs a focused diagnostic"
           ]
         }
       ],
-      "version": "0.3.26+codex.20261003232324"
+      "version": "1.0.0+codex.20261006.1"
     },
     {
       "descriptor_path": ".codex/plugins/cascade-ai-architect/capabilities.yaml",
-      "descriptor_sha256": "ad5a4604e7286151d6e0128828525bc35f48fd7d2273106e1f1b875eb9964e8d",
+      "descriptor_sha256": "f1af9216b9a19198ea35b8849e7d6f670ca71739eaa892556b0f16019479e93f",
       "manifest_path": ".codex/plugins/cascade-ai-architect/.codex-plugin/plugin.json",
-      "manifest_sha256": "1bf8782cf93480970b5afe4517b81ebce5dae184662484aa0c0f01ce7e72ac0f",
+      "manifest_sha256": "5d82a40d0d9343c1e27f1b4bebd313660375f96d5abcbbfd07f3c05c3f5e5a68",
       "model_policy": {
         "evaluation_reasoning_effort": "high",
         "model": "gpt-6-astra",
@@ -566,19 +757,21 @@
             "only software boundaries, prompt wording, or maintenance within accepted agent behavior is needed"
           ],
           "authority": "READ_ONLY",
+          "component": "ai-architect",
           "consumes": [
             "agent-system-request",
             "authoritative-sources"
           ],
           "description": "Compile an end-to-end source-grounded AI agent or agentic-system architecture packet.",
           "effect": "CANDIDATE_WRITE",
+          "entrypoint": "skills/architect-ai-system/SKILL.md",
           "evaluation_cases": [
             "smallest-topology",
             "permission-boundary"
           ],
           "optional_dependencies": [
-            "cascade-software-architect:select-architecture-patterns",
-            "cascade-software-architect:review-architecture",
+            "cascade-engineering:select-architecture-patterns",
+            "cascade-engineering:review-architecture",
             "cascade-design:design-system"
           ],
           "policy_tags": [
@@ -590,6 +783,7 @@
           ],
           "required_dependencies": [],
           "route": "cascade-ai-architect:architect-ai-system",
+          "skill_sha256": "20fd4582faba450b4fc1426507808a5608d3daa7dde4fd2b77493524997324f3",
           "triggers": [
             "agent behavior or state and tool ownership is unresolved",
             "agent system topology or complete AI architecture is unresolved"
@@ -600,12 +794,14 @@
             "capabilities are already frozen and only implementation is requested"
           ],
           "authority": "READ_ONLY",
+          "component": "ai-architect",
           "consumes": [
             "agent-system-request",
             "authoritative-sources"
           ],
           "description": "Extract and cluster atomic source-grounded capabilities for an AI agent or agentic system.",
           "effect": "CANDIDATE_WRITE",
+          "entrypoint": "skills/map-agent-capabilities/SKILL.md",
           "evaluation_cases": [
             "capability-grounding",
             "no-opaque-claims"
@@ -620,6 +816,7 @@
           ],
           "required_dependencies": [],
           "route": "cascade-ai-architect:map-agent-capabilities",
+          "skill_sha256": "139c347423fd11fa50957ccf7c472da031330e4cbad453d8a9abb6d9625fc07f",
           "triggers": [
             "agent capabilities or ownership clusters must be mapped"
           ]
@@ -629,16 +826,18 @@
             "the capability map is still unresolved"
           ],
           "authority": "READ_ONLY",
+          "component": "ai-architect",
           "consumes": [
             "agent-capability-map"
           ],
-          "description": "Design a bounded agent blueprint with outcome closure, semantic Analyzer findings, optional task plans, claims, memory, authorized actions, recovery and the smallest justified topology.",
+          "description": "Design a bounded agent blueprint with claims/actions admission, role Context Builders, authorized orchestration, independent response verification and the smallest justified topology.",
           "effect": "CANDIDATE_WRITE",
+          "entrypoint": "skills/design-agent-blueprint/SKILL.md",
           "evaluation_cases": [
             "behavior-block-coverage"
           ],
           "optional_dependencies": [
-            "cascade-software-architect:select-architecture-patterns",
+            "cascade-engineering:select-architecture-patterns",
             "cascade-design:design-system"
           ],
           "policy_tags": [
@@ -650,6 +849,7 @@
           ],
           "required_dependencies": [],
           "route": "cascade-ai-architect:design-agent-blueprint",
+          "skill_sha256": "fd949bb07d8097d64d871cc4a06196bf2933794107afaf258eae320599c92475",
           "triggers": [
             "an agent capability map needs a behavior blueprint"
           ]
@@ -659,11 +859,13 @@
             "a cross-plugin capability plan or project delivery schedule is requested"
           ],
           "authority": "READ_ONLY",
+          "component": "ai-architect",
           "consumes": [
             "agent-blueprint"
           ],
-          "description": "Design a typed agent behavior flow with deterministic routes, bounded loops, recovery, budgets, stop rules, and an optional LangGraph binding for a selected stateful architecture.",
+          "description": "Design a framework-neutral typed agent behavior flow with deterministic routes, bounded loops, recovery, budgets, and stop rules.",
           "effect": "CANDIDATE_WRITE",
+          "entrypoint": "skills/design-agent-workflow/SKILL.md",
           "evaluation_cases": [
             "bounded-loop",
             "typed-handoff",
@@ -679,9 +881,45 @@
           ],
           "required_dependencies": [],
           "route": "cascade-ai-architect:design-agent-workflow",
+          "skill_sha256": "e47aa2c77f78a51b247ee5d44061fbd286ea4f2fd1d586a2e4afcc123f9dfa61",
           "triggers": [
-            "an agent or multi-agent behavior flow must be designed",
-            "a selected stateful agent workflow needs a LangGraph binding"
+            "an agent or multi-agent behavior flow must be designed"
+          ]
+        },
+        {
+          "anti_triggers": [
+            "agent behavior or ownership is unresolved",
+            "only prompt wording or a cross-plugin delivery plan is needed"
+          ],
+          "authority": "READ_ONLY",
+          "component": "ai-architect",
+          "consumes": [
+            "agent-workflow"
+          ],
+          "description": "Bind an accepted workflow to the smallest host runtime with role Context Builders, Admission, authorized orchestration and bounded recovery.",
+          "effect": "CANDIDATE_WRITE",
+          "entrypoint": "skills/bind-agent-runtime/SKILL.md",
+          "evaluation_cases": [
+            "fresh-role-context",
+            "denied-action",
+            "research-reanalysis",
+            "bounded-recovery"
+          ],
+          "optional_dependencies": [
+            "cascade-ai-architect:design-agent-workflow"
+          ],
+          "policy_tags": [
+            "ai-architecture",
+            "runtime-binding"
+          ],
+          "produces": [
+            "runtime-binding"
+          ],
+          "required_dependencies": [],
+          "route": "cascade-ai-architect:bind-agent-runtime",
+          "skill_sha256": "a63f0f0891caa4293f7cf8e5b00fb746e2ee736729d58286387356db2df000a2",
+          "triggers": [
+            "an accepted agent workflow needs a concrete runtime binding or audit"
           ]
         },
         {
@@ -689,12 +927,14 @@
             "no distinct role boundary exists"
           ],
           "authority": "READ_ONLY",
+          "component": "ai-architect",
           "consumes": [
             "agent-blueprint",
             "agent-workflow"
           ],
           "description": "Generate exclusive reviewable role contracts from a selected AI-agent topology and workflow.",
           "effect": "CANDIDATE_WRITE",
+          "entrypoint": "skills/build-agent-roles/SKILL.md",
           "evaluation_cases": [
             "exclusive-ownership",
             "collapse-unneeded-role"
@@ -709,6 +949,7 @@
           ],
           "required_dependencies": [],
           "route": "cascade-ai-architect:build-agent-roles",
+          "skill_sha256": "bda063c65f1efb0529051d1638ce1c1d4dcc716dfb3a691e2ab5981e5b0aee26",
           "triggers": [
             "agent roles or handoff ownership must be defined"
           ]
@@ -718,12 +959,14 @@
             "the behavior belongs in project facts, native capability, or target implementation"
           ],
           "authority": "READ_ONLY",
+          "component": "ai-architect",
           "consumes": [
             "agent-capability-map",
             "agent-blueprint"
           ],
           "description": "Design focused triggerable skill briefs from coherent AI-agent capability clusters without creating a second skill-packaging authority.",
           "effect": "CANDIDATE_WRITE",
+          "entrypoint": "skills/build-agent-skills/SKILL.md",
           "evaluation_cases": [
             "trigger-boundary",
             "no-duplicate-skill"
@@ -738,6 +981,7 @@
           ],
           "required_dependencies": [],
           "route": "cascade-ai-architect:build-agent-skills",
+          "skill_sha256": "e462a9c87e197604864325a079375fdcb83270c7bc1985ff84749fb7d0565fed",
           "triggers": [
             "reusable agent skills must be designed or audited"
           ]
@@ -747,18 +991,23 @@
             "prompt wording is the only unresolved work or architecture authority is missing"
           ],
           "authority": "READ_ONLY",
+          "component": "ai-architect",
           "consumes": [
             "agent-architecture-packet"
           ],
           "description": "Compile one architecture-bound prompt brief and provenance binding for Cascade Prompt without authoring or grading the prompt.",
           "effect": "CANDIDATE_WRITE",
+          "entrypoint": "skills/prepare-agent-prompt/SKILL.md",
           "evaluation_cases": [
             "architecture-prompt-binding",
             "no-prompt-policy-copy"
           ],
+          "optional_consumes": [
+            "runtime-binding"
+          ],
           "optional_dependencies": [
             "cascade-prompt:prompt",
-            "cascade-evals:prompt-evaluation"
+            "cascade-quality:prompt-evaluation"
           ],
           "policy_tags": [
             "ai-architecture",
@@ -769,6 +1018,7 @@
           ],
           "required_dependencies": [],
           "route": "cascade-ai-architect:prepare-agent-prompt",
+          "skill_sha256": "fb4cc32eb1a17cae049df0a07cce310f10e0a0848e622af46341570db7379ac8",
           "triggers": [
             "an AI-agent architecture needs a prompt-ready contract"
           ]
@@ -778,17 +1028,19 @@
             "only canonical persona work, simulation actor compilation, or simulation execution is requested"
           ],
           "authority": "READ_ONLY",
+          "component": "ai-architect",
           "consumes": [
             "persona-projection"
           ],
           "description": "Translate a frozen Persona agent-architecture projection into evidence-bound user-model requirements for an AI-system blueprint.",
           "effect": "CANDIDATE_WRITE",
+          "entrypoint": "skills/derive-persona-requirements/SKILL.md",
           "evaluation_cases": [
             "projection-only",
             "no-persona-invention"
           ],
           "optional_dependencies": [
-            "cascade-personas:compile-persona"
+            "cascade-discovery:compile-persona"
           ],
           "policy_tags": [
             "ai-architecture",
@@ -799,6 +1051,7 @@
           ],
           "required_dependencies": [],
           "route": "cascade-ai-architect:derive-persona-requirements",
+          "skill_sha256": "a2d7001d831f5f5264e1986c3fa1a8b82ac2d0136e3353c902f2c2ad64fd3103",
           "triggers": [
             "AI architecture needs persona-grounded user-model requirements"
           ]
@@ -808,17 +1061,22 @@
             "only evaluation execution, judging, reduction, or deterministic source validation is requested"
           ],
           "authority": "READ_ONLY",
+          "component": "ai-architect",
           "consumes": [
             "agent-architecture-packet"
           ],
           "description": "Compile architecture-specific cases, eligibility assertions, profiles, rubrics, and budgets into an agent-evaluation request.",
           "effect": "CANDIDATE_WRITE",
+          "entrypoint": "skills/prepare-agent-evaluation/SKILL.md",
           "evaluation_cases": [
             "mechanical-before-semantic",
             "independent-judges"
           ],
+          "optional_consumes": [
+            "runtime-binding"
+          ],
           "optional_dependencies": [
-            "cascade-evals:agent-evaluation",
+            "cascade-quality:agent-evaluation",
             "cascade-simulations:simulate"
           ],
           "policy_tags": [
@@ -831,70 +1089,80 @@
           ],
           "required_dependencies": [],
           "route": "cascade-ai-architect:prepare-agent-evaluation",
+          "skill_sha256": "628bae6de07de16126af35f5fdcfe26583395180cfaad5b471c74dabbf14e96b",
           "triggers": [
             "an AI-agent architecture or workflow needs a controlled evaluation contract"
           ]
         },
         {
           "anti_triggers": [
-            "live online learning, direct active-artifact mutation, or production promotion is requested"
+            "an ordinary accepted implementation fix is sufficient",
+            "installation or promotion is requested without host authorization"
           ],
           "authority": "READ_ONLY",
+          "component": "ai-architect",
           "consumes": [
-            "agent-evaluation-receipt",
-            "agent-architecture-packet"
+            "improvement-request"
           ],
-          "description": "Run a bounded offline evidence-driven improvement experiment from frozen AI-agent evaluation receipts.",
+          "description": "Run one bounded measured-failure improvement cycle with a frozen baseline, scoped candidate and matched independent Quality evaluations.",
           "effect": "CANDIDATE_WRITE",
+          "entrypoint": "skills/run-improvement-cycle/SKILL.md",
           "evaluation_cases": [
-            "held-out-comparison",
+            "frozen-baseline",
+            "independent-comparison",
             "no-self-promotion"
           ],
+          "optional_consumes": [
+            "workflow-failure-evidence"
+          ],
           "optional_dependencies": [
-            "cascade-ai-architect:prepare-agent-evaluation",
-            "cascade-evals:agent-evaluation",
-            "cascade-prompt:prompt",
-            "cascade-simulations:simulate"
+            "cascade-quality:prompt-evaluation",
+            "cascade-quality:agent-evaluation",
+            "cascade-quality:harness-evaluation",
+            "cascade-engineering:integrate-agent-assets"
           ],
           "policy_tags": [
             "ai-architecture",
             "bounded-improvement"
           ],
           "produces": [
-            "agent-improvement-candidate"
+            "improvement-cycle"
           ],
           "required_dependencies": [],
-          "route": "cascade-ai-architect:improve-agent-system",
+          "route": "cascade-ai-architect:run-improvement-cycle",
+          "skill_sha256": "b3179f85e492f3e598620acefc6e5c6e7ab9956f61addd6e6a850716f6d0a475",
           "triggers": [
-            "measured AI-agent failures need a bounded candidate improvement"
+            "a measured failure or explicit bounded improvement experiment needs a candidate comparison"
           ]
         }
       ],
-      "version": "0.1.12+codex.20261003232324"
+      "version": "0.2.0+codex.20261006.1"
     },
     {
-      "descriptor_path": ".codex/plugins/cascade-software-architect/capabilities.yaml",
-      "descriptor_sha256": "72f6e69c5ad50336af285314b5073b3525b71d37054d559b2c34cec83d8dab2f",
-      "manifest_path": ".codex/plugins/cascade-software-architect/.codex-plugin/plugin.json",
-      "manifest_sha256": "882a59b0b603d96620080504d7a17bdf900012f395c82ae5aaf856d32d5c9efd",
+      "descriptor_path": ".codex/plugins/cascade-engineering/capabilities.yaml",
+      "descriptor_sha256": "52351704446890fc02cc0efe454148a206c9941a75c9a180c8eb4ac6f6c2106b",
+      "manifest_path": ".codex/plugins/cascade-engineering/.codex-plugin/plugin.json",
+      "manifest_sha256": "ac5fe52d5dd6ad6ed0398b5d98b371d442c3d28e0764829d2447b15ac3dbd754",
       "model_policy": {
         "evaluation_reasoning_effort": "high",
         "model": "gpt-6-astra",
         "planning_reasoning_effort": "high"
       },
-      "name": "cascade-software-architect",
+      "name": "cascade-engineering",
       "skills": [
         {
           "anti_triggers": [
             "only an internal edit within accepted boundaries or an AI-agent topology decision is needed"
           ],
           "authority": "READ_ONLY",
+          "component": "software-architect",
           "consumes": [
             "accepted-requirements",
             "architecture-constraints"
           ],
           "description": "Design source-grounded architecture before implementing a new application with unresolved boundaries; derive cohesive business modules from scenarios and invariants with explicit state owners.",
           "effect": "CANDIDATE_WRITE",
+          "entrypoint": "skills/software-architect/skills/architect-software-system/SKILL.md",
           "evaluation_cases": [
             "boundary-ownership",
             "pattern-composition",
@@ -904,9 +1172,9 @@
             "git-integration-report"
           ],
           "optional_dependencies": [
-            "cascade-software-architect:select-architecture-patterns",
+            "cascade-engineering:select-architecture-patterns",
             "cascade-design:design-system",
-            "cascade-coding-agent:pull-and-integrate"
+            "cascade-engineering:pull-and-integrate"
           ],
           "policy_tags": [
             "software-architecture",
@@ -916,7 +1184,8 @@
             "architecture-candidate"
           ],
           "required_dependencies": [],
-          "route": "cascade-software-architect:architect-software-system",
+          "route": "cascade-engineering:architect-software-system",
+          "skill_sha256": "dd391e8711212378576ab2069243f2dd3cd320577dcb5453020493a269b76ede",
           "triggers": [
             "a new application has no accepted architecture",
             "business or data ownership and dependency boundaries are unresolved"
@@ -927,12 +1196,14 @@
             "no pattern catalog or architecture decision is in scope"
           ],
           "authority": "READ_ONLY",
+          "component": "software-architect",
           "consumes": [
             "architecture-claims",
             "architecture-pattern-catalog"
           ],
           "description": "Disposition and compose compatible architecture patterns from a versioned host-supplied catalog.",
           "effect": "CANDIDATE_WRITE",
+          "entrypoint": "skills/software-architect/skills/select-architecture-patterns/SKILL.md",
           "evaluation_cases": [
             "adopt-adapt-reject-gap",
             "incompatible-patterns"
@@ -946,7 +1217,8 @@
             "architecture-pattern-selection"
           ],
           "required_dependencies": [],
-          "route": "cascade-software-architect:select-architecture-patterns",
+          "route": "cascade-engineering:select-architecture-patterns",
+          "skill_sha256": "a94ad8c5f2bfe846e235970bd46bc49908842b4af9a99fa06fb14c18e360a992",
           "triggers": [
             "architecture patterns or defaults must be selected"
           ]
@@ -956,14 +1228,17 @@
             "only domain acceptance or implementation of an already reviewed architecture is needed"
           ],
           "authority": "READ_ONLY",
+          "component": "software-architect",
           "consumes": [],
           "consumes_any_of": [
             "architecture-candidate",
             "agent-architecture-packet",
-            "agent-workflow"
+            "agent-workflow",
+            "runtime-binding"
           ],
           "description": "Independently review software, plugin, workflow, or AI architecture for ownership, boundary, dependency, and evidence defects.",
           "effect": "READ_ONLY",
+          "entrypoint": "skills/software-architect/skills/review-architecture/SKILL.md",
           "evaluation_cases": [
             "hidden-consumer",
             "authority-collision",
@@ -975,7 +1250,7 @@
             "git-integration-report"
           ],
           "optional_dependencies": [
-            "cascade-coding-agent:pull-and-integrate"
+            "cascade-engineering:pull-and-integrate"
           ],
           "policy_tags": [
             "software-architecture",
@@ -985,7 +1260,8 @@
             "architecture-review-findings"
           ],
           "required_dependencies": [],
-          "route": "cascade-software-architect:review-architecture",
+          "route": "cascade-engineering:review-architecture",
+          "skill_sha256": "0a73aaf3e50cd132691c3133dafb036159265fa77f66258b0135459d860723a9",
           "triggers": [
             "an architecture candidate needs independent review"
           ]
@@ -996,12 +1272,14 @@
             "no current diff exists to review"
           ],
           "authority": "READ_ONLY",
+          "component": "software-architect",
           "consumes": [
             "change-diff",
             "change-contract"
           ],
           "description": "Independently review a current diff against its request, architecture, public contracts, consumers, and regression surface.",
           "effect": "READ_ONLY",
+          "entrypoint": "skills/software-architect/skills/review-change/SKILL.md",
           "evaluation_cases": [
             "introduced-defect",
             "unrelated-dirty-work",
@@ -1014,7 +1292,7 @@
             "git-integration-report"
           ],
           "optional_dependencies": [
-            "cascade-coding-agent:pull-and-integrate"
+            "cascade-engineering:pull-and-integrate"
           ],
           "policy_tags": [
             "software-architecture",
@@ -1024,26 +1302,12 @@
             "change-review-findings"
           ],
           "required_dependencies": [],
-          "route": "cascade-software-architect:review-change",
+          "route": "cascade-engineering:review-change",
+          "skill_sha256": "a3c04b802686f7cb7fa569b9a6f2a09a492b345df2ef9a78fb23ec53802f9a2b",
           "triggers": [
             "a risky or requested change needs fixed-point review"
           ]
-        }
-      ],
-      "version": "0.2.5+codex.20261003232324"
-    },
-    {
-      "descriptor_path": ".codex/plugins/cascade-coding-agent/capabilities.yaml",
-      "descriptor_sha256": "de34156e4ee409dbf4994bc5b1c4f84e463c2555088b0521501fabce40d3cb65",
-      "manifest_path": ".codex/plugins/cascade-coding-agent/.codex-plugin/plugin.json",
-      "manifest_sha256": "4db8eb52b58887eca5b6fdbde3c0cbcde5935e4c970818691531796015142f99",
-      "model_policy": {
-        "evaluation_reasoning_effort": "high",
-        "model": "gpt-6-astra",
-        "planning_reasoning_effort": "high"
-      },
-      "name": "cascade-coding-agent",
-      "skills": [
+        },
         {
           "anti_triggers": [
             "only a read-only branch comparison is requested",
@@ -1051,11 +1315,13 @@
             "a skill about pulling is being authored rather than executed"
           ],
           "authority": "LOCAL_WRITE",
+          "component": "coding-agent",
           "consumes": [
             "git-integration-request"
           ],
           "description": "Integrate develop or the actual primary branch when develop is absent; resolve Git conflicts by branch authority rather than chronology and prepare reviewed changes for push with explicit readiness.",
           "effect": "HOST_EFFECT",
+          "entrypoint": "skills/coding-agent/skills/pull-and-integrate/SKILL.md",
           "evaluation_cases": [
             "older-authoritative-base",
             "clean-merge-semantic-conflict",
@@ -1075,7 +1341,7 @@
             "change-review-findings"
           ],
           "optional_dependencies": [
-            "cascade-software-architect:review-change"
+            "cascade-engineering:review-change"
           ],
           "policy_tags": [
             "coding-agent",
@@ -1086,7 +1352,8 @@
             "git-integration-report"
           ],
           "required_dependencies": [],
-          "route": "cascade-coding-agent:pull-and-integrate",
+          "route": "cascade-engineering:pull-and-integrate",
+          "skill_sha256": "f2ef207a48a6cf0aabc7b1a5ce50870adc747f18240a3ada5c98eaaa494ac84e",
           "triggers": [
             "a Git branch must be pulled or synchronized with its upstream",
             "dev or develop or the primary branch must be merged or rebased into the working branch",
@@ -1100,12 +1367,14 @@
             "a new software or agent architecture must first be designed"
           ],
           "authority": "READ_ONLY",
+          "component": "coding-agent",
           "consumes": [
             "harness-source",
             "installed-plugin-inventory"
           ],
           "description": "Audit a coding-agent harness for routing, ownership, dependency, permission, model, evidence, and installation defects.",
           "effect": "READ_ONLY",
+          "entrypoint": "skills/coding-agent/skills/audit-harness/SKILL.md",
           "evaluation_cases": [
             "dependency-drift",
             "model-policy-drift",
@@ -1120,7 +1389,8 @@
             "harness-audit"
           ],
           "required_dependencies": [],
-          "route": "cascade-coding-agent:audit-harness",
+          "route": "cascade-engineering:audit-harness",
+          "skill_sha256": "f42891cb6939df4e75f76fc11cd266c930dc3978b6d8f0af88ed5263afa32abd",
           "triggers": [
             "an existing coding-agent harness needs a read-only audit"
           ]
@@ -1130,18 +1400,20 @@
             "only a generic agent architecture or an atomic harness fix is requested"
           ],
           "authority": "READ_ONLY",
+          "component": "coding-agent",
           "consumes": [
             "target-repository-inventory",
             "installed-plugin-inventory"
           ],
           "description": "Adapt a coding-agent harness to a target repository from current inventory, protected paths, commands, and installation state.",
           "effect": "CANDIDATE_WRITE",
+          "entrypoint": "skills/coding-agent/skills/adapt-harness/SKILL.md",
           "evaluation_cases": [
             "preserve-target-source",
             "explicit-install-authority"
           ],
           "optional_dependencies": [
-            "cascade-coding-agent:audit-harness",
+            "cascade-engineering:audit-harness",
             "cascade-ai-architect:architect-ai-system",
             "cascade-prompt:prompt"
           ],
@@ -1153,7 +1425,8 @@
             "harness-adaptation-candidate"
           ],
           "required_dependencies": [],
-          "route": "cascade-coding-agent:adapt-harness",
+          "route": "cascade-engineering:adapt-harness",
+          "skill_sha256": "c7b1fa1de85a44b88c0217e38932ac5bdbdb86743dd791e093d2ac97aa9fb12c",
           "triggers": [
             "a new repository needs coding-agent onboarding or an existing harness needs target adaptation"
           ]
@@ -1163,11 +1436,13 @@
             "agent-system topology or domain semantics are unresolved"
           ],
           "authority": "READ_ONLY",
+          "component": "coding-agent",
           "consumes": [
             "harness-change-contract"
           ],
           "description": "Implement a scoped authorized change to an existing coding-agent harness while preserving source ownership and validation.",
           "effect": "CANDIDATE_WRITE",
+          "entrypoint": "skills/coding-agent/skills/maintain-harness/SKILL.md",
           "evaluation_cases": [
             "source-not-cache",
             "preserve-permissions"
@@ -1178,10 +1453,10 @@
           "optional_dependencies": [
             "cascade-ai-architect:architect-ai-system",
             "cascade-prompt:prompt",
-            "cascade-evals:evaluate",
-            "cascade-evals:build-judge",
-            "cascade-evals:harness-evaluation",
-            "cascade-evals:agent-evaluation"
+            "cascade-quality:evaluate",
+            "cascade-quality:build-judge",
+            "cascade-quality:harness-evaluation",
+            "cascade-quality:agent-evaluation"
           ],
           "policy_tags": [
             "coding-agent",
@@ -1191,7 +1466,8 @@
             "harness-change-candidate"
           ],
           "required_dependencies": [],
-          "route": "cascade-coding-agent:maintain-harness",
+          "route": "cascade-engineering:maintain-harness",
+          "skill_sha256": "a1cbce57d85e0119b113c7838758b7fef190d56c9a906decff648c9d5b3d3bbb",
           "triggers": [
             "an accepted harness finding or explicit harness change must be implemented"
           ]
@@ -1201,23 +1477,28 @@
             "the architecture candidate is missing or unreviewed"
           ],
           "authority": "READ_ONLY",
+          "component": "coding-agent",
           "consumes": [
             "agent-architecture-packet",
             "agent-assets"
           ],
           "description": "Map reviewed architecture, skill, role, workflow, prompt, or evaluation candidates into target-owned harness surfaces with explicit authority, execution-surface, write-scope, validation, and handoff bindings.",
           "effect": "CANDIDATE_WRITE",
+          "entrypoint": "skills/coding-agent/skills/integrate-agent-assets/SKILL.md",
           "evaluation_cases": [
             "one-owner-per-artifact",
             "no-plugin-copy"
           ],
+          "optional_consumes": [
+            "runtime-binding"
+          ],
           "optional_dependencies": [
             "cascade-ai-architect:architect-ai-system",
             "cascade-prompt:prompt",
-            "cascade-evals:evaluate",
-            "cascade-evals:build-judge",
-            "cascade-evals:harness-evaluation",
-            "cascade-evals:agent-evaluation"
+            "cascade-quality:evaluate",
+            "cascade-quality:build-judge",
+            "cascade-quality:harness-evaluation",
+            "cascade-quality:agent-evaluation"
           ],
           "policy_tags": [
             "coding-agent",
@@ -1228,37 +1509,384 @@
             "workflow-host-binding"
           ],
           "required_dependencies": [],
-          "route": "cascade-coding-agent:integrate-agent-assets",
+          "route": "cascade-engineering:integrate-agent-assets",
+          "skill_sha256": "6ecd2b4937295c0c97b10f996f0ef44f97fc00001f4ee7c646e1bc984cb219e2",
           "triggers": [
             "reviewed agent assets need target harness integration"
           ]
         }
       ],
-      "version": "0.3.3+codex.20260910204851"
+      "version": "1.0.1+codex.20261006.1"
     },
     {
-      "descriptor_path": ".codex/plugins/cascade-personas/capabilities.yaml",
-      "descriptor_sha256": "f1bdaee862448e96c4f34814497fef3192377e7fc04cca2d3cdcaa50123db4da",
-      "manifest_path": ".codex/plugins/cascade-personas/.codex-plugin/plugin.json",
-      "manifest_sha256": "9d659e7fb4c3bfb2e953ca768da8b9c49a4d3d913a5a375334750db40f828ed3",
+      "descriptor_path": ".codex/plugins/cascade-discovery/capabilities.yaml",
+      "descriptor_sha256": "6967f762c49e797797d38c6c5a5a4d9aed9625b8649acbeef58c345bf03b2959",
+      "manifest_path": ".codex/plugins/cascade-discovery/.codex-plugin/plugin.json",
+      "manifest_sha256": "728708970b4217ff4757f01c89f91037dc9cc610c1a704750dcbbeaf42178f6d",
       "model_policy": {
         "evaluation_reasoning_effort": "high",
         "model": "gpt-6-astra",
         "planning_reasoning_effort": "high"
       },
-      "name": "cascade-personas",
+      "name": "cascade-discovery",
       "skills": [
+        {
+          "anti_triggers": [
+            "accepted market evidence already exists and only positioning is requested",
+            "only technical implementation or architecture comparison without a market question is requested"
+          ],
+          "authority": "READ_ONLY",
+          "component": "market",
+          "consumes": [
+            "market-research-brief",
+            "external-sources"
+          ],
+          "description": "Discover or refresh markets, competitors and alternative workflows using current evidence of jobs, demand, pricing, buying behavior and entrant reachability.",
+          "effect": "CANDIDATE_WRITE",
+          "entrypoint": "skills/market/skills/research-market/SKILL.md",
+          "evaluation_cases": [
+            "source-attribution",
+            "no-synthetic-proof"
+          ],
+          "optional_dependencies": [
+            "cascade-discovery:compile-persona",
+            "cascade-discovery:evaluate-market-opportunity",
+            "cascade-discovery:plan-growth"
+          ],
+          "policy_tags": [
+            "market-intelligence",
+            "research"
+          ],
+          "produces": [
+            "market-evidence-ledger"
+          ],
+          "required_dependencies": [],
+          "route": "cascade-discovery:research-market",
+          "skill_sha256": "58c374dcc834cddd79bbc00e158b4c97a5bc57f4eb8e78a318fc115294d00c72",
+          "triggers": [
+            "current attributable market evidence is required",
+            "open market discovery or comparable niche research is requested",
+            "competitor or alternative-solution changes require an evidence refresh"
+          ]
+        },
+        {
+          "anti_triggers": [
+            "only evidence collection or product approval is requested without an opportunity assessment"
+          ],
+          "authority": "READ_ONLY",
+          "component": "market",
+          "consumes": [
+            "market-evidence-ledger"
+          ],
+          "description": "Compare markets and entrant opportunities, stress-test differentiation and PMF hypotheses against a frozen evidence ledger.",
+          "effect": "READ_ONLY",
+          "entrypoint": "skills/market/skills/evaluate-market-opportunity/SKILL.md",
+          "evaluation_cases": [
+            "uncertainty-preservation",
+            "no-score-as-approval"
+          ],
+          "optional_dependencies": [
+            "cascade-quality:evaluate",
+            "cascade-quality:build-judge",
+            "cascade-discovery:brand-positioning",
+            "cascade-discovery:define-product",
+            "cascade-discovery:plan-growth"
+          ],
+          "policy_tags": [
+            "market-intelligence",
+            "opportunity-assessment"
+          ],
+          "produces": [
+            "market-opportunity-assessment"
+          ],
+          "required_dependencies": [],
+          "route": "cascade-discovery:evaluate-market-opportunity",
+          "skill_sha256": "ea8aead5b0327ac49eeb325773b8e235ea6e5266ca90534393431b4f3cacd3e8",
+          "triggers": [
+            "market opportunity or segment attractiveness needs assessment"
+          ]
+        },
+        {
+          "anti_triggers": [
+            "a synthetic simulation is being presented as market proof"
+          ],
+          "authority": "READ_ONLY",
+          "component": "market",
+          "consumes": [
+            "market-evidence-ledger",
+            "market-hypothesis"
+          ],
+          "description": "Design or audit real-world market experiments for demand, pricing, channel, positioning, retention, or buying behavior.",
+          "effect": "CANDIDATE_WRITE",
+          "entrypoint": "skills/market/skills/design-market-experiments/SKILL.md",
+          "evaluation_cases": [
+            "kill-criteria",
+            "synthetic-evidence-boundary"
+          ],
+          "optional_consumes": [
+            "growth-strategy"
+          ],
+          "optional_dependencies": [
+            "cascade-prompt:prompt",
+            "cascade-discovery:manage-product-lifecycle",
+            "cascade-discovery:plan-growth",
+            "cascade-simulations:simulate",
+            "cascade-quality:evaluate"
+          ],
+          "policy_tags": [
+            "market-intelligence",
+            "experiment-design"
+          ],
+          "produces": [
+            "market-experiment-plan"
+          ],
+          "required_dependencies": [],
+          "route": "cascade-discovery:design-market-experiments",
+          "skill_sha256": "34e95b054e118f6f3b452ee42f273b2c58aa078664dd7f634f703493d62fc141",
+          "triggers": [
+            "a market hypothesis needs a bounded real-participant experiment"
+          ]
+        },
+        {
+          "anti_triggers": [
+            "fresh market research or product behavior definition is the real task"
+          ],
+          "authority": "READ_ONLY",
+          "component": "market",
+          "consumes": [],
+          "consumes_any_of": [
+            "product-contract",
+            "brand-brief"
+          ],
+          "description": "Create or audit positioning, messaging, naming, tone, proof language, trust language, and marketing direction from accepted evidence.",
+          "effect": "CANDIDATE_WRITE",
+          "entrypoint": "skills/market/skills/brand-positioning/SKILL.md",
+          "evaluation_cases": [
+            "source-bound-proof",
+            "unsupported-claim-hypothesis",
+            "product-boundary"
+          ],
+          "optional_consumes": [
+            "market-evidence-ledger",
+            "market-opportunity-assessment",
+            "persona-projection"
+          ],
+          "optional_dependencies": [
+            "cascade-discovery:research-market",
+            "cascade-discovery:evaluate-market-opportunity",
+            "cascade-discovery:plan-growth",
+            "cascade-discovery:define-product",
+            "cascade-discovery:compile-persona",
+            "cascade-design:design-system",
+            "cascade-prompt:prompt"
+          ],
+          "policy_tags": [
+            "market",
+            "brand-positioning"
+          ],
+          "produces": [
+            "marketing-positioning"
+          ],
+          "required_dependencies": [],
+          "route": "cascade-discovery:brand-positioning",
+          "skill_sha256": "b928b929548a71631f4f4b8ef624ac2d4eb772ee5bc131038207935210830a42",
+          "triggers": [
+            "brand positioning or marketing language must be created or revised"
+          ]
+        },
+        {
+          "anti_triggers": [
+            "copy-only execution of an accepted brief is requested",
+            "an individual experiment protocol is the work product"
+          ],
+          "authority": "READ_ONLY",
+          "component": "market",
+          "consumes": [
+            "market-evidence-ledger",
+            "market-opportunity-assessment"
+          ],
+          "description": "Choose channels and plan growth from acquisition through product value, payment, completion or retention, cohort economics and product feedback.",
+          "effect": "CANDIDATE_WRITE",
+          "entrypoint": "skills/market/skills/plan-growth/SKILL.md",
+          "evaluation_cases": [
+            "finite-job-growth",
+            "unknown-economics-no-scale",
+            "growth-product-feedback"
+          ],
+          "optional_consumes": [
+            "product-contract",
+            "product-evidence"
+          ],
+          "optional_dependencies": [
+            "cascade-discovery:research-market",
+            "cascade-discovery:evaluate-market-opportunity",
+            "cascade-discovery:brand-positioning",
+            "cascade-discovery:design-market-experiments",
+            "cascade-design:design-system",
+            "cascade-discovery:define-product",
+            "cascade-discovery:validate-product",
+            "cascade-discovery:manage-product-lifecycle"
+          ],
+          "policy_tags": [
+            "market",
+            "growth-strategy",
+            "value-economics"
+          ],
+          "produces": [
+            "growth-strategy"
+          ],
+          "required_dependencies": [],
+          "route": "cascade-discovery:plan-growth",
+          "skill_sha256": "6ca63b2e5aa84ea440760b25e704fcf1ace64eacdd2b9ff68692e972415b4834",
+          "triggers": [
+            "growth strategy or channel selection is requested",
+            "funnel or lifecycle growth needs diagnosis"
+          ]
+        },
+        {
+          "anti_triggers": [
+            "only implementation of accepted product decisions or project scheduling is needed"
+          ],
+          "authority": "READ_ONLY",
+          "component": "product",
+          "consumes": [
+            "product-evidence"
+          ],
+          "description": "Manage value strategy, portfolio allocation, product priorities, owner-held gates and evidence-driven re-entry without implementation.",
+          "effect": "CANDIDATE_WRITE",
+          "entrypoint": "skills/product/skills/manage-product-lifecycle/SKILL.md",
+          "evaluation_cases": [
+            "owner-held-gate",
+            "no-project-status"
+          ],
+          "optional_consumes": [
+            "market-opportunity-assessment",
+            "persona-projection",
+            "growth-strategy"
+          ],
+          "optional_dependencies": [
+            "cascade-discovery:research-market",
+            "cascade-discovery:evaluate-market-opportunity",
+            "cascade-discovery:plan-growth",
+            "cascade-discovery:compile-persona",
+            "cascade-workflows:plan-project"
+          ],
+          "policy_tags": [
+            "product",
+            "lifecycle"
+          ],
+          "produces": [
+            "product-lifecycle-decision"
+          ],
+          "required_dependencies": [],
+          "route": "cascade-discovery:manage-product-lifecycle",
+          "skill_sha256": "38a2a81023e6faf549067aed6451bab9f3bbf150b3e9bb0ff544682ea6119968",
+          "triggers": [
+            "product strategy or investment allocation is requested",
+            "product lifecycle or evidence-driven gate routing is requested",
+            "observed outcomes or changed market evidence may invalidate a prior product decision"
+          ]
+        },
+        {
+          "anti_triggers": [
+            "only external market evidence collection is requested",
+            "implementation of an already specified change is the task",
+            "only internal refactoring with unchanged accepted product behavior is requested"
+          ],
+          "authority": "READ_ONLY",
+          "component": "product",
+          "consumes": [
+            "product-evidence"
+          ],
+          "description": "Turn supplied problems, opportunities and learning into value or offer models, idea and feature candidates, traceable requirements, acceptance behavior and the MVP.",
+          "effect": "CANDIDATE_WRITE",
+          "entrypoint": "skills/product/skills/define-product/SKILL.md",
+          "evaluation_cases": [
+            "traceable-requirements",
+            "mvp-boundary",
+            "feature-value-handoff",
+            "finite-job-offer"
+          ],
+          "optional_consumes": [
+            "product-lifecycle-decision",
+            "market-opportunity-assessment",
+            "persona-projection",
+            "growth-strategy"
+          ],
+          "optional_dependencies": [
+            "cascade-prompt:prompt",
+            "cascade-discovery:plan-growth",
+            "cascade-design:ux-flow-review",
+            "cascade-design:design-system",
+            "cascade-ai-architect:design-agent-blueprint"
+          ],
+          "policy_tags": [
+            "product",
+            "definition"
+          ],
+          "produces": [
+            "product-contract"
+          ],
+          "required_dependencies": [],
+          "route": "cascade-discovery:define-product",
+          "skill_sha256": "611c97e315c573967fff4d5144a5a293a7cbe54b4c2d9b4fa9023537a468d07a",
+          "triggers": [
+            "a product value or offer model needs definition",
+            "ideas or features must be generated or compared from supplied inputs",
+            "the product definition or accepted behavior is the work product",
+            "a redesign or feature retirement changes intended user behavior"
+          ]
+        },
+        {
+          "anti_triggers": [
+            "market demand is being inferred only from synthetic actors"
+          ],
+          "authority": "READ_ONLY",
+          "component": "product",
+          "consumes": [
+            "product-contract",
+            "product-evidence"
+          ],
+          "description": "Design or assess product validation, outcome measures, sustained progress, transfer and causal evidence alongside functional and independent evaluation.",
+          "effect": "CANDIDATE_WRITE",
+          "entrypoint": "skills/product/skills/validate-product/SKILL.md",
+          "evaluation_cases": [
+            "evidence-class-separation",
+            "synthetic-boundary",
+            "progress-is-not-transfer"
+          ],
+          "optional_dependencies": [
+            "cascade-discovery:design-market-experiments",
+            "cascade-simulations:simulate",
+            "cascade-quality:evaluate"
+          ],
+          "policy_tags": [
+            "product",
+            "validation"
+          ],
+          "produces": [
+            "product-validation-plan"
+          ],
+          "required_dependencies": [],
+          "route": "cascade-discovery:validate-product",
+          "skill_sha256": "deb936aa948d114c066c9554f174db7c62016143769c76e9d815ecc2b890a2e1",
+          "triggers": [
+            "a product hypothesis or behavior needs a validation plan or evidence assessment"
+          ]
+        },
         {
           "anti_triggers": [
             "only a consumer projection or runtime actor is required"
           ],
           "authority": "READ_ONLY",
+          "component": "personas",
           "consumes": [
             "persona-evidence",
             "persona-brief"
           ],
           "description": "Create or revise a canonical source-grounded Persona with provenance, stable traits, dynamic state, uncertainty, and privacy controls.",
           "effect": "CANDIDATE_WRITE",
+          "entrypoint": "skills/personas/skills/build-persona/SKILL.md",
           "evaluation_cases": [
             "provenance",
             "synthetic-honesty",
@@ -1275,7 +1903,8 @@
             "canonical-persona"
           ],
           "required_dependencies": [],
-          "route": "cascade-personas:build-persona",
+          "route": "cascade-discovery:build-persona",
+          "skill_sha256": "12fb2b5f09099304102aaa7c76561249aa90f6aba84d9af8d21ed7a9f4238271",
           "triggers": [
             "canonical persona truth or behavior rules must change"
           ]
@@ -1285,11 +1914,13 @@
             "canonical persona facts must be created or revised"
           ],
           "authority": "READ_ONLY",
+          "component": "personas",
           "consumes": [
             "canonical-persona"
           ],
           "description": "Compile a frozen canonical Persona into a digest-bound purpose-limited consumer projection.",
           "effect": "CANDIDATE_WRITE",
+          "entrypoint": "skills/personas/skills/compile-persona/SKILL.md",
           "evaluation_cases": [
             "purpose-limitation",
             "digest-binding"
@@ -1303,7 +1934,8 @@
             "persona-projection"
           ],
           "required_dependencies": [],
-          "route": "cascade-personas:compile-persona",
+          "route": "cascade-discovery:compile-persona",
+          "skill_sha256": "8b7127b48fdfd8ec5d31be26726e2bf6c56311160bc4ec8067800de62d46c171",
           "triggers": [
             "a product, market, architecture, evaluation, or simulation persona projection is required"
           ]
@@ -1313,6 +1945,7 @@
             "only persona creation, revision, or runtime simulation is requested"
           ],
           "authority": "READ_ONLY",
+          "component": "personas",
           "consumes": [],
           "consumes_any_of": [
             "canonical-persona",
@@ -1320,13 +1953,14 @@
           ],
           "description": "Independently audit a frozen Persona or projection for grounding, coherence, privacy, bias risk, and consumer compatibility.",
           "effect": "READ_ONLY",
+          "entrypoint": "skills/personas/skills/evaluate-persona/SKILL.md",
           "evaluation_cases": [
             "builder-cannot-self-accept",
             "consumer-compatibility"
           ],
           "optional_dependencies": [
-            "cascade-evals:evaluate",
-            "cascade-evals:build-judge"
+            "cascade-quality:evaluate",
+            "cascade-quality:build-judge"
           ],
           "policy_tags": [
             "personas",
@@ -1336,364 +1970,20 @@
             "persona-evaluation"
           ],
           "required_dependencies": [],
-          "route": "cascade-personas:evaluate-persona",
+          "route": "cascade-discovery:evaluate-persona",
+          "skill_sha256": "54a08ee687a4b196ea6f02938d49f72e5d3dd3ea03141142efa3fc455c52fc26",
           "triggers": [
             "a persona or projection needs independent evaluation"
           ]
         }
       ],
-      "version": "0.1.29+codex.20260910172549"
-    },
-    {
-      "descriptor_path": ".codex/plugins/cascade-product/capabilities.yaml",
-      "descriptor_sha256": "860407806389c4f74e347c9922e09d9490d165b8d0e152135421bcf7964edc67",
-      "manifest_path": ".codex/plugins/cascade-product/.codex-plugin/plugin.json",
-      "manifest_sha256": "f42b7a2f2ee17343237fa5cbb3b8e22862cf2aeb3c1f85b4a890c20d1491705b",
-      "model_policy": {
-        "evaluation_reasoning_effort": "high",
-        "model": "gpt-6-astra",
-        "planning_reasoning_effort": "high"
-      },
-      "name": "cascade-product",
-      "skills": [
-        {
-          "anti_triggers": [
-            "only implementation of accepted product decisions or project scheduling is needed"
-          ],
-          "authority": "READ_ONLY",
-          "consumes": [
-            "product-evidence"
-          ],
-          "description": "Manage value strategy, portfolio allocation, product priorities, owner-held gates and evidence-driven re-entry without implementation.",
-          "effect": "CANDIDATE_WRITE",
-          "evaluation_cases": [
-            "owner-held-gate",
-            "no-project-status"
-          ],
-          "optional_consumes": [
-            "market-opportunity-assessment",
-            "persona-projection",
-            "growth-strategy"
-          ],
-          "optional_dependencies": [
-            "cascade-market:research-market",
-            "cascade-market:evaluate-market-opportunity",
-            "cascade-market:plan-growth",
-            "cascade-personas:compile-persona",
-            "cascade-project-management:plan-project"
-          ],
-          "policy_tags": [
-            "product",
-            "lifecycle"
-          ],
-          "produces": [
-            "product-lifecycle-decision"
-          ],
-          "required_dependencies": [],
-          "route": "cascade-product:manage-product-lifecycle",
-          "triggers": [
-            "product strategy or investment allocation is requested",
-            "product lifecycle or evidence-driven gate routing is requested"
-          ]
-        },
-        {
-          "anti_triggers": [
-            "fresh market evidence is required",
-            "implementation of an already specified change is the task"
-          ],
-          "authority": "READ_ONLY",
-          "consumes": [
-            "product-evidence"
-          ],
-          "description": "Model product value and offers, form and compare feature candidates, and define traceable requirements, acceptance behavior and the MVP.",
-          "effect": "CANDIDATE_WRITE",
-          "evaluation_cases": [
-            "traceable-requirements",
-            "mvp-boundary",
-            "feature-value-handoff",
-            "finite-job-offer"
-          ],
-          "optional_consumes": [
-            "product-lifecycle-decision",
-            "market-opportunity-assessment",
-            "persona-projection",
-            "growth-strategy"
-          ],
-          "optional_dependencies": [
-            "cascade-prompt:prompt",
-            "cascade-market:plan-growth",
-            "cascade-design:ux-flow-review",
-            "cascade-design:design-system",
-            "cascade-ai-architect:design-agent-blueprint"
-          ],
-          "policy_tags": [
-            "product",
-            "definition"
-          ],
-          "produces": [
-            "product-contract"
-          ],
-          "required_dependencies": [],
-          "route": "cascade-product:define-product",
-          "triggers": [
-            "a product value or offer model needs definition",
-            "features must be generated or compared",
-            "the product definition or accepted behavior is the work product"
-          ]
-        },
-        {
-          "anti_triggers": [
-            "market demand is being inferred only from synthetic actors"
-          ],
-          "authority": "READ_ONLY",
-          "consumes": [
-            "product-contract",
-            "product-evidence"
-          ],
-          "description": "Design or assess product validation, outcome measures, sustained progress, transfer and causal evidence alongside functional and independent evaluation.",
-          "effect": "CANDIDATE_WRITE",
-          "evaluation_cases": [
-            "evidence-class-separation",
-            "synthetic-boundary",
-            "progress-is-not-transfer"
-          ],
-          "optional_dependencies": [
-            "cascade-market:design-market-experiments",
-            "cascade-simulations:simulate",
-            "cascade-evals:evaluate"
-          ],
-          "policy_tags": [
-            "product",
-            "validation"
-          ],
-          "produces": [
-            "product-validation-plan"
-          ],
-          "required_dependencies": [],
-          "route": "cascade-product:validate-product",
-          "triggers": [
-            "a product hypothesis or behavior needs a validation plan or evidence assessment"
-          ]
-        }
-      ],
-      "version": "0.1.33+codex.20260910172549"
-    },
-    {
-      "descriptor_path": ".codex/plugins/cascade-market/capabilities.yaml",
-      "descriptor_sha256": "747e4455786184a98cce6bdec9b7024966fc02cc00ef580a0d0dea53d7fac8e5",
-      "manifest_path": ".codex/plugins/cascade-market/.codex-plugin/plugin.json",
-      "manifest_sha256": "e6ba81732835457fb11d2206a15e1d016689b743c93a36dc1fab49e42d54fcb6",
-      "model_policy": {
-        "evaluation_reasoning_effort": "high",
-        "model": "gpt-6-astra",
-        "planning_reasoning_effort": "high"
-      },
-      "name": "cascade-market",
-      "skills": [
-        {
-          "anti_triggers": [
-            "accepted market evidence already exists and only positioning is requested"
-          ],
-          "authority": "READ_ONLY",
-          "consumes": [
-            "market-research-brief",
-            "external-sources"
-          ],
-          "description": "Explore and compare market niches using current evidence of jobs, demand, alternatives, pricing, buying behavior and entrant reachability.",
-          "effect": "CANDIDATE_WRITE",
-          "evaluation_cases": [
-            "source-attribution",
-            "no-synthetic-proof"
-          ],
-          "optional_dependencies": [
-            "cascade-personas:compile-persona",
-            "cascade-market:evaluate-market-opportunity",
-            "cascade-market:plan-growth"
-          ],
-          "policy_tags": [
-            "market-intelligence",
-            "research"
-          ],
-          "produces": [
-            "market-evidence-ledger"
-          ],
-          "required_dependencies": [],
-          "route": "cascade-market:research-market",
-          "triggers": [
-            "current attributable market evidence is required",
-            "open market discovery or comparable niche research is requested"
-          ]
-        },
-        {
-          "anti_triggers": [
-            "fresh research or product approval is the requested outcome"
-          ],
-          "authority": "READ_ONLY",
-          "consumes": [
-            "market-evidence-ledger"
-          ],
-          "description": "Compare markets and entrant opportunities, stress-test differentiation and PMF hypotheses against a frozen evidence ledger.",
-          "effect": "READ_ONLY",
-          "evaluation_cases": [
-            "uncertainty-preservation",
-            "no-score-as-approval"
-          ],
-          "optional_dependencies": [
-            "cascade-evals:evaluate",
-            "cascade-evals:build-judge",
-            "cascade-market:brand-positioning",
-            "cascade-product:define-product",
-            "cascade-market:plan-growth"
-          ],
-          "policy_tags": [
-            "market-intelligence",
-            "opportunity-assessment"
-          ],
-          "produces": [
-            "market-opportunity-assessment"
-          ],
-          "required_dependencies": [],
-          "route": "cascade-market:evaluate-market-opportunity",
-          "triggers": [
-            "market opportunity or segment attractiveness needs assessment"
-          ]
-        },
-        {
-          "anti_triggers": [
-            "a synthetic simulation is being presented as market proof"
-          ],
-          "authority": "READ_ONLY",
-          "consumes": [
-            "market-evidence-ledger",
-            "market-hypothesis"
-          ],
-          "description": "Design or audit real-world market experiments for demand, pricing, channel, positioning, retention, or buying behavior.",
-          "effect": "CANDIDATE_WRITE",
-          "evaluation_cases": [
-            "kill-criteria",
-            "synthetic-evidence-boundary"
-          ],
-          "optional_consumes": [
-            "growth-strategy"
-          ],
-          "optional_dependencies": [
-            "cascade-prompt:prompt",
-            "cascade-product:manage-product-lifecycle",
-            "cascade-market:plan-growth",
-            "cascade-simulations:simulate",
-            "cascade-evals:evaluate"
-          ],
-          "policy_tags": [
-            "market-intelligence",
-            "experiment-design"
-          ],
-          "produces": [
-            "market-experiment-plan"
-          ],
-          "required_dependencies": [],
-          "route": "cascade-market:design-market-experiments",
-          "triggers": [
-            "a market hypothesis needs a bounded real-participant experiment"
-          ]
-        },
-        {
-          "anti_triggers": [
-            "fresh market research or product behavior definition is the real task"
-          ],
-          "authority": "READ_ONLY",
-          "consumes": [],
-          "consumes_any_of": [
-            "product-contract",
-            "brand-brief"
-          ],
-          "description": "Create or audit positioning, messaging, naming, tone, proof language, trust language, and marketing direction from accepted evidence.",
-          "effect": "CANDIDATE_WRITE",
-          "evaluation_cases": [
-            "source-bound-proof",
-            "unsupported-claim-hypothesis",
-            "product-boundary"
-          ],
-          "optional_consumes": [
-            "market-evidence-ledger",
-            "market-opportunity-assessment",
-            "persona-projection"
-          ],
-          "optional_dependencies": [
-            "cascade-market:research-market",
-            "cascade-market:evaluate-market-opportunity",
-            "cascade-market:plan-growth",
-            "cascade-product:define-product",
-            "cascade-personas:compile-persona",
-            "cascade-design:design-system",
-            "cascade-prompt:prompt"
-          ],
-          "policy_tags": [
-            "market",
-            "brand-positioning"
-          ],
-          "produces": [
-            "marketing-positioning"
-          ],
-          "required_dependencies": [],
-          "route": "cascade-market:brand-positioning",
-          "triggers": [
-            "brand positioning or marketing language must be created or revised"
-          ]
-        },
-        {
-          "anti_triggers": [
-            "copy-only execution of an accepted brief is requested",
-            "an individual experiment protocol is the work product"
-          ],
-          "authority": "READ_ONLY",
-          "consumes": [
-            "market-evidence-ledger",
-            "market-opportunity-assessment"
-          ],
-          "description": "Choose channels and plan growth from acquisition through product value, payment, completion or retention, cohort economics and product feedback.",
-          "effect": "CANDIDATE_WRITE",
-          "evaluation_cases": [
-            "finite-job-growth",
-            "unknown-economics-no-scale",
-            "growth-product-feedback"
-          ],
-          "optional_consumes": [
-            "product-contract",
-            "product-evidence"
-          ],
-          "optional_dependencies": [
-            "cascade-market:research-market",
-            "cascade-market:evaluate-market-opportunity",
-            "cascade-market:brand-positioning",
-            "cascade-market:design-market-experiments",
-            "cascade-design:design-system",
-            "cascade-product:define-product",
-            "cascade-product:validate-product",
-            "cascade-product:manage-product-lifecycle"
-          ],
-          "policy_tags": [
-            "market",
-            "growth-strategy",
-            "value-economics"
-          ],
-          "produces": [
-            "growth-strategy"
-          ],
-          "required_dependencies": [],
-          "route": "cascade-market:plan-growth",
-          "triggers": [
-            "growth strategy or channel selection is requested",
-            "funnel or lifecycle growth needs diagnosis"
-          ]
-        }
-      ],
-      "version": "0.2.9+codex.20260910172549"
+      "version": "1.0.0+codex.20261006.1"
     },
     {
       "descriptor_path": ".codex/plugins/cascade-design/capabilities.yaml",
-      "descriptor_sha256": "28485a624263abeb36e58bfd411549bea5d1ff493a88353a195d2e86db381bff",
+      "descriptor_sha256": "a374b351f8c9bc800973470c698665c7f588ae3192dd650cce55951fd5cfe330",
       "manifest_path": ".codex/plugins/cascade-design/.codex-plugin/plugin.json",
-      "manifest_sha256": "9ea411bd8f1afdefc94cdb4de6a4fef242a59703230c45a2e71282613dff9375",
+      "manifest_sha256": "df4219c7b8491fae43a2f9b75f9c5ff75267e0d4e49aeab9fa90e4a863594f70",
       "model_policy": {
         "evaluation_reasoning_effort": "high",
         "model": "gpt-6-astra",
@@ -1706,6 +1996,7 @@
             "only reusable tokens, accessibility, or screenshot parity is requested"
           ],
           "authority": "READ_ONLY",
+          "component": "design",
           "consumes": [],
           "consumes_any_of": [
             "product-contract",
@@ -1713,6 +2004,7 @@
           ],
           "description": "Review product journeys, onboarding burden, useful outcomes, completion, recovery and observable UX states within supplied product intent.",
           "effect": "READ_ONLY",
+          "entrypoint": "skills/ux-flow-review/SKILL.md",
           "evaluation_cases": [
             "state-coverage",
             "recovery"
@@ -1721,8 +2013,8 @@
             "persona-projection"
           ],
           "optional_dependencies": [
-            "cascade-product:define-product",
-            "cascade-personas:compile-persona"
+            "cascade-discovery:define-product",
+            "cascade-discovery:compile-persona"
           ],
           "policy_tags": [
             "design",
@@ -1733,6 +2025,7 @@
           ],
           "required_dependencies": [],
           "route": "cascade-design:ux-flow-review",
+          "skill_sha256": "f5fb71b0a6498733e8c5a5c72b0290c2f7b5a310c7ab54d7234c88feaa7e8011",
           "triggers": [
             "a screen or user flow needs UX review"
           ]
@@ -1742,11 +2035,13 @@
             "a one-off feature flow or brand-positioning decision is requested"
           ],
           "authority": "READ_ONLY",
+          "component": "design",
           "consumes": [
             "design-evidence"
           ],
           "description": "Define or audit the Hybrid outcome UI default, basic components, shared generative UI practice, tokens, states, responsive behavior, motion, accessibility, and content constraints.",
           "effect": "CANDIDATE_WRITE",
+          "entrypoint": "skills/design-system/SKILL.md",
           "evaluation_cases": [
             "reusable-rule",
             "brand-boundary"
@@ -1756,8 +2051,8 @@
             "marketing-positioning"
           ],
           "optional_dependencies": [
-            "cascade-market:brand-positioning",
-            "cascade-product:define-product"
+            "cascade-discovery:brand-positioning",
+            "cascade-discovery:define-product"
           ],
           "policy_tags": [
             "design",
@@ -1768,6 +2063,7 @@
           ],
           "required_dependencies": [],
           "route": "cascade-design:design-system",
+          "skill_sha256": "26fb3d73be478da75d6d7417189e23f94bbe953f3d59aceab51400b3d2026553",
           "triggers": [
             "a reusable design-system rule is missing or changing",
             "generative UI templates or component catalogs need a reusable rule"
@@ -1778,11 +2074,13 @@
             "legal compliance certification or product invention is requested"
           ],
           "authority": "READ_ONLY",
+          "component": "design",
           "consumes": [
             "design-evidence"
           ],
           "description": "Review UI semantics, names, keyboard and focus behavior, contrast, targets, forms, status messages, motion, and narrow viewports.",
           "effect": "READ_ONLY",
+          "entrypoint": "skills/accessibility-review/SKILL.md",
           "evaluation_cases": [
             "keyboard-focus",
             "semantic-controls"
@@ -1803,6 +2101,7 @@
           ],
           "required_dependencies": [],
           "route": "cascade-design:accessibility-review",
+          "skill_sha256": "8536f80ce965cb80cf3994ed69572b14cc6f99e07cef688cab6cc51778e4cda7",
           "triggers": [
             "a UI or design needs accessibility review"
           ]
@@ -1812,11 +2111,13 @@
             "functional acceptance or unsupported redesign is requested"
           ],
           "authority": "READ_ONLY",
+          "component": "design",
           "consumes": [
             "visual-evidence"
           ],
           "description": "Validate visual evidence across viewports and states for layout, hierarchy, overflow, spacing, tokens, responsiveness, and brand fit.",
           "effect": "READ_ONLY",
+          "entrypoint": "skills/visual-qa/SKILL.md",
           "evaluation_cases": [
             "viewport-states",
             "no-pixel-proof-from-source"
@@ -1827,7 +2128,7 @@
           ],
           "optional_dependencies": [
             "cascade-design:design-system",
-            "cascade-market:brand-positioning"
+            "cascade-discovery:brand-positioning"
           ],
           "policy_tags": [
             "design",
@@ -1838,6 +2139,7 @@
           ],
           "required_dependencies": [],
           "route": "cascade-design:visual-qa",
+          "skill_sha256": "11c7ae6b61912af7ff0e5c1aca759fab2c11bd0c0855c5762d59d11530b64e24",
           "triggers": [
             "runnable UI or screenshots need visual validation"
           ]
@@ -1848,6 +2150,7 @@
             "only production implementation of an accepted design is needed"
           ],
           "authority": "READ_ONLY",
+          "component": "design",
           "consumes": [],
           "consumes_any_of": [
             "product-contract",
@@ -1855,6 +2158,7 @@
           ],
           "description": "Create editable product and marketing mockups, inspected previews and a version-bound frontend handoff from grounded requirements.",
           "effect": "CANDIDATE_WRITE",
+          "entrypoint": "skills/create-design/SKILL.md",
           "evaluation_cases": [
             "candidate-handoff",
             "missing-design-inputs",
@@ -1864,7 +2168,7 @@
             "design-evidence"
           ],
           "optional_dependencies": [
-            "cascade-product:define-product",
+            "cascade-discovery:define-product",
             "cascade-design:design-system",
             "cascade-design:accessibility-review",
             "cascade-design:visual-qa"
@@ -1879,18 +2183,19 @@
           ],
           "required_dependencies": [],
           "route": "cascade-design:create-design",
+          "skill_sha256": "01f7fe119456693f0477183b9197d6d66fe5d75a11691ce78c697981d0f28944",
           "triggers": [
             "create or revise concrete mockups or a design prototype"
           ]
         }
       ],
-      "version": "0.1.10+codex.20260910172549"
+      "version": "0.1.11+codex.20261006.1"
     },
     {
       "descriptor_path": ".codex/plugins/cascade-security/capabilities.yaml",
-      "descriptor_sha256": "73ffb16aba7f40b76550c1e6fcb650cd4dbad6cac285cb54552011041d975c01",
+      "descriptor_sha256": "562e9c36b66fb59548bdc606a78b2c6854a2956afb16acd54357e61695cd6aa8",
       "manifest_path": ".codex/plugins/cascade-security/.codex-plugin/plugin.json",
-      "manifest_sha256": "d118bfca6a75b1f48f9f84e344ab8e3eab5675e01dc5abe9a474fa722eb399af",
+      "manifest_sha256": "07c415640943fbbc1beda3a7fa2fb56ec0db3cda34699ca4aaf20e6101744d1a",
       "model_policy": {
         "evaluation_reasoning_effort": "high",
         "model": "gpt-6-astra",
@@ -1903,12 +2208,14 @@
             "only authentication or design review is in scope"
           ],
           "authority": "READ_ONLY",
+          "component": "security",
           "consumes": [
             "codebase-source",
             "security-scope"
           ],
           "description": "Audit a target codebase through evidence-bound security trajectories and a current surface inventory without patching runtime code.",
           "effect": "READ_ONLY",
+          "entrypoint": "skills/codebase-audit/SKILL.md",
           "evaluation_cases": [
             "sensitive-value-redaction",
             "evidence-trajectory"
@@ -1926,6 +2233,7 @@
           ],
           "required_dependencies": [],
           "route": "cascade-security:codebase-audit",
+          "skill_sha256": "e5e77fce12f5cd08de8d573eef8cb7e45b4dfcc1a99e193d675db93ba2681f53",
           "triggers": [
             "a codebase security audit is requested"
           ]
@@ -1935,12 +2243,14 @@
             "a general codebase audit or future design only is requested"
           ],
           "authority": "READ_ONLY",
+          "component": "security",
           "consumes": [
             "auth-source",
             "security-scope"
           ],
           "description": "Audit authentication, sessions, revocation, RBAC, tenant isolation, and client-server authorization contracts.",
           "effect": "READ_ONLY",
+          "entrypoint": "skills/auth-analysis/SKILL.md",
           "evaluation_cases": [
             "tenant-boundary",
             "revocation"
@@ -1958,6 +2268,7 @@
           ],
           "required_dependencies": [],
           "route": "cascade-security:auth-analysis",
+          "skill_sha256": "5671f97e1db56ef6c529077804b6aaeb2df637da2c4c3e4e27044d16fe8fe613",
           "triggers": [
             "authentication or tenant-isolation analysis is requested"
           ]
@@ -1967,6 +2278,7 @@
             "only implementation of reviewed controls or penetration execution is needed"
           ],
           "authority": "READ_ONLY",
+          "component": "security",
           "consumes": [],
           "consumes_any_of": [
             "architecture-candidate",
@@ -1977,16 +2289,17 @@
           ],
           "description": "Review a proposed feature, architecture, workflow, integration, or agent-tool plan for trust boundaries and abuse cases.",
           "effect": "READ_ONLY",
+          "entrypoint": "skills/secure-design/SKILL.md",
           "evaluation_cases": [
             "trust-boundary",
             "least-privilege"
           ],
           "optional_dependencies": [
-            "cascade-software-architect:review-architecture",
+            "cascade-engineering:review-architecture",
             "cascade-prompt:prompt",
             "cascade-simulations:simulate",
-            "cascade-evals:evaluate",
-            "cascade-qa:design-tests"
+            "cascade-quality:evaluate",
+            "cascade-quality:design-tests"
           ],
           "policy_tags": [
             "security",
@@ -1997,328 +2310,40 @@
           ],
           "required_dependencies": [],
           "route": "cascade-security:secure-design",
+          "skill_sha256": "3e480806fa57db411a50bf1e92ed5c48923d4204cf4aa84927453dc1fac08d6f",
           "triggers": [
             "a proposed design needs security review before implementation",
             "new trust or authorization boundaries and external effects need controls"
           ]
         }
       ],
-      "version": "0.1.10+codex.20260910172549"
+      "version": "0.1.11+codex.20261006.1"
     },
     {
-      "descriptor_path": ".codex/plugins/cascade-project-management/capabilities.yaml",
-      "descriptor_sha256": "736696c8c0604d3905dce5ed087af3641ec43d365cc4e0a75c6f321434483cf0",
-      "manifest_path": ".codex/plugins/cascade-project-management/.codex-plugin/plugin.json",
-      "manifest_sha256": "c79fceb266f65ed1bf1933ce7ee3c6cf1dc8a6e0b96fee0f2a8775d44ec76d20",
+      "descriptor_path": ".codex/plugins/cascade-workflows/capabilities.yaml",
+      "descriptor_sha256": "d46d2b45fa776bfb8e8dd8669aabab68952441c6a6d3e0ed5ab861ba4d88def3",
+      "manifest_path": ".codex/plugins/cascade-workflows/.codex-plugin/plugin.json",
+      "manifest_sha256": "599f3064c8ff32f7494663131b1c74879bb84a33e6002f3ceef94b7ab8704df9",
       "model_policy": {
         "evaluation_reasoning_effort": "high",
         "model": "gpt-6-astra",
         "planning_reasoning_effort": "high"
       },
-      "name": "cascade-project-management",
-      "skills": [
-        {
-          "anti_triggers": [
-            "only validation, defect classification, project planning, or implementation is requested"
-          ],
-          "authority": "READ_ONLY",
-          "consumes": [],
-          "consumes_any_of": [
-            "user-report",
-            "accepted-behavior",
-            "frozen-findings"
-          ],
-          "description": "Draft one grounded tracker-ready issue, bug, story, task, enabler, or experiment without filing or activating it.",
-          "effect": "CANDIDATE_WRITE",
-          "evaluation_cases": [
-            "grounded-bug",
-            "missing-evidence",
-            "no-external-filing"
-          ],
-          "optional_dependencies": [
-            "cascade-product:manage-product-lifecycle",
-            "cascade-qa:triage-defects"
-          ],
-          "policy_tags": [
-            "project-management",
-            "work-item"
-          ],
-          "produces": [
-            "work-item-definition"
-          ],
-          "required_dependencies": [],
-          "route": "cascade-project-management:define-work-item",
-          "triggers": [
-            "a durable tracker-ready work-item body is requested"
-          ]
-        },
-        {
-          "anti_triggers": [
-            "one bounded implementation slice or product priority decision is requested"
-          ],
-          "authority": "READ_ONLY",
-          "consumes": [
-            "accepted-objective",
-            "accepted-domain-artifacts"
-          ],
-          "description": "Build or revise a lean delivery plan with horizons, milestones, dependencies, risks, and evidence gates from accepted objectives.",
-          "effect": "CANDIDATE_WRITE",
-          "evaluation_cases": [
-            "lean-plan",
-            "no-invented-owner"
-          ],
-          "optional_dependencies": [
-            "cascade-product:manage-product-lifecycle",
-            "cascade-qa:plan-quality"
-          ],
-          "policy_tags": [
-            "project-management",
-            "planning"
-          ],
-          "produces": [
-            "project-plan"
-          ],
-          "required_dependencies": [],
-          "route": "cascade-project-management:plan-project",
-          "triggers": [
-            "multi-horizon or multi-owner delivery planning is required"
-          ]
-        },
-        {
-          "anti_triggers": [
-            "no durable project state exists"
-          ],
-          "authority": "READ_ONLY",
-          "consumes": [
-            "project-plan",
-            "execution-receipts"
-          ],
-          "description": "Assess, coordinate, update, or reconcile an existing project plan from current artifacts, blockers, dependencies, and receipts.",
-          "effect": "CANDIDATE_WRITE",
-          "evaluation_cases": [
-            "stale-state",
-            "no-auto-dispatch"
-          ],
-          "optional_dependencies": [
-            "cascade-qa:assess-quality"
-          ],
-          "policy_tags": [
-            "project-management",
-            "coordination"
-          ],
-          "produces": [
-            "project-status-proposal"
-          ],
-          "required_dependencies": [],
-          "route": "cascade-project-management:manage-project",
-          "triggers": [
-            "an existing project has blockers, collisions, stale state, or handoffs"
-          ]
-        },
-        {
-          "anti_triggers": [
-            "target archival or ordinary bounded completion is requested"
-          ],
-          "authority": "READ_ONLY",
-          "consumes": [
-            "project-plan",
-            "execution-receipts"
-          ],
-          "description": "Assess terminal project completion and propose evidence-preserving retention without archiving or rewriting history.",
-          "effect": "CANDIDATE_WRITE",
-          "evaluation_cases": [
-            "terminal-evidence",
-            "no-archive-effect"
-          ],
-          "optional_consumes": [
-            "quality-assessment"
-          ],
-          "optional_dependencies": [
-            "cascade-qa:assess-quality"
-          ],
-          "policy_tags": [
-            "project-management",
-            "closeout"
-          ],
-          "produces": [
-            "project-closeout-proposal"
-          ],
-          "required_dependencies": [],
-          "route": "cascade-project-management:close-project",
-          "triggers": [
-            "an existing project may be complete, superseded, or abandoned"
-          ]
-        }
-      ],
-      "version": "0.1.9+codex.20260910172549"
-    },
-    {
-      "descriptor_path": ".codex/plugins/cascade-qa/capabilities.yaml",
-      "descriptor_sha256": "5000d9479219595d650b2db0cd0c9e61df4f5e091b53b205e9a15aaab0bb33f7",
-      "manifest_path": ".codex/plugins/cascade-qa/.codex-plugin/plugin.json",
-      "manifest_sha256": "505717a36e7616994f8d212998ca31b7828f45548aea4df6237040bc789326df",
-      "model_policy": {
-        "evaluation_reasoning_effort": "high",
-        "model": "gpt-6-astra",
-        "planning_reasoning_effort": "high"
-      },
-      "name": "cascade-qa",
-      "skills": [
-        {
-          "anti_triggers": [
-            "no accepted behavior exists or ordinary validation is sufficient"
-          ],
-          "authority": "READ_ONLY",
-          "consumes": [],
-          "consumes_any_of": [
-            "product-contract",
-            "change-contract",
-            "accepted-behavior",
-            "accepted-requirements",
-            "accepted-journeys",
-            "accepted-scenarios"
-          ],
-          "description": "Build a risk-based quality plan with evidence classes, contours, gates, and execution ownership from accepted behavior.",
-          "effect": "CANDIDATE_WRITE",
-          "evaluation_cases": [
-            "risk-based-scope",
-            "evidence-classes"
-          ],
-          "optional_dependencies": [
-            "cascade-product:define-product"
-          ],
-          "policy_tags": [
-            "quality",
-            "planning"
-          ],
-          "produces": [
-            "quality-plan"
-          ],
-          "required_dependencies": [],
-          "route": "cascade-qa:plan-quality",
-          "triggers": [
-            "quality scope or acceptance gates must be planned"
-          ]
-        },
-        {
-          "anti_triggers": [
-            "tests must be run or product behavior is unresolved"
-          ],
-          "authority": "READ_ONLY",
-          "consumes": [
-            "quality-plan",
-            "product-contract"
-          ],
-          "description": "Design traceable test cases, data, oracles, and execution requests from accepted behavior and quality scope.",
-          "effect": "CANDIDATE_WRITE",
-          "evaluation_cases": [
-            "traceable-oracle",
-            "no-execution"
-          ],
-          "optional_dependencies": [
-            "cascade-prompt:prompt",
-            "cascade-simulations:simulate",
-            "cascade-evals:evaluate"
-          ],
-          "policy_tags": [
-            "quality",
-            "test-design"
-          ],
-          "produces": [
-            "test-plan"
-          ],
-          "required_dependencies": [],
-          "route": "cascade-qa:design-tests",
-          "triggers": [
-            "test design rather than execution is requested"
-          ]
-        },
-        {
-          "anti_triggers": [
-            "missing checks must be executed or defects repaired"
-          ],
-          "authority": "READ_ONLY",
-          "consumes": [
-            "quality-plan",
-            "frozen-evidence"
-          ],
-          "description": "Assess frozen evidence against a fixed quality plan and acceptance gate without executing missing checks or approving release.",
-          "effect": "READ_ONLY",
-          "evaluation_cases": [
-            "pass-fail-blocked-not-run",
-            "no-release-approval"
-          ],
-          "optional_dependencies": [
-            "cascade-qa:triage-defects"
-          ],
-          "policy_tags": [
-            "quality",
-            "assessment"
-          ],
-          "produces": [
-            "quality-assessment"
-          ],
-          "required_dependencies": [],
-          "route": "cascade-qa:assess-quality",
-          "triggers": [
-            "quality status or a gate recommendation is requested"
-          ]
-        },
-        {
-          "anti_triggers": [
-            "the failure class is already proven and only repair is requested"
-          ],
-          "authority": "READ_ONLY",
-          "consumes": [
-            "failure-evidence",
-            "public-boundary-evidence"
-          ],
-          "description": "Classify observed failures as product defect, test drift, environment failure, flake, or ambiguity from current boundary evidence.",
-          "effect": "READ_ONLY",
-          "evaluation_cases": [
-            "test-drift-proof",
-            "environment-failure"
-          ],
-          "optional_dependencies": [],
-          "policy_tags": [
-            "quality",
-            "defect-triage"
-          ],
-          "produces": [
-            "defect-disposition"
-          ],
-          "required_dependencies": [],
-          "route": "cascade-qa:triage-defects",
-          "triggers": [
-            "failure ownership is uncertain before source or test repair"
-          ]
-        }
-      ],
-      "version": "0.1.9+codex.20260910172549"
-    },
-    {
-      "descriptor_path": ".codex/plugins/cascade-coordinator/capabilities.yaml",
-      "descriptor_sha256": "b3d95698aebee113a12ee4aac5ca92b5e05d89ddd53f24e959bf03eb0854a6a1",
-      "manifest_path": ".codex/plugins/cascade-coordinator/.codex-plugin/plugin.json",
-      "manifest_sha256": "43c31e51e2f88a59247a39b48c397c434d11c0983b13b924981f5ce9e907fb8f",
-      "model_policy": {
-        "evaluation_reasoning_effort": "high",
-        "model": "gpt-6-astra",
-        "planning_reasoning_effort": "high"
-      },
-      "name": "cascade-coordinator",
+      "name": "cascade-workflows",
       "skills": [
         {
           "anti_triggers": [
             "one exact namespaced skill is already requested and its required inputs and dependencies are satisfied"
           ],
           "authority": "READ_ONLY",
+          "component": "coordinator",
           "consumes": [
             "task-envelope",
             "plugin-capability-catalog"
           ],
           "description": "Select the smallest sufficient Cascade capability set from request claims, triggers, exclusions, artifacts, authority, and current plugin identities.",
           "effect": "CANDIDATE_WRITE",
+          "entrypoint": "skills/coordinator/skills/select-capabilities/SKILL.md",
           "evaluation_cases": [
             "single-route-selection",
             "multi-domain-selection",
@@ -2327,7 +2352,7 @@
             "no-self-dispatch"
           ],
           "optional_dependencies": [
-            "cascade-evals:agent-evaluation"
+            "cascade-quality:agent-evaluation"
           ],
           "policy_tags": [
             "plugin-routing",
@@ -2337,7 +2362,8 @@
             "capability-selection"
           ],
           "required_dependencies": [],
-          "route": "cascade-coordinator:select-capabilities",
+          "route": "cascade-workflows:select-capabilities",
+          "skill_sha256": "d6f33fcd000a26f00a7139017a9bd8aee66f3cf26e72a2de79deb427ee18b004",
           "triggers": [
             "a request spans multiple plugin domains or its exact namespaced capability route is ambiguous"
           ]
@@ -2347,6 +2373,7 @@
             "the only unresolved work is one implementation slice or a project schedule"
           ],
           "authority": "READ_ONLY",
+          "component": "coordinator",
           "consumes": [
             "task-envelope",
             "plugin-capability-catalog",
@@ -2354,6 +2381,7 @@
           ],
           "description": "Compile an accepted capability selection into an ordered, dependency-safe, artifact-complete, non-dispatching Cascade plugin workflow plan.",
           "effect": "CANDIDATE_WRITE",
+          "entrypoint": "skills/coordinator/skills/plan-workflow/SKILL.md",
           "evaluation_cases": [
             "multi-claim-routing",
             "dependency-ordering",
@@ -2364,8 +2392,8 @@
           ],
           "optional_dependencies": [
             "cascade-prompt:prompt",
-            "cascade-evals:prompt-evaluation",
-            "cascade-evals:agent-evaluation"
+            "cascade-quality:prompt-evaluation",
+            "cascade-quality:agent-evaluation"
           ],
           "policy_tags": [
             "plugin-routing",
@@ -2375,15 +2403,160 @@
             "plugin-plan"
           ],
           "required_dependencies": [
-            "cascade-coordinator:select-capabilities"
+            "cascade-workflows:select-capabilities"
           ],
-          "route": "cascade-coordinator:plan-workflow",
+          "route": "cascade-workflows:plan-workflow",
+          "skill_sha256": "c23692bf2dba18cd5f92e3db00c95d6078fc5b0dfe19b01404a72910cea0c7d2",
           "triggers": [
             "two or more selected plugin capabilities require ordering, parallelization, an artifact handoff, or a join"
           ]
+        },
+        {
+          "anti_triggers": [
+            "only validation, defect classification, project planning, or implementation is requested"
+          ],
+          "authority": "READ_ONLY",
+          "component": "project-management",
+          "consumes": [],
+          "consumes_any_of": [
+            "user-report",
+            "accepted-behavior",
+            "frozen-findings"
+          ],
+          "description": "Draft one grounded tracker-ready issue, bug, story, task, enabler, or experiment without filing or activating it.",
+          "effect": "CANDIDATE_WRITE",
+          "entrypoint": "skills/project-management/skills/define-work-item/SKILL.md",
+          "evaluation_cases": [
+            "grounded-bug",
+            "missing-evidence",
+            "no-external-filing"
+          ],
+          "optional_dependencies": [
+            "cascade-discovery:manage-product-lifecycle",
+            "cascade-quality:triage-defects"
+          ],
+          "policy_tags": [
+            "project-management",
+            "work-item"
+          ],
+          "produces": [
+            "work-item-definition"
+          ],
+          "required_dependencies": [],
+          "route": "cascade-workflows:define-work-item",
+          "skill_sha256": "0cfd1603a374ee6328fab4e77d6bba4f06b7157a10e79b129cec7065e56e1855",
+          "triggers": [
+            "a durable tracker-ready work-item body is requested"
+          ]
+        },
+        {
+          "anti_triggers": [
+            "one bounded implementation slice or product priority decision is requested"
+          ],
+          "authority": "READ_ONLY",
+          "component": "project-management",
+          "consumes": [
+            "accepted-objective",
+            "accepted-domain-artifacts"
+          ],
+          "description": "Build or revise a lean delivery plan with horizons, milestones, dependencies, risks, and evidence gates from accepted objectives.",
+          "effect": "CANDIDATE_WRITE",
+          "entrypoint": "skills/project-management/skills/plan-project/SKILL.md",
+          "evaluation_cases": [
+            "lean-plan",
+            "no-invented-owner"
+          ],
+          "optional_dependencies": [
+            "cascade-discovery:manage-product-lifecycle",
+            "cascade-quality:plan-quality"
+          ],
+          "policy_tags": [
+            "project-management",
+            "planning"
+          ],
+          "produces": [
+            "project-plan"
+          ],
+          "required_dependencies": [],
+          "route": "cascade-workflows:plan-project",
+          "skill_sha256": "8a6ea06b048f326802e32febb6a1f797a23fdc95c10709b473552663b98c3cfd",
+          "triggers": [
+            "multi-horizon or multi-owner delivery planning is required"
+          ]
+        },
+        {
+          "anti_triggers": [
+            "no durable project state exists"
+          ],
+          "authority": "READ_ONLY",
+          "component": "project-management",
+          "consumes": [
+            "project-plan",
+            "execution-receipts"
+          ],
+          "description": "Assess, coordinate, update, or reconcile an existing project plan from current artifacts, blockers, dependencies, and receipts.",
+          "effect": "CANDIDATE_WRITE",
+          "entrypoint": "skills/project-management/skills/manage-project/SKILL.md",
+          "evaluation_cases": [
+            "stale-state",
+            "no-auto-dispatch"
+          ],
+          "optional_dependencies": [
+            "cascade-quality:assess-quality"
+          ],
+          "policy_tags": [
+            "project-management",
+            "coordination"
+          ],
+          "produces": [
+            "project-status-proposal"
+          ],
+          "required_dependencies": [],
+          "route": "cascade-workflows:manage-project",
+          "skill_sha256": "fa418ef6c41663c68b9590e05562374f02d4badef941d301960c9820609152e0",
+          "triggers": [
+            "an existing project has blockers, collisions, stale state, or handoffs"
+          ]
+        },
+        {
+          "anti_triggers": [
+            "target archival or ordinary bounded completion is requested"
+          ],
+          "authority": "READ_ONLY",
+          "component": "project-management",
+          "consumes": [
+            "project-plan",
+            "execution-receipts"
+          ],
+          "description": "Assess terminal project completion and propose evidence-preserving retention without archiving or rewriting history.",
+          "effect": "CANDIDATE_WRITE",
+          "entrypoint": "skills/project-management/skills/close-project/SKILL.md",
+          "evaluation_cases": [
+            "terminal-evidence",
+            "no-archive-effect"
+          ],
+          "optional_consumes": [
+            "quality-assessment"
+          ],
+          "optional_dependencies": [
+            "cascade-quality:assess-quality"
+          ],
+          "policy_tags": [
+            "project-management",
+            "closeout"
+          ],
+          "produces": [
+            "project-closeout-proposal"
+          ],
+          "required_dependencies": [],
+          "route": "cascade-workflows:close-project",
+          "skill_sha256": "7de2309c71a30bcab3ba87b8dd47bfae4bf6d5f0fed7d30831ffd23331c48f05",
+          "triggers": [
+            "an existing project may be complete, superseded, or abandoned"
+          ]
         }
       ],
-      "version": "0.2.3+codex.20260910200733"
+      "version": "1.0.2+codex.20261006.3"
     }
   ],
   "schema_version": 1

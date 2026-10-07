@@ -7,25 +7,26 @@ config; keep reusable workflow rules in skills, agents, and patterns.
 
 | Folder | Purpose | Written By |
 |---|---|---|
-| `.agents/plugins/` | Repo-local plugin marketplace catalog | `plugin-creator`, `cascade-coding-agent:maintain-harness` |
-| `.github/` | Pull request description contract and GitHub Copilot repository instructions | `cascade-coding-agent:maintain-harness`, `cascade-coding-agent:adapt-harness` |
+| `.agents/plugins/` | Repo-local plugin marketplace catalog | `plugin-creator`, `cascade-engineering:maintain-harness` |
+| `.github/` | Pull request description contract and GitHub Copilot repository instructions | `cascade-engineering:maintain-harness`, `cascade-engineering:adapt-harness` |
 | `docs/work/` | Active work lanes, first-class Coordination Graphs, copyable examples, lane packets, reports, handoffs | Cascade Project Management proposals plus authorized host `plan-change`, `validate-change`, and `closeout` effects |
-| `docs/archive/work-reports/` | Compact archive capsules and relocated frozen lane, graph, and report history | `closeout` only after `cascade-project-management:close-project` proposes exact retention and current authority permits it |
+| `docs/archive/work-reports/` | Compact archive capsules and relocated frozen lane, graph, and report history | `closeout` only after `cascade-workflows:close-project` proposes exact retention and current authority permits it |
 | `docs/specs/` | Preserved sources, public contracts, and spec packets | `create-spec` plus authorized host implementation |
 | `docs/product/` | Product intent plus stable domain/capability relationships, requirements, journeys, personas, and scenarios | Cascade Product/Personas artifacts persisted through `create-spec` |
 | `docs/design/` | Interaction model, tokens, components, design constraints | Cascade Design artifacts plus `create-spec` when durable persistence is needed |
-| `docs/brand/` | Naming, tone, content, visual direction | `cascade-market:brand-positioning` artifacts persisted through `create-spec` |
-| `docs/backlog/` | Follow-up candidates with acceptance criteria | `create-spec`, `cascade-project-management:define-work-item`, or `closeout` when their trigger is present |
-| `docs/patterns/` | Reusable workflow, boundary, testing, context rules, and selectable context packs | `pattern-context`, `closeout`, `cascade-coding-agent:adapt-harness` |
+| `docs/brand/` | Naming, tone, content, visual direction | `cascade-discovery:brand-positioning` artifacts persisted through `create-spec` |
+| `docs/backlog/` | Follow-up candidates with acceptance criteria | `create-spec`, `cascade-workflows:define-work-item`, or `closeout` when their trigger is present |
+| `docs/patterns/` | Reusable workflow, boundary, testing, context rules, and selectable context packs | `pattern-context`, `closeout`, `cascade-engineering:adapt-harness` |
 | `.codex/skills/` | Repository context, persistence, mutation, validation, target execution/repair, and closeout effects | Agent Engineer and Orchestrator host integration |
 | `.codex/agents/` | Role contracts and skill maps | Agent Engineer skills |
 | `.codex/agents/product-designer/` and sibling `.toml` | Scoped product discovery, supporting market/persona/prompt/project methods, mockups and frontend handoff | Agent Engineer integration; Product Designer owns the design brief and artifacts; strategy and independent acceptance retain separate owners |
 | `.codex/agents/software-engineer/` and sibling `.toml` | Application/domain/data/integration implementation | Agent Engineer integration; Software Engineer owns assigned target slice |
 | `.codex/agents/code-reviewer/` and sibling `.toml` | Read-only fixed-diff review | Agent Engineer integration; Code Reviewer owns scoped findings |
 | `.codex/agents/frontend-engineer/` and sibling `.toml` | Frontend implementation, responsive/state behavior and approved-mockup fidelity role | Agent Engineer integration; Frontend Engineer executes scoped target work |
-| `.codex/plugins/` | Repo-local plugin source packages referenced by the repository marketplace | `plugin-creator`, `cascade-coding-agent:maintain-harness` |
+| `.codex/plugins/` | Repo-local plugin source packages referenced by the repository marketplace | `plugin-creator`, `cascade-engineering:maintain-harness` |
 | `.codex/harness-tooling/` | Isolated pinned browser-simulation dependencies and Playwright runner files | Harness maintainers |
-| `harness-evals/` | Canonical scenarios, generated catalog, target schema, judge profiles, anchored rubrics, and judgment schema | `cascade-evals:harness-evaluation`, `cascade-evals:build-judge`, and the host runner |
+| `examples/vehicle-assistant/` | Standalone Python example for Laya/LangGraph automotive support; its local stores and dependencies are outside the harness runtime | Example maintainers |
+| `harness-evals/` | Canonical scenarios, generated catalog, target schema, judge profiles, anchored rubrics, and judgment schema | `cascade-quality:harness-evaluation`, `cascade-quality:build-judge`, and the host runner |
 | `.artifacts/harness-evals/` | Ignored raw JSONL traces, normalized runs, eligibility, judgments, and local reports | `scripts/cascade/evals.ts` |
 | `product-evals/campaigns/`, `product-evals/tasks/`, `product-evals/simulations/` | Canonical simulation campaigns, reusable tasks, populations, scenarios, worlds, datasets, and generated catalog | `cascade-simulations:manage-simulation-campaign` plus host persistence |
 | `product-evals/intakes/harness/`, `product-evals/intakes/product/` | Scope-separated Task Envelope/product-context/action-policy bindings; product campaigns require a current READY intake before execution | Simulations plugin methods plus host runner; consumed by Simulation Operator and Simulation Evaluator |
@@ -33,8 +34,8 @@ config; keep reusable workflow rules in skills, agents, and patterns.
 | `.artifacts/product-evals/` | Ignored append-only product-evaluation execution, evaluation, calibration, and aggregation receipts | `scripts/cascade/campaigns.ts`, Simulation Operator, and Simulation Evaluator |
 | `.artifacts/product-eval-reports/` | Private local HTML/JSON reports and optional PDF exports derived from a verified frozen run; never part of its evidence namespace | `scripts/cascade/campaign-report.ts` and the isolated print renderer |
 | `.codex/plugins/cascade-simulations/skills/manage-simulation-campaign/` | Campaign authoring, selection, replay planning, receipt aggregation, claim projection, and reporting contract | Cascade Simulations source |
-| `.codex/plugins/cascade-simulations/skills/execute-simulation-campaign/` | Bounded selected-run lifecycle and execution receipt contract | Cascade Simulations source and Simulation Operator |
-| `.codex/plugins/cascade-evals/skills/simulation-evaluation/` | Read-only frozen-evidence, policy, oracle, semantic, and claim-support contract | Cascade Evals source and Simulation Evaluator |
+| `.codex/plugins/cascade-simulations/skills/run-simulation-campaign/` | Bounded selected-run lifecycle and execution receipt contract | Cascade Simulations source and Simulation Operator |
+| `.codex/plugins/cascade-quality/skills/evals/skills/simulation-evaluation/` | Read-only frozen-evidence, policy, oracle, semantic, and claim-support contract | Cascade Evals source and Simulation Evaluator |
 | `scripts/cascade/cli/` | Async command dispatcher shared by the executable entrypoint and future transports | Cascade CLI application layer |
 | `scripts/cascade/closeout.ts`, `scripts/cascade/closeout-hook.ts` | Shared task/turn-scoped integrity checker and advisory prompt/Stop adapter | Host closeout; never launches tests or judges |
 | `.artifacts/closeout/` | Optional ignored current-turn contracts and evidence summaries | Active host after real scoped checks; no authority from file presence |
@@ -64,21 +65,26 @@ The context skill reads that identity and only relevant target architecture.
 Specialized stateful-agent knowledge remains in plugin references, loaded
 only for explicit requests or an adopted target architecture.
 
-The repository's default `bun run test` command retains only six runtime
+The repository's default `bun run test` command retains seven runtime
 safety smoke files under `scripts/cascade/`: admission authority, filesystem
 and process boundaries, workspace artifact persistence, the real MCP adapter,
-closeout integrity, and the lean runtime bundle. This is deliberately reduced coverage, not an
+closeout integrity, plugin selection/workflow control, and the lean runtime bundle.
+This is deliberately reduced coverage, not an
 exhaustive unit suite. Plugin package tests, lab corpora, and built-in targeted
 self-tests remain separate and run only for an affected contract; do not
 recreate broad module-by-module test suites as a routine harness task.
 
-The repository marketplace at `.agents/plugins/marketplace.json` catalogs all
-14 Cascade plugin source packages under `.codex/plugins/<plugin-name>/`:
-Prompt, Simulations, Evals, Coordinator, AI Architect, Software Architect, Coding Agent,
-Personas, Product, Marketing, Design, Security, Project Management, and QA.
-Cascade Marketing retains the internal ID `cascade-market` and owns evidence,
-market selection, positioning and growth planning. Cascade Product owns value
-and offer models, feature formation, accepted behavior and outcome learning.
+The repository marketplace at `.agents/plugins/marketplace.json` catalogs nine
+Cascade packages: Discovery, Engineering, Workflows, Quality, AI Architect,
+Prompt, Design, Security and Simulations. All 65 methods retain distinct owners.
+Grouped methods keep resources under
+`.codex/plugins/<group>/skills/<component>/skills/<method>/SKILL.md`; the catalog
+binds exact entrypoints and source digests. Nested component manifests identify
+evaluation subjects and are not separate marketplace installations.
+See [the complete method catalog](patterns/workflow/plugin-groups.md).
+Discovery's Market component owns evidence, positioning and growth; Product
+owns value/offer models, feature formation and outcome learning; Personas owns
+the canonical human model.
 See [Value decisions through feature delivery](patterns/workflow/value-to-delivery.md).
 Keeping catalog and source in the repository makes the packages portable; it
 does not by itself mean a plugin is installed, active, or published.
@@ -86,7 +92,7 @@ does not by itself mean a plugin is installed, active, or published.
 Plugin-packaged skills remain independently namespaced and are intentionally
 not mirrored as canonical workflow bodies into `.codex/skills/`. The local
 security and architecture entries are thin evidence adapters. `context`,
-`create-spec`, `pattern-context`, `run-qa-plan`, `repair-tests`, and `closeout`
+`create-spec`, `pattern-context`, `run-qa-plan`, `resolve-validation-failure`, and `closeout`
 remain because they bind current repository state, durable paths, or target
 effects. Portable methods route directly through `.codex/config.toml` aliases.
 
@@ -159,7 +165,7 @@ Task Graph authority and read-only graph references after direct cutover;
 `active.md` remains a derived projection.
 
 `docs/work/` is the live and recent execution surface. When a lane or graph may
-be terminal, `cascade-project-management:close-project` assesses completion,
+be terminal, `cascade-workflows:close-project` assesses completion,
 active consumers, and retention readiness without mutating files. `closeout`
 may move only the exact `RETIRE_PROPOSED` set when current user or active-state
 authority permits it and terminal evidence, dependency closure, index
@@ -361,11 +367,11 @@ Implemented skill and runtime authority:
 - Quality checklist:
   `.codex/plugins/cascade-simulations/skills/manage-simulation-campaign/checklists/campaign-quality.md`
 - Execution skill and role:
-  `.codex/plugins/cascade-simulations/skills/execute-simulation-campaign/`;
+  `.codex/plugins/cascade-simulations/skills/run-simulation-campaign/`;
   `.codex/agents/simulation-operator/`;
   `.codex/agents/simulation-operator.toml`
 - Evaluation skill and role:
-  `.codex/plugins/cascade-evals/skills/simulation-evaluation/`;
+  `.codex/plugins/cascade-quality/skills/evals/skills/simulation-evaluation/`;
   `.codex/agents/simulation-evaluator/`;
   `.codex/agents/simulation-evaluator.toml`
 - Program:
@@ -427,14 +433,14 @@ providers, reducers, or campaign definitions. Its current operational path is:
 
 1. Orchestrator selects `cascade-simulations:manage-simulation-campaign` for a
    campaign, or `cascade-simulations:simulate` for one bounded actor loop.
-2. Simulation Operator follows `cascade-simulations:execute-simulation-campaign`;
+2. Simulation Operator follows `cascade-simulations:run-simulation-campaign`;
    `campaign run` owns policy checks, execution, source/evidence copies,
    cleanup, and `execution/execution-receipt.json`.
 3. General campaign evaluation uses its declared fixture or Codex profile.
    Simulation Evaluator owns the independent semantic boundary via
-   `cascade-evals:simulation-evaluation`; actor-loop evidence first needs
+   `cascade-quality:simulation-evaluation`; actor-loop evidence first needs
    `cascade-simulations:simulation-review`. Cascade route/trace claims require
-   the specialized Harness Evaluator and `cascade-evals:harness-evaluation`.
+   the specialized Harness Evaluator and `cascade-quality:harness-evaluation`.
 4. The runner reduces eligible receipts, writes `aggregations/` and
    `summary.json`, then seals the complete run with `finalization.json`.
    `campaign verify <run-id>` verifies that frozen package without rerunning it.

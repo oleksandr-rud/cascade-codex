@@ -9,6 +9,16 @@ The plugin-to-plugin and plugin-to-host responsibility map, including the
 conditional QA branch, lives in
 [`plugin-orchestration.md`](plugin-orchestration.md).
 
+For research, opportunity discovery, feature formation, competitor refresh,
+redesign, refactoring and bounded agent improvement, use the entry conditions
+and feedback rules in [`value-to-delivery.md`](value-to-delivery.md).
+
+Current package ownership and every method's source entrypoint live in
+[`plugin-groups.md`](plugin-groups.md). The observation-controlled loop and
+Nexus tracker handoff live in [`nexus-integration.md`](nexus-integration.md).
+The common host cycle, broad Quality/Evals routing and reusable method
+compositions live in [`shared-workflow.md`](shared-workflow.md).
+
 ## Workflow Prompt Routing
 
 "Workflow" describes many outputs; route by the requested result.
@@ -16,20 +26,20 @@ conditional QA branch, lives in
 | Requested result | Primary route |
 |---|---|
 | Normal non-atomic change | `context -> plan-change -> implement-change -> validate-change` |
-| Agent or skill workflow design | `cascade-ai-architect:design-agent-workflow`, then `cascade-coding-agent:integrate-agent-assets` only for target binding |
-| Tracker-ready issue, story, task, enabler, or experiment | `cascade-project-management:define-work-item` |
-| Multi-horizon roadmap or Agile MVP/version/iteration plan | `cascade-project-management:plan-project` |
-| Independently owned or resumable work, dependencies, evidence joins, status, or reconciliation | `cascade-project-management:manage-project` |
-| Quality planning or test design for accepted behavior | `cascade-qa:plan-quality` or `cascade-qa:design-tests` |
+| Agent or skill workflow design | `cascade-ai-architect:design-agent-workflow`, then `cascade-engineering:integrate-agent-assets` only for target binding |
+| Tracker-ready issue, story, task, enabler, or experiment | `cascade-workflows:define-work-item` |
+| Multi-horizon roadmap or Agile MVP/version/iteration plan | `cascade-workflows:plan-project` |
+| Independently owned or resumable work, dependencies, evidence joins, status, or reconciliation | `cascade-workflows:manage-project` |
+| Quality planning or test design for accepted behavior | `cascade-quality:plan-quality` or `cascade-quality:design-tests` |
 | Authorized target execution of a frozen QA artifact | `run-qa-plan` |
-| Frozen quality evidence assessment | `cascade-qa:assess-quality` |
+| Frozen quality evidence assessment | `cascade-quality:assess-quality` |
 | UX or security review | Installed namespaced Cascade Design or Cascade Security skill |
-| Market research or experiment design | `cascade-market:research-market` or `cascade-market:design-market-experiments` |
-| Ambiguous or multi-domain capability selection | `cascade-coordinator:select-capabilities` |
-| Validated multi-capability ordering, artifact handoffs, parallel branches, or joins | `cascade-coordinator:plan-workflow` |
+| Market research or experiment design | `cascade-discovery:research-market` or `cascade-discovery:design-market-experiments` |
+| Ambiguous or multi-domain capability selection | `cascade-workflows:select-capabilities` |
+| Validated multi-capability ordering, artifact handoffs, parallel branches, or joins | `cascade-workflows:plan-workflow` |
 | Current evidence aggregation | `validate-change` |
 | Durable handoff or active-record finalization | `closeout` |
-| Completion or retention assessment | `cascade-project-management:close-project`, then `closeout` for authorized host effects |
+| Completion or retention assessment | `cascade-workflows:close-project`, then `closeout` for authorized host effects |
 
 Atomic mechanical edits may bypass planning. Bounded one-owner work uses a short
 inline plan and creates no spec, lane, graph, report, receipt, or archive record.
@@ -52,7 +62,7 @@ spend.
 
 ## Iteration Planning
 
-Use `cascade-project-management:plan-project` only for a requested roadmap,
+Use `cascade-workflows:plan-project` only for a requested roadmap,
 Agile delivery decomposition, or work that cannot be delivered as one bounded
 slice. The compact form classifies grounded slices as `FIRST`, `NEXT`, `LATER`,
 `DEFERRED`, or `REMOVED`. The Agile form maps one accepted MVP into versions,
@@ -60,7 +70,7 @@ iterations, stories, and tasks, fully decomposing only the first MVP iteration.
 Both forms keep proposals distinct from committed scope.
 
 Do not invent dates, cadence, capacity, staffing, points, owners, or active IDs. Use
-`cascade-project-management:manage-project` only when FIRST contains real
+`cascade-workflows:manage-project` only when FIRST contains real
 cross-owner work, durable handoffs, dependencies, or evidence joins. The host
 separately applies any authorized durable-state or execution effect.
 
@@ -77,7 +87,7 @@ non-atomic. Lifecycle and advanced graph mechanics are centralized in
 [`graph-shaped-work.md`](graph-shaped-work.md).
 
 After terminal acceptance, ask
-`cascade-project-management:close-project` for a retention proposal. Remove a
+`cascade-workflows:close-project` for a retention proposal. Remove a
 projection from active state only through `closeout`, when its remaining
 consumers and durable evidence are accounted for and current authority permits
 the exact host mutation. Retention is never automatic.

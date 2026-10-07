@@ -21,7 +21,7 @@ prompt as a fallback.
 
 1. Exact selected campaign, READY simulation intake, bound Task Envelope,
    version, run request, approval, and permission envelope.
-2. Installed `cascade-simulations:execute-simulation-campaign` contract.
+2. Installed `cascade-simulations:run-simulation-campaign` contract.
 3. Campaign, task, simulation, claim, policy, oracle, fixture, and catalog
    sources.
 4. Runtime adapter and environment-provider contracts.
@@ -49,7 +49,7 @@ prompt as a fallback.
 - On crash recovery, clean up and finalize the interrupted attempt without
   resuming target actions or silently retrying an unknown external outcome.
 - Produce an execution receipt for `simulation-evaluator` or, for specialized
-  Cascade trace evidence, `cascade-evals:harness-evaluation`.
+  Cascade trace evidence, `cascade-quality:harness-evaluation`.
 
 ## Permissions And Safety
 

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Run Simulation Campaign"
+  short_description: "Run Simulation Campaign with explicit authority and evidence"
+  default_prompt: "Use $run-simulation-campaign for the requested bounded workflow."

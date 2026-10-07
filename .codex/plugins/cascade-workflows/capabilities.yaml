@@ -1,0 +1,179 @@
+schema_version: 1
+plugin:
+  name: cascade-workflows
+  version: 1.0.2+codex.20261006.3
+model_policy:
+  model: gpt-6-astra
+  planning_reasoning_effort: high
+  evaluation_reasoning_effort: high
+skills:
+  - route: cascade-workflows:select-capabilities
+    description: Select the smallest sufficient Cascade capability set from request claims, triggers,
+      exclusions, artifacts, authority, and current plugin identities.
+    triggers:
+      - a request spans multiple plugin domains or its exact namespaced capability route is ambiguous
+    anti_triggers:
+      - one exact namespaced skill is already requested and its required inputs and dependencies are
+        satisfied
+    consumes:
+      - task-envelope
+      - plugin-capability-catalog
+    produces:
+      - capability-selection
+    required_dependencies: []
+    optional_dependencies:
+      - cascade-quality:agent-evaluation
+    policy_tags:
+      - plugin-routing
+      - capability-selection
+    effect: CANDIDATE_WRITE
+    authority: READ_ONLY
+    evaluation_cases:
+      - single-route-selection
+      - multi-domain-selection
+      - anti-trigger-exclusion
+      - ambiguity-blocked
+      - no-self-dispatch
+    component: coordinator
+    entrypoint: skills/coordinator/skills/select-capabilities/SKILL.md
+  - route: cascade-workflows:plan-workflow
+    description: Compile an accepted capability selection into an ordered, dependency-safe,
+      artifact-complete, non-dispatching Cascade plugin workflow plan.
+    triggers:
+      - two or more selected plugin capabilities require ordering, parallelization, an artifact
+        handoff, or a join
+    anti_triggers:
+      - the only unresolved work is one implementation slice or a project schedule
+    consumes:
+      - task-envelope
+      - plugin-capability-catalog
+      - capability-selection
+    produces:
+      - plugin-plan
+    required_dependencies:
+      - cascade-workflows:select-capabilities
+    optional_dependencies:
+      - cascade-prompt:prompt
+      - cascade-quality:prompt-evaluation
+      - cascade-quality:agent-evaluation
+    policy_tags:
+      - plugin-routing
+      - workflow-planning
+    effect: CANDIDATE_WRITE
+    authority: READ_ONLY
+    evaluation_cases:
+      - multi-claim-routing
+      - dependency-ordering
+      - artifact-edge-completeness
+      - safe-parallelism
+      - policy-preservation
+      - no-self-dispatch
+    component: coordinator
+    entrypoint: skills/coordinator/skills/plan-workflow/SKILL.md
+  - route: cascade-workflows:define-work-item
+    description: Draft one grounded tracker-ready issue, bug, story, task, enabler, or experiment
+      without filing or activating it.
+    triggers:
+      - a durable tracker-ready work-item body is requested
+    anti_triggers:
+      - only validation, defect classification, project planning, or implementation is requested
+    consumes: []
+    consumes_any_of:
+      - user-report
+      - accepted-behavior
+      - frozen-findings
+    produces:
+      - work-item-definition
+    required_dependencies: []
+    optional_dependencies:
+      - cascade-discovery:manage-product-lifecycle
+      - cascade-quality:triage-defects
+    policy_tags:
+      - project-management
+      - work-item
+    effect: CANDIDATE_WRITE
+    authority: READ_ONLY
+    evaluation_cases:
+      - grounded-bug
+      - missing-evidence
+      - no-external-filing
+    component: project-management
+    entrypoint: skills/project-management/skills/define-work-item/SKILL.md
+  - route: cascade-workflows:plan-project
+    description: Build or revise a lean delivery plan with horizons, milestones, dependencies, risks,
+      and evidence gates from accepted objectives.
+    triggers:
+      - multi-horizon or multi-owner delivery planning is required
+    anti_triggers:
+      - one bounded implementation slice or product priority decision is requested
+    consumes:
+      - accepted-objective
+      - accepted-domain-artifacts
+    produces:
+      - project-plan
+    required_dependencies: []
+    optional_dependencies:
+      - cascade-discovery:manage-product-lifecycle
+      - cascade-quality:plan-quality
+    policy_tags:
+      - project-management
+      - planning
+    effect: CANDIDATE_WRITE
+    authority: READ_ONLY
+    evaluation_cases:
+      - lean-plan
+      - no-invented-owner
+    component: project-management
+    entrypoint: skills/project-management/skills/plan-project/SKILL.md
+  - route: cascade-workflows:manage-project
+    description: Assess, coordinate, update, or reconcile an existing project plan from current
+      artifacts, blockers, dependencies, and receipts.
+    triggers:
+      - an existing project has blockers, collisions, stale state, or handoffs
+    anti_triggers:
+      - no durable project state exists
+    consumes:
+      - project-plan
+      - execution-receipts
+    produces:
+      - project-status-proposal
+    required_dependencies: []
+    optional_dependencies:
+      - cascade-quality:assess-quality
+    policy_tags:
+      - project-management
+      - coordination
+    effect: CANDIDATE_WRITE
+    authority: READ_ONLY
+    evaluation_cases:
+      - stale-state
+      - no-auto-dispatch
+    component: project-management
+    entrypoint: skills/project-management/skills/manage-project/SKILL.md
+  - route: cascade-workflows:close-project
+    description: Assess terminal project completion and propose evidence-preserving retention without
+      archiving or rewriting history.
+    triggers:
+      - an existing project may be complete, superseded, or abandoned
+    anti_triggers:
+      - target archival or ordinary bounded completion is requested
+    consumes:
+      - project-plan
+      - execution-receipts
+    optional_consumes:
+      - quality-assessment
+    produces:
+      - project-closeout-proposal
+    required_dependencies: []
+    optional_dependencies:
+      - cascade-quality:assess-quality
+    policy_tags:
+      - project-management
+      - closeout
+    effect: CANDIDATE_WRITE
+    authority: READ_ONLY
+    evaluation_cases:
+      - terminal-evidence
+      - no-archive-effect
+    component: project-management
+    entrypoint: skills/project-management/skills/close-project/SKILL.md

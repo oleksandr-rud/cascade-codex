@@ -239,14 +239,14 @@ class ArtifactContractTests(unittest.TestCase):
         artifact["coverage"]["reuse_evidence"] = []
         artifact["findings"][0]["classification"] = "gap"
         artifact["handoffs"] = [{
-            "route": "cascade-product:define-product",
+            "route": "cascade-discovery:define-product",
             "reason": "Product behavior is missing.",
             "status": "REQUIRED",
             "required_input": "Accepted product definition naming actor and states",
             "expected_output": "Accepted product definition naming actor and states",
         }]
         errors = MODULE.validate_artifact(SCHEMA, artifact)
-        self.assertIn("handoff input repeats its expected output: cascade-product:define-product", errors)
+        self.assertIn("handoff input repeats its expected output: cascade-discovery:define-product", errors)
         self.assertIn("product-definition handoff requires the missing product output as its own input", errors)
 
     def test_product_handoff_accepts_current_evidence_input(self) -> None:
@@ -256,7 +256,7 @@ class ArtifactContractTests(unittest.TestCase):
         artifact["coverage"]["reuse_evidence"] = []
         artifact["findings"][0]["classification"] = "gap"
         artifact["handoffs"] = [{
-            "route": "cascade-product:define-product",
+            "route": "cascade-discovery:define-product",
             "reason": "Product behavior is missing.",
             "status": "REQUIRED",
             "required_input": "Current request, primitive observation, source identities, and unresolved actor and state gaps",

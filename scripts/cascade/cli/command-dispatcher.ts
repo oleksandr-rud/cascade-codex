@@ -89,6 +89,12 @@ Usage:
   cascade workflow catalog [--check|--write] [--output PATH]
   cascade workflow validate-selection --selection PATH --envelope PATH
   cascade workflow validate-plan --plan PATH --selection PATH --envelope PATH
+  cascade workflow groups
+  cascade workflow intake --envelope PATH --bindings PATH [--output PATH]
+  cascade workflow accept-selection --intake PATH --response PATH [--output PATH]
+  cascade workflow control-init --plan PATH --selection PATH --envelope PATH --bindings PATH --budget PATH [--output PATH]
+  cascade workflow control-intake --state PATH --observation PATH
+  cascade workflow control-step --state PATH --observation PATH [--decision PATH] [--output PATH]
   cascade brief list
   cascade brief validate <brief-id-or-path>
   cascade brief generate <brief-id-or-path> [--check|--write]

@@ -183,8 +183,8 @@ export function evaluationContractSources(profile: Pick<EvaluationProfileDefinit
     "simulation-evaluator.toml": ".codex/agents/simulation-evaluator.toml",
     "AGENT.md": ".codex/agents/simulation-evaluator/AGENT.md",
     "skills.yaml": ".codex/agents/simulation-evaluator/skills.yaml",
-    "SKILL.md": ".codex/plugins/cascade-evals/skills/simulation-evaluation/SKILL.md",
-    "evaluation-quality.md": ".codex/plugins/cascade-evals/skills/simulation-evaluation/checklists/evaluation-quality.md",
+    "SKILL.md": ".codex/plugins/cascade-quality/skills/evals/skills/simulation-evaluation/SKILL.md",
+    "evaluation-quality.md": ".codex/plugins/cascade-quality/skills/evals/skills/simulation-evaluation/checklists/evaluation-quality.md",
     "rubric.json": profile.rubric_file!,
     "output.schema.json": OUTPUT_SCHEMA,
   };

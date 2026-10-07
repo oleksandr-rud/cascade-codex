@@ -28,7 +28,7 @@ import {
   writeJsonAtomic,
 } from "./common";
 import { readStructured } from "./structured-data";
-import { scoreRatings } from "../../.codex/plugins/cascade-evals/scripts/judge-ratings.mjs";
+import { scoreRatings } from "../../.codex/plugins/cascade-quality/skills/evals/scripts/judge-ratings.mjs";
 import { runFixtureSelfTest } from "./target";
 import { runAdmissionCorpus } from "./admission";
 import { buildPluginCapabilityCatalog } from "./plugin-workflow";
@@ -868,7 +868,7 @@ async function normalizeTrace(
         if (await confirmsRead(match[0], readCommand, String(item.aggregated_output ?? ""))) loadedSkills.add(match[1]!);
       }
       for (const match of readCommand.matchAll(
-        /\.codex\/plugins\/([a-z0-9-]+)\/skills\/([a-z0-9-]+)\/SKILL\.md/g,
+        /\.codex\/plugins\/([a-z0-9-]+)\/skills\/(?:[a-z0-9-]+\/skills\/)?([a-z0-9-]+)\/SKILL\.md/g,
       )) {
         if (await confirmsRead(match[0], readCommand, String(item.aggregated_output ?? ""))) loadedSkills.add(`${match[1]}:${match[2]}`);
       }
@@ -1473,7 +1473,7 @@ function judgePrompt(
 ): string {
   return `You are an independent ${profile.judge_type} judge for a completed Cascade harness run.
 
-Load .codex/plugins/cascade-evals/skills/harness-evaluation/SKILL.md and its references/judge-profile.md. No registered host evaluator role is required.
+Load .codex/plugins/cascade-quality/skills/evals/skills/harness-evaluation/SKILL.md and its references/judge-profile.md. No registered host evaluator role is required.
 Evaluate only the completed evidence packet. Do not execute the target, edit files,
 use the network, or delegate. Return only JSON matching the judgment schema.
 
@@ -1543,7 +1543,7 @@ async function recordedJudgments(runRoot: string, caseName: string, scenario: Js
     if (stableJson((await readJson<JsonObject>(resolve(path, "command.json"))).argv) !== stableJson(command)) throw new CascadeError("judge command differs from pinned policy");
     const trace = await recordedTrace(path, { id: `JUDGE-${scenario.id}` });
     const unsafe = [...trace.commands, ...trace.tool_actions].some((item: JsonObject) => item.mutation || item.network || item.delegation || item.unknown);
-    if (!trace.thread_id || threads.has(trace.thread_id) || trace.terminal_event !== "turn.completed" || trace.exit_code !== 0 || trace.timed_out || unsafe || !trace.loaded_skills.includes("cascade-evals:harness-evaluation")) {
+    if (!trace.thread_id || threads.has(trace.thread_id) || trace.terminal_event !== "turn.completed" || trace.exit_code !== 0 || trace.timed_out || unsafe || !trace.loaded_skills.includes("cascade-quality:harness-evaluation")) {
       throw new CascadeError(`judge trace is incomplete, unsafe or not independent: ${caseName}/${profile.id}`);
     }
     threads.add(trace.thread_id);
@@ -1840,7 +1840,7 @@ async function judgeLifecycleSelfTest(scenario: JsonObject, required: JsonObject
         confidence: 1, summary: "Synthetic fixture", evidence: [], replay_command: "synthetic fixture only",
         regression_recommendation: "", residual_uncertainty: [] };
       const path = resolve(runRoot, "judgments", caseName, profile.id);
-      await makeTrace(path, `JUDGE-${scenario.id}`, thread, final, ".codex/plugins/cascade-evals/skills/harness-evaluation/SKILL.md");
+      await makeTrace(path, `JUDGE-${scenario.id}`, thread, final, ".codex/plugins/cascade-quality/skills/evals/skills/harness-evaluation/SKILL.md");
       await writeFile(resolve(path, "prompt.txt"), judgePrompt(runRoot, caseName, scenario, profile, definition));
       await writeJson(resolve(path, "command.json"), { argv: codexCommand(JUDGE_MODEL, profile.reasoning_effort, "<prompt-in-prompt.txt>", JUDGE_SCHEMA) });
       await writeJson(resolve(path, "judgment.json"), { ...await validateJudgment(final, profile, definition, metadata.run_id, scenario.id), case_name: caseName, target_evidence_digest: target.digest });
@@ -2118,7 +2118,7 @@ async function commandSelfTest(): Promise<number> {
   const [missingRejected] = acceptedCandidate(good, missingJudgments, required);
   const targetFailures = await runFixtureSelfTest();
   const roleContracts = await agentContracts();
-  const roleCase = { id: "SELF-ROLE-ROUTE", owner: "product-designer", expected_primary: "cascade-product:define-product", prompt: "Define a scoped product candidate." };
+  const roleCase = { id: "SELF-ROLE-ROUTE", owner: "product-designer", expected_primary: "cascade-discovery:define-product", prompt: "Define a scoped product candidate." };
   const wiredInteraction = interactionScenario(roleCase, roleContracts);
   const rejectsInteraction = (changes: JsonObject): boolean => {
     try { interactionScenario({ ...roleCase, ...changes }, roleContracts); return false; }
@@ -2152,8 +2152,8 @@ async function commandSelfTest(): Promise<number> {
     [codexCommand(PLANNING_MODEL, "high", "probe", OUTPUT_SCHEMA, "win32").includes('windows.sandbox="unelevated"') && codexCommand(PLANNING_MODEL, "high", "probe", OUTPUT_SCHEMA, "win32").includes("read-only"), "Windows source reads retain a configured read-only sandbox"],
     [!codexCommand(PLANNING_MODEL, "high", "probe", OUTPUT_SCHEMA, "linux").some((arg) => arg.includes("windows.sandbox")), "non-Windows execution preserves its native sandbox"],
     [wiredInteraction.owner === "product-designer" && wiredInteraction.expectation.must_load_roles.includes("product-designer"), "role usage requires the wired specialist contract"],
-    [rejectsInteraction({ expected_primary: "cascade-coding-agent:maintain-harness" }), "unwired primary must fail before execution"],
-    [rejectsInteraction({ allowed_supporting: ["cascade-coding-agent:maintain-harness"] }), "unwired supporting skill must fail before execution"],
+    [rejectsInteraction({ expected_primary: "cascade-engineering:maintain-harness" }), "unwired primary must fail before execution"],
+    [rejectsInteraction({ allowed_supporting: ["cascade-engineering:maintain-harness"] }), "unwired supporting skill must fail before execution"],
     [rejectsInteraction({ owner: "missing-role" }), "unknown usage owner must fail before execution"],
     [good.verdict === "PASS", "good trace must pass"],
     [wrong.hard_failures.includes("primary-route"), "wrong route must fail"],
@@ -2180,7 +2180,7 @@ async function commandSelfTest(): Promise<number> {
     [!classifyCommand("rg 'placeholder|<[^>]+>' docs").mutation, "quoted redirect safe"],
     [classifyCommand("printf result > result.txt").mutation, "write redirect detected"],
     [handoffMatches("plan-change -> implement-change", "plan-change", "implement-change", skills), "handoff passes"],
-    [!handoffMatches("plan-change -> cascade-software-architect:review-change -> implement-change", "plan-change", "implement-change", skills), "wrong handoff fails"],
+    [!handoffMatches("plan-change -> cascade-engineering:review-change -> implement-change", "plan-change", "implement-change", skills), "wrong handoff fails"],
     [fullyAccepted, "required judges accept"],
     [!missingRejected, "missing judge rejects"],
     [Object.values(judgments).every((item) => item.computed_score === 100), "scores recomputed"],

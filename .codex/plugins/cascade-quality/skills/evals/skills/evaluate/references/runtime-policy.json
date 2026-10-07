@@ -1,0 +1,10 @@
+{
+  "schema_version": 1,
+  "protocol": "immutable-codex-runtime-v2",
+  "default_container_image": "cascade-evals-codex:0.160.0",
+  "required_codex_version": "codex-cli 0.160.0",
+  "dispatch_image_identity": "sha256",
+  "phase_clock": "monotonic-includes-create-inspect-attach",
+  "cleanup_clock": "reported-separately",
+  "failure_streams": "preserve-complete-or-partial"
+}

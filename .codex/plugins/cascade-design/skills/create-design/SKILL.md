@@ -35,7 +35,7 @@ requested prototype.
    needs, not an automatic Cartesian product of every possible state.
    Preserve accepted behavior and existing design authority; label design
    assumptions. Route material missing product decisions to
-   `cascade-product:define-product` using the current request and unresolved
+   `cascade-discovery:define-product` using the current request and unresolved
    questions as inputs. Continue useful design work that does not depend on them.
 2. Create editable mockups with viewable exports using the host's available
    tools. An isolated HTML/CSS prototype or SVG plus preview is suitable when

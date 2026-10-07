@@ -1,0 +1,271 @@
+schema_version: 1
+plugin:
+  name: cascade-quality
+  version: 1.0.0+codex.20261006.1
+model_policy:
+  model: gpt-6-astra
+  planning_reasoning_effort: high
+  evaluation_reasoning_effort: high
+skills:
+  - route: cascade-quality:plan-quality
+    description: Build a risk-based quality plan with evidence classes, contours, gates, and execution
+      ownership from accepted behavior.
+    triggers:
+      - quality scope or acceptance gates must be planned
+    anti_triggers:
+      - no accepted behavior exists or ordinary validation is sufficient
+    consumes: []
+    consumes_any_of:
+      - product-contract
+      - change-contract
+      - accepted-behavior
+      - accepted-requirements
+      - accepted-journeys
+      - accepted-scenarios
+    produces:
+      - quality-plan
+    required_dependencies: []
+    optional_dependencies:
+      - cascade-discovery:define-product
+    policy_tags:
+      - quality
+      - planning
+    effect: CANDIDATE_WRITE
+    authority: READ_ONLY
+    evaluation_cases:
+      - risk-based-scope
+      - evidence-classes
+    component: qa
+    entrypoint: skills/qa/skills/plan-quality/SKILL.md
+  - route: cascade-quality:design-tests
+    description: Design traceable test cases, data, oracles, and execution requests from accepted
+      behavior and quality scope.
+    triggers:
+      - test design rather than execution is requested
+    anti_triggers:
+      - tests must be run or product behavior is unresolved
+    consumes:
+      - quality-plan
+      - product-contract
+    produces:
+      - test-plan
+    required_dependencies: []
+    optional_dependencies:
+      - cascade-prompt:prompt
+      - cascade-simulations:simulate
+      - cascade-quality:evaluate
+    policy_tags:
+      - quality
+      - test-design
+    effect: CANDIDATE_WRITE
+    authority: READ_ONLY
+    evaluation_cases:
+      - traceable-oracle
+      - no-execution
+    component: qa
+    entrypoint: skills/qa/skills/design-tests/SKILL.md
+  - route: cascade-quality:assess-quality
+    description: Assess frozen evidence against a fixed quality plan and acceptance gate without
+      executing missing checks or approving release.
+    triggers:
+      - quality status or a gate recommendation is requested
+    anti_triggers:
+      - missing checks must be executed or defects repaired
+    consumes:
+      - quality-plan
+      - frozen-evidence
+    produces:
+      - quality-assessment
+    required_dependencies: []
+    optional_dependencies:
+      - cascade-quality:triage-defects
+    policy_tags:
+      - quality
+      - assessment
+    effect: READ_ONLY
+    authority: READ_ONLY
+    evaluation_cases:
+      - pass-fail-blocked-not-run
+      - no-release-approval
+    component: qa
+    entrypoint: skills/qa/skills/assess-quality/SKILL.md
+  - route: cascade-quality:triage-defects
+    description: Classify observed failures as product defect, test drift, environment failure, flake,
+      or ambiguity from current boundary evidence.
+    triggers:
+      - failure ownership is uncertain before source or test repair
+    anti_triggers:
+      - the failure class is already proven and only repair is requested
+    consumes:
+      - failure-evidence
+      - public-boundary-evidence
+    produces:
+      - defect-disposition
+    required_dependencies: []
+    optional_dependencies: []
+    policy_tags:
+      - quality
+      - defect-triage
+    effect: READ_ONLY
+    authority: READ_ONLY
+    evaluation_cases:
+      - test-drift-proof
+      - environment-failure
+    component: qa
+    entrypoint: skills/qa/skills/triage-defects/SKILL.md
+  - route: cascade-quality:evaluate
+    description: Design, validate, reduce, or audit a versioned evaluation with mechanical gates and
+      independent semantic judges.
+    triggers:
+      - a versioned evaluation or evidence receipt is required
+    anti_triggers:
+      - only target execution or subject repair is requested
+    consumes:
+      - evaluation-subject
+    optional_consumes:
+      - evaluation-cases
+      - frozen-evidence
+    produces:
+      - evaluation-receipt
+    required_dependencies: []
+    optional_dependencies: []
+    policy_tags:
+      - evaluation
+      - independent-judgment
+    effect: READ_ONLY
+    authority: READ_ONLY
+    evaluation_cases:
+      - mechanical-before-semantic
+      - conservative-reduction
+      - sol-independent-contexts
+    component: evals
+    entrypoint: skills/evals/skills/evaluate/SKILL.md
+  - route: cascade-quality:build-judge
+    description: Build or audit semantic judge profiles, anchored rubrics, schemas, labeled cases, and
+      aggregation rules.
+    triggers:
+      - semantic quality needs a judge contract
+    anti_triggers:
+      - the decision is completely deterministic
+    consumes:
+      - evaluation-claim
+    optional_consumes:
+      - labeled-cases
+    produces:
+      - judge-contract
+    required_dependencies: []
+    optional_dependencies: []
+    policy_tags:
+      - evaluation
+      - judge-design
+    effect: CANDIDATE_WRITE
+    authority: READ_ONLY
+    evaluation_cases:
+      - blind-judge
+      - anchored-rubric
+    component: evals
+    entrypoint: skills/evals/skills/build-judge/SKILL.md
+  - route: cascade-quality:prompt-evaluation
+    description: Run controlled prompt and interview evaluations, and design native typed-decision
+      evaluations with versioned evidence, model-specific adapters, repetitions, and independent
+      judgments.
+    triggers:
+      - prompt quality or model fit must be measured
+    anti_triggers:
+      - the prompt has not been frozen or only authoring is requested
+    consumes:
+      - prompt-candidate
+      - prompt-evaluation-cases
+    produces:
+      - prompt-evaluation-receipt
+    required_dependencies: []
+    optional_dependencies:
+      - cascade-prompt:prompt
+      - cascade-simulations:simulate
+    policy_tags:
+      - evaluation
+      - prompt-evaluation
+    effect: READ_ONLY
+    authority: READ_ONLY
+    evaluation_cases:
+      - prompt-quality
+      - interview-behavior
+      - repeated-variance
+    component: evals
+    entrypoint: skills/evals/skills/prompt-evaluation/SKILL.md
+  - route: cascade-quality:agent-evaluation
+    description: Adapt the generic evaluation lifecycle to an agent, role, skill, workflow, tool loop,
+      or architecture packet.
+    triggers:
+      - agent behavior or routing needs controlled evaluation
+    anti_triggers:
+      - only prompt composition or simulation review is requested
+    consumes:
+      - agent-evaluation-request
+      - agent-evaluation-cases
+    produces:
+      - agent-evaluation-receipt
+    required_dependencies: []
+    optional_dependencies:
+      - cascade-simulations:simulate
+    policy_tags:
+      - evaluation
+      - agent-evaluation
+    effect: READ_ONLY
+    authority: READ_ONLY
+    evaluation_cases:
+      - route-selection
+      - trace-eligibility
+      - independent-judges
+    component: evals
+    entrypoint: skills/evals/skills/agent-evaluation/SKILL.md
+  - route: cascade-quality:simulation-evaluation
+    description: Independently evaluate semantic outcome, policy support, or claim support for one
+      frozen simulation run.
+    triggers:
+      - a frozen simulation run needs independent semantic judgment
+    anti_triggers:
+      - simulation execution or repair is requested
+    consumes:
+      - controller-verification
+      - frozen-simulation-run
+    produces:
+      - simulation-evaluation-receipt
+    required_dependencies: []
+    optional_dependencies:
+      - cascade-simulations:simulation-review
+    policy_tags:
+      - evaluation
+      - simulation-evaluation
+    effect: READ_ONLY
+    authority: READ_ONLY
+    evaluation_cases:
+      - claim-support
+      - policy-support
+    component: evals
+    entrypoint: skills/evals/skills/simulation-evaluation/SKILL.md
+  - route: cascade-quality:harness-evaluation
+    description: Adapt evaluation to bounded, disposable diagnostics of coding-agent harness skills,
+      routes, roles, outputs, and execution traces.
+    triggers:
+      - coding-agent harness behavior needs a focused diagnostic
+    anti_triggers:
+      - ordinary target code validation is sufficient
+    consumes:
+      - harness-evaluation-cases
+      - harness-traces
+    produces:
+      - harness-evaluation-receipt
+    required_dependencies: []
+    optional_dependencies: []
+    policy_tags:
+      - evaluation
+      - harness-evaluation
+    effect: READ_ONLY
+    authority: READ_ONLY
+    evaluation_cases:
+      - trigger-collision
+      - route-order
+      - permission-preservation
+    component: evals
+    entrypoint: skills/evals/skills/harness-evaluation/SKILL.md

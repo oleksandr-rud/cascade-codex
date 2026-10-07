@@ -50,12 +50,12 @@ and cross-field checks before a typed artifact is consumed.
 
 | Alias | Purpose | Boundary |
 | --- | --- | --- |
-| `cascade-product:define-product` | Resolve missing or changed product behavior | Product owns intent and acceptance; Design proposes evidence-bound deltas only |
-| `cascade-personas:compile-persona` | Supply a frozen user-model projection | Persona evidence informs constraints but is not product truth |
+| `cascade-discovery:define-product` | Resolve missing or changed product behavior | Product owns intent and acceptance; Design proposes evidence-bound deltas only |
+| `cascade-discovery:compile-persona` | Supply a frozen user-model projection | Persona evidence informs constraints but is not product truth |
 | `cascade-simulations:simulate` | Execute a requested bounded actor behavior experiment | Design supplies a fixed context/outcome; Simulations owns execution and receipts |
 | `cascade-prompt:prompt` | Audit a model-facing UI prompt or design instruction | Prompt owns prompt construction; Design owns only the interface rule |
-| `cascade-evals:evaluate` | Run generic versioned semantic evaluation | Evals owns blind judges, reduction, and immutable receipts |
-| `cascade-evals:agent-evaluation` | Evaluate the five skill contracts | The plugin owns cases and assertions; Evals owns execution |
+| `cascade-quality:evaluate` | Run generic versioned semantic evaluation | Evals owns blind judges, reduction, and immutable receipts |
+| `cascade-quality:agent-evaluation` | Evaluate the five skill contracts | The plugin owns cases and assertions; Evals owns execution |
 
 Dependencies are soft until a case requires them. A required alias must resolve
 to an enabled immutable installed plugin for executable evaluation. Missing

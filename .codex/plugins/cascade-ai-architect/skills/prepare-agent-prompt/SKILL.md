@@ -7,7 +7,7 @@ description: Compile one AI-architecture target into a source-bound prompt brief
 
 Produce a prompt brief, not a prompt. Cascade AI Architect owns the
 architecture-to-prompt mapping; `cascade-prompt:prompt` exclusively owns prompt
-construction and prompt policy; `cascade-evals:prompt-evaluation` owns measured
+construction and prompt policy; `cascade-quality:prompt-evaluation` owns measured
 prompt qualification.
 
 ## Inputs
@@ -32,6 +32,10 @@ construction remains with Cascade Prompt, and validation with Cascade Evals.
 Missing topology, ownership, authority, tool, state, or success decisions are
 `BLOCKING_ARCHITECTURE_GAP`. Do not fill them from model memory or delegate
 them to Prompt.
+When a reviewed `runtime-binding` is supplied, bind its selected
+node input slice, typed decision labels, uncertainty route, checkpoint/store
+ownership and release contract to the relevant prompt target. Carry its version
+and digest in the brief; graph routing policy does not become prompt authority.
 
 ## Workflow
 
@@ -61,7 +65,7 @@ A generic agent, tool, memory, or conversational request does not select this pr
 6. Hand the brief to `cascade-prompt:prompt` only when a final prompt is in
    scope. If that route is unavailable, return the usable brief with `BLOCKED`
    for prompt authoring; do not create a local substitute.
-7. Hand a frozen prompt candidate to `cascade-evals:prompt-evaluation` only
+7. Hand a frozen prompt candidate to `cascade-quality:prompt-evaluation` only
    when measured qualification is requested and authorized.
 
 ## Boundaries

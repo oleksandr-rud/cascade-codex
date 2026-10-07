@@ -33,7 +33,7 @@ skill_calls:
   - skill: cascade-design:accessibility-review
     when: visible interaction or semantics change
     required: true
-  - skill: cascade-qa:design-tests
+  - skill: cascade-quality:design-tests
     when: keyboard or observable accessibility behavior can be executed
     required: false
 nodes:

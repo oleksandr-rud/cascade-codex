@@ -1,0 +1,16 @@
+{
+  "request_id": "budget-review",
+  "scope_id": "tenant-a/project-atlas",
+  "revision": 7,
+  "task": "Clarify the reported project budget.",
+  "observations": [
+    {
+      "id": "user-budget",
+      "kind": "USER",
+      "content": "Our project budget is USD 5,000. Ask before treating it as approved.",
+      "source_id": "current-user-message"
+    }
+  ],
+  "status": "ACTIVE",
+  "response": null
+}

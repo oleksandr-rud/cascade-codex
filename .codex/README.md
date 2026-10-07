@@ -4,7 +4,7 @@ This directory contains reusable workflow skills and role contracts.
 
 This source checkout also contains plugin packages and lab tooling. A normal
 target does not copy this tree wholesale: `bun run build:runtime` emits a core
-profile with 9 host skills, 3 roles, the frozen capability catalog, admission,
+profile with 10 host skills, 7 roles, the frozen capability catalog, admission,
 Coordinator validation, and Workspace MCP. Plugin source and eval/simulation
 labs stay here and resolve separately through installed plugins or explicit
 lab packs.
@@ -20,9 +20,9 @@ merge a target application's root package manifest or lockfile.
 
 `.codex/plugins/` contains repo-local plugin source packages. Their catalog is
 `.agents/plugins/marketplace.json`; local source paths in that catalog resolve
-from the repository root. The catalog owns 14 sources: Cascade Prompt,
-Coordinator, Simulations, Evals, AI Architect, Software Architect, Coding
-Agent, Personas, Product, Market, Design, Security, Project Management, and QA under
+from the repository root. The catalog owns 9 sources: Cascade Discovery,
+Engineering, Workflows, Quality, AI Architect, Prompt, Design, Security and
+Simulations under
 `.codex/plugins/<plugin-name>/`. Source presence is distinct from installed,
 active, or published state.
 
@@ -35,20 +35,15 @@ exact namespaced plugin skill and fail closed; it cannot embed a fallback copy.
 
 | Plugin | Reusable owner |
 |---|---|
+| Cascade Discovery | Market evidence/experiments, Product value/lifecycle and canonical Personas with consumer projections |
+| Cascade Engineering | Software architecture/review and coding-agent harness audit, adaptation, maintenance and integration |
+| Cascade Workflows | Semantic capability selection, artifact ordering and project/work-item coordination |
+| Cascade Quality | QA planning, test design, assessment and triage; independent Evals lifecycle, judges and receipts |
+| Cascade AI Architect | Agent capabilities, blueprints, roles, skills, workflows, prompt/evaluation briefs and bounded improvement |
 | Cascade Prompt | Prompt and context-plan construction or audit |
-| Cascade Coordinator | Claim-bound capability selection and non-dispatching cross-plugin workflow planning |
-| Cascade AI Architect | AI-agent capability maps, behavior blueprints, workflows, roles, skills, prompt briefs, persona requirements, evaluation requests, and bounded improvement |
-| Cascade Software Architect | Software boundaries, pattern selection, and independent architecture/change review |
-| Cascade Coding Agent | Coding-agent harness audit, target adaptation, maintenance, asset integration, and evaluation coordination |
-| Cascade Personas | Canonical human models, purpose-limited projections, and persona evaluation |
-| Cascade Simulations | Runtime actors, persona consumption, briefs, outcomes, adapters, campaign governance/execution, bounded actor loops, and frozen-run review |
-| Cascade Evals | Generic evaluation lifecycle, judge contracts, response validation, score reduction, calibration state, and receipts |
-| Cascade Product | Product definition, lifecycle decisions, and product validation |
-| Cascade Market | Market research, opportunity assessment, experiments, positioning, category, proof, messaging, naming, tone, and trust language |
-| Cascade Design | UX, accessibility, visual, and reusable design-system review |
-| Cascade Security | Codebase security trajectories, auth/session/tenant analysis, secure-design review, typed findings, and filename-only stack inventory |
-| Cascade Project Management | Tracker-ready work-item definition, project planning, coordination, reconciliation, lifecycle state, and closeout assessment |
-| Cascade QA | Quality planning, test design, evidence assessment, and defect triage |
+| Cascade Simulations | Bounded actor execution, runtime persona consumption, campaign governance and frozen-run review |
+| Cascade Design | Concrete design and UX, accessibility, visual and design-system review |
+| Cascade Security | Codebase/auth analysis, secure design and trust-boundary review |
 
 Every repo-local plugin exposes a typed `capabilities.yaml`; the deterministic
 compiler writes the canonical route registry to
@@ -104,7 +99,7 @@ iteration forecasting, coordination, reconciliation, and project closeout
 assessment route directly to Cascade Project Management. Portable quality
 planning, test design, evidence assessment, and defect triage route directly
 to Cascade QA only when applicable. The harness keeps `run-qa-plan`,
-`repair-tests`, and `closeout` for target effects. Bounded one-owner work
+`resolve-validation-failure`, and `closeout` for target effects. Bounded one-owner work
 creates no spec, lane, graph, report, receipt, or archive entry by default.
 
 `create-spec` may register stable product domains and capabilities in
@@ -113,10 +108,10 @@ creates no spec, lane, graph, report, receipt, or archive entry by default.
 deterministic Bun compiler; generated briefs remain projections rather than
 product authority.
 
-`cascade-project-management:close-project` proposes retention and `closeout`
+`cascade-workflows:close-project` proposes retention and `closeout`
 applies exact authorized host changes. Retention is not automatic.
 
-Host skills (9):
+Host skills (10):
 
 - `closeout`
 - `context`
@@ -124,15 +119,17 @@ Host skills (9):
 - `implement-change`
 - `pattern-context`
 - `plan-change`
-- `repair-tests`
+- `resolve-validation-failure`
 - `run-qa-plan`
+- `run-workflow`
 - `validate-change`
 
 Portable Market, Product, Persona, Design, Security, Architect, Coding Agent,
 Simulation, Evaluation, Project Management, QA, and Prompt methods route
 directly to namespaced plugin skills. Host skills remain only for context,
 mutation, validation, QA target execution/repair, spec or pattern persistence,
-and closeout effects.
+and closeout effects. `run-workflow` is the thin shared host cycle for ambiguous
+method selection and connected artifact handoffs, using current portable methods.
 
 ## Dynamic Simulation Plugin
 
@@ -141,9 +138,9 @@ is the default route for one actor performing meaningful work through a
 declared interface toward an observable outcome. It uses a compact
 interface-adapter, persona, actor, domain-and-feature brief, outcome, and limits
 contract. Use `cascade-simulations:manage-simulation-campaign` for controlled
-comparisons and `cascade-simulations:execute-simulation-campaign` for an
+comparisons and `cascade-simulations:run-simulation-campaign` for an
 approved campaign run. Independent semantic judgment remains
-`cascade-evals:simulation-evaluation`; none of these methods is duplicated in
+`cascade-quality:simulation-evaluation`; none of these methods is duplicated in
 the host skill tree.
 
 ## Agents
@@ -182,7 +179,7 @@ delegation, workflow, and skill mapping stay in the companion `AGENT.md` and
 
 Cascade is skill-first. Market/product analysis stays in plugin-backed skills
 under Orchestrator, and onboarding uses
-`cascade-coding-agent:adapt-harness` under Agent Engineer. Retain roles only
+`cascade-engineering:adapt-harness` under Agent Engineer. Retain roles only
 for a real permission, mutable-execution, or
 independent-review boundary. Use subagents only when the user explicitly
 authorizes delegation in the target runtime.

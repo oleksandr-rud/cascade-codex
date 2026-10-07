@@ -71,8 +71,8 @@ has no relevant quality claim.
 |---|---|---|---|---|
 | `<REQUIRED_NOT_APPLICABLE>` | `<SOURCE_IDS_OR_REASON>` | `<CASCADE_QA_ARTIFACT_OR_NONE>` | `<RUN_QA_PLAN_RECEIPT_OR_NOT_RUN>` | `<QA_RESULT_OR_NOT_APPLICABLE>` |
 
-When applicable, `cascade-qa:plan-quality` or
-`cascade-qa:design-tests` produces the portable artifact. `run-qa-plan`
+When applicable, `cascade-quality:plan-quality` or
+`cascade-quality:design-tests` produces the portable artifact. `run-qa-plan`
 performs only the authorized repository execution. Assessment and defect
 classification return to Cascade QA.
 
@@ -95,7 +95,7 @@ Readiness never grants dispatch or mutation authority.
 
 ## Closeout And Retention
 
-`cascade-project-management:close-project` may propose completion and
+`cascade-workflows:close-project` may propose completion and
 retention after current outcomes, dependencies, consumers, and evidence are
 known. `closeout` applies only an explicitly authorized host mutation.
 Retention and archival are never automatic.

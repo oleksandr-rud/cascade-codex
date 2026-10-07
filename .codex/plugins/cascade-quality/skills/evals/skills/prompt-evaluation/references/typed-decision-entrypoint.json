@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "adapter_id": "cascade-quality:typed-decisions-v2",
+  "contract_version": 2,
+  "legacy_execution_policy": "INSPECTION_ONLY",
+  "runner": {
+    "file": "run-typed-decision-eval-v2.py",
+    "sha256": "8f20abeed8f410dbddb3af40d76b6d7b3f4a08492db3f169da8b7f33c686f646"
+  },
+  "legacy": {
+    "file": "run-typed-decision-eval.py",
+    "sha256": "3f63b9b9f4424a8bb1050752f3780a808b151f0d209bb9a98e1acec9994db5d3"
+  }
+}

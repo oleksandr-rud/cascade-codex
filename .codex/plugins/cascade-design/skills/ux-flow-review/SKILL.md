@@ -43,7 +43,7 @@ silently choosing one.
    success, retry/recovery, and mobile/narrow viewport.
 4. Compare the path with supplied product, persona, safety, permission,
    environment, density, and device constraints. A compiled
-   `cascade-personas:compile-persona` projection is contextual evidence, never
+   `cascade-discovery:compile-persona` projection is contextual evidence, never
    product truth or permission authority.
 5. Classify findings: `P0` prevents safe task completion; `P1` risks a wrong
    action, lost work, or hidden required state; `P2` adds material friction or
@@ -54,7 +54,7 @@ silently choosing one.
    - accessibility-specific evidence ->
      `cascade-design:accessibility-review`;
    - screenshot/layout comparison -> `cascade-design:visual-qa`;
-   - missing product behavior -> `cascade-product:define-product` when
+   - missing product behavior -> `cascade-discovery:define-product` when
      installed, otherwise a product-definition handoff requirement;
    - executable visible proof -> the host functional-acceptance capability;
    - code change -> the host planning and implementation capabilities.

@@ -1,4 +1,4 @@
-import { basename, dirname, resolve } from "node:path";
+import { basename, dirname, relative, resolve } from "node:path";
 
 import {
   CascadeError,
@@ -26,8 +26,8 @@ import {
 } from "./admission";
 
 const MARKETPLACE_RELATIVE = ".agents/plugins/marketplace.json";
-const SELECT_CAPABILITIES_ROUTE = "cascade-coordinator:select-capabilities";
-const PLAN_WORKFLOW_ROUTE = "cascade-coordinator:plan-workflow";
+const SELECT_CAPABILITIES_ROUTE = "cascade-workflows:select-capabilities";
+const PLAN_WORKFLOW_ROUTE = "cascade-workflows:plan-workflow";
 const COORDINATOR_ROUTES = new Set([
   SELECT_CAPABILITIES_ROUTE,
   PLAN_WORKFLOW_ROUTE,
@@ -35,7 +35,7 @@ const COORDINATOR_ROUTES = new Set([
 export const PLUGIN_CAPABILITY_CATALOG_RELATIVE =
   ".codex/plugin-capabilities.generated.json";
 const COORDINATOR_SOURCE_ROOT = rootPath(
-  ".codex/plugins/cascade-coordinator/skills",
+  ".codex/plugins/cascade-workflows/skills/coordinator/skills",
 );
 const COORDINATOR_RUNTIME_CONTRACT_ROOT = rootPath(
   ".codex/runtime/contracts/coordinator",
@@ -98,7 +98,7 @@ function catalogPayload(catalog: Omit<PluginCapabilityCatalog, "catalog_digest">
   return payload;
 }
 
-function validateCatalogDigest(catalog: PluginCapabilityCatalog): void {
+export function validateCatalogDigest(catalog: PluginCapabilityCatalog): void {
   assertJsonSchema(catalog, CATALOG_SCHEMA, "plugin capability catalog");
   const expected = sha256Text(stableJson(catalogPayload(catalog)));
   if (catalog.catalog_digest !== expected) {
@@ -113,6 +113,10 @@ function selectionPayload(selection: CapabilitySelection): JsonRecord {
 
 export function capabilitySelectionDigest(selection: CapabilitySelection): string {
   return sha256Text(stableJson(selectionPayload(selection)));
+}
+
+export function capabilitySelectionResponseSchema(): JsonRecord {
+  return structuredClone(SELECTION_SCHEMA);
 }
 
 function validateSelectionDigest(selection: CapabilitySelection): void {
@@ -239,6 +243,7 @@ export async function buildPluginCapabilityCatalog(): Promise<PluginCapabilityCa
 
     const sourceRoutes = new Set<string>();
     const sourceBodies = new Map<string, string>();
+    const sourcePaths = new Map<string, string>();
     for (const path of await walkFiles(resolve(pluginRoot, "skills"), {
       include: (candidate) => basename(candidate) === "SKILL.md",
     })) {
@@ -249,13 +254,18 @@ export async function buildPluginCapabilityCatalog(): Promise<PluginCapabilityCa
         throw new CascadeError(`${rel(path)} skill name does not match its folder`);
       }
       const route = `${name}:${frontmatterName}`;
+      if (sourceRoutes.has(route)) throw new CascadeError(`duplicate source skill: ${route}`);
       sourceRoutes.add(route);
       sourceBodies.set(route, body);
+      sourcePaths.set(route, relative(pluginRoot, path).replaceAll("\\", "/"));
     }
     if (!exactStringSet([...sourceRoutes], [...declared.keys()])) {
       throw new CascadeError(`${name} capability routes do not exactly match source skills`);
     }
     for (const [route, skill] of declared) {
+      if (skill.entrypoint && skill.entrypoint !== sourcePaths.get(route)) {
+        throw new CascadeError(`${route} declared entrypoint differs from its actual source`);
+      }
       const body = sourceBodies.get(route)!;
       for (const dependency of [
         ...sortedStrings(skill.required_dependencies),
@@ -282,7 +292,12 @@ export async function buildPluginCapabilityCatalog(): Promise<PluginCapabilityCa
       manifest_sha256: await sha256File(manifestPath),
       descriptor_sha256: await sha256File(descriptorPath),
       model_policy: descriptor.model_policy,
-      skills: descriptor.skills,
+      skills: await Promise.all(descriptor.skills.map(async (skill: JsonRecord) => ({
+        ...skill,
+        component: skill.component ?? name.slice("cascade-".length),
+        entrypoint: sourcePaths.get(skill.route),
+        skill_sha256: await sha256File(resolve(pluginRoot, sourcePaths.get(skill.route)!)),
+      }))),
     });
   }
 
@@ -543,10 +558,10 @@ export function validatePluginPlan(
     if (node.model.id !== descriptor.model_policy.model) {
       throw new CascadeError(`${node.route} model differs from its capability policy`);
     }
-    if (node.route.startsWith("cascade-evals:") && node.model.reasoning_effort !== descriptor.model_policy.evaluation_reasoning_effort) {
+    if (descriptor.component === "evals" && node.model.reasoning_effort !== descriptor.model_policy.evaluation_reasoning_effort) {
       throw new CascadeError(`${node.route} evaluation reasoning effort differs from its capability policy`);
     }
-    if (!node.route.startsWith("cascade-evals:") && node.model.reasoning_effort !== descriptor.model_policy.planning_reasoning_effort) {
+    if (descriptor.component !== "evals" && node.model.reasoning_effort !== descriptor.model_policy.planning_reasoning_effort) {
       throw new CascadeError(`${node.route} planning reasoning effort differs from its capability policy`);
     }
     for (const claimId of node.claim_ids as string[]) {
@@ -690,9 +705,15 @@ async function validateSelectionCommand(args: ReturnType<typeof parseArgs>): Pro
 
 export async function main(argv: string[]): Promise<number> {
   const [command, ...rest] = argv;
+  if (["intake", "accept-selection"].includes(command ?? "")) {
+    return (await import("./workflow-composition")).workflowCompositionCommand(command!, rest);
+  }
+  if (["groups", "control-init", "control-intake", "control-step"].includes(command ?? "")) {
+    return (await import("./workflow-control")).workflowControlCommand(command!, rest);
+  }
   const args = parseArgs(rest);
   if (command === "catalog") return checkOrWriteCatalog(args);
   if (command === "validate-selection") return validateSelectionCommand(args);
   if (command === "validate" || command === "validate-plan") return validatePlanCommand(args);
-  throw new CascadeError("workflow command must be catalog, validate-selection, or validate-plan");
+  throw new CascadeError("workflow command must be catalog, groups, intake, accept-selection, validate-selection, validate-plan, control-init, control-intake, or control-step");
 }

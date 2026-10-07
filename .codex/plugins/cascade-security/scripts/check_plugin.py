@@ -133,14 +133,14 @@ def validate(root: Path) -> list[str]:
     if suite.get("schema_version") != 2 or len(cases) != contract.get("expected_case_count"):
         errors.append("evaluation suite identity or case count is invalid")
         cases = []
-    if suite.get("subject_adapter") != "cascade-evals:agent-evaluation":
+    if suite.get("subject_adapter") != "cascade-quality:agent-evaluation":
         errors.append("subject adapter alias is invalid")
     if suite.get("split_membership") != [case.get("case_id") for case in cases]:
         errors.append("split_membership must list every case once in execution order")
     adapter = suite.get("execution_adapter", {})
     if (
         adapter.get("id") != "cascade-evals-agent-runner-v1"
-        or adapter.get("runner") != "cascade-evals/scripts/run_agent_evaluation.py"
+        or adapter.get("runner") != "cascade-quality/skills/evals/scripts/run_agent_evaluation.py"
         or adapter.get("model") != "gpt-6-astra"
         or adapter.get("reasoning_effort") != "high"
         or adapter.get("target_batching") != "contiguous-balanced-parallel-v1"
@@ -152,8 +152,8 @@ def validate(root: Path) -> list[str]:
     if (
         packet.get("target_fields") != ["case_id", "request", "fixture"]
         or packet.get("sealed_fields") != ["skill", "expected_status", "oracle", "mechanical_assertions"]
-        or packet.get("judge_builder") != "cascade-evals/scripts/build_blind_packets.py"
-        or packet.get("judge_schema") != "cascade-evals/skills/evaluate/references/judge-packet.schema.json"
+        or packet.get("judge_builder") != "cascade-quality/skills/evals/scripts/build_blind_packets.py"
+        or packet.get("judge_schema") != "cascade-quality/skills/evals/skills/evaluate/references/judge-packet.schema.json"
     ):
         errors.append("blind packet contract is invalid")
     if set(suite.get("assertion_catalog", {})) != ASSERTIONS:

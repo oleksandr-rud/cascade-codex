@@ -1,0 +1,47 @@
+schema_version: 1
+plugin:
+  name: cascade-product
+  version: 0.1.34+codex.20261005203443
+model_policy:
+  model: gpt-6-astra
+  planning_reasoning_effort: high
+  evaluation_reasoning_effort: high
+skills:
+  - route: cascade-discovery:manage-product-lifecycle
+    description: Manage value strategy, portfolio allocation, product priorities, owner-held gates and evidence-driven re-entry without implementation.
+    triggers: [product strategy or investment allocation is requested, product lifecycle or evidence-driven gate routing is requested, observed outcomes or changed market evidence may invalidate a prior product decision]
+    anti_triggers: [only implementation of accepted product decisions or project scheduling is needed]
+    consumes: [product-evidence]
+    optional_consumes: [market-opportunity-assessment, persona-projection, growth-strategy]
+    produces: [product-lifecycle-decision]
+    required_dependencies: []
+    optional_dependencies: [cascade-discovery:research-market, cascade-discovery:evaluate-market-opportunity, cascade-discovery:plan-growth, cascade-discovery:compile-persona, cascade-workflows:plan-project]
+    policy_tags: [product, lifecycle]
+    effect: CANDIDATE_WRITE
+    authority: READ_ONLY
+    evaluation_cases: [owner-held-gate, no-project-status]
+  - route: cascade-discovery:define-product
+    description: Turn supplied problems, opportunities and learning into value or offer models, idea and feature candidates, traceable requirements, acceptance behavior and the MVP.
+    triggers: [a product value or offer model needs definition, ideas or features must be generated or compared from supplied inputs, the product definition or accepted behavior is the work product, a redesign or feature retirement changes intended user behavior]
+    anti_triggers: [only external market evidence collection is requested, implementation of an already specified change is the task, only internal refactoring with unchanged accepted product behavior is requested]
+    consumes: [product-evidence]
+    optional_consumes: [product-lifecycle-decision, market-opportunity-assessment, persona-projection, growth-strategy]
+    produces: [product-contract]
+    required_dependencies: []
+    optional_dependencies: [cascade-prompt:prompt, cascade-discovery:plan-growth, cascade-design:ux-flow-review, cascade-design:design-system, cascade-ai-architect:design-agent-blueprint]
+    policy_tags: [product, definition]
+    effect: CANDIDATE_WRITE
+    authority: READ_ONLY
+    evaluation_cases: [traceable-requirements, mvp-boundary, feature-value-handoff, finite-job-offer]
+  - route: cascade-discovery:validate-product
+    description: Design or assess product validation, outcome measures, sustained progress, transfer and causal evidence alongside functional and independent evaluation.
+    triggers: [a product hypothesis or behavior needs a validation plan or evidence assessment]
+    anti_triggers: [market demand is being inferred only from synthetic actors]
+    consumes: [product-contract, product-evidence]
+    produces: [product-validation-plan]
+    required_dependencies: []
+    optional_dependencies: [cascade-discovery:design-market-experiments, cascade-simulations:simulate, cascade-quality:evaluate]
+    policy_tags: [product, validation]
+    effect: CANDIDATE_WRITE
+    authority: READ_ONLY
+    evaluation_cases: [evidence-class-separation, synthetic-boundary, progress-is-not-transfer]

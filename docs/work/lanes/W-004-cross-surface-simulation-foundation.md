@@ -84,10 +84,10 @@ review and Gate A remain blocked on an accepted N07 boundary.
 - The `cascade-simulations:manage-simulation-campaign` plugin skill owns
   campaign authoring, selection, dispatch planning, replay planning, receipt
   aggregation, and reporting.
-- The `cascade-simulations:execute-simulation-campaign` plugin skill and
+- The `cascade-simulations:run-simulation-campaign` plugin skill and
   `simulation-operator` agent own one approved mutable run, immutable evidence
   capture, cleanup, and its execution receipt.
-- The read-only `cascade-evals:simulation-evaluation` plugin skill and
+- The read-only `cascade-quality:simulation-evaluation` plugin skill and
   `simulation-evaluator` agent own evidence, policy, oracle, claim-ledger, and
   evaluation-receipt judgment;
   Cascade route/trace evaluation first produces a specialized

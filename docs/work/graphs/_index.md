@@ -21,7 +21,7 @@ projections of graph state.
 Retain superseded and completed graph entries when they carry revision,
 receipt, evidence, reconciliation, or repair history. Remove only their active
 projection after the owning closeout route preserves durable evidence.
-`cascade-project-management:close-project` first proposes whether the frozen
+`cascade-workflows:close-project` first proposes whether the frozen
 set is retention-ready. `closeout` moves only exact `RETIRE_PROPOSED` records
 to `docs/archive/work-reports/` under current authority; `ARCHIVE_DEFERRED`
 retains this row with its blocker. Nothing invokes retention automatically.

@@ -87,7 +87,7 @@ are reusable, bounded by a topic, and have metadata plus at least one pack file.
 
 ## Onboarding Rules
 
-During onboarding, use `cascade-coding-agent:adapt-harness` as the portable
+During onboarding, use `cascade-engineering:adapt-harness` as the portable
 adaptation owner and this skill for target pattern entries. Create or update
 pattern entries only after source inspection
 shows a repeated architecture, security, testing, workflow, context, memory, or
@@ -106,6 +106,6 @@ summary, routing, documents, and sections.
 - compiled context preview command and result;
 - files changed;
 - validation evidence;
-- next route: `create-spec`, `cascade-coding-agent:adapt-harness`,
-  `cascade-coding-agent:maintain-harness`, `plan-change`, `validate-change`, or
+- next route: `create-spec`, `cascade-engineering:adapt-harness`,
+  `cascade-engineering:maintain-harness`, `plan-change`, `validate-change`, or
   `closeout`.

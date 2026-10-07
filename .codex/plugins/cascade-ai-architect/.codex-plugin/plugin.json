@@ -1,6 +1,6 @@
 {
   "name": "cascade-ai-architect",
-  "version": "0.1.12+codex.20261003232324",
+  "version": "0.2.0+codex.20261006.1",
   "description": "Designs source-grounded AI agents and agentic systems while delegating prompt authoring, evaluation execution, simulation, and harness integration to their owning plugins.",
   "author": {
     "name": "Cascade"
@@ -11,7 +11,6 @@
     "agent-roles",
     "agent-skills",
     "agent-workflows",
-    "langgraph",
     "prompt-briefs",
     "agent-evaluation"
   ],
@@ -19,7 +18,7 @@
   "interface": {
     "displayName": "Cascade AI Architect",
     "shortDescription": "Design bounded AI agents and agentic systems.",
-    "longDescription": "Map AI-agent capabilities, select the smallest agent topology, design behavior, roles, skills, workflows, optional LangGraph bindings, prompt briefs, persona-derived requirements, evaluation requests, and bounded improvement candidates. Cascade Prompt authors prompts, Cascade Evals executes and judges evaluations, Cascade Simulations executes actors, and Cascade Coding Agent integrates reviewed assets into a harness.",
+    "longDescription": "Design grounded agent capabilities, claims/actions behavior, Admission, Policy Engine orchestration, per-role context, runtime bindings, roles, skills, prompt/evaluation briefs and bounded improvement cycles. The host owns authority and execution; Quality owns independent semantic evaluation.",
     "developerName": "Cascade",
     "category": "Productivity",
     "capabilities": [

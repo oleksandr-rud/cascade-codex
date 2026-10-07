@@ -1,0 +1,61 @@
+schema_version: 1
+plugin:
+  name: cascade-software-architect
+  version: 0.2.6+codex.20261005203443
+model_policy:
+  model: gpt-6-astra
+  planning_reasoning_effort: high
+  evaluation_reasoning_effort: high
+skills:
+  - route: cascade-engineering:architect-software-system
+    description: Design source-grounded architecture before implementing a new application with unresolved boundaries; derive cohesive business modules from scenarios and invariants with explicit state owners.
+    triggers: [a new application has no accepted architecture, business or data ownership and dependency boundaries are unresolved]
+    anti_triggers: [only an internal edit within accepted boundaries or an AI-agent topology decision is needed]
+    consumes: [accepted-requirements, architecture-constraints]
+    optional_consumes: [git-integration-report]
+    produces: [architecture-candidate]
+    required_dependencies: []
+    optional_dependencies: [cascade-engineering:select-architecture-patterns, cascade-design:design-system, cascade-engineering:pull-and-integrate]
+    policy_tags: [software-architecture, boundaries]
+    effect: CANDIDATE_WRITE
+    authority: READ_ONLY
+    evaluation_cases: [boundary-ownership, pattern-composition, stale-base-host-integration-handoff]
+  - route: cascade-engineering:select-architecture-patterns
+    description: Disposition and compose compatible architecture patterns from a versioned host-supplied catalog.
+    triggers: [architecture patterns or defaults must be selected]
+    anti_triggers: [no pattern catalog or architecture decision is in scope]
+    consumes: [architecture-claims, architecture-pattern-catalog]
+    produces: [architecture-pattern-selection]
+    required_dependencies: []
+    optional_dependencies: []
+    policy_tags: [software-architecture, pattern-selection]
+    effect: CANDIDATE_WRITE
+    authority: READ_ONLY
+    evaluation_cases: [adopt-adapt-reject-gap, incompatible-patterns]
+  - route: cascade-engineering:review-architecture
+    description: Independently review software, plugin, workflow, or AI architecture for ownership, boundary, dependency, and evidence defects.
+    triggers: [an architecture candidate needs independent review]
+    anti_triggers: [only domain acceptance or implementation of an already reviewed architecture is needed]
+    consumes: []
+    consumes_any_of: [architecture-candidate, agent-architecture-packet, agent-workflow, runtime-binding]
+    optional_consumes: [consumer-map, git-integration-report]
+    produces: [architecture-review-findings]
+    required_dependencies: []
+    optional_dependencies: [cascade-engineering:pull-and-integrate]
+    policy_tags: [software-architecture, independent-review]
+    effect: READ_ONLY
+    authority: READ_ONLY
+    evaluation_cases: [hidden-consumer, authority-collision, no-findings, stale-base-host-integration-handoff]
+  - route: cascade-engineering:review-change
+    description: Independently review a current diff against its request, architecture, public contracts, consumers, and regression surface.
+    triggers: [a risky or requested change needs fixed-point review]
+    anti_triggers: [a tiny internal change has sufficient direct validation, no current diff exists to review]
+    consumes: [change-diff, change-contract]
+    optional_consumes: [consumer-map, git-integration-report]
+    produces: [change-review-findings]
+    required_dependencies: []
+    optional_dependencies: [cascade-engineering:pull-and-integrate]
+    policy_tags: [software-architecture, independent-review]
+    effect: READ_ONLY
+    authority: READ_ONLY
+    evaluation_cases: [introduced-defect, unrelated-dirty-work, no-findings, readonly-integration-handoff, no-recursive-integration]

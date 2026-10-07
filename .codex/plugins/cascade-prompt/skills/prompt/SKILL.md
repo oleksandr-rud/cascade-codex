@@ -69,7 +69,7 @@ Load only the smallest conditional material:
   runtime coverage audit. It maps reference rules to their active consumers.
 - `runtime/evaluation.md` for audit, comparison, tests, or effectiveness claims.
   This skill designs evaluation cases but owns no campaign runtime or state.
-  When measured testing is requested and `cascade-evals:prompt-evaluation` is
+  When measured testing is requested and `cascade-quality:prompt-evaluation` is
   installed, hand a frozen candidate and versioned cases to that skill. Use
   its direct `--case-file` and `--prompt-file` path for a supplied prompt;
   omit `--prompt-file` when the same request asks Cascade Prompt to build a

@@ -39,7 +39,7 @@ routing:
       use_when: "Durable facts may require product, design, brand, spec, backlog, glossary, or pattern updates."
     - route: research
       use_when: "Research or source discovery may become durable rules or specs."
-    - route: cascade-project-management:close-project
+    - route: cascade-workflows:close-project
       use_when: "The user explicitly requests retirement or historical cleanup of completed durable records."
   write_when:
     - "A repeated proportional-routing, durable-coordination, planning, closeout, or research-coverage rule changes."
@@ -48,12 +48,12 @@ routing:
     - "The fact is product-specific and belongs in docs/product, docs/design, docs/brand, docs/specs, or docs/backlog."
   primary_skills:
     - context
-    - cascade-project-management:manage-project
+    - cascade-workflows:manage-project
     - plan-change
     - create-spec
     - validate-change
     - closeout
-    - cascade-project-management:close-project
+    - cascade-workflows:close-project
   related_roles:
     - orchestrator
     - agent-engineer
@@ -71,7 +71,7 @@ documents:
         title: Workflow Prompt Routing
         anchor: "## Workflow Prompt Routing"
         summary: "Classifies workflow prompts into workflow-packet, active-lane, planning, implementation, UX, security, market, validation, or closeout routes."
-        routing_description: "Use before choosing cascade-ai-architect:design-agent-workflow, cascade-coding-agent:integrate-agent-assets, cascade-project-management:manage-project, plan-change, implement-change, or specialist review skills."
+        routing_description: "Use before choosing cascade-ai-architect:design-agent-workflow, cascade-engineering:integrate-agent-assets, cascade-workflows:manage-project, plan-change, implement-change, or specialist review skills."
         tags:
           - routing
           - skills
@@ -302,14 +302,14 @@ documents:
         title: Composition Contract
         anchor: "## Composition Contract"
         summary: "Evaluates fragment dispositions, binds ports, resolves capabilities and tests, merges compatible fragments, and emits only the minimal active graph."
-        routing_description: "Use before plan-change or cascade-project-management:manage-project finalizes worklines and graph topology."
+        routing_description: "Use before plan-change or cascade-workflows:manage-project finalizes worklines and graph topology."
         tags:
           - planning
           - graph-fragments
           - roles
           - skills
           - testing
-  - path: .codex/plugins/cascade-project-management/skills/manage-project/SKILL.md
+  - path: .codex/plugins/cascade-workflows/skills/project-management/skills/manage-project/SKILL.md
     kind: skill
     description: "Adaptive workline discovery, lane materialization, dependency, scheduling, and merge routing."
     trigger_when:
@@ -334,7 +334,7 @@ documents:
     description: "Final evidence, memory, and thin doc diffs."
     trigger_when:
       - "Work is finishing and needs validation evidence, memory routing, or handoff recorded."
-  - path: .codex/plugins/cascade-project-management/skills/close-project/SKILL.md
+  - path: .codex/plugins/cascade-workflows/skills/project-management/skills/close-project/SKILL.md
     kind: skill
     description: "Explicit completed-work eligibility audit, compact archive capsule, immutable relocation, and reference maintenance."
     trigger_when:

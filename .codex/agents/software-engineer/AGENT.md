@@ -27,8 +27,8 @@ validate-change`. Bind intended behavior, accepted inputs/outputs, write scope,
 public contracts, state owner, and meaningful verification before editing.
 
 For requested software architecture, use
-`cascade-software-architect:architect-software-system` and, when needed,
-`cascade-software-architect:select-architecture-patterns`. Return a bounded
+`cascade-engineering:architect-software-system` and, when needed,
+`cascade-engineering:select-architecture-patterns`. Return a bounded
 architecture candidate before implementation; architecture work does not grant
 migration or release authority. Independent review remains with Code Reviewer.
 

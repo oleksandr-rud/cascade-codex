@@ -27,7 +27,7 @@
 | design constraint | `<detail>` | `docs/design/` |
 | brand/content constraint | `<detail>` | `docs/brand/` |
 | implementation constraint | `<detail>` | `docs/specs/{slice-slug}/` |
-| architecture/boundary constraint | `<detail>` | `docs/patterns/boundaries/index.md` or `cascade-software-architect:review-architecture` |
+| architecture/boundary constraint | `<detail>` | `docs/patterns/boundaries/index.md` or `cascade-engineering:review-architecture` |
 | runtime/config fact | `<detail>` | `harness.config.yaml` |
 | vocabulary | `<term>` | `docs/glossary.md` |
 | reusable pattern | `<detail>` | `docs/patterns/` via `pattern-context` |

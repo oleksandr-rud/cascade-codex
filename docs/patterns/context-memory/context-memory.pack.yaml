@@ -29,9 +29,9 @@ routing:
   primary_skills:
     - context
     - plan-change
-    - cascade-project-management:manage-project
+    - cascade-workflows:manage-project
     - pattern-context
-    - cascade-coding-agent:adapt-harness
+    - cascade-engineering:adapt-harness
     - validate-change
     - closeout
   related_roles:
@@ -131,7 +131,7 @@ documents:
     description: "Pattern entry and context-pack retrieval owner."
     trigger_when:
       - "Reusable pattern memory, context-pack retrieval, or pattern-pack schema changes are in scope."
-  - path: .codex/plugins/cascade-coding-agent/skills/adapt-harness/SKILL.md
+  - path: .codex/plugins/cascade-engineering/skills/coding-agent/skills/adapt-harness/SKILL.md
     kind: skill
     description: "Onboarding route for source-context and memory rules."
     trigger_when:

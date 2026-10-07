@@ -1,0 +1,291 @@
+schema_version: 1
+plugin:
+  name: cascade-engineering
+  version: 1.0.1+codex.20261006.1
+model_policy:
+  model: gpt-6-astra
+  planning_reasoning_effort: high
+  evaluation_reasoning_effort: high
+skills:
+  - route: cascade-engineering:architect-software-system
+    description: Design source-grounded architecture before implementing a new application with unresolved
+      boundaries; derive cohesive business modules from scenarios and invariants with explicit state
+      owners.
+    triggers:
+      - a new application has no accepted architecture
+      - business or data ownership and dependency boundaries are unresolved
+    anti_triggers:
+      - only an internal edit within accepted boundaries or an AI-agent topology decision is needed
+    consumes:
+      - accepted-requirements
+      - architecture-constraints
+    optional_consumes:
+      - git-integration-report
+    produces:
+      - architecture-candidate
+    required_dependencies: []
+    optional_dependencies:
+      - cascade-engineering:select-architecture-patterns
+      - cascade-design:design-system
+      - cascade-engineering:pull-and-integrate
+    policy_tags:
+      - software-architecture
+      - boundaries
+    effect: CANDIDATE_WRITE
+    authority: READ_ONLY
+    evaluation_cases:
+      - boundary-ownership
+      - pattern-composition
+      - stale-base-host-integration-handoff
+    component: software-architect
+    entrypoint: skills/software-architect/skills/architect-software-system/SKILL.md
+  - route: cascade-engineering:select-architecture-patterns
+    description: Disposition and compose compatible architecture patterns from a versioned host-supplied catalog.
+    triggers:
+      - architecture patterns or defaults must be selected
+    anti_triggers:
+      - no pattern catalog or architecture decision is in scope
+    consumes:
+      - architecture-claims
+      - architecture-pattern-catalog
+    produces:
+      - architecture-pattern-selection
+    required_dependencies: []
+    optional_dependencies: []
+    policy_tags:
+      - software-architecture
+      - pattern-selection
+    effect: CANDIDATE_WRITE
+    authority: READ_ONLY
+    evaluation_cases:
+      - adopt-adapt-reject-gap
+      - incompatible-patterns
+    component: software-architect
+    entrypoint: skills/software-architect/skills/select-architecture-patterns/SKILL.md
+  - route: cascade-engineering:review-architecture
+    description: Independently review software, plugin, workflow, or AI architecture for ownership, boundary,
+      dependency, and evidence defects.
+    triggers:
+      - an architecture candidate needs independent review
+    anti_triggers:
+      - only domain acceptance or implementation of an already reviewed architecture is needed
+    consumes: []
+    consumes_any_of:
+      - architecture-candidate
+      - agent-architecture-packet
+      - agent-workflow
+      - runtime-binding
+    optional_consumes:
+      - consumer-map
+      - git-integration-report
+    produces:
+      - architecture-review-findings
+    required_dependencies: []
+    optional_dependencies:
+      - cascade-engineering:pull-and-integrate
+    policy_tags:
+      - software-architecture
+      - independent-review
+    effect: READ_ONLY
+    authority: READ_ONLY
+    evaluation_cases:
+      - hidden-consumer
+      - authority-collision
+      - no-findings
+      - stale-base-host-integration-handoff
+    component: software-architect
+    entrypoint: skills/software-architect/skills/review-architecture/SKILL.md
+  - route: cascade-engineering:review-change
+    description: Independently review a current diff against its request, architecture, public contracts,
+      consumers, and regression surface.
+    triggers:
+      - a risky or requested change needs fixed-point review
+    anti_triggers:
+      - a tiny internal change has sufficient direct validation
+      - no current diff exists to review
+    consumes:
+      - change-diff
+      - change-contract
+    optional_consumes:
+      - consumer-map
+      - git-integration-report
+    produces:
+      - change-review-findings
+    required_dependencies: []
+    optional_dependencies:
+      - cascade-engineering:pull-and-integrate
+    policy_tags:
+      - software-architecture
+      - independent-review
+    effect: READ_ONLY
+    authority: READ_ONLY
+    evaluation_cases:
+      - introduced-defect
+      - unrelated-dirty-work
+      - no-findings
+      - readonly-integration-handoff
+      - no-recursive-integration
+    component: software-architect
+    entrypoint: skills/software-architect/skills/review-change/SKILL.md
+  - route: cascade-engineering:pull-and-integrate
+    description: Integrate develop or the actual primary branch when develop is absent; resolve Git conflicts
+      by branch authority rather than chronology and prepare reviewed changes for push with explicit
+      readiness.
+    triggers:
+      - a Git branch must be pulled or synchronized with its upstream
+      - dev or develop or the primary branch must be merged or rebased into the working branch
+      - an active merge or rebase needs conflict resolution
+      - local changes must be adapted to an authoritative branch even without Git conflict markers
+      - changes must be prepared for push
+    anti_triggers:
+      - only a read-only branch comparison is requested
+      - reviewed agent assets need installation without Git branch integration
+      - a skill about pulling is being authored rather than executed
+    consumes:
+      - git-integration-request
+    optional_consumes:
+      - git-repository-state
+      - branch-authority-policy
+      - change-review-findings
+    produces:
+      - git-integration-report
+    required_dependencies: []
+    optional_dependencies:
+      - cascade-engineering:review-change
+    policy_tags:
+      - coding-agent
+      - git-integration
+      - branch-authority
+    effect: HOST_EFFECT
+    authority: LOCAL_WRITE
+    evaluation_cases:
+      - older-authoritative-base
+      - clean-merge-semantic-conflict
+      - rebase-side-inversion
+      - dirty-work-preservation
+      - ambiguous-source
+      - report-required-on-noop
+      - absent-develop-primary-fallback
+      - fork-base-versus-push-target
+      - remote-movement-before-push
+      - review-bound-to-final-candidate
+      - prepared-without-push-authority
+    component: coding-agent
+    entrypoint: skills/coding-agent/skills/pull-and-integrate/SKILL.md
+  - route: cascade-engineering:audit-harness
+    description: Audit a coding-agent harness for routing, ownership, dependency, permission, model,
+      evidence, and installation defects.
+    triggers:
+      - an existing coding-agent harness needs a read-only audit
+    anti_triggers:
+      - a new software or agent architecture must first be designed
+    consumes:
+      - harness-source
+      - installed-plugin-inventory
+    produces:
+      - harness-audit
+    required_dependencies: []
+    optional_dependencies: []
+    policy_tags:
+      - coding-agent
+      - audit
+    effect: READ_ONLY
+    authority: READ_ONLY
+    evaluation_cases:
+      - dependency-drift
+      - model-policy-drift
+      - authority-collision
+    component: coding-agent
+    entrypoint: skills/coding-agent/skills/audit-harness/SKILL.md
+  - route: cascade-engineering:adapt-harness
+    description: Adapt a coding-agent harness to a target repository from current inventory, protected paths,
+      commands, and installation state.
+    triggers:
+      - a new repository needs coding-agent onboarding or an existing harness needs target adaptation
+    anti_triggers:
+      - only a generic agent architecture or an atomic harness fix is requested
+    consumes:
+      - target-repository-inventory
+      - installed-plugin-inventory
+    produces:
+      - harness-adaptation-candidate
+    required_dependencies: []
+    optional_dependencies:
+      - cascade-engineering:audit-harness
+      - cascade-ai-architect:architect-ai-system
+      - cascade-prompt:prompt
+    policy_tags:
+      - coding-agent
+      - adaptation
+    effect: CANDIDATE_WRITE
+    authority: READ_ONLY
+    evaluation_cases:
+      - preserve-target-source
+      - explicit-install-authority
+    component: coding-agent
+    entrypoint: skills/coding-agent/skills/adapt-harness/SKILL.md
+  - route: cascade-engineering:maintain-harness
+    description: Implement a scoped authorized change to an existing coding-agent harness while preserving
+      source ownership and validation.
+    triggers:
+      - an accepted harness finding or explicit harness change must be implemented
+    anti_triggers:
+      - agent-system topology or domain semantics are unresolved
+    consumes:
+      - harness-change-contract
+    optional_consumes:
+      - harness-audit
+    produces:
+      - harness-change-candidate
+    required_dependencies: []
+    optional_dependencies:
+      - cascade-ai-architect:architect-ai-system
+      - cascade-prompt:prompt
+      - cascade-quality:evaluate
+      - cascade-quality:build-judge
+      - cascade-quality:harness-evaluation
+      - cascade-quality:agent-evaluation
+    policy_tags:
+      - coding-agent
+      - maintenance
+    effect: CANDIDATE_WRITE
+    authority: READ_ONLY
+    evaluation_cases:
+      - source-not-cache
+      - preserve-permissions
+    component: coding-agent
+    entrypoint: skills/coding-agent/skills/maintain-harness/SKILL.md
+  - route: cascade-engineering:integrate-agent-assets
+    description: Map reviewed architecture, skill, role, workflow, prompt, or evaluation candidates into
+      target-owned harness surfaces with explicit authority, execution-surface, write-scope, validation,
+      and handoff bindings.
+    triggers:
+      - reviewed agent assets need target harness integration
+    anti_triggers:
+      - the architecture candidate is missing or unreviewed
+    consumes:
+      - agent-architecture-packet
+      - agent-assets
+    optional_consumes:
+      - runtime-binding
+    produces:
+      - harness-integration-map
+      - workflow-host-binding
+    required_dependencies: []
+    optional_dependencies:
+      - cascade-ai-architect:architect-ai-system
+      - cascade-prompt:prompt
+      - cascade-quality:evaluate
+      - cascade-quality:build-judge
+      - cascade-quality:harness-evaluation
+      - cascade-quality:agent-evaluation
+    policy_tags:
+      - coding-agent
+      - asset-integration
+    effect: CANDIDATE_WRITE
+    authority: READ_ONLY
+    evaluation_cases:
+      - one-owner-per-artifact
+      - no-plugin-copy
+    component: coding-agent
+    entrypoint: skills/coding-agent/skills/integrate-agent-assets/SKILL.md

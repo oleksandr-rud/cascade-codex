@@ -2,7 +2,7 @@
   "schema_version": 2,
   "plugin_id": "cascade-design",
   "subject_kind": "agent",
-  "version": "0.1.10+codex.20260910172549",
+  "version": "0.1.11+codex.20261006.1",
   "expected_case_count": 19,
   "expected_cases_per_skill": {
     "ux-flow-review": 3,
@@ -34,11 +34,11 @@
   "required_runtime_phrases": [
     "untrusted evidence",
     "../../schemas/design-review.schema.json",
-    "cascade-product:define-product",
-    "cascade-personas:compile-persona",
+    "cascade-discovery:define-product",
+    "cascade-discovery:compile-persona",
     "cascade-simulations:simulate",
     "cascade-prompt:prompt",
-    "cascade-evals:evaluate",
+    "cascade-quality:evaluate",
     "legal compliance",
     "Every `EV-*` reference in a coverage check must name",
     "Every available automated source must be dispositioned",
@@ -51,17 +51,17 @@
   ],
   "required_dependency_aliases": [
     "cascade-prompt:prompt",
-    "cascade-evals:agent-evaluation",
-    "cascade-evals:build-judge",
-    "cascade-evals:evaluate",
+    "cascade-quality:agent-evaluation",
+    "cascade-quality:build-judge",
+    "cascade-quality:evaluate",
     "cascade-ai-architect:map-agent-capabilities",
     "cascade-ai-architect:build-agent-skills",
-    "cascade-coding-agent:integrate-agent-assets",
-    "cascade-coding-agent:maintain-harness"
+    "cascade-engineering:integrate-agent-assets",
+    "cascade-engineering:maintain-harness"
   ],
   "routed_peer_aliases": [
-    "cascade-product:define-product",
-    "cascade-personas:compile-persona",
+    "cascade-discovery:define-product",
+    "cascade-discovery:compile-persona",
     "cascade-simulations:simulate"
   ],
   "required_case_categories": [
@@ -149,52 +149,52 @@
       "path": "skills/prompt/runtime/model-index.yaml"
     },
     {
-      "alias": "cascade-evals:agent-evaluation",
-      "path": "skills/agent-evaluation/SKILL.md"
+      "alias": "cascade-quality:agent-evaluation",
+      "path": "skills/evals/skills/agent-evaluation/SKILL.md"
     },
     {
-      "alias": "cascade-evals:evaluate",
-      "path": "skills/evaluate/SKILL.md"
+      "alias": "cascade-quality:evaluate",
+      "path": "skills/evals/skills/evaluate/SKILL.md"
     },
     {
-      "alias": "cascade-evals:evaluate",
-      "path": "scripts/run_agent_evaluation.py"
+      "alias": "cascade-quality:evaluate",
+      "path": "skills/evals/scripts/run_agent_evaluation.py"
     },
     {
-      "alias": "cascade-evals:evaluate",
-      "path": "scripts/build_blind_packets.py"
+      "alias": "cascade-quality:evaluate",
+      "path": "skills/evals/scripts/build_blind_packets.py"
     },
     {
-      "alias": "cascade-evals:evaluate",
-      "path": "scripts/reduce_evaluation.py"
+      "alias": "cascade-quality:evaluate",
+      "path": "skills/evals/scripts/reduce_evaluation.py"
     },
     {
-      "alias": "cascade-evals:evaluate",
-      "path": "scripts/validate_judge.py"
+      "alias": "cascade-quality:evaluate",
+      "path": "skills/evals/scripts/validate_judge.py"
     },
     {
-      "alias": "cascade-evals:evaluate",
-      "path": "skills/evaluate/references/agent-builder-response.schema.json"
+      "alias": "cascade-quality:evaluate",
+      "path": "skills/evals/skills/evaluate/references/agent-builder-response.schema.json"
     },
     {
-      "alias": "cascade-evals:evaluate",
-      "path": "skills/evaluate/references/agent-target-response.schema.json"
+      "alias": "cascade-quality:evaluate",
+      "path": "skills/evals/skills/evaluate/references/agent-target-response.schema.json"
     },
     {
-      "alias": "cascade-evals:evaluate",
-      "path": "skills/evaluate/references/judge-packet.schema.json"
+      "alias": "cascade-quality:evaluate",
+      "path": "skills/evals/skills/evaluate/references/judge-packet.schema.json"
     },
     {
-      "alias": "cascade-evals:evaluate",
-      "path": "skills/evaluate/references/model-policy.json"
+      "alias": "cascade-quality:evaluate",
+      "path": "skills/evals/skills/evaluate/references/model-policy.json"
     },
     {
-      "alias": "cascade-evals:build-judge",
-      "path": "skills/build-judge/SKILL.md"
+      "alias": "cascade-quality:build-judge",
+      "path": "skills/evals/skills/build-judge/SKILL.md"
     },
     {
-      "alias": "cascade-evals:build-judge",
-      "path": "skills/build-judge/references/judge-response.schema.json"
+      "alias": "cascade-quality:build-judge",
+      "path": "skills/evals/skills/build-judge/references/judge-response.schema.json"
     },
     {
       "alias": "cascade-ai-architect:map-agent-capabilities",
@@ -205,20 +205,20 @@
       "path": "skills/build-agent-skills/SKILL.md"
     },
     {
-      "alias": "cascade-coding-agent:integrate-agent-assets",
-      "path": "skills/integrate-agent-assets/SKILL.md"
+      "alias": "cascade-engineering:integrate-agent-assets",
+      "path": "skills/coding-agent/skills/integrate-agent-assets/SKILL.md"
     },
     {
-      "alias": "cascade-coding-agent:maintain-harness",
-      "path": "skills/maintain-harness/SKILL.md"
+      "alias": "cascade-engineering:maintain-harness",
+      "path": "skills/coding-agent/skills/maintain-harness/SKILL.md"
     },
     {
-      "alias": "cascade-product:define-product",
-      "path": "skills/define-product/SKILL.md"
+      "alias": "cascade-discovery:define-product",
+      "path": "skills/product/skills/define-product/SKILL.md"
     },
     {
-      "alias": "cascade-personas:compile-persona",
-      "path": "skills/compile-persona/SKILL.md"
+      "alias": "cascade-discovery:compile-persona",
+      "path": "skills/personas/skills/compile-persona/SKILL.md"
     },
     {
       "alias": "cascade-simulations:simulate",

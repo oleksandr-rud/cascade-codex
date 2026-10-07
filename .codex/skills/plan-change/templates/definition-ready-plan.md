@@ -164,9 +164,9 @@ plausible delivery fragment and assurance overlay.
 
 Use this section only to identify possible obligation boundaries. Do not create
 active worklines here. When slices span horizons,
-`cascade-project-management:plan-project` assigns candidate work one exclusive
+`cascade-workflows:plan-project` assigns candidate work one exclusive
 delivery disposition while Product retains MVP authority. Then
-`cascade-project-management:manage-project` coordinates only committed current
+`cascade-workflows:manage-project` coordinates only committed current
 scope; the host separately persists authorized state.
 
 | Candidate | Independent Outcome | Definitions / Criteria Owned | Write Scope | Dependencies | Validation Seam | Disposition / Reason |
@@ -198,7 +198,7 @@ needs independent status, ownership, dependencies, validation, or handoff.
 - Horizon planning applicability: `<NOT_NEEDED | PLAN_ITERATIONS_REQUIRED | CURRENT_HORIZON_ALREADY_COMMITTED>`
 - Current coherent slice or source slice IDs:
 - MVP-boundary owner:
-- Next route: `<cascade-project-management:plan-project | cascade-project-management:manage-project | cascade-qa:plan-quality | cascade-qa:design-tests | implement-change>`
+- Next route: `<cascade-workflows:plan-project | cascade-workflows:manage-project | cascade-quality:plan-quality | cascade-quality:design-tests | implement-change>`
 - Future-scope activation rule: only committed first-iteration scope may become
   active workline or graph state.
 

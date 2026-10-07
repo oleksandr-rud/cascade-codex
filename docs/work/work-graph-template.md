@@ -9,7 +9,7 @@ Terminal Gate: `<WG-XXX-GX>`
 
 Use this portable graph-shaped projection only when several independently
 meaningful items need typed dependencies, owners, evidence joins, invalidation,
-or partial repair. `cascade-project-management:manage-project` owns the method;
+or partial repair. `cascade-workflows:manage-project` owns the method;
 the host adds current execution bindings and receipts separately.
 
 ## Purpose
@@ -64,7 +64,7 @@ Readiness does not authorize dispatch.
 
 - Terminal gate evidence: `<CURRENT_RECEIPTS_OR_DIGESTS>`
 - Remaining consumers or risks: `<LIST_OR_NONE>`
-- `cascade-project-management:close-project` proposal:
+- `cascade-workflows:close-project` proposal:
   `<KEEP_ACTIVE_RETIRE_PROPOSED_ARCHIVE_DEFERRED>`
 - Authorized host closeout action: `<ACTION_OR_NONE>`
 

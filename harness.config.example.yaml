@@ -42,8 +42,8 @@ plugin_architecture:
   mode: "plugin-first"
   route_registry: ".codex/plugin-capabilities.generated.json"
   plugin_lock: ".codex/plugins.lock.json"
-  capability_selector: "cascade-coordinator:select-capabilities"
-  workflow_planner: "cascade-coordinator:plan-workflow"
+  capability_selector: "cascade-workflows:select-capabilities"
+  workflow_planner: "cascade-workflows:plan-workflow"
   workspace_mcp_server: "cascade_workspace"
   workspace_mcp_runner: ".codex/runtime/workspace-mcp.js"
   workspace_artifact_registry: ".codex/artifact-destinations.json"
@@ -99,14 +99,15 @@ validation_commands:
     - "<E2E_COMMAND>"
 
 routing:
+  common_workflow: "admit -> select -> prepare -> act -> observe -> verify -> complete or recover, at proportional depth; run-workflow binds ambiguous method requests and connected handoffs"
   admission: "Compile each request through the task-admission microkernel; it advises proportional controls but never grants authority or dispatches work."
   non_atomic_fallback_path:
     - "context"
     - "plan-change"
     - "implement-change"
     - "validate-change"
-  capability_selection: "Use cascade-coordinator:select-capabilities only for ambiguous or multi-domain plugin work."
-  plugin_workflow: "Use cascade-coordinator:plan-workflow only for multiple nodes, dependencies, artifact handoffs, parallel branches, or joins."
+  capability_selection: "Use cascade-workflows:select-capabilities only for ambiguous or multi-domain plugin work."
+  plugin_workflow: "Use cascade-workflows:plan-workflow only for multiple nodes, dependencies, artifact handoffs, parallel branches, or joins."
   quality: "Cascade QA designs and assesses; the host run-qa-plan adapter executes an authorized frozen plan."
   closeout: "Plugins produce candidates; only the host closeout effect may persist validated durable state."
 

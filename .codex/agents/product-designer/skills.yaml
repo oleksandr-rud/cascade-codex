@@ -4,17 +4,17 @@ plugin_skills:
   - cascade-design:design-system
   - cascade-design:accessibility-review
   - cascade-design:visual-qa
-  - cascade-product:define-product
-  - cascade-product:validate-product
-  - cascade-market:research-market
-  - cascade-market:brand-positioning
-  - cascade-market:design-market-experiments
-  - cascade-personas:build-persona
-  - cascade-personas:compile-persona
-  - cascade-project-management:define-work-item
-  - cascade-project-management:plan-project
-  - cascade-project-management:manage-project
-  - cascade-project-management:close-project
+  - cascade-discovery:define-product
+  - cascade-discovery:validate-product
+  - cascade-discovery:research-market
+  - cascade-discovery:brand-positioning
+  - cascade-discovery:design-market-experiments
+  - cascade-discovery:build-persona
+  - cascade-discovery:compile-persona
+  - cascade-workflows:define-work-item
+  - cascade-workflows:plan-project
+  - cascade-workflows:manage-project
+  - cascade-workflows:close-project
   - cascade-prompt:prompt
   - cascade-simulations:simulation-actor
   - cascade-simulations:simulation-persona
@@ -33,4 +33,4 @@ skills:
     source: .codex/skills/validate-change/SKILL.md
   - name: closeout
     source: .codex/skills/closeout/SKILL.md
-    delegate: cascade-project-management:close-project
+    delegate: cascade-workflows:close-project

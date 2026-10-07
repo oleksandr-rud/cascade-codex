@@ -39,7 +39,7 @@ No separate check-closeout skill, task journal or mandatory report is needed.
 7. Route reusable operating lessons to the appropriate documentation or pattern
    owner; do not duplicate them across reports.
 8. When durable project state may leave the active projection, first consume a
-   current `cascade-project-management:close-project` artifact. Apply only its
+   current `cascade-workflows:close-project` artifact. Apply only its
    exact `RETIRE_PROPOSED` records when the user or active-state contract grants
    current host mutation authority; revalidate indexes and preserve the source
    artifact, failed history, and rehydration path. Retention is never automatic.

@@ -2,11 +2,11 @@ plugin_skills:
   - cascade-security:codebase-audit
   - cascade-security:auth-analysis
   - cascade-security:secure-design
-  - cascade-software-architect:select-architecture-patterns
-  - cascade-software-architect:review-architecture
-  - cascade-qa:plan-quality
-  - cascade-qa:design-tests
-  - cascade-qa:assess-quality
+  - cascade-engineering:select-architecture-patterns
+  - cascade-engineering:review-architecture
+  - cascade-quality:plan-quality
+  - cascade-quality:design-tests
+  - cascade-quality:assess-quality
 skills:
   - name: pattern-context
     source: .codex/skills/pattern-context/SKILL.md

@@ -124,9 +124,9 @@ They remain separate authorities and cannot substitute for each other.
 | Stage | Role / skill | Required input | Authority | Output |
 |---|---|---|---|---|
 | author | `agent-engineer` / `cascade-simulations:manage-simulation-campaign` | Task Envelope, product brief when product scoped, current definitions | author campaign/intake changes only | validated campaign and READY intake |
-| execute | `simulation-operator` / `cascade-simulations:execute-simulation-campaign` | explicit run authorization and READY intake | mutate only the approved isolated target/run boundary | frozen evidence, cleanup, execution receipt |
-| evaluate | `simulation-evaluator` / `cascade-evals:simulation-evaluation` | frozen run plus frozen intake | read-only judgment | claim ledger, evaluation receipt, repair/refinement route |
-| harness judge | `harness-evaluator` / `cascade-evals:harness-evaluation` | Cascade route/trace packet | specialized read-only harness judgment | harness receipt consumed by general evaluation |
+| execute | `simulation-operator` / `cascade-simulations:run-simulation-campaign` | explicit run authorization and READY intake | mutate only the approved isolated target/run boundary | frozen evidence, cleanup, execution receipt |
+| evaluate | `simulation-evaluator` / `cascade-quality:simulation-evaluation` | frozen run plus frozen intake | read-only judgment | claim ledger, evaluation receipt, repair/refinement route |
+| harness judge | `harness-evaluator` / `cascade-quality:harness-evaluation` | Cascade route/trace packet | specialized read-only harness judgment | harness receipt consumed by general evaluation |
 
 Authoring does not dispatch execution. Execution does not change campaign
 intent. Evaluation does not execute or repair. Product-document promotion

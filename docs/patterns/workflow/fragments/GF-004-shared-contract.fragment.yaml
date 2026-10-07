@@ -24,7 +24,7 @@ actor:
     - orchestrator
     - agent-engineer
 skill_calls:
-  - skill: cascade-software-architect:review-architecture
+  - skill: cascade-engineering:review-architecture
     when: the change crosses module or public-contract boundaries
     required: true
   - skill: plan-change

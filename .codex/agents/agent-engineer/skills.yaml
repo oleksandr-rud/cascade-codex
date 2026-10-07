@@ -1,38 +1,47 @@
 plugin_skills:
-  - cascade-coding-agent:pull-and-integrate
+  - cascade-workflows:select-capabilities
+  - cascade-workflows:plan-workflow
+  - cascade-engineering:pull-and-integrate
   - cascade-ai-architect:architect-ai-system
   - cascade-ai-architect:map-agent-capabilities
   - cascade-ai-architect:design-agent-blueprint
   - cascade-ai-architect:design-agent-workflow
+  - cascade-ai-architect:bind-agent-runtime
   - cascade-ai-architect:build-agent-roles
   - cascade-ai-architect:build-agent-skills
   - cascade-ai-architect:prepare-agent-prompt
-  - cascade-software-architect:select-architecture-patterns
-  - cascade-software-architect:review-architecture
-  - cascade-software-architect:review-change
+  - cascade-engineering:select-architecture-patterns
+  - cascade-engineering:review-architecture
+  - cascade-engineering:review-change
   - cascade-ai-architect:prepare-agent-evaluation
-  - cascade-ai-architect:improve-agent-system
-  - cascade-coding-agent:audit-harness
-  - cascade-coding-agent:adapt-harness
-  - cascade-coding-agent:maintain-harness
-  - cascade-coding-agent:integrate-agent-assets
-  - cascade-evals:evaluate
-  - cascade-evals:build-judge
-  - cascade-evals:harness-evaluation
+  - cascade-ai-architect:run-improvement-cycle
+  - cascade-engineering:audit-harness
+  - cascade-engineering:adapt-harness
+  - cascade-engineering:maintain-harness
+  - cascade-engineering:integrate-agent-assets
+  - cascade-quality:evaluate
+  - cascade-quality:build-judge
+  - cascade-quality:harness-evaluation
   - cascade-prompt:prompt
   - cascade-simulations:manage-simulation-campaign
   - cascade-security:secure-design
   - cascade-ai-architect:derive-persona-requirements
-  - cascade-evals:prompt-evaluation
-  - cascade-evals:agent-evaluation
+  - cascade-quality:prompt-evaluation
+  - cascade-quality:agent-evaluation
 skills:
+  - name: run-workflow
+    source: .codex/skills/run-workflow/SKILL.md
   - name: create-spec
     source: .codex/skills/create-spec/SKILL.md
     delegates:
-      - cascade-product:define-product
-      - cascade-product:manage-product-lifecycle
-      - cascade-personas:build-persona
-      - cascade-personas:compile-persona
-      - cascade-market:research-market
+      - cascade-discovery:define-product
+      - cascade-discovery:manage-product-lifecycle
+      - cascade-discovery:build-persona
+      - cascade-discovery:compile-persona
+      - cascade-discovery:research-market
   - name: pattern-context
     source: .codex/skills/pattern-context/SKILL.md
+  - name: resolve-validation-failure
+    source: .codex/skills/resolve-validation-failure/SKILL.md
+    delegates:
+      - cascade-quality:triage-defects

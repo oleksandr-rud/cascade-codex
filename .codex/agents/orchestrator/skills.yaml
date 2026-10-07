@@ -1,45 +1,48 @@
 plugin_skills:
-  - cascade-coding-agent:pull-and-integrate
-  - cascade-coordinator:select-capabilities
-  - cascade-coordinator:plan-workflow
+  - cascade-engineering:pull-and-integrate
+  - cascade-workflows:select-capabilities
+  - cascade-workflows:plan-workflow
   - cascade-ai-architect:architect-ai-system
   - cascade-ai-architect:design-agent-workflow
+  - cascade-ai-architect:bind-agent-runtime
   - cascade-ai-architect:build-agent-roles
-  - cascade-software-architect:select-architecture-patterns
-  - cascade-software-architect:architect-software-system
-  - cascade-software-architect:review-architecture
-  - cascade-software-architect:review-change
+  - cascade-engineering:select-architecture-patterns
+  - cascade-engineering:architect-software-system
+  - cascade-engineering:review-architecture
+  - cascade-engineering:review-change
   - cascade-design:create-design
   - cascade-design:ux-flow-review
   - cascade-design:accessibility-review
   - cascade-design:visual-qa
   - cascade-design:design-system
-  - cascade-market:research-market
-  - cascade-market:evaluate-market-opportunity
-  - cascade-market:design-market-experiments
-  - cascade-market:brand-positioning
-  - cascade-market:plan-growth
-  - cascade-personas:build-persona
-  - cascade-personas:compile-persona
-  - cascade-personas:evaluate-persona
-  - cascade-product:define-product
-  - cascade-product:manage-product-lifecycle
-  - cascade-product:validate-product
-  - cascade-project-management:plan-project
-  - cascade-project-management:define-work-item
-  - cascade-project-management:manage-project
-  - cascade-project-management:close-project
-  - cascade-qa:plan-quality
-  - cascade-qa:design-tests
-  - cascade-qa:assess-quality
-  - cascade-qa:triage-defects
+  - cascade-discovery:research-market
+  - cascade-discovery:evaluate-market-opportunity
+  - cascade-discovery:design-market-experiments
+  - cascade-discovery:brand-positioning
+  - cascade-discovery:plan-growth
+  - cascade-discovery:build-persona
+  - cascade-discovery:compile-persona
+  - cascade-discovery:evaluate-persona
+  - cascade-discovery:define-product
+  - cascade-discovery:manage-product-lifecycle
+  - cascade-discovery:validate-product
+  - cascade-workflows:plan-project
+  - cascade-workflows:define-work-item
+  - cascade-workflows:manage-project
+  - cascade-workflows:close-project
+  - cascade-quality:plan-quality
+  - cascade-quality:design-tests
+  - cascade-quality:assess-quality
+  - cascade-quality:triage-defects
   - cascade-simulations:manage-simulation-campaign
   - cascade-simulations:simulate
   - cascade-security:secure-design
   - cascade-prompt:prompt
-  - cascade-evals:prompt-evaluation
-  - cascade-evals:agent-evaluation
+  - cascade-quality:prompt-evaluation
+  - cascade-quality:agent-evaluation
 skills:
+  - name: run-workflow
+    source: .codex/skills/run-workflow/SKILL.md
   - name: context
     source: .codex/skills/context/SKILL.md
   - name: plan-change
@@ -47,28 +50,27 @@ skills:
   - name: run-qa-plan
     source: .codex/skills/run-qa-plan/SKILL.md
     delegates:
-      - cascade-qa:design-tests
-      - cascade-qa:assess-quality
-      - cascade-qa:triage-defects
+      - cascade-quality:design-tests
+      - cascade-quality:assess-quality
+      - cascade-quality:triage-defects
   - name: implement-change
     source: .codex/skills/implement-change/SKILL.md
   - name: validate-change
     source: .codex/skills/validate-change/SKILL.md
-  - name: repair-tests
-    source: .codex/skills/repair-tests/SKILL.md
+  - name: resolve-validation-failure
+    source: .codex/skills/resolve-validation-failure/SKILL.md
     delegates:
-      - cascade-qa:triage-defects
-      - cascade-qa:assess-quality
+      - cascade-quality:triage-defects
   - name: closeout
     source: .codex/skills/closeout/SKILL.md
-    delegate: cascade-project-management:close-project
+    delegate: cascade-workflows:close-project
   - name: create-spec
     source: .codex/skills/create-spec/SKILL.md
     delegates:
-      - cascade-product:define-product
-      - cascade-product:manage-product-lifecycle
-      - cascade-personas:build-persona
-      - cascade-personas:compile-persona
-      - cascade-market:research-market
+      - cascade-discovery:define-product
+      - cascade-discovery:manage-product-lifecycle
+      - cascade-discovery:build-persona
+      - cascade-discovery:compile-persona
+      - cascade-discovery:research-market
   - name: pattern-context
     source: .codex/skills/pattern-context/SKILL.md

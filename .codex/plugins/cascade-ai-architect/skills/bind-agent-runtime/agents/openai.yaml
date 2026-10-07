@@ -1,0 +1,4 @@
+interface:
+  display_name: "Bind Agent Runtime"
+  short_description: "Bind Agent Runtime with explicit authority and evidence"
+  default_prompt: "Use $bind-agent-runtime for the requested bounded workflow."

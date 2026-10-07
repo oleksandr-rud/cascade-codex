@@ -33,23 +33,23 @@ Add a stage only when its trigger is present:
   validated artifact must become a durable target specification;
 - `context` in Discovery mode when essential target evidence is missing;
 - `pattern-context` for reusable pattern entries or compiled context packs;
-- `cascade-project-management:plan-project` for a requested roadmap,
+- `cascade-workflows:plan-project` for a requested roadmap,
   genuinely multi-horizon forecast, or Agile MVP/version/iteration plan;
-- `cascade-project-management:manage-project` for independently owned,
+- `cascade-workflows:manage-project` for independently owned,
   resumable work, evidence joins, status, or reconciliation;
-- `cascade-qa:plan-quality` and `cascade-qa:design-tests` only when accepted
+- `cascade-quality:plan-quality` and `cascade-quality:design-tests` only when accepted
   behavior has a material quality or evidence gate;
 - `run-qa-plan` only when an authorized frozen QA artifact requires target
-  execution, followed by `cascade-qa:assess-quality`;
-- `cascade-software-architect:review-change` for public, cross-boundary,
+  execution, followed by `cascade-quality:assess-quality`;
+- `cascade-engineering:review-change` for public, cross-boundary,
   security-sensitive, harness semantic, large, or explicitly requested review;
-- `cascade-qa:triage-defects` when failure ownership is uncertain, then
-  `repair-tests` only for proven `TEST_DRIFT`;
+- `cascade-quality:triage-defects` when failure ownership is uncertain, then
+  `resolve-validation-failure` only for proven `TEST_DRIFT`;
 - `closeout` when an existing durable work record or reusable handoff must be
   updated;
-- `cascade-project-management:close-project` for completion and retention
+- `cascade-workflows:close-project` for completion and retention
   assessment; `closeout` alone applies exact authorized host updates;
-- `cascade-project-management:define-work-item` when the requested output is a
+- `cascade-workflows:define-work-item` when the requested output is a
   durable issue, story, task, enabler, or experiment candidate.
 
 A bounded change completed by one owner stays inline. Do not create a spec, lane,
@@ -60,13 +60,18 @@ does not remove a needed product, software/AI architecture, or security method.
 
 ## Specialist routing
 
+Use `run-workflow` for ambiguous package-level requests and connected method
+handoffs. Its common host cycle applies proportionally; one sufficient method
+stays direct. Quality contains QA and Evals work products: determine the subject,
+desired operation and available evidence before selecting a concrete route.
+
 - Route ambiguous or multi-domain requests through
-  `cascade-coordinator:select-capabilities`. When the validated selection has
+  `cascade-workflows:select-capabilities`. When the validated selection has
   multiple nodes, dependencies, artifact handoffs, parallel branches, or a
-  join, compile it through `cascade-coordinator:plan-workflow`. Coordinator
+  join, compile it through `cascade-workflows:plan-workflow`. Coordinator
   artifacts never grant dispatch or repository authority.
 - Route market research, selection, experiments, positioning and messaging
-  through Cascade Marketing (`cascade-market`); use `cascade-market:plan-growth`
+  through Discovery's Market component; use `cascade-discovery:plan-growth`
   for channels, growth strategy, economics and proposed product feedback.
 - Route value/offer models, feature formation, accepted product behavior,
   prioritization, lifecycle and outcome validation through Cascade Product.
@@ -81,7 +86,7 @@ does not remove a needed product, software/AI architecture, or security method.
   projection needed by Product, Market, Cascade AI Architect, Evals, or
   Simulations.
 - Use Software Engineer for assigned implementation slices and Code Reviewer
-  for fixed-diff reviews through `cascade-software-architect:review-change`.
+  for fixed-diff reviews through `cascade-engineering:review-change`.
   Keep one implementation owner per write scope. Independent review needs a
   separate context; local review is self-review. A bounded task can still run
   the implementation contract locally. Role selection never grants dispatch.
@@ -135,7 +140,10 @@ to use the source-only lexical classifier.
    and the user's model/evaluation policy. A prose claim that admission passed
    is insufficient. Compile or refresh these host inputs before invoking the
    selector; never ask the plugin to invent missing identities.
-2. Run `cascade-coordinator:select-capabilities` against catalog descriptors;
+   `workflow intake` prepares the model request from that envelope and the
+   exact versioned artifact bindings. Submit declared model JSON through
+   `workflow accept-selection`; retain unresolved questions and blockers.
+2. Run `cascade-workflows:select-capabilities` against catalog descriptors;
    load domain skill bodies only after selection. Supply the digest of the
    exact selector prompt and compute the candidate's selection digest on the
    host. Validate with `workflow validate-selection --selection PATH --envelope
@@ -144,7 +152,7 @@ to use the source-only lexical classifier.
    producer; controller inputs alone do not make a domain route ready.
 3. If the validated selection needs ordering or artifact handoffs, supply that
    exact serialized selection and the exact planner-prompt digest to
-   `cascade-coordinator:plan-workflow`. Validate with `workflow validate-plan
+   `cascade-workflows:plan-workflow`. Validate with `workflow validate-plan
    --plan PATH --selection PATH --envelope PATH` before consuming its nodes.
    Use the source CLI or the installed runtime CLI available in this repository.
 4. Execute only the user's authorized scope after validation, carrying each

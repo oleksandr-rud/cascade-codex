@@ -29,10 +29,10 @@
       "category": "Productivity"
     },
     {
-      "name": "cascade-evals",
+      "name": "cascade-quality",
       "source": {
         "source": "local",
-        "path": "./.codex/plugins/cascade-evals"
+        "path": "./.codex/plugins/cascade-quality"
       },
       "policy": {
         "installation": "AVAILABLE",
@@ -53,10 +53,10 @@
       "category": "Productivity"
     },
     {
-      "name": "cascade-software-architect",
+      "name": "cascade-engineering",
       "source": {
         "source": "local",
-        "path": "./.codex/plugins/cascade-software-architect"
+        "path": "./.codex/plugins/cascade-engineering"
       },
       "policy": {
         "installation": "AVAILABLE",
@@ -65,46 +65,10 @@
       "category": "Productivity"
     },
     {
-      "name": "cascade-coding-agent",
+      "name": "cascade-discovery",
       "source": {
         "source": "local",
-        "path": "./.codex/plugins/cascade-coding-agent"
-      },
-      "policy": {
-        "installation": "AVAILABLE",
-        "authentication": "ON_INSTALL"
-      },
-      "category": "Productivity"
-    },
-    {
-      "name": "cascade-personas",
-      "source": {
-        "source": "local",
-        "path": "./.codex/plugins/cascade-personas"
-      },
-      "policy": {
-        "installation": "AVAILABLE",
-        "authentication": "ON_INSTALL"
-      },
-      "category": "Productivity"
-    },
-    {
-      "name": "cascade-product",
-      "source": {
-        "source": "local",
-        "path": "./.codex/plugins/cascade-product"
-      },
-      "policy": {
-        "installation": "AVAILABLE",
-        "authentication": "ON_INSTALL"
-      },
-      "category": "Productivity"
-    },
-    {
-      "name": "cascade-market",
-      "source": {
-        "source": "local",
-        "path": "./.codex/plugins/cascade-market"
+        "path": "./.codex/plugins/cascade-discovery"
       },
       "policy": {
         "installation": "AVAILABLE",
@@ -137,34 +101,10 @@
       "category": "Developer Tools"
     },
     {
-      "name": "cascade-project-management",
+      "name": "cascade-workflows",
       "source": {
         "source": "local",
-        "path": "./.codex/plugins/cascade-project-management"
-      },
-      "policy": {
-        "installation": "AVAILABLE",
-        "authentication": "ON_INSTALL"
-      },
-      "category": "Productivity"
-    },
-    {
-      "name": "cascade-qa",
-      "source": {
-        "source": "local",
-        "path": "./.codex/plugins/cascade-qa"
-      },
-      "policy": {
-        "installation": "AVAILABLE",
-        "authentication": "ON_INSTALL"
-      },
-      "category": "Developer Tools"
-    },
-    {
-      "name": "cascade-coordinator",
-      "source": {
-        "source": "local",
-        "path": "./.codex/plugins/cascade-coordinator"
+        "path": "./.codex/plugins/cascade-workflows"
       },
       "policy": {
         "installation": "AVAILABLE",

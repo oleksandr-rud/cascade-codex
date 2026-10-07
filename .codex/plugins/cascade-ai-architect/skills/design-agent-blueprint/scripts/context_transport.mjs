@@ -54,19 +54,19 @@ export function decodeStructured(text, format = 'json') {
   return value; // Source-specific schema and authority checks remain mandatory.
 }
 
-function requireDelta(value) {
-  if (!value || Array.isArray(value) || typeof value !== 'object' || value.schema_version !== 'state-delta.v3') throw Error('expected StateDelta mapping');
+function requireAnalysis(value) {
+  if (!value || Array.isArray(value) || typeof value !== 'object' || value.schema_version !== 'analysis.v1') throw Error('expected claims/actions Analysis mapping');
   return value;
 }
 
 export function parseAnalyzerYaml(text) {
-  return requireDelta(decodeStructured(text, 'yaml'));
+  return requireAnalysis(decodeStructured(text, 'yaml'));
 }
 
-// Already-bound runtime delta decoder. The advertised model proposal schema and
-// hidden-envelope restoration belong to the target adapter, before this boundary.
+// Analyzer syntax decoder. Admission validates schema, references, scope and freshness
+// before Policy Engine can consume the declared claims and action requests.
 export function parseAnalyzer(text, format = 'json') {
-  return requireDelta(decodeStructured(text, format));
+  return requireAnalysis(decodeStructured(text, format));
 }
 
 // Canonical ordering for this offline reference only. Production canonicalization

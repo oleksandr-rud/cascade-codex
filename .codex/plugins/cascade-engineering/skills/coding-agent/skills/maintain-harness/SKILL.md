@@ -1,0 +1,94 @@
+---
+name: maintain-harness
+description: Implement a scoped change to an existing Codex or coding-agent harness, including instructions, configuration, skills, roles, tools, hooks, context, memory, observability, evaluation wiring, validators, and deprecations. Use after a clear request or accepted audit finding; preserve target authority, protect unrelated work, and validate source plus installed behavior proportionally.
+---
+
+# Maintain Harness
+
+Make the smallest structurally complete target-repository harness change. This
+skill maintains an existing harness; use Cascade AI Architect when the work
+first requires designing a new agent system or materially changing its
+topology, and Cascade Software Architect when software boundaries or an
+independent change review are unresolved.
+
+## Preconditions
+
+- A target repository and requested outcome are explicit.
+- Its boot instructions and current source precedence have been read.
+- Dirty work, protected paths, change authority, and success criteria are
+  known.
+- A short plan maps producer, consumers, validation, installation, and
+  deprecation impact.
+
+If these are absent, inspect first with `$audit-harness`. Ask only a question
+whose answer materially changes the authorized result.
+
+## Workflow
+
+Across LLM task boundaries, implement semantic interpretation through LLM output
+with defined enums/claims and explicit uncertainty, then code-owned validation
+and consumption. Do not add regex/keyword intent, claim, relevance, approval or
+route inference, even as preprocessing or fallback. Never recommend or ship
+these substitutes in generated roles, skills, prompts, defaults, examples,
+prototypes or cost/latency optimizations. A lexical match wrapped in a claim
+schema is still a violation; missing model output requires bounded repair or an
+explicit unresolved result. Keep syntax parsing and
+authority checks deterministic. Guidance changes must report existing runtime
+violations separately from any authorized migration.
+
+1. Freeze a change envelope: intended behavior, assumptions, non-goals,
+   touched owners, likely regressions, validation commands, and rollback.
+2. Trace the current path before editing. Prefer current code over prose and
+   do not overwrite unrelated changes.
+3. Keep one owner per rule. Route durable facts to the target's declared
+   configuration/docs and reusable workflow behavior to its skills or roles.
+4. For external capabilities, resolve the exact installed namespaced skill
+   with `../../scripts/resolve_plugin_skill.py`, record version and digests, and
+   return `BLOCKED` if a required dependency is unavailable or invalid.
+5. Implement a narrow behavior slice. Update all real consumers and generated
+   artifacts controlled by that source; never patch only an installed cache.
+   For adopted state/claims/memory assets, preserve the owning AI architecture's
+   domain/claim/source/memory distinction and context-section contracts. Reuse
+   registered operations; reject unsupported subsets explicitly. Package prepared
+   data with its synthetic provenance and keep backend, installed and semantic
+   evidence separate. Never treat a runnable example as a full runtime migration.
+6. Preserve permission, confirmation, idempotency, retry, timeout, stop,
+   observability, redaction, evidence, and rollback contracts when affected.
+7. Validate from cheapest to strongest: syntax/schema, focused tests, target
+   validator, generated-catalog check, source-reference scan, installed
+   discovery, then a bounded functional or live evaluation only when its
+   preconditions and authority exist.
+8. Compare source and installed identity when packaging changed. Remove a
+   superseded owner only after replacement parity and discovery are proven.
+9. Review the fixed-point diff against the request. Report exact passes and
+   every `NOT_RUN`, `BLOCKED`, or historical-only evidence boundary.
+
+## Delegation boundaries
+
+- Use `cascade-ai-architect:architect-ai-system` for new or materially
+  redesigned agent architecture.
+- Use `cascade-prompt:prompt` for prompt-specific authoring or diagnosis.
+- Use `cascade-quality:evaluate` for generic evaluation lifecycle and
+  `cascade-quality:build-judge` for judge contracts. Use
+  `cascade-quality:harness-evaluation` only for coding-agent route/trace subjects;
+  other agent or skill subjects use `cascade-quality:agent-evaluation`.
+- Use `cascade-discovery:build-persona` and `compile-persona` for canonical
+  human models and purpose-limited projections; never recreate persona
+  authoring in the target.
+- Use Cascade Simulations only when an approved dynamic campaign needs actors,
+  interfaces, execution, or frozen-run review.
+
+Do not copy those dependencies' instructions into the target. Keep target-
+specific scenarios, assertions, release policy, and repository edits local.
+
+## Output
+
+Keep the user-facing answer concise. Output requirements specify information,
+not extra headings. Preserve required schemas, evidence and permissions. Avoid
+duplicate artifact prose, empty sections, unsolicited variants and extra files
+unless needed for the requested delivery or an actual handoff.
+
+Return changed behavior and owners; files changed; dependency identities;
+validation evidence grouped as source, fixture, installed, live, semantic, and
+release; remaining gaps; rollback/deprecation state; and the exact next action
+if blocked.

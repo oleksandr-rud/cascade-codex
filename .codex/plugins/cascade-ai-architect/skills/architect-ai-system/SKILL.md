@@ -32,12 +32,12 @@ prompt briefs.
    practice through `cascade-design:design-system`, `references/generative-ui.md`.
    Bind it in the existing output/state contract; the practice itself does not
    select a new agent topology, service or transport.
-   Use `cascade-software-architect:select-architecture-patterns` only with a
+   Use `cascade-engineering:select-architecture-patterns` only with a
    versioned pattern catalog, and send the completed candidate to
-   `cascade-software-architect:review-architecture` when independent review is
+   `cascade-engineering:review-architecture` when independent review is
    required. Neither route may change AI behavior ownership.
 6. **Prepare prompt inputs.** Use `$prepare-agent-prompt` to compile an architecture-bound `prompt-brief`, then let `cascade-prompt:prompt` author the prompt. Do not recreate prompt policy here.
-7. **Prepare evaluation inputs.** Use `$prepare-agent-evaluation` to compile architecture-specific cases, assertions, profiles, rubrics, and budgets. Let `cascade-evals:agent-evaluation` execute and judge; Cascade Simulations owns bounded dynamic execution. Preserve `NOT_RUN`, `BLOCKED`, `INVALID`, and semantic `FAIL` distinctly.
+7. **Prepare evaluation inputs.** Use `$prepare-agent-evaluation` to compile architecture-specific cases, assertions, profiles, rubrics, and budgets. Let `cascade-quality:agent-evaluation` execute and judge; Cascade Simulations owns bounded dynamic execution. Preserve `NOT_RUN`, `BLOCKED`, `INVALID`, and semantic `FAIL` distinctly.
 8. **Compile and validate.** Use the selected blueprint template for behavior;
    `assets/architecture.packet.yaml` is a generic machine-index example, not a
    topology default. Create the human-review files described in

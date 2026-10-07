@@ -2,7 +2,7 @@
   "schema_version": 2,
   "plugin_id": "cascade-security",
   "subject_kind": "agent",
-  "version": "0.1.10+codex.20260910172549",
+  "version": "0.1.11+codex.20261006.1",
   "expected_case_count": 9,
   "acceptance_threshold": 0.95,
   "minimum_dimension": 3,
@@ -27,10 +27,10 @@
     "../../schemas/security-review.schema.json",
     "cascade-security:auth-analysis",
     "cascade-security:codebase-audit",
-    "cascade-software-architect:review-architecture",
+    "cascade-engineering:review-architecture",
     "cascade-prompt:prompt",
     "cascade-simulations:simulate",
-    "cascade-evals:evaluate",
+    "cascade-quality:evaluate",
     "target-host"
   ],
   "forbidden_runtime_phrases": [
@@ -41,17 +41,17 @@
   ],
   "required_dependency_aliases": [
     "cascade-prompt:prompt",
-    "cascade-evals:agent-evaluation",
-    "cascade-evals:build-judge",
-    "cascade-evals:evaluate",
-    "cascade-software-architect:review-architecture",
+    "cascade-quality:agent-evaluation",
+    "cascade-quality:build-judge",
+    "cascade-quality:evaluate",
+    "cascade-engineering:review-architecture",
     "cascade-ai-architect:architect-ai-system",
-    "cascade-coding-agent:integrate-agent-assets"
+    "cascade-engineering:integrate-agent-assets"
   ],
   "routed_peer_aliases": [
     "cascade-simulations:simulate",
-    "cascade-product:validate-product",
-    "cascade-qa:design-tests"
+    "cascade-discovery:validate-product",
+    "cascade-quality:design-tests"
   ],
   "required_case_categories": [
     "happy",
@@ -108,76 +108,76 @@
       "path": "skills/prompt/runtime/model-index.yaml"
     },
     {
-      "alias": "cascade-evals:agent-evaluation",
-      "path": "skills/agent-evaluation/SKILL.md"
+      "alias": "cascade-quality:agent-evaluation",
+      "path": "skills/evals/skills/agent-evaluation/SKILL.md"
     },
     {
-      "alias": "cascade-evals:evaluate",
-      "path": "skills/evaluate/SKILL.md"
+      "alias": "cascade-quality:evaluate",
+      "path": "skills/evals/skills/evaluate/SKILL.md"
     },
     {
-      "alias": "cascade-evals:evaluate",
-      "path": "scripts/run_agent_evaluation.py"
+      "alias": "cascade-quality:evaluate",
+      "path": "skills/evals/scripts/run_agent_evaluation.py"
     },
     {
-      "alias": "cascade-evals:evaluate",
-      "path": "scripts/build_blind_packets.py"
+      "alias": "cascade-quality:evaluate",
+      "path": "skills/evals/scripts/build_blind_packets.py"
     },
     {
-      "alias": "cascade-evals:evaluate",
-      "path": "scripts/reduce_evaluation.py"
+      "alias": "cascade-quality:evaluate",
+      "path": "skills/evals/scripts/reduce_evaluation.py"
     },
     {
-      "alias": "cascade-evals:evaluate",
-      "path": "scripts/validate_judge.py"
+      "alias": "cascade-quality:evaluate",
+      "path": "skills/evals/scripts/validate_judge.py"
     },
     {
-      "alias": "cascade-evals:evaluate",
-      "path": "skills/evaluate/references/agent-builder-response.schema.json"
+      "alias": "cascade-quality:evaluate",
+      "path": "skills/evals/skills/evaluate/references/agent-builder-response.schema.json"
     },
     {
-      "alias": "cascade-evals:evaluate",
-      "path": "skills/evaluate/references/agent-target-response.schema.json"
+      "alias": "cascade-quality:evaluate",
+      "path": "skills/evals/skills/evaluate/references/agent-target-response.schema.json"
     },
     {
-      "alias": "cascade-evals:evaluate",
-      "path": "skills/evaluate/references/judge-packet.schema.json"
+      "alias": "cascade-quality:evaluate",
+      "path": "skills/evals/skills/evaluate/references/judge-packet.schema.json"
     },
     {
-      "alias": "cascade-evals:evaluate",
-      "path": "skills/evaluate/references/model-policy.json"
+      "alias": "cascade-quality:evaluate",
+      "path": "skills/evals/skills/evaluate/references/model-policy.json"
     },
     {
-      "alias": "cascade-evals:build-judge",
-      "path": "skills/build-judge/SKILL.md"
+      "alias": "cascade-quality:build-judge",
+      "path": "skills/evals/skills/build-judge/SKILL.md"
     },
     {
-      "alias": "cascade-evals:build-judge",
-      "path": "skills/build-judge/references/judge-response.schema.json"
+      "alias": "cascade-quality:build-judge",
+      "path": "skills/evals/skills/build-judge/references/judge-response.schema.json"
     },
     {
-      "alias": "cascade-software-architect:review-architecture",
-      "path": "skills/review-architecture/SKILL.md"
+      "alias": "cascade-engineering:review-architecture",
+      "path": "skills/software-architect/skills/review-architecture/SKILL.md"
     },
     {
       "alias": "cascade-ai-architect:architect-ai-system",
       "path": "skills/architect-ai-system/SKILL.md"
     },
     {
-      "alias": "cascade-coding-agent:integrate-agent-assets",
-      "path": "skills/integrate-agent-assets/SKILL.md"
+      "alias": "cascade-engineering:integrate-agent-assets",
+      "path": "skills/coding-agent/skills/integrate-agent-assets/SKILL.md"
     },
     {
       "alias": "cascade-simulations:simulate",
       "path": "skills/simulate/SKILL.md"
     },
     {
-      "alias": "cascade-product:validate-product",
-      "path": "skills/validate-product/SKILL.md"
+      "alias": "cascade-discovery:validate-product",
+      "path": "skills/product/skills/validate-product/SKILL.md"
     },
     {
-      "alias": "cascade-qa:design-tests",
-      "path": "skills/design-tests/SKILL.md"
+      "alias": "cascade-quality:design-tests",
+      "path": "skills/qa/skills/design-tests/SKILL.md"
     }
   ]
 }

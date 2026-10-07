@@ -1,4 +1,4 @@
 plugin_skills:
   - cascade-simulations:simulation-review
-  - cascade-evals:simulation-evaluation
+  - cascade-quality:simulation-evaluation
 skills: []

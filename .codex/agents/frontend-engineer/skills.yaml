@@ -1,10 +1,10 @@
 plugin_skills:
-  - cascade-coding-agent:pull-and-integrate
+  - cascade-engineering:pull-and-integrate
   - cascade-design:ux-flow-review
   - cascade-design:design-system
   - cascade-design:visual-qa
   - cascade-design:accessibility-review
-  - cascade-software-architect:review-change
+  - cascade-engineering:review-change
 skills:
   - name: context
     source: .codex/skills/context/SKILL.md
@@ -16,4 +16,8 @@ skills:
     source: .codex/skills/validate-change/SKILL.md
   - name: closeout
     source: .codex/skills/closeout/SKILL.md
-    delegate: cascade-project-management:close-project
+    delegate: cascade-workflows:close-project
+  - name: resolve-validation-failure
+    source: .codex/skills/resolve-validation-failure/SKILL.md
+    delegates:
+      - cascade-quality:triage-defects

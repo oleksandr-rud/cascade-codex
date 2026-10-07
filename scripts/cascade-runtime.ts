@@ -37,7 +37,7 @@ export function coreRuntimeHelpText(): string {
 Usage:
   cascade closeout <snapshot|check|path>
   cascade admission <validate|intake|assess|explain|check-envelope>
-  cascade workflow <validate-selection|validate-plan>
+  cascade workflow <groups|intake|accept-selection|validate-selection|validate-plan|control-init|control-intake|control-step>
   cascade target <inventory|init-manifest|refresh-manifest|validate|drift|probe-commands>
   cascade patterns <options>
   cascade work <audit|automation-prompt>

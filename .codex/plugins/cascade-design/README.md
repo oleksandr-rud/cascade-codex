@@ -32,4 +32,4 @@ model is not required to adopt the practice. The JavaScript check above covers
 the optional example's event and action boundaries; run it when those assets change.
 
 The model-backed qualification suite under `evals/` runs through the installed
-`cascade-evals:agent-evaluation` adapter.
+`cascade-quality:agent-evaluation` adapter.

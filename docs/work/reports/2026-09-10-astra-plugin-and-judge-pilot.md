@@ -48,11 +48,11 @@ or missing equivalent domain evaluation packs.
 
 Three migration constraints remain:
 
-- The [generic runner](../../../.codex/plugins/cascade-evals/scripts/run_agent_evaluation.py)
+- The [generic runner](../../../.codex/plugins/cascade-quality/skills/evals/scripts/run_agent_evaluation.py)
   currently requires builder, target and judge to share one model and effort.
   A controlled target comparison needs separate phase bindings and a fixed
   judge; otherwise subject and measurement change together.
-- Its [execution contract](../../../.codex/plugins/cascade-evals/skills/evaluate/references/agent-runner.md)
+- Its [execution contract](../../../.codex/plugins/cascade-quality/skills/evals/skills/evaluate/references/agent-runner.md)
   requires macOS filesystem read isolation, unavailable on this Windows host.
   Preflight success does not establish execution isolation or quality.
 - Coordinator's own selector/planner schemas still bind Sol. Design, Project

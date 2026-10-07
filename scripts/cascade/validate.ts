@@ -40,43 +40,36 @@ const WORKSPACE_PERSISTENCE_RECEIPT_SCHEMA =
 const REPO_PLUGIN_NAMES = [
   "cascade-prompt",
   "cascade-simulations",
-  "cascade-evals",
-  "cascade-coordinator",
+  "cascade-quality",
+  "cascade-workflows",
   "cascade-ai-architect",
-  "cascade-software-architect",
-  "cascade-coding-agent",
-  "cascade-personas",
-  "cascade-product",
-  "cascade-market",
+  "cascade-engineering",
+  "cascade-discovery",
   "cascade-design",
   "cascade-security",
-  "cascade-project-management",
-  "cascade-qa",
 ] as const;
 const REPO_PLUGIN_MARKETPLACE = ".agents/plugins/marketplace.json";
 const CASCADE_PROMPT_PLUGIN_NAME = "cascade-prompt";
 const PLUGIN_ADAPTER_DELEGATES: Record<string, string[]> = {
   "create-spec": [
-    "cascade-product:define-product",
-    "cascade-product:manage-product-lifecycle",
-    "cascade-personas:build-persona",
-    "cascade-personas:compile-persona",
-    "cascade-market:research-market",
+    "cascade-discovery:define-product",
+    "cascade-discovery:manage-product-lifecycle",
+    "cascade-discovery:build-persona",
+    "cascade-discovery:compile-persona",
+    "cascade-discovery:research-market",
   ],
   "run-qa-plan": [
-    "cascade-qa:design-tests",
-    "cascade-qa:assess-quality",
-    "cascade-qa:triage-defects",
+    "cascade-quality:design-tests",
+    "cascade-quality:assess-quality",
+    "cascade-quality:triage-defects",
   ],
-  "repair-tests": [
-    "cascade-qa:triage-defects",
-    "cascade-qa:assess-quality",
+  "resolve-validation-failure": [
+    "cascade-quality:triage-defects",
   ],
-  closeout: ["cascade-project-management:close-project"],
+  closeout: ["cascade-workflows:close-project"],
 };
 const PLUGIN_ONLY_HOST_ADAPTERS = new Set([
   "run-qa-plan",
-  "repair-tests",
 ]);
 
 const REQUIRED_FILES = [
@@ -218,14 +211,14 @@ const REQUIRED_FILES = [
   "product-evals/simulations/harness/README.md",
   "product-evals/simulations/product/README.md",
   ".codex/plugins/cascade-security/skills/codebase-audit/scripts/security_stack_scan.ts",
-  ".codex/plugins/cascade-project-management/schemas/project-management-artifact.schema.json",
-  ".codex/plugins/cascade-project-management/scripts/check_plugin.py",
-  ".codex/plugins/cascade-project-management/evals/evaluation-contract.json",
-  ".codex/plugins/cascade-project-management/evals/cases.json",
-  ".codex/plugins/cascade-qa/schemas/qa-artifact.schema.json",
-  ".codex/plugins/cascade-qa/scripts/check_plugin.py",
-  ".codex/plugins/cascade-qa/evals/evaluation-contract.json",
-  ".codex/plugins/cascade-qa/evals/cases.json",
+  ".codex/plugins/cascade-workflows/skills/project-management/schemas/project-management-artifact.schema.json",
+  ".codex/plugins/cascade-workflows/skills/project-management/scripts/check_plugin.py",
+  ".codex/plugins/cascade-workflows/skills/project-management/evals/evaluation-contract.json",
+  ".codex/plugins/cascade-workflows/skills/project-management/evals/cases.json",
+  ".codex/plugins/cascade-quality/skills/qa/schemas/qa-artifact.schema.json",
+  ".codex/plugins/cascade-quality/skills/qa/scripts/check_plugin.py",
+  ".codex/plugins/cascade-quality/skills/qa/evals/evaluation-contract.json",
+  ".codex/plugins/cascade-quality/skills/qa/evals/cases.json",
   ".codex/schemas/target/harness-config.schema.json",
   ".codex/schemas/target/onboarding-manifest.schema.json",
   ".codex/schemas/target/project-inventory.schema.json",
@@ -279,13 +272,13 @@ const FORBIDDEN = [
   new RegExp(`\\b${["standalone", "qa"].join("[- ]")}\\b`, "i"),
   RETIRED_MODEL_PATTERN,
   new RegExp(`\\b${["max", "threads"].join("_")}\\b`),
-  new RegExp(["cascade-project-management:manage-project", "plan-change"].join("\\s*->\\s*")),
+  new RegExp(["cascade-workflows:manage-project", "plan-change"].join("\\s*->\\s*")),
 ];
 const FROZEN_PLUGIN_HISTORY_PATHS = new Set<string>();
 const PLUGIN_RETIRED_MODEL_GUARD_PATHS = new Set([
-  ".codex/plugins/cascade-evals/scripts/reduce_evaluation.py",
-  ".codex/plugins/cascade-evals/scripts/run_agent_evaluation.py",
-  ".codex/plugins/cascade-evals/skills/evaluate/references/model-policy.json",
+  ".codex/plugins/cascade-quality/skills/evals/scripts/reduce_evaluation.py",
+  ".codex/plugins/cascade-quality/skills/evals/scripts/run_agent_evaluation.py",
+  ".codex/plugins/cascade-quality/skills/evals/skills/evaluate/references/model-policy.json",
 ]);
 
 const CANONICAL_NON_ATOMIC_ROUTE = [
@@ -738,10 +731,10 @@ async function validateRoutingContracts(
   } else {
     errors.push(...routeOrderErrors(".codex/config.toml", configRoute.join(" -> "), CONFIG_NON_ATOMIC_ROUTE));
   }
-  if (config.cascade?.conditional_iteration_planning !== "cascade-project-management:plan-project") {
+  if (config.cascade?.conditional_iteration_planning !== "cascade-workflows:plan-project") {
     errors.push(".codex/config.toml must route conditional iteration planning to Cascade Project Management");
   }
-  if (config.cascade?.conditional_capability_selection !== "cascade-coordinator:select-capabilities") {
+  if (config.cascade?.conditional_capability_selection !== "cascade-workflows:select-capabilities") {
     errors.push(".codex/config.toml must route ambiguous capability selection to Cascade Coordinator");
   }
   if (config.cascade?.plugin_coordinator_validator !== "scripts/cascade/plugin-workflow.ts") {
@@ -782,10 +775,10 @@ async function validateRoutingContracts(
       if (stableJson(configuredRoutes) !== stableJson(catalogRoutes)) {
         errors.push(".codex/config.toml cascade.plugin_skills must project every generated capability route exactly once");
       }
-      if (configuredPluginSkills.capability_selection !== "cascade-coordinator:select-capabilities") {
+      if (configuredPluginSkills.capability_selection !== "cascade-workflows:select-capabilities") {
         errors.push(".codex/config.toml capability_selection alias must use Cascade Coordinator");
       }
-      if (configuredPluginSkills.workflow_plan !== "cascade-coordinator:plan-workflow") {
+      if (configuredPluginSkills.workflow_plan !== "cascade-workflows:plan-workflow") {
         errors.push(".codex/config.toml workflow_plan alias must use Cascade Coordinator");
       }
     } catch (error) {

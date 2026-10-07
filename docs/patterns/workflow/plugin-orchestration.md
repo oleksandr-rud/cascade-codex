@@ -69,7 +69,7 @@ flowchart TB
     PM --> PLAN[Host planning and coordination adapters]
     PLAN --> IMPL[implement-change / authorized target actions]
     QA --> RUNQA[run-qa-plan]
-    SIM --> RUNSIM[cascade-simulations:execute-simulation-campaign<br/>host-authorized operator]
+    SIM --> RUNSIM[cascade-simulations:run-simulation-campaign<br/>host-authorized operator]
     IMPL --> RECEIPTS[Current-source receipts]
     RUNQA --> RECEIPTS
     RUNSIM --> RECEIPTS
@@ -139,10 +139,10 @@ skill, so it does not depend on loading the repository's CODEX.md.
 | Software architecture and fixed-point review | Software Architect patterns/design + Software Architect review | Implement only after host authority; validate the resulting diff separately |
 | AI-agent design and qualification | AI Architect + Prompt + Evals; Software Architect for affected software boundaries | Integrate reviewed assets through Coding Agent, then validate the target separately |
 | Persona-based discovery | Personas + Product or Market | Preserve accepted source references |
-| Actor simulation | Personas + Prompt + Simulations + Evals | `cascade-simulations:execute-simulation-campaign`, freeze evidence, validate |
+| Actor simulation | Personas + Prompt + Simulations + Evals | `cascade-simulations:run-simulation-campaign`, freeze evidence, validate |
 | Agile MVP delivery | Product + Project Management; Design/Security as applicable | Execute only the accepted first iteration, then review and validate |
 | Quality evidence | Product/Design/Security inputs + QA + Evals as needed | `run-qa-plan`, freeze receipts, assess |
-| Test-drift repair | QA triage | `repair-tests` within test-only scope |
+| Test-drift repair | QA triage | `resolve-validation-failure` within test-only scope |
 | Completion and retention | Project Management | `closeout` for the exact authorized projection or files |
 
 The project artifact may reference any accepted domain artifact. QA remains an

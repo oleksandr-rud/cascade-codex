@@ -1,0 +1,87 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://cascade.local/ai-workflow/control.v1.schema.json",
+  "$defs": {
+    "digest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "text": { "type": "string", "minLength": 1, "maxLength": 2000 },
+    "binding": {
+      "type": "object", "additionalProperties": false,
+      "required": ["artifact_type", "artifact_id", "version", "path", "sha256"],
+      "properties": {
+        "artifact_type": { "$ref": "#/$defs/text" }, "artifact_id": { "$ref": "#/$defs/text" },
+        "version": { "$ref": "#/$defs/text" }, "path": { "$ref": "#/$defs/text" },
+        "sha256": { "$ref": "#/$defs/digest" }
+      }
+    },
+    "budget": {
+      "type": "object", "additionalProperties": false,
+      "required": ["max_decisions", "max_retries_per_node", "wall_time_seconds"],
+      "properties": {
+        "max_decisions": { "type": "integer", "minimum": 1, "maximum": 100 },
+        "max_retries_per_node": { "type": "integer", "minimum": 0, "maximum": 10 },
+        "wall_time_seconds": { "type": "integer", "minimum": 1, "maximum": 86400 }
+      }
+    },
+    "decision": {
+      "type": "object", "additionalProperties": false,
+      "required": ["schema_version", "artifact_type", "state_digest", "observation_digest", "model_id", "resolution", "trigger", "action", "node_id", "reason", "uncertainty"],
+      "properties": {
+        "schema_version": { "const": 1 }, "artifact_type": { "const": "cascade-workflow-decision" },
+        "state_digest": { "$ref": "#/$defs/digest" }, "observation_digest": { "$ref": "#/$defs/digest" },
+        "model_id": { "$ref": "#/$defs/text" }, "resolution": { "enum": ["RESOLVED", "UNRESOLVED"] },
+        "trigger": { "enum": ["ENTRY", "OBSERVED_PROGRESS", "MEASURED_FAILURE", "INPUT_CHANGED", "INPUT_GAP", "AUTHORITY_GAP", "GOAL_MET", "NO_PROGRESS"] },
+        "action": { "enum": ["RUN_NODE", "RETRY_NODE", "REPLAN", "WAIT_INPUT", "WAIT_AUTHORITY", "REQUEST_RSI", "COMPLETE", "STOP"] },
+        "node_id": { "type": ["string", "null"] }, "reason": { "$ref": "#/$defs/text" },
+        "uncertainty": { "type": "array", "maxItems": 16, "items": { "$ref": "#/$defs/text" } }
+      }
+    },
+    "observation": {
+      "type": "object", "additionalProperties": false,
+      "required": ["schema_version", "artifact_type", "observation_id", "state_digest", "kind", "node_id", "summary", "evidence"],
+      "properties": {
+        "schema_version": { "const": 1 }, "artifact_type": { "const": "cascade-workflow-observation" },
+        "observation_id": { "$ref": "#/$defs/text" }, "state_digest": { "$ref": "#/$defs/digest" },
+        "kind": { "enum": ["ENTRY", "NODE_COMPLETED", "NODE_FAILED", "INPUT_CHANGED", "INPUT_GAP", "AUTHORITY_REVOKED", "CANCELLED", "NO_CHANGE"] },
+        "node_id": { "type": ["string", "null"] }, "summary": { "$ref": "#/$defs/text" },
+        "evidence": { "type": "array", "maxItems": 64, "items": { "$ref": "#/$defs/binding" } }
+      }
+    },
+    "history-entry": {
+      "type": "object", "additionalProperties": false,
+      "required": ["observation", "observation_digest", "decision"],
+      "properties": {
+        "observation": { "$ref": "#/$defs/observation" },
+        "observation_digest": { "$ref": "#/$defs/digest" },
+        "decision": { "anyOf": [{ "$ref": "#/$defs/decision" }, { "type": "null" }] }
+      }
+    },
+    "state": {
+      "type": "object", "additionalProperties": false,
+      "required": ["schema_version", "artifact_type", "revision", "parent_digest", "state_digest", "created_at", "deadline", "status", "envelope", "selection", "plan", "bindings", "budget", "decisions_used", "nodes", "history", "next_action", "stop_reason", "dispatch_authorized", "acceptance_authorized"],
+      "properties": {
+        "schema_version": { "const": 1 }, "artifact_type": { "const": "cascade-workflow-control" },
+        "revision": { "type": "integer", "minimum": 1 }, "parent_digest": { "type": ["string", "null"], "pattern": "^[a-f0-9]{64}$" },
+        "state_digest": { "$ref": "#/$defs/digest" }, "created_at": { "type": "string", "format": "date-time" },
+        "deadline": { "type": "string", "format": "date-time" },
+        "status": { "enum": ["ACTIVE", "WAITING", "REPLAN_REQUIRED", "RSI_REQUESTED", "COMPLETED", "BLOCKED", "CANCELLED", "BUDGET_EXHAUSTED", "STOPPED"] },
+        "envelope": { "type": "object" }, "selection": { "type": "object" }, "plan": { "type": "object" },
+        "bindings": { "type": "array", "maxItems": 64, "items": { "$ref": "#/$defs/binding" } },
+        "budget": { "$ref": "#/$defs/budget" }, "decisions_used": { "type": "integer", "minimum": 0 },
+        "nodes": {
+          "type": "array", "maxItems": 100,
+          "items": {
+            "type": "object", "additionalProperties": false,
+            "required": ["node_id", "status", "retries", "evidence"],
+            "properties": {
+              "node_id": { "$ref": "#/$defs/text" }, "status": { "enum": ["PENDING", "PREPARED", "COMPLETED", "FAILED"] },
+              "retries": { "type": "integer", "minimum": 0 }, "evidence": { "type": "array", "maxItems": 64, "items": { "$ref": "#/$defs/binding" } }
+            }
+          }
+        },
+        "history": { "type": "array", "maxItems": 101, "items": { "$ref": "#/$defs/history-entry" } },
+        "next_action": { "type": ["object", "null"] }, "stop_reason": { "type": ["string", "null"] },
+        "dispatch_authorized": { "const": false }, "acceptance_authorized": { "const": false }
+      }
+    }
+  }
+}

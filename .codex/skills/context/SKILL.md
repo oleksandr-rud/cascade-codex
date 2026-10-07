@@ -36,13 +36,13 @@ sources explicitly point there.
 4. If resuming durable work, compare the active record with current source and
    evidence. Mark only affected claims or consumers stale.
 5. In Discovery mode, route reusable interpretation directly to the owning
-   `cascade-product`, `cascade-personas`, `cascade-market`, `cascade-design`, or
+   `cascade-discovery`, `cascade-design`, or
    other namespaced plugin skill. Preserve source locators, freshness,
    authority, and privacy; do not invent a local fallback.
 6. Separate facts, assumptions, conflicts, blockers, and evidence that was not
    run. Never convert historical evidence into a current pass.
 7. Select the proportional next route. A normal bounded change should proceed
-   to `plan-change`; use `cascade-project-management:manage-project` only for a
+   to `plan-change`; use `cascade-workflows:manage-project` only for a
    real active-record collision, stale project state, or coordination boundary.
 
 ## Output

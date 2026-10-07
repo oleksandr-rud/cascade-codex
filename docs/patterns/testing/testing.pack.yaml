@@ -18,16 +18,16 @@ routing:
   write_when:
     - "A reusable validation, browser, scenario, or semantic repair rule changes."
   defer_when:
-    - "Expected behavior is ambiguous and needs plan-change or cascade-qa:design-tests before repair."
+    - "Expected behavior is ambiguous and needs plan-change or cascade-quality:design-tests before repair."
   primary_skills:
-    - cascade-qa:design-tests
+    - cascade-quality:design-tests
     - validate-change
-    - repair-tests
+    - resolve-validation-failure
   related_roles:
     - orchestrator
     - security
 selection_rules:
-  - "Use semantic-repair-tests only when behavior is believed correct and test drift is the likely problem."
+  - "Use semantic-resolve-validation-failure only when behavior is believed correct and test drift is the likely problem."
 documents:
   - path: docs/patterns/testing/index.md
     kind: pattern-entry
@@ -39,9 +39,9 @@ documents:
         title: Functional Acceptance
         anchor: "## Functional Acceptance"
         summary: "Defines behavior evidence layers and PASS, FAIL, BLOCKED, NOT_RUN, and GAP outcomes."
-        routing_description: "Use before validation planning, cascade-qa:design-tests, and validate-change."
+        routing_description: "Use before validation planning, cascade-quality:design-tests, and validate-change."
         tags:
-          - cascade-qa:design-tests
+          - cascade-quality:design-tests
           - validation
           - evidence
       - id: browser-and-e2e
@@ -60,18 +60,18 @@ documents:
         routing_description: "Use when docs/product/scenarios or work lanes need executable scenario coverage."
         tags:
           - scenarios
-          - cascade-qa:design-tests
+          - cascade-quality:design-tests
           - traceability
-      - id: semantic-repair-tests
+      - id: semantic-resolve-validation-failure
         title: Semantic Test Autorepair
         anchor: "## Semantic Test Autorepair"
         summary: "Failure classes and forbidden repairs for stale, flaky, or failing tests."
         routing_description: "Use after evidence shows product behavior still matches the expected contract."
         tags:
-          - repair-tests
+          - resolve-validation-failure
           - stale-tests
           - validation
-  - path: .codex/plugins/cascade-qa/skills/design-tests/SKILL.md
+  - path: .codex/plugins/cascade-quality/skills/qa/skills/design-tests/SKILL.md
     kind: skill
     description: "Primary product-visible acceptance gate."
     trigger_when:
@@ -81,7 +81,7 @@ documents:
     description: "Evidence aggregation and status terms."
     trigger_when:
       - "A change needs validation evidence aggregated into a final status."
-  - path: .codex/skills/repair-tests/SKILL.md
+  - path: .codex/skills/resolve-validation-failure/SKILL.md
     kind: skill
     description: "Stale, flaky, or failing test repair workflow."
     trigger_when:

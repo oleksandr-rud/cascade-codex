@@ -1,0 +1,32 @@
+{
+  "name": "cascade-workflows",
+  "version": "1.0.2+codex.20261006.3",
+  "description": "Portable workflows methods with separate component ownership.",
+  "author": {
+    "name": "Cascade"
+  },
+  "keywords": [
+    "coordination",
+    "capability-routing",
+    "workflow-planning",
+    "plugin-orchestration"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Cascade Workflows",
+    "shortDescription": "Portable workflows methods with separate component ownership.",
+    "longDescription": "Portable workflows methods with separate component ownership. The host owns execution and acceptance.",
+    "developerName": "Cascade",
+    "category": "Productivity",
+    "capabilities": [
+      "Interactive",
+      "Write"
+    ],
+    "defaultPrompt": [
+      "Use Cascade Workflows for the smallest sufficient workflow."
+    ],
+    "brandColor": "#4F46E5",
+    "composerIcon": "./assets/composer-icon.svg",
+    "logo": "./assets/logo.svg"
+  }
+}

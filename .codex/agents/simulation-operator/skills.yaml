@@ -1,5 +1,5 @@
 plugin_skills:
-  - cascade-simulations:execute-simulation-campaign
+  - cascade-simulations:run-simulation-campaign
   - cascade-simulations:simulate
   - cascade-simulations:simulation-actor
   - cascade-simulations:simulation-persona
@@ -10,6 +10,6 @@ skills:
   - name: run-qa-plan
     source: .codex/skills/run-qa-plan/SKILL.md
     delegates:
-      - cascade-qa:design-tests
-      - cascade-qa:assess-quality
-      - cascade-qa:triage-defects
+      - cascade-quality:design-tests
+      - cascade-quality:assess-quality
+      - cascade-quality:triage-defects

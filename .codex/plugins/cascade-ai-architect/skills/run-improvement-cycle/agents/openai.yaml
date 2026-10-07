@@ -1,0 +1,4 @@
+interface:
+  display_name: "Run Improvement Cycle"
+  short_description: "Run Improvement Cycle with explicit authority and evidence"
+  default_prompt: "Use $run-improvement-cycle for the requested bounded workflow."

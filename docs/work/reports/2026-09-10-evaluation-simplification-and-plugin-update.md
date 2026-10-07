@@ -24,7 +24,7 @@ The retained implementation decisions are:
 - Fresh Prompt phases call bounded execution adapters directly, with literal
   stdin, cancellation, output limits, isolated Codex context, and immutable
   dispatch/results. Historical controller receipts retain their read-only
-  verifier. See the [Prompt evaluation contract](../../../.codex/plugins/cascade-evals/skills/prompt-evaluation/evals/README.md).
+  verifier. See the [Prompt evaluation contract](../../../.codex/plugins/cascade-quality/skills/evals/skills/prompt-evaluation/evals/README.md).
 - Campaigns load their selected dependency graph. Basic starters emit 11 files;
   `--research` expands this to 21 when the claims require it. Existing product
   intake, seed, policy, and evidence gates still apply. See

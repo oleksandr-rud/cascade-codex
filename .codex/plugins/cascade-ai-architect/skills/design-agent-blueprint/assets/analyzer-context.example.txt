@@ -1,20 +1,19 @@
 [Current input]
 "Я Олена. Я хвилююся. Поясни по одному кроку, без пошуку."
 
-[Evidence]
+[Source observations]
 •
-  Source — "e1"
+  Id — "e1"
+  Kind — "USER"
   Text — "Я Олена."
 •
-  Source — "e2"
+  Id — "e2"
+  Kind — "USER"
   Text — "Я хвилююся."
 •
-  Source — "e3"
+  Id — "e3"
+  Kind — "USER"
   Text — "Поясни по одному кроку, без пошуку."
 
-[Current state]
-"Перше повідомлення. Ім’я та формат ще не записані; конкретна задача не уточнена."
-
-[Applicable rules]
-• "Запропонувати лише обґрунтовані зміни."
-• "Користувач просить без пошуку."
+[Output task]
+"Return typed claims with support, evidence and uncertainty, plus an action request. The application task is not yet specified. No state or permission updates."

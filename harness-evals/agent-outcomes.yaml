@@ -54,14 +54,14 @@ agents:
       - CODEX.md
       - .codex/agents/agent-engineer/AGENT.md
       - .codex/agents/agent-engineer/skills.yaml
-      - .codex/plugins/cascade-coding-agent/skills/audit-harness/SKILL.md
+      - .codex/plugins/cascade-engineering/skills/coding-agent/skills/audit-harness/SKILL.md
     max_commands: 10
     max_loaded_roles: 1
     max_loaded_skills: 1
     max_output_chars: 7000
     model: gpt-6-astra
     next_route: ""
-    primary_skill: cascade-coding-agent:audit-harness
+    primary_skill: cascade-engineering:audit-harness
     product_context_required: false
     prompt: Audit whether the current Cascade agent manifests, role contracts, and skill maps are ported consistently. Use AGENTS.md, CODEX.md, .codex/agents/agent-engineer/AGENT.md, .codex/agents/agent-engineer/skills.yaml, and the existing validator as the bounded source set. Separate mechanical wiring checks from semantic model behavior, identify only concrete gaps, and propose the smallest correction without editing files.
     reasoning_effort: high
@@ -73,7 +73,7 @@ agents:
       - GAP
   - agent: security
     allowed_supporting:
-      - cascade-software-architect:review-architecture
+      - cascade-engineering:review-architecture
     context_sources:
       - docs/product/requirements.md
       - docs/specs/persona-simulation-governance/contract.md
@@ -103,7 +103,7 @@ agents:
     allowed_supporting: []
     context_sources:
       - .codex/agents/simulation-operator/AGENT.md
-      - .codex/plugins/cascade-simulations/skills/execute-simulation-campaign/SKILL.md
+      - .codex/plugins/cascade-simulations/skills/run-simulation-campaign/SKILL.md
       - product-evals/campaigns/simulation-contract-smoke.yaml
     max_commands: 8
     max_loaded_roles: 1
@@ -111,13 +111,13 @@ agents:
     max_output_chars: 5000
     model: gpt-6-astra
     next_route: ""
-    primary_skill: cascade-simulations:execute-simulation-campaign
+    primary_skill: cascade-simulations:run-simulation-campaign
     product_context_required: false
     prompt: Preflight the simulation-contract-smoke campaign for execution, but treat approval and resolved runtime intake as unavailable. Do not execute, widen permissions, judge results, or edit artifacts; report the precise blocking inputs.
     reasoning_effort: high
     required_evidence_paths:
       - .codex/agents/simulation-operator/AGENT.md
-      - .codex/plugins/cascade-simulations/skills/execute-simulation-campaign/SKILL.md
+      - .codex/plugins/cascade-simulations/skills/run-simulation-campaign/SKILL.md
       - product-evals/campaigns/simulation-contract-smoke.yaml
     sandbox_mode: workspace-write
     status_any:
@@ -128,7 +128,7 @@ agents:
       - cascade-simulations:simulation-review
     context_sources:
       - .codex/agents/simulation-evaluator/AGENT.md
-      - .codex/plugins/cascade-evals/skills/simulation-evaluation/SKILL.md
+      - .codex/plugins/cascade-quality/skills/evals/skills/simulation-evaluation/SKILL.md
       - product-evals/campaigns/simulation-contract-smoke.yaml
     max_commands: 8
     max_loaded_roles: 1
@@ -136,13 +136,13 @@ agents:
     max_output_chars: 5000
     model: gpt-6-astra
     next_route: ""
-    primary_skill: cascade-evals:simulation-evaluation
+    primary_skill: cascade-quality:simulation-evaluation
     product_context_required: false
     prompt: Evaluate whether the simulation-contract-smoke campaign supports a product claim when the campaign definition exists but no frozen run package, oracle results, or independent judgments are supplied. Apply mechanical gates first, remain read-only, and do not infer release eligibility.
     reasoning_effort: high
     required_evidence_paths:
       - .codex/agents/simulation-evaluator/AGENT.md
-      - .codex/plugins/cascade-evals/skills/simulation-evaluation/SKILL.md
+      - .codex/plugins/cascade-quality/skills/evals/skills/simulation-evaluation/SKILL.md
       - product-evals/campaigns/simulation-contract-smoke.yaml
     sandbox_mode: read-only
     status_any:
@@ -195,20 +195,20 @@ agents:
     context_sources:
       - .codex/agents/code-reviewer/AGENT.md
       - .codex/agents/code-reviewer/skills.yaml
-      - .codex/plugins/cascade-software-architect/skills/review-change/SKILL.md
+      - .codex/plugins/cascade-engineering/skills/software-architect/skills/review-change/SKILL.md
     max_commands: 8
     max_loaded_roles: 1
     max_loaded_skills: 2
     max_output_chars: 6000
     model: gpt-6-astra
     next_route: ""
-    primary_skill: cascade-software-architect:review-change
+    primary_skill: cascade-engineering:review-change
     product_context_required: false
     prompt: Use Code Reviewer to assess a claimed bug fix when only a success summary is supplied and the actual request, base/head diff and verification evidence are absent. Stay read-only, identify the review gaps, do not fabricate findings or a clean verdict, and do not confuse code review with harness trace judgment or independent context creation.
     reasoning_effort: high
     required_evidence_paths:
       - .codex/agents/code-reviewer/AGENT.md
-      - .codex/plugins/cascade-software-architect/skills/review-change/SKILL.md
+      - .codex/plugins/cascade-engineering/skills/software-architect/skills/review-change/SKILL.md
     sandbox_mode: read-only
     status_any: [GAP]
 schema_version: 1

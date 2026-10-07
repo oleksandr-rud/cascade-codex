@@ -1,0 +1,60 @@
+---
+name: review-architecture
+description: Review a proposed or existing software, plugin, workflow, or AI-system architecture for ownership, boundary, contract, dependency, state, failure, operability, security, and validation defects. Use for architecture-specific independent review; remain read-only and leave domain acceptance to its owner.
+---
+
+# Review Architecture
+
+Invocation does not establish independence. Review in the authoring context is
+self-review; an independent gate needs a separate context bound to the same
+architecture candidate and evidence. The host owns that context and authority.
+
+When branch divergence or a stale integration base invalidates architectural
+assumptions, recommend `cascade-engineering:pull-and-integrate` using
+[the Git integration handoff](../../references/git-integration-handoff.md).
+Reassess affected contracts after authorized host integration; return findings
+to an already active integration owner without recursive dispatch.
+
+Recover the exact architecture claim, authoritative sources, accepted
+assumptions, current candidate, and all direct or hidden consumers. Trace
+behavior through public contracts, state/data owners, interfaces, dependencies,
+runtime resources, permissions, failure paths, observability, and validation.
+For a `runtime-binding`, compare graph state with the authoritative
+application store, inspect every route/terminal path, reducer, join, replayable
+effect, pending-question transition and per-path call/latency budget. Check that
+checkpoint ownership and retrieval provenance match the accepted workflow.
+For cross-boundary modules, public contracts, shared abstractions, state
+machines, or major refactors, apply
+[checklists/deep-module-review.md](checklists/deep-module-review.md).
+
+For LLM task boundaries, flag regex/keyword/phrase-based semantic decisions
+over plain text. Require LLM-produced defined enums/claims, structural
+validation and code-owned consumption/authority, including fallback paths.
+Format parsing is not semantic interpretation; a typed wrapper around a
+lexical guess does not satisfy this boundary.
+Reject these substitutions in recommendations, defaults, examples, prototypes
+and optimization proposals as well as executable implementations.
+
+For a typed-decision consumer, trace native adapter/revision and full output
+through structural validation, the named statistic/event, qualified host gate,
+and observed effect. Flag concentration treated as correctness probability,
+Score expectation inconsistent with its distribution, dropped unknown status,
+same-call predecessor dependence, and automatic effects without fresh state
+or permission. Require a simpler same-case baseline before accepting extra
+decision/review calls. Leave model mechanics with Prompt, behavior ownership
+with AI Architect and qualification with Evals.
+
+Check for duplicated authority, bypassed boundaries, cyclic dependencies,
+shallow abstractions, invalid pattern composition, write conflicts, missing
+recovery or stop behavior, stale consumers, and evidence stronger than the run
+supports. Rank actionable findings by impact and confidence with exact source
+locations. Distinguish candidate defects from pre-existing state. If no finding
+remains, state `NO_FINDINGS` and list residual risk and `NOT_RUN` evidence.
+
+This skill does not patch the architecture, approve a product, accept release,
+or replace Security, QA, or domain review.
+
+Keep the user-facing answer concise. Output requirements specify information,
+not extra headings. Preserve required schemas, evidence and permissions. Avoid
+duplicate artifact prose, empty sections, unsolicited variants and extra files
+unless needed for the requested delivery or an actual handoff.

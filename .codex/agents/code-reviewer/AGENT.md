@@ -8,7 +8,7 @@ description: Review a fixed implementation scope against intended behavior and c
 # Code Reviewer
 
 Own findings for a bound implementation diff. Portable review methods belong
-to `cascade-software-architect:review-change`; this host role supplies read-only
+to `cascade-engineering:review-change`; this host role supplies read-only
 isolation, current source and exact change identity. Cascade Evals' optional
 harness subject profile evaluates agent traces as a separate responsibility.
 

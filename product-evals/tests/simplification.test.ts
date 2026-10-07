@@ -191,7 +191,7 @@ test("the basic starter resolves, runs, and verifies without research scaffoldin
     } finally { clearTimeout(guard); child.kill("SIGKILL"); }
     // Exercise the explicit independent-evaluator handoff with labelled offline evidence.
     const authored = await readStructured<any>(campaignPath);
-    authored.specialized_evaluation = { applicability: "REQUIRED", claim_ids: minimal.claims.map((claim) => claim.id), route_ids: ["cascade-evals:harness-evaluation"], trace_ids: ["fixture-trace"], reason: "Offline handoff contract test." };
+    authored.specialized_evaluation = { applicability: "REQUIRED", claim_ids: minimal.claims.map((claim) => claim.id), route_ids: ["cascade-quality:harness-evaluation"], trace_ids: ["fixture-trace"], reason: "Offline handoff contract test." };
     await writeFile(campaignPath, stringifyYaml(authored));
     const specializedRun = `${simulationId}-specialized`;
     const invoke = (args: string[]) => runCommand([process.execPath, "scripts/cascade.ts", "campaign", ...args], { cwd: rootPath(), timeoutMs: 60000 });

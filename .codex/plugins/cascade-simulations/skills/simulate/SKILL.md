@@ -130,7 +130,7 @@ explicitly out of scope.
 - A normal simulation needs no campaign, population, dataset, treatment,
   calibration, claim ledger, seed binding, or independent receipt.
 - Use `simulation-review` only when the user asks to assess a frozen run.
-- Use the installed `cascade-evals:prompt-evaluation` skill for controlled
+- Use the installed `cascade-quality:prompt-evaluation` skill for controlled
   prompt or adaptive-interview comparison, repeated model runs, independent
   grading, or calibration. Use the corresponding Cascade Evals adapter for
   other evaluation domains.

@@ -33,12 +33,12 @@ authority, permissions, plugin routing, or write scope.
 
 ## Upstream owners
 
-- `cascade-product:manage-product-lifecycle` owns product state and gates.
-- `cascade-product:define-product` owns PRDs, requirements, journeys,
+- `cascade-discovery:manage-product-lifecycle` owns product state and gates.
+- `cascade-discovery:define-product` owns PRDs, requirements, journeys,
   scenarios, metrics, and MVP behavior.
-- `cascade-personas:build-persona` owns canonical persona creation/revision.
-- `cascade-personas:compile-persona` owns purpose-limited persona projections.
-- `cascade-market:<skill>` owns market evidence, opportunity assessment,
+- `cascade-discovery:build-persona` owns canonical persona creation/revision.
+- `cascade-discovery:compile-persona` owns purpose-limited persona projections.
+- `cascade-discovery:<skill>` owns market evidence, opportunity assessment,
   experiments, positioning, and messaging semantics.
 - `cascade-design:<skill>` owns reusable design interpretation.
 
@@ -98,4 +98,4 @@ renderers, not alternate plugin schemas. Return mode, source and upstream
 identities, classifications, impact dispositions, allocated paths/IDs, files
 changed or proposed, validation, unchanged evidence/authority state, blockers,
 and the exact next owner. Route implementation-ready behavior to `plan-change`
-and product-visible test design to `cascade-qa:design-tests`.
+and product-visible test design to `cascade-quality:design-tests`.

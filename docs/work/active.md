@@ -93,7 +93,7 @@ surfaces, composition, and live/platform evidence remain open, blocked, or
 did not change WG-001 topology or acceptance state.
 
 Completed rows leave this registry in their owning closeout after durable
-evidence is preserved and `cascade-project-management:close-project` records `ARCHIVED`,
+evidence is preserved and `cascade-workflows:close-project` records `ARCHIVED`,
 `ARCHIVE_DEFERRED`, or `NOT_APPLICABLE`.
 
 When example lanes exist under `docs/work/examples/`, they are not active work

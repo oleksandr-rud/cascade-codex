@@ -22,7 +22,7 @@ actor:
   preferred_existing_roles:
     - orchestrator
 skill_calls:
-  - skill: cascade-software-architect:review-architecture
+  - skill: cascade-engineering:review-architecture
     when: wiring crosses public or runtime boundaries
     required: false
   - skill: implement-change

@@ -72,7 +72,7 @@ Use this folder as the active work memory for Orchestrator.
   durable research-memory entries to `docs/patterns/context-memory/index.md`.
 - Do not accumulate completed history indefinitely in the live work tree.
   After a lane or graph may be complete,
-  `cascade-project-management:close-project` assesses terminal, dependency,
+  `cascade-workflows:close-project` assesses terminal, dependency,
   consumer, and retention readiness. `closeout` may create a digest-bound
   capsule and move only exact `RETIRE_PROPOSED` originals under current host
   authority. If preflight cannot pass, retain the files and record

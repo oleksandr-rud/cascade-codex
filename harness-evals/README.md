@@ -87,7 +87,7 @@ cases:
     owner: agent-engineer
     prompt: Refine one supplied instruction prompt's wording; its role, workflow and permissions are accepted. No experiment is requested. The actual prompt text is absent; identify that gap without inventing it.
     expected_primary: cascade-prompt:prompt
-    forbidden_primary: [cascade-ai-architect:architect-ai-system, cascade-evals:prompt-evaluation]
+    forbidden_primary: [cascade-ai-architect:architect-ai-system, cascade-quality:prompt-evaluation]
     status_any: [GAP, BLOCKED]
 ```
 
@@ -191,9 +191,9 @@ directory.
 `judge-profiles.yaml` and `rubrics/` are versioned measurement contracts.
 Judges emit only 0–4 dimension ratings, rationale, evidence, and a semantic
 verdict. The runner recomputes weighted scores and requires threshold,
-minimum-dimension, and verdict agreement. Use `cascade-evals:build-judge` to
+minimum-dimension, and verdict agreement. Use `cascade-quality:build-judge` to
 change or calibrate these contracts; use
-`cascade-evals:harness-evaluation` to coordinate and reduce one bounded target
+`cascade-quality:harness-evaluation` to coordinate and reduce one bounded target
 diagnostic.
 The per-case `effectiveness_score` is the lower required-judge score, while the
 coverage ledger retains both profile scores and their distributions.

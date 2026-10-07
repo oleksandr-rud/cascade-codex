@@ -78,7 +78,7 @@ affected implementation; preserve user-authorized deviations without reapproval.
   unless the user explicitly authorizes delegation; report to the assigning owner.
 - Route design ambiguity to `cascade-design:ux-flow-review` or `design-system`,
   visual comparison to `visual-qa`, and cross-boundary code review to
-  `cascade-software-architect:review-change` when warranted. Do not duplicate
+  `cascade-engineering:review-change` when warranted. Do not duplicate
   these portable methods inside the target or call self-review independent proof.
 
 ## Completion and failure

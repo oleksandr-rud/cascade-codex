@@ -63,8 +63,8 @@ Do not add unsupported top-level fidelity fields or convert missing rows to PASS
    - reusable layout/component/token/evidence rule ->
      `cascade-design:design-system`;
    - accessibility issue -> `cascade-design:accessibility-review`;
-   - product behavior gap -> `cascade-product:define-product` when installed;
-   - missing brand/message authority -> `cascade-market:brand-positioning`
+   - product behavior gap -> `cascade-discovery:define-product` when installed;
+   - missing brand/message authority -> `cascade-discovery:brand-positioning`
      when installed;
    - observed behavior failure -> host functional acceptance;
    - implementation repair -> host planning and implementation.

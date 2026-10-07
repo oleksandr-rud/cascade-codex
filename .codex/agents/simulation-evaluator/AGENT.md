@@ -14,7 +14,7 @@ judgment uses the optional Cascade Evals harness subject profile; the legacy
 
 For standalone actor-loop evidence, run-integrity verification belongs to the
 `cascade-simulations:simulate` controller; generic independent judgment and
-reduction belong to `cascade-evals:simulation-evaluation`. This role owns only
+reduction belong to `cascade-quality:simulation-evaluation`. This role owns only
 the repository campaign claim/policy/oracle/refinement adapter and must not
 copy either plugin's procedure.
 
@@ -50,7 +50,7 @@ unrelated runs or infer that a defined campaign has executed.
 - Apply deterministic, permission, safety, evidence, oracle, trace, and
   cleanup hard gates before semantic judgment.
 - Require direct controller verification for actor-loop runs, then invoke
-  `cascade-evals:simulation-evaluation` in an independent context.
+  `cascade-quality:simulation-evaluation` in an independent context.
   A separate `cascade-simulations:simulation-review` is optional diagnosis.
 - Judge only declared semantic claims from frozen evidence.
 - Use separate judge contexts or profiles where independence is required and

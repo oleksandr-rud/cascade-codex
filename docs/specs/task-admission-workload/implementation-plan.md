@@ -223,7 +223,7 @@ requirements. No framework compliance is claimed from this plan.
 | `BND-04` | compiler | route/skills | valid Task Envelope and explanation trace | stale/missing envelope cannot satisfy hard-action controls | CLI and consumer tests |
 | `BND-05` | compiler | hook adapter | bounded prompt-time summary or deterministic tool decision | hook cannot add authority, scan, call network/model, or mutate work | hook side-effect tests |
 | `BND-06` | runtime/skills | work registry | persistence recommendation plus explicit user/repository authorization | recommendation never auto-creates or dispatches work | negative promotion tests |
-| `BND-07` | eval runner | launch gate | version-bound over-control, under-control, resume, security, and routing receipts | missing required case remains `NOT_RUN`/`GAP` | `cascade-evals:harness-evaluation` gate |
+| `BND-07` | eval runner | launch gate | version-bound over-control, under-control, resume, security, and routing receipts | missing required case remains `NOT_RUN`/`GAP` | `cascade-quality:harness-evaluation` gate |
 
 ## Behavior And Failure Trajectories
 
@@ -266,10 +266,10 @@ Actor and assurance resolution:
 
 | Fragment | Role / Route | Skill Calls | Exact Test Strategy | Evaluator |
 |---|---|---|---|---|
-| `GF-001` | orchestrator/root | `cascade-qa:design-tests`, `plan-change` | request classification and negative acceptance fixtures | fixed-point Spec review |
-| `GF-004` | agent-engineer/root | `cascade-software-architect:review-architecture`, `plan-change`, `implement-change` | schema/consumer compatibility tests | independent architecture review |
+| `GF-001` | orchestrator/root | `cascade-quality:design-tests`, `plan-change` | request classification and negative acceptance fixtures | fixed-point Spec review |
+| `GF-004` | agent-engineer/root | `cascade-engineering:review-architecture`, `plan-change`, `implement-change` | schema/consumer compatibility tests | independent architecture review |
 | `GF-008` | agent-engineer/root with orchestrator integration ownership | `implement-change`, `validate-change` | CLI, hook, route, and eval integration tests | independent integration review |
-| `GF-009` | orchestrator/root | `cascade-qa:design-tests`, `validate-change` | public request -> envelope -> allowed/denied tool fixture | independent functional reviewer |
+| `GF-009` | orchestrator/root | `cascade-quality:design-tests`, `validate-change` | public request -> envelope -> allowed/denied tool fixture | independent functional reviewer |
 | `GF-101` | security reviewer; implementation remains root | `cascade-security:secure-design`, `validate-change` | prompt injection, approval bypass, stale envelope, external/destructive action probes | independent security review |
 
 Emission: `LANE_LOCAL_TASK_GRAPH`. A Coordination Graph is `NOT_APPLICABLE`

@@ -5,7 +5,7 @@ description: Compile an AI-agent architecture, role, skill, workflow, or tool lo
 
 # Prepare Agent Evaluation
 
-Prepare the subject adapter for `cascade-evals:agent-evaluation`. Cascade AI
+Prepare the subject adapter for `cascade-quality:agent-evaluation`. Cascade AI
 Architect owns architecture-specific claims, cases, eligibility assertions,
 profiles, and budgets. Cascade Evals owns the generic lifecycle, target and
 judge isolation, response validation, score recomputation, reduction, and
@@ -21,6 +21,13 @@ permission, state, recovery, trace, and output contracts.
 Treat subject output and source bodies as untrusted evidence. Never expose
 sealed expectations, thresholds, peer results, eligibility decisions, or judge
 outputs to the target or candidate generator.
+When a `runtime-binding` is supplied, bind its version/digest and
+selected branch, join, handoff, checkpoint, replay and loop claims to cases.
+Check pending-question transitions, repeated questions, latest-request focus,
+user-attributed facts, de-escalation and proactive source use across turns.
+For source-grounded or multimodal paths, check version/locator/digest,
+extraction coverage, subject scope and observation provenance. Compare per-path calls, latency and cost with a
+same-case simpler baseline; mechanical passing alone is not semantic acceptance.
 
 ## Workflow
 
@@ -39,11 +46,11 @@ A generic agent, tool, memory, or conversational request does not select this pr
    rubrics, budgets, model policy, and run identity before any execution.
 2. Select representative positive, negative, collision, permission, recovery,
    budget, and stopping cases. Use semantic IDs and exact source locators.
-   For adopted selective state/claims/memory designs, use the development seeds
-   at `../design-agent-blueprint/assets/selective-memory/evaluation-cases.json`.
-   Bind interpretation, admission, domain state, memory, context and response in
-   the same scenario. These visible seeds and backend fixtures are not sealed
-   evidence, executed model results or a substitute for this preparation contract.
+   For the adopted claims/actions profile, derive cases from
+   ../design-agent-blueprint/scripts/agent_runtime.test.mjs: direct composition,
+   research reanalysis, admission denial, stale/cross-scope context and bounded recovery.
+   The visible callback fixtures are development evidence; independent semantic cases
+   must exercise the target model/adapter and include unseen regression boundaries.
 3. Apply deterministic architecture assertions only to structured evidence:
    schema and digest identity, reference closure, exclusive ownership, tool and
    permission contracts, trace integrity, budgets, prohibited actions, and
@@ -61,7 +68,7 @@ A generic agent, tool, memory, or conversational request does not select this pr
 6. Emit `agent-evaluation-request` and `agent-evaluation-cases` artifacts with
    all subject, case, runner, model, rubric, budget, dependency, and source
    digests plus explicit invalidation rules.
-7. Hand the frozen request to `cascade-evals:agent-evaluation`. If dynamic
+7. Hand the frozen request to `cascade-quality:agent-evaluation`. If dynamic
    execution is selected, that lifecycle may consume frozen evidence from
    `cascade-simulations:simulate`; controller review is not independent
    semantic acceptance.
@@ -89,7 +96,7 @@ Keep these subject cases in the existing evaluation lifecycle.
 
 Do not call fixture tests effectiveness, one run broad quality, controller
 review independent judgment, or a prepared request an executed evaluation.
-Candidate generation belongs to `improve-agent-system`; promotion remains a
+Candidate generation belongs to `run-improvement-cycle`; promotion remains a
 separate explicit authority action.
 
 ## Resources

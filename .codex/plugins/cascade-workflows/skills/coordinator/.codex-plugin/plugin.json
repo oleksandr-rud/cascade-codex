@@ -1,0 +1,34 @@
+{
+  "name": "cascade-coordinator",
+  "version": "0.2.6+codex.20261006.3",
+  "description": "Selects the smallest sufficient Cascade plugin capabilities and compiles validated, non-dispatching cross-plugin workflow plans.",
+  "author": {
+    "name": "Cascade"
+  },
+  "keywords": [
+    "coordination",
+    "capability-routing",
+    "workflow-planning",
+    "plugin-orchestration"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Cascade Coordinator",
+    "shortDescription": "Choose Cascade skills and organize work across plugins",
+    "longDescription": "Select the smallest sufficient namespaced Cascade capabilities from a validated Task Envelope and digest-bound catalog, then compile a dependency-safe workflow plan. The host retains permissions, repository access, execution, persistence, and acceptance.",
+    "developerName": "Cascade",
+    "category": "Productivity",
+    "capabilities": [
+      "Interactive",
+      "Write"
+    ],
+    "defaultPrompt": [
+      "Select the exact Cascade capabilities for this request.",
+      "Plan a dependency-safe multi-plugin workflow.",
+      "Explain why each candidate route was selected or rejected."
+    ],
+    "brandColor": "#4F46E5",
+    "composerIcon": "./assets/composer-icon.svg",
+    "logo": "./assets/logo.svg"
+  }
+}

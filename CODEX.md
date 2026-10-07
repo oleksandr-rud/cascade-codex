@@ -59,6 +59,30 @@ invalid or uncertain interpretation remains unresolved. The retained lexical
 classifier is available only through explicit source diagnostics; its corpus
 does not establish semantic qualification or a trusted permission adapter.
 
+## Shared Host Workflow
+
+Apply `admit -> select -> prepare -> act -> observe -> verify -> complete or
+recover` to every request at proportional depth. Admission and method choice
+are always considered; an answer, atomic edit or one exact sufficient method
+does not require a multi-node plan or every plugin. For ambiguous capability
+requests or connected plugin work, use the thin local
+[run-workflow adapter](.codex/skills/run-workflow/SKILL.md).
+
+The host prepares `workflow intake` from the current Task Envelope, exact
+available artifact bindings and catalog. The LLM selects concrete methods;
+`workflow accept-selection` validates its declared JSON and stamps only digest
+fields. Group/component wording such as Quality or Evals never determines a
+route by lexical alias. Resolve the desired subject, operation and evidence;
+ask only a decision-critical missing question. A blocked selection cannot run
+partial work. Plan only real dependencies and handoffs. Bounded observation
+control supplies each prepared consumer with current producer/input bindings,
+expected outputs and the exact catalog method/model identity.
+
+Recipes live with the portable planner at `references/shared-workflows.md`;
+local skills bind target context and authorized tools instead of duplicating
+the recipes or producing a new skill for every run. Native host permissions,
+budgets, independent evaluation and owner acceptance remain in force.
+
 ## Plugin-First Capability Routing
 
 Plugins own portable methods, schemas, templates, and generic evaluation
@@ -68,31 +92,31 @@ durable paths, target commands, campaign state, and acceptance.
 | Capability | Plugin route | Host owner |
 |---|---|---|
 | Prompt creation and prompt diagnosis | `cascade-prompt:prompt` | Requesting role |
-| Semantic capability selection and cross-plugin artifact ordering | `cascade-coordinator:select-capabilities` then `cascade-coordinator:plan-workflow` when a graph is needed | Orchestrator |
-| Software, plugin, and workflow architecture, patterns, and independent review | `cascade-software-architect:<skill>` | Software Engineer for software design; Code Reviewer for independent review; Agent Engineer for host integration |
+| Semantic capability selection and cross-plugin artifact ordering | `cascade-workflows:select-capabilities` then `cascade-workflows:plan-workflow` when a graph is needed | Orchestrator |
+| Software, plugin, and workflow architecture, patterns, and independent review | `cascade-engineering:<skill>` | Software Engineer for software design; Code Reviewer for independent review; Agent Engineer for host integration |
 | AI-agent topology, behavior, roles, skills, prompt briefs, persona requirements, and evaluation briefs | `cascade-ai-architect:<skill>` | Requesting role; Agent Engineer for host integration |
-| Harness audit, maintenance, and asset integration | `cascade-coding-agent:<skill>` | Agent Engineer |
-| Git pull, upstream synchronization, merge/rebase conflicts and preparing changes for push | `cascade-coding-agent:pull-and-integrate`; `cascade-software-architect:review-change` for applicable review | Active implementation owner; host executes authorized Git effects |
-| Market research, selection, differentiation and experiments | `cascade-market:<skill>` | Orchestrator; Product Designer for scoped design research |
-| Channel selection, growth strategy, cohort economics and product feedback | `cascade-market:plan-growth` | Orchestrator |
-| Positioning, messaging, naming, tone, proof, and trust language | `cascade-market:brand-positioning` | Orchestrator; Product Designer within the design brief |
-| Product value and offers, feature formation, lifecycle and outcome validation | `cascade-product:<skill>` | Orchestrator for lifecycle; Product Designer for scoped definition and validation |
-| Canonical personas and compiled projections | `cascade-personas:<skill>` | Orchestrator; Product Designer for scoped authoring/compilation, independent review separately |
+| Harness audit, maintenance, and asset integration | `cascade-engineering:<skill>` | Agent Engineer |
+| Git pull, upstream synchronization, merge/rebase conflicts and preparing changes for push | `cascade-engineering:pull-and-integrate`; `cascade-engineering:review-change` for applicable review | Active implementation owner; host executes authorized Git effects |
+| Market research, selection, differentiation and experiments | `cascade-discovery:<skill>` | Orchestrator; Product Designer for scoped design research |
+| Channel selection, growth strategy, cohort economics and product feedback | `cascade-discovery:plan-growth` | Orchestrator |
+| Positioning, messaging, naming, tone, proof, and trust language | `cascade-discovery:brand-positioning` | Orchestrator; Product Designer within the design brief |
+| Product value and offers, feature formation, lifecycle and outcome validation | `cascade-discovery:<skill>` | Orchestrator for lifecycle; Product Designer for scoped definition and validation |
+| Canonical personas and compiled projections | `cascade-discovery:<skill>` | Orchestrator; Product Designer for scoped authoring/compilation, independent review separately |
 | UX, accessibility, visual, and design-system review | `cascade-design:<skill>` | Requesting role or Orchestrator |
 | Design authoring and mockup handoff | `cascade-design:create-design`; host artifact persistence | Product Designer |
 | Software implementation | Host context, planning, implementation and validation skills | Software Engineer; Orchestrator may apply locally |
-| Independent code review | `cascade-software-architect:review-change` | Code Reviewer; separate context and fixed diff |
+| Independent code review | `cascade-engineering:review-change` | Code Reviewer; separate context and fixed diff |
 | Frontend implementation and approved-mockup repair | Host implementation cascade; Design skills for evidence | Frontend Engineer; role selection does not authorize delegation |
 | Codebase, auth, and secure-design review | `cascade-security:<skill>` | Security or Agent Engineer |
 | Bounded actor simulation and run review | `cascade-simulations:<skill>` | Requesting role |
-| Approved simulation-campaign execution and evidence freeze | `cascade-simulations:execute-simulation-campaign` | Simulation Operator |
-| Frozen simulation outcome or policy judgment | `cascade-evals:simulation-evaluation` | Simulation Evaluator |
-| Cascade route, skill, agent, output, or JSONL-trace evaluation | `cascade-evals:harness-evaluation` | Ephemeral Cascade Evals judge using the harness subject profile |
-| Prompt or adaptive-interview evaluation | `cascade-evals:prompt-evaluation` | Requesting role; independent judge identity declared by the frozen evaluation |
-| AI-agent, role, skill, workflow, tool-loop, or architecture evaluation | `cascade-evals:agent-evaluation` | Requesting role; independent judge identity declared by the frozen evaluation |
-| Generic evaluation design or judge-contract construction | `cascade-evals:evaluate` or `cascade-evals:build-judge` | Requesting role; Agent Engineer only for harness-owned judge contracts |
-| Project planning, coordination, reconciliation, and closeout assessment | `cascade-project-management:<skill>` | Orchestrator across owners; Product Designer within its design workstream |
-| Quality planning, test design, assessment, and defect triage | `cascade-qa:<skill>` | Requesting role |
+| Approved simulation-campaign execution and evidence freeze | `cascade-simulations:run-simulation-campaign` | Simulation Operator |
+| Frozen simulation outcome or policy judgment | `cascade-quality:simulation-evaluation` | Simulation Evaluator |
+| Cascade route, skill, agent, output, or JSONL-trace evaluation | `cascade-quality:harness-evaluation` | Ephemeral Cascade Evals judge using the harness subject profile |
+| Prompt or adaptive-interview evaluation | `cascade-quality:prompt-evaluation` | Requesting role; independent judge identity declared by the frozen evaluation |
+| AI-agent, role, skill, workflow, tool-loop, or architecture evaluation | `cascade-quality:agent-evaluation` | Requesting role; independent judge identity declared by the frozen evaluation |
+| Generic evaluation design or judge-contract construction | `cascade-quality:evaluate` or `cascade-quality:build-judge` | Requesting role; Agent Engineer only for harness-owned judge contracts |
+| Project planning, coordination, reconciliation, and closeout assessment | `cascade-workflows:<skill>` | Orchestrator across owners; Product Designer within its design workstream |
+| Quality planning, test design, assessment, and defect triage | `cascade-quality:<skill>` | Requesting role |
 
 Simulation Operator and Simulation Evaluator are optional source/lab roles.
 Harness judgment is an optional Cascade Evals subject profile; no dedicated
@@ -106,23 +130,34 @@ Resolve required namespaced skills from the enabled installed inventory. Missing
 required dependencies are `BLOCKED`; do not restore copied local
 implementations or search caches as a hidden fallback.
 For this repository-owned marketplace, a resolved route
-`cascade-<plugin>:<skill>` has the deterministic source path
-`.codex/plugins/cascade-<plugin>/skills/<skill>/SKILL.md`, and a selected local
+`cascade-<plugin>:<skill>` resolves to the catalog's exact `entrypoint` under
+`.codex/plugins/cascade-<plugin>/`. Grouped packages keep their method resources
+under `skills/<component>/skills/<skill>/SKILL.md`; standalone packages use
+`skills/<skill>/SKILL.md`. Bind the catalog's skill digest, and a selected local
 role has `.codex/agents/<role>/AGENT.md`. Use those exact paths without a broad
 `.codex` inventory. Do not probe alternative skill files merely to record a
 rejection after the primary route and owner are already supported.
 
 For one explicit capability whose inputs and required dependencies are already
 satisfied, load that exact skill directly. For an ambiguous or multi-domain
-request, `cascade-coordinator:select-capabilities` emits the smallest
+request, `cascade-workflows:select-capabilities` emits the smallest
 claim-bound selected set and explicit rejections. Use
-`cascade-coordinator:plan-workflow` only when the validated selection needs more
+`cascade-workflows:plan-workflow` only when the validated selection needs more
 than one node, a dependency, an artifact handoff, parallel branches, or a join.
 Both are non-dispatching controllers; the active host role retains repository
 access, execution, persistence, and acceptance.
 
+Use the host `workflow control-init -> control-intake -> control-step` binding
+only when a plugin plan needs an observation loop. AI Architect owns its typed
+trigger, state, recovery and RSI design; the host validates model decisions and
+prepares one action under frozen limits. Completion produces evidence for host
+acceptance. Replanning and RSI end the iteration and never self-dispatch.
+See [workflow control and Nexus integration](docs/patterns/workflow/nexus-integration.md).
+The `workflow groups` projection supplies exact current method identities for
+tracker filters; groups are not mandatory project phases or workstreams.
+
 For a requested or already authorized Git pull, upstream integration, or conflict
-resolution, load `cascade-coding-agent:pull-and-integrate` before mutation, even
+resolution, load `cascade-engineering:pull-and-integrate` before mutation, even
 when Git predicts a clean merge. Interpret intent semantically, including
 requests in other languages; do not use lexical trigger tables. This exact route
 applies to target product repositories as well as the harness. Bind the user's
@@ -248,23 +283,23 @@ actual trigger:
 |---|---|
 | Supplied source must be preserved or classified | `create-spec` |
 | Essential target evidence is missing | `context` in Discovery mode, then the smallest namespaced plugin |
-| Market evidence or experiments are needed | `cascade-market:research-market` or `cascade-market:design-market-experiments` |
+| Market evidence or experiments are needed | `cascade-discovery:research-market` or `cascade-discovery:design-market-experiments` |
 | Supplied or validated evidence needs durable target persistence | `create-spec` |
 | A durable fact has sibling documentation consumers | impact mapping inside `create-spec`, `plan-change`, or `implement-change` |
 | A reusable pattern entry or context pack is needed | `pattern-context` |
-| Work needs a roadmap, multiple horizons, or Agile MVP/version/iteration decomposition | `cascade-project-management:plan-project` |
-| Independent owners, resumable handoffs, dependencies, evidence joins, or reconciliation exist | `cascade-project-management:manage-project` |
-| Accepted behavior needs a quality plan or test design | `cascade-qa:plan-quality` or `cascade-qa:design-tests` |
-| The exact namespaced route is ambiguous or the request spans plugin domains | `cascade-coordinator:select-capabilities` |
-| A validated capability selection needs multiple nodes, ordering, parallelization, an artifact handoff, or a join | `cascade-coordinator:plan-workflow` |
+| Work needs a roadmap, multiple horizons, or Agile MVP/version/iteration decomposition | `cascade-workflows:plan-project` |
+| Independent owners, resumable handoffs, dependencies, evidence joins, or reconciliation exist | `cascade-workflows:manage-project` |
+| Accepted behavior needs a quality plan or test design | `cascade-quality:plan-quality` or `cascade-quality:design-tests` |
+| The exact namespaced route is ambiguous or the request spans plugin domains | `cascade-workflows:select-capabilities` |
+| A validated capability selection needs multiple nodes, ordering, parallelization, an artifact handoff, or a join | `cascade-workflows:plan-workflow` |
 | An authorized frozen QA plan needs target execution | `run-qa-plan` |
-| Frozen evidence needs a quality recommendation | `cascade-qa:assess-quality` |
-| Public, cross-boundary, security-sensitive, harness-semantic, large, or requested review | `cascade-software-architect:review-change` |
-| Failure ownership is uncertain | `cascade-qa:triage-defects` |
-| QA proves `TEST_DRIFT` and test files must change | `repair-tests` |
+| Frozen evidence needs a quality recommendation | `cascade-quality:assess-quality` |
+| Public, cross-boundary, security-sensitive, harness-semantic, large, or requested review | `cascade-engineering:review-change` |
+| Failure ownership is uncertain | `cascade-quality:triage-defects` |
+| QA proves `TEST_DRIFT` and test files must change | `resolve-validation-failure` |
 | Existing durable state or a reusable handoff must be finalized | `closeout` |
-| Project completion or retention needs assessment | `cascade-project-management:close-project`, then `closeout` for authorized host effects |
-| The requested output is a tracker-ready issue, story, task, enabler, or experiment | `cascade-project-management:define-work-item` |
+| Project completion or retention needs assessment | `cascade-workflows:close-project`, then `closeout` for authorized host effects |
+| The requested output is a tracker-ready issue, story, task, enabler, or experiment | `cascade-workflows:define-work-item` |
 
 A bounded one-owner task creates no spec, lane, work graph, report, receipt, or
 archive entry by default.
@@ -285,7 +320,7 @@ do not duplicate plugin methods.
 - `orchestrator`: proportional normal routing, host market/product adapters,
   implementation, and evidence.
 - `agent-engineer`: Cascade maintenance, target onboarding through
-  `cascade-coding-agent:adapt-harness`, reviewed agent-asset integration,
+  `cascade-engineering:adapt-harness`, reviewed agent-asset integration,
   tooling, observability, and eval wiring.
 - `security`: read-only Security plugin selection with minimized sensitive
   evidence.
@@ -368,7 +403,7 @@ Cascade AI Architect, and Evals consume their own compiled projections.
 Use `cascade-simulations:simulate` for one actor, interface, brief, outcome,
 and bounded loop. Use `cascade-simulations:manage-simulation-campaign` only for
 an explicitly versioned multi-case or multi-contour campaign, and
-`cascade-simulations:execute-simulation-campaign` for its approved run.
+`cascade-simulations:run-simulation-campaign` for its approved run.
 Reviewing plugin source is Coding Agent maintenance, not campaign execution.
 
 For campaigns, keep design/registration, mutable execution, frozen evidence,
