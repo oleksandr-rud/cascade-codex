@@ -155,19 +155,19 @@
   "evaluation_assets": [
     {
       "path": "evals/evaluation-contract.json",
-      "sha256": "7b2c74f990e346621040a29318ffd62e4206ba98fbfd0b7557a96593e430ea8f"
+      "sha256": "11da2b3d73e9fbb299d3b285db15a1ab304d08f9126247d23132fb3170ed63eb"
     },
     {
       "path": "evals/cases.json",
-      "sha256": "256f7c52afaf24d5c10fab3839dfcd8dc2264d89a541fad0c3a127a68a2a316a"
+      "sha256": "f6d4c4128de677c400e8c143929e7774429b2afc9453942c83ea3b0dc2196254"
     },
     {
       "path": "evals/judge-outcome.json",
-      "sha256": "ccb14eeb68bf16b94fa741d122f91806a827f55106fce204b4254be39d1ba791"
+      "sha256": "98130995a0b2be3beecd75e90a403e25869e7665ab0feb7c9752a803129048bb"
     },
     {
       "path": "evals/judge-trajectory.json",
-      "sha256": "9a1fec163917822a95e722455e8ce279c0f062769e37756076cce071d1adffcb"
+      "sha256": "46594711d6130a1e4c04ac3f47cb0194f092b96acee5f45f0874560b351be19e"
     },
     {
       "path": "scripts/evaluate_case_assertions.py",
@@ -176,48 +176,1256 @@
   ],
   "manifest_id": "cascade-design-evaluation-assets-v2",
   "plugin_id": "cascade-design",
-  "plugin_version": "0.1.11+codex.20261006.1",
+  "plugin_version": "0.2.0+codex.20261007.2",
   "schema_version": 2,
   "subject_assets": [
     {
       "path": ".codex-plugin/plugin.json",
-      "sha256": "df4219c7b8491fae43a2f9b75f9c5ff75267e0d4e49aeab9fa90e4a863594f70"
+      "sha256": "1a27882357f8a339520b684aada32a24ac072b547d291a6e0b8c4faa19482ff3"
     },
     {
-      "path": "skills/create-design/SKILL.md",
-      "sha256": "01f7fe119456693f0477183b9197d6d66fe5d75a11691ce78c697981d0f28944"
+      "path": "README.md",
+      "sha256": "fc95102d0f2316a02f856c717ada57fe642e032bbff3c1409988179f427588d5"
     },
     {
-      "path": "skills/create-design/agents/openai.yaml",
-      "sha256": "c37fb8dfe0bbedb96a52ebcac553dfa30ac34d3d784179731c749617b9229980"
+      "path": "capabilities.yaml",
+      "sha256": "169c102fb178207a781c64a3f30899e25d45f27c47308c8bde5cc4a744a419fd"
     },
     {
-      "path": "skills/ux-flow-review/SKILL.md",
-      "sha256": "f5fb71b0a6498733e8c5a5c72b0290c2f7b5a310c7ab54d7234c88feaa7e8011"
+      "path": "references/README.md",
+      "sha256": "582f1b392cab43fc7a182daefde6bf52535ca97d1a20cc5ee88b605020157d83"
     },
     {
-      "path": "skills/ux-flow-review/agents/openai.yaml",
-      "sha256": "5298c003ab41576b4250d8247e18a1448f20df5f3ae914dc06f52e69b1963be6"
+      "path": "references/THIRD-PARTY-NOTICES.md",
+      "sha256": "db0f81c6fe72d952ac602c0080f2434d08d984a6c57dbd615b45bd601decf783"
     },
     {
-      "path": "skills/ux-flow-review/checklists/ux-flow-review.md",
-      "sha256": "92fb9cab2024a86589ff9d647c50fcdb54328634f3deb9a885f432b23a0c29a5"
+      "path": "references/licenses/impeccable/LICENSE",
+      "sha256": "02bb8c3b4e70190e3986c0404ad2fd8d639b4f534252d82379cc1b502b6d1812"
     },
     {
-      "path": "skills/ux-flow-review/references/ux-flow-patterns.md",
-      "sha256": "51b91066ecc48544f3bd04d100a875a44278f1c61eddea766a2260fcfa5c13f6"
+      "path": "references/licenses/impeccable/NOTICE.md",
+      "sha256": "c60a093c2845fd9fb82f9c6f742ece31f379f8190b535309d32d66c45ccffdcb"
     },
     {
-      "path": "skills/ux-flow-review/templates/ux-flow-review.md",
-      "sha256": "8b7a9da6a15579eafb0ca6d4d2277c7632a5d9834c24980ded1a74461c763d90"
+      "path": "references/licenses/platform-origin-notice/LICENSE",
+      "sha256": "1126322e2cc8d165adc4c792eeb195717de2bcc7b39be1ce77959d78e87ef685"
     },
     {
-      "path": "skills/ux-flow-review/templates/product-ux-delta.md",
-      "sha256": "4802078f2638fa3c50d5a693473e95c1d8aa9b6e8c8d5f7800f376450a83b17d"
+      "path": "references/licenses/pro-max/LICENSE",
+      "sha256": "738f69dfa83db5c347c678fb9d90e560877059f0de93a327c39001bff92dc014"
+    },
+    {
+      "path": "references/licenses/rampstack/LICENSE",
+      "sha256": "7957f4b291988f21be7cb75637d2efb6edd0369a95d3814cac7ef931f7f10b7c"
+    },
+    {
+      "path": "references/licenses/ui-design/LICENSE",
+      "sha256": "f89abb55d9f073f38f1703e4518f0613c788c6174be7f13b8dfe48a1c076c746"
+    },
+    {
+      "path": "references/modification-notes.md",
+      "sha256": "a9a40916c09c0781d0fbe2251c3968bdb5740b5cbd41f6bd461f4bd753de1d37"
+    },
+    {
+      "path": "references/process/direction.md",
+      "sha256": "baee7da72e58940cd365900b77610ec076d7a8aefd8cdc1fa4cf6f62c2d54118"
+    },
+    {
+      "path": "references/process/intake.md",
+      "sha256": "4be5c815c35e9dff57fdbc410011e9c2be9405c9d30780dd8c61d3007caf79af"
+    },
+    {
+      "path": "references/process/prototype-and-build.md",
+      "sha256": "fddc78c1468150f256df5a57351514379fc4cfffb0000edeebc45abce6397d3a"
+    },
+    {
+      "path": "references/process/research-and-ia.md",
+      "sha256": "6ea1497d0b332b31ba9da390754ec12cf59182cbed59bb2b5451e1e2ed80bc0f"
+    },
+    {
+      "path": "references/process/reuse-and-update.md",
+      "sha256": "b7f0415f9262e42f7172fd5936ff2a57516ec13341db66fbd08480fc549b5a22"
+    },
+    {
+      "path": "references/process/review-and-evidence.md",
+      "sha256": "38db7e5cb33077170ddee4a208ff1178c5e23d7d60c134bf439c26d57e4a91a9"
+    },
+    {
+      "path": "references/source-manifest.json",
+      "sha256": "8a7079bbb54b0e4172af7c8b19d37c72d6b917621b4b83130cf0cd41cf8f4bde"
+    },
+    {
+      "path": "references/templates/design-handoff.md",
+      "sha256": "907bc1f411677a4f4de9b983c3d1ada3e39b9c922979bed41105e7a40d0f2cc7"
+    },
+    {
+      "path": "references/templates/process-examples.md",
+      "sha256": "a97fb313174cebfa41aaf81a9b42779526896af19353c187ca05e6e7bc5be0f2"
+    },
+    {
+      "path": "references/topics/accessibility.md",
+      "sha256": "c400b1ec130065ca240cd30224bec9f77ae39cae6589bdb965ed8ce98168792b"
+    },
+    {
+      "path": "references/topics/domain-controls.md",
+      "sha256": "975827bbc06c2d2ceb2890be8cd775571906bd328ba0894c1f981d1295095c3e"
+    },
+    {
+      "path": "references/topics/platforms-and-components.md",
+      "sha256": "2f81eb727223e9648b94499b2b63cb397497ed854dd1d6c75dd9c5c5995ce4be"
+    },
+    {
+      "path": "references/vendor/README.md",
+      "sha256": "1b082f73e3fd423e3ff02d896f92a8a85e725984bfd932810a3cb68183562fa2"
+    },
+    {
+      "path": "references/vendor/impeccable/skill/agents/finish-review-guide.md",
+      "sha256": "b476d2f75d31df0a2ad9c39d77d1d823753283b801ded809ee57a7937cba02cd"
+    },
+    {
+      "path": "references/vendor/impeccable/skill/reference/adapt.md",
+      "sha256": "ceccb134b470a010a3f38e75bdc3fe70ba0f5e1fe9f0db7a66cdb81ef7525745"
+    },
+    {
+      "path": "references/vendor/impeccable/skill/reference/adapt.native.md",
+      "sha256": "8df98a633d94721f65dd9687532a88b6038b292f8b3b5dbae18dfe060fa4b78a"
+    },
+    {
+      "path": "references/vendor/impeccable/skill/reference/android.md",
+      "sha256": "174a78f148acf09a01b15253a4c87b93942055e32f232a76014b11c32960a83e"
+    },
+    {
+      "path": "references/vendor/impeccable/skill/reference/animate.md",
+      "sha256": "7d7fd24b7b6389d757a41f76075ce4f0ac4ff6ee4573073cd102ca6d9dce3521"
+    },
+    {
+      "path": "references/vendor/impeccable/skill/reference/audit.md",
+      "sha256": "dded0bbba92e490cca2d21a6a8b4065f19baca2974050c903c58378bdf00393a"
+    },
+    {
+      "path": "references/vendor/impeccable/skill/reference/audit.native.md",
+      "sha256": "4f98615f59e1d32e87beddbea927d0ee9303aaf9a4f1d170429c3069a44388fd"
+    },
+    {
+      "path": "references/vendor/impeccable/skill/reference/bolder.md",
+      "sha256": "5788d7c448a5b07804246e1d7913d2bba7908d4affac8f8c7d73c01084eff3f8"
+    },
+    {
+      "path": "references/vendor/impeccable/skill/reference/clarify.md",
+      "sha256": "a25424d356f4e5f3dcdab8c5c0429b5dd0f9189c4944d9238a7dc4fffb21df77"
+    },
+    {
+      "path": "references/vendor/impeccable/skill/reference/colorize.md",
+      "sha256": "377dbe47f64bd7370704281255e3b00861c631d823cf03b3ab0f58026e01ed46"
+    },
+    {
+      "path": "references/vendor/impeccable/skill/reference/component-review.md",
+      "sha256": "921683e7acb1c877fb3257ff1d818d83d1d367e8c7ef84c0b28805230fe13b64"
+    },
+    {
+      "path": "references/vendor/impeccable/skill/reference/craft-floor.md",
+      "sha256": "63dd6bf4c5e660483d9727f6f96655beb372d9fff5348025d7ab7e4c3ab51240"
+    },
+    {
+      "path": "references/vendor/impeccable/skill/reference/critique.md",
+      "sha256": "ebeb489a2ab720bd4992c08865bb612bc887496eb256957e258529fabf2af503"
+    },
+    {
+      "path": "references/vendor/impeccable/skill/reference/delight.md",
+      "sha256": "4d1d7e08cb4af1fb23cb6cfbd6aa14c99b4abd7e6def850b4172e1cf9cdc5dd7"
+    },
+    {
+      "path": "references/vendor/impeccable/skill/reference/distill.md",
+      "sha256": "8f49ffada1860c05ac67317e53e49167418073b75ccb881a5f05bc1e1c54c11d"
+    },
+    {
+      "path": "references/vendor/impeccable/skill/reference/document.md",
+      "sha256": "7a33de9d78aff8cf2ac3660d309ad427548f369a14a7c34ab5695ea34803a00e"
+    },
+    {
+      "path": "references/vendor/impeccable/skill/reference/extract.md",
+      "sha256": "6cbc03369dc1aaf7fc2ed9d08aa2fcce3f5739970cbe3c01a65e4de0fd1d6673"
+    },
+    {
+      "path": "references/vendor/impeccable/skill/reference/harden.md",
+      "sha256": "d6407dc1443ea94f357d3b3e7e13b1a77c727118117e8f9f67d002dc70abd589"
+    },
+    {
+      "path": "references/vendor/impeccable/skill/reference/init.md",
+      "sha256": "e39e61ef536443a5fff232be4951ead82555a69926f88bc5396332b1ef2b928f"
+    },
+    {
+      "path": "references/vendor/impeccable/skill/reference/ios.md",
+      "sha256": "c272f8a58e95cea623e7d1bd258bbfb9f181f638374ffd6379d3f4838860d14b"
+    },
+    {
+      "path": "references/vendor/impeccable/skill/reference/layout.md",
+      "sha256": "2ea0ffe2b5d1520390d2ff54d1f14c5b667757fb7f15493a676f3ae3a9d12c1a"
+    },
+    {
+      "path": "references/vendor/impeccable/skill/reference/mode-operate.md",
+      "sha256": "c7fe24aa6f8b2e0e0b031fc814cb3d32ca04b5d70ee58e66800c734b5ba26ae2"
+    },
+    {
+      "path": "references/vendor/impeccable/skill/reference/mode-persuade.md",
+      "sha256": "272405420dd2a19fc9d2f427ea8d0552a289f3a625dda7d714fddb4669cf0dc9"
+    },
+    {
+      "path": "references/vendor/impeccable/skill/reference/mode-read.md",
+      "sha256": "01b078e86be58ff8f055cb7e57aa78a4460adfed29f1042fea79c657a479aafd"
+    },
+    {
+      "path": "references/vendor/impeccable/skill/reference/new-work.md",
+      "sha256": "2e17b7cff06a776b0ed6fcf9a2680ff25c06a1187a1e31b353030000af6b7c9c"
+    },
+    {
+      "path": "references/vendor/impeccable/skill/reference/optimize.md",
+      "sha256": "7e31e22a86bd4e9e260b0cea012ebc69612e7aa34995ac9f0cd16dfac803ee88"
+    },
+    {
+      "path": "references/vendor/impeccable/skill/reference/polish.md",
+      "sha256": "875457ab0d05466009e113619bfa6e38bb84eaf4c860486d1766fcfe1a0813b8"
+    },
+    {
+      "path": "references/vendor/impeccable/skill/reference/quieter.md",
+      "sha256": "0825c22ebb4a3f868d3c007755f50046a0575df05ce453601fd0582a36586f68"
+    },
+    {
+      "path": "references/vendor/impeccable/skill/reference/region-map.md",
+      "sha256": "a863f77c6285204e94bd4aa638abe051123d83332d5cc3e32da98002a81ed8a2"
+    },
+    {
+      "path": "references/vendor/impeccable/skill/reference/shape.md",
+      "sha256": "d25706efc815865785cac19c2a93f78163e0bb0d4400f00e0a01c0b023cc0cc4"
+    },
+    {
+      "path": "references/vendor/impeccable/skill/reference/typeset.md",
+      "sha256": "d249e985da33a27cec61142f960d89b2ebdf4f1e3ca5885aaef5455841cd3d05"
+    },
+    {
+      "path": "references/vendor/impeccable/skill/reference/visualize.md",
+      "sha256": "8e3d8995187a3c1c11f7537884cd8c1aed95ec985172d0a4f2c1884b0c13a7bf"
+    },
+    {
+      "path": "references/vendor/pro-max/LOCAL-KNOWLEDGE.md",
+      "sha256": "30562fcedbd061c5745b4025eb6dc0d90d675f9ee44a2b4b59d0fa5a4382cf40"
+    },
+    {
+      "path": "references/vendor/pro-max/src/ui-ux-pro-max/data/app-interface.csv",
+      "sha256": "331e7cf2c0b222d80c566c5f255c63cb339f65bfd02e471a720f28e4864a9f08"
+    },
+    {
+      "path": "references/vendor/pro-max/src/ui-ux-pro-max/data/charts.csv",
+      "sha256": "4115cf1120680f2cedef0676cb648f30c7ef4699e2a947535d4113e71ed3b12a"
+    },
+    {
+      "path": "references/vendor/pro-max/src/ui-ux-pro-max/data/colors.csv",
+      "sha256": "8162429222bce22df62b564085946a30d07cc9722c58d0a3a494bd0d1d00841c"
+    },
+    {
+      "path": "references/vendor/pro-max/src/ui-ux-pro-max/data/google-fonts.csv",
+      "sha256": "1c8c3b2ea1faf6a1012da463756def8b3889db33f2226f0343bb4daa80307d03"
+    },
+    {
+      "path": "references/vendor/pro-max/src/ui-ux-pro-max/data/icons.csv",
+      "sha256": "50816c6012030178195a16ee481ebf58b47bd985d70e8ec58886cc83f6eddafc"
+    },
+    {
+      "path": "references/vendor/pro-max/src/ui-ux-pro-max/data/landing.csv",
+      "sha256": "1c533739233c7e1e2d1ed40442aaf9af641aad87ea165ca88666a6b8a10d1ec6"
+    },
+    {
+      "path": "references/vendor/pro-max/src/ui-ux-pro-max/data/motion.csv",
+      "sha256": "75a57e6d60af96ab2c184e29b5eca91219f11a118b03921d88036d347e66838e"
+    },
+    {
+      "path": "references/vendor/pro-max/src/ui-ux-pro-max/data/products.csv",
+      "sha256": "42473f75e8dde5987bdf89ce55d8c168091b80a356cae691dd60247d80720b70"
+    },
+    {
+      "path": "references/vendor/pro-max/src/ui-ux-pro-max/data/react-performance.csv",
+      "sha256": "3d925802539abac5afeb63ae8aa1960b7229ad271b3a47caed40ab2d97ad0734"
+    },
+    {
+      "path": "references/vendor/pro-max/src/ui-ux-pro-max/data/stacks/angular.csv",
+      "sha256": "704be83f2bad30c7e6de01afb113ffa01e0c458762f48b7102f31ba2367b5553"
+    },
+    {
+      "path": "references/vendor/pro-max/src/ui-ux-pro-max/data/stacks/astro.csv",
+      "sha256": "2c2f55fadaafc05e04cc321c8194a1a28b656e6757fe2ba316f41b16428299c6"
+    },
+    {
+      "path": "references/vendor/pro-max/src/ui-ux-pro-max/data/stacks/avalonia.csv",
+      "sha256": "442fca14675a020683473e7e49f08abb27b9df0765c80efe54aef61f1a4ac258"
+    },
+    {
+      "path": "references/vendor/pro-max/src/ui-ux-pro-max/data/stacks/flutter.csv",
+      "sha256": "64dba0ac17349f28bce517a0f5f48c54d9ed2e487ec0c0258303463b382f41a0"
+    },
+    {
+      "path": "references/vendor/pro-max/src/ui-ux-pro-max/data/stacks/html-tailwind.csv",
+      "sha256": "b454edf14a5a69007dcbd3b2bcbbe6ffa2ab3ac3c0df2237a115b869efa44e5b"
+    },
+    {
+      "path": "references/vendor/pro-max/src/ui-ux-pro-max/data/stacks/javafx.csv",
+      "sha256": "2e819b8d5abdd23ad4dae0991650fdb57af497aabd68b37463aa9c442944c869"
+    },
+    {
+      "path": "references/vendor/pro-max/src/ui-ux-pro-max/data/stacks/jetpack-compose.csv",
+      "sha256": "699de218b286948eaec7d15767b6e1350ee299167e49bf476d82e3ff58724e0a"
+    },
+    {
+      "path": "references/vendor/pro-max/src/ui-ux-pro-max/data/stacks/laravel.csv",
+      "sha256": "854ea4daa5fc61292d22235ad33b49ba3fe22423c3de8d3cb03758ffed3b59f9"
+    },
+    {
+      "path": "references/vendor/pro-max/src/ui-ux-pro-max/data/stacks/nextjs.csv",
+      "sha256": "ecd2c27b2ea0127d203ae726060efcdd7335b5e83f96b99e4f3befbbfeebd5a4"
+    },
+    {
+      "path": "references/vendor/pro-max/src/ui-ux-pro-max/data/stacks/nuxt-ui.csv",
+      "sha256": "fce682a338cfcdbf35d318d20e5befbe7b5d81b05abc37f87677a6d9cde84dc6"
+    },
+    {
+      "path": "references/vendor/pro-max/src/ui-ux-pro-max/data/stacks/nuxtjs.csv",
+      "sha256": "3d9b54ed2d151bd9c86e9e5609b8a6f88a00c4c52fa601a30af96c49b2c4d176"
+    },
+    {
+      "path": "references/vendor/pro-max/src/ui-ux-pro-max/data/stacks/react-native.csv",
+      "sha256": "ba31dd9c0c04da6bc02a74448bf121f9c0728ae5ba3b4d47b487778b0a1135b5"
+    },
+    {
+      "path": "references/vendor/pro-max/src/ui-ux-pro-max/data/stacks/react.csv",
+      "sha256": "7c29cd626c5985982b442233abe367e9e5fc4da5ff9a4fe3d6ae4f18206a8786"
+    },
+    {
+      "path": "references/vendor/pro-max/src/ui-ux-pro-max/data/stacks/shadcn.csv",
+      "sha256": "e56cfde5b74907836ac3582a4779d5b7f3d206a702ab81b8669a1b668c3eeb51"
+    },
+    {
+      "path": "references/vendor/pro-max/src/ui-ux-pro-max/data/stacks/svelte.csv",
+      "sha256": "f6e379ba802941ba26b01d4ffbe3cd39120f2587659a1d93851c707f66bc13db"
+    },
+    {
+      "path": "references/vendor/pro-max/src/ui-ux-pro-max/data/stacks/swiftui.csv",
+      "sha256": "bdd9231ff3ad658f4e7c063e1eb49df2fd09ac8d90631a86df899b39833b9623"
+    },
+    {
+      "path": "references/vendor/pro-max/src/ui-ux-pro-max/data/stacks/threejs.csv",
+      "sha256": "041f57c980aea3cbfe65ab22ca0830174005947734a5187f75b8189ea95b9a13"
+    },
+    {
+      "path": "references/vendor/pro-max/src/ui-ux-pro-max/data/stacks/uno.csv",
+      "sha256": "a0474363e4225b5367214d5675fd3e075f137026f9500f0d04357882ef4f6d48"
+    },
+    {
+      "path": "references/vendor/pro-max/src/ui-ux-pro-max/data/stacks/uwp.csv",
+      "sha256": "c409f08c1fbba1f1029f1acaa554e7b4471cc85517a5751c9f2e62465badcd5c"
+    },
+    {
+      "path": "references/vendor/pro-max/src/ui-ux-pro-max/data/stacks/vue.csv",
+      "sha256": "b655f1ebb9dff2652d15981f31b1784c8a6d4759efd2815a14f3088257569f95"
+    },
+    {
+      "path": "references/vendor/pro-max/src/ui-ux-pro-max/data/stacks/winui.csv",
+      "sha256": "e676dc1c13ee6c205c40b0746f1335150a346c7a49a0616d2545bc3d2c930c85"
+    },
+    {
+      "path": "references/vendor/pro-max/src/ui-ux-pro-max/data/stacks/wpf.csv",
+      "sha256": "9781a9950b20333637b30a02e498b7efca21b618a3eeb8665836f3ac6e974da7"
+    },
+    {
+      "path": "references/vendor/pro-max/src/ui-ux-pro-max/data/styles.csv",
+      "sha256": "a93a4d9d7025856575d7b7583bda020be9043013432c5af7c58af9dbdfb206b7"
+    },
+    {
+      "path": "references/vendor/pro-max/src/ui-ux-pro-max/data/typography.csv",
+      "sha256": "afa2bfff4bcbe98e53ae576150d7f7936a9eb1da850a6b6ce5b3ace44eb78bbe"
+    },
+    {
+      "path": "references/vendor/pro-max/src/ui-ux-pro-max/data/ui-reasoning.csv",
+      "sha256": "2a12b61e3cd51f84456f0221c0109bab257b4ff8feea42dc21771737d9e57c10"
+    },
+    {
+      "path": "references/vendor/pro-max/src/ui-ux-pro-max/data/ux-guidelines.csv",
+      "sha256": "a21fc11cfd678e97b1d283e9f0adf0e9662385da5cf629b4299274a8e45691fe"
+    },
+    {
+      "path": "references/vendor/pro-max/src/ui-ux-pro-max/templates/base/quick-reference.md",
+      "sha256": "1de4f7d6edcfeb124b6bcf13928bcd790d19f083fe6afce27ffe0440ae452b98"
+    },
+    {
+      "path": "references/vendor/rampstack/skills/accessibility-audit/guide.md",
+      "sha256": "48b52a857333b0cd3058388ac3d55ea6ff5c92968d0280cd8fa02b6e5257fe31"
+    },
+    {
+      "path": "references/vendor/rampstack/skills/accessibility-audit/references/aria-patterns.md",
+      "sha256": "05a4b26826dbdadf82ca1e9da0e624428c8fc6f47554e269797b646804113591"
+    },
+    {
+      "path": "references/vendor/rampstack/skills/accessibility-audit/references/audit-report-template.md",
+      "sha256": "7373d5aa922f8a761f39924a2d2c1d6719dec58e513a5005b299627c3e893e79"
+    },
+    {
+      "path": "references/vendor/rampstack/skills/accessibility-audit/references/wcag-quick-reference.md",
+      "sha256": "08442e035776a6f154a0c8adfc0d8ec2cd3922ddbac669789d039a6a1110bb1c"
+    },
+    {
+      "path": "references/vendor/rampstack/skills/art-direction/guide.md",
+      "sha256": "b84fb1bd6f95e87b4082727e36f5e69108b8991e79b894eedc9c83295d9b41b1"
+    },
+    {
+      "path": "references/vendor/rampstack/skills/art-direction/references/creative-brief-template.md",
+      "sha256": "6dc4f3708b0fe81340014ce100d83bcbe9138520e11247936db2c6b6d3d939e4"
+    },
+    {
+      "path": "references/vendor/rampstack/skills/art-direction/references/illustration-brief.md",
+      "sha256": "7199ce3221c6565822104d98b7d68858a885e89c149c46f0ae6b4a2ddc35d6f9"
+    },
+    {
+      "path": "references/vendor/rampstack/skills/art-direction/references/photo-shoot-brief.md",
+      "sha256": "4842a0b5db00a95aa9c28befd20f337659fb0e064b04c8f692bc0ee7c3936bfb"
+    },
+    {
+      "path": "references/vendor/rampstack/skills/brand-ideation/guide.md",
+      "sha256": "852fd6e4afc9e96b1febeb0dc965338de7bb8ff6f9929bfc19373338d64b6dce"
+    },
+    {
+      "path": "references/vendor/rampstack/skills/brand-ideation/references/ideation-output-template.md",
+      "sha256": "69df57e3101fbda2203bd0716849b600244cb03aa96ff8c7b38303038e2b3124"
+    },
+    {
+      "path": "references/vendor/rampstack/skills/brand-ideation/references/naming-evaluation-rubric.md",
+      "sha256": "fc69a9433bf3ca50d5d20180d03be0fdb103eac012546343388912d2a3e81de2"
+    },
+    {
+      "path": "references/vendor/rampstack/skills/chatbot-flow-design/guide.md",
+      "sha256": "900531066cfb0261bae85d21a2ca62342fd23a84d650d02520863ff790ba3b09"
+    },
+    {
+      "path": "references/vendor/rampstack/skills/chatbot-flow-design/references/branching-and-conditional-logic.md",
+      "sha256": "4b03353c61150710ddad4dc24d92e07fa0f52732c889de6dcca13b690618d02d"
+    },
+    {
+      "path": "references/vendor/rampstack/skills/chatbot-flow-design/references/chatbot-anti-patterns.md",
+      "sha256": "499e765123c4d0443308a89a3a365c5ae7a786d0e4525d4f152f22b2b8c9146b"
+    },
+    {
+      "path": "references/vendor/rampstack/skills/chatbot-flow-design/references/chatbot-decision-criteria.md",
+      "sha256": "6b84f5071475da8b8f509e1c9777ec0e308916c1f72efc9b8a88383f8f89a7ab"
+    },
+    {
+      "path": "references/vendor/rampstack/skills/chatbot-flow-design/references/common-chatbot-failures.md",
+      "sha256": "d37a724c514678c69c4302bca0f49c62f04447851353c11bbc25c42b009958b1"
+    },
+    {
+      "path": "references/vendor/rampstack/skills/chatbot-flow-design/references/conversation-analytics-patterns.md",
+      "sha256": "e2c24a38a88f4768cc3cba1c14131c7cd6578c00f52183d7dc478d5edfa5e888"
+    },
+    {
+      "path": "references/vendor/rampstack/skills/chatbot-flow-design/references/escalation-to-human-patterns.md",
+      "sha256": "40fcf445305900fe3816932dab49136aea484be99a272936d65df25cbd54e631"
+    },
+    {
+      "path": "references/vendor/rampstack/skills/chatbot-flow-design/references/fallback-pattern-design.md",
+      "sha256": "8101c6a4ad193e220d47ef9f052eb6c7c0f6e2f34c62819a181fe9931987dd3c"
+    },
+    {
+      "path": "references/vendor/rampstack/skills/chatbot-flow-design/references/intent-architecture-patterns.md",
+      "sha256": "4d5f016566d838e401d1d7de1976150d8579b54eb7d0660bbeda5cd517fb2342"
+    },
+    {
+      "path": "references/vendor/rampstack/skills/chatbot-flow-design/references/knowledge-base-grounding-patterns.md",
+      "sha256": "c429ea73dd21e7e09c7de0a9598a6cd70b773dabf58c2e69975f24fbbf2d4d3e"
+    },
+    {
+      "path": "references/vendor/rampstack/skills/comparison-tool-design/guide.md",
+      "sha256": "1663a94e981821acb885b80e07c5c1396931742d7ec7210054a346e29205bb51"
+    },
+    {
+      "path": "references/vendor/rampstack/skills/comparison-tool-design/references/axis-selection-patterns.md",
+      "sha256": "4bb5b634e25f881779e9f21140a993f9a2a9d4989ae25b2744f66bf6ea4fe520"
+    },
+    {
+      "path": "references/vendor/rampstack/skills/comparison-tool-design/references/common-comparison-failures.md",
+      "sha256": "1af2dfb54ec71c750ddacae7b74c3dabe8a484ea499912b7136d6ea62f6a8d7a"
+    },
+    {
+      "path": "references/vendor/rampstack/skills/comparison-tool-design/references/comparison-anti-patterns.md",
+      "sha256": "a2826999cead092dddfda1558274f5fa3e297346ee8c0873ddf55eece4c8be96"
+    },
+    {
+      "path": "references/vendor/rampstack/skills/comparison-tool-design/references/comparison-fatigue-patterns.md",
+      "sha256": "864c71b29f50df38ef530f0f8d033bfe0622f38c8234d45c9c64577b9a3514f5"
+    },
+    {
+      "path": "references/vendor/rampstack/skills/comparison-tool-design/references/comparison-tool-decision-criteria.md",
+      "sha256": "11d5edd4cec6a59827f9c84bb6e962eeec07cc358c08070119c219f3c8ffc833"
+    },
+    {
+      "path": "references/vendor/rampstack/skills/comparison-tool-design/references/default-comparison-logic.md",
+      "sha256": "7ae1dc58f2621f378f2b8d97e6052a638728650b8a25778207ce0e9874bd1f3d"
+    },
+    {
+      "path": "references/vendor/rampstack/skills/comparison-tool-design/references/filter-and-toggle-patterns.md",
+      "sha256": "bf878b611bbfd26f3ef3d441f352d0b0981e70bb63e0b021b3533d4924bd050e"
+    },
+    {
+      "path": "references/vendor/rampstack/skills/comparison-tool-design/references/honest-recommendation-discipline.md",
+      "sha256": "fe07bf6430810de724755a8d63c293f84bfe9ae595336d5700cb876b745b0f83"
+    },
+    {
+      "path": "references/vendor/rampstack/skills/comparison-tool-design/references/recommendation-engine-design.md",
+      "sha256": "b0be9b45347e0bbdd0d0eaaa56a6b9dc658e415a6f7b82e6516d24d9a0308c6a"
+    },
+    {
+      "path": "references/vendor/rampstack/skills/competitor-experience-audit/guide.md",
+      "sha256": "19092f12e7d6b4e1d5c8bdf7e7e1ab3e9dd2b6e301c0cfbce745522ca09ff09c"
+    },
+    {
+      "path": "references/vendor/rampstack/skills/competitor-experience-audit/references/audit-template.md",
+      "sha256": "85eb4407230a6e7c11595be42899d43aaf636d5475e42e9f99aac645dc7133d3"
+    },
+    {
+      "path": "references/vendor/rampstack/skills/competitor-experience-audit/references/experience-dimensions-checklist.md",
+      "sha256": "94976b554a8adef49861dc219ba96ec59ea0ff513f771a742efc9df4137e9c45"
+    },
+    {
+      "path": "references/vendor/rampstack/skills/content-and-copy/guide.md",
+      "sha256": "de81c789be2a488960ccd855f87081c441db8ebcae3702a57bd3b1d4ee5cfaaf"
+    },
+    {
+      "path": "references/vendor/rampstack/skills/content-and-copy/references/content-brief-template.md",
+      "sha256": "3d11f3f1d3b03457aba2b41b52e8f8b4c84b7d5cda1606743295a400ade97aff"
+    },
+    {
+      "path": "references/vendor/rampstack/skills/content-and-copy/references/content-edit-checklist.md",
+      "sha256": "01d22a7c49302cc6f27d18f8a139fc0ddfbabf00225a11d107e228e23b94da79"
+    },
+    {
+      "path": "references/vendor/rampstack/skills/content-brief-authoring/guide.md",
+      "sha256": "0706bb900b43d22631e9aeb5ee177a8b118b301c3c0b2bbe7fcb2494ad429b44"
+    },
+    {
+      "path": "references/vendor/rampstack/skills/content-brief-authoring/references/brief-governance-patterns.md",
+      "sha256": "72821b98c10495fa04e07832cdbc579c65559bb533e9014b198b37adec92cfa1"
+    },
+    {
+      "path": "references/vendor/rampstack/skills/content-brief-authoring/references/brief-templates.md",
+      "sha256": "adf1085f8dc855e87e482c2b487a9dc982495286240b2986e08560cc0b161f25"
+    },
+    {
+      "path": "references/vendor/rampstack/skills/content-brief-authoring/references/common-brief-failures.md",
+      "sha256": "284828f5d4d0d7a45ce1d64e0371bc60c8a00fd1977dcd08b5f44f6eeb8245fe"
+    },
+    {
+      "path": "references/vendor/rampstack/skills/content-brief-authoring/references/entity-coverage-checklist.md",
+      "sha256": "c4b99469a8df07f3b03c57ae567513c4bb9c213d95320c4b07046cbfe52f85db"
+    },
+    {
+      "path": "references/vendor/rampstack/skills/content-brief-authoring/references/heading-structure-patterns.md",
+      "sha256": "2ff9010c6923d0f83d5a5b9f65d086d885341a6973a6b827668854b195c4cf52"
+    },
+    {
+      "path": "references/vendor/rampstack/skills/content-brief-authoring/references/internal-linking-strategy.md",
+      "sha256": "2fab543b0bd4eee0274d02f190f487efb2d7dd7b8a1e0d104be422ec468757f7"
+    },
+    {
+      "path": "references/vendor/rampstack/skills/content-brief-authoring/references/search-intent-classification.md",
+      "sha256": "b1ebbf5d138d5352bf71d443ba5f31974d432550e641b9de588e6337fdfcecfc"
+    },
+    {
+      "path": "references/vendor/rampstack/skills/content-brief-authoring/references/writer-handoff-protocols.md",
+      "sha256": "21b3b88d32eaec4da526bb032b10513fa1a5c374b8b910e1264c09b06efd57cf"
+    },
+    {
+      "path": "references/vendor/rampstack/skills/creative-brief-selector/guide.md",
+      "sha256": "daa201356656afc0d3406894825bd879f86a840a30ab536057f6baa332c3e1e5"
+    },
+    {
+      "path": "references/vendor/rampstack/skills/creative-brief-selector/references/00-overview.md",
+      "sha256": "c55e325f716ddb060d977bf01920bf73b8922d4ab797c564c24c1bc78e4e7459"
+    },
+    {
+      "path": "references/vendor/rampstack/skills/creative-brief-selector/references/01-process.md",
+      "sha256": "a425369dfcc9760a5b024c6d7739b8d62f76abae812e96c1e9964ae61ebe69a5"
+    },
+    {
+      "path": "references/vendor/rampstack/skills/creative-brief-selector/references/03-divergence-check.md",
+      "sha256": "a9e7501b83caa5961cd87e3fd2941f25e58c82f0f1452f1d52ca54aea4984dd1"
+    },
+    {
+      "path": "references/vendor/rampstack/skills/creative-brief-selector/references/05-section-shapes-vocabulary.md",
+      "sha256": "ffa8ed013e6d2ba7320a2413577316310a870e632207a588e9f604e09fb5f4da"
+    },
+    {
+      "path": "references/vendor/rampstack/skills/creative-brief-selector/references/reference-bank/README.md",
+      "sha256": "8be6d76a79bfa453780e185ceb8a15dd55ff4ef991780fa32656be3464b12bb9"
+    },
+    {
+      "path": "references/vendor/rampstack/skills/creative-brief-selector/references/reference-bank/bold-confident-editorial-restrained-aaa-game-studio.md",
+      "sha256": "ddaefaa62976c79a6df70d50552b976492f76d7e91b3bcb396de153b9b6b4aa4"
+    },
+    {
+      "path": "references/vendor/rampstack/skills/creative-brief-selector/references/reference-bank/bold-confident-vibrant-saturated-single-ip-game-title.md",
+      "sha256": "ccdbe894a4c7653ba61a655a6c9a9869dfa8f6cb88f113f0c6b7bc77caaba4d1"
+    },
+    {
+      "path": "references/vendor/rampstack/skills/creative-brief-selector/references/reference-bank/editorial-restrained-documentary-honest-specialty-coffee-subscription.md",
+      "sha256": "9f1932128851b6847498eb43e35a951eaac19d5e9d70619c55e895462e9d9df9"
+    },
+    {
+      "path": "references/vendor/rampstack/skills/creative-brief-selector/references/reference-bank/editorial-restrained-literary-quarterly.md",
+      "sha256": "c948760be0c76a3d759c44b10937e594f14f0490dcef491bb94a2093608fb89f"
+    },
+    {
+      "path": "references/vendor/rampstack/skills/creative-brief-selector/references/reference-bank/heritage-local-service-barbershop.md",
+      "sha256": "0fddf6a85b753212f3fcd02dadccac7625760a7a5744ffa0efac03747f8f2d26"
+    },
+    {
+      "path": "references/vendor/rampstack/skills/creative-brief-selector/references/reference-bank/hospitality-experience-balloon-ride.md",
+      "sha256": "fb35d98b66822d4f15f5bf1262100e4f2c1c85247619d51b1eb76317c74364dc"
+    },
+    {
+      "path": "references/vendor/rampstack/skills/creative-brief-selector/references/reference-bank/luxe-considered-curated-stays-directory.md",
+      "sha256": "2b03851ac4cbd3f9474224090d9d1bd336c4e835f068380b85319fbdc6ac9217"
+    },
+    {
+      "path": "references/vendor/rampstack/skills/creative-brief-selector/references/reference-bank/luxe-considered-editorial-restrained-residential-architectural-brokerage.md",
+      "sha256": "c7ecbaddafd9bbdde420d4fd75522ae98caf487e343b8f7dffc709968a738ffa"
+    },
+    {
+      "path": "references/vendor/rampstack/skills/creative-brief-selector/references/reference-bank/minimal-essentialist-documentary-honest-trades-directory.md",
+      "sha256": "05b42f82dfffbbe591f25ef91a3720692c68455310eb16d9fb7ea9782e796d3c"
+    },
+    {
+      "path": "references/vendor/rampstack/skills/creative-brief-selector/references/reference-bank/premium-dtc-maker-western-boots.md",
+      "sha256": "2d9c4e5bc382db032044e06855780d0782b9f97eaf772a461cbb0d3363d43ca4"
+    },
+    {
+      "path": "references/vendor/rampstack/skills/creative-brief-selector/references/reference-bank/rugged-utilitarian-documentary-honest-regional-used-vehicle-marketplace.md",
+      "sha256": "49867611d6640545dfef6f524b3ad2371ae0850f9ba8f67eaf09398788a7bc67"
+    },
+    {
+      "path": "references/vendor/rampstack/skills/creative-brief/guide.md",
+      "sha256": "da88ffc8eab31b494a7f06948e487fce30014b69363e81281879f8a1ad4063a5"
+    },
+    {
+      "path": "references/vendor/rampstack/skills/creative-brief/references/creative-brief-template.md",
+      "sha256": "7bacb1406fb3552b5055856f868b662e7b9836e68a13834ddcfb0777bb23f2d9"
+    },
+    {
+      "path": "references/vendor/rampstack/skills/creative-brief/references/example-brief.md",
+      "sha256": "fbf03f9ce2628172141d3c1d4fe5476c17190a58d75a189cdb92dc4a7d7babc1"
+    },
+    {
+      "path": "references/vendor/rampstack/skills/creative-brief/references/voice-and-tone-guide.md",
+      "sha256": "f5836abb6a224bfd5e754fa92682fb149045f0e2c97fd1b6f0bf2d1abe4dd897"
+    },
+    {
+      "path": "references/vendor/rampstack/skills/creative-direction/guide.md",
+      "sha256": "9416565a77abceb5861b3102719799ec85a274b03abc77c0795be35f896c6668"
+    },
+    {
+      "path": "references/vendor/rampstack/skills/creative-direction/references/axes-explained.md",
+      "sha256": "a908eb126038b3c55e6145e6cedcdd501d2709d56489972a21b27edbe4770f53"
+    },
+    {
+      "path": "references/vendor/rampstack/skills/creative-direction/references/brief-template.md",
+      "sha256": "3e31483a6b875fcccbe6bd7fe5acbb3f85d40d35ec5d1971c3eaedd11254725c"
+    },
+    {
+      "path": "references/vendor/rampstack/skills/creative-direction/references/example-aesthetic-brief.md",
+      "sha256": "35c396c31f9f8022ec826cb7f6f05bea5b7d420594a47a43869acd982199271f"
+    },
+    {
+      "path": "references/vendor/rampstack/skills/design-standards/guide.md",
+      "sha256": "e34a375cec292c13e3554d6da9413a6f340e2ed953d1348262c84fd10552c7c2"
+    },
+    {
+      "path": "references/vendor/rampstack/skills/design-standards/references/design-tokens-template.md",
+      "sha256": "9aaae99b402d8962ede45fa4fd2e13bc0c89a13ac4ecbbd94e4a1d72de457454"
+    },
+    {
+      "path": "references/vendor/rampstack/skills/design-standards/references/preship-checklist.md",
+      "sha256": "61ed930a1eecb412cbdf5117b00cb0094ff5c87674bde6756d246a6691960daa"
+    },
+    {
+      "path": "references/vendor/rampstack/skills/design-standards/references/tailwind-patterns.md",
+      "sha256": "2d5e26234257c15b94479247ef51ea7d5cf47396320ef0c056bcbb38a6a1d821"
+    },
+    {
+      "path": "references/vendor/rampstack/skills/design-system/guide.md",
+      "sha256": "6b947cabdf585a084ec85667b1fcde0c6b20fd1434fbea46a32e4de12f02decb"
+    },
+    {
+      "path": "references/vendor/rampstack/skills/design-system/references/governance-playbook.md",
+      "sha256": "d4c924548717017f9366c266da832656a8d0a0bab517847d201034dd2ad45b51"
+    },
+    {
+      "path": "references/vendor/rampstack/skills/design-system/references/system-architecture.md",
+      "sha256": "69fdefc9cd3830aeea765c614cbb6eda58847dc02ce309f861e6d40f2554dca7"
+    },
+    {
+      "path": "references/vendor/rampstack/skills/design-system/references/system-audit-template.md",
+      "sha256": "c11f1ac1c06cf0b357235d367eb0ff3ca38fab7f939ba56325f7447f46f3ffef"
+    },
+    {
+      "path": "references/vendor/rampstack/skills/discovery-research-synthesis/guide.md",
+      "sha256": "284a0975758b9c737cedeba7ecada5573617168639017365cc30c72e9ae1beca"
+    },
+    {
+      "path": "references/vendor/rampstack/skills/discovery-research-synthesis/references/common-discovery-synthesis-failures.md",
+      "sha256": "86c92682cbe4de3695d9001020723605eb5225ccfe4f3dfec7dd796e880a4e34"
+    },
+    {
+      "path": "references/vendor/rampstack/skills/discovery-research-synthesis/references/from-pattern-to-product-implication.md",
+      "sha256": "469a1f3785b9524f1d74b2343c7e058b37149d3fc61c7877ab905ec1cfb8effa"
+    },
+    {
+      "path": "references/vendor/rampstack/skills/discovery-research-synthesis/references/pattern-naming-patterns.md",
+      "sha256": "7219c48ed3ee8969d84ee11a844ed3237229d9c78ab758bef138f2b442723369"
+    },
+    {
+      "path": "references/vendor/rampstack/skills/discovery-research-synthesis/references/research-types-and-when-each-fits.md",
+      "sha256": "5ee2df1fae80cdb87a55c41661942d02ab61c9d1999686229c9a8cc46ba86716"
+    },
+    {
+      "path": "references/vendor/rampstack/skills/discovery-research-synthesis/references/synthesis-review-and-validation.md",
+      "sha256": "ef47d8600a7e07524d322d308f6360e6d4c3b1a3e8e96001659825a8faacd4fb"
+    },
+    {
+      "path": "references/vendor/rampstack/skills/discovery-research-synthesis/references/synthesis-sequence-walkthrough.md",
+      "sha256": "443c0b2d162f94d4dcda1d4e54bdd28fc0a8cb3fafc25599e4f74e074f3512a3"
+    },
+    {
+      "path": "references/vendor/rampstack/skills/discovery-research-synthesis/references/tagging-and-clustering-discipline.md",
+      "sha256": "ddebf31660a08024dcd95564fb09b629a0f46f7817804bdd6183f0602a641eaf"
+    },
+    {
+      "path": "references/vendor/rampstack/skills/discovery-research-synthesis/references/when-to-gather-more-data.md",
+      "sha256": "6fb7f54ea991ca96dccf2cf49a26751f3e984cbcec9afaee5b67f543177c4de5"
+    },
+    {
+      "path": "references/vendor/rampstack/skills/discovery-research-synthesis/references/writing-for-decisions-not-decks.md",
+      "sha256": "1b87281ef1fc57dafa390522398268dcb37151b52a985cefd2009eac39682dbe"
+    },
+    {
+      "path": "references/vendor/rampstack/skills/form-strategy/guide.md",
+      "sha256": "aa37fae830fd57b34dc0a0de3b3df94146feb43e11f7fba8872052eeb6264f5e"
+    },
+    {
+      "path": "references/vendor/rampstack/skills/form-strategy/references/form-anatomy-checklist.md",
+      "sha256": "932a1b7edb2f5068191f334aa96429e35d51f254b73eb1cd51a62536aeadcf89"
+    },
+    {
+      "path": "references/vendor/rampstack/skills/frontend-component-build/guide.md",
+      "sha256": "66d4f2eed19fb1dafcc602c4aacdb6d64c731e612b16eea2351090768e51fbbc"
+    },
+    {
+      "path": "references/vendor/rampstack/skills/frontend-component-build/references/accessibility-patterns.md",
+      "sha256": "70671e79e3158c345d34fe3f2d50ceec92ab684167e03faa627487c3b6716a9c"
+    },
+    {
+      "path": "references/vendor/rampstack/skills/frontend-component-build/references/component-api-patterns.md",
+      "sha256": "3796ac8e510738c037db292ab00cc2fea2c70a9ec6a72f3941f398e5b5893756"
+    },
+    {
+      "path": "references/vendor/rampstack/skills/frontend-component-build/references/component-spec-template.md",
+      "sha256": "472fc10eb173276b26de66e735b5d97288472d553a567351aafb4e30cd8cdffb"
+    },
+    {
+      "path": "references/vendor/rampstack/skills/information-architecture/guide.md",
+      "sha256": "8ac5689391032ebd01b633ee5ed8c1919c55120e06149640a86c9f9509cb8f6c"
+    },
+    {
+      "path": "references/vendor/rampstack/skills/information-architecture/references/ia-document-template.md",
+      "sha256": "909801ececda0767eb54e0249ad91809ad7768d3111af75cb5076861e0531747"
+    },
+    {
+      "path": "references/vendor/rampstack/skills/information-architecture/references/url-pattern-library.md",
+      "sha256": "f8888719a97aa2871962dd8adbe42a82852917d0b186b92851b90c0e3e56b981"
+    },
+    {
+      "path": "references/vendor/rampstack/skills/interactive-product-tour/guide.md",
+      "sha256": "b44353419d1bd4c21444363b95c0ffaa3e1c231b3bff8f7871c854711ea2f959"
+    },
+    {
+      "path": "references/vendor/rampstack/skills/interactive-product-tour/references/common-tour-failures.md",
+      "sha256": "4cc37600e6982794c3eb0f782a9c842c57ad0b6c85a43ce4b3794b655365814e"
+    },
+    {
+      "path": "references/vendor/rampstack/skills/interactive-product-tour/references/completion-tracking-and-re-trigger.md",
+      "sha256": "7bcbd2d9f281f3904121959ab1226f3918f11c2c8fce53999ca8aa0cee8aef6b"
+    },
+    {
+      "path": "references/vendor/rampstack/skills/interactive-product-tour/references/contextual-placement-patterns.md",
+      "sha256": "b5f72fa025f6077f67f6ceb4b4cd2e3bc68eb1fa7876abffd3a4d37bff7c1b9e"
+    },
+    {
+      "path": "references/vendor/rampstack/skills/interactive-product-tour/references/dismissal-and-non-intrusion-patterns.md",
+      "sha256": "edb0924ad8d91e4a47959c9dd93e3e74aabb9c67f24fcebe534a236747a3e0c8"
+    },
+    {
+      "path": "references/vendor/rampstack/skills/interactive-product-tour/references/power-user-vs-new-user-patterns.md",
+      "sha256": "0cf15f0fae0ea8aa4269e2e633225b5ce4a01bf1dc7300e64161098131b3a96e"
+    },
+    {
+      "path": "references/vendor/rampstack/skills/interactive-product-tour/references/tour-anti-patterns.md",
+      "sha256": "3342e9506d7e4532b9c8c8a9b5566dc6c780c2eefa5943b6509b812c627b0654"
+    },
+    {
+      "path": "references/vendor/rampstack/skills/interactive-product-tour/references/tour-architecture-patterns.md",
+      "sha256": "10a9868549506111fe1b7b9a5bdf449afbfd7beb647cfcafa773ea2ad2628d78"
+    },
+    {
+      "path": "references/vendor/rampstack/skills/interactive-product-tour/references/tour-decision-criteria.md",
+      "sha256": "bc4013bf308c6bbd53c626d58f1d4b8375af94661b93f056c6e43e8ac3b2d0ba"
+    },
+    {
+      "path": "references/vendor/rampstack/skills/interactive-product-tour/references/trigger-logic-patterns.md",
+      "sha256": "6caaa251d1f4672536a95255eba18ccece2a42549b899e83459c396265a3912e"
+    },
+    {
+      "path": "references/vendor/rampstack/skills/internationalization/guide.md",
+      "sha256": "a92e493ddc58ad6871ebd02ae4266fbdfea0fc4910d794eb0684c7c36ad50958"
+    },
+    {
+      "path": "references/vendor/rampstack/skills/internationalization/references/locale-checklist.md",
+      "sha256": "36ba35ad3e95590aed68f854df9652d380cdda196c85c559215185db4c047756"
+    },
+    {
+      "path": "references/vendor/rampstack/skills/journey-mapping/guide.md",
+      "sha256": "6229e65ab76c79798ceb8cb60ea78f9e4af9907f71170340539785c885d72fbc"
+    },
+    {
+      "path": "references/vendor/rampstack/skills/journey-mapping/references/journey-map-template.md",
+      "sha256": "2e1a9a1e09deefeb6df6f5e5632061a6fbfd8ba7b3d30cc9df02d8552f68800b"
+    },
+    {
+      "path": "references/vendor/rampstack/skills/jtbd-framing/guide.md",
+      "sha256": "8c8feea1494d1c6cdbc70dc99625410a4c1d73f2b60459dae9760ca42f1a91b0"
+    },
+    {
+      "path": "references/vendor/rampstack/skills/jtbd-framing/references/applying-jtbd-to-discovery.md",
+      "sha256": "b390d2cc4b435a868e9c69a77b1c8d08b4df85fd4e025d9d2d252163763f06ac"
+    },
+    {
+      "path": "references/vendor/rampstack/skills/jtbd-framing/references/applying-jtbd-to-positioning.md",
+      "sha256": "92232de3d75a814ad6ccc566160bd7fcd46dee222a6ca9874a0ef109236b3165"
+    },
+    {
+      "path": "references/vendor/rampstack/skills/jtbd-framing/references/applying-jtbd-to-prioritization.md",
+      "sha256": "2f6bde96172a3e5965d226dba693121ab78781d39e7de0add61708dba3ff9ca4"
+    },
+    {
+      "path": "references/vendor/rampstack/skills/jtbd-framing/references/common-jtbd-failures.md",
+      "sha256": "7811fd590e1417fa75c6b08335b05b030464e6e3971b19222239a7455257d4db"
+    },
+    {
+      "path": "references/vendor/rampstack/skills/jtbd-framing/references/functional-emotional-social-dimensions.md",
+      "sha256": "cd0e83fdcd51f25e0e8023ed6cec32ace19390235475a7fa41235126e3bea330"
+    },
+    {
+      "path": "references/vendor/rampstack/skills/jtbd-framing/references/hire-and-fire-criteria.md",
+      "sha256": "c9170724fba4ee087f4f554e40e331b8a557322656edcb933d55e54f73a0edee"
+    },
+    {
+      "path": "references/vendor/rampstack/skills/jtbd-framing/references/identifying-struggling-moments.md",
+      "sha256": "7b119850ac5f71fac5a5352b45001d7ce9ef0127b832adfd70ef663a25c634be"
+    },
+    {
+      "path": "references/vendor/rampstack/skills/jtbd-framing/references/job-statement-structure-patterns.md",
+      "sha256": "6a9cb3d250bc620a60c47dbb1ed32ec66656a5d916dba7bd42ed0542fa3bdedc"
+    },
+    {
+      "path": "references/vendor/rampstack/skills/multi-step-form-design/guide.md",
+      "sha256": "58c3b509b594e650e309d587374d987e55db0e9c2bc4e6e9f2c9acc807bfc5fe"
+    },
+    {
+      "path": "references/vendor/rampstack/skills/multi-step-form-design/references/common-multi-step-form-failures.md",
+      "sha256": "fcbe2ac4f56b25ddda931ab8f517124ec70301c474152bfde891a37b80a7f2f2"
+    },
+    {
+      "path": "references/vendor/rampstack/skills/multi-step-form-design/references/conditional-logic-patterns.md",
+      "sha256": "6c966ec1b8b5b023df7e75b3da77cb1d68353a5bcf0410d8889346ef9ffc4e4a"
+    },
+    {
+      "path": "references/vendor/rampstack/skills/multi-step-form-design/references/drop-off-measurement-and-remediation.md",
+      "sha256": "4f860f52ce96e6760abb975c843b3fc5dc6ce3bf3eb7155bb0395e96ff9056fc"
+    },
+    {
+      "path": "references/vendor/rampstack/skills/multi-step-form-design/references/form-anti-patterns.md",
+      "sha256": "cea5fcaf24f596c514ca3f24104d3ab7852a634c3ad06584940e22242099c692"
+    },
+    {
+      "path": "references/vendor/rampstack/skills/multi-step-form-design/references/multi-step-decision-criteria.md",
+      "sha256": "98cb0e357c87e63bf2a1fc46be080e546c468c211c73080338041d0bc74b911c"
+    },
+    {
+      "path": "references/vendor/rampstack/skills/multi-step-form-design/references/progress-indicator-patterns.md",
+      "sha256": "86ee1a3c7fe135ab1ff64bcf19ab1dfe20f5e43d13047bbd907d9185588e9095"
+    },
+    {
+      "path": "references/vendor/rampstack/skills/multi-step-form-design/references/save-and-resume-mechanics.md",
+      "sha256": "59e6007f1b4c3b4a70d5527da568bcc741f98dea1a60ebc321ea9e3fd74fa350"
+    },
+    {
+      "path": "references/vendor/rampstack/skills/multi-step-form-design/references/step-architecture-patterns.md",
+      "sha256": "94b8794083fe2005592535f736f817eb22f9387a8cfad08f6eb835251910290f"
+    },
+    {
+      "path": "references/vendor/rampstack/skills/multi-step-form-design/references/validation-strategy-patterns.md",
+      "sha256": "335ec2d96faec031e93dc1f4d99b8576c593858789bf0b1105f476422603b41b"
+    },
+    {
+      "path": "references/vendor/rampstack/skills/onboarding-wizard-design/guide.md",
+      "sha256": "2778c9fa9e0b0b493472f0360fa30eafc4e5496c347ed9b039f9cd2a385ba73f"
+    },
+    {
+      "path": "references/vendor/rampstack/skills/onboarding-wizard-design/references/ah-ha-moment-engineering.md",
+      "sha256": "38341860c790f99e8343cd682341b71cf21f72651fd508bb6c9b9228d6f05bb7"
+    },
+    {
+      "path": "references/vendor/rampstack/skills/onboarding-wizard-design/references/common-onboarding-failures.md",
+      "sha256": "d2415ca45ec23d871b68b0b92dd7324a7344e0ebbabe8d3e45c324c967abf164"
+    },
+    {
+      "path": "references/vendor/rampstack/skills/onboarding-wizard-design/references/drop-off-measurement-templates.md",
+      "sha256": "586c98d1fa78a2cfb01e7b91ab86a88003586310ed3e8cf5845f7344201d13be"
+    },
+    {
+      "path": "references/vendor/rampstack/skills/onboarding-wizard-design/references/progressive-disclosure-patterns.md",
+      "sha256": "865ab8263b3a332b1e3783ca6caf2a5cf71ef12593483ce81177e5c069b0733a"
+    },
+    {
+      "path": "references/vendor/rampstack/skills/onboarding-wizard-design/references/skip-and-resume-mechanics.md",
+      "sha256": "e73bcf34b9f447908da8036c11a78ff86a7bbb7565313d21260d4a2ff1884f32"
+    },
+    {
+      "path": "references/vendor/rampstack/skills/onboarding-wizard-design/references/step-architecture-patterns.md",
+      "sha256": "1577253d88af1513e037a6262fad92311ec0efcc8af4aa1534326babaea577e6"
+    },
+    {
+      "path": "references/vendor/rampstack/skills/onboarding-wizard-design/references/user-type-variation-patterns.md",
+      "sha256": "869e2dd0b9bed2b273c9c5d45c7fba20345364dbf77713b21e85940386bed604"
+    },
+    {
+      "path": "references/vendor/rampstack/skills/onboarding-wizard-design/references/wizard-anti-patterns.md",
+      "sha256": "f438e0ed58e49d7e795c9ec99dbc488d64a745ccff285679a956f40f6e20de6d"
+    },
+    {
+      "path": "references/vendor/rampstack/skills/onboarding-wizard-design/references/wizard-decision-criteria.md",
+      "sha256": "9d471f3161026f7e1c42a4bc00053ded2fae803db93f1e1617d1ffce07eee138"
+    },
+    {
+      "path": "references/vendor/rampstack/skills/product-configurator-design/guide.md",
+      "sha256": "42943db774ecbac0f8e2888dd29256c6e43925cc5a9c246891e7fc379970bfab"
+    },
+    {
+      "path": "references/vendor/rampstack/skills/product-configurator-design/references/common-configurator-failures.md",
+      "sha256": "1a3426f365b9095a2254b51e646100dcb99cfeb337a68c31ab139dcfa63e07bd"
+    },
+    {
+      "path": "references/vendor/rampstack/skills/product-configurator-design/references/configurator-anti-patterns.md",
+      "sha256": "ce2532d59f4bd19b94d6687d862b30335fdbd0f1d821607ad7db96ea239cda7e"
+    },
+    {
+      "path": "references/vendor/rampstack/skills/product-configurator-design/references/configurator-decision-criteria.md",
+      "sha256": "7752e84711cbb2eb03afc7bb5936473fdbafeec7b27c4e4ef58e1d536b4238c7"
+    },
+    {
+      "path": "references/vendor/rampstack/skills/product-configurator-design/references/configurator-to-cart-handoff.md",
+      "sha256": "05cb13ca1b6398a8652e42b1f98dd625b1412517a8d401bd5349f7c48f40b739"
+    },
+    {
+      "path": "references/vendor/rampstack/skills/product-configurator-design/references/constraint-logic-patterns.md",
+      "sha256": "47b1e591ee16b670295da41771f5cf912a1c5dbe53b817107d9309b273dbc23d"
+    },
+    {
+      "path": "references/vendor/rampstack/skills/product-configurator-design/references/default-configuration-design.md",
+      "sha256": "4e9a0bf1ea30010a6360e337a45faaa35b1ec850925420060bfd76d1cdc8ca62"
+    },
+    {
+      "path": "references/vendor/rampstack/skills/product-configurator-design/references/real-time-pricing-patterns.md",
+      "sha256": "89fcd1b102cafa7ed8a6d9e21e02447bb0a9ba03e91f1524cffd764e060c1889"
+    },
+    {
+      "path": "references/vendor/rampstack/skills/product-configurator-design/references/save-and-share-mechanics.md",
+      "sha256": "9675f2f8bc8199a4ab28f1e84c7e30ba3760a23a22f088ac92d9a91aec98982f"
+    },
+    {
+      "path": "references/vendor/rampstack/skills/product-configurator-design/references/validation-and-error-patterns.md",
+      "sha256": "8fa78fc5ba68baf855f403f956c0f33ba99d14d0d6258f6c396d9ae7c80946ff"
+    },
+    {
+      "path": "references/vendor/rampstack/skills/qa-testing/guide.md",
+      "sha256": "813887821339c11d348a82f55ea796b407040bfdecfe23e705bb641d83001e9c"
+    },
+    {
+      "path": "references/vendor/rampstack/skills/qa-testing/references/qa-report-template.md",
+      "sha256": "9384ae89205aa891508366d1eaf06d8f7905ddd221af10d1e958d3f3463116d8"
+    },
+    {
+      "path": "references/vendor/rampstack/skills/usability-testing/guide.md",
+      "sha256": "ab746f2f205444066814d7534b91c9827abdcd2bab00dd45ed0b97e2b86441c0"
+    },
+    {
+      "path": "references/vendor/rampstack/skills/usability-testing/references/task-script-patterns.md",
+      "sha256": "cc7395ca704268117e04384a768352599639e6658f0a519ce4ccb2497467c299"
+    },
+    {
+      "path": "references/vendor/rampstack/skills/ux-research/guide.md",
+      "sha256": "6eb8fc8a57f2a17a0bdba895f1c58682b2862225350d13d1aaaf9c008a93a3f5"
+    },
+    {
+      "path": "references/vendor/rampstack/skills/ux-research/references/interview-guide-template.md",
+      "sha256": "4bf03180112af2c6b4eb23f8595147492a18c74204a835597ed805dc5e45ddc2"
+    },
+    {
+      "path": "references/vendor/rampstack/skills/vertical-site-conventions/guide.md",
+      "sha256": "73836a3e446b14262ef462a42818844bcf13dd5846d141c7a8c01edb00e6c080"
+    },
+    {
+      "path": "references/vendor/rampstack/skills/vertical-site-conventions/references/shape-b2b-manufacturer.md",
+      "sha256": "4a2b76056742626c08ab591535e2af87c456c1f3914e84ba52eec9aea02b37be"
+    },
+    {
+      "path": "references/vendor/rampstack/skills/vertical-site-conventions/references/shape-conventions-checklist.md",
+      "sha256": "19e8da861e52cbc7dda67a212e57b8f9559dca8688ab3752ea203a2458f9a8a5"
+    },
+    {
+      "path": "references/vendor/rampstack/skills/vertical-site-conventions/references/shape-directory-marketplace.md",
+      "sha256": "869b4c1d21b6ca3893a471cd9f3e161b78cc8221e67c139458ab2ab46fdd9bdd"
+    },
+    {
+      "path": "references/vendor/rampstack/skills/vertical-site-conventions/references/shape-ecommerce-catalog.md",
+      "sha256": "f0b15b3dba08afddbc61fc07f8005b4004571855ec5dc4a60f2f2d0db5cd2ef1"
+    },
+    {
+      "path": "references/vendor/rampstack/skills/vertical-site-conventions/references/shape-ecommerce-standout.md",
+      "sha256": "3094cb1ba45a45cd8a3d3662b1bd517d8741e9754b782a596b726b5df77d078d"
+    },
+    {
+      "path": "references/vendor/rampstack/skills/vertical-site-conventions/references/shape-hospitality-experience.md",
+      "sha256": "0fb98441542be58d04ae072cdceaff71dac332e6f6a44ab2f58ed524c16a233f"
+    },
+    {
+      "path": "references/vendor/rampstack/skills/vertical-site-conventions/references/shape-hospitality-food.md",
+      "sha256": "4fdec98737beb23dfe1e51e749e9277fd40a6021a602cdb2bddef573689ed288"
+    },
+    {
+      "path": "references/vendor/rampstack/skills/vertical-site-conventions/references/shape-institution-mission.md",
+      "sha256": "d76b23d5ec2c6845cba9d3b064d11879ba31dcd4d4856539b6cf6d9c0a104937"
+    },
+    {
+      "path": "references/vendor/rampstack/skills/vertical-site-conventions/references/shape-inventory-listing.md",
+      "sha256": "da08016c5314547f93b7322c9027aac1e029a3881c7d98ecb100ae8ec941223b"
+    },
+    {
+      "path": "references/vendor/rampstack/skills/vertical-site-conventions/references/shape-local-service-booking.md",
+      "sha256": "3964c4e276708dbd03d05d92a5dfb31633bbf54930bb9e9dbdea397f2778ae07"
+    },
+    {
+      "path": "references/vendor/rampstack/skills/vertical-site-conventions/references/shape-subscription-app.md",
+      "sha256": "5f24315f6cfc0e667bbe54784c7c21bbfbcd848b010f4f9f49b0e3c4c638700e"
+    },
+    {
+      "path": "references/vendor/ui-design/plugins/ui-design/commands/accessibility-audit.md",
+      "sha256": "2502320b631fb05a8956e711763236ac4c9dc613e7d417ad07f4c612bf79323c"
+    },
+    {
+      "path": "references/vendor/ui-design/plugins/ui-design/commands/create-component.md",
+      "sha256": "67fc8c324441b4d24dd4a0fb821d5c9a563aae5cfcc6441b402b4c1162a0d790"
+    },
+    {
+      "path": "references/vendor/ui-design/plugins/ui-design/commands/design-review.md",
+      "sha256": "8387c85db6f9e732998091e6f0938f8117dd6238412095ed14e9d300bb5471f8"
+    },
+    {
+      "path": "references/vendor/ui-design/plugins/ui-design/commands/design-system-setup.md",
+      "sha256": "7010402608fa0c589c5352d913054ac3b403942a35068c1aed14cb31bf898d78"
+    },
+    {
+      "path": "references/vendor/ui-design/plugins/ui-design/skills/accessibility-compliance/guide.md",
+      "sha256": "f307428ee38fd6007dbb74e5cdecc3cfa24608d8e81a8672a8f037ca300733f1"
+    },
+    {
+      "path": "references/vendor/ui-design/plugins/ui-design/skills/accessibility-compliance/references/aria-patterns.md",
+      "sha256": "21e0e7b0b8454622ed51bbf7be8226e544b5da87f79cbbb518bde2d1a0a7e8d0"
+    },
+    {
+      "path": "references/vendor/ui-design/plugins/ui-design/skills/accessibility-compliance/references/details.md",
+      "sha256": "dbccfd29e438d3bc94d4463db5aa2b34b6735d1b2c8b612aa9e6dbed4d3ad497"
+    },
+    {
+      "path": "references/vendor/ui-design/plugins/ui-design/skills/accessibility-compliance/references/mobile-accessibility.md",
+      "sha256": "3a7bc4920cafe3b9e069d34b4914b913cd41d0e8ead213ebb543acf5f3009a39"
+    },
+    {
+      "path": "references/vendor/ui-design/plugins/ui-design/skills/accessibility-compliance/references/wcag-guidelines.md",
+      "sha256": "bf9531e1f47a6b4c6770888b22307b3d3a6dba45bdecb368622591131d4f1293"
+    },
+    {
+      "path": "references/vendor/ui-design/plugins/ui-design/skills/design-system-patterns/guide.md",
+      "sha256": "66eac2b3d04a7ab504c63447f9990c5e8761893376fa92512e3b0e37f5cb8267"
+    },
+    {
+      "path": "references/vendor/ui-design/plugins/ui-design/skills/design-system-patterns/references/component-architecture.md",
+      "sha256": "c548192b4877e76d3c232661a0c90324e7986ea45752eaed00e82d69cb6cecb3"
+    },
+    {
+      "path": "references/vendor/ui-design/plugins/ui-design/skills/design-system-patterns/references/design-tokens.md",
+      "sha256": "020114b23c2cfd851331d69a76066e4abc640143b5ccd30b98fde12affa63791"
+    },
+    {
+      "path": "references/vendor/ui-design/plugins/ui-design/skills/design-system-patterns/references/details.md",
+      "sha256": "9dc9c1efa68f4acaf2ad13e226c3e2c6303971a88c7b715f27394c6c1554cd2f"
+    },
+    {
+      "path": "references/vendor/ui-design/plugins/ui-design/skills/design-system-patterns/references/theming-architecture.md",
+      "sha256": "43a561abd491cd60dd822f4728db3542e28eeb9b4214054ecfd6a7e6b52b058e"
+    },
+    {
+      "path": "references/vendor/ui-design/plugins/ui-design/skills/interaction-design/guide.md",
+      "sha256": "91b8d5b1be2b4ecd6b2789ecc4f2b551d4334f31f79fa8f618671ee7455c2d64"
+    },
+    {
+      "path": "references/vendor/ui-design/plugins/ui-design/skills/interaction-design/references/animation-libraries.md",
+      "sha256": "8b5fdbf46a069972b645da2a4debed8824d21741c9747a7fbb8dbb5022fa5510"
+    },
+    {
+      "path": "references/vendor/ui-design/plugins/ui-design/skills/interaction-design/references/microinteraction-patterns.md",
+      "sha256": "71856f4f91750befdfa5ff5a864b9c1daf107365511ec28b10c8f34b35f6c05d"
+    },
+    {
+      "path": "references/vendor/ui-design/plugins/ui-design/skills/interaction-design/references/scroll-animations.md",
+      "sha256": "eabd0e6ccb6b69ed2995639d63c031dfeaf3070e10c93fc29936323ba19b5d5b"
+    },
+    {
+      "path": "references/vendor/ui-design/plugins/ui-design/skills/mobile-android-design/guide.md",
+      "sha256": "2d47a83d7bd2c8b1389158bd332549352d494387733cf19c3cd6afccd69c9072"
+    },
+    {
+      "path": "references/vendor/ui-design/plugins/ui-design/skills/mobile-android-design/references/android-navigation.md",
+      "sha256": "93cab3447e80ad0c5fe11d17836be6509a72aca23473edc7643df80fd57286f7"
+    },
+    {
+      "path": "references/vendor/ui-design/plugins/ui-design/skills/mobile-android-design/references/compose-components.md",
+      "sha256": "c973cef17c7b6dcbf0c83e7264f1b40bd0f7cde5d1a979f32fdfba9d627ea821"
+    },
+    {
+      "path": "references/vendor/ui-design/plugins/ui-design/skills/mobile-android-design/references/details.md",
+      "sha256": "e05081fcdf08e1a101b853893c3e835b4a35e1fcda987a4a7d974cff87773e5a"
+    },
+    {
+      "path": "references/vendor/ui-design/plugins/ui-design/skills/mobile-android-design/references/material3-theming.md",
+      "sha256": "bcfa6338dff81443fa0e04c72a063b584b4dc3b4176408f2d4ea800db5ab8abc"
+    },
+    {
+      "path": "references/vendor/ui-design/plugins/ui-design/skills/mobile-ios-design/guide.md",
+      "sha256": "e53660bf5c8bc2dc44346c4cff46061f19f1dd58aeed1fbdca4e66e8cdbda1ee"
+    },
+    {
+      "path": "references/vendor/ui-design/plugins/ui-design/skills/mobile-ios-design/references/hig-patterns.md",
+      "sha256": "8b5741a3db5cdcfe44159c5ea57fcc369058977b48e923bbc954e8ccdfdbb062"
+    },
+    {
+      "path": "references/vendor/ui-design/plugins/ui-design/skills/mobile-ios-design/references/ios-navigation.md",
+      "sha256": "a1f320f16eb7c19f322a0f4efdde7af6d7423c231a5cb53109ba21cd12b9af73"
+    },
+    {
+      "path": "references/vendor/ui-design/plugins/ui-design/skills/mobile-ios-design/references/swiftui-components.md",
+      "sha256": "fae67b6ef52b27a85ae4ad28ba438c8015065f657e07bae99bea98e6eab3a218"
+    },
+    {
+      "path": "references/vendor/ui-design/plugins/ui-design/skills/react-native-design/guide.md",
+      "sha256": "d11b732b0b3df32654de9afaeebfb61b04e7a3e62943eb0c55afc142c407c9f1"
+    },
+    {
+      "path": "references/vendor/ui-design/plugins/ui-design/skills/react-native-design/references/details.md",
+      "sha256": "3d4d234b27ef720e8bac9fd986d353ed1cca044dd735f85d8c85f13ceec89fde"
+    },
+    {
+      "path": "references/vendor/ui-design/plugins/ui-design/skills/react-native-design/references/navigation-patterns.md",
+      "sha256": "2c63954770670439312b3a874245655f43999d591781942680c238972e3e275d"
+    },
+    {
+      "path": "references/vendor/ui-design/plugins/ui-design/skills/react-native-design/references/reanimated-patterns.md",
+      "sha256": "cf42f2ec59e1d2d8482b2cc9649a4f95c75f59968c2755c7a982ff3cb5cc53e5"
+    },
+    {
+      "path": "references/vendor/ui-design/plugins/ui-design/skills/react-native-design/references/styling-patterns.md",
+      "sha256": "7dc1232d034f1dd4549f752575051e7e13cbe5bc9cb985644923453cd21b2e34"
+    },
+    {
+      "path": "references/vendor/ui-design/plugins/ui-design/skills/responsive-design/guide.md",
+      "sha256": "51409020a53b426a1341d2f6de40b60c511798ee1f169042bb8d515087392d16"
+    },
+    {
+      "path": "references/vendor/ui-design/plugins/ui-design/skills/responsive-design/references/breakpoint-strategies.md",
+      "sha256": "a842832472da08a6d0175d80a064fa0309d0426871a3fbabccd3a45c4ecd61ac"
+    },
+    {
+      "path": "references/vendor/ui-design/plugins/ui-design/skills/responsive-design/references/container-queries.md",
+      "sha256": "cd4e9be0b858e5e9d09dc58a546abe795d6f2ebb48098c7fe23d100ff127d1c6"
+    },
+    {
+      "path": "references/vendor/ui-design/plugins/ui-design/skills/responsive-design/references/details.md",
+      "sha256": "96fe3591ef114bf432d4788fb894eba5e25c010429bd31ea045c68b8e09c5987"
+    },
+    {
+      "path": "references/vendor/ui-design/plugins/ui-design/skills/responsive-design/references/fluid-layouts.md",
+      "sha256": "1838f3a7e65409ba69c26012dfd904b62fa18c9924bc5f769e74b2ff648f7319"
+    },
+    {
+      "path": "references/vendor/ui-design/plugins/ui-design/skills/visual-design-foundations/guide.md",
+      "sha256": "d2312bb33dd5c5d67e98029abd8252a9c979e508f3448244621ec78b50aa82fd"
+    },
+    {
+      "path": "references/vendor/ui-design/plugins/ui-design/skills/visual-design-foundations/references/color-systems.md",
+      "sha256": "dbe96d850b665b962133f8c664996431c2935a87a04520018253cb8f8839b4d1"
+    },
+    {
+      "path": "references/vendor/ui-design/plugins/ui-design/skills/visual-design-foundations/references/spacing-iconography.md",
+      "sha256": "4803633a3cb73e8705f219651e9dd6dee7d97e43c1b25fd2f262d7edb7cd834c"
+    },
+    {
+      "path": "references/vendor/ui-design/plugins/ui-design/skills/visual-design-foundations/references/typography-systems.md",
+      "sha256": "02a94d35bad19a30adc609fd46a5cbff06b76ece47a5aacc2ed67b08fab9e134"
+    },
+    {
+      "path": "references/vendor/ui-design/plugins/ui-design/skills/web-component-design/guide.md",
+      "sha256": "9743373ab837f71f33da3d0cf4397ee0ce9875536732222697c3c2712260e69d"
+    },
+    {
+      "path": "references/vendor/ui-design/plugins/ui-design/skills/web-component-design/references/accessibility-patterns.md",
+      "sha256": "1a3a3e40afbf53a87de9943f4098efc582cc860d7bbc2aecd6fb97d970290b7d"
+    },
+    {
+      "path": "references/vendor/ui-design/plugins/ui-design/skills/web-component-design/references/component-patterns.md",
+      "sha256": "3420c63e666143b150995ee8faceb14503ac4fc5f663bcde3da15f3aaf3de158"
+    },
+    {
+      "path": "references/vendor/ui-design/plugins/ui-design/skills/web-component-design/references/css-styling-approaches.md",
+      "sha256": "f5875dc7e3438f3c71288a2cacb851d2b3e43b444cb1c9b7fbb83f096cacea5c"
+    },
+    {
+      "path": "schemas/design-review.schema.json",
+      "sha256": "a5cbe811f5330c288639607c7dd945df915bd8c4870d44003a72eb474574d0f8"
+    },
+    {
+      "path": "scripts/check_references.mjs",
+      "sha256": "9b108f8c88fe11eba8702247e88f42576a9c6990e1c58e0273605b16fb7ebe05"
+    },
+    {
+      "path": "scripts/validate_artifact.py",
+      "sha256": "c41cd46632906307a6589e1e9a94f3b71bde7466262b17b7daede2ab3270c54a"
     },
     {
       "path": "skills/accessibility-review/SKILL.md",
-      "sha256": "8536f80ce965cb80cf3994ed69572b14cc6f99e07cef688cab6cc51778e4cda7"
+      "sha256": "5af2bbc1fac00a5f97f3130462b650d30aa69c79540a2f9198eb15ffde7a3f16"
     },
     {
       "path": "skills/accessibility-review/agents/openai.yaml",
@@ -236,8 +1444,112 @@
       "sha256": "08a96deaaa06d4cb57678d6a0f2675e87f50aa9602f255540c95ac942ddb30cc"
     },
     {
+      "path": "skills/create-design/SKILL.md",
+      "sha256": "37bbb378c3454f66f220415d9c3700ba5a116f2dbccffe2cb04c52bbefe46167"
+    },
+    {
+      "path": "skills/create-design/agents/openai.yaml",
+      "sha256": "c37fb8dfe0bbedb96a52ebcac553dfa30ac34d3d784179731c749617b9229980"
+    },
+    {
+      "path": "skills/design-system/SKILL.md",
+      "sha256": "8a1c53069d10522eba33bd72dd03cb42c4d2848cb9e83d3b0a7e845ab5acfa8b"
+    },
+    {
+      "path": "skills/design-system/agents/openai.yaml",
+      "sha256": "5dda2e9f37cf99e962834ac1fa783a292faf22fa7e9e20e059a60118de95d6ca"
+    },
+    {
+      "path": "skills/design-system/assets/generative-ui-demo.html",
+      "sha256": "84bf3578654f68a9fab47b933c87f2c8aca44a4eded92b0931ff3e895577093b"
+    },
+    {
+      "path": "skills/design-system/assets/generative-ui-demo.mjs",
+      "sha256": "a0bd130aa5fd0995c2b35c5ca1e290fe5457680775e1b77a3a0d13d252f72c9e"
+    },
+    {
+      "path": "skills/design-system/assets/generative-ui.css",
+      "sha256": "53b7cff85f330a22dc701a3d21888c5349e27f8957bfd7215b68cde513718d28"
+    },
+    {
+      "path": "skills/design-system/assets/generative-ui.mjs",
+      "sha256": "ddbba4335ba9bf2c4f9a9842865f001e9721f7eb6bd414855dc31a3b4ac4d35d"
+    },
+    {
+      "path": "skills/design-system/assets/hybrid-components.html",
+      "sha256": "29d6c69264ef910d74529609cf6f2792f1aa41b8fa83f5201ccb97d2b07d13fa"
+    },
+    {
+      "path": "skills/design-system/assets/hybrid.css",
+      "sha256": "1bc7873f2a715127b21500c090a559eff88282d4e3a80ace6156f71528ef6281"
+    },
+    {
+      "path": "skills/design-system/checklists/design-system.md",
+      "sha256": "d6383d24d8cff8bef5a77745ba1fe1561865185d05c58132afa385999d56c53f"
+    },
+    {
+      "path": "skills/design-system/references/design-system-contract.md",
+      "sha256": "7c85e71942f56142dd3c6cab037c80a6e4fa4b0799d55c49a607458ffca42932"
+    },
+    {
+      "path": "skills/design-system/references/generative-ui-example.md",
+      "sha256": "9064ca883eb746c996f734ab96a6aab63538ef735fd77ff3f6a2aff08a120f03"
+    },
+    {
+      "path": "skills/design-system/references/generative-ui.md",
+      "sha256": "1e0a753b7d3c6d358da2340e50aba099652c56ef168469a5e907df53148de183"
+    },
+    {
+      "path": "skills/design-system/references/hybrid-foundations.md",
+      "sha256": "cde5ec9c2c2c1d19ab8c1b744d17a0c5c57b08e2a3c5669268f6034c93ad67e0"
+    },
+    {
+      "path": "skills/design-system/references/outcome-ui-standard.md",
+      "sha256": "0e6a94f0339f12f236723e4d3ebe9f5477d199269822e120c19da4c2195daec6"
+    },
+    {
+      "path": "skills/design-system/templates/component-rule.md",
+      "sha256": "57e80af8a58be9ea8be84c665c382f8e1a31f85e59c20c4cbbe2b090d9130d8c"
+    },
+    {
+      "path": "skills/design-system/templates/design-rule.md",
+      "sha256": "769563d8496a5f4edb3f099bc6d8e646cffb6b4a5fefcf3672765e8c0b2ae115"
+    },
+    {
+      "path": "skills/design-system/templates/generative-ui-events.json",
+      "sha256": "a5590ee6a662911857bf2ba6165e4acb1d1ea51a610c76ba2a36c6ff2db37456"
+    },
+    {
+      "path": "skills/ux-flow-review/SKILL.md",
+      "sha256": "39cec0c2f3bcfc1b8e5b7d7e550aa3aac1fe2dfe48611f87711b5037c872ba38"
+    },
+    {
+      "path": "skills/ux-flow-review/agents/openai.yaml",
+      "sha256": "5298c003ab41576b4250d8247e18a1448f20df5f3ae914dc06f52e69b1963be6"
+    },
+    {
+      "path": "skills/ux-flow-review/checklists/ux-flow-review.md",
+      "sha256": "92fb9cab2024a86589ff9d647c50fcdb54328634f3deb9a885f432b23a0c29a5"
+    },
+    {
+      "path": "skills/ux-flow-review/references/ux-flow-patterns.md",
+      "sha256": "51b91066ecc48544f3bd04d100a875a44278f1c61eddea766a2260fcfa5c13f6"
+    },
+    {
+      "path": "skills/ux-flow-review/references/value-experience.md",
+      "sha256": "d670d7a82008e941a8be9f77aec7eeca2c7c81504483e9fd5854e16c0b1db20e"
+    },
+    {
+      "path": "skills/ux-flow-review/templates/product-ux-delta.md",
+      "sha256": "4802078f2638fa3c50d5a693473e95c1d8aa9b6e8c8d5f7800f376450a83b17d"
+    },
+    {
+      "path": "skills/ux-flow-review/templates/ux-flow-review.md",
+      "sha256": "8b7a9da6a15579eafb0ca6d4d2277c7632a5d9834c24980ded1a74461c763d90"
+    },
+    {
       "path": "skills/visual-qa/SKILL.md",
-      "sha256": "11c7ae6b61912af7ff0e5c1aca759fab2c11bd0c0855c5762d59d11530b64e24"
+      "sha256": "2fad9f65018464d465595c755143fb4d311bfd608b82465a7594ba7464197ec0"
     },
     {
       "path": "skills/visual-qa/agents/openai.yaml",
@@ -256,94 +1568,18 @@
       "sha256": "cf16a66750a6b571517b1c5b78c23b45ecd48cac35ed6d3630fe44276ae0c633"
     },
     {
-      "path": "skills/design-system/SKILL.md",
-      "sha256": "26fb3d73be478da75d6d7417189e23f94bbe953f3d59aceab51400b3d2026553"
-    },
-    {
-      "path": "skills/design-system/agents/openai.yaml",
-      "sha256": "5dda2e9f37cf99e962834ac1fa783a292faf22fa7e9e20e059a60118de95d6ca"
-    },
-    {
-      "path": "skills/design-system/checklists/design-system.md",
-      "sha256": "d6383d24d8cff8bef5a77745ba1fe1561865185d05c58132afa385999d56c53f"
-    },
-    {
-      "path": "skills/design-system/references/design-system-contract.md",
-      "sha256": "6af72b3e4c6f4e672727c0e771f2c8a3a45dd390a8f95bc442929030d0374cb2"
-    },
-    {
-      "path": "skills/design-system/references/outcome-ui-standard.md",
-      "sha256": "66cc2d14c6f67eca3dc1b072e9a86e9c04e1af88b563baef4755a9df04da82a4"
-    },
-    {
-      "path": "skills/design-system/references/hybrid-foundations.md",
-      "sha256": "e0cc1fd3b11d8830ce7545329c9e2fd42d4c0f748b8d217402dd493c7cb5e3d3"
-    },
-    {
-      "path": "skills/design-system/assets/hybrid.css",
-      "sha256": "1bc7873f2a715127b21500c090a559eff88282d4e3a80ace6156f71528ef6281"
-    },
-    {
-      "path": "skills/design-system/assets/hybrid-components.html",
-      "sha256": "29d6c69264ef910d74529609cf6f2792f1aa41b8fa83f5201ccb97d2b07d13fa"
-    },
-    {
-      "path": "skills/design-system/references/generative-ui.md",
-      "sha256": "1e0a753b7d3c6d358da2340e50aba099652c56ef168469a5e907df53148de183"
-    },
-    {
-      "path": "skills/design-system/references/generative-ui-example.md",
-      "sha256": "9064ca883eb746c996f734ab96a6aab63538ef735fd77ff3f6a2aff08a120f03"
-    },
-    {
-      "path": "skills/design-system/assets/generative-ui.mjs",
-      "sha256": "ddbba4335ba9bf2c4f9a9842865f001e9721f7eb6bd414855dc31a3b4ac4d35d"
-    },
-    {
-      "path": "skills/design-system/assets/generative-ui.css",
-      "sha256": "53b7cff85f330a22dc701a3d21888c5349e27f8957bfd7215b68cde513718d28"
-    },
-    {
-      "path": "skills/design-system/assets/generative-ui-demo.html",
-      "sha256": "84bf3578654f68a9fab47b933c87f2c8aca44a4eded92b0931ff3e895577093b"
-    },
-    {
-      "path": "skills/design-system/assets/generative-ui-demo.mjs",
-      "sha256": "a0bd130aa5fd0995c2b35c5ca1e290fe5457680775e1b77a3a0d13d252f72c9e"
-    },
-    {
-      "path": "skills/design-system/templates/generative-ui-events.json",
-      "sha256": "a5590ee6a662911857bf2ba6165e4acb1d1ea51a610c76ba2a36c6ff2db37456"
-    },
-    {
-      "path": "skills/design-system/templates/design-rule.md",
-      "sha256": "769563d8496a5f4edb3f099bc6d8e646cffb6b4a5fefcf3672765e8c0b2ae115"
-    },
-    {
-      "path": "skills/design-system/templates/component-rule.md",
-      "sha256": "57e80af8a58be9ea8be84c665c382f8e1a31f85e59c20c4cbbe2b090d9130d8c"
-    },
-    {
-      "path": "schemas/design-review.schema.json",
-      "sha256": "a5cbe811f5330c288639607c7dd945df915bd8c4870d44003a72eb474574d0f8"
-    },
-    {
-      "path": "scripts/validate_artifact.py",
-      "sha256": "c41cd46632906307a6589e1e9a94f3b71bde7466262b17b7daede2ab3270c54a"
-    },
-    {
       "path": "specs/architecture.md",
-      "sha256": "6777a0131eb130877cd7fdb5cf921d8c10b0151185b13e38aadc8268e5349a7d"
+      "sha256": "04839cd737c23554c3ea01400a62250ce932503aad520526bbaca86b5dbf17a9"
     },
     {
       "path": "specs/capability-map.md",
-      "sha256": "ecebfd7ce9907110cbcc99e72c3a7ba3320b7d0226ad8d35a1f928d040afca6b"
+      "sha256": "5c8ca2e58e12117f421c4335bc242556ee9550e74cf427b36beb8c16b64be0f8"
     },
     {
       "path": "specs/extraction-manifest.json",
       "sha256": "f6e845aa1ae3aba04f06f3df8eb2aab12d04980690fa8b2b30893fed30fb9647"
     }
   ],
-  "subject_digest": "d4f4e1b23cfd2dae23aafec2211cdd1b621ab377c593926d82e322fb94b25c21",
+  "subject_digest": "60bd5b50ab93e991487c34229e6a0d657e0e57827c3238720b79eeb7082eb243",
   "subject_digest_algorithm": "sha256-path-digest-list-v1"
 }

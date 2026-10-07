@@ -36,6 +36,12 @@ their demonstrated coverage. Do not impose an unselected default after a run.
 
 ## Evidence states
 
+For every UI change or UI refactor with possible UI impact, report the applicable
+Cascade Design method, its governing source and affected topic/depth, and the
+actual Design evidence/check disposition. Reused accepted design can reduce
+work; it does not replace the affected check. A declared activation or catalog
+PASS alone cannot establish that the method ran or its checks passed.
+
 For UI work governed by an approved mockup, include matched reference/current
 screenshots and the Visual QA fidelity disposition for affected viewports/states.
 Build and functional passes do not establish visual parity. Unresolved visible

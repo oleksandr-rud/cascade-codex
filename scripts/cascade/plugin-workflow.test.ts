@@ -252,6 +252,15 @@ function fixture(routes: string[], inputs: string[], alternatives: Record<string
       effect: skill.effect, authority: skill.authority,
       reason: "Use the source contract's supported input mode.",
     })),
+    plugin_activation: catalog.plugins.filter(plugin => plugin.activation).map(plugin => ({
+      plugin_name: plugin.name, plugin_version: plugin.version, claim_ids: [envelope.claims[0]!.claim_id],
+      disposition: descriptors.some(skill => skill.route.startsWith(`${plugin.name}:`)) ? "ACTIVE" : "NOT_APPLICABLE",
+      depth: descriptors.some(skill => skill.route.startsWith(`${plugin.name}:`)) ? "FOCUSED" : "NONE",
+      topics: descriptors.some(skill => skill.route.startsWith(`${plugin.name}:`)) ? ["component-states"] : [],
+      trigger_evidence: ["Authored structural fixture: supplied routes explicitly establish whether Design work is in scope."],
+      anti_trigger_disposition: "This fixture is not model selection or semantic qualification.",
+      reason: "Preserve the authored method/input boundary under the current activation contract.",
+    })),
     rejected_candidates: [], ambiguities: [], blockers: [], dispatch_authorized: false,
   } as CapabilitySelection;
   selection.selection_digest = capabilitySelectionDigest(selection);

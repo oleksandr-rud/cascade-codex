@@ -182,6 +182,18 @@ or invalidated. Carry selected decisions and applicable references into the
 implementation and its validation. A catalog or installation check alone does
 not prove that a method was used.
 
+Every UI change or UI refactor with possible rendered, interaction, navigation,
+accessibility or UI-contract impact includes Cascade Design at proportional
+depth. Use its catalog plugin activation contract to choose the smallest
+existing method set: lightweight evidence checks for bounded accepted changes,
+focused component/flow design, and deeper design for structural uncertainty.
+One sufficient explicit Design method stays direct; ambiguous or connected
+selection records the claim-bound plugin activation disposition. Reuse accepted
+designs, and preserve the host implementation/evidence sequence. A proven
+no-UI-impact internal change is outside this activation; uncertain impact is
+not proof of that exclusion. Activation never dispatches a designer, starts a
+runtime hook, or requires every Design skill or external research.
+
 For product and marketing UI, consume the shared default owned by
 `cascade-design:design-system` at `references/outcome-ui-standard.md`.
 Product supplies the useful outcome and behavior, Marketing the supported

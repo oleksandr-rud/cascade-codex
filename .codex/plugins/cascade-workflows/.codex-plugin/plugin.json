@@ -1,6 +1,6 @@
 {
   "name": "cascade-workflows",
-  "version": "1.0.2+codex.20261006.3",
+  "version": "1.0.3+codex.20261007.1",
   "description": "Portable workflows methods with separate component ownership.",
   "author": {
     "name": "Cascade"

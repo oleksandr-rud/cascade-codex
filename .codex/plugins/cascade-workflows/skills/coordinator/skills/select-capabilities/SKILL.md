@@ -56,7 +56,8 @@ model policy are actually present. Do not reconstruct a missing Task Envelope
 from request prose or treat “already admitted” as its identity. Return
 `BLOCKED` immediately with the first missing or stale identity.
 
-When preflight passes, select only from the catalog's `.plugins[].skills[]`
+When preflight passes, first read each catalog plugin's optional `activation`
+contract; then select only from the catalog's `.plugins[].skills[]`
 descriptors. Do not load candidate domain `SKILL.md` files merely to decide
 whether to select them; the descriptor trigger, anti-trigger, artifact,
 dependency, effect, authority, version, and evaluation fields are the routing
@@ -66,7 +67,17 @@ actual work.
 ## Selection
 
 1. Bind each requested outcome to one or more Task Envelope claims and available
-   input artifacts.
+   input artifacts. First disposition every catalog plugin that declares an
+   `activation` contract in `plugin_activation`. Interpret plugin scope, relevant
+   topics and depth semantically; record current version, claim IDs, evidence and
+   exclusions. ACTIVE Design for UI changes/refactors needs a current Design
+   method covering those claims in a CANDIDATE selection. A bounded accepted
+   implementation can use a lightweight evidence check; it does not require new
+   mockups, Product, research, a role dispatch or every Design method. Proven
+   no-UI-impact work is NOT_APPLICABLE with NONE depth and no topics. Unresolved
+   impact is BLOCKED, never a no-impact assertion. Topic routes are guidance for
+   the work product, not lexical dispatch rules. Missing real method inputs still
+   require a concrete host evidence/input action; never fabricate them.
 2. Compare plausible catalog candidates using their descriptions, triggers,
    anti-triggers, consumes, produces, authority, effect, and current version.
    Evaluate each unresolved decision or required work product, including

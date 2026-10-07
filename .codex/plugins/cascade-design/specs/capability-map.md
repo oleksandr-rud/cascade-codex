@@ -1,6 +1,6 @@
 # Cascade Design capability map
 
-Version: 0.1.1+codex.20260909181000
+Version: 0.2.0+codex.20261007.1
 
 `specs/extraction-manifest.json` freezes the pre-cutover Designer role and four
 repository skill packages as historical extraction evidence. The plugin owns
@@ -28,3 +28,8 @@ The user-selected Hybrid default, small component foundation, optional
 generative UI templates/catalog and reference
 assets belong to `design-system`. `create-design` applies them to candidate
 pages; the target host owns production adaptation and rendered verification.
+
+The [local Design controller/process](../references/README.md) reconciles the
+full licensed reference corpus under the existing five methods. Copied guides
+are not new skills, roles or triggers. The source manifest binds original pins,
+local adaptations, licenses and omitted incompatible material.

@@ -1,5 +1,24 @@
 # Cascade Design architecture
 
+## Process and local knowledge
+
+Create Design is the single commissioning controller. It reuses one current
+brief and handoff, selects necessary intake/research/IA/direction/prototype/review
+work, and loads full local references progressively. A settled correction skips
+open discovery and extra approval rounds. Product, reusable rules, operational
+research execution, production integration and host acceptance keep their owners.
+
+[Local process and topic references](../references/README.md) contain adapted
+licensed procedures, platform/component examples and local datasets with exact
+pins, modification records and full notices. They are knowledge, not additional
+entrypoints or operational permissions. Invocation does not fetch/execute an
+external skill, engine, API, listener, hook, telemetry or updater. Existing target
+authority and the scoped Hybrid default remain bound by the direction procedure.
+
+Source/catalog checks establish local binding and typed handoffs only. The new
+process regression scenarios require separate target-model/installed/pilot
+evidence; previous evaluation receipts do not qualify this revision.
+
 ## Authority
 
 The five plugin skills produce design candidates, review artifacts, rule
@@ -86,7 +105,7 @@ not open files or prove that a model actually rendered or inspected a preview;
 those claims require host evidence and semantic review. Existing review variants
 remain compatible with the shared schema.
 
-Qualification corpus version 3 includes seven authoring cases under the existing
+Qualification corpus version 5 includes twelve authoring cases and 28 total cases under the existing
 read-only runner: missing artifacts, missing product intent, unavailable required
 tool, a supplied candidate handoff, adversarial source instructions, conflicting
 requirements and output pressure. READY cases use explicitly synthetic host
@@ -94,3 +113,16 @@ artifact observations; they do not exercise live rendering or independently
 inspect pixels. Structural tests cover required view pairs and reject unsupported
 readiness. Live authoring, visual quality and frontend reproduction remain
 separate NOT_RUN evidence until exercised on real design artifacts.
+
+Seven new frozen regression cases cover settled brief reuse, tool failure without
+approval, duplicate/contradictory evidence, local-data authority, corrected
+accessibility scope, accepted-source visual review and an open direction with
+missing artifacts. Their target-model execution and semantic qualification are
+NOT_RUN until the actual evaluation owner executes this exact version.
+
+The existing sanitized runner is tool-free: ordinary bound process/topic/vendor
+references are metadata-only, while manifest/schema/spec/skill instructions and
+explicitly marked inline assets supply target context. A later qualification of
+reference use requires a selected phase/topic inline packet or an authorized
+read-capable host. Full-corpus inlining and evaluator changes are outside this
+revision; live-host local reads remain available under actual host permissions.

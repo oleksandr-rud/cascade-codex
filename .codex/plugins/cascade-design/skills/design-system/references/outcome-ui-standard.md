@@ -7,6 +7,10 @@ request, accepted target design system, or approved mockup governs its own scope
 Record those bindings; do not silently restyle an established product.
 
 The user selected Hybrid after comparing Chat, Liquid and Hybrid examples.
+Use the local [direction procedure](../../../references/process/direction.md) to
+distinguish inheritance, this scoped default and a current explicitly authorized
+new/replacement direction. Reuse one brief and selected source; do not stack
+independent style authorities or reopen a settled extension.
 Use [Hybrid foundations](hybrid-foundations.md) for the small component system,
 concrete tokens, page compositions and the local action-zone gradient.
 

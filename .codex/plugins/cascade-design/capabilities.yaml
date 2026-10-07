@@ -1,7 +1,152 @@
 schema_version: 1
 plugin:
   name: cascade-design
-  version: 0.1.11+codex.20261006.1
+  version: 0.2.0+codex.20261007.2
+  activation:
+    description: Include Cascade Design for every UI change or UI refactor with rendered, interaction,
+      navigation, accessibility or UI-contract impact, at a depth proportional to the affected task
+      and uncertainty. Include requested UI review and design authoring. Reuse accepted designs;
+      choose the smallest sufficient existing method set.
+    triggers:
+      - Any new or changed UI surface, appearance, component state, input, data presentation,
+        navigation or user workflow needs a proportional Design contribution.
+      - A UI refactor can affect rendered output, interaction, responsive behavior, keyboard/focus,
+        accessibility or an accepted UI contract, even when product intent is unchanged.
+      - Concrete design authoring or review of an existing or proposed interface is requested.
+    anti_triggers:
+      - The bounded change is evidenced to have no rendered, interaction, navigation, accessibility
+        or UI-contract impact.
+      - Only non-UI backend, data, market, architecture or security work is requested and UI
+        behavior remains settled.
+      - The request is a harness/plugin routing audit with no target UI work product.
+    depths:
+      - id: LIGHTWEIGHT
+        description: A bounded presentation or implementation change with accepted intent, design and
+          interaction semantics; perform the affected Design check without regenerating a design or
+          opening discovery.
+        evidence:
+          - Named accepted source and actual affected surface/evidence, with relevant viewport/state
+            or input-mode bindings.
+        completion:
+          - An existing Design method dispositions the affected evidence and applicable checks.
+            Missing rendered or runtime evidence stays planned, NOT_RUN, GAP or BLOCKED; READY is
+            not implementation acceptance.
+        escalates_when:
+          - The change affects meaning, contrast, focus, state transitions, usable workspace,
+            reusable rules or unsupported viewports.
+      - id: FOCUSED
+        description: A component, parameter editor, feature interaction, layout or responsive change
+          requires scoped design decisions, states or an authored candidate.
+        evidence:
+          - Actor/job, current UI or accepted behavior, affected component/data/action/state mapping
+            and requested viewport/state pairs.
+        completion:
+          - Affected states, recovery and applicable visual/accessibility/functional checks are
+            explicit; actual required mockups/previews exist and a bound handoff names the
+            implementation owner.
+        escalates_when:
+          - Actor outcomes, object/task hierarchy, cross-workflow navigation, permissions or
+            authoritative data/action ownership are unresolved.
+      - id: STRUCTURAL
+        description: A new application, information architecture or workflow changes material product, task
+          or ownership decisions. Resolve only those missing decisions before authoring and
+          verifying the affected design.
+        evidence:
+          - Current object/task/route map, actors, accepted behavior and constraints; current
+            external research only when it changes the decision.
+        completion:
+          - Product/IA/ownership alternatives are disposed, governing behavior and design are bound,
+            and affected journeys have separate functional, visual and accessibility evidence or
+            explicit blockers.
+        escalates_when:
+          - An unresolved decision requires its Discovery, architecture or security owner; do not
+            invent that authority or require every owner by default.
+    topics:
+      - id: visual-style
+        description: Visual polish, material, theme, typography, color, spacing, icons and content
+          presentation. Prefer visual-qa for accepted designs; create-design for a requested
+          proposal; design-system for a reusable rule.
+        routes:
+          - cascade-design:visual-qa
+          - cascade-design:create-design
+          - cascade-design:design-system
+      - id: component-states
+        description: Component variants and loading, empty, error, disabled, selected, pending and completed
+          states; distinguish feature behavior from reusable component rules.
+        routes:
+          - cascade-design:design-system
+          - cascade-design:ux-flow-review
+          - cascade-design:create-design
+          - cascade-design:accessibility-review
+      - id: form-parameters
+        description: Forms, parameter configuration and schema-driven inspectors. Bind parameter identity,
+          type, units, constraints, options, value source, per-parameter control, validation,
+          save/reset and observed persistence; generic record editing is not sufficient for
+          differing semantics.
+        routes:
+          - cascade-design:ux-flow-review
+          - cascade-design:design-system
+          - cascade-design:create-design
+          - cascade-design:accessibility-review
+      - id: search-selection
+        description: Search, filters, sorting, pickers, selections and command interfaces; distinguish
+          query/result/selection, retained context, keyboard behavior, async and no-result states.
+        routes:
+          - cascade-design:ux-flow-review
+          - cascade-design:accessibility-review
+          - cascade-design:create-design
+      - id: navigation-layout
+        description: Navigation, sidebar, workspace layout, right inspector, split view, drawer and modal.
+          Compare task co-presence, usable content width, interruption, unsaved state, dismiss/back
+          and focus rather than choosing from a control name.
+        routes:
+          - cascade-design:ux-flow-review
+          - cascade-design:create-design
+          - cascade-design:visual-qa
+          - cascade-design:accessibility-review
+      - id: information-architecture
+        description: Object/action/task hierarchy, permissions, route structure or workflow steps. Separate
+          unresolved product behavior from the Design layout; use existing Discovery only for
+          decisions that require it.
+        routes:
+          - cascade-design:ux-flow-review
+          - cascade-design:create-design
+      - id: responsive-input
+        description: Responsive and narrow viewport behavior, touch/pointer, keyboard, focus, assistive
+          paths and reduced motion. Require actual affected modes and viewport/state evidence, not
+          source or build proof alone.
+        routes:
+          - cascade-design:accessibility-review
+          - cascade-design:ux-flow-review
+          - cascade-design:visual-qa
+          - cascade-design:design-system
+      - id: data-visualization
+        description: Charts, dashboards, dense tables, comparisons and records. Bind data meaning, units,
+          scale, partial/stale/error states and an accessible equivalent to the user's decision.
+        routes:
+          - cascade-design:ux-flow-review
+          - cascade-design:design-system
+          - cascade-design:create-design
+          - cascade-design:visual-qa
+          - cascade-design:accessibility-review
+      - id: canvas-workspace
+        description: Graph, canvas, spatial editor or timeline. Bind selection, zoom/pan, edits,
+          undo/recovery, retained workspace, large/empty data and a keyboard/nonspatial alternative.
+          A UI view does not require a new graph store.
+        routes:
+          - cascade-design:ux-flow-review
+          - cascade-design:create-design
+          - cascade-design:design-system
+          - cascade-design:accessibility-review
+      - id: domain-interface
+        description: Web, mobile, desktop or operational app patterns. Bind the real actor, platform, domain
+          objects, task frequency, density, side effects and constraints; reuse accepted target
+          systems instead of a universal CRUD or marketing composition.
+        routes:
+          - cascade-design:ux-flow-review
+          - cascade-design:create-design
+          - cascade-design:design-system
+          - cascade-design:accessibility-review
 model_policy:
   model: gpt-6-astra
   planning_reasoning_effort: high
@@ -113,8 +258,8 @@ skills:
       - viewport-states
       - no-pixel-proof-from-source
   - route: cascade-design:create-design
-    description: Create editable product and marketing mockups, inspected previews and a version-bound
-      frontend handoff from grounded requirements.
+    description: Control grounded Design intake, conditional research and direction, editable prototypes,
+      inspected states and a version-bound frontend handoff using self-contained local references.
     triggers:
       - create or revise concrete mockups or a design prototype
     anti_triggers:
@@ -126,6 +271,7 @@ skills:
       - design-brief
     optional_consumes:
       - design-evidence
+      - design-system-contract
     produces:
       - design-candidate
       - frontend-design-handoff

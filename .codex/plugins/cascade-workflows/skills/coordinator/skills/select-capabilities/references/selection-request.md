@@ -11,6 +11,20 @@ generic evaluation and judge authoring. Previously used component names such
 as Evals describe intent; select only a current catalog route. Never implement
 this interpretation with keywords, substring aliases or lexical scores.
 
+First disposition each plugin with a catalog activation contract. Emit its
+claim-bound `plugin_activation` decision with exact version, relevant topic IDs,
+proportional depth, trigger evidence and exclusions. Treat UI changes and UI
+refactors with possible rendered, interaction, navigation, accessibility or
+UI-contract impact as ACTIVE Design. Use LIGHTWEIGHT for a bounded change under
+accepted design/behavior, FOCUSED for a component/flow decision, and STRUCTURAL
+for unresolved product/IA/ownership changes. Reuse accepted inputs; activate the
+plugin and select only sufficient existing methods. A CANDIDATE ACTIVE decision
+must include a current method of that plugin covering its claim IDs. No-impact
+work can be NOT_APPLICABLE with NONE depth and no topics only when its bounded
+impact is established; uncertainty is BLOCKED. Missing real evidence is a host
+input action, not permission to invent a preview, run full discovery, dispatch a
+role or install a plugin. These are semantic rules, not keyword tests.
+
 Compare descriptor triggers and exclusions, input/output contracts, effects,
 authority and dependencies. Reuse available artifacts. Select a missing
 producer only when its own inputs and requested outcome support doing that

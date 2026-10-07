@@ -3,51 +3,104 @@
   "$id": "https://cascade.local/cascade-coordinator/plugin-capabilities.v1.schema.json",
   "type": "object",
   "additionalProperties": false,
-  "required": ["schema_version", "plugin", "model_policy", "skills"],
+  "required": [
+    "schema_version",
+    "plugin",
+    "model_policy",
+    "skills"
+  ],
   "properties": {
-    "schema_version": { "const": 1 },
+    "schema_version": {
+      "const": 1
+    },
     "plugin": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["name", "version"],
+      "required": [
+        "name",
+        "version"
+      ],
       "properties": {
-        "name": { "$ref": "#/$defs/slug" },
-        "version": { "type": "string", "minLength": 1 }
+        "name": {
+          "$ref": "#/$defs/slug"
+        },
+        "version": {
+          "type": "string",
+          "minLength": 1
+        },
+        "activation": {
+          "$ref": "#/$defs/pluginActivation"
+        }
       }
     },
     "model_policy": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["model", "planning_reasoning_effort", "evaluation_reasoning_effort"],
+      "required": [
+        "model",
+        "planning_reasoning_effort",
+        "evaluation_reasoning_effort"
+      ],
       "properties": {
-        "model": { "enum": ["gpt-5.6-sol", "gpt-6-sol", "gpt-6-astra"] },
-        "planning_reasoning_effort": { "enum": ["high", "max"] },
-        "evaluation_reasoning_effort": { "enum": ["high", "max"] }
+        "model": {
+          "enum": [
+            "gpt-5.6-sol",
+            "gpt-6-sol",
+            "gpt-6-astra"
+          ]
+        },
+        "planning_reasoning_effort": {
+          "enum": [
+            "high",
+            "max"
+          ]
+        },
+        "evaluation_reasoning_effort": {
+          "enum": [
+            "high",
+            "max"
+          ]
+        }
       }
     },
     "skills": {
       "type": "array",
       "minItems": 1,
-      "items": { "$ref": "#/$defs/skill" }
+      "items": {
+        "$ref": "#/$defs/skill"
+      }
     }
   },
   "$defs": {
-    "slug": { "type": "string", "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$" },
-    "route": { "type": "string", "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*:[a-z0-9]+(?:-[a-z0-9]+)*$" },
+    "slug": {
+      "type": "string",
+      "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+    },
+    "route": {
+      "type": "string",
+      "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*:[a-z0-9]+(?:-[a-z0-9]+)*$"
+    },
     "slugList": {
       "type": "array",
       "uniqueItems": true,
-      "items": { "$ref": "#/$defs/slug" }
+      "items": {
+        "$ref": "#/$defs/slug"
+      }
     },
     "routeList": {
       "type": "array",
       "uniqueItems": true,
-      "items": { "$ref": "#/$defs/route" }
+      "items": {
+        "$ref": "#/$defs/route"
+      }
     },
     "textList": {
       "type": "array",
       "uniqueItems": true,
-      "items": { "type": "string", "minLength": 3 }
+      "items": {
+        "type": "string",
+        "minLength": 3
+      }
     },
     "skill": {
       "type": "object",
@@ -67,30 +120,198 @@
         "evaluation_cases"
       ],
       "properties": {
-        "route": { "$ref": "#/$defs/route" },
-        "component": { "$ref": "#/$defs/slug" },
-        "entrypoint": { "type": "string", "pattern": "^skills/[a-z0-9/-]+/SKILL\\.md$" },
-        "description": { "type": "string", "minLength": 20 },
-        "triggers": { "$ref": "#/$defs/textList" },
-        "anti_triggers": { "$ref": "#/$defs/textList" },
-        "consumes": { "$ref": "#/$defs/slugList" },
-        "optional_consumes": { "$ref": "#/$defs/slugList" },
+        "route": {
+          "$ref": "#/$defs/route"
+        },
+        "component": {
+          "$ref": "#/$defs/slug"
+        },
+        "entrypoint": {
+          "type": "string",
+          "pattern": "^skills/[a-z0-9/-]+/SKILL\\.md$"
+        },
+        "description": {
+          "type": "string",
+          "minLength": 20
+        },
+        "triggers": {
+          "$ref": "#/$defs/textList"
+        },
+        "anti_triggers": {
+          "$ref": "#/$defs/textList"
+        },
+        "consumes": {
+          "$ref": "#/$defs/slugList"
+        },
+        "optional_consumes": {
+          "$ref": "#/$defs/slugList"
+        },
         "consumes_any_of": {
-          "type": "array", "minItems": 2, "uniqueItems": true,
-          "items": { "$ref": "#/$defs/slug" }
+          "type": "array",
+          "minItems": 2,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/slug"
+          }
         },
         "produces": {
           "type": "array",
           "minItems": 1,
           "uniqueItems": true,
-          "items": { "$ref": "#/$defs/slug" }
+          "items": {
+            "$ref": "#/$defs/slug"
+          }
         },
-        "required_dependencies": { "$ref": "#/$defs/routeList" },
-        "optional_dependencies": { "$ref": "#/$defs/routeList" },
-        "policy_tags": { "$ref": "#/$defs/slugList" },
-        "effect": { "enum": ["READ_ONLY", "CANDIDATE_WRITE", "HOST_EFFECT"] },
-        "authority": { "enum": ["READ_ONLY", "LOCAL_WRITE", "EXTERNAL_WRITE", "PRIVILEGED", "DESTRUCTIVE"] },
-        "evaluation_cases": { "$ref": "#/$defs/slugList" }
+        "required_dependencies": {
+          "$ref": "#/$defs/routeList"
+        },
+        "optional_dependencies": {
+          "$ref": "#/$defs/routeList"
+        },
+        "policy_tags": {
+          "$ref": "#/$defs/slugList"
+        },
+        "effect": {
+          "enum": [
+            "READ_ONLY",
+            "CANDIDATE_WRITE",
+            "HOST_EFFECT"
+          ]
+        },
+        "authority": {
+          "enum": [
+            "READ_ONLY",
+            "LOCAL_WRITE",
+            "EXTERNAL_WRITE",
+            "PRIVILEGED",
+            "DESTRUCTIVE"
+          ]
+        },
+        "evaluation_cases": {
+          "$ref": "#/$defs/slugList"
+        }
+      }
+    },
+    "pluginActivation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "description",
+        "triggers",
+        "anti_triggers",
+        "depths",
+        "topics"
+      ],
+      "properties": {
+        "description": {
+          "type": "string",
+          "minLength": 20
+        },
+        "triggers": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 3
+          }
+        },
+        "anti_triggers": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 3
+          }
+        },
+        "depths": {
+          "type": "array",
+          "minItems": 3,
+          "maxItems": 3,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "id",
+              "description",
+              "evidence",
+              "completion",
+              "escalates_when"
+            ],
+            "properties": {
+              "id": {
+                "enum": [
+                  "LIGHTWEIGHT",
+                  "FOCUSED",
+                  "STRUCTURAL"
+                ]
+              },
+              "description": {
+                "type": "string",
+                "minLength": 20
+              },
+              "evidence": {
+                "type": "array",
+                "minItems": 1,
+                "uniqueItems": true,
+                "items": {
+                  "type": "string",
+                  "minLength": 3
+                }
+              },
+              "completion": {
+                "type": "array",
+                "minItems": 1,
+                "uniqueItems": true,
+                "items": {
+                  "type": "string",
+                  "minLength": 3
+                }
+              },
+              "escalates_when": {
+                "type": "array",
+                "minItems": 1,
+                "uniqueItems": true,
+                "items": {
+                  "type": "string",
+                  "minLength": 3
+                }
+              }
+            }
+          }
+        },
+        "topics": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "id",
+              "description",
+              "routes"
+            ],
+            "properties": {
+              "id": {
+                "$ref": "#/$defs/slug"
+              },
+              "description": {
+                "type": "string",
+                "minLength": 20
+              },
+              "routes": {
+                "type": "array",
+                "minItems": 1,
+                "uniqueItems": true,
+                "items": {
+                  "type": "string",
+                  "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*:[a-z0-9]+(?:-[a-z0-9]+)*$"
+                }
+              }
+            }
+          }
+        }
       }
     }
   }

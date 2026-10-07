@@ -122,6 +122,13 @@ describe("Cascade lean target runtime bundle", () => {
     const selection = {
       schema_version: 1,
       artifact_type: "cascade-capability-selection",
+      plugin_activation: catalog.plugins.filter(plugin => plugin.activation).map(plugin => ({
+        plugin_name: plugin.name, plugin_version: plugin.version, claim_ids: [envelope.claims[0]!.claim_id],
+        disposition: "NOT_APPLICABLE", depth: "NONE", topics: [],
+        trigger_evidence: ["This authored runtime fixture requests only market research without a UI work product."],
+        anti_trigger_disposition: "Pure market research is outside Design activation.",
+        reason: "Keep this non-UI fixture outside the Design method set.",
+      })),
       status: "CANDIDATE",
       task_envelope_id: envelope.envelope_id,
       request_digest: envelope.request_digest,
@@ -182,6 +189,10 @@ describe("Cascade lean target runtime bundle", () => {
     const intake = JSON.parse(await readFile(resolve(artifacts, "intake.json"), "utf8"));
     expect(intake.task_envelope_id).toBe(envelope.envelope_id);
     expect(intake.dispatch_authorized).toBe(false);
+    expect(intake.prompt).toContain("Plugin activation contract");
+    expect(intake.prompt).toContain("form-parameters");
+    expect(intake.prompt).toContain("navigation-layout");
+    expect(intake.prompt).toContain("STRUCTURAL");
     const rawSelection = structuredClone(selection);
     rawSelection.selector.prompt_sha256 = "0".repeat(64); rawSelection.selection_digest = "0".repeat(64);
     await writeFile(resolve(artifacts, "response.json"), JSON.stringify(rawSelection));
@@ -190,6 +201,13 @@ describe("Cascade lean target runtime bundle", () => {
     const accepted = JSON.parse(await readFile(resolve(artifacts, "accepted.json"), "utf8"));
     expect(accepted.selected_candidates).toEqual(selection.selected_candidates);
     expect(accepted.selector.prompt_sha256).toBe(intake.prompt_sha256);
+    expect(accepted.plugin_activation).toEqual(selection.plugin_activation);
+    const missingActivation = structuredClone(rawSelection);
+    delete missingActivation.plugin_activation;
+    await writeFile(resolve(artifacts, "missing-activation.json"), JSON.stringify(missingActivation));
+    const missingActivationRun = runBundle(output, ["workflow", "accept-selection", "--intake", ".artifacts/runtime-bundle-test/intake.json", "--response", ".artifacts/runtime-bundle-test/missing-activation.json", "--output", ".artifacts/runtime-bundle-test/rejected.json"]);
+    expect(missingActivationRun.exitCode).toBe(1);
+    expect(missingActivationRun.stderr.toString()).toContain("plugin activation disposition is missing");
     const validation = runBundle(output, [
       "workflow",
       "validate-selection",
@@ -367,6 +385,10 @@ describe("Cascade lean target runtime bundle", () => {
     const closeoutHelp = runBundle(output, ["closeout", "--help"]);
     expect(closeoutHelp.exitCode).toBe(0);
     expect(closeoutHelp.stdout.toString()).toContain("closeout check --file");
+    // Model a registered target repository in this case's new output. The hook
+    // calls Git; a source copy need not have an ancestor repository.
+    const targetGit = Bun.spawnSync({ cmd: ["git", "init", "--quiet", "--initial-branch=fixture", output], cwd: output, stdout: "pipe", stderr: "pipe" });
+    expect(targetGit.exitCode).toBe(0);
     const closeoutBinding = Bun.spawnSync({
       cmd: [process.execPath, resolve(output, ".codex/runtime/closeout-hook.js")],
       cwd: output,

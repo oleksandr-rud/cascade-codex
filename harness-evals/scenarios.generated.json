@@ -1,7 +1,7 @@
 {
   "agent_count": 9,
   "agent_scenario_count": 9,
-  "catalog_digest": "140e6ecae5bd7f4ca0535c57c5b1c2a55f9aa4e5bdc1ac2f6a874a422952b026",
+  "catalog_digest": "7c3d56a77ee121e2f5faa99f1be419ff15c2a73c2546d95c7c00b36012d4a44b",
   "generated_by": "scripts/cascade/evals.ts",
   "scenario_count": 45,
   "scenarios": [
@@ -1186,7 +1186,7 @@
         },
         {
           "path": "CODEX.md",
-          "sha256": "ec8a9710a7c65bda96e5244530bd8591094eb45dbf2eb0f011170a705aedf1a3"
+          "sha256": "5149980f2cc5c60fec819104cea111b9c93219b23a21f47180c8b6da321bd446"
         }
       ],
       "execution": {
@@ -1300,11 +1300,11 @@
         },
         {
           "path": ".codex/plugins/cascade-design/skills/design-system/references/design-system-contract.md",
-          "sha256": "6af72b3e4c6f4e672727c0e771f2c8a3a45dd390a8f95bc442929030d0374cb2"
+          "sha256": "7c85e71942f56142dd3c6cab037c80a6e4fa4b0799d55c49a607458ffca42932"
         },
         {
           "path": ".codex/skills/plan-change/SKILL.md",
-          "sha256": "2ac8d0bd817380e9547cf1efca162bf5ef366c6a3bd4bc335dc7b8464d762f5e"
+          "sha256": "6304c3a65fad956371a3804253007343d3b8145a466ca96570838e49d23110a6"
         }
       ],
       "execution": {
@@ -1421,7 +1421,7 @@
         },
         {
           "path": ".codex/plugins/cascade-design/skills/create-design/SKILL.md",
-          "sha256": "01f7fe119456693f0477183b9197d6d66fe5d75a11691ce78c697981d0f28944"
+          "sha256": "37bbb378c3454f66f220415d9c3700ba5a116f2dbccffe2cb04c52bbefe46167"
         }
       ],
       "execution": {
@@ -1658,7 +1658,7 @@
         },
         {
           "path": ".codex/skills/plan-change/SKILL.md",
-          "sha256": "2ac8d0bd817380e9547cf1efca162bf5ef366c6a3bd4bc335dc7b8464d762f5e"
+          "sha256": "6304c3a65fad956371a3804253007343d3b8145a466ca96570838e49d23110a6"
         }
       ],
       "execution": {

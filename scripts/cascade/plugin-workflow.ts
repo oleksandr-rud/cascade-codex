@@ -104,6 +104,55 @@ export function validateCatalogDigest(catalog: PluginCapabilityCatalog): void {
   if (catalog.catalog_digest !== expected) {
     throw new CascadeError("plugin capability catalog digest is invalid");
   }
+  for (const plugin of catalog.plugins) {
+    if (!plugin.activation) continue;
+    const depths = plugin.activation.depths.map((depth: JsonRecord) => depth.id);
+    if (!exactStringSet(depths, ["LIGHTWEIGHT", "FOCUSED", "STRUCTURAL"]) || new Set(depths).size !== depths.length) {
+      throw new CascadeError(`${plugin.name} plugin activation must declare each proportional depth exactly once`);
+    }
+    const topics = new Set<string>();
+    const routes = new Set(plugin.skills.map((skill: JsonRecord) => skill.route));
+    for (const topic of plugin.activation.topics as JsonRecord[]) {
+      if (topics.has(topic.id)) throw new CascadeError(`${plugin.name} plugin activation has a duplicate topic: ${topic.id}`);
+      topics.add(topic.id);
+      for (const route of topic.routes) {
+        if (!routes.has(route)) throw new CascadeError(`${plugin.name} plugin activation names a foreign or absent method: ${route}`);
+      }
+    }
+  }
+}
+
+function validatePluginActivationDecisions(selection: CapabilitySelection, catalog: PluginCapabilityCatalog, claims: Set<string>): void {
+  const configured = new Map(catalog.plugins.filter(plugin => plugin.activation).map(plugin => [plugin.name, plugin]));
+  const dispositions = new Map<string, JsonRecord>();
+  for (const decision of selection.plugin_activation ?? []) {
+    const plugin = configured.get(decision.plugin_name);
+    if (!plugin) throw new CascadeError(`plugin activation is not declared by the current catalog: ${decision.plugin_name}`);
+    if (dispositions.has(plugin.name)) throw new CascadeError(`duplicate plugin activation disposition: ${plugin.name}`);
+    if (decision.plugin_version !== plugin.version) throw new CascadeError(`${plugin.name} plugin activation version is stale`);
+    for (const claimId of decision.claim_ids) {
+      if (!claims.has(claimId)) throw new CascadeError(`${plugin.name} plugin activation references unknown claim ${claimId}`);
+    }
+    const topics = new Set(plugin.activation.topics.map((topic: JsonRecord) => topic.id));
+    if (decision.topics.some((topic: string) => !topics.has(topic))) throw new CascadeError(`${plugin.name} plugin activation references an unknown topic`);
+    const ownRoutes = new Set(plugin.skills.map((skill: JsonRecord) => skill.route));
+    const selected = selection.selected_candidates.filter(candidate => ownRoutes.has(candidate.route));
+    if (decision.disposition === "ACTIVE") {
+      if (decision.depth === "NONE" || !decision.topics.length) throw new CascadeError(`${plugin.name} active plugin activation needs a depth and topic`);
+      if (selection.status === "CANDIDATE" && !selected.length) throw new CascadeError(`${plugin.name} active plugin activation has no selected method`);
+      if (selection.status === "CANDIDATE" && decision.claim_ids.some((claimId: string) => !selected.some(candidate => candidate.claim_ids.includes(claimId)))) {
+        throw new CascadeError(`${plugin.name} active plugin activation has an uncovered claim`);
+      }
+    } else if (decision.disposition === "NOT_APPLICABLE") {
+      if (decision.depth !== "NONE" || decision.topics.length || selected.length) throw new CascadeError(`${plugin.name} excluded plugin activation cannot contain depth, topics or selected methods`);
+    } else if (selection.status !== "BLOCKED") {
+      throw new CascadeError(`${plugin.name} blocked plugin activation requires a blocked selection`);
+    }
+    dispositions.set(plugin.name, decision);
+  }
+  for (const name of configured.keys()) {
+    if (!dispositions.has(name)) throw new CascadeError(`plugin activation disposition is missing: ${name}`);
+  }
 }
 
 function selectionPayload(selection: CapabilitySelection): JsonRecord {
@@ -292,6 +341,7 @@ export async function buildPluginCapabilityCatalog(): Promise<PluginCapabilityCa
       manifest_sha256: await sha256File(manifestPath),
       descriptor_sha256: await sha256File(descriptorPath),
       model_policy: descriptor.model_policy,
+      ...(descriptor.plugin.activation ? { activation: descriptor.plugin.activation } : {}),
       skills: await Promise.all(descriptor.skills.map(async (skill: JsonRecord) => ({
         ...skill,
         component: skill.component ?? name.slice("cascade-".length),
@@ -434,6 +484,8 @@ export function validateCapabilitySelection(
       throw new CascadeError(`${route} consumes unavailable artifact: requires an alternative input (${alternatives.join(" or ")})`);
     }
   }
+
+  validatePluginActivationDecisions(selection, catalog, claims);
 
   const rejectedRoutes = new Set<string>();
   for (const rejection of selection.rejected_candidates) {

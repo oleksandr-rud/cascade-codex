@@ -1,7 +1,7 @@
 {
   "name": "cascade-design",
-  "version": "0.1.11+codex.20261006.1",
-  "description": "Create product mockups and review UX, accessibility, design systems and visual quality with explicit host implementation boundaries.",
+  "version": "0.2.0+codex.20261007.2",
+  "description": "Apply proportional design to UI changes and refactors: appearance, components, forms, parameter configuration, search, navigation, layouts, workflows, responsive behavior and data/canvas interfaces; create mockups and review visual/accessibility evidence.",
   "author": {
     "name": "Cascade"
   },
@@ -10,13 +10,22 @@
     "accessibility",
     "design-system",
     "visual-qa",
-    "product-design"
+    "product-design",
+    "ui-change",
+    "ui-refactor",
+    "forms",
+    "parameter-configuration",
+    "navigation",
+    "information-architecture",
+    "responsive-ui",
+    "data-visualization",
+    "canvas-ui"
   ],
   "skills": "./skills/",
   "interface": {
     "displayName": "Cascade Design",
-    "shortDescription": "Create mockups and review UX and visual design.",
-    "longDescription": "Create editable design candidates and precise frontend handoffs; review UX, accessibility, design-system rules and rendered visual evidence while preserving product and implementation authority.",
+    "shortDescription": "Design checks and mockups for UI changes and refactors.",
+    "longDescription": "Include Design at an appropriate depth for UI changes and refactors. Choose existing UX, design-system, mockup, visual or accessibility methods for the affected topic; preserve accepted product/design authority and host implementation ownership.",
     "developerName": "Cascade",
     "category": "Productivity",
     "capabilities": [
@@ -24,9 +33,9 @@
       "Write"
     ],
     "defaultPrompt": [
+      "Review the design impact of this UI change at an appropriate depth.",
       "Create responsive mockups and a frontend handoff for this product flow.",
-      "Audit this interface for accessibility risks.",
-      "Validate this UI visually across relevant viewports."
+      "Review visual quality and accessibility across the affected viewports and states."
     ],
     "brandColor": "#4F46E5",
     "composerIcon": "./assets/composer-icon.svg",

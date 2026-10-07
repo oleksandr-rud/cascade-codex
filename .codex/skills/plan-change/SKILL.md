@@ -53,6 +53,15 @@ Bind only applicable target-adopted or explicitly selected references, including
 their concrete rules and source versions. Missing decision-critical sources are
 gaps; do not substitute source-checkout defaults or load every reference pack.
 
+For every UI change or UI refactor with possible visual, interaction, navigation,
+accessibility or UI-contract impact, include Cascade Design at the appropriate
+depth under its catalog activation contract. Reuse accepted behavior/design
+and choose the smallest current Design method: a bounded evidence check can
+suffice, while unresolved component, flow or structural decisions need their
+owning method. Bind the affected surface, topic, reference, states and evidence;
+do not automatically create mockups, Product research or a design role dispatch.
+Proven no-UI-impact work can be excluded; uncertain impact needs a scoped check.
+
 For UI, map the intended outcome to necessary information, the primary action,
 and observable completion/recovery. Bind the accepted target design or Cascade
 Design's shared outcome UI default as the presentation source.

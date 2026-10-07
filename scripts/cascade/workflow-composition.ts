@@ -18,6 +18,7 @@ function intakeDigest(intake: RecordValue): string {
 function renderCatalog(catalog: PluginCapabilityCatalog): string {
   return catalog.plugins.map(plugin => [
     `Package ${plugin.name}@${plugin.version}; model policy: ${stableJson(plugin.model_policy)}`,
+    ...(plugin.activation ? [`Plugin activation contract (semantic scope and proportional depth, not phrase matching): ${stableJson(plugin.activation)}`] : []),
     ...plugin.skills.map((skill: RecordValue) => [
       `Method ${skill.route}; component=${skill.component}; effect=${skill.effect}; authority=${skill.authority}`,
       `Purpose: ${skill.description}`,

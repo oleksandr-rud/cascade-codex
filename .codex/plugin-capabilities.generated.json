@@ -1,6 +1,6 @@
 {
   "artifact_type": "cascade-plugin-capability-catalog",
-  "catalog_digest": "ced3f5176196dc1b70af3ce9dde2e8b01018dc0c5addac1140ae385a2efffa6d",
+  "catalog_digest": "05bf26a249f51758a728e339d065eae808b18b7e7383fccb08a44f55c912ca58",
   "marketplace": ".agents/plugins/marketplace.json",
   "plugins": [
     {
@@ -1987,10 +1987,163 @@
       "version": "1.0.1+codex.20261007.1"
     },
     {
+      "activation": {
+        "anti_triggers": [
+          "The bounded change is evidenced to have no rendered, interaction, navigation, accessibility or UI-contract impact.",
+          "Only non-UI backend, data, market, architecture or security work is requested and UI behavior remains settled.",
+          "The request is a harness/plugin routing audit with no target UI work product."
+        ],
+        "depths": [
+          {
+            "completion": [
+              "An existing Design method dispositions the affected evidence and applicable checks. Missing rendered or runtime evidence stays planned, NOT_RUN, GAP or BLOCKED; READY is not implementation acceptance."
+            ],
+            "description": "A bounded presentation or implementation change with accepted intent, design and interaction semantics; perform the affected Design check without regenerating a design or opening discovery.",
+            "escalates_when": [
+              "The change affects meaning, contrast, focus, state transitions, usable workspace, reusable rules or unsupported viewports."
+            ],
+            "evidence": [
+              "Named accepted source and actual affected surface/evidence, with relevant viewport/state or input-mode bindings."
+            ],
+            "id": "LIGHTWEIGHT"
+          },
+          {
+            "completion": [
+              "Affected states, recovery and applicable visual/accessibility/functional checks are explicit; actual required mockups/previews exist and a bound handoff names the implementation owner."
+            ],
+            "description": "A component, parameter editor, feature interaction, layout or responsive change requires scoped design decisions, states or an authored candidate.",
+            "escalates_when": [
+              "Actor outcomes, object/task hierarchy, cross-workflow navigation, permissions or authoritative data/action ownership are unresolved."
+            ],
+            "evidence": [
+              "Actor/job, current UI or accepted behavior, affected component/data/action/state mapping and requested viewport/state pairs."
+            ],
+            "id": "FOCUSED"
+          },
+          {
+            "completion": [
+              "Product/IA/ownership alternatives are disposed, governing behavior and design are bound, and affected journeys have separate functional, visual and accessibility evidence or explicit blockers."
+            ],
+            "description": "A new application, information architecture or workflow changes material product, task or ownership decisions. Resolve only those missing decisions before authoring and verifying the affected design.",
+            "escalates_when": [
+              "An unresolved decision requires its Discovery, architecture or security owner; do not invent that authority or require every owner by default."
+            ],
+            "evidence": [
+              "Current object/task/route map, actors, accepted behavior and constraints; current external research only when it changes the decision."
+            ],
+            "id": "STRUCTURAL"
+          }
+        ],
+        "description": "Include Cascade Design for every UI change or UI refactor with rendered, interaction, navigation, accessibility or UI-contract impact, at a depth proportional to the affected task and uncertainty. Include requested UI review and design authoring. Reuse accepted designs; choose the smallest sufficient existing method set.",
+        "topics": [
+          {
+            "description": "Visual polish, material, theme, typography, color, spacing, icons and content presentation. Prefer visual-qa for accepted designs; create-design for a requested proposal; design-system for a reusable rule.",
+            "id": "visual-style",
+            "routes": [
+              "cascade-design:visual-qa",
+              "cascade-design:create-design",
+              "cascade-design:design-system"
+            ]
+          },
+          {
+            "description": "Component variants and loading, empty, error, disabled, selected, pending and completed states; distinguish feature behavior from reusable component rules.",
+            "id": "component-states",
+            "routes": [
+              "cascade-design:design-system",
+              "cascade-design:ux-flow-review",
+              "cascade-design:create-design",
+              "cascade-design:accessibility-review"
+            ]
+          },
+          {
+            "description": "Forms, parameter configuration and schema-driven inspectors. Bind parameter identity, type, units, constraints, options, value source, per-parameter control, validation, save/reset and observed persistence; generic record editing is not sufficient for differing semantics.",
+            "id": "form-parameters",
+            "routes": [
+              "cascade-design:ux-flow-review",
+              "cascade-design:design-system",
+              "cascade-design:create-design",
+              "cascade-design:accessibility-review"
+            ]
+          },
+          {
+            "description": "Search, filters, sorting, pickers, selections and command interfaces; distinguish query/result/selection, retained context, keyboard behavior, async and no-result states.",
+            "id": "search-selection",
+            "routes": [
+              "cascade-design:ux-flow-review",
+              "cascade-design:accessibility-review",
+              "cascade-design:create-design"
+            ]
+          },
+          {
+            "description": "Navigation, sidebar, workspace layout, right inspector, split view, drawer and modal. Compare task co-presence, usable content width, interruption, unsaved state, dismiss/back and focus rather than choosing from a control name.",
+            "id": "navigation-layout",
+            "routes": [
+              "cascade-design:ux-flow-review",
+              "cascade-design:create-design",
+              "cascade-design:visual-qa",
+              "cascade-design:accessibility-review"
+            ]
+          },
+          {
+            "description": "Object/action/task hierarchy, permissions, route structure or workflow steps. Separate unresolved product behavior from the Design layout; use existing Discovery only for decisions that require it.",
+            "id": "information-architecture",
+            "routes": [
+              "cascade-design:ux-flow-review",
+              "cascade-design:create-design"
+            ]
+          },
+          {
+            "description": "Responsive and narrow viewport behavior, touch/pointer, keyboard, focus, assistive paths and reduced motion. Require actual affected modes and viewport/state evidence, not source or build proof alone.",
+            "id": "responsive-input",
+            "routes": [
+              "cascade-design:accessibility-review",
+              "cascade-design:ux-flow-review",
+              "cascade-design:visual-qa",
+              "cascade-design:design-system"
+            ]
+          },
+          {
+            "description": "Charts, dashboards, dense tables, comparisons and records. Bind data meaning, units, scale, partial/stale/error states and an accessible equivalent to the user's decision.",
+            "id": "data-visualization",
+            "routes": [
+              "cascade-design:ux-flow-review",
+              "cascade-design:design-system",
+              "cascade-design:create-design",
+              "cascade-design:visual-qa",
+              "cascade-design:accessibility-review"
+            ]
+          },
+          {
+            "description": "Graph, canvas, spatial editor or timeline. Bind selection, zoom/pan, edits, undo/recovery, retained workspace, large/empty data and a keyboard/nonspatial alternative. A UI view does not require a new graph store.",
+            "id": "canvas-workspace",
+            "routes": [
+              "cascade-design:ux-flow-review",
+              "cascade-design:create-design",
+              "cascade-design:design-system",
+              "cascade-design:accessibility-review"
+            ]
+          },
+          {
+            "description": "Web, mobile, desktop or operational app patterns. Bind the real actor, platform, domain objects, task frequency, density, side effects and constraints; reuse accepted target systems instead of a universal CRUD or marketing composition.",
+            "id": "domain-interface",
+            "routes": [
+              "cascade-design:ux-flow-review",
+              "cascade-design:create-design",
+              "cascade-design:design-system",
+              "cascade-design:accessibility-review"
+            ]
+          }
+        ],
+        "triggers": [
+          "Any new or changed UI surface, appearance, component state, input, data presentation, navigation or user workflow needs a proportional Design contribution.",
+          "A UI refactor can affect rendered output, interaction, responsive behavior, keyboard/focus, accessibility or an accepted UI contract, even when product intent is unchanged.",
+          "Concrete design authoring or review of an existing or proposed interface is requested."
+        ]
+      },
       "descriptor_path": ".codex/plugins/cascade-design/capabilities.yaml",
-      "descriptor_sha256": "a374b351f8c9bc800973470c698665c7f588ae3192dd650cce55951fd5cfe330",
+      "descriptor_sha256": "169c102fb178207a781c64a3f30899e25d45f27c47308c8bde5cc4a744a419fd",
       "manifest_path": ".codex/plugins/cascade-design/.codex-plugin/plugin.json",
-      "manifest_sha256": "df4219c7b8491fae43a2f9b75f9c5ff75267e0d4e49aeab9fa90e4a863594f70",
+      "manifest_sha256": "1a27882357f8a339520b684aada32a24ac072b547d291a6e0b8c4faa19482ff3",
       "model_policy": {
         "evaluation_reasoning_effort": "high",
         "model": "gpt-6-astra",
@@ -2032,7 +2185,7 @@
           ],
           "required_dependencies": [],
           "route": "cascade-design:ux-flow-review",
-          "skill_sha256": "f5fb71b0a6498733e8c5a5c72b0290c2f7b5a310c7ab54d7234c88feaa7e8011",
+          "skill_sha256": "39cec0c2f3bcfc1b8e5b7d7e550aa3aac1fe2dfe48611f87711b5037c872ba38",
           "triggers": [
             "a screen or user flow needs UX review"
           ]
@@ -2070,7 +2223,7 @@
           ],
           "required_dependencies": [],
           "route": "cascade-design:design-system",
-          "skill_sha256": "26fb3d73be478da75d6d7417189e23f94bbe953f3d59aceab51400b3d2026553",
+          "skill_sha256": "8a1c53069d10522eba33bd72dd03cb42c4d2848cb9e83d3b0a7e845ab5acfa8b",
           "triggers": [
             "a reusable design-system rule is missing or changing",
             "generative UI templates or component catalogs need a reusable rule"
@@ -2108,7 +2261,7 @@
           ],
           "required_dependencies": [],
           "route": "cascade-design:accessibility-review",
-          "skill_sha256": "8536f80ce965cb80cf3994ed69572b14cc6f99e07cef688cab6cc51778e4cda7",
+          "skill_sha256": "5af2bbc1fac00a5f97f3130462b650d30aa69c79540a2f9198eb15ffde7a3f16",
           "triggers": [
             "a UI or design needs accessibility review"
           ]
@@ -2146,7 +2299,7 @@
           ],
           "required_dependencies": [],
           "route": "cascade-design:visual-qa",
-          "skill_sha256": "11c7ae6b61912af7ff0e5c1aca759fab2c11bd0c0855c5762d59d11530b64e24",
+          "skill_sha256": "2fad9f65018464d465595c755143fb4d311bfd608b82465a7594ba7464197ec0",
           "triggers": [
             "runnable UI or screenshots need visual validation"
           ]
@@ -2163,7 +2316,7 @@
             "product-contract",
             "design-brief"
           ],
-          "description": "Create editable product and marketing mockups, inspected previews and a version-bound frontend handoff from grounded requirements.",
+          "description": "Control grounded Design intake, conditional research and direction, editable prototypes, inspected states and a version-bound frontend handoff using self-contained local references.",
           "effect": "CANDIDATE_WRITE",
           "entrypoint": "skills/create-design/SKILL.md",
           "evaluation_cases": [
@@ -2172,7 +2325,8 @@
             "required-tool-unavailable"
           ],
           "optional_consumes": [
-            "design-evidence"
+            "design-evidence",
+            "design-system-contract"
           ],
           "optional_dependencies": [
             "cascade-discovery:define-product",
@@ -2190,13 +2344,13 @@
           ],
           "required_dependencies": [],
           "route": "cascade-design:create-design",
-          "skill_sha256": "01f7fe119456693f0477183b9197d6d66fe5d75a11691ce78c697981d0f28944",
+          "skill_sha256": "37bbb378c3454f66f220415d9c3700ba5a116f2dbccffe2cb04c52bbefe46167",
           "triggers": [
             "create or revise concrete mockups or a design prototype"
           ]
         }
       ],
-      "version": "0.1.11+codex.20261006.1"
+      "version": "0.2.0+codex.20261007.2"
     },
     {
       "descriptor_path": ".codex/plugins/cascade-security/capabilities.yaml",
@@ -2328,9 +2482,9 @@
     },
     {
       "descriptor_path": ".codex/plugins/cascade-workflows/capabilities.yaml",
-      "descriptor_sha256": "d46d2b45fa776bfb8e8dd8669aabab68952441c6a6d3e0ed5ab861ba4d88def3",
+      "descriptor_sha256": "7683de8ddd59e5b1d90e5d4affee07366e420329b7bbb45fee941cc497cf1fbf",
       "manifest_path": ".codex/plugins/cascade-workflows/.codex-plugin/plugin.json",
-      "manifest_sha256": "599f3064c8ff32f7494663131b1c74879bb84a33e6002f3ceef94b7ab8704df9",
+      "manifest_sha256": "bf43d61b5596ce8f2f616f3a5a38f0858cb753b8706f7ef5112c763204b71d58",
       "model_policy": {
         "evaluation_reasoning_effort": "high",
         "model": "gpt-6-astra",
@@ -2370,7 +2524,7 @@
           ],
           "required_dependencies": [],
           "route": "cascade-workflows:select-capabilities",
-          "skill_sha256": "d6f33fcd000a26f00a7139017a9bd8aee66f3cf26e72a2de79deb427ee18b004",
+          "skill_sha256": "ef1da522228bc9e16ee1e05b14ef29507a06d73c120e9f6107a7d76808c97219",
           "triggers": [
             "a request spans multiple plugin domains or its exact namespaced capability route is ambiguous"
           ]
@@ -2563,7 +2717,7 @@
           ]
         }
       ],
-      "version": "1.0.2+codex.20261006.3"
+      "version": "1.0.3+codex.20261007.1"
     }
   ],
   "schema_version": 1
