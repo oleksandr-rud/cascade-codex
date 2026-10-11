@@ -1,0 +1,87 @@
+schema_version: 1
+mode: CONFIGURED
+research:
+  effort: FOCUSED
+  refresh: MATERIAL_CLAIMS
+methods:
+  source_analysis:
+    skill: knowledge-to-policy:source-analysis
+    purpose: Analyze a bounded collection of specifications or other sources with located evidence and coverage.
+    inputs: [bounded_source_collection, intended_application]
+    results: [source_inventory, segment_analysis, conflicts, coverage, gaps]
+  market_research:
+    skill: cascade-discovery:research-market
+    purpose: Resolve a market, competitor, pricing or buying question with attributable evidence.
+    inputs: [market_decision_scope, audience_geography_time, available_evidence]
+    results: [market_findings, source_bound_claims, contradictions, gaps]
+  architecture_patterns:
+    skill: cascade-engineering:select-architecture-patterns
+    purpose: Compare applicable patterns from an actual versioned host catalog.
+    inputs: [versioned_pattern_catalog, current_source_claims, compatibility_constraints]
+    results: [candidate_selection, dispositions, preserved_contracts, required_evidence]
+  quality_plan:
+    skill: cascade-quality:plan-quality
+    purpose: Define risk-specific coverage and evidence when the quality scope is unresolved.
+    inputs: [accepted_behavior, behavior_owner_revision, risks]
+    results: [quality_scope, coverage, evidence_requirements, gaps]
+  test_design:
+    skill: cascade-quality:design-tests
+    purpose: Design cases and oracles for accepted behavior without executing tests.
+    inputs: [accepted_behavior, quality_scope, existing_quality_plan_if_present]
+    results: [cases, traceability, fixtures_oracles, evidence_contracts]
+  create_design:
+    skill: cascade-design:create-design
+    purpose: Resolve a scoped screen or interaction design gap from product behavior.
+    inputs: [behavior_contract, audience_scope_constraints, existing_design_if_present]
+    results: [design_brief, mockups, state_component_handoff, gaps]
+  ux_review:
+    skill: cascade-design:ux-flow-review
+    purpose: Review a consequential journey or recovery flow.
+    inputs: [product_contract_or_design_evidence, journey_scope]
+    results: [flow_findings, recovery_gaps, proposed_changes]
+  design_system:
+    skill: cascade-design:design-system
+    purpose: Define a scoped reusable component or design rule when actual reuse needs it.
+    inputs: [reuse_need, current_design_system, affected_components]
+    results: [scoped_design_rule, state_responsive_contracts, gaps]
+  accessibility:
+    skill: cascade-design:accessibility-review
+    purpose: Review applicable accessibility requirements against available UI evidence.
+    inputs: [ui_or_design_evidence, interaction_scope]
+    results: [accessibility_findings, evidence_limits, proposed_repairs]
+  visual_qa:
+    skill: cascade-design:visual-qa
+    purpose: Compare actual captures to an accepted design at matching viewports and states.
+    inputs: [accepted_reference_capture, current_capture, viewport_state_bindings]
+    results: [visual_findings, fidelity_disposition, evidence_limits]
+  simulation_campaign:
+    skill: cascade-simulations:manage-simulation-campaign
+    purpose: Plan an explicitly scoped multi-case or multi-contour simulation campaign.
+    inputs: [authorized_planning_scope, native_case_bindings, environments_budgets_evidence_rules]
+    results: [native_campaign_candidate, source_bindings, plan_gaps]
+  simulation_brief:
+    skill: cascade-simulations:simulation-brief
+    purpose: Ground missing domain and feature context for a selected simulation plan.
+    inputs: [source_bound_domain_feature_scope, available_contracts]
+    results: [native_simulation_brief, context_gaps]
+  simulation_outcome:
+    skill: cascade-simulations:simulation-outcome
+    purpose: Define a selected simulation case's observable outcome and evidence contract.
+    inputs: [behavior_scope, actor_goal, observation_evidence_constraints]
+    results: [native_outcome_contract, oracle_gaps]
+  simulation_actor:
+    skill: cascade-simulations:simulation-actor
+    purpose: Derive an executable actor from supported evidence or an explicitly supplied role.
+    inputs: [persona_evidence_or_explicit_role, goal_behavior_scope, interface_limits]
+    results: [native_actor_contract, evidence_limits]
+  simulation_persona:
+    skill: cascade-simulations:simulation-persona
+    purpose: Consume a frozen compiled-persona simulation projection without inventing its source.
+    inputs: [frozen_compile_persona_simulation_projection]
+    results: [validated_native_persona_binding, projection_gaps]
+bindings:
+  W02: [source_analysis, market_research]
+  W03: [architecture_patterns]
+  W04: [quality_plan, test_design]
+  W06: [create_design, ux_review, design_system, accessibility, visual_qa]
+  W07: [quality_plan, test_design, simulation_campaign, simulation_brief, simulation_outcome, simulation_actor, simulation_persona]

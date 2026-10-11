@@ -40,6 +40,9 @@ test_repair_condition = "only after cascade-quality:triage-defects proves TEST_D
 exception_paths = ["cascade-workflows:define-work-item"]
 
 [cascade.plugin_skills]
+specification = "specification-kit:build-spec"
+spec_diagrams = "specification-kit:spec-diagrams"
+spec_test_design = "specification-kit:spec-test-design"
 prompt = "cascade-prompt:prompt"
 capability_selection = "cascade-workflows:select-capabilities"
 workflow_plan = "cascade-workflows:plan-workflow"

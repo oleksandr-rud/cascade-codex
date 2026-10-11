@@ -232,6 +232,16 @@ function assertUniqueArtifactOwnership(skills: Map<string, JsonRecord>): void {
   }
 }
 
+// The portable kit is its own source owner; other repository packages keep
+// their established roots. This allowlist does not accept arbitrary local paths.
+export function repoPluginRoot(name: string): string {
+  if (name === "specification-kit") return "specification-kit";
+  if (!/^cascade-[a-z0-9-]+$/.test(name)) {
+    throw new CascadeError(`invalid repository marketplace plugin name: ${name}`);
+  }
+  return `.codex/plugins/${name}`;
+}
+
 export async function buildPluginCapabilityCatalog(): Promise<PluginCapabilityCatalog> {
   const marketplace = await readJson<JsonRecord>(rootPath(MARKETPLACE_RELATIVE));
   if (!Array.isArray(marketplace.plugins) || marketplace.plugins.length === 0) {
@@ -245,14 +255,14 @@ export async function buildPluginCapabilityCatalog(): Promise<PluginCapabilityCa
   for (const entry of marketplace.plugins) {
     const name = entry?.name;
     const source = entry?.source?.path;
-    if (typeof name !== "string" || !/^cascade-[a-z0-9-]+$/.test(name)) {
+    if (typeof name !== "string") {
       throw new CascadeError(`invalid Cascade marketplace plugin name: ${String(name)}`);
     }
     if (seenPlugins.has(name)) {
       throw new CascadeError(`duplicate Cascade marketplace plugin: ${name}`);
     }
     seenPlugins.add(name);
-    const expectedSource = `./.codex/plugins/${name}`;
+    const expectedSource = `./${repoPluginRoot(name)}`;
     if (entry?.source?.source !== "local" || source !== expectedSource) {
       throw new CascadeError(`${name} marketplace source must be ${expectedSource}`);
     }
@@ -344,7 +354,7 @@ export async function buildPluginCapabilityCatalog(): Promise<PluginCapabilityCa
       ...(descriptor.plugin.activation ? { activation: descriptor.plugin.activation } : {}),
       skills: await Promise.all(descriptor.skills.map(async (skill: JsonRecord) => ({
         ...skill,
-        component: skill.component ?? name.slice("cascade-".length),
+        component: skill.component ?? (name.startsWith("cascade-") ? name.slice("cascade-".length) : name),
         entrypoint: sourcePaths.get(skill.route),
         skill_sha256: await sha256File(resolve(pluginRoot, sourcePaths.get(skill.route)!)),
       }))),

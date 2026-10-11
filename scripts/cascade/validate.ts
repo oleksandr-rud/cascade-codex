@@ -26,6 +26,7 @@ import { loadProductArtifactPolicy, loadProductPolicyRegistry } from "./policies
 import { parseStrictYaml, readStructured } from "./structured-data";
 import {
   buildPluginCapabilityCatalog,
+  repoPluginRoot,
   PLUGIN_CAPABILITY_CATALOG_RELATIVE,
 } from "./plugin-workflow";
 
@@ -47,11 +48,13 @@ const REPO_PLUGIN_NAMES = [
   "cascade-discovery",
   "cascade-design",
   "cascade-security",
+  "specification-kit",
 ] as const;
 const REPO_PLUGIN_MARKETPLACE = ".agents/plugins/marketplace.json";
 const CASCADE_PROMPT_PLUGIN_NAME = "cascade-prompt";
 const PLUGIN_ADAPTER_DELEGATES: Record<string, string[]> = {
   "create-spec": [
+    "specification-kit:build-spec",
     "cascade-discovery:define-product",
     "cascade-discovery:manage-product-lifecycle",
     "cascade-discovery:build-persona",
@@ -86,7 +89,7 @@ const REQUIRED_FILES = [
   ".codex/hooks.json",
   ".agents/plugins/marketplace.json",
   PLUGIN_CAPABILITY_CATALOG_RELATIVE,
-  ...REPO_PLUGIN_NAMES.map((name) => `.codex/plugins/${name}/.codex-plugin/plugin.json`),
+  ...REPO_PLUGIN_NAMES.map((name) => `${repoPluginRoot(name)}/.codex-plugin/plugin.json`),
   ".codex/plugins/cascade-prompt/skills/prompt/references/model-system/model-registry.yaml",
   ".codex/plugins/cascade-prompt/skills/prompt/runtime/model-index.yaml",
   ".codex/task-admission/task-envelope.schema.json",
@@ -229,7 +232,7 @@ const REQUIRED_FOLDERS = [
   ".codex/skills",
   ".codex/agents",
   ".codex/plugins",
-  ...REPO_PLUGIN_NAMES.map((name) => `.codex/plugins/${name}`),
+  ...REPO_PLUGIN_NAMES.map(repoPluginRoot),
   ".codex/harness-tooling",
   "docs",
   "docs/product",
@@ -393,7 +396,7 @@ export function repoPluginMetadataErrors(
   pluginName = CASCADE_PROMPT_PLUGIN_NAME,
 ): string[] {
   const errors: string[] = [];
-  const pluginSource = `./.codex/plugins/${pluginName}`;
+  const pluginSource = `./${repoPluginRoot(pluginName)}`;
   if (typeof marketplace.name !== "string" || !marketplace.name.trim()) {
     errors.push("repo plugin marketplace missing name");
   }
@@ -805,7 +808,7 @@ async function validateRepoPlugins(errors: string[]): Promise<void> {
   }
 
   for (const pluginName of REPO_PLUGIN_NAMES) {
-    const pluginRootRelative = `.codex/plugins/${pluginName}`;
+    const pluginRootRelative = repoPluginRoot(pluginName);
     let manifest: Record<string, any>;
     try {
       manifest = await readJson<Record<string, any>>(

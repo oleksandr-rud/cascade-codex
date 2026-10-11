@@ -29,7 +29,7 @@ runs remain the dominant latency in live evaluations.
 - Core target role contracts: 7; simulation lab roles are optional
 - Registered host skills: 9
 - Canonical skill and role source: `.codex/skills/` and `.codex/agents/`
-- Repo-local Cascade plugin sources: 14
+- Marketplace plugin packages: 10, including Specification Kit
 - Planning model: `gpt-6-astra`
 - Execution, prompt-builder, and judge model: `gpt-6-astra`
 - Default reasoning effort: `high`
@@ -39,11 +39,16 @@ runs remain the dominant latency in live evaluations.
 
 ## Source Checkout And Target Runtime
 
-This repository is the full source monorepo. It intentionally contains all 14
-plugin packages, source validators, 981 admission regression cases, 138
+This repository is the full source monorepo. It intentionally contains all 10
+marketplace plugin packages, source validators, 981 admission regression cases, 138
 generated harness scenarios, simulation campaigns, fixtures, and historical
 design/work evidence. Those are development and lab assets, not one runtime
 dependency graph.
+
+[Specification Kit](specification-kit/README.md) is available through the
+repository marketplace. Its three routes are `specification-kit:build-spec`,
+`specification-kit:spec-diagrams` and `specification-kit:spec-test-design`.
+It can also run through the standalone skill exports without the Cascade runtime.
 
 `bun run build:runtime` creates `dist/cascade-runtime/`, a lean target profile
 with the host roles and effect skills, a compact Bun command adapter, task
@@ -83,6 +88,8 @@ by the target; a generic agent or prompt request does not select that topology.
 | `.codex/harness-tooling/` | Isolated pinned Bun/Playwright package; installing it never mutates the target application's root package manifest or lockfile. |
 | `.codex/skills/` | Reusable workflow skills with trigger-focused frontmatter, source order, output contracts, templates, checklists, and references where needed. |
 | `.codex/agents/` | Codex-compatible custom-agent TOML files plus local role contracts, skill maps, delegation policy, and specialist checklists. |
+| `specification-kit/` | Portable Specification Kit plugin: interview-led specifications, contract-bound diagrams and test design, with six profiles and conditional design/campaign policies. |
+| `exports/skills/` | Generated standalone exports of the three Specification Kit skills; regenerate with `bun scripts/build-spec-skill.ts --write` and verify with `--check`. |
 | `harness-evals/` | Curated per-skill cases, cross-skill collisions, a generated catalog, judge profiles, anchored rubrics, and response schemas. |
 | `product-evals/tasks/`, `product-evals/campaigns/` | Reusable typed execution tasks and immutable campaign plans for deterministic commands, browser simulations, or agent-response evaluations. |
 | `product-evals/simulations/` | Shared schemas plus explicit `harness/` framework fixtures and `product/` target-product simulation definitions; scope never upgrades evidence authority. |

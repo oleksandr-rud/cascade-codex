@@ -1,6 +1,6 @@
 ---
 name: create-spec
-description: Preserve and classify supplied source material or render validated plugin artifacts into the target repository's durable specifications, product views, personas, requirements, journeys, scenarios, briefs, and indexes. Use only when durable persistence is warranted; do not redefine upstream Product, Persona, Market, or Design semantics.
+description: Preserve and classify supplied source material or render validated plugin artifacts into the target repository's durable specifications, product views, personas, requirements, journeys, scenarios, briefs, and indexes. Use only when durable persistence is warranted; do not redefine upstream Specs, Product, Persona, Market, Design, Architecture, or QA semantics.
 ---
 
 # Create Spec
@@ -13,7 +13,7 @@ the reusable methods owned by Cascade plugins.
 
 - **Intake**: preserve and classify an incoming ticket, screenshot, research
   packet, implementation note, or test artifact.
-- **Render**: project a validated Cascade Product or Cascade Personas artifact,
+- **Render**: project a validated Specification Kit, Product or Personas artifact,
   or an approved generic source packet, into target-owned documents.
 - **Update**: change an existing durable contract and update only its true
   consumers.
@@ -33,6 +33,13 @@ authority, permissions, plugin routing, or write scope.
 
 ## Upstream owners
 
+- `specification-kit:build-spec` owns interview-led composition, policy/profile
+  selection and candidate specification structure for product, company,
+  scenario, test, application and feature-change subjects. It consumes owning
+  contracts; it does not grant approval or replace their decisions.
+- `specification-kit:spec-diagrams` owns contract-bound diagram projections;
+  `specification-kit:spec-test-design` owns portable specification cases and
+  conditional campaign plans. Native QA/simulation artifacts retain their owners.
 - `cascade-discovery:manage-product-lifecycle` owns product state and gates.
 - `cascade-discovery:define-product` owns PRDs, requirements, journeys,
   scenarios, metrics, and MVP behavior.
@@ -41,6 +48,8 @@ authority, permissions, plugin routing, or write scope.
 - `cascade-discovery:<skill>` owns market evidence, opportunity assessment,
   experiments, positioning, and messaging semantics.
 - `cascade-design:<skill>` owns reusable design interpretation.
+- `cascade-engineering:architect-software-system` owns software architecture
+  decisions; `cascade-quality:design-tests` owns cases, fixtures and oracles.
 
 If a required plugin or validated artifact is unavailable, return `BLOCKED`.
 Do not reconstruct its method from local templates.

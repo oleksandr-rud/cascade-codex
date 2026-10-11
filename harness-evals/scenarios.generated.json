@@ -1,7 +1,7 @@
 {
   "agent_count": 9,
   "agent_scenario_count": 9,
-  "catalog_digest": "7c3d56a77ee121e2f5faa99f1be419ff15c2a73c2546d95c7c00b36012d4a44b",
+  "catalog_digest": "9af61eab9f35c5788214e790fb9641e049378cf2bd0591035d9a22b51102a854",
   "generated_by": "scripts/cascade/evals.ts",
   "scenario_count": 45,
   "scenarios": [
@@ -1174,7 +1174,7 @@
         },
         {
           "path": ".codex/agents/agent-engineer/skills.yaml",
-          "sha256": "c754d00b755feb863d561561b1cbfeca35d1ab1c1b14c6e9a1af8812f122a772"
+          "sha256": "d453417c7865add8fe4a5e610d9d3ab1e436e209661fdb3dfe50c7f36e869cb6"
         },
         {
           "path": ".codex/plugins/cascade-engineering/skills/coding-agent/skills/audit-harness/SKILL.md",
@@ -1186,7 +1186,7 @@
         },
         {
           "path": "CODEX.md",
-          "sha256": "5149980f2cc5c60fec819104cea111b9c93219b23a21f47180c8b6da321bd446"
+          "sha256": "03ac2aee8389091710e31d57b88136cc912dec96838a6b46080383de9b82782f"
         }
       ],
       "execution": {

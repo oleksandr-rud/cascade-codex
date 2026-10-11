@@ -1,7 +1,7 @@
 # Cascade packages, methods and host roles
 
-Current source catalog snapshot: 2026-10-06. The marketplace has **9 packages,
-65 portable methods**. Public route identities and exact entrypoints come from
+Current source catalog snapshot: 2026-10-12. The marketplace has **10 packages,
+68 portable methods**. Public route identities and exact entrypoints come from
 `.codex/plugin-capabilities.generated.json`; this guide explains their purpose.
 Use `bun scripts/cascade.ts workflow groups` for a current machine projection.
 
@@ -37,13 +37,14 @@ tools. Candidate outputs do not authorize execution, acceptance or persistence.
 | cascade-discovery | 11 | Market, Product and Personas: current evidence, opportunities, human models, value and learning. |
 | cascade-design | 5 | Concrete UI/interaction design and UX, accessibility and visual review. |
 | cascade-security | 3 | Trust boundaries, threat/abuse review and source-grounded security audits. |
+| specification-kit | 3 | Interview-led specification composition, focused contract-bound diagrams and test design with conditional campaign planning. |
 | cascade-workflows | 6 | Semantic capability selection, artifact ordering and project/work-item coordination. |
 
 The former Market/Product/Personas packages are Discovery components;
 Software Architect/Coding Agent are Engineering; Coordinator/Project Management
 are Workflows; QA/Evals are Quality. Prompt, AI Architect, Design, Security and
 Simulations remain focused packages. Component manifests/evaluation subjects
-retain their own identity/version; only the nine root manifests are installed.
+retain their own identity/version; the ten marketplace manifests are installation units.
 
 Grouped source layout is `skills/<component>/skills/<method>/SKILL.md` under the
 public package. Standalone layout is `skills/<method>/SKILL.md`. Method resource
@@ -155,6 +156,14 @@ ceilings remain in the catalog; installation alone never requires a method.
 | [cascade-security:auth-analysis](../../../.codex/plugins/cascade-security/skills/auth-analysis/SKILL.md) | Audit authentication, sessions, revocation, RBAC, tenant isolation, and client-server authorization contracts. |
 | [cascade-security:secure-design](../../../.codex/plugins/cascade-security/skills/secure-design/SKILL.md) | Review a proposed feature, architecture, workflow, integration, or agent-tool plan for trust boundaries and abuse cases. |
 
+### specification-kit
+
+| Method | Purpose / entry condition |
+|---|---|
+| [specification-kit:build-spec](../../../specification-kit/skills/build-spec/SKILL.md) | Interview and compose one specification from a brief, selected profile, policies and concrete contracts. |
+| [specification-kit:spec-diagrams](../../../specification-kit/skills/spec-diagrams/SKILL.md) | Author/review one focused view against its owning contracts with source-bound evidence. |
+| [specification-kit:spec-test-design](../../../specification-kit/skills/spec-test-design/SKILL.md) | Derive cases, fixtures, levels and oracles; plan a coordinated test/simulation campaign when needed. |
+
 ### cascade-workflows
 
 | Method | Purpose / entry condition |
@@ -178,7 +187,7 @@ role, not an instruction to run every listed capability.
 | agent-engineer | 3 / 29 | [role](../../../.codex/agents/agent-engineer/AGENT.md), [skills](../../../.codex/agents/agent-engineer/skills.yaml) |
 | code-reviewer | 1 / 2 | [role](../../../.codex/agents/code-reviewer/AGENT.md), [skills](../../../.codex/agents/code-reviewer/skills.yaml) |
 | frontend-engineer | 5 / 6 | [role](../../../.codex/agents/frontend-engineer/AGENT.md), [skills](../../../.codex/agents/frontend-engineer/skills.yaml) |
-| orchestrator | 10 / 41 | [role](../../../.codex/agents/orchestrator/AGENT.md), [skills](../../../.codex/agents/orchestrator/skills.yaml) |
+| orchestrator | 10 / 44 | [role](../../../.codex/agents/orchestrator/AGENT.md), [skills](../../../.codex/agents/orchestrator/skills.yaml) |
 | product-designer | 5 / 23 | [role](../../../.codex/agents/product-designer/AGENT.md), [skills](../../../.codex/agents/product-designer/skills.yaml) |
 | security | 3 / 8 | [role](../../../.codex/agents/security/AGENT.md), [skills](../../../.codex/agents/security/skills.yaml) |
 | simulation-evaluator | 0 / 2 | [role](../../../.codex/agents/simulation-evaluator/AGENT.md), [skills](../../../.codex/agents/simulation-evaluator/skills.yaml) |

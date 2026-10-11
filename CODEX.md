@@ -101,6 +101,7 @@ durable paths, target commands, campaign state, and acceptance.
 | Channel selection, growth strategy, cohort economics and product feedback | `cascade-discovery:plan-growth` | Orchestrator |
 | Positioning, messaging, naming, tone, proof, and trust language | `cascade-discovery:brand-positioning` | Orchestrator; Product Designer within the design brief |
 | Product value and offers, feature formation, lifecycle and outcome validation | `cascade-discovery:<skill>` | Orchestrator for lifecycle; Product Designer for scoped definition and validation |
+| Interview-led specification composition and policy/profile selection for product, company, scenario, test, application and feature change | `specification-kit:build-spec`; `create-spec` for accepted persistence | Requesting owner; domain decisions remain with Discovery, Engineering, Design and Quality |
 | Canonical personas and compiled projections | `cascade-discovery:<skill>` | Orchestrator; Product Designer for scoped authoring/compilation, independent review separately |
 | UX, accessibility, visual, and design-system review | `cascade-design:<skill>` | Requesting role or Orchestrator |
 | Design authoring and mockup handoff | `cascade-design:create-design`; host artifact persistence | Product Designer |
@@ -131,7 +132,9 @@ required dependencies are `BLOCKED`; do not restore copied local
 implementations or search caches as a hidden fallback.
 For this repository-owned marketplace, a resolved route
 `cascade-<plugin>:<skill>` resolves to the catalog's exact `entrypoint` under
-`.codex/plugins/cascade-<plugin>/`. Grouped packages keep their method resources
+`.codex/plugins/cascade-<plugin>/`; `specification-kit:<skill>` resolves under
+`specification-kit/`. This is the portable kit's single source owner.
+Grouped packages keep their method resources
 under `skills/<component>/skills/<skill>/SKILL.md`; standalone packages use
 `skills/<skill>/SKILL.md`. Bind the catalog's skill digest, and a selected local
 role has `.codex/agents/<role>/AGENT.md`. Use those exact paths without a broad

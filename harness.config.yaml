@@ -98,6 +98,7 @@ paths:
     - ".codex/plugins/cascade-prompt/.codex-plugin/plugin.json"
     - ".codex/plugins/cascade-quality/skills/qa/.codex-plugin/plugin.json"
     - ".codex/plugins/cascade-security/.codex-plugin/plugin.json"
+    - "specification-kit/.codex-plugin/plugin.json"
     - ".codex/plugins/cascade-simulations/.codex-plugin/plugin.json"
     - ".codex/task-admission/task-envelope.schema.json"
     - ".codex/plugin-capabilities.generated.json"

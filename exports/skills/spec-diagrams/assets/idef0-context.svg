@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="460" viewBox="0 0 900 460" role="img" aria-labelledby="title desc">
+  <title id="title">IDEF0 A-0 context fragment: Manage desk reservations</title>
+  <desc id="desc">Reservation requests enter left; availability and ownership rules control from above; persisted reservations leave right; the application and PostgreSQL provide mechanisms from below. Purpose: define functional boundary. Viewpoint: product owner.</desc>
+  <defs><marker id="arrow" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto"><path d="M0 0 L10 4 L0 8 Z" fill="#172033"/></marker></defs>
+  <rect width="900" height="460" fill="#fff"/>
+  <g font-family="Arial, sans-serif" fill="#172033" font-size="17">
+    <text x="30" y="35" font-size="22">A-0 · Manage desk reservations</text>
+    <text x="30" y="66">Purpose: define the product's functional boundary</text>
+    <text x="30" y="92">Viewpoint: product owner · TARGET · context fragment</text>
+    <rect x="310" y="190" width="290" height="125" fill="#f5f7fa" stroke="#172033" stroke-width="2"/>
+    <text x="355" y="242">Manage desk</text><text x="355" y="269">reservations</text>
+    <text x="577" y="304">0</text><text x="570" y="339">A0</text>
+    <text x="30" y="219">Reservation requests</text>
+    <path d="M30 245 H310" fill="none" stroke="#172033" stroke-width="2" marker-end="url(#arrow)"/>
+    <text x="320" y="137">Availability and ownership rules</text>
+    <path d="M455 148 V190" fill="none" stroke="#172033" stroke-width="2" marker-end="url(#arrow)"/>
+    <path d="M600 245 H870" fill="none" stroke="#172033" stroke-width="2" marker-end="url(#arrow)"/>
+    <text x="630" y="219">Persisted reservations</text>
+    <path d="M455 390 V315" fill="none" stroke="#172033" stroke-width="2" marker-end="url(#arrow)"/>
+    <text x="320" y="421">Application and PostgreSQL</text>
+  </g>
+</svg>

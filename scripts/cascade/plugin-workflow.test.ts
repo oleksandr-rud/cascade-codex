@@ -1,6 +1,7 @@
 import { describe, expect, test } from "bun:test";
 import { mkdir, rm, writeFile } from "node:fs/promises";
-import { rootPath, sha256Text } from "./common";
+import { assertJsonSchema, readJson, rootPath, sha256Text } from "./common";
+import { readStructured } from "./structured-data";
 import { createWorkflowControl, advanceWorkflowControl, workflowObservationDigest, pluginGroupProjection } from "./workflow-control";
 import { createCapabilityIntake, acceptCapabilitySelection } from "./workflow-composition";
 
@@ -11,6 +12,7 @@ import {
   type CapabilitySelection,
   validatePluginPlan,
   validateCapabilitySelection,
+  repoPluginRoot,
 } from "./plugin-workflow";
 
 function fixtureInterpretation(request: string) {
@@ -56,12 +58,12 @@ describe("bounded workflow control and grouped method identity", () => {
   const decision = (state: any, observed: any, action = "RUN_NODE", trigger = "ENTRY", node: string | null = "node-1") => ({ schema_version: 1, artifact_type: "cascade-workflow-decision", state_digest: state.state_digest, observation_digest: workflowObservationDigest(observed), model_id: "AUTHORED_FIXTURE_NOT_MODEL_INFERENCE", resolution: "RESOLVED", trigger, action, node_id: node, reason: "Bounded synthetic proposal", uncertainty: [] });
   const advance = (state: any, observed: any, proposed: any) => advanceWorkflowControl(state, observed, proposed, catalog, "2026-10-06T00:00:00Z");
 
-  test("nine packages preserve all methods with distinct component and source bindings", () => {
+  test("ten packages preserve all methods with distinct component and source bindings", () => {
     const projection = pluginGroupProjection(catalog);
-    expect(projection.groups).toHaveLength(9);
+    expect(projection.groups).toHaveLength(10);
     const methods = projection.groups.flatMap((group: any) => group.methods);
-    expect(methods).toHaveLength(65);
-    expect(new Set(methods.map((method: any) => method.route)).size).toBe(65);
+    expect(methods).toHaveLength(catalog.plugins.flatMap(plugin => plugin.skills).length);
+    expect(new Set(methods.map((method: any) => method.route)).size).toBe(methods.length);
     expect(methods.every((method: any) => method.entrypoint && method.skill_sha256)).toBe(true);
     expect(projection.dispatch_authorized).toBe(false);
   });
@@ -294,6 +296,9 @@ function fixture(routes: string[], inputs: string[], alternatives: Record<string
 
 // These inputs come from supported SKILL.md modes, independently of descriptor.consumes.
 const supportedModes: [string, string[], string[]?][] = [
+  ["specification-kit:build-spec", ["specification-brief"]],
+  ["specification-kit:spec-diagrams", ["spec-diagram-brief"]],
+  ["specification-kit:spec-test-design", ["spec-test-brief"]],
   ["cascade-discovery:research-market", ["market-research-brief"]],
   ["cascade-engineering:review-change", ["change-diff", "change-contract"]],
   ["cascade-discovery:define-product", ["product-evidence"]],
@@ -314,6 +319,65 @@ const supportedModes: [string, string[], string[]?][] = [
 ];
 
 describe("source-supported plugin input modes", () => {
+  test("the portable kit has one source owner and no retired specification route", () => {
+    const kit = catalog.plugins.find(plugin => plugin.name === "specification-kit")!;
+    expect(kit.manifest_path).toBe("specification-kit/.codex-plugin/plugin.json");
+    expect(kit.skills.map((skill: any) => skill.route).sort()).toEqual([
+      "specification-kit:build-spec", "specification-kit:spec-diagrams", "specification-kit:spec-test-design",
+    ]);
+    expect(catalog.plugins.flatMap(plugin => plugin.skills).some(skill => skill.route === "cascade-specs:synthesise-spec")).toBe(false);
+    expect(repoPluginRoot("specification-kit")).toBe("specification-kit");
+    expect(() => repoPluginRoot("../../specification-kit")).toThrow("invalid repository marketplace plugin name");
+  });
+  test.each(["specification-kit:spec-diagrams", "specification-kit:spec-test-design"])(
+    "%s cannot manufacture its subject from context or grant execution", route => {
+      const skill = catalog.plugins.flatMap(plugin => plugin.skills).find(skill => skill.route === route)!;
+      const context = skill.optional_consumes.includes("repository-context") ? "repository-context" : "codebase-source";
+      expect(fixture([route], [context], { [route]: [context] }).check).toThrow("consumes unavailable artifact");
+      expect(skill.effect).toBe("CANDIDATE_WRITE");
+      expect(skill.authority).toBe("READ_ONLY");
+      expect(skill.required_dependencies).toEqual([]);
+    },
+  );
+  test("configured design/campaign bindings reference declared methods and retain schema limits", async () => {
+    const schema = await readJson(rootPath("specification-kit/skills/build-spec/references/policy-bindings.schema.json"));
+    const preset: any = await readStructured(rootPath("specification-kit/skills/build-spec/assets/policy-bindings.ecosystem.yaml"));
+    expect(() => assertJsonSchema(preset, schema)).not.toThrow();
+    for (const ids of Object.values(preset.bindings) as string[][]) {
+      for (const id of ids) expect(preset.methods[id]).toBeDefined();
+    }
+    expect(preset.bindings.W06).toContain("create_design");
+    expect(preset.bindings.W07).toContain("simulation_campaign");
+    expect(() => assertJsonSchema({ ...preset, bindings: { W08: ["test_design"] } }, schema)).toThrow();
+    expect(() => assertJsonSchema({ ...preset, mode: "BUILTIN" }, schema)).toThrow();
+  });
+  test("diagram semantic/formal verdicts require owner bindings independently of syntax evidence", async () => {
+    const schema = await readJson(rootPath("specification-kit/skills/spec-diagrams/references/diagram-evidence.schema.json"));
+    const draft: any = await readStructured(rootPath("specification-kit/skills/spec-diagrams/assets/diagram-record.yaml"));
+    for (const evidence of draft.evidence) expect(() => assertJsonSchema(evidence, schema)).not.toThrow();
+    const checked = { kind: "SYNTAX", status: "PASS", source_sha256: "a".repeat(64), reviewer_or_tool: "synthetic-format-fixture", version: "1", reference: "fixture:syntax" };
+    expect(() => assertJsonSchema(checked, schema)).not.toThrow();
+    expect(() => assertJsonSchema({ ...checked, source_sha256: null }, schema)).toThrow();
+    for (const kind of ["CONTRACT_REVIEW", "FORMAL_NOTATION_REVIEW"]) {
+      expect(() => assertJsonSchema({ ...checked, kind }, schema)).toThrow();
+      expect(() => assertJsonSchema({ ...checked, kind, owner_sha256: "b".repeat(64), related_owner_bindings: [] }, schema)).not.toThrow();
+      expect(() => assertJsonSchema({ ...checked, kind, owner_sha256: "b".repeat(64), related_owner_bindings: [{ ref: "SPEC#rule", sha256: "invalid" }] }, schema)).toThrow();
+    }
+  });
+  test("specification context cannot replace a brief or become accepted domain truth", () => {
+    const route = "specification-kit:build-spec";
+    const supplied = fixture([route], ["specification-brief", "repository-context"], {
+      [route]: ["repository-context"],
+    });
+    expect(supplied.check).not.toThrow();
+    expect(fixture([route], ["repository-context"], { [route]: ["repository-context"] }).check)
+      .toThrow("consumes unavailable artifact");
+    const descriptor = catalog.plugins.flatMap(plugin => plugin.skills).find(skill => skill.route === route)!;
+    expect(descriptor.produces).toEqual(["specification-candidate", "spec-composition"]);
+    expect(descriptor.required_dependencies).toEqual([]);
+    expect(descriptor.effect).toBe("CANDIDATE_WRITE");
+    expect(descriptor.authority).toBe("READ_ONLY");
+  });
   test("Git integration cannot borrow read-only planning authority even with a supplied subject", () => {
     const route = "cascade-engineering:pull-and-integrate";
     expect(fixture([route], ["git-integration-request"]).check).toThrow("exceeds Task Envelope authority");

@@ -26,6 +26,7 @@ config; keep reusable workflow rules in skills, agents, and patterns.
 | `.codex/plugins/` | Repo-local plugin source packages referenced by the repository marketplace | `plugin-creator`, `cascade-engineering:maintain-harness` |
 | `.codex/harness-tooling/` | Isolated pinned browser-simulation dependencies and Playwright runner files | Harness maintainers |
 | `examples/vehicle-assistant/` | Standalone Python example for Laya/LangGraph automotive support; its local stores and dependencies are outside the harness runtime | Example maintainers |
+| `specification-kit/` | Independent specification package: policy blocks, six templates, worked application specification and diagram authoring skills; no harness runtime dependency | Specification package maintainers |
 | `harness-evals/` | Canonical scenarios, generated catalog, target schema, judge profiles, anchored rubrics, and judgment schema | `cascade-quality:harness-evaluation`, `cascade-quality:build-judge`, and the host runner |
 | `.artifacts/harness-evals/` | Ignored raw JSONL traces, normalized runs, eligibility, judgments, and local reports | `scripts/cascade/evals.ts` |
 | `product-evals/campaigns/`, `product-evals/tasks/`, `product-evals/simulations/` | Canonical simulation campaigns, reusable tasks, populations, scenarios, worlds, datasets, and generated catalog | `cascade-simulations:manage-simulation-campaign` plus host persistence |
@@ -74,14 +75,21 @@ exhaustive unit suite. Plugin package tests, lab corpora, and built-in targeted
 self-tests remain separate and run only for an affected contract; do not
 recreate broad module-by-module test suites as a routine harness task.
 
-The repository marketplace at `.agents/plugins/marketplace.json` catalogs nine
-Cascade packages: Discovery, Engineering, Workflows, Quality, AI Architect,
-Prompt, Design, Security and Simulations. All 65 methods retain distinct owners.
+The repository marketplace at `.agents/plugins/marketplace.json` catalogs ten
+packages: Discovery, Engineering, Workflows, Quality, AI Architect,
+Prompt, Design, Security, Simulations and the portable Specification Kit.
+All 68 methods retain distinct owners.
 Grouped methods keep resources under
 `.codex/plugins/<group>/skills/<component>/skills/<method>/SKILL.md`; the catalog
 binds exact entrypoints and source digests. Nested component manifests identify
 evaluation subjects and are not separate marketplace installations.
 See [the complete method catalog](patterns/workflow/plugin-groups.md).
+Specification Kit owns three focused methods: interview-led composition,
+contract-bound diagrams and test design with conditional campaign planning.
+Its six profiles and S/W policies live in the single `specification-kit/` source.
+The three skill exports are generated from that source with
+`bun scripts/build-spec-skill.ts --write`; `--check` verifies export consistency.
+See [Specification Kit](../specification-kit/README.md).
 Discovery's Market component owns evidence, positioning and growth; Product
 owns value/offer models, feature formation and outcome learning; Personas owns
 the canonical human model.

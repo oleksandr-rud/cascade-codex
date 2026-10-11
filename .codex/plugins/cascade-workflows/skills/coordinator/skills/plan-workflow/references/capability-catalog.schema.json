@@ -46,11 +46,11 @@
           },
           "manifest_path": {
             "type": "string",
-            "pattern": "^\\.codex/plugins/[a-z0-9-]+/\\.codex-plugin/plugin\\.json$"
+            "pattern": "^(?:\\.codex/plugins/[a-z0-9-]+|specification-kit)/\\.codex-plugin/plugin\\.json$"
           },
           "descriptor_path": {
             "type": "string",
-            "pattern": "^\\.codex/plugins/[a-z0-9-]+/capabilities\\.yaml$"
+            "pattern": "^(?:\\.codex/plugins/[a-z0-9-]+|specification-kit)/capabilities\\.yaml$"
           },
           "manifest_sha256": {
             "$ref": "#/$defs/digest"

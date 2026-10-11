@@ -34,6 +34,7 @@ skills:
   - name: create-spec
     source: .codex/skills/create-spec/SKILL.md
     delegates:
+      - specification-kit:build-spec
       - cascade-discovery:define-product
       - cascade-discovery:manage-product-lifecycle
       - cascade-discovery:build-persona

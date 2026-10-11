@@ -1,0 +1,6 @@
+interface:
+  display_name: "Specification Test Design"
+  short_description: "Design focused tests and conditional campaign plans"
+  default_prompt: "Use $spec-test-design to derive cases, fixtures and oracles from this specification and decide whether a campaign plan is needed."
+policy:
+  allow_implicit_invocation: true

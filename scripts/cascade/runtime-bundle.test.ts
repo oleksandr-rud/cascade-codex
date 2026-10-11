@@ -15,6 +15,7 @@ import { tmpdir } from "node:os";
 import { buildRuntimeBundle } from "../build-runtime-bundle";
 import { compileTaskEnvelope, semanticAdmissionRequest, type AdmissionRequest } from "./admission";
 import {
+  buildPluginCapabilityCatalog,
   capabilitySelectionDigest,
   readPluginCapabilityCatalog,
   type CapabilitySelection,
@@ -61,7 +62,7 @@ describe("Cascade lean target runtime bundle", () => {
     outputs.push(output);
     const report = await buildRuntimeBundle(output);
     expect(report.file_count).toBeLessThanOrEqual(120);
-    expect(report.plugin_count).toBe(9);
+    expect(report.plugin_count).toBe(10);
 
     for (const excluded of [
       ".codex/plugins",
@@ -83,8 +84,9 @@ describe("Cascade lean target runtime bundle", () => {
     const grouped = runBundle(output, ["workflow", "groups"]);
     expect(grouped.exitCode).toBe(0);
     const projection = JSON.parse(grouped.stdout.toString());
-    expect(projection.groups.length).toBe(9);
-    expect(projection.groups.flatMap((group: any) => group.methods).length).toBe(65);
+    expect(projection.groups.length).toBe(10);
+    expect(projection.groups.flatMap((group: any) => group.methods).map((method: any) => method.route).sort())
+      .toEqual((await buildPluginCapabilityCatalog()).plugins.flatMap(plugin => plugin.skills.map((skill: any) => skill.route)).sort());
     expect(projection.dispatch_authorized).toBe(false);
     const sourceOnly = runBundle(output, ["admission", "corpus"]);
     expect(sourceOnly.exitCode).toBe(1);

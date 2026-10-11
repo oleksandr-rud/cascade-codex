@@ -1,0 +1,60 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Specification policy method bindings",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "mode", "methods", "bindings"],
+  "properties": {
+    "schema_version": { "const": 1 },
+    "mode": { "enum": ["BUILTIN", "CONFIGURED"] },
+    "research": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["effort", "refresh"],
+      "properties": {
+        "effort": { "enum": ["FOCUSED", "STANDARD", "DEEP"] },
+        "refresh": { "enum": ["MATERIAL_CLAIMS", "ALL_IN_SCOPE"] }
+      }
+    },
+    "methods": {
+      "type": "object",
+      "propertyNames": { "pattern": "^[a-z][a-z0-9_]*$" },
+      "additionalProperties": { "$ref": "#/$defs/method" }
+    },
+    "bindings": {
+      "type": "object",
+      "propertyNames": { "enum": ["W01", "W02", "W03", "W04", "W05", "W06", "W07"] },
+      "additionalProperties": {
+        "type": "array",
+        "uniqueItems": true,
+        "items": { "type": "string", "minLength": 1 }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "mode": { "const": "BUILTIN" } } },
+      "then": { "properties": { "methods": { "maxProperties": 0 }, "bindings": { "maxProperties": 0 } } },
+      "else": { "properties": { "methods": { "minProperties": 1 }, "bindings": { "minProperties": 1 } } }
+    }
+  ],
+  "$defs": {
+    "strings": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "method": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["skill", "purpose", "inputs", "results"],
+      "properties": {
+        "skill": { "type": "string", "pattern": "^[^\\s:]+:[^\\s:]+$" },
+        "purpose": { "type": "string", "minLength": 1 },
+        "inputs": { "$ref": "#/$defs/strings" },
+        "results": { "$ref": "#/$defs/strings" }
+      }
+    }
+  }
+}

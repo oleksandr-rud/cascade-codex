@@ -1,0 +1,22 @@
+{
+  "name": "specification-kit",
+  "version": "0.4.0",
+  "description": "Build complete specifications through an interview, selected policies, contract-bound diagrams and focused test design.",
+  "author": { "name": "Cascade" },
+  "keywords": ["specifications", "interview", "diagrams", "test-design"],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Specification Kit",
+    "shortDescription": "Build specifications, diagrams and test designs.",
+    "longDescription": "One portable authoring plugin with six specification profiles, conditional design and campaign policies, and three focused skills. Acceptance and execution remain with the target owner.",
+    "developerName": "Cascade",
+    "category": "Developer Tools",
+    "capabilities": ["Interactive", "Write"],
+    "defaultPrompt": [
+      "Interview me and build a complete application specification.",
+      "Add contract-bound diagrams to this specification.",
+      "Design tests and identify whether a campaign plan is needed."
+    ],
+    "brandColor": "#2563EB"
+  }
+}

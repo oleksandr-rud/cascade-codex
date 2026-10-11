@@ -1,0 +1,4 @@
+interface:
+  display_name: "Spec Diagrams"
+  short_description: "Bind specification diagrams to concrete contracts"
+  default_prompt: "Use $spec-diagrams to add and review diagrams for this specification, including their source bindings and actual render evidence."

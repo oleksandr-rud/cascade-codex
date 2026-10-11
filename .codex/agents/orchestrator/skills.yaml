@@ -2,6 +2,9 @@ plugin_skills:
   - cascade-engineering:pull-and-integrate
   - cascade-workflows:select-capabilities
   - cascade-workflows:plan-workflow
+  - specification-kit:build-spec
+  - specification-kit:spec-diagrams
+  - specification-kit:spec-test-design
   - cascade-ai-architect:architect-ai-system
   - cascade-ai-architect:design-agent-workflow
   - cascade-ai-architect:bind-agent-runtime
@@ -67,6 +70,7 @@ skills:
   - name: create-spec
     source: .codex/skills/create-spec/SKILL.md
     delegates:
+      - specification-kit:build-spec
       - cascade-discovery:define-product
       - cascade-discovery:manage-product-lifecycle
       - cascade-discovery:build-persona

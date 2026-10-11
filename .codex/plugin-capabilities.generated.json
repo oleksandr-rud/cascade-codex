@@ -1,6 +1,6 @@
 {
   "artifact_type": "cascade-plugin-capability-catalog",
-  "catalog_digest": "05bf26a249f51758a728e339d065eae808b18b7e7383fccb08a44f55c912ca58",
+  "catalog_digest": "8598dcebfc8083e837a064dca8443bbb941e82a7c124cdfd9386c61d7bf16dbc",
   "marketplace": ".agents/plugins/marketplace.json",
   "plugins": [
     {
@@ -2479,6 +2479,190 @@
         }
       ],
       "version": "0.1.11+codex.20261006.1"
+    },
+    {
+      "descriptor_path": "specification-kit/capabilities.yaml",
+      "descriptor_sha256": "66a079fefa5c229e0c1f8be0d65d370201b57432153c0a1e10d7edab895cbb22",
+      "manifest_path": "specification-kit/.codex-plugin/plugin.json",
+      "manifest_sha256": "16b9ce5a6328fdf696d0e72529f4a359b8eedb72ca63fb73f7673f90b8915b90",
+      "model_policy": {
+        "evaluation_reasoning_effort": "high",
+        "model": "gpt-6-astra",
+        "planning_reasoning_effort": "high"
+      },
+      "name": "specification-kit",
+      "skills": [
+        {
+          "anti_triggers": [
+            "only a focused diagram or test design is requested",
+            "only implementation, test execution or accepted persistence is requested",
+            "an already sufficient bounded task contract needs no specification"
+          ],
+          "authority": "READ_ONLY",
+          "component": "specification-kit",
+          "consumes": [
+            "specification-brief"
+          ],
+          "description": "Interview and compose a complete specification from selected content and development policies.",
+          "effect": "CANDIDATE_WRITE",
+          "entrypoint": "skills/build-spec/SKILL.md",
+          "evaluation_cases": [
+            "whole-application",
+            "company-operating-model",
+            "feature-baseline",
+            "proposed-acceptance",
+            "design-gap",
+            "conditional-campaign"
+          ],
+          "optional_consumes": [
+            "product-contract",
+            "company-source",
+            "accepted-behavior",
+            "test-design",
+            "architecture-candidate",
+            "design-evidence",
+            "codebase-source",
+            "repository-context",
+            "external-sources",
+            "spec-diagram-set",
+            "spec-test-design",
+            "spec-campaign-plan"
+          ],
+          "optional_dependencies": [
+            "specification-kit:spec-diagrams",
+            "specification-kit:spec-test-design",
+            "cascade-discovery:define-product",
+            "cascade-discovery:research-market",
+            "cascade-engineering:architect-software-system",
+            "cascade-engineering:select-architecture-patterns",
+            "cascade-design:create-design",
+            "cascade-design:ux-flow-review",
+            "cascade-design:design-system",
+            "cascade-design:accessibility-review",
+            "cascade-design:visual-qa",
+            "cascade-security:secure-design",
+            "cascade-quality:plan-quality",
+            "cascade-quality:design-tests",
+            "cascade-simulations:manage-simulation-campaign",
+            "cascade-simulations:simulation-brief",
+            "cascade-simulations:simulation-outcome",
+            "cascade-simulations:simulation-actor",
+            "cascade-simulations:simulation-persona"
+          ],
+          "policy_tags": [
+            "specification",
+            "source-grounding"
+          ],
+          "produces": [
+            "specification-candidate",
+            "spec-composition"
+          ],
+          "required_dependencies": [],
+          "route": "specification-kit:build-spec",
+          "skill_sha256": "885016975c2ade25875006eafacece657335f476925a21603a05d1f81692fbdc",
+          "triggers": [
+            "a coherent application, product, company, scenario or test specification is needed",
+            "an added feature needs a specification bound to its existing baseline"
+          ]
+        },
+        {
+          "anti_triggers": [
+            "a diagram would substitute for a missing contract",
+            "only visual product design or application execution is requested"
+          ],
+          "authority": "READ_ONLY",
+          "component": "specification-kit",
+          "consumes": [
+            "spec-diagram-brief"
+          ],
+          "description": "Author or review focused specification diagrams against exact owning contracts and evidence bindings.",
+          "effect": "CANDIDATE_WRITE",
+          "entrypoint": "skills/spec-diagrams/SKILL.md",
+          "evaluation_cases": [
+            "bound-notation-adaptation",
+            "stale-owner-review",
+            "missing-owner-contract"
+          ],
+          "optional_consumes": [
+            "specification-candidate",
+            "accepted-behavior",
+            "architecture-candidate",
+            "design-evidence",
+            "codebase-source",
+            "spec-test-design"
+          ],
+          "optional_dependencies": [],
+          "policy_tags": [
+            "specification",
+            "source-grounding"
+          ],
+          "produces": [
+            "spec-diagram-set"
+          ],
+          "required_dependencies": [],
+          "route": "specification-kit:spec-diagrams",
+          "skill_sha256": "af8adc5cb292f2ef7d8f8e730752b66436a2c745b6d03bc86e7cf6e5aae1208a",
+          "triggers": [
+            "a specification relationship needs an inspectable diagram",
+            "changed contracts require a scoped diagram and evidence review"
+          ]
+        },
+        {
+          "anti_triggers": [
+            "only test implementation or execution is requested",
+            "behavior is missing and context would be used to invent acceptance",
+            "an operational world model is requested"
+          ],
+          "authority": "READ_ONLY",
+          "component": "specification-kit",
+          "consumes": [
+            "spec-test-brief"
+          ],
+          "description": "Derive cases, fixtures, levels and oracles from source-bound behavior and conditionally plan coordinated test or user-simulation campaigns.",
+          "effect": "CANDIDATE_WRITE",
+          "entrypoint": "skills/spec-test-design/SKILL.md",
+          "evaluation_cases": [
+            "distinct-test-boundaries",
+            "unknown-commit-outcome",
+            "campaign-not-needed",
+            "native-persona-gap"
+          ],
+          "optional_consumes": [
+            "accepted-behavior",
+            "specification-candidate",
+            "test-design",
+            "quality-plan",
+            "codebase-source",
+            "repository-context"
+          ],
+          "optional_dependencies": [
+            "specification-kit:spec-diagrams",
+            "cascade-quality:plan-quality",
+            "cascade-quality:design-tests",
+            "cascade-simulations:manage-simulation-campaign",
+            "cascade-simulations:simulation-brief",
+            "cascade-simulations:simulation-outcome",
+            "cascade-simulations:simulation-actor",
+            "cascade-simulations:simulation-persona"
+          ],
+          "policy_tags": [
+            "specification",
+            "source-grounding"
+          ],
+          "produces": [
+            "spec-test-design",
+            "spec-campaign-plan"
+          ],
+          "required_dependencies": [],
+          "route": "specification-kit:spec-test-design",
+          "skill_sha256": "45f62fd87cf57887a480d920e30b0bcb336287176765e8d25b37f903eb922bb9",
+          "triggers": [
+            "specification behavior needs focused test cases and observable acceptance",
+            "an actual case coordination need requires a candidate campaign plan"
+          ]
+        }
+      ],
+      "version": "0.4.0"
     },
     {
       "descriptor_path": ".codex/plugins/cascade-workflows/capabilities.yaml",

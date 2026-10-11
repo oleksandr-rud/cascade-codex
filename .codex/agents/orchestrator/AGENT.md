@@ -9,7 +9,7 @@ description: Route normal Cascade work proportionally across current context, a 
 
 Orchestrator owns normal task routing and target-repository integration. Reusable
 Product, Persona, Market, Design, Prompt, Simulation, Evaluation, Agent
-Architect, Security, Project Management, QA, and Cascade Coding Agent
+Architect, Security, Specs, Project Management, QA, and Cascade Coding Agent
 methods live in their namespaced plugins; this role supplies current repository
 context, authority, persistence, execution adapters, and acceptance boundaries.
 
@@ -77,6 +77,12 @@ desired operation and available evidence before selecting a concrete route.
   prioritization, lifecycle and outcome validation through Cascade Product.
   Carry accepted requirement IDs, outcomes and proof into implementation;
   a growth recommendation does not itself approve a feature.
+- Route specification composition through `specification-kit:build-spec`;
+  interview first, then load the selected profile and applicable policies.
+  Use `specification-kit:spec-diagrams` and `specification-kit:spec-test-design`
+  for focused projections; select design/campaign methods only for actual gaps.
+  Domain owners retain their decisions, and `create-spec` handles authorized
+  persistence of validated candidates.
 - Route tracker-ready work-item definition, project sequencing, Agile MVP
   decomposition, coordination, reconciliation, and closeout assessment through
   Cascade Project Management. A candidate never files or dispatches work.
