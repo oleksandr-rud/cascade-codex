@@ -89,9 +89,12 @@ def build(root: Path) -> dict[str, Any]:
     contract = json.loads((root / "evals" / "evaluation-contract.json").read_text(encoding="utf-8"))
     subject = local_assets(root, contract["required_subject_assets"])
     evaluation = local_assets(root, contract["required_evaluation_assets"])
+    manifest_id = contract.get("evaluation_manifest_id")
+    if not isinstance(manifest_id, str) or not manifest_id:
+        raise ValueError("evaluation_manifest_id must identify the versioned candidate")
     return {
         "schema_version": 2,
-        "manifest_id": f"{contract['plugin_id']}-evaluation-assets-v2",
+        "manifest_id": manifest_id,
         "plugin_id": contract["plugin_id"],
         "plugin_version": contract["version"],
         "digest_algorithm": "sha256",

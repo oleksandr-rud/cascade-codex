@@ -2,14 +2,14 @@
 
 Keep durable behavior contracts here, grouped by accepted change or product
 unit. A small change with an accepted contract needs no new spec. Planning,
-execution status and check results belong to numbered Work tasks.
+execution status and check results belong in Work lanes, graphs and reports.
 
 ## Authoring And Persistence
 
-Use `cascade-specs:synthesise-spec` to synthesize mixed sources into one
-feature/change specification or an approved-parent task slice. Its generic
-feature/change, technical-design and task-slice templates live in the plugin;
-load only the selected one. Do not copy its instructions, reference guides or
+Use `specification-kit:build-spec` to compose accepted sources into a supported
+product, application or feature specification. Its references and templates
+live in the plugin; load only the selected specification view. Do not copy its
+instructions, reference guides or
 example outputs into this folder. `create-spec` owns authorized target paths,
 IDs, source preservation and rendering; it does not redefine synthesis.
 

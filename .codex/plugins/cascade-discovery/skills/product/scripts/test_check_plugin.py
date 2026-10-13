@@ -57,6 +57,32 @@ class PluginContractTests(unittest.TestCase):
             (candidate / "schemas" / contract["required_schemas"][0]).unlink()
             self.assertTrue(any("missing schema" in item for item in check_plugin.validate(candidate)))
 
+    def test_missing_product_decision_brief_fails(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            candidate = Path(tmp) / self.root.name
+            shutil.copytree(self.root, candidate)
+            asset = "skills/manage-product-lifecycle/assets/product-decision-brief.md"
+            (candidate / asset).unlink()
+            self.assertTrue(any(asset in item for item in check_plugin.validate(candidate)))
+
+    def test_working_process_reference_drift_fails(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            candidate = Path(tmp) / self.root.name
+            shutil.copytree(self.root, candidate)
+            path = candidate / "skills/manage-product-lifecycle/references/working-process.md"
+            path.write_text(path.read_text(encoding="utf-8") + " ", encoding="utf-8")
+            self.assertTrue(any("subject_assets" in item for item in check_plugin.validate(candidate)))
+
+    def test_manifest_identity_drift_fails(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            candidate = Path(tmp) / self.root.name
+            shutil.copytree(self.root, candidate)
+            path = candidate / "evals/manifest.json"
+            manifest = json.loads(path.read_text(encoding="utf-8"))
+            manifest["manifest_id"] = "stale-candidate"
+            path.write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
+            self.assertTrue(any("manifest_id" in item for item in check_plugin.validate(candidate)))
+
 
 if __name__ == "__main__":
     unittest.main()

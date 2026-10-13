@@ -2,7 +2,7 @@
   "schema_version": 2,
   "plugin_id": "cascade-discovery",
   "subject_kind": "agent",
-  "version": "1.0.2+codex.20261013.sync.1",
+  "version": "1.0.3+codex.20261013.cleanup.1",
   "expected_case_count": 24,
   "acceptance_threshold": 0.95,
   "minimum_dimension": 3,
@@ -90,14 +90,18 @@
     "skills/define-product/references/feature-investment.md",
     "skills/define-product/references/value-model.md",
     "skills/manage-product-lifecycle/references/value-strategy.md",
-    "skills/validate-product/references/outcome-evidence.md"
+    "skills/validate-product/references/outcome-evidence.md",
+    "skills/manage-product-lifecycle/assets/product-decision-brief.md",
+    "skills/manage-product-lifecycle/references/working-process.md",
+    "skills/manage-product-lifecycle/references/source-guide.md"
   ],
   "required_evaluation_assets": [
     "evals/evaluation-contract.json",
     "evals/cases.json",
     "evals/judge-outcome.json",
     "evals/judge-trajectory.json",
-    "scripts/evaluate_case_assertions.py"
+    "scripts/evaluate_case_assertions.py",
+    "scripts/refresh_manifest.py"
   ],
   "required_dependency_artifacts": [
     {
@@ -204,5 +208,6 @@
       "alias": "cascade-simulations:simulate",
       "path": "skills/simulate/SKILL.md"
     }
-  ]
+  ],
+  "evaluation_manifest_id": "cascade-discovery-product-evaluation-assets-1.0.3+codex.20261013.cleanup.1"
 }

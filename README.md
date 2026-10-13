@@ -27,7 +27,7 @@ runs remain the dominant latency in live evaluations.
 - Runtime bridge: `CODEX.md`
 - Adapter template: `harness.config.example.yaml`
 - Core target role contracts: 7; simulation lab roles are optional
-- Registered host skills: 9
+- Registered host skills: 10
 - Canonical skill and role source: `.codex/skills/` and `.codex/agents/`
 - Marketplace plugin packages: 10, including Specification Kit
 - Planning model: `gpt-6.1-sol`

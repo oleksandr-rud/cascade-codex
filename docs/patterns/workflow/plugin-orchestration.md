@@ -6,7 +6,7 @@ host projections. No plugin is a universal hub.
 
 For market selection, product value, feature formation, growth strategy and
 feedback into delivery, see [Value decisions through feature delivery](value-to-delivery.md).
-Cascade Marketing uses the stable internal plugin ID `cascade-market`.
+Cascade Marketing is the Market component of the `cascade-discovery` plugin.
 
 ```mermaid
 flowchart TB
@@ -23,7 +23,7 @@ flowchart TB
     CAT --> PW
     PW --> DAG
 
-    subgraph Domain[Portable domain plugins]
+    subgraph Domain[Portable domain components]
         M[Cascade Marketing<br/>research, opportunity, growth, experiments, positioning]
         P[Cascade Product]
         PE[Cascade Personas]

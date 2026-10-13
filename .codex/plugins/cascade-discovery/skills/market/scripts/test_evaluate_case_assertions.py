@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import copy
 import json
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 import sys
 import unittest
@@ -229,6 +230,17 @@ class MarketAssertionAdapterTests(unittest.TestCase):
         target = self.target()
         target["cases"][0]["status"] = "INVALID"
         self.assertEqual(evaluate(self.suite, target)["status"], "INVALID")
+
+    def test_expired_execution_receipt_remains_ineligible(self) -> None:
+        target = self.target()
+        case = next(item for item in target["cases"] if item["case_id"] == "MKT-008")
+        envelope = json.loads(case["response"])
+        expired = (datetime.now(timezone.utc) - timedelta(minutes=1)).isoformat()
+        envelope["artifact"]["receipt"]["expires_at"] = expired
+        envelope["artifact"]["permissions"]["authority_receipt"]["expires_at"] = expired
+        case["response"] = json.dumps(envelope)
+        finalized = finalize_target(self.suite, target)
+        self.assertEqual(evaluate(self.suite, finalized)["status"], "INVALID")
 
     def test_experiment_instrument_and_event_schemas_require_exact_frozen_bytes(self) -> None:
         target = self.target()

@@ -1,6 +1,6 @@
 {
   "artifact_type": "cascade-plugin-capability-catalog",
-  "catalog_digest": "e21e7c020f4783827f6978e6ae007431a57af6ef2e7a45ae946cbbae03f13aa2",
+  "catalog_digest": "9cc813b6d9ec94c37b0e18b278d8928a7276fd626eae4cf2748db6ab2d21ecf2",
   "marketplace": ".agents/plugins/marketplace.json",
   "plugins": [
     {
@@ -1525,9 +1525,9 @@
     },
     {
       "descriptor_path": ".codex/plugins/cascade-discovery/capabilities.yaml",
-      "descriptor_sha256": "5ae7bcb0773e1198256beca1ab4b1e57548b4893e8f303e535d91d8636ce0d73",
+      "descriptor_sha256": "5305a51f4df214cfeda7647046eb113bd0ea8efab713dea2f966d07c318a2e1b",
       "manifest_path": ".codex/plugins/cascade-discovery/.codex-plugin/plugin.json",
-      "manifest_sha256": "0c64b1dc85aac07ee6e7335e270c56f9d4c141376bd9bfa2a130f499d85555d5",
+      "manifest_sha256": "cfc852262b59e40a89b46710e3e0e85dfb0013dbc28dc1abf00a8b6782a4af84",
       "model_policy": {
         "evaluation_reasoning_effort": "xhigh",
         "model": "gpt-6.1-sol",
@@ -1984,7 +1984,7 @@
           ]
         }
       ],
-      "version": "1.0.2+codex.20261013.sync.1"
+      "version": "1.0.3+codex.20261013.cleanup.1"
     },
     {
       "activation": {

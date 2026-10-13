@@ -8,7 +8,7 @@
 - Coverage: `complete`
 - Catalog digest: `5e6b263b4f1ce9a4b7cef1e60fc60744de6d87634305503978d47ff7740bfb84`
 - Manifest digest: `c2b59a1ce6e0fa15e2bb716fcc5ae2c89c84515a43facda9787d25a687994efc`
-- Selected-source digest: `0490dcd4b1b263443dc1267514390af988bb1d12f4dd2bda1b33889daee1098b`
+- Selected-source digest: `3c1a85c830fbdcfd7f75027b4bc260d3ded2a5ef844a3571674bf475f8d9f7f7`
 - Compiler-contract digest: `6cd5a7c76ea5a751ae51aee06aaac1786c197ae6682aaa88d6cfbf2367fa923b`
 
 ## Purpose And Audience
@@ -133,7 +133,7 @@ owner ledgers; one small unit document may contain distinct requirement,
 journey and scenario tables. Split only for actual ownership or consumption.
 Legacy catalogs retain flat owners. No file path determines product meaning.
 Generic Product rendering uses the unit template; mixed-source specification
-synthesis belongs to cascade-specs:synthesise-spec, with host create-spec
+synthesis belongs to specification-kit:build-spec, with host create-spec
 owning authorized persistence. Do not maintain copied authoring methods.
 
 ### product-context-core / brief-manifest-and-compilation

@@ -37,7 +37,7 @@ owner ledgers; one small unit document may contain distinct requirement,
 journey and scenario tables. Split only for actual ownership or consumption.
 Legacy catalogs retain flat owners. No file path determines product meaning.
 Generic Product rendering uses the unit template; mixed-source specification
-synthesis belongs to cascade-specs:synthesise-spec, with host create-spec
+synthesis belongs to specification-kit:build-spec, with host create-spec
 owning authorized persistence. Do not maintain copied authoring methods.
 
 ## Brief Manifest And Compilation

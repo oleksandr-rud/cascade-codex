@@ -216,6 +216,8 @@ def experiment() -> dict:
 
 def executed_experiment() -> dict:
     value = experiment()
+    # Synthetic executions need a current validity window, independent of run date.
+    expires_at = (datetime.now(timezone.utc) + timedelta(hours=1)).isoformat()
     value["execution_state"] = "RECEIPT_SUPPLIED"
     value["evidence_location"] = "artifact://experiment-1/raw-outcomes"
     authority = {
@@ -225,7 +227,7 @@ def executed_experiment() -> dict:
         "subject": "operator-a",
         "scopes": ["EXECUTE_MARKET_EXPERIMENT"],
         "issued_at": "2026-08-20T08:00:00Z",
-        "expires_at": "2026-09-21T11:00:00Z",
+        "expires_at": expires_at,
         "destination": "approved-store",
         "budget_reference": "budget-1",
     }
@@ -269,7 +271,7 @@ def executed_experiment() -> dict:
         "budget_reference": "budget-1",
         "authority_receipt_sha256": authority["sha256"],
         "executed_at": "2026-08-21T11:00:00Z",
-        "expires_at": "2026-09-21T11:00:00Z",
+        "expires_at": expires_at,
         "raw_outcome_sha256": canonical_digest(raw_outcome),
         "raw_outcome": raw_outcome,
         "exclusions": [],

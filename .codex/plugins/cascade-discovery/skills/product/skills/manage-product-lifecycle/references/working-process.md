@@ -16,8 +16,8 @@ error and actual uncertainty before choosing a method.
 | An unclear problem, affected population or useful outcome | define-product frames the problem; validate-product designs the needed research |
 | A supported problem with competing solutions | define-product compares mechanisms and assumptions; validate-product tests the important risk |
 | A cross-product investment or changed priority | manage-product-lifecycle compares outcome, evidence, capacity and exposure |
-| Accepted behavior needs a combined specification | cascade-specs:synthesise-spec; the host persists its accepted output |
-| Several owners or delivery dependencies need coordination | cascade-project-management:plan-project; use the current tracker and accepted scope |
+| Accepted behavior needs a combined specification | specification-kit:build-spec; the host persists its accepted output |
+| Several owners or delivery dependencies need coordination | cascade-workflows:plan-project; use the current tracker and accepted scope |
 | A launch, live outcome or retirement decision | Lifecycle review with the relevant operational and learning evidence below |
 
 Discovery and delivery can run concurrently on different decisions. Reuse

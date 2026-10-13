@@ -1,8 +1,8 @@
 {
   "schema_version": 2,
-  "plugin_id": "cascade-personas",
+  "plugin_id": "cascade-discovery",
   "subject_kind": "agent",
-  "version": "0.1.34+codex.20261001201835",
+  "version": "1.0.3+codex.20261013.cleanup.1",
   "expected_case_count": 15,
   "acceptance_threshold": 0.95,
   "minimum_dimension": 3,
@@ -73,7 +73,8 @@
     "evals/cases.json",
     "evals/judge-outcome.json",
     "evals/judge-trajectory.json",
-    "scripts/evaluate_case_assertions.py"
+    "scripts/evaluate_case_assertions.py",
+    "scripts/refresh_manifest.py"
   ],
   "required_dependency_artifacts": [
     {
@@ -189,8 +190,8 @@
       "path": "skills/simulation-actor/references/actor-prompt.md"
     },
     {
-      "alias": "cascade-evals:evaluate",
-      "path": "scripts/model_policy.py"
+      "alias": "cascade-quality:evaluate",
+      "path": "skills/evals/scripts/model_policy.py"
     }
   ],
   "required_case_categories": [
@@ -206,5 +207,6 @@
     "privacy",
     "tool-failure",
     "output-pressure"
-  ]
+  ],
+  "evaluation_manifest_id": "cascade-discovery-personas-evaluation-assets-1.0.3+codex.20261013.cleanup.1"
 }

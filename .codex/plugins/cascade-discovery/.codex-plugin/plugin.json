@@ -1,6 +1,6 @@
 {
   "name": "cascade-discovery",
-  "version": "1.0.2+codex.20261013.sync.1",
+  "version": "1.0.3+codex.20261013.cleanup.1",
   "description": "Portable discovery methods with separate component ownership.",
   "author": {
     "name": "Cascade"
