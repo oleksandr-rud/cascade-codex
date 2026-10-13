@@ -71,8 +71,16 @@ output, obtain missing evidence or clarify the actual decision; do not guess.
 The default hook stores a pending intake and clears only its old session
 envelope, so prior advice cannot masquerade as the new request's admission.
 
-`legacy-assess` and `corpus` are source-only diagnostics for the retained
-lexical classifier and historical cases. They do not establish semantic
-qualification. The standalone guard still lacks a production trusted-host
+`corpus` is a source-only inventory of historical cases without independent
+semantic proposals. Its execution remains NOT_RUN; the local semantic compiler
+does not restore lexical interpretation or `legacy-assess`. The standalone guard still lacks a production trusted-host
 hard-action bridge; do not register it as a native permission hook. This slice
 does not qualify any decision model or automate the active LLM's intake step.
+
+The host also accepts the existing request/task/source-bound format from
+`interpretation.schema.json`. The compiler validates either transport and
+normalizes the incoming proposal into that canonical claim-bearing derivation;
+model proposals retain MODEL_INFERENCE/INFERRED provenance. Supplying both
+formats is rejected. A stale request or prior binding never falls back to the
+other format. Native hook inputs use `interpretation`; the incoming transport
+uses `admission_interpretation`.

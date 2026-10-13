@@ -1,5 +1,5 @@
-model = "gpt-6-astra"
-model_reasoning_effort = "high"
+model = "gpt-6.1-sol"
+model_reasoning_effort = "xhigh"
 
 [harness]
 name = "cascade"
@@ -20,6 +20,7 @@ fallback_non_atomic = [
 conditional_discovery = "context"
 conditional_market_research = "cascade-market:research-market"
 conditional_market_experiments = "cascade-market:design-market-experiments"
+conditional_spec_synthesis = "cascade-specs:synthesise-spec"
 conditional_spec_persistence = "create-spec"
 conditional_iteration_planning = "cascade-project-management:plan-project"
 conditional_project_management = "cascade-project-management:manage-project"
@@ -41,6 +42,7 @@ exception_paths = ["cascade-project-management:define-work-item"]
 
 [cascade.plugin_skills]
 prompt = "cascade-prompt:prompt"
+spec_synthesis = "cascade-specs:synthesise-spec"
 capability_selection = "cascade-coordinator:select-capabilities"
 workflow_plan = "cascade-coordinator:plan-workflow"
 software_architecture = "cascade-software-architect:architect-software-system"
@@ -116,12 +118,11 @@ specs = "docs/specs"
 patterns = "docs/patterns"
 pattern_context_builder = "scripts/cascade/patterns.ts"
 pattern_context_packs = "docs/patterns/*/*.pack.yaml"
-backlog = "docs/backlog"
 
 [harness_evals]
-planning_model = "gpt-6-astra"
-execution_model = "gpt-6-astra"
-judge_model = "gpt-6-astra"
+planning_model = "gpt-6.1-sol"
+execution_model = "gpt-6.1-sol"
+judge_model = "gpt-6.1-sol"
 default_model_profile = "execution"
 cases = "harness-evals/skill-cases.yaml"
 interactions = "harness-evals/interactions.yaml"

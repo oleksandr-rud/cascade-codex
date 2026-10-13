@@ -50,14 +50,6 @@
       "max_bytes": 1048576,
       "workflow_owner": "closeout",
       "retention": "durable"
-    },
-    {
-      "kind": "backlog",
-      "prefixes": ["docs/backlog/"],
-      "formats": ["json", "yaml", "markdown"],
-      "max_bytes": 1048576,
-      "workflow_owner": "closeout",
-      "retention": "durable"
     }
   ]
 }

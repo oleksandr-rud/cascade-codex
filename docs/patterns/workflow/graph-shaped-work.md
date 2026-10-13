@@ -14,8 +14,8 @@ records, or spends provider resources.
 | Situation | Durable shape |
 |---|---|
 | One owner and one bounded outcome | Inline task plan; no lane or graph |
-| Outcome needs status across tasks or an independent handoff | One lane |
-| Several meaningful items have simple dependencies | Lane work-item table |
+| Outcome needs status across tasks or an independent handoff | One numbered task record |
+| Several meaningful items have simple dependencies | Concise dependencies in the numbered task |
 | Several owners or worklines need joins, materialization, invalidation, or partial repair | Coordination Graph |
 
 Do not create a workline for each file, skill, test, phase, or available agent.
@@ -33,8 +33,8 @@ MVP iteration. `manage-project` establishes current items, owners, joins,
 blockers, reconciliation dispositions, and next gates. `close-project`
 assesses completion, consumers, and retention readiness.
 
-The host may project an accepted artifact into `docs/work/active.md`, a lane,
-or a Coordination Graph when persistence is actually required. That projection
+The host references an accepted artifact from the relevant
+`docs/work/tasks/{task_id}.md` record when persistence is required. That projection
 adds only host-specific paths, execution surfaces, authority references,
 runtime handles, receipts, and current source identity. It must not copy the
 plugin's reusable method or become a second product or strategy source of

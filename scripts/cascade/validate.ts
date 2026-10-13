@@ -24,6 +24,7 @@ import { validateBriefRepository } from "./briefs";
 import { validateAdmissionRepository } from "./admission";
 import { loadProductArtifactPolicy, loadProductPolicyRegistry } from "./policies";
 import { parseStrictYaml, readStructured } from "./structured-data";
+import { readWorkTasks } from "./work-tasks";
 import {
   buildPluginCapabilityCatalog,
   PLUGIN_CAPABILITY_CATALOG_RELATIVE,
@@ -52,11 +53,13 @@ const REPO_PLUGIN_NAMES = [
   "cascade-security",
   "cascade-project-management",
   "cascade-qa",
+  "cascade-specs",
 ] as const;
 const REPO_PLUGIN_MARKETPLACE = ".agents/plugins/marketplace.json";
 const CASCADE_PROMPT_PLUGIN_NAME = "cascade-prompt";
 const PLUGIN_ADAPTER_DELEGATES: Record<string, string[]> = {
   "create-spec": [
+    "cascade-specs:synthesise-spec",
     "cascade-product:define-product",
     "cascade-product:manage-product-lifecycle",
     "cascade-personas:build-persona",
@@ -97,6 +100,7 @@ const REQUIRED_FILES = [
   ".codex/plugins/cascade-prompt/skills/prompt/references/model-system/model-registry.yaml",
   ".codex/plugins/cascade-prompt/skills/prompt/runtime/model-index.yaml",
   ".codex/task-admission/task-envelope.schema.json",
+  ".codex/task-admission/interpretation.schema.json",
   ".codex/task-admission/policy.schema.json",
   ".codex/task-admission/policy-source.schema.json",
   ".codex/task-admission/control-catalog.schema.json",
@@ -110,13 +114,12 @@ const REQUIRED_FILES = [
   "docs/_index.md",
   "docs/structure.md",
   "docs/glossary.md",
-  "docs/backlog/_index.md",
   "docs/product/_index.md",
   "docs/product/catalog.yaml",
   "docs/product/catalog.schema.json",
-  "docs/product/scenarios.md",
-  "docs/product/journeys.md",
-  "docs/product/requirements.md",
+  "docs/product/contours/context-and-simulation/scenarios.md",
+  "docs/product/contours/context-and-simulation/journeys.md",
+  "docs/product/contours/context-and-simulation/requirements.md",
   "docs/product/personas/_index.md",
   "docs/design/_index.md",
   "docs/design/interaction-model.md",
@@ -125,14 +128,8 @@ const REQUIRED_FILES = [
   "docs/specs/_index.md",
   "docs/specs/brief-manifest.schema.json",
   "docs/work/_index.md",
-  "docs/work/active.md",
-  "docs/work/lane-template.md",
-  "docs/work/graph-template.md",
-  "docs/work/work-graph-template.md",
-  "docs/work/examples/_index.md",
-  "docs/work/graphs/_index.md",
-  "docs/work/reports/_index.md",
-  "docs/archive/work-reports/_index.md",
+  "docs/work/task-template.md",
+  "docs/work/task.schema.json",
   "docs/patterns/_index.md",
   "docs/patterns/context-pack-schema.yaml",
   "docs/patterns/workflow/index.md",
@@ -244,6 +241,7 @@ const REQUIRED_FOLDERS = [
   "docs/brand",
   "docs/specs",
   "docs/work",
+  "docs/work/tasks",
   "docs/patterns",
   ".codex/task-admission",
   ".codex/task-admission/policies",
@@ -302,8 +300,6 @@ const ALLOWED_DOC_ROOTS = new Set([
   "_index.md",
   "structure.md",
   "glossary.md",
-  "archive",
-  "backlog",
   "brand",
   "design",
   "patterns",
@@ -471,184 +467,13 @@ export function modelRegistryFreshnessErrors(
   return [];
 }
 
-export interface WorkGraphDocument {
-  path: string;
-  text: string;
-}
-
-const WORK_GRAPH_ID = /^WG-\d{3}$/;
-const WORK_GRAPH_NODE_ID = /^WG-\d{3}-N\d{2}$/;
-const WORK_GRAPH_GATE_ID = /^WG-\d{3}-G[A-Z0-9]+$/;
-const WORK_GRAPH_REFERENCE = /\bWG-[A-Z0-9-]+\b/g;
-const LEGACY_WORK_GRAPH_REFERENCE = /\bIG-[A-Z0-9-]+\b/g;
-const IMPLEMENTATION_GRAPH_TERM = /\bimplementation[- ]graph\b/i;
-
-function markdownSection(text: string, heading: string): string | undefined {
-  const marker = `## ${heading}`;
-  const start = text.indexOf(marker);
-  if (start === -1) return undefined;
-  const bodyStart = start + marker.length;
-  const next = text.slice(bodyStart).search(/\n## /);
-  return next === -1
-    ? text.slice(bodyStart)
-    : text.slice(bodyStart, bodyStart + next);
-}
-
-function workGraphReferences(text: string): string[] {
-  return [...text.matchAll(WORK_GRAPH_REFERENCE)].map((match) => match[0]);
-}
-
-export function validateWorkGraphDocuments(
-  graphDocuments: WorkGraphDocument[],
-  workDocuments: WorkGraphDocument[],
-): string[] {
-  const errors: string[] = [];
-  const graphIds = new Map<string, string>();
-  const scopedIds = new Map<string, string>();
-
-  for (const document of workDocuments) {
-    if (document.path === "docs/work/work-graph-template.md") continue;
-    if (document.path.includes("implementation-graph")) {
-      errors.push(`legacy implementation-graph filename: ${document.path}`);
-    }
-    if (IMPLEMENTATION_GRAPH_TERM.test(document.text)) {
-      errors.push(`legacy implementation-graph terminology in ${document.path}`);
-    }
-    for (const legacy of document.text.matchAll(LEGACY_WORK_GRAPH_REFERENCE)) {
-      errors.push(`legacy work-graph id in ${document.path}: ${legacy[0]}`);
-    }
-    for (const reference of workGraphReferences(document.text)) {
-      if (
-        !WORK_GRAPH_ID.test(reference) &&
-        !WORK_GRAPH_NODE_ID.test(reference) &&
-        !WORK_GRAPH_GATE_ID.test(reference)
-      ) {
-        errors.push(`invalid work-graph id shape in ${document.path}: ${reference}`);
-      }
-    }
+export function modelEntryFreshnessErrors(model: Record<string, any>, fallbackDate: unknown, now = new Date()): string[] {
+  const freshness = modelRegistryFreshnessErrors(model.checked_at ?? fallbackDate, now);
+  if (model.status === "current-candidate") return freshness;
+  if (model.status === "needs-verification") {
+    return freshness.filter((error) => !error.startsWith("Cascade Prompt model registry is stale ("));
   }
-
-  for (const document of graphDocuments) {
-    if (
-      !/^docs\/work\/reports\/\d{4}-\d{2}-\d{2}-[a-z0-9-]+-work-graph\.md$/.test(
-        document.path,
-      )
-    ) {
-      errors.push(`invalid work-graph report path: ${document.path}`);
-    }
-
-    const header = /^Work Graph ID:\s*`([^`]+)`\s*$/m.exec(document.text);
-    if (!header) {
-      errors.push(`work graph missing Work Graph ID header: ${document.path}`);
-      continue;
-    }
-    const graphId = header[1]!;
-    if (!WORK_GRAPH_ID.test(graphId)) {
-      errors.push(`invalid Work Graph ID in ${document.path}: ${graphId}`);
-      continue;
-    }
-    const duplicateGraph = graphIds.get(graphId);
-    if (duplicateGraph) {
-      errors.push(`duplicate Work Graph ID ${graphId}: ${duplicateGraph}, ${document.path}`);
-    } else {
-      graphIds.set(graphId, document.path);
-    }
-
-    const nodeRegistry = markdownSection(document.text, "Node Registry");
-    if (!nodeRegistry) {
-      errors.push(`work graph missing Node Registry: ${document.path}`);
-      continue;
-    }
-    const registryIds = [...nodeRegistry.matchAll(/^\|\s*`([^`]+)`\s*\|/gm)].map(
-      (match) => match[1]!,
-    );
-    const nodeIds = registryIds.filter((id) => WORK_GRAPH_NODE_ID.test(id));
-    if (nodeIds.length === 0) {
-      errors.push(`work graph has no canonical node IDs: ${document.path}`);
-    }
-    const localIds = new Set<string>();
-    for (const id of registryIds) {
-      if (!WORK_GRAPH_NODE_ID.test(id) && !WORK_GRAPH_GATE_ID.test(id)) {
-        errors.push(`invalid Node Registry ID in ${document.path}: ${id}`);
-        continue;
-      }
-      if (!id.startsWith(`${graphId}-`)) {
-        errors.push(`out-of-scope Node Registry ID in ${document.path}: ${id}`);
-      }
-      if (localIds.has(id)) {
-        errors.push(`duplicate Node Registry ID in ${document.path}: ${id}`);
-      } else {
-        localIds.add(id);
-      }
-      const duplicateScoped = scopedIds.get(id);
-      if (duplicateScoped && duplicateScoped !== document.path) {
-        errors.push(`duplicate work-graph node/gate ID ${id}: ${duplicateScoped}, ${document.path}`);
-      } else {
-        scopedIds.set(id, document.path);
-      }
-    }
-
-    const gateContracts = markdownSection(document.text, "Gate Contracts");
-    if (!gateContracts) {
-      errors.push(`work graph missing Gate Contracts: ${document.path}`);
-      continue;
-    }
-    const headingGateIds = [
-      ...gateContracts.matchAll(/^###\s+`?(WG-[A-Z0-9-]+)`?(?:\s|$)/gm),
-    ].map((match) => match[1]!);
-    const tableGateIds = [
-      ...gateContracts.matchAll(/^\|\s*`(WG-[A-Z0-9-]+)`\s*\|/gm),
-    ].map((match) => match[1]!);
-    const gateDefinitionIds = [...headingGateIds, ...tableGateIds];
-    if (gateDefinitionIds.length === 0) {
-      errors.push(`work graph has no canonical gate IDs: ${document.path}`);
-    }
-    const localGateIds = new Set<string>();
-    for (const id of gateDefinitionIds) {
-      if (!WORK_GRAPH_GATE_ID.test(id)) {
-        errors.push(`invalid Gate Contracts ID in ${document.path}: ${id}`);
-        continue;
-      }
-      if (!id.startsWith(`${graphId}-`)) {
-        errors.push(`out-of-scope Gate Contracts ID in ${document.path}: ${id}`);
-      }
-      if (localGateIds.has(id)) {
-        errors.push(`duplicate Gate Contracts ID in ${document.path}: ${id}`);
-      } else {
-        localGateIds.add(id);
-      }
-      const duplicateScoped = scopedIds.get(id);
-      if (duplicateScoped && duplicateScoped !== document.path) {
-        errors.push(`duplicate work-graph node/gate ID ${id}: ${duplicateScoped}, ${document.path}`);
-      } else {
-        scopedIds.set(id, document.path);
-      }
-    }
-
-    const terminal = /^Terminal Gate:\s*(.+)$/m.exec(document.text)?.[1] ?? "";
-    const terminalGate = workGraphReferences(terminal).find(
-      (id) => WORK_GRAPH_GATE_ID.test(id) && id.startsWith(`${graphId}-`),
-    );
-    if (!terminalGate) {
-      errors.push(`work graph missing graph-scoped Terminal Gate: ${document.path}`);
-    }
-  }
-
-  for (const document of workDocuments) {
-    if (document.path === "docs/work/work-graph-template.md") continue;
-    for (const reference of new Set(workGraphReferences(document.text))) {
-      if (WORK_GRAPH_ID.test(reference) && !graphIds.has(reference)) {
-        errors.push(`unknown work-graph reference in ${document.path}: ${reference}`);
-      } else if (
-        (WORK_GRAPH_NODE_ID.test(reference) || WORK_GRAPH_GATE_ID.test(reference)) &&
-        !scopedIds.has(reference)
-      ) {
-        errors.push(`unknown work-graph node/gate reference in ${document.path}: ${reference}`);
-      }
-    }
-  }
-
-  return errors;
+  return [`unsupported model status: ${model.id}`, ...freshness];
 }
 
 async function discoverSkills(): Promise<Map<string, string>> {
@@ -895,8 +720,10 @@ async function validateRepoPlugins(errors: string[]): Promise<void> {
       indexPath,
       rel(indexPath),
     );
-    errors.push(...modelRegistryFreshnessErrors(registry.checked_at));
-    errors.push(...modelRegistryFreshnessErrors(index.checked_at));
+    for (const payload of [registry, index]) {
+      if (payload.freshness_policy !== "per-entry") errors.push("Cascade Prompt freshness policy must check each model entry");
+      errors.push(...modelRegistryFreshnessErrors(payload.checked_at).filter((error) => !error.startsWith("Cascade Prompt model registry is stale (")));
+    }
     if (registry.checked_at !== index.checked_at) {
       errors.push("Cascade Prompt model registry and runtime index freshness differ");
     }
@@ -917,14 +744,7 @@ async function validateRepoPlugins(errors: string[]): Promise<void> {
         }
         if (ids.has(model.id)) errors.push(`Cascade Prompt model ${label} duplicates ${model.id}`);
         ids.add(model.id);
-        if (model.checked_at !== undefined) {
-          errors.push(...modelRegistryFreshnessErrors(model.checked_at).map(
-            (error) => `${model.id}: ${error}`,
-          ));
-        }
-        if (model.status !== "current-candidate") {
-          errors.push(`Cascade Prompt active model ${label} contains non-current entry: ${model.id}`);
-        }
+        errors.push(...modelEntryFreshnessErrors(model, payload.checked_at).map((error) => `${label}/${model.id}: ${error}`));
       }
     }
     for (const id of registryIds) {
@@ -938,6 +758,7 @@ async function validateRepoPlugins(errors: string[]): Promise<void> {
       if (source && (model.checked_at ?? index.checked_at) !== (source.checked_at ?? registry.checked_at)) {
         errors.push(`Cascade Prompt model review date differs for ${model.id}`);
       }
+      if (source && model.status !== source.status) errors.push(`Cascade Prompt model review status differs for ${model.id}`);
     }
   } catch (error) {
     errors.push(`invalid ${CASCADE_PROMPT_PLUGIN_NAME} model registry: ${errorMessage(error)}`);
@@ -1020,12 +841,22 @@ async function validateConfigToml(
     string,
     any
   >;
-  if (config.model !== "gpt-6-astra") errors.push("default model must be gpt-6-astra");
-  if (config.model_reasoning_effort !== "high") errors.push("default reasoning effort must be high");
+  if (config.model !== "gpt-6.1-sol") errors.push("default model must be gpt-6.1-sol");
+  if (config.model_reasoning_effort !== "xhigh") errors.push("default reasoning effort must be xhigh");
   const evals = config.harness_evals ?? {};
-  if (evals.planning_model !== "gpt-6-astra") errors.push("planning model mismatch");
-  if (evals.execution_model !== "gpt-6-astra") errors.push("execution model mismatch");
-  if (evals.judge_model !== "gpt-6-astra") errors.push("judge model mismatch");
+  if (evals.planning_model !== "gpt-6.1-sol") errors.push("planning model mismatch");
+  if (evals.execution_model !== "gpt-6.1-sol") errors.push("execution model mismatch");
+  if (evals.judge_model !== "gpt-6.1-sol") errors.push("judge model mismatch");
+  const evaluationPolicyPath = rootPath(".codex/plugins/cascade-evals/skills/evaluate/references/model-policy.json");
+  if (await isFile(evaluationPolicyPath)) {
+    const evaluationPolicy = await readJson<Record<string, any>>(evaluationPolicyPath);
+    for (const role of ["builder", "target", "judge"]) {
+      if (evaluationPolicy.defaults?.[`${role}_model`] !== config.model ||
+          evaluationPolicy.defaults?.[`${role}_reasoning_effort`] !== config.model_reasoning_effort) {
+        errors.push(`Cascade Evals ${role} default differs from the current harness model policy`);
+      }
+    }
+  }
   if (evals.runner !== "scripts/cascade/evals.ts") {
     errors.push("harness eval runner must point to scripts/cascade/evals.ts");
   }
@@ -1195,7 +1026,6 @@ async function validateReferences(errors: string[]): Promise<void> {
       for (const match of text.matchAll(expression)) {
         const reference = match[1]!;
         if (/[{}*<>]/.test(reference)) continue;
-        if (reference.startsWith("docs/work/")) continue;
         if (!(await isFile(rootPath(reference)))) {
           errors.push(`missing referenced resource: ${rel(path)} -> ${reference}`);
         }
@@ -1253,23 +1083,9 @@ async function validatePatterns(errors: string[]): Promise<void> {
   }
 }
 
-async function validateWorkGraphs(errors: string[]): Promise<void> {
-  const paths = await walkFiles(rootPath("docs/work"), {
-    include: (item) => item.endsWith(".md"),
-  });
-  const workDocuments = await Promise.all(
-    paths.map(async (path) => ({
-      path: rel(path),
-      text: await readText(path),
-    })),
-  );
-  const graphDocuments = workDocuments.filter(
-    (document) =>
-      document.path !== "docs/work/work-graph-template.md" &&
-      (document.path.endsWith("-work-graph.md") ||
-        /^Work Graph ID:\s*/m.test(document.text)),
-  );
-  errors.push(...validateWorkGraphDocuments(graphDocuments, workDocuments));
+async function validateWorkTasks(errors: string[]): Promise<void> {
+  try { await readWorkTasks(); }
+  catch (error) { errors.push(`invalid Work records: ${errorMessage(error)}`); }
 }
 
 async function validateCampaigns(errors: string[]): Promise<void> {
@@ -1495,7 +1311,7 @@ async function validateHarness(errors: string[]): Promise<{
   for (const error of await validateBriefRepository(true)) {
     errors.push(`invalid product brief context: ${error}`);
   }
-  await validateWorkGraphs(errors);
+  await validateWorkTasks(errors);
   await validateSimulationLayout(errors);
   await validateCampaigns(errors);
   await validateBunCutover(errors);

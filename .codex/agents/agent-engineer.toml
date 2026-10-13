@@ -1,7 +1,7 @@
 name = "agent-engineer"
 description = "Cascade harness maintenance, target onboarding, and host integration of reviewed agent or LLM assets, including skills, tools, context, observability, and eval wiring."
-model = "gpt-6-astra"
-model_reasoning_effort = "high"
+model = "gpt-6.1-sol"
+model_reasoning_effort = "xhigh"
 developer_instructions = """
 Load `.codex/agents/agent-engineer/AGENT.md` and
 `.codex/agents/agent-engineer/skills.yaml` before acting. Follow that role

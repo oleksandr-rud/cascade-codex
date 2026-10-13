@@ -1,6 +1,254 @@
 checked_at: 2026-09-22
 # Catalog review marker; scoped entry updates do not reverify other models or provider availability.
+freshness_policy: per-entry
 models:
+  - capabilities:
+      - text
+      - vision
+      - tools
+      - reasoning-controls
+      - structured-output
+      - long-context
+    checked_at: 2026-10-01
+    id: gpt-6.1-sol
+    prompt_adapter: runtime/model-sol.md
+    status: current-candidate
+    tiers:
+      - frontier-generalist
+      - frontier-autonomous
+  - capabilities:
+      - text
+      - vision
+      - tools
+      - reasoning-controls
+      - structured-output
+      - long-context
+    checked_at: 2026-10-01
+    id: gpt-6-luna
+    prompt_adapter: runtime/model-luna6.md
+    status: current-candidate
+    tiers:
+      - efficient-structured
+      - balanced-production
+  - capabilities:
+      - text
+      - vision
+      - tools
+      - reasoning-controls
+      - structured-output
+      - long-context
+    checked_at: 2026-10-01
+    id: gpt-6-sol
+    prompt_adapter: runtime/model-sol6.md
+    status: current-candidate
+    tiers:
+      - frontier-generalist
+      - frontier-autonomous
+  - capabilities:
+      - text
+      - vision
+      - tools
+      - reasoning-controls
+      - long-context
+    checked_at: 2026-09-09
+    id: Qwen/Qwen3.8-27B
+    prompt_adapter: runtime/model-qwen.md
+    status: current-candidate
+    tiers:
+      - balanced-production
+      - frontier-generalist
+  - capabilities:
+      - text
+      - vision
+      - tools
+      - long-context
+    checked_at: 2026-09-09
+    id: Qwen/Qwen3.6-27B
+    prompt_adapter: runtime/model-qwen.md
+    status: current-candidate
+    tiers:
+      - balanced-production
+      - frontier-generalist
+  - capabilities:
+      - text
+      - vision
+      - tools
+      - long-context
+    checked_at: 2026-09-09
+    id: Qwen/Qwen3.5-27B
+    prompt_adapter: runtime/model-qwen.md
+    status: current-candidate
+    tiers:
+      - efficient-structured
+      - balanced-production
+  - capabilities:
+      - text
+      - vision
+      - long-context
+    checked_at: 2026-09-09
+    id: google/gemma-3-27b-it
+    prompt_adapter: runtime/model-open-weight.md
+    status: current-candidate
+    tiers:
+      - efficient-structured
+      - balanced-production
+  - capabilities:
+      - text
+      - vision
+      - tools
+      - long-context
+    checked_at: 2026-09-09
+    id: google/gemma-4-31B-it
+    prompt_adapter: runtime/model-open-weight.md
+    status: current-candidate
+    tiers:
+      - balanced-production
+      - frontier-generalist
+  - capabilities:
+      - text
+      - vision
+      - tools
+      - long-context
+    checked_at: 2026-09-09
+    id: mistralai/Mistral-Small-3.2-24B-Instruct-2506
+    prompt_adapter: runtime/model-open-weight.md
+    status: current-candidate
+    tiers:
+      - efficient-structured
+      - balanced-production
+  - capabilities:
+      - text
+      - vision
+      - tools
+      - reasoning-controls
+      - structured-output
+      - long-context
+    checked_at: 2026-10-01
+    id: gpt-6-astra
+    prompt_adapter: runtime/model-astra.md
+    status: current-candidate
+    tiers:
+      - frontier-generalist
+      - frontier-autonomous
+  - capabilities:
+      - text
+      - vision
+      - tools
+      - reasoning-controls
+      - long-context
+    checked_at: 2026-08-05
+    id: gpt-5.6-sol
+    status: needs-verification
+    tiers:
+      - frontier-generalist
+      - frontier-autonomous
+  - capabilities:
+      - text
+      - vision
+      - tools
+      - reasoning-controls
+      - long-context
+    checked_at: 2026-08-05
+    id: gpt-5.6-terra
+    status: needs-verification
+    tiers:
+      - balanced-production
+  - capabilities:
+      - text
+      - tools
+      - structured-output
+    checked_at: 2026-08-05
+    id: gpt-5.6-luna
+    status: needs-verification
+    tiers:
+      - efficient-structured
+  - capabilities:
+      - text
+      - vision
+      - tools
+      - extended-thinking
+      - long-context
+    checked_at: 2026-08-05
+    id: claude-fable-5
+    status: needs-verification
+    tiers:
+      - frontier-autonomous
+  - capabilities:
+      - text
+      - vision
+      - tools
+      - extended-thinking
+      - long-context
+    checked_at: 2026-08-05
+    id: claude-opus-5
+    status: needs-verification
+    tiers:
+      - frontier-generalist
+      - frontier-autonomous
+  - capabilities:
+      - text
+      - vision
+      - tools
+      - extended-thinking
+      - long-context
+    checked_at: 2026-08-05
+    id: claude-sonnet-5
+    status: needs-verification
+    tiers:
+      - balanced-production
+  - capabilities:
+      - text
+      - vision
+      - tools
+    checked_at: 2026-08-05
+    id: claude-haiku-4-5
+    status: needs-verification
+    tiers:
+      - efficient-structured
+  - capabilities:
+      - text
+      - vision
+      - audio
+      - video
+      - tools
+      - long-context
+    checked_at: 2026-08-05
+    id: gemini-3.5-flash
+    status: needs-verification
+    tiers:
+      - frontier-generalist
+  - capabilities:
+      - text
+      - vision
+      - audio
+      - video
+      - tools
+      - long-context
+    checked_at: 2026-08-05
+    id: gemini-3.6-flash
+    status: needs-verification
+    tiers:
+      - balanced-production
+  - capabilities:
+      - text
+      - vision
+      - tools
+      - structured-output
+    checked_at: 2026-08-05
+    id: gemini-3.5-flash-lite
+    status: needs-verification
+    tiers:
+      - efficient-structured
+  - capabilities:
+      - text
+      - vision
+      - tools
+      - reasoning-controls
+    checked_at: 2026-08-05
+    id: grok-4.5
+    status: needs-verification
+    tiers:
+      - frontier-generalist
   - id: Qwen/Qwen3.5-2B
     checked_at: 2026-10-03
     capabilities: [ text, vision, tools, reasoning-controls, long-context ]
@@ -9,156 +257,6 @@ models:
     tiers: [ efficient-structured ]
     tier_conditions:
       efficient-structured: Bounded generation/extraction only; exact deployment passes representative language, modality, schema and failure-path validation.
-  - id: Qwen/Qwen3.8-27B
-    checked_at: 2026-09-09
-    capabilities: [text, vision, tools, reasoning-controls, long-context]
-    status: current-candidate
-    prompt_adapter: runtime/model-qwen.md
-    tiers: [balanced-production, frontier-generalist]
-  - id: Qwen/Qwen3.6-27B
-    checked_at: 2026-09-09
-    capabilities: [text, vision, tools, long-context]
-    status: current-candidate
-    prompt_adapter: runtime/model-qwen.md
-    tiers: [balanced-production, frontier-generalist]
-  - id: Qwen/Qwen3.5-27B
-    checked_at: 2026-09-09
-    capabilities: [text, vision, tools, long-context]
-    status: current-candidate
-    prompt_adapter: runtime/model-qwen.md
-    tiers: [efficient-structured, balanced-production]
-  - id: google/gemma-3-27b-it
-    checked_at: 2026-09-09
-    capabilities: [text, vision, long-context]
-    status: current-candidate
-    prompt_adapter: runtime/model-open-weight.md
-    tiers: [efficient-structured, balanced-production]
-  - id: google/gemma-4-31B-it
-    checked_at: 2026-09-09
-    capabilities: [text, vision, tools, long-context]
-    status: current-candidate
-    prompt_adapter: runtime/model-open-weight.md
-    tiers: [balanced-production, frontier-generalist]
-  - id: mistralai/Mistral-Small-3.2-24B-Instruct-2506
-    checked_at: 2026-09-09
-    capabilities: [text, vision, tools, long-context]
-    status: current-candidate
-    prompt_adapter: runtime/model-open-weight.md
-    tiers: [efficient-structured, balanced-production]
-  - id: gpt-6-astra
-    checked_at: 2026-09-09
-    prompt_adapter: runtime/model-astra.md
-    capabilities: [text, vision, tools, reasoning-controls, structured-output, long-context]
-    status: current-candidate
-    tiers: [frontier-generalist, frontier-autonomous]
-  - capabilities:
-      - text
-      - vision
-      - tools
-      - reasoning-controls
-      - long-context
-    id: gpt-5.6-sol
-    status: current-candidate
-    tiers:
-      - frontier-generalist
-      - frontier-autonomous
-  - capabilities:
-      - text
-      - vision
-      - tools
-      - reasoning-controls
-      - long-context
-    id: gpt-5.6-terra
-    status: current-candidate
-    tiers:
-      - balanced-production
-  - capabilities:
-      - text
-      - tools
-      - structured-output
-    id: gpt-5.6-luna
-    status: current-candidate
-    tiers:
-      - efficient-structured
-  - capabilities:
-      - text
-      - vision
-      - tools
-      - extended-thinking
-      - long-context
-    id: claude-fable-5
-    status: current-candidate
-    tiers:
-      - frontier-autonomous
-  - capabilities:
-      - text
-      - vision
-      - tools
-      - extended-thinking
-      - long-context
-    id: claude-opus-5
-    status: current-candidate
-    tiers:
-      - frontier-generalist
-      - frontier-autonomous
-  - capabilities:
-      - text
-      - vision
-      - tools
-      - extended-thinking
-      - long-context
-    id: claude-sonnet-5
-    status: current-candidate
-    tiers:
-      - balanced-production
-  - capabilities:
-      - text
-      - vision
-      - tools
-    id: claude-haiku-4-5
-    status: current-candidate
-    tiers:
-      - efficient-structured
-  - capabilities:
-      - text
-      - vision
-      - audio
-      - video
-      - tools
-      - long-context
-    id: gemini-3.5-flash
-    status: current-candidate
-    tiers:
-      - frontier-generalist
-  - capabilities:
-      - text
-      - vision
-      - audio
-      - video
-      - tools
-      - long-context
-    id: gemini-3.6-flash
-    status: current-candidate
-    tiers:
-      - balanced-production
-  - capabilities:
-      - text
-      - vision
-      - tools
-      - structured-output
-    id: gemini-3.5-flash-lite
-    status: current-candidate
-    tiers:
-      - efficient-structured
-  - capabilities:
-      - text
-      - vision
-      - tools
-      - reasoning-controls
-    id: grok-4.5
-    status: current-candidate
-    tiers:
-      - frontier-generalist
 purpose: Compact candidate lookup for runtime routing. Detailed evidence and source URLs remain in the source registry.
 schema_version: 1
 source: references/model-system/model-registry.yaml

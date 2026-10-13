@@ -1,11 +1,11 @@
 schema_version: 1
 plugin:
   name: cascade-qa
-  version: 0.1.9+codex.20260910172549
+  version: "0.1.14+codex.20261001201835"
 model_policy:
-  model: gpt-6-astra
-  planning_reasoning_effort: high
-  evaluation_reasoning_effort: high
+  model: gpt-6.1-sol
+  planning_reasoning_effort: xhigh
+  evaluation_reasoning_effort: xhigh
 skills:
   - route: cascade-qa:plan-quality
     description: Build a risk-based quality plan with evidence classes, contours, gates, and execution ownership from accepted behavior.
@@ -24,7 +24,9 @@ skills:
     description: Design traceable test cases, data, oracles, and execution requests from accepted behavior and quality scope.
     triggers: [test design rather than execution is requested]
     anti_triggers: [tests must be run or product behavior is unresolved]
-    consumes: [quality-plan, product-contract]
+    consumes: []
+    consumes_any_of: [product-contract, change-contract, accepted-behavior, accepted-requirements, accepted-journeys, accepted-scenarios]
+    optional_consumes: [quality-plan]
     produces: [test-plan]
     required_dependencies: []
     optional_dependencies: [cascade-prompt:prompt, cascade-simulations:simulate, cascade-evals:evaluate]

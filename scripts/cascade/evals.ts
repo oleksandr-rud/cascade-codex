@@ -41,9 +41,9 @@ const OUTPUT_SCHEMA = resolve(EVAL_ROOT, "response.schema.json");
 const JUDGE_SCHEMA = resolve(EVAL_ROOT, "judge-response.schema.json");
 const JUDGE_PROFILES = resolve(EVAL_ROOT, "judge-profiles.yaml");
 const ARTIFACT_ROOT = rootPath(".artifacts/harness-evals");
-const PLANNING_MODEL = "gpt-6-astra";
-const EXECUTION_MODEL = "gpt-6-astra";
-const JUDGE_MODEL = "gpt-6-astra";
+const PLANNING_MODEL = "gpt-6.1-sol";
+const EXECUTION_MODEL = "gpt-6.1-sol";
+const JUDGE_MODEL = "gpt-6.1-sol";
 const STATUS_VALUES = new Set(["PASS", "FAIL", "BLOCKED", "GAP", "NOT_RUN"]);
 const REQUIRED_RESPONSE_KEYS = new Set([
   "scenario_id",
@@ -1303,7 +1303,7 @@ function scenarioExecution(
   return {
     model,
     reasoning_effort:
-      flag(args, "reasoning-effort") ?? scenario.execution?.reasoning_effort ?? "high",
+      flag(args, "reasoning-effort") ?? scenario.execution?.reasoning_effort ?? "xhigh",
     model_profile: explicitModel
       ? "custom"
       : explicitProfile ?? (scenario.execution?.model ? "agent-contract" : "execution"),
@@ -2192,7 +2192,7 @@ async function commandSelfTest(): Promise<number> {
     [generatedCatalog.agent_scenario_count === generatedCatalog.agent_count, "every agent has an outcome case"],
     [targetPrompt(scenario).includes("future handoffs"), "prompt separates handoffs"],
     [valueDigest({ a: 1 }) === valueDigest({ a: 1 }), "stable digest"],
-    [admissionCorpus.status === "PASS", "task admission shadow corpus passes"],
+    [admissionCorpus.status === "NOT_RUN", "historical admission text corpus cannot imply semantic interpreter coverage"],
   ];
   const failures = assertions.filter(([passed]) => !passed);
   for (const [, message] of failures) console.error(`FAIL: ${message}`);

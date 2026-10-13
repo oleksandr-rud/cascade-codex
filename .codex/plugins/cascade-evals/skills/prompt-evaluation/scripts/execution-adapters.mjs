@@ -1,5 +1,6 @@
 import { acquireExecution, haltExecution, GLOBAL_MODEL_LIMIT } from "./execution-coordinator.mjs";
 import { checkpointRun } from "./execution-progress.mjs";
+import { evaluationDefaults, MODEL_POLICY_URL } from "./model-policy.mjs";
 import { spawn, spawnSync } from "node:child_process";
 import { createHash } from "node:crypto";
 import { readFileSync, writeFileSync, appendFileSync } from "node:fs";
@@ -7,7 +8,7 @@ import { mkdir, mkdtemp, rename, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { isAbsolute, join, resolve } from "node:path";
 
-export const EXECUTION_RUNTIME_SHA256 = digest(Buffer.concat([readFileSync(new URL(import.meta.url)), readFileSync(new URL("./execution-coordinator.mjs", import.meta.url)), readFileSync(new URL("./execution-progress.mjs", import.meta.url))]));
+export const EXECUTION_RUNTIME_SHA256 = digest(Buffer.concat([readFileSync(new URL(import.meta.url)), readFileSync(new URL("./execution-coordinator.mjs", import.meta.url)), readFileSync(new URL("./execution-progress.mjs", import.meta.url)), readFileSync(new URL("./model-policy.mjs", import.meta.url)), readFileSync(MODEL_POLICY_URL)]));
 
 export const DEFAULT_TIMEOUTS_MS = Object.freeze({
   "efficient-structured": 180_000,
@@ -154,7 +155,7 @@ export async function runCommand({ command, args, input, cwd, timeoutMs, signal,
   });
 }
 
-export async function runModel({ model, reasoningEffort = "high", prompt, cwd, timeoutMs, adapter = "codex-cli", adapterConfig, adapterId, signal = processAbortSignal(), maxOutputBytes, installedPluginDiscovery = false, onDispatch, onStdout, onStderr }) {
+export async function runModel({ model, reasoningEffort = evaluationDefaults.target_reasoning_effort, prompt, cwd, timeoutMs, adapter = "codex-cli", adapterConfig, adapterId, signal = processAbortSignal(), maxOutputBytes, installedPluginDiscovery = false, onDispatch, onStdout, onStderr }) {
   if (typeof model !== "string" || !model || typeof prompt !== "string" || !prompt) throw new Error("model and prompt are required");
   const startedAt = new Date().toISOString();
   let started = process.hrtime.bigint();
@@ -226,7 +227,7 @@ export async function runModelPhase({ phase, runId, runRoot, ...configuration })
   const path = `${phase}.execution.json`;
   const identity = {
     schema_version: 1, run_id: runId, phase,
-    model: configuration.model, reasoning_effort: configuration.reasoningEffort ?? "high",
+    model: configuration.model, reasoning_effort: configuration.reasoningEffort ?? evaluationDefaults.target_reasoning_effort,
     adapter: configuration.adapter ?? "codex-cli", adapter_identity: configuration.adapterId ?? configuration.adapter ?? "codex-cli",
     codex_context: (configuration.adapter ?? "codex-cli") === "codex-cli" ? (configuration.installedPluginDiscovery ? "installed-plugin-discovery" : "isolated") : null,
     execution_surface: {

@@ -153,6 +153,7 @@ class AgentEvaluationRunnerTests(unittest.TestCase):
             ("cascade-evals:evaluate", "scripts/run_agent_evaluation.py"),
             ("cascade-evals:evaluate", "scripts/build_blind_packets.py"),
             ("cascade-evals:evaluate", "scripts/reduce_evaluation.py"),
+            ("cascade-evals:evaluate", "scripts/model_policy.py"),
             ("cascade-evals:evaluate", "scripts/validate_judge.py"),
             ("cascade-evals:evaluate", "skills/evaluate/references/agent-builder-response.schema.json"),
             ("cascade-evals:evaluate", "skills/evaluate/references/agent-target-response.schema.json"),
@@ -306,6 +307,17 @@ class AgentEvaluationRunnerTests(unittest.TestCase):
         self.assertFalse((output / "sealed-oracles.json").exists())
         target = json.loads((output / "public" / "target-packet.json").read_text(encoding="utf-8"))
         self.assertNotIn("oracle", json.dumps(target))
+
+    def test_omitted_model_options_preserve_a_bound_legacy_suite(self) -> None:
+        args = self.args(self.root / "preserved-baseline")
+        args.model = None
+        args.reasoning_effort = None
+        version = json.loads((SCRIPT_ROOT.parent / ".codex-plugin/plugin.json").read_text())["version"]
+        with patch("run_agent_evaluation.installed_dependency_roots", return_value={"cascade-evals": (version, SCRIPT_ROOT.parent)}):
+            receipt = execute(args)
+        self.assertEqual(receipt["binding_status"], "PASS")
+        self.assertEqual(args.model, "gpt-6-astra")
+        self.assertEqual(args.reasoning_effort, "high")
 
     def test_rejects_output_inside_subject_source(self) -> None:
         with self.assertRaisesRegex(ContractError, "disjoint"):

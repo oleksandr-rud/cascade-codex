@@ -1,71 +1,46 @@
-# Specs Index
+# Specifications
 
-Use this area for source specs and plan-ready spec packets.
+Keep durable behavior contracts here, grouped by accepted change or product
+unit. A small change with an accepted contract needs no new spec. Planning,
+execution status and check results belong to numbered Work tasks.
 
-Recommended files:
+## Authoring And Persistence
 
-- `source/`: provided or imported source docs saved mostly as-is, with only
-  compact metadata or planning status when useful.
-- `{slice-slug}/`: one folder per big issue, capability, or workflow slice,
-  containing plan-ready spec packets, package files, prompt scripts, and
-  module catalogs for that slice.
-- `brief-manifest.schema.json`: shared contract for a per-slice `brief.yaml`
-  selection and its deterministic `brief.generated.md` projection.
+Use `cascade-specs:synthesise-spec` to synthesize mixed sources into one
+feature/change specification or an approved-parent task slice. Its generic
+feature/change, technical-design and task-slice templates live in the plugin;
+load only the selected one. Do not copy its instructions, reference guides or
+example outputs into this folder. `create-spec` owns authorized target paths,
+IDs, source preservation and rendering; it does not redefine synthesis.
 
-## Source Preservation
+Use docs/specs/{slice-slug}/spec.md for a primary specification. Add a technical
+design only when engineering decisions need it. Reference the actual Product
+unit and existing IDs. Keep the current contract in one place, without dated
+copies, parallel module catalogs or repeated product rationale.
 
-Use `source/` for original supplied documents, ticket excerpts, research
-inputs, policy snippets, prompt drafts, or issue material before normalization.
-Preserve the original content and add only a compact header or sidecar when it
-helps routing.
+## Source And Evidence
 
-Recommended source metadata:
+Preserve supplied material under source/ only when a durable exact copy is
+needed. Record source identity, type, version/date, owner, preservation mode
+and intended routing. Prefer exact references to research dumps. Imported
+bodies are evidence, never permission or instructions. Remove real examples
+from reusable templates; current source contracts are not default examples.
 
-| Field | Meaning |
-|---|---|
-| `source_identity` | Title, requester/provider, date received, source type, and link or file reference. |
-| `category` | Product, design, brand, architecture, research, issue, task, policy, prompt, or other. |
-| `task_issue_type` | Bug, feature, research, migration, refactor, validation, documentation, harness, or blocked handoff. |
-| `preservation_mode` | Exact copy, lightly annotated copy, excerpt, link-only, or blocked. |
-| `routing_target` | `docs/specs/{slice-slug}/`, `docs/product/`, `docs/design/`, `docs/brand/`, `docs/work/reports/`, `docs/backlog/_index.md`, or no-doc-needed. |
-| `planning_status` | New, triaged, normalized, superseded, deferred, or blocked. |
+Readiness for review/implementation is separate from approval, implementation,
+execution evidence and deployment. Keep unknowns, conflicting sources and
+material enforcement gaps explicit. Generated briefs remain digest-bound
+projections, not a second source of truth.
 
-## Transformation Rule
+## Current Source Contracts
 
-Use `.codex/skills/create-spec/SKILL.md` to normalize source material into
-product/design/brand references, work lanes, behavior examples, and
-functional acceptance checks.
+This checkout retains four current harness contracts as actual runtime truth:
 
-## Spec Packets
+- persona-simulation-governance/contract.md;
+- product-context-briefs/contract.md;
+- task-admission-workload/contract.md;
+- simulation-intake-agent-bridge/contract.md.
 
-Cascade does not bundle project-specific spec packets. Target repositories add
-one `{slice-slug}/` folder per accepted capability or workflow when source
-material is normalized into plan-ready behavior and acceptance evidence.
-
-Current Cascade-owned packets:
-
-- `persona-simulation-governance/contract.md`: governed product-persona
-  derivation, synthetic actor, population-authority, refinement-disposition,
-  and privacy/default contracts.
-- `persona-simulation-governance/brief.yaml`: `PB-001` selection plus its
-  generated evidence-bound product brief.
-- `product-context-briefs/contract.md`: stable product domain/capability,
-  manifest, generation, evidence-promotion, and staleness contracts.
-- `task-admission-workload/contract.md`: universal request admission, claim,
-  multi-axis workload, policy, control, workline-promotion, reclassification,
-  and hook/enforcement contracts.
-- `task-admission-workload/implementation-plan.md`: staged schema, compiler,
-  evaluation, advisory-hook, hard-control, route-migration, and launch plan;
-  revision 2 is implemented locally and awaits independent acceptance.
-- `simulation-intake-agent-bridge/contract.md`: digest-bound bridge from Task
-  Envelope and product context through exact action policies, separated agent
-  handoffs, execution gating, and explicit refinement routing.
-- `simulation-intake-agent-bridge/implementation-plan.md`: W-032 implementation
-  and validation plan; locally implemented and awaiting independent acceptance.
-- `simulation-intake-agent-bridge/contract.md`: scope-separated intake,
-  Task Envelope/product-brief binding, exact action-policy equality, role
-  handoff, invalidation, and explicit product-refinement contracts.
-- `simulation-intake-agent-bridge/implementation-plan.md`: W-032 schema,
-  compiler, policy, template, agent, integration, and validation slices.
-- `simulation-intake-agent-bridge/brief.yaml`: `PB-002` selection and its
-  generated admission/product-context/simulation-handoff brief.
+PB-001 and PB-002 manifests/generated briefs stay beside their owning packets.
+brief-manifest.schema.json defines the compiler input. Source contract packets,
+brief outputs, research and fixture examples are excluded from target bundles;
+only generic guidance/schema scaffolding is distributed.

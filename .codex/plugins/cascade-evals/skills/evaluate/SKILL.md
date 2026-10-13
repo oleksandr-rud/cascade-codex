@@ -105,7 +105,9 @@ remains `NOT_RUN`. Keep sealed expectations outside target-visible material.
 
 When selecting a model configuration or preparing execution, read
 `references/model-policy.json`. Default builder, target, and judge
-invocations to `gpt-6-astra` with `high` reasoning effort.
+invocations to `gpt-6.1-sol` with `xhigh` reasoning effort. Preserve an
+explicitly bound pre-v3 Astra/High pack through its declared baseline; it is
+not selected for a new unbound evaluation.
 Explicit comparison configurations may bind a different supported model and
 reasoning effort, but every value must be frozen in the evaluation bundle and
 preserved in the receipt. Never silently change the default or reuse the target

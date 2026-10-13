@@ -20,7 +20,7 @@ source precedence; reusable plugin guidance does not override product contracts.
 - Project configuration and checks: `harness.config.yaml`.
 - Source and documentation owners: `docs/structure.md`.
 - Accepted product and architecture facts: the target's relevant source/docs.
-- Current work: `docs/work/`, only when the request needs durable work state.
+- Numbered task state: `docs/work/_index.md` and `docs/work/tasks/`; use a real product/tracker task reference when supplied.
 - Host effects and role contracts: `.codex/skills/` and `.codex/agents/`.
 
 ## Workflow

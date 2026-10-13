@@ -15,6 +15,7 @@ SCRIPT_ROOT = Path(__file__).resolve().parent
 sys.path.insert(0, str(SCRIPT_ROOT))
 
 from reduce_evaluation import ContractError, reduce_bundle
+from model_policy import DEFAULTS
 from validate_judge import score_ratings, validate_profile, validate_response
 
 
@@ -132,7 +133,7 @@ class EvaluationContractsTests(unittest.TestCase):
         with self.assertRaises(ContractError):
             reduce_bundle(bundle)
 
-    def test_astra_high_is_required_unless_comparison_is_explicit(self) -> None:
+    def test_default_or_exact_preserved_baseline_requires_explicit_comparison_for_mixed_models(self) -> None:
         bundle = self.bundle()
         bundle["models"]["judge_model"] = "gpt-5.6-terra"
         with self.assertRaises(ContractError):
@@ -141,6 +142,22 @@ class EvaluationContractsTests(unittest.TestCase):
         for judgment in bundle["judgments"]:
             judgment["profile"]["model"] = "gpt-5.6-terra"
         self.assertEqual(reduce_bundle(bundle)["overall_status"], "PASS")
+
+    def test_new_default_preserves_sol_xhigh_and_independent_judges(self) -> None:
+        bundle = self.bundle()
+        bundle["models"] = {**DEFAULTS, "explicit_comparison": False}
+        for judgment in bundle["judgments"]:
+            judgment["profile"]["model"] = "gpt-6.1-sol"
+        receipt = reduce_bundle(bundle)
+        self.assertEqual(receipt["overall_status"], "PASS")
+        self.assertEqual(receipt["models"]["target_model"], "gpt-6.1-sol")
+        self.assertEqual(receipt["models"]["judge_reasoning_effort"], "xhigh")
+
+    def test_changed_effort_is_not_an_exact_preserved_baseline(self) -> None:
+        bundle = self.bundle()
+        bundle["models"]["judge_reasoning_effort"] = "max"
+        with self.assertRaises(ContractError):
+            reduce_bundle(bundle)
 
     def test_receipt_preserves_explicit_sol_max_configuration(self) -> None:
         bundle = self.bundle()

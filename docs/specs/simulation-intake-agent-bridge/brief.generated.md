@@ -6,10 +6,10 @@
 - Brief: `PB-002` revision `1`
 - Status: `reviewed`
 - Coverage: `complete`
-- Catalog digest: `df37463e28d651950ec6e9146a1a1643cfa328ce44643baaf8d8ae608c09b110`
+- Catalog digest: `5e6b263b4f1ce9a4b7cef1e60fc60744de6d87634305503978d47ff7740bfb84`
 - Manifest digest: `c2b59a1ce6e0fa15e2bb716fcc5ae2c89c84515a43facda9787d25a687994efc`
-- Selected-source digest: `6eb5d53565672ca6570e4bd44712220b90c9706f0ad6f18d674879bedee74bf6`
-- Compiler-contract digest: `4cfeada5833d864235315bb41aa63acf157b08f15c247f2914c23fc84fd9acd1`
+- Selected-source digest: `36f6f08521f641736664a318e7bbc3c061543d79cef1cf2ff8d13d9cbff12470`
+- Compiler-contract digest: `6cd5a7c76ea5a751ae51aee06aaac1786c197ae6682aaa88d6cfbf2367fa923b`
 
 ## Purpose And Audience
 
@@ -30,15 +30,18 @@ Assemble current admission, product-context, simulation-policy, and agent-handof
 
 | Path | SHA-256 |
 |---|---|
-| `docs/specs/simulation-intake-agent-bridge/contract.md` | `836dd2d588e22117fb0e5846b83aa09993c61a13422edb161de6548a4d90a95c` |
-| `docs/specs/task-admission-workload/contract.md` | `56b50f23ff14ebe92b9fbe594d38454b35f7370bf84e3e5eb40bf0c767244f75` |
-| `docs/specs/product-context-briefs/contract.md` | `a0e5ad2910e3a475cf7ea9a306d4bacd52fe4ea4b0b3c86872562e6306f5e44e` |
+| `docs/specs/simulation-intake-agent-bridge/contract.md` | `aa3ef6424ee9707fe84f2ffc296cd112487ac99ec90d125abd90c3808e8d5fac` |
+| `docs/specs/task-admission-workload/contract.md` | `e3b13d802fae74ff44fff450df5521af0863b0ff31478b1662c9e60ed9d65f79` |
+| `docs/specs/product-context-briefs/contract.md` | `f1ab9970145e8b9206169bdc9ceab2d1769576b1482ec4022ad5c6f282804f69` |
+| `docs/product/contours/context-and-simulation/requirements.md` | `08b3baffaf56f96169a41691f2c7d9d4ddc29b047161bfcf60c40d4451092108` |
+| `docs/product/contours/context-and-simulation/journeys.md` | `19ab71460f84beef9e874bd2f92aee045548e8c30af65e369c364c739ea97929` |
+| `docs/product/contours/context-and-simulation/scenarios.md` | `5df75e1d20354638f567bd842ab8c0fcf970f8d610768c3345b63dcec23ee975` |
 
 ## Requirements
 
 | ID | Source | Requirement | Acceptance Criterion | Scenario IDs | Status |
 |---|---|---|---|---|---|
-| PR-009 | `SIB-001, SIB-002 / PC-003` | Product simulation campaigns require a scope-correct intake bound to the current W-031 Task Envelope. | Given an absent, draft, blocked, cross-scope, or stale product intake, when campaign execution is requested, then execution stops before provisioning. | `PS-009` | `reviewed` |
+| PR-009 | `SIB-001, SIB-002 / PC-003` | Product simulation campaigns require a scope-correct intake bound to the current Task Envelope. | Given an absent, draft, blocked, cross-scope, or stale product intake, when campaign execution is requested, then execution stops before provisioning. | `PS-009` | `reviewed` |
 | PR-010 | `SIB-003 / PC-003` | A READY product intake binds one current reviewed/approved product brief and generated projection with exact product reference selections. | Given a changed manifest, generated brief, or selected product source, when the intake resolves, then it is stale and cannot execute. | `PS-010` | `reviewed` |
 | PR-011 | `SIB-004 / PC-003` | Every campaign action has exactly one computed applicable policy and each task's declared policy set equals the computed set. | Given zero, overlapping, denied, omitted, or extra action policies, when intake compilation or campaign resolution runs, then readiness fails closed with the task/action identities. | `PS-011` | `reviewed` |
 | PR-012 | `SIB-005, SIB-006 / PC-003` | Campaign authoring, mutable execution, independent evaluation, harness judgment, and product-doc promotion remain separate explicit handoffs. | Given a simulation finding, when repair or refinement is routed, then no evaluator executes/repairs and no product document changes without an accepted synthesis/composition decision. | `PS-012` | `reviewed` |
@@ -123,6 +126,15 @@ Require unique stable IDs, one declared domain per capability, bounded source
 paths, existing owner references, explicit evaluation authority, and no orphan
 product rows. Update the catalog and owner docs together when a relationship
 changes.
+
+Use the target's actual structural units: contours, modules, features, models
+or another accepted vocabulary. Catalog reference_documents selects exact
+owner ledgers; one small unit document may contain distinct requirement,
+journey and scenario tables. Split only for actual ownership or consumption.
+Legacy catalogs retain flat owners. No file path determines product meaning.
+Generic Product rendering uses the unit template; mixed-source specification
+synthesis belongs to cascade-specs:synthesise-spec, with host create-spec
+owning authorized persistence. Do not maintain copied authoring methods.
 
 ### product-context-core / brief-manifest-and-compilation
 
@@ -219,9 +231,9 @@ Source boundary: `docs/patterns/testing/index.md`
 Traceability:
 
 ```text
-docs/product/scenarios.md
+docs/product/contours/context-and-simulation/scenarios.md
   -> executable scenario or functional test
-  -> docs/work/active.md or docs/work/lanes/*.md for the active work overlay
+  -> docs/work/tasks/{task_id}.md for current task state and checks
 ```
 
 Rules:

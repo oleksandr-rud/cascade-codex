@@ -23,10 +23,6 @@ import { lstatSync, realpathSync } from "node:fs";
 import { relative, resolve } from "node:path";
 import {
   classifyEnvGitAction,
-  deriveAdmissionClausePatches,
-  parseAdmissionClauses,
-  type AdmissionClausePatches,
-  type AdmissionClauseSpan,
 } from "./admission-clauses";
 
 export const ADMISSION_SCHEMA_VERSION = 41;
@@ -40,6 +36,7 @@ const POLICY_PATH = rootPath(ADMISSION_POLICY_SOURCE_FILE);
 const CONTROL_PATH = rootPath(ADMISSION_CONTROL_SOURCE_FILE);
 const CONTROL_SCHEMA_PATH = rootPath(".codex/task-admission/control-catalog.schema.json");
 const ENVELOPE_SCHEMA_PATH = rootPath(".codex/task-admission/task-envelope.schema.json");
+const INTERPRETATION_SCHEMA_PATH = rootPath(".codex/task-admission/interpretation.schema.json");
 const POLICY_SCHEMA_PATH = rootPath(".codex/task-admission/policy.schema.json");
 const POLICY_SOURCE_SCHEMA_PATH = rootPath(".codex/task-admission/policy-source.schema.json");
 const CORPUS_PATH = rootPath("harness-evals/task-admission/cases.yaml");
@@ -152,6 +149,8 @@ export interface TrustedAuthorityHost {
 
 export interface AdmissionRequest {
   request: string;
+  interpretation?: AdmissionInterpretation;
+  semantic_interpretation?: unknown;
   task_id?: string;
   relation?: Relation;
   intent?: Intent;
@@ -163,47 +162,20 @@ export interface AdmissionRequest {
   source_segments?: AdmissionSourceSegment[];
   trusted_direct_user_attestation?: TrustedDirectUserAttestation;
   prior_envelope?: TaskEnvelope;
-  semantic_interpretation?: unknown;
 }
 
 export interface AdmissionInterpretation {
   schema_version: 1;
-  artifact_type: "cascade-admission-interpretation";
-  status: "RESOLVED" | "UNRESOLVED";
+  interpreter: { kind: "LLM"; model: string };
   request_digest: string;
-  prior_envelope_id: string | null;
-  model_id: string;
+  task_id: string;
+  source_digest: string | null;
   relation: Relation;
   intent: Intent;
-  policy_tags: string[];
-  workload: {
-    topology: typeof TOPOLOGY[number];
-    effort: typeof EFFORT[number];
-    authority: AuthorityClass;
-    duration: typeof DURATION[number];
-  };
-  local_write_scope: TaskEnvelope["authority"]["local_write_scope"];
-  claims: Array<{ kind: TaskClaim["kind"]; statement: string; confidence: number; policy_tags: string[] }>;
-  uncertainty: string[];
-}
-
-export function validateAdmissionInterpretation(value: unknown): asserts value is AdmissionInterpretation {
-  assertJsonSchema(value, { $schema: ENVELOPE_SCHEMA.$schema, $defs: ENVELOPE_SCHEMA.$defs, $ref: "#/$defs/admissionInterpretation" }, "$");
-  const proposal = value as AdmissionInterpretation;
-  if (proposal.status !== "RESOLVED" || proposal.uncertainty.length) throw new CascadeError("semantic admission is unresolved; repair or clarify before compiling an envelope");
-  requireString(proposal.model_id, "semantic admission model_id");
-  proposal.claims.forEach((claim) => requireString(claim.statement, "semantic admission claim"));
-  for (const tag of [...proposal.policy_tags, ...proposal.claims.flatMap((claim) => claim.policy_tags)]) {
-    if (tag === "always" || tag.startsWith("requested-")) throw new CascadeError("model admission tags cannot establish requested authority");
-  }
-  const represented = new Set(proposal.claims.flatMap((claim) => claim.policy_tags));
-  if (proposal.policy_tags.some((tag) => !represented.has(tag)) || [...represented].some((tag) => !proposal.policy_tags.includes(tag))) throw new CascadeError("semantic admission policy tags must be bound to declared claims");
-  if (proposal.claims.some((claim) => containsRawSecret(claim.statement))) throw new CascadeError("semantic admission claims contain unredacted secret material");
-  const scope = proposal.local_write_scope;
-  if (scope.targets.some((target) => canonicalLocalWriteTarget(target) !== target)) throw new CascadeError("semantic admission write targets must be canonical repository-relative paths");
-  if (scope.mode === "REPOSITORY" && scope.targets.length) throw new CascadeError("repository write scope cannot also name targets");
-  if (proposal.workload.authority !== "LOCAL_WRITE" && (scope.mode !== "TARGETS" || scope.targets.length)) throw new CascadeError("non-local admission cannot declare a local write scope");
-  if (["ANSWER", "DISCOVER", "DIAGNOSE", "REVIEW", "VALIDATE"].includes(proposal.intent) && proposal.workload.authority !== "READ_ONLY") throw new CascadeError("read-only semantic intent cannot declare mutation authority");
+  claims: TaskClaim[];
+  workload: { topology: typeof TOPOLOGY[number]; effort: typeof EFFORT[number]; authority: AuthorityClass; duration: typeof DURATION[number]; context: typeof CONTEXT[number] };
+  local_write_scope: { mode: "TARGETS" | "REPOSITORY"; targets: string[] };
+  uncertainties: string[];
 }
 
 export interface TaskClaim {
@@ -279,20 +251,20 @@ interface PriorDerivationSnapshot {
   request_digest: string;
   source_digest: string | null;
   intent: Intent;
-  provenance_mode: "TRUSTED_SOURCE_SEGMENTS" | "LEXICAL_FALLBACK" | "STRUCTURED_PROPOSAL";
+  provenance_mode: "TRUSTED_SOURCE_SEGMENTS" | "UNVERIFIED_SOURCE";
   direct_user_attestation: TrustedDirectUserAttestationExpected | null;
   claims: TaskClaim[];
 }
 
 interface TaskDerivationInput extends JsonObject {
   schema_version: 41;
-  classifier_id: "cascade-task-admission-v41" | "cascade-task-admission-semantic-v1";
-  semantic_interpretation?: AdmissionInterpretation;
+  classifier_id: "cascade-semantic-admission-v1";
+  interpretation: AdmissionInterpretation;
   canonical_request: string;
   classification_request: string;
   classification_digest: string;
   provenance_version: 2;
-  provenance_mode: "TRUSTED_SOURCE_SEGMENTS" | "LEXICAL_FALLBACK" | "STRUCTURED_PROPOSAL";
+  provenance_mode: "TRUSTED_SOURCE_SEGMENTS" | "UNVERIFIED_SOURCE";
   source_segments_digest: string;
   direct_user_attestation: TrustedDirectUserAttestationExpected | null;
   request_spans: RequestSpan[];
@@ -305,7 +277,7 @@ interface TaskDerivationInput extends JsonObject {
   authority_candidates: string[];
   candidate_tags: string[];
   prior: PriorDerivationSnapshot | null;
-  authenticity: "TRUSTED_DIRECT_USER_ATTESTATION" | "UNVERIFIED_LEXICAL_FALLBACK" | "UNVERIFIED_MODEL_PROPOSAL";
+  authenticity: "TRUSTED_DIRECT_USER_ATTESTATION" | "UNVERIFIED_SOURCE";
 }
 
 interface RequestSpan {
@@ -395,10 +367,11 @@ export interface ToolAdmissionDecision {
   reason: string;
 }
 
-const [ENVELOPE_SCHEMA, POLICY_BUNDLE, CONTROL_CATALOG] = await Promise.all([
+const [ENVELOPE_SCHEMA, POLICY_BUNDLE, CONTROL_CATALOG, INTERPRETATION_SCHEMA] = await Promise.all([
   readJson<JsonObject>(ENVELOPE_SCHEMA_PATH),
   loadAdmissionPolicyBundle(),
   loadAdmissionControlCatalog(),
+  readJson<JsonObject>(INTERPRETATION_SCHEMA_PATH),
 ]);
 const CASE_SCHEMA = (await isFile(CASE_SCHEMA_PATH))
   ? await readJson<JsonObject>(CASE_SCHEMA_PATH)
@@ -472,104 +445,6 @@ function canonicalAdmissionRequest(value: string): string {
     throw new CascadeError(`redacted admission request exceeds ${MAX_REDACTED_REQUEST_CHARACTERS} characters`);
   }
   return canonical;
-}
-
-const EXTERNAL_SOURCE_MARKER = /\b(?:(?:quoted\s+request|copied\s+note|for\s+(?:analysis|assessment)\s+purposes?)\s*:|(?:(?:the\s+following\s+)?(?:retrieved|external|tool|web|pasted|copied|clipboard)(?:\s+(?:content|output|text|instructions?|description|body|result))?(?:\s*,?\s*(?:quoted\s+verbatim|verbatim))?)\s*(?::|,|(?:says?|asks?|instructs?|recommends?)\b\s*:?)|(?:(?:the\s+following\s+)?(?:ticket|issue|document|prompt|page)(?:\s+(?:content|output|text|instructions?|description|body|result))?(?:\s*,?\s*(?:quoted\s+verbatim|verbatim))?)\s*(?::|(?:says?|asks?|instructs?|recommends?)\b\s*:?)|quoted(?:\s+(?:content|text))?(?:\s+verbatim)?\s*(?::|,)|according\s+to\s+(?:the\s+)?(?:retrieved\s+)?(?:page|ticket|issue|document|tool(?:\s+result)?|web\s+page)\s*(?::|,|(?:says?|asks?|instructs?|recommends?)\b\s*:?)|(?:copied|pasted)\s+(?:from|out\s+of|off)\s+(?:the\s+)?[^:\n]{1,80}\s*:|(?:here(?:'s|\s+is)|this\s+is|below\s+is)\s+(?:what\s+)?i\s+(?:pasted|copied)(?:\s+(?:from|out\s+of|off)\s+(?:the\s+)?[^:\n]{1,80})?\s*:|i(?:['’]ve|\s+have)?\s+(?:(?:copied\s+and\s+)?pasted|copied)\s+(?:this|the\s+following|it|below)(?:\s+(?:from|out\s+of|off)\s+(?:the\s+)?[^:\n]{1,80})?\s*:|what\s+i\s+pasted\s+was\s*:|i\s+have\s+pasted\s+below\s*:|i\s+copied\s+and\s+pasted\s+this\s*:|(?:the\s+)?clipboard\s+(?:contains|contents(?:\s+are)?)\s*:|(?:(?:review|explain)\s*:\s*(?:the\s+)?proposed\s+(?:action|command|change|request)|(?:review|explain)\s+(?:the\s+)?proposed\s+(?:action|command|change|request))\s*:|(?:the\s+following\s+)?(?:paste|pasted\s+text|copied\s+text|clipboard)(?:\s+(?:entry|content|text))?\s+(?:says?|reads?)\s*:|from\s+(?:my\s+|the\s+)?clipboard\s*:|(?:please\s+)?review\s+(?:this|the\s+following)\s+(?:copied|pasted)\s+[^:\n]{1,80}\s*:|for\s+review\s*,?\s+(?:the\s+following\s+)?(?:text|message|content)?\s*(?:was\s+)?(?:copied|pasted)(?:\s+from\s+[^:\n]{1,80})?\s*:|(?:here(?:'s|\s+is)|below\s+is)\s+(?:a|the)\s+[^:\n]{1,60}\s+to\s+review\s*:)\s*/gi;
-
-const EXTERNAL_SOURCE_VARIANT_MARKER = /\b(?:i\s+(?:have\s+)?(?:copied\s*&\s*pasted|copy-pasted|pasted\s+(?:the\s+below|this\s+here))(?:\s+(?:this|it|the\s+following))?(?:\s+(?:from|out\s+of|off)\s+(?:the\s+)?[^:\n]{1,80})?\s*:|(?:the\s+)?clipboard\s+(?:has|holds|includes)\s*:|(?:pasted|copied)\s+content\s+follows\s*:|(?:(?:please|kindly)\s+|(?:can|could|would|might)\s+you\s+)?(?:review|explain)\s+(?:this|the)\s+proposed\s+(?:action|command|change|request)(?:\s+only)?\s*:|(?:slack\s+drop|dropped\s+from\s+(?:slack|jira)|i\s+dropped\s+(?:this|the\s+following)\s+from\s+(?:slack|jira))\s*:)\s*/gi;
-const EXTERNAL_SOURCE_REVIEW_MARKER = /\b(?:(?:copied|pasted)(?:\s+(?:text|content|message|excerpt|request|command))?\s+from\s+[^:\n—–-]{1,80}(?:\s+for\s+(?:review|inspection))?\s*(?::|—|–|\s-\s)|(?:copied|pasted)\s+(?:text|content|message|excerpt|request|command)\s+for\s+(?:review|inspect|inspection|explain|analysis)\s*(?::|—|–|\s-\s)|(?:(?:an?|the)\s+)?clipboard\s+(?:excerpt|entry|message|text|request|note|command)\s+(?:to|for)\s+(?:review|inspect|explain|inspection|analysis)\s*(?::|—|–|\s-\s)|(?:clipboard\s+(?:request|note|command)|copied\s+command)\s*(?::|—|–|\s-\s)|(?:an?|the)\s+(?:slack|jira|teams)\s+(?:message|excerpt|drop)\s+(?:to|for)\s+(?:review|inspect|explain|inspection)\s*(?::|—|–|\s-\s)|(?:an?|the)\s+(?:slack|jira|teams)\s+message\s+for\s+review\s+follows\s*(?::|—|–|\s-\s)|(?:review|explain|inspect|audit|analyze|assess|evaluate|examine)\s+(?:only\s+)?(?:this|the\s+following)\s+(?:copied|pasted)\s+(?:(?:slack|jira|teams)\s+)?(?:request|message|text|content|command)\s*(?::|—|–|\s-\s)|(?:audit|review|explain|inspect|analyze|assess|evaluate|examine)\s+(?:this\s+)?(?:copied|pasted)\s+(?:request|message|text|content|command)\s*(?::|—|–|\s-\s)|conduct\s+a\s+review\s+of\s+(?:this\s+)?(?:copied|pasted)\s+(?:request|message|text|content|command)\s*(?::|—|–|\s-\s)|(?:audit|review)\s+(?:only\s+)?(?:the\s+)?phrase\s*|(?:review|explain|audit|analyze|assess|evaluate|examine)\s+(?:(?:the\s+)?risk\s+in\s+|whether\s+to\s+(?:execute|perform)\s+)?(?:only\s+)?(?:(?:this|the)\s+)?proposed\s+(?:action|command|change|request)(?:\s+without\s+(?:actually\s+)?(?:carrying|executing|performing|doing)\s+(?:it|that|anything)\s+(?:out)?)?\s*(?::|—|–|\s-\s))\s*/gi;
-const EXPLICIT_REVIEW_SOURCE_MARKER = /\b(?:(?:for\s+review\s+only|review-only|review\s+only|analysis\s+only|analy[sz]e\s+only|assessment\s+only|safety\s+(?:review|analysis|assessment|check)\s+only)\s*(?::|,|—|–|-)|(?:quoted|copied)\s+(?:review|analysis|assessment|safety\s+(?:review|analysis|assessment|check))\s*(?::|,|—|–|-)|(?:please\s+)?review\s*,?\s*but\s+do\s+not\s+execute\s*(?::|—|–|-)|(?:inspect|review)\s*,?\s*(?:but\s+)?(?:do\s+not|don't|not)\s+(?:execute|execution)\s*(?::|—|–|-)|(?:safety|risk|security)\s+(?:review|analysis|assessment|check)\s*,?\s*(?:not|without)\s+(?:execution|action)\s*(?::|—|–|-)|do\s+not\s+execute\s*;\s*(?:please\s+)?review(?:\s+this\s+request)?\s*(?::|—|–|-)|(?:(?:please|kindly)\s+|(?:can|could|would)\s+you\s+)?(?:review|audit|analyze|inspect|explain|assess|evaluate|examine)\s+(?:this\s+|the\s+)?(?:(?:slack|jira|teams)\s+message\s+copied\s+below|copied\s+(?:(?:slack|jira|teams)\s+)?(?:request|message|text|content))\s*(?::|—|–|-))\s*/gi;
-const STRUCTURAL_REVIEW_SOURCE_MARKER = /\b(?:(?:critique|discuss|summarize|summarise|check|analyze|analyse|(?:provide|give\s+me)\s+(?:an?\s+)?analysis\s+of)\s+(?:only\s+)?(?:this\s+|the\s+following\s+)?(?:copied|pasted)\s+(?:(?:slack|jira|teams)\s+)?(?:request|message|text|content)[^:\n—–-]{0,80}\s*(?::|—|–|-)|tell\s+me\s+(?:whether|if)\s+(?:this\s+|the\s+following\s+)?(?:copied|pasted)\s+(?:(?:slack|jira|teams)\s+)?(?:request|message|text|content)[^:\n—–-]{0,80}\s*(?::|—|–|-))\s*/gi;
-const GENERAL_REVIEW_SOURCE_MARKER = /\b(?:(?:(?:for\s+)?(?:safety|risk|security|compliance)\s+(?:review|analysis|assessment|inspection)|(?:safety|risk|security|compliance)\s+check|request\s+under\s+review|external\s+request\s+for\s+(?:review|analysis|assessment)|untrusted\s+(?:request|command|action))\s*(?::|—|–|\s-\s|,)|(?:(?:analy[sz]e|assess|evaluate|check|review|explain)\s+(?:only\s+)?(?:the\s+)?(?:safety|risk|security|compliance|hazards?)\s+(?:of|in|for)\s+(?:this|the\s+following)\s+(?:request|command|action|change)|(?:analy[sz]e|assess|evaluate|check|review|explain)\s+(?:this|the\s+following)\s+(?:request|command|action|change)\s+for\s+(?:safety|risk|security|compliance)|(?:analy[sz]e|assess|evaluate|check|review|explain)\s+(?:whether|if)\s+(?:this|the\s+following)\s+(?:request|command|action|change)\s+is\s+(?:safe|risky|dangerous|compliant)|tell\s+me\s+(?:whether|if)\s+(?:this|the\s+following)\s+(?:request|command|action|change)\s+is\s+(?:safe|risky|dangerous|compliant))[^:\n—–-]{0,80}\s*(?::|—|–|\s-\s)|(?:is|would)\s+(?:this|the\s+following)\s+(?:request|command|action|change)\s+(?:be\s+)?(?:safe|compliant)\s*(?::|\?|—|–|\s-\s))\s*/gi;
-const ADVISORY_ACTION_SOURCE_MARKER = /\b(?:(?:(?:copied|pasted|external|quoted|quotation)\s+(?:request|instruction|action|command))\s*(?::|—|–|\s-\s)\s*|(?:copied|pasted|clipboard)\s+(?:note|request|command)\s+for\s+(?:review|analysis|assessment|compliance)\s*(?::|—|–|\s-\s)\s*|(?:assess|evaluate|review|audit|inspect|analy[sz]e|discuss)\s*:\s*(?:quoted|copied|pasted|external|clipboard)\s+(?:request|instruction|note|command)\s*(?::|—|–|\s-\s)\s*|(?:assess|evaluate|review|audit|inspect|analy[sz]e|discuss)\s+(?:this\s+)?(?:copied|pasted|external|clipboard)\s+(?:request|instruction|note|command)\s*(?::|—|–|\s-\s)\s*|(?:security|safety|risk|compliance)\s+(?:review|analysis|assessment)(?:\s+request)?\s*[,;:—–]\s*|for\s+(?:security|safety|risk|compliance)\s+(?:review|analysis|assessment)\s*[,;:—–]\s*|(?:review|assess|evaluate|audit|inspect|analy[sz]e)\s+whether\s+(?=(?:we|you|i|the|this|that|it|there)\b))/gi;
-const EXTERNAL_SOURCE_MARKERS = [EXTERNAL_SOURCE_MARKER, EXTERNAL_SOURCE_VARIANT_MARKER, EXTERNAL_SOURCE_REVIEW_MARKER, EXPLICIT_REVIEW_SOURCE_MARKER, STRUCTURAL_REVIEW_SOURCE_MARKER, GENERAL_REVIEW_SOURCE_MARKER, ADVISORY_ACTION_SOURCE_MARKER];
-
-function quotedRangeEnd(request: string, contentStart: number, quote: string): number {
-  const closingQuote = quote === "“" ? "”" : quote === "‘" ? "’" : quote;
-  for (let index = contentStart + 1; index < request.length; index += 1) {
-    if (request[index] !== closingQuote) continue;
-    let escapes = 0;
-    for (let cursor = index - 1; cursor >= contentStart && request[cursor] === "\\"; cursor -= 1) escapes += 1;
-    if (escapes % 2) continue;
-    if ((quote === "'" || quote === "‘") && /[A-Za-z0-9]/.test(request[index - 1] ?? "") && /[A-Za-z0-9]/.test(request[index + 1] ?? "")) continue;
-    return index + 1;
-  }
-  return request.length;
-}
-
-function balancedRangeEnd(request: string, contentStart: number): number {
-  const pairs: Record<string, string> = { "(": ")", "[": "]", "{": "}" };
-  const stack = [pairs[request[contentStart]!]!];
-  let quote: string | null = null;
-  for (let index = contentStart + 1; index < request.length; index += 1) {
-    const character = request[index]!;
-    if (quote) {
-      if (character === quote) {
-        let escapes = 0;
-        for (let cursor = index - 1; cursor >= contentStart && request[cursor] === "\\"; cursor -= 1) escapes += 1;
-        const apostrophe = quote === "'" && /[A-Za-z0-9]/.test(request[index - 1] ?? "") && /[A-Za-z0-9]/.test(request[index + 1] ?? "");
-        if (escapes % 2 === 0 && !apostrophe) quote = null;
-      }
-      continue;
-    }
-    if (["\"", "'", "`"].includes(character)) {
-      if (character === "'" && /[A-Za-z0-9]/.test(request[index - 1] ?? "") && /[A-Za-z0-9]/.test(request[index + 1] ?? "")) continue;
-      quote = character;
-      continue;
-    }
-    if (pairs[character]) { stack.push(pairs[character]!); continue; }
-    if (character === stack.at(-1)) {
-      stack.pop();
-      if (!stack.length) return index + 1;
-    }
-  }
-  return request.length;
-}
-
-function externalRangeEnd(request: string, contentStart: number): number {
-  const fence = request.slice(contentStart).match(/^(```+|~~~+)/)?.[1];
-  if (fence) {
-    const closing = request.indexOf(fence, contentStart + fence.length);
-    return closing >= 0 ? closing + fence.length : request.length;
-  }
-  const quote = request[contentStart];
-  if (quote === '"' || quote === "'" || quote === "`" || quote === "“" || quote === "‘") {
-    return quotedRangeEnd(request, contentStart, quote);
-  }
-  if (["(", "[", "{"].includes(quote ?? "")) return balancedRangeEnd(request, contentStart);
-  const tail = request.slice(contentStart);
-  const boundary = /(?:\n\s*|[.!?;,—–]\s*|\s-\s|[()]\s*)(?:(?:(?:direct\s+)?user\s+(?:request|instruction)|my\s+request|requested\s+action|what\s+i\s+need\s+you\s+to\s+do|please\s+now|user\s+non_goal|continue)\s*(?::|—|–|\s-\s)|(?:please\s+)?(?:review|explain)\s+it\s+only\.?|(?:analy[sz]e|assess|review|evaluate)\s+whether\s+(?:(?:to\s+)?(?:execute|perform|act\s+on|take|carry\s+out|do|proceed\s+with)\s+(?:it|that|this|the\s+(?:action|request)|(?:the\s+)?(?:requested\s+action|action\s+requested))|(?:the\s+)?(?:action|request)\s+should\s+be\s+performed)\b|(?:do\s+not|don't|never)\s+(?:execute|perform|act\s+on|take|carry\s+out|do|proceed\s+with)\s+(?:it|that|this|the\s+(?:action|request)|(?:the\s+)?(?:requested\s+action|action\s+requested))\b|(?:(?:please|then)\s+)?(?:proceed(?:\s+with\s+(?:it|that))?|carry(?:\s+(?:it|that))?\s+out|do\s+(?:it|that)|execute\s+(?:it|that|this|(?:the\s+)?(?:requested\s+action|action\s+requested))(?:\s+now)?|perform\s+(?:it|that|that\s+action|(?:the\s+)?(?:requested\s+action|action\s+requested))|act\s+on\s+(?:it|that|(?:the\s+)?(?:requested\s+action|action\s+requested))(?:\s+now)?|take\s+(?:it|that|the\s+action|(?:the\s+)?(?:requested\s+action|action\s+requested))|go\s+ahead(?:\s+and\s+(?:do\s+(?:it|that)|carry(?:\s+(?:it|that))?\s+out))?)(?!\s+and\s+(?:make|add|apply|fix|change|edit|modify|update|implement|build|create|remove|delete|refactor|write))\b)/i.exec(tail);
-  return boundary ? contentStart + boundary.index : request.length;
-}
-
-function deriveRequestSpans(request: string): RequestSpan[] {
-  const externalRanges: Array<{ start: number; end: number }> = [];
-  for (const marker of EXTERNAL_SOURCE_MARKERS) {
-    marker.lastIndex = 0;
-    for (let match = marker.exec(request); match; match = marker.exec(request)) {
-      const start = match.index + match[0].length;
-      const end = externalRangeEnd(request, start);
-      if (end > start) externalRanges.push({ start, end });
-      marker.lastIndex = Math.max(marker.lastIndex, end);
-    }
-  }
-  externalRanges.sort((left, right) => left.start - right.start || right.end - left.end);
-  const spans: RequestSpan[] = [];
-  let cursor = 0;
-  for (const range of externalRanges) {
-    if (range.start < cursor) continue;
-    if (range.start > cursor) spans.push({ start: cursor, end: range.start, source: "USER" });
-    spans.push({ start: range.start, end: range.end, source: "EXTERNAL_SOURCE" });
-    cursor = range.end;
-  }
-  if (cursor < request.length) spans.push({ start: cursor, end: request.length, source: "USER" });
-  if (!spans.length) spans.push({ start: 0, end: request.length, source: "USER" });
-  return spans.filter((span) => span.end > span.start);
-}
-
-function refinedLexicalRequestSpans(request: string): RequestSpan[] {
-  const spans = deriveRequestSpans(request);
-  return deriveAdmissionClausePatches(request, spans as AdmissionClauseSpan[]).provenance_spans as RequestSpan[] ?? spans;
 }
 
 function validateRequestSpans(request: string, spans: RequestSpan[]): void {
@@ -688,7 +563,7 @@ function requestForSource(request: string, spans: RequestSpan[], source: Request
 }
 
 function classificationRequestFromSpans(request: string, spans: RequestSpan[]): string {
-  return requestForSource(request, spans, "USER") || "review external source content";
+  return requestForSource(request, spans, "USER") || request;
 }
 
 export function canonicalAdmissionRequestDigest(value: string): string {
@@ -710,830 +585,6 @@ export function hardActionTargetDigest(toolName: string, toolInput: unknown): st
 export function trustedHardActionReceiptPayload(receipt: TrustedHardActionReceipt): TrustedHardActionExpected {
   const { signature: _signature, ...payload } = receipt;
   return payload;
-}
-
-const MUTATION_BASE_VERBS = new Set(["make", "add", "apply", "adjust", "alter", "revise", "rewrite", "rework", "rebuild", "redesign", "repair", "overhaul", "refresh", "modernize", "revamp", "correct", "format", "rename", "patch", "fix", "change", "edit", "modify", "update", "implement", "build", "create", "document", "remove", "delete", "erase", "eliminate", "dispose", "drop", "destroy", "wipe", "purge", "obliterate", "eradicate", "expunge", "discard", "refactor", "write"]);
-const MUTATION_GERUNDS = new Map([
-  ["making", "make"], ["adding", "add"], ["applying", "apply"], ["adjusting", "adjust"], ["altering", "alter"], ["revising", "revise"], ["rewriting", "rewrite"], ["reworking", "rework"], ["rebuilding", "rebuild"], ["redesigning", "redesign"], ["repairing", "repair"], ["overhauling", "overhaul"], ["refreshing", "refresh"], ["modernizing", "modernize"], ["revamping", "revamp"], ["correcting", "correct"], ["formatting", "format"], ["renaming", "rename"], ["patching", "patch"],
-  ["fixing", "fix"], ["changing", "change"], ["editing", "edit"], ["modifying", "modify"], ["updating", "update"], ["implementing", "implement"],
-  ["building", "build"], ["creating", "create"], ["documenting", "document"], ["removing", "remove"], ["deleting", "delete"], ["erasing", "erase"], ["dropping", "drop"],
-  ["destroying", "destroy"], ["eliminating", "eliminate"], ["disposing", "dispose"], ["wiping", "wipe"], ["purging", "purge"], ["obliterating", "obliterate"], ["eradicating", "eradicate"], ["expunging", "expunge"], ["discarding", "discard"], ["refactoring", "refactor"], ["writing", "write"],
-]);
-const MUTATION_POLITE_FORMS = new Map([
-  ["made", "make"], ["added", "add"], ["applied", "apply"], ["adjusted", "adjust"], ["altered", "alter"], ["revised", "revise"], ["rewritten", "rewrite"], ["reworked", "rework"], ["rebuilt", "rebuild"], ["redesigned", "redesign"], ["repaired", "repair"], ["overhauled", "overhaul"], ["refreshed", "refresh"], ["modernized", "modernize"], ["revamped", "revamp"], ["corrected", "correct"], ["formatted", "format"], ["renamed", "rename"], ["patched", "patch"],
-  ["fixed", "fix"], ["changed", "change"], ["edited", "edit"], ["modified", "modify"], ["updated", "update"], ["implemented", "implement"],
-  ["built", "build"], ["created", "create"], ["documented", "document"], ["removed", "remove"], ["deleted", "delete"], ["erased", "erase"], ["dropped", "drop"],
-  ["destroyed", "destroy"], ["eliminated", "eliminate"], ["disposed", "dispose"], ["wiped", "wipe"], ["purged", "purge"], ["obliterated", "obliterate"], ["eradicated", "eradicate"], ["expunged", "expunge"], ["discarded", "discard"], ["refactored", "refactor"], ["wrote", "write"],
-]);
-const MUTATION_NOUNS = new Set([
-  "change", "changes", "fix", "fixes", "bug", "bugs", "error", "errors", "issue", "issues",
-  "defect", "defects", "fault", "faults", "problem", "problems", "update", "updates", "edit", "edits",
-  "modification", "modifications", "adjustment", "adjustments", "alteration", "alterations", "revision", "revisions", "rewrite", "rewrites", "rework", "rebuild", "rebuilding", "redesign", "redesigning", "overhaul", "overhauls", "refresh", "refreshes", "modernization", "modernizations", "revamp", "revamps", "patch", "patches", "correction", "corrections", "format", "formatting", "rename", "renames", "implementation", "implementations", "refactor", "refactors",
-  "removal", "removals", "deletion", "deletions", "erasure", "erasures", "destruction", "elimination", "disposal",
-]);
-const DIRECT_MUTATION_VERBS = new Set(["add", "apply", "adjust", "alter", "revise", "rewrite", "rework", "rebuild", "redesign", "repair", "overhaul", "refresh", "modernize", "revamp", "correct", "format", "rename", "patch", "fix", "change", "edit", "modify", "update", "implement", "build", "create", "document", "remove", "delete", "erase", "eliminate", "dispose", "drop", "destroy", "wipe", "purge", "obliterate", "eradicate", "expunge", "discard", "refactor", "write"]);
-const CLAUSE_LEADS = new Set(["and", "then", "also", "but", "so", "yet", "please", "kindly", "now", "still", "just", "only", "simply", "carefully", "directly", "immediately"]);
-const NEGATION_WORDS = new Set(["no", "not", "none", "nothing", "never", "neither", "zero", "0"]);
-const CONTINUATION_ACTIONS = new Set([
-  ...MUTATION_BASE_VERBS, ...MUTATION_GERUNDS.keys(),
-  "review", "reviewing", "audit", "auditing", "read", "reading", "inspect", "inspecting",
-  "validate", "validating", "validation", "verify", "verifying", "verification", "test", "testing", "check", "checking", "diagnose", "diagnosing", "debug", "debugging",
-]);
-
-interface SemanticWord { value: string; index: number; end: number }
-interface NegatedContinuationRange { start: number; separatorStart: number; continuationStart: number }
-
-function semanticWords(text: string): SemanticWord[] {
-  return [...text.matchAll(/[a-z][a-z0-9_-]*(?:['’][a-z]+)?/gi)].map((match) => ({
-    value: match[0]!.toLowerCase().replace("’", "'"),
-    index: match.index!,
-    end: match.index! + match[0]!.length,
-  }));
-}
-
-/**
- * Replace quoted spans with same-width whitespace before clause semantics are
- * evaluated. This keeps offsets stable while ensuring mentioned actions do not
- * become requested actions; a direct continuation outside the quote remains
- * visible to the classifier.
- */
-function maskQuotedSpans(text: string): string {
-  let result = "";
-  let quote: string | null = null;
-  let closing = "";
-  for (let index = 0; index < text.length; index += 1) {
-    const character = text[index]!;
-    if (quote) {
-      if (character === "\\") {
-        result += " ";
-        if (index + 1 < text.length) { result += " "; index += 1; }
-        continue;
-      }
-      result += /\s/u.test(character) ? character : " ";
-      if (character === closing && !(quote === "'" && /[A-Za-z0-9]/.test(text[index - 1] ?? "") && /[A-Za-z0-9]/.test(text[index + 1] ?? ""))) quote = null;
-      continue;
-    }
-    if (["\"", "'", "`", "“", "‘"].includes(character)) {
-      if (character === "'" && /[A-Za-z0-9]/.test(text[index - 1] ?? "")) { result += character; continue; }
-      quote = character;
-      closing = character === "“" ? "”" : character === "‘" ? "’" : character;
-      result += " ";
-      continue;
-    }
-    result += character;
-  }
-  return result;
-}
-
-function isClauseLead(word: string): boolean {
-  return CLAUSE_LEADS.has(word) || (word.endsWith("ly") && !MUTATION_BASE_VERBS.has(word) && !MUTATION_GERUNDS.has(word));
-}
-
-function skipClauseLeads(words: SemanticWord[], start = 0): number {
-  let index = start;
-  while (index < words.length && isClauseLead(words[index]!.value)) index += 1;
-  return index;
-}
-
-function directDestructiveNounRequest(clause: string): boolean {
-  const normalized = clause.trim();
-  if (/^(?:(?:please|kindly)\s+)?(?:review|audit|explain|inspect|quote|describe|document|test)\b/i.test(normalized)
-    || /^(?:(?:please|kindly)\s+)?(?:add|implement|update|change|fix|build|create)\b[^.!?]{0,140}\b(?:parser|classifier|classification|detection|support|handling|tests?|docs?|documentation|wording|phrase|sentence|terms?)\b/i.test(normalized)) return false;
-  return [
-    /^(?:(?:please|kindly)\s+)?(?:finish|complete|perform|handle|execute|undertake)\b[^.!?]{0,180}\b(?:removal|deletion|erasure|destruction|elimination|disposal|purging|removing|deleting|erasing|dropping|destroying|wiping)\b/i,
-    /^(?:(?:please|kindly)\s+)?(?:proceed|go\s+ahead)\s+with\b[^.!?]{0,180}\b(?:removal|deletion|erasure|destruction|elimination|disposal|purging|removing|deleting|erasing|dropping|destroying|wiping)\b/i,
-    /^(?:we\s+would\s+be\s+grateful\s+for|i\s+would\s+appreciate|i['’]d\s+appreciate)\b[^.!?]{0,180}\b(?:removal|deletion|purging|removing|deleting|erasing|dropping|destroying|wiping)\b/i,
-    /^(?:your\s+)?(?:purging|removing|deleting|erasing|dropping|destroying|wiping)\b[^.!?]{0,180}\bwould\s+be\s+appreciated\b/i,
-    /^(?:(?:the|this|that|our|my|your)\s+)?[^.!?]{0,120}\b(?:removal|deletion)\s+would\s+be\s+appreciated\b/i,
-    /^it\s+would\s+be\s+appreciated\s+if\b[^.!?]{0,180}\b(?:were|was|be)\s+(?:removed|deleted|erased|dropped|destroyed|wiped|purged)\b/i,
-    /^(?:i['’]d|i\s+would|we['’]d|we\s+would)\s+(?:be\s+grateful\s+for|appreciate)\b[^.!?]{0,180}\b(?:removal|deletion|erasure|destruction|elimination|disposal)\b/i,
-    /^(?:(?:the|this|that)\s+)?(?:removal|deletion|erasure|destruction|elimination|disposal)\s+of\b[^.!?]{0,180}\bwould\s+be\s+appreciated\b/i,
-    /^(?:(?:please|kindly)\s+)?(?:can|could|would)\s+you\s+see\s+to\b[^.!?]{0,180}\b(?:removal|deletion|erasure|destruction|elimination|disposal)\b/i,
-    /^(?:(?:please|kindly)\s+)?(?:can|could|would|might)\s+you\s+(?:please\s+|kindly\s+)?arrange(?:\s+for)?\b[^.!?]{0,180}\b(?:removal|deletion|erasure|destruction|elimination|disposal|purging)\b/i,
-    /^(?:(?:please|kindly)\s+)?see\s+to\b[^.!?]{0,180}\b(?:removal|deletion|erasure|destruction|elimination|disposal)\b/i,
-    /^(?:(?:please|kindly)\s+)?arrange(?:\s+for)?\b[^.!?]{0,160}\b(?:removal|deletion|erasure|destruction|elimination|disposal)\b/i,
-    /^(?:(?:the|this|that|our|my|your)\s+)?[^.!?]{0,140}\b(?:ought|needs?|must|should)\s+to\s+be\s+(?:removed|deleted|erased|eliminated|disposed|dropped|destroyed|wiped|purged)\b/i,
-    /^(?:(?:the|this|that|our|my|your)\s+)?[^.!?]{0,140}\b(?:needs?|must|should)\s+be\s+(?:removed|deleted|erased|eliminated|disposed(?:\s+of)?|dropped|destroyed|wiped|purged)\b/i,
-    /^(?:(?:the|this|that|our|my|your)\s+)?[^.!?]{0,140}\b(?:needs?|requires?)\s+(?:removing|deleting|erasing|eliminating|disposing|dropping|destroying|wiping|purging)\b/i,
-    /^(?:(?:the|this|that|our|my|your)\s+)?[^.!?]{0,140}\b(?:must|should|needs?\s+to)\s+disappear\b/i,
-    /^(?:disposal|removal|deletion|erasure|destruction|elimination)\s+of\b[^.!?]{0,160}\b(?:is|remains?)\s+(?:required|needed|necessary)\b/i,
-    /^(?:purge|disposal|removal|deletion|erasure|destruction|elimination)\s+of\b[^.!?]{0,160}\b(?:is|remains?)\s+(?:mandatory|compulsory|obligatory|required|needed|necessary)\b/i,
-    /^(?:(?:the|this|that|our|my|your)\s+)?[^.!?]{0,120}\b(?:removal|deletion|erasure|destruction|elimination|disposal|purging)\s+(?:is|remains?)\s+(?:mandatory|compulsory|obligatory|required|needed|necessary)\b/i,
-    /^(?:(?:the|this|that|our|my|your)\s+)?[^.!?]{0,140}\b(?:is|are)\s+(?:destined|due|intended)\s+for\s+(?:disposal|removal|deletion|erasure|destruction|purging)\b/i,
-    /^(?:(?:please|kindly)\s+)?arrange(?:\s+for)?\b[^.!?]{0,160}\bto\s+be\s+(?:removed|deleted|erased|eliminated|disposed|dropped|destroyed|wiped|purged)\b/i,
-    /^(?:(?:the|this|that|our|my|your)\s+)?[^.!?]{0,140}\bis\s+to\s+disappear\b/i,
-    /^(?:(?:the|this|that|our|my|your)\s+)?[^.!?]{0,140}\b(?:is|are)\s+(?:marked|designated|scheduled|queued|slated|set)\s+for\s+(?:disposal|removal|deletion|erasure|destruction|purging)\b/i,
-    /^(?:(?:the|this|that|our|my|your)\s+)?[^.!?]{0,140}\b(?:is|are)\s+(?:designated|scheduled|slated|set)\s+to\s+(?:be\s+)?(?:removed|deleted|erased|eliminated|disposed|dropped|destroyed|wiped|purged|disappear|vanish)\b/i,
-    /^(?:(?:the|this|that|our|my|your)\s+)?[^.!?]{0,140}\b(?:has|have|required|is\s+required|needs?)\s+to\s+(?:disappear|vanish)\b/i,
-    /^(?:(?:the|this|that|our|my|your)\s+)?[^.!?]{0,140}\b(?:has|have)\s+got\s+to\s+(?:be\s+)?(?:removed|deleted|erased|eliminated|disposed|dropped|destroyed|wiped|purged|go|disappear|vanish)\b/i,
-    /^(?:(?:the|this|that|our|my|your)\s+)?[^.!?]{0,140}\bought\s+to\s+(?:go|disappear|vanish)\b/i,
-    /^(?:(?:the|this|that|our|my|your)\s+)?[^.!?]{0,140}\b(?:is|are)\s+in\s+need\s+of\s+(?:removal|deletion|erasure|elimination|disposal|purging)\b/i,
-    /^(?:(?:the|this|that|our|my|your)\s+)?[^.!?]{0,120}\b(?:removing|deleting|erasing|destroying|purging)\s+(?:is|remains?)\s+(?:mandatory|compulsory|obligatory|required|needed|necessary)\b/i,
-    /^(?:(?:please|kindly)\s+)?see\s+to\s+it(?:\s+that)?\b[^.!?]{0,160}\b(?:is|are|be|gets?)\s+(?:removed|deleted|erased|eliminated|disposed|dropped|destroyed|wiped|purged)\b/i,
-    /^(?:(?:please|kindly)\s+)?see\s+that\b[^.!?]{0,160}\b(?:is|are|be|gets?)\s+(?:removed|deleted|erased|eliminated|disposed|dropped|destroyed|wiped|purged)\b/i,
-    /^(?:(?:please|kindly)\s+)?ensure\b[^.!?]{0,160}\b(?:is|are|be|get)\s+(?:removed|deleted|erased|eliminated|disposed|dropped|destroyed|wiped|purged)\b/i,
-    /^(?:(?:please|kindly)\s+)?(?:make\s+sure|ensure)\b[^.!?]{0,160}\b(?:is|are|be|gets?|got)\s+(?:removed|deleted|erased|eliminated|disposed|dropped|destroyed|wiped|purged)\b/i,
-    /^(?:it\s+would\s+(?:help|be\s+helpful)\s+if)\b[^.!?]{0,180}\b(?:were|was)\s+(?:removed|deleted|erased|eliminated|disposed|dropped|destroyed|wiped|purged)\b/i,
-    /^(?:we|i)\s+(?:need|want)\b[^.!?]{0,180}\b(?:removal|deletion|erasure|destruction|elimination|disposal)\b/i,
-    /^(?:removing|deleting|erasing|eliminating|disposing|dropping|destroying|wiping|purging)\b[^.!?]{0,180}\bis\s+what\s+(?:i|we)\s+(?:need|want)\b/i,
-    /^(?:(?:please|kindly)\s+)?(?:have|get)\b[^.!?]{0,160}\b(?:removed|deleted|erased|eliminated|disposed|dropped|destroyed|wiped|purged|obliterated|eradicated|expunged|discarded)\b/i,
-    /^(?:(?:please|kindly)\s+)?(?:get\s+rid\s+of|clear\s+out|take\s+care\s+of\s+(?:the\s+)?(?:removal|deletion|erasure|destruction|elimination|disposal))\b/i,
-    /^(?:i|we)\s+(?:need|want|would\s+like)\b[^.!?]{0,160}\b(?:gone|removed|deleted|erased|destroyed|purged|discarded)\b/i,
-    /^(?:(?:the|this|that|our|my|your)\s+)?[^.!?]{0,140}\b(?:has|have)\s+to\s+go\b/i,
-    /^(?:(?:please|kindly)\s+)?make\b[^.!?]{0,160}\bdisappear\b/i,
-  ].some((pattern) => pattern.test(normalized));
-}
-
-function imperativeMutationVerb(clause: string): string | null {
-  if (directDestructiveNounRequest(clause)) return "remove";
-  if (/^(?:(?:please|kindly)\s+)?(?:continue|resume)(?:\s+(?:with|on))?\s+(?:the\s+)?(?:repair|implementation|changes?|fixes?)(?:\s+work)?\b/i.test(clause.trim())) return "change";
-  const passive = /\b(added|applied|corrected|patched|fixed|changed|edited|modified|updated|implemented|built|created|removed|deleted|erased|dropped|destroyed|wiped|purged|refactored|written)\b/i.exec(clause)?.[1]?.toLowerCase();
-  const passiveRequest = /^(?:(?:please|kindly)\s+)?(?:(?:can|could|would|will|might|should)\b|(?:i|we)\s+(?:need|want|would\s+like)\b|(?:have|let)\b)/i.test(clause)
-    && /\b(?:be|have|get|need|want|like|arrange|ensure|make)\b/i.test(clause);
-  const possessiveRequest = /^(?:(?:please|kindly)\s+)?(?:complete|perform|handle|execute|implement|do|carry\s+out)\b[^.!?]{0,160}\b(?:removal|deletion|update|change|edit|modification)\b/i.test(clause)
-    && !/\b(?:support|handling|parser|classifier|classification|detection|wording|terms?|tests?|docs?|documentation)\s+(?:for|of)\b/i.test(clause);
-  if (passive && passiveRequest) return MUTATION_POLITE_FORMS.get(passive) ?? (passive === "written" ? "write" : null);
-  if (possessiveRequest) {
-    if (/\b(?:removal|deletion)\b/i.test(clause)) return "remove";
-    return "change";
-  }
-  const words = semanticWords(clause);
-  let index = skipClauseLeads(words);
-  let allowGerund = false;
-  if (["can", "could", "would", "will", "might"].includes(words[index]?.value ?? "") && words[index + 1]?.value === "you") {
-    const modal = words[index]!.value;
-    index = skipClauseLeads(words, index + 2);
-    if (modal === "would" && words[index]?.value === "mind") {
-      index = skipClauseLeads(words, index + 1);
-      if (words[index]?.value === "if") index = skipClauseLeads(words, index + 1);
-      allowGerund = true;
-    } else if (words[index]?.value === "be" && words[index + 1]?.value === "able") {
-      index = skipClauseLeads(words, index + 2);
-      if (words[index]?.value === "to") index = skipClauseLeads(words, index + 1);
-    } else if (words[index]?.value === "be" && words[index + 1]?.value === "so" && words[index + 2]?.value === "kind") {
-      index = skipClauseLeads(words, index + 3);
-      if (["as", "to"].includes(words[index]?.value ?? "")) index = skipClauseLeads(words, index + 1);
-      if (words[index]?.value === "to") index = skipClauseLeads(words, index + 1);
-    } else if (words[index]?.value === "be" && words[index + 1]?.value === "kind") {
-      index = skipClauseLeads(words, index + 2);
-      if (words[index]?.value === "enough") index = skipClauseLeads(words, index + 1);
-      if (["as", "to"].includes(words[index]?.value ?? "")) index = skipClauseLeads(words, index + 1);
-    } else if (modal === "would" && words[index]?.value === "care") {
-      index = skipClauseLeads(words, index + 1);
-      if (words[index]?.value === "to") index = skipClauseLeads(words, index + 1);
-    } else if (words[index]?.value === "arrange") {
-      index = skipClauseLeads(words, index + 1);
-      if (words[index]?.value === "for") index = skipClauseLeads(words, index + 1);
-      while (index < words.length && words[index]?.value !== "to") index += 1;
-      if (words[index]?.value === "to") index = skipClauseLeads(words, index + 1);
-      if (["be", "have"].includes(words[index]?.value ?? "")) index = skipClauseLeads(words, index + 1);
-      const passiveIndex = words.slice(index).findIndex((word) => MUTATION_POLITE_FORMS.has(word.value));
-      if (passiveIndex >= 0) index += passiveIndex;
-      allowGerund = true;
-    }
-  } else if (["would", "could", "might"].includes(words[index]?.value ?? "") && words[index + 1]?.value === "it" && words[index + 2]?.value === "be" && words[index + 3]?.value === "possible") {
-    index = skipClauseLeads(words, index + 4);
-    if (words[index]?.value === "for" && words[index + 1]?.value === "you") index = skipClauseLeads(words, index + 2);
-    if (words[index]?.value === "to") index = skipClauseLeads(words, index + 1);
-  } else if (words[index]?.value === "do" && words[index + 1]?.value === "you" && words[index + 2]?.value === "mind") {
-    index = skipClauseLeads(words, index + 3);
-    if (words[index]?.value === "if") index = skipClauseLeads(words, index + 1);
-    allowGerund = true;
-  } else if ((words[index]?.value === "i" || words[index]?.value === "i'd") && (words[index + 1]?.value === "would" || words[index]?.value === "i'd") && ["really", "truly"].includes(words[index + (words[index]?.value === "i'd" ? 1 : 2)]?.value ?? "")) {
-    const appreciateIndex = words.findIndex((word, wordIndex) => wordIndex >= index && word.value === "appreciate");
-    if (appreciateIndex >= 0) index = skipClauseLeads(words, appreciateIndex + 1);
-    else return null;
-    if (["it", "you", "your"].includes(words[index]?.value ?? "")) index = skipClauseLeads(words, index + 1);
-    if (words[index]?.value === "if") index = skipClauseLeads(words, index + 1);
-    if (["you", "your"].includes(words[index]?.value ?? "")) index = skipClauseLeads(words, index + 1);
-    allowGerund = true;
-  } else if ((words[index]?.value === "i" && words[index + 1]?.value === "would" && words[index + 2]?.value === "appreciate") || (words[index]?.value === "i'd" && words[index + 1]?.value === "appreciate")) {
-    index = skipClauseLeads(words, index + (words[index]?.value === "i'd" ? 2 : 3));
-    if (words[index]?.value === "it") index = skipClauseLeads(words, index + 1);
-    if (words[index]?.value === "if") index = skipClauseLeads(words, index + 1);
-    if (["you", "your"].includes(words[index]?.value ?? "")) index = skipClauseLeads(words, index + 1);
-    allowGerund = true;
-  } else if (words[index]?.value === "i" && words[index + 1]?.value === "was" && words[index + 2]?.value === "hoping") {
-    index = skipClauseLeads(words, index + 3);
-    if (["you", "that"].includes(words[index]?.value ?? "")) index = skipClauseLeads(words, index + 1);
-    if (["could", "would", "might"].includes(words[index]?.value ?? "")) index = skipClauseLeads(words, index + 1);
-  } else if (
-    (["i", "i'd"].includes(words[index]?.value ?? "") && words[index + 1]?.value === "be" && words[index + 2]?.value === "grateful")
-    || (words[index]?.value === "i" && words[index + 1]?.value === "would" && words[index + 2]?.value === "be" && words[index + 3]?.value === "grateful")
-  ) {
-    index = skipClauseLeads(words, index + (words[index + 1]?.value === "would" ? 4 : 3));
-    if (words[index]?.value === "if") index = skipClauseLeads(words, index + 1);
-    if (words[index]?.value === "you") index = skipClauseLeads(words, index + 1);
-    allowGerund = true;
-  } else if (words[index]?.value === "may" && words[index + 1]?.value === "i" && words[index + 2]?.value === "ask") {
-    index = skipClauseLeads(words, index + 3);
-    if (words[index]?.value === "you") index = skipClauseLeads(words, index + 1);
-    if (words[index]?.value === "to") index = skipClauseLeads(words, index + 1);
-  } else if (words[index]?.value === "could" && words[index + 1]?.value === "i" && words[index + 2]?.value === "trouble") {
-    index = skipClauseLeads(words, index + 3);
-    if (words[index]?.value === "you") index = skipClauseLeads(words, index + 1);
-    if (words[index]?.value === "to") index = skipClauseLeads(words, index + 1);
-  } else if (words[index]?.value === "be" && words[index + 1]?.value === "so" && words[index + 2]?.value === "kind") {
-    index = skipClauseLeads(words, index + 3);
-    if (["as", "to"].includes(words[index]?.value ?? "")) index = skipClauseLeads(words, index + 1);
-    if (words[index]?.value === "to") index = skipClauseLeads(words, index + 1);
-  }
-  if (["i", "i'd"].includes(words[index]?.value ?? "") && ["need", "want", "would", "like"].includes(words[index + 1]?.value ?? "")) {
-    let cursor = index + 2;
-    if (words[index + 1]?.value === "would" && words[cursor]?.value === "like") cursor += 1;
-    if (words[cursor]?.value === "you") cursor += 1;
-    if (words[cursor]?.value === "to") cursor += 1;
-    index = skipClauseLeads(words, cursor);
-  } else if (words[index]?.value === "let" && words[index + 1]?.value === "us") {
-    index = skipClauseLeads(words, index + 2);
-  } else if (words[index]?.value === "we" && ["should", "must", "need", "want", "can", "could"].includes(words[index + 1]?.value ?? "")) {
-    index = skipClauseLeads(words, index + (words[index + 2]?.value === "to" ? 3 : 2));
-  } else if (["can", "could", "should", "would"].includes(words[index]?.value ?? "") && words[index + 1]?.value === "we") {
-    index = skipClauseLeads(words, index + 2);
-  } else if (words[index]?.value === "go" && words[index + 1]?.value === "ahead") {
-    index = skipClauseLeads(words, index + (words[index + 2]?.value === "and" ? 3 : 2));
-  } else if (words[index]?.value === "have" && words[index + 1]?.value === "the" && words[index + 2]?.value === "agent") {
-    index = skipClauseLeads(words, index + 3);
-    if (words[index]?.value === "to") index = skipClauseLeads(words, index + 1);
-  } else if (words[index]?.value === "lets" || words[index]?.value === "let's") {
-    index = skipClauseLeads(words, index + 1);
-  }
-  if (["help", "assist"].includes(words[index]?.value ?? "")) {
-    const helper = words[index]!.value;
-    index += 1;
-    if (["me", "us"].includes(words[index]?.value ?? "")) index += 1;
-    if (["to", "in", "with"].includes(words[index]?.value ?? "")) index += 1;
-    index = skipClauseLeads(words, index);
-    allowGerund = helper === "assist" || MUTATION_GERUNDS.has(words[index]?.value ?? "");
-  }
-  let continuation = false;
-  if (["continue", "resume"].includes(words[index]?.value ?? "")) {
-    continuation = true;
-    index += 1;
-    if (words[index]?.value === "to") index += 1;
-    index = skipClauseLeads(words, index);
-  }
-  const verbWord = words[index]?.value;
-  if (!verbWord) return null;
-  const verb = MUTATION_BASE_VERBS.has(verbWord) ? verbWord : continuation || allowGerund ? MUTATION_GERUNDS.get(verbWord) ?? MUTATION_POLITE_FORMS.get(verbWord) : undefined;
-  if (!verb) return continuation && words.slice(index).some((word) => MUTATION_NOUNS.has(word.value)) ? "change" : null;
-  const tail = words.slice(index + 1);
-  if (tail.some((word) => NEGATION_WORDS.has(word.value))) return null;
-  if (DIRECT_MUTATION_VERBS.has(verb)) return verb;
-  return tail.some((word) => MUTATION_NOUNS.has(word.value)) ? verb : null;
-}
-
-function imperativeMutationClause(clause: string): boolean {
-  return imperativeMutationVerb(clause) !== null;
-}
-
-function semanticClauses(text: string): string[] {
-  return maskQuotedSpans(text)
-    .replace(/\.(?=\s+[A-Z0-9])/g, ";")
-    .split(/(?:--|\s-\s|[;!?,:—–()[\]{}]|\b(?:and|then|but|after\s+that|afterwards?)\b|\n\s*(?:[-*+]\s+|\d+[.)]\s+)?)/iu)
-    .map((clause) => clause.trim())
-    .filter(Boolean);
-}
-
-function hasImperativeMutation(text: string): boolean {
-  return semanticClauses(text).some((clause) => imperativeMutationClause(clause));
-}
-
-function requestsDestructiveMutation(text: string, intent: Intent): boolean {
-  if (!['CHANGE', 'OPERATE'].includes(intent)) return false;
-  if (intent === "OPERATE" && /^\s*(?:(?:please|kindly)\s+)?(?:execute|run|perform)\s+(?:an?\s+)?destructive\s+(?:action|cleanup|operation|removal|deletion)\b/i.test(text)) return true;
-  if (!/^(?:(?:please|kindly)\s+)?(?:add|implement|update|change|fix|build|create)\b[^.!?]{0,140}\b(?:parser|classifier|classification|detection|support|handling|tests?|docs?|documentation|wording|phrase|sentence|terms?)\b/i.test(text)
-    && /\bimplement\b[^.!?]{0,100}\brequested\s+(?:change|action|request)\b[^.!?]{0,80}\b(?:remove|delete|erase|drop|destroy|wipe|purge)\b/i.test(text)) return true;
-  const firstVerb = imperativeMutationVerb(text);
-  if (firstVerb !== null && ["remove", "delete", "erase", "eliminate", "dispose", "drop", "destroy", "wipe", "purge", "obliterate", "eradicate", "expunge", "discard"].includes(firstVerb)) return true;
-  if (/\b(?:implement|add|fix|update|document|test|review|explain|describe)\b[^.!?\n]{0,160}\b(?:delete|remove|erase|drop|purge|wipe|destroy|rm\s+-rf)\b[^.!?\n]{0,80}\b(?:verbs?|terms?|wording|commands?|classification|classifier|parser|support|handling|cases?|tests?|docs?|approval)\b/i.test(text)) return false;
-  return semanticClauses(text).some((clause) => {
-    const verb = imperativeMutationVerb(clause);
-    return verb !== null && ["remove", "delete", "erase", "eliminate", "dispose", "drop", "destroy", "wipe", "purge", "obliterate", "eradicate", "expunge", "discard"].includes(verb);
-  });
-}
-
-function continuationOffset(text: string): number | null {
-  const words = semanticWords(maskQuotedSpans(text));
-  let cursor = 0;
-  for (let index = 0; index < words.length; index += 1) {
-    const word = words[index]!;
-    const gap = text.slice(cursor, word.index);
-    if (gap.replace(/[\s,:—–-]/g, "")) return null;
-    if (word.value === "continue" || word.value === "resume") {
-      const suffix = text.slice(word.end).replace(/^\s*(?:--|[,:;—–/-])\s*/, "");
-      const tailClause = suffix.split(/(?:--|\s-\s|[,;:—–/()[\]{}]|\n)/u)[0] ?? "";
-      const tailWords = semanticWords(tailClause);
-      let tailIndex = skipClauseLeads(tailWords);
-      if (["to", "with", "on"].includes(tailWords[tailIndex]?.value ?? "")) tailIndex = skipClauseLeads(tailWords, tailIndex + 1);
-      if (["the", "this", "that"].includes(tailWords[tailIndex]?.value ?? "") && ["work", "task", "implementation", "repair"].includes(tailWords[tailIndex + 1]?.value ?? "")) return word.index;
-      if (CONTINUATION_ACTIONS.has(tailWords[tailIndex]?.value ?? "")) return word.index;
-      if (["work", "task", "implementation", "repair", "changes", "fixes"].includes(tailWords[tailIndex]?.value ?? "")
-        && !tailWords.slice(tailIndex + 1).some((candidate) => ["new", "unrelated", "separate", "different"].includes(candidate.value))) return word.index;
-      if (["the", "this", "that", "these", "those"].includes(tailWords[tailIndex]?.value ?? "")) {
-        const remainder = tailWords.slice(tailIndex + 1).map((candidate) => candidate.value);
-        if (remainder.some((candidate) => MUTATION_NOUNS.has(candidate) || ["work", "task", "implementation", "repair", "validation", "review", "audit", "reading", "inspection"].includes(candidate))) return word.index;
-      }
-      return null;
-    }
-    if (!isClauseLead(word.value)) return null;
-    cursor = word.end;
-  }
-  return null;
-}
-
-function negatedPrefixOffset(prefix: string): number | null {
-  const conventional = /\b(?:(?:please|kindly)\s+)?(?:do\s+not|don't|must\s+not|never|without)\b/i.exec(prefix);
-  if (conventional) return conventional.index;
-  const words = semanticWords(prefix);
-  for (let index = 0; index < words.length; index += 1) {
-    if (!MUTATION_BASE_VERBS.has(words[index]!.value)) continue;
-    if (words.slice(index + 1).some((word) => NEGATION_WORDS.has(word.value))) return words[index]!.index;
-  }
-  return null;
-}
-
-function negatedContinuationRanges(text: string): NegatedContinuationRange[] {
-  const ranges: NegatedContinuationRange[] = [];
-  const separators = [...text.matchAll(/--|\s-\s|[,;:—–/()[\]{}]|\n\s*(?:[-*+]\s+|\d+[.)]\s+)?/gu)];
-  for (const separator of separators) {
-    const separatorStart = separator.index!;
-    const separatorEnd = separatorStart + separator[0]!.length;
-    const downstreamOffset = continuationOffset(text.slice(separatorEnd));
-    if (downstreamOffset === null) continue;
-    const prior = text.slice(0, separatorStart);
-    const strong = [...prior.matchAll(/--|\s-\s|[.!?;:—–/()[\]{}]|\n/gu)].at(-1);
-    const windowStart = strong ? strong.index! + strong[0]!.length : 0;
-    const negativeOffset = negatedPrefixOffset(text.slice(windowStart, separatorStart));
-    if (negativeOffset === null) continue;
-    const start = windowStart + negativeOffset;
-    const continuationStart = separatorEnd + downstreamOffset;
-    if (ranges.some((range) => start < range.continuationStart)) continue;
-    ranges.push({ start, separatorStart, continuationStart });
-  }
-  return ranges;
-}
-
-function transformNegatedContinuations(text: string, preservePrefix: boolean): string {
-  const ranges = negatedContinuationRanges(text);
-  if (!ranges.length) return text;
-  let result = "";
-  let cursor = 0;
-  for (const range of ranges) {
-    result += text.slice(cursor, range.start);
-    if (preservePrefix) result += `${text.slice(range.start, range.separatorStart).trim()}; `;
-    else result += " ";
-    cursor = range.continuationStart;
-  }
-  return result + text.slice(cursor);
-}
-
-function isNegatedImperativeMutationClause(clause: string): boolean {
-  const words = semanticWords(clause);
-  let index = skipClauseLeads(words);
-  if (!MUTATION_BASE_VERBS.has(words[index]?.value ?? "")) return false;
-  return words.slice(index + 1).some((word) => word.value === "no" || word.value === "nothing");
-}
-
-function stripNegatedImperativeMutationClauses(text: string): string {
-  return text.split(/((?:--|\s-\s|[.;!?,:—–/()[\]{}]|\n\s*(?:[-*+]\s+|\d+[.)]\s+)?))/u).map((part, index) => index % 2 === 0 && isNegatedImperativeMutationClause(part) ? " " : part).join("");
-}
-
-function stripNegatedClauses(text: string): string {
-  const positiveBoundary = String.raw`(?:review|audit|read|inspect|validate|verify|check|diagnose|debug|add|implement|fix|change|build|create|update|remove|refactor|write|run|execute|explain|report)`;
-  const boundary = new RegExp(String.raw`(?=(?:[.;:/]|,\s*(?:(?:but|instead|then|and)\s+)?(?=${positiveBoundary}\b)|\bbut\b|$))`, "gi");
-  return stripNegatedImperativeMutationClauses(transformNegatedContinuations(text, false))
-    .replace(/\b(?:is|are|was|were)\s+not\s+(?:required|needed|supposed|expected)\s+to\s+(?:disappear|be\s+(?:removed|deleted|erased|eliminated|disposed|dropped|destroyed|wiped|purged))\b[^.;,]*/gi, " ")
-    .replace(/\b(?:do not|don't|must not|never)\b(?=[^.;,]*\b(?:change|modify|implement|edit|write)\w*\b)[^.;,]*,\s*(?=(?:continue|resume)\b)/gi, " ")
-    .replace(/\bwithout\b(?=[^.;,]*\b(?:chang|modify|implement|edit|writ)\w*\b)[^.;,]*,\s*(?=(?:continue|resume)\b)/gi, " ")
-    .replace(new RegExp(String.raw`\b(?:do not|don't|must not|never)\b.*?${boundary.source}`, "gi"), " ")
-    .replace(new RegExp(String.raw`\bwithout\b.*?${boundary.source}`, "gi"), " ");
-}
-
-function hasExplicitNoMutationConstraint(text: string): boolean {
-  const unquoted = maskQuotedSpans(text);
-  if (/\b(?:none|not\s+one)\s+of\s+(?:the\s+)?(?:(?:repository|repo|project|codebase)(?:['’]s)?\s+)?(?:files?|contents?|items?|records?|entries?)\b[^.!?;]{0,100}\b(?:may|can|must|should|shall)\s+(?:change|be\s+(?:changed|modified|edited|written|touched|altered))\b/i.test(unquoted)) return true;
-  return semanticClauses(unquoted).some((clause) => {
-    const normalized = clause.trim();
-    if (/^(?:(?:please|kindly)\s+)?(?:add|implement|document|test|describe|explain)\b[^.!?]{0,120}\b(?:read[- ]only|no[- ]mutation|no\s+(?:writes?|changes?|edits?|modifications?)|(?:leave|leaving)\b[^.!?]{0,80}\buntouched)\b/i.test(normalized)) return false;
-    return /^(?:(?:this|the)\s+(?:request|task|work)\s+is\s+)?read[- ]only\b/i.test(normalized)
-      || /^(?:(?:please|kindly)\s+)?(?:make|add|apply|adjust|alter|revise|rewrite|rework|correct|format|rename|patch|fix|change|edit|modify|update|implement|build|create|document|remove|delete|erase|eliminate|dispose|drop|destroy|wipe|purge|obliterate|eradicate|expunge|discard|refactor|write)\s+(?:none\s+of\s+|zero\s+|0\s+)(?:the\s+)?(?:repository\s+|repo\s+|project\s+|codebase\s+)?(?:files?|contents?|items?|records?|entries?)\b/i.test(normalized)
-      || /^(?:no|without)\s+(?:code\s+|repository\s+|file\s+)?mutations?\b/i.test(normalized)
-      || /^(?:make|apply|perform)\s+no\s+(?:(?:repository|repo|project|codebase|file)\s+)?(?:writes?|changes?|edits?|modifications?|mutations?)\b/i.test(normalized)
-      || /\b(?:do\s+not|don't|must\s+not|never)\s+(?:(?:make|apply|perform)\s+)?(?:any\s+)?(?:(?:repository|repo|project|codebase|file)\s+)?(?:writes?|changes?|edits?|modifications?|mutations?|modify|change|edit|write|mutate|alter)\b/i.test(normalized)
-      || /\bwithout\s+(?:(?:making|applying|performing)\s+)?(?:any\s+)?(?:(?:repository|repo|project|codebase|file)\s+)?(?:writes?|changes?|edits?|modifications?|mutations?|modifying|changing|editing|writing|mutating|altering|revising)\b/i.test(normalized)
-      || /\b(?:leave|leaving|keep|keeping)\s+(?:(?:all|every|each)\s+)?(?:the\s+)?(?:(?:repository|repo|project|codebase)(?:\s+(?:files?|contents?))?|files?|contents?)\s+(?:entirely\s+|completely\s+)?(?:untouched|unchanged)\b/i.test(normalized)
-      || /\b(?:(?:all|every|each)\s+)?(?:(?:repository|repo|project|codebase)\s+)?(?:files?|contents?)\s+must\s+(?:stay|remain)\s+(?:entirely\s+|completely\s+)?(?:untouched|unchanged)\b/i.test(normalized)
-      || /\bpreserve\s+(?:(?:all|every|each)\s+)?(?:the\s+)?(?:(?:repository|repo|project|codebase)(?:\s+(?:files?|contents?))?|files?|contents?)\s+(?:entirely\s+|completely\s+)?(?:untouched|unchanged)\b/i.test(normalized)
-      || /\bno\s+(?:(?:repository|repo|project|codebase)\s+)?(?:files?|contents?)\s+(?:may|can|must|should)\s+(?:change|be\s+(?:changed|modified|edited|written|touched))\b/i.test(normalized)
-      || /\b(?:all|every|each)\s+(?:(?:repository|repo|project|codebase)\s+)?(?:files?|contents?)\s+(?:are\s+to|must|shall)\s+(?:remain|be\s+kept)\s+(?:entirely\s+|completely\s+)?(?:unmodified|unchanged|untouched)\b/i.test(normalized)
-      || /\bnone\s+of\s+(?:the\s+)?(?:(?:repository|repo|project|codebase)\s+)?(?:files?|contents?)\s+(?:may|can|must|should)\s+be\s+(?:modified|changed|edited|written|touched)\b/i.test(normalized)
-      || /\bno\s+(?:(?:repository|repo|project|codebase)\s+)?(?:files?|contents?)\s+(?:are|is)\s+to\s+be\s+(?:modified|changed|edited|written|touched)\b/i.test(normalized)
-      || /\b(?:all|every|each)\s+(?:(?:repository|repo|project|codebase)\s+)?(?:files?|contents?)\s+(?:are|is)\s+(?:required|expected|supposed)\s+to\s+(?:remain|stay|be\s+kept)\s+(?:entirely\s+|completely\s+)?(?:unmodified|unchanged|untouched)\b/i.test(normalized)
-      || /\b(?:all|every|each)\s+(?:(?:repository|repo|project|codebase)\s+)?(?:files?|contents?)\s+(?:are|is)\s+not\s+to\s+be\s+(?:modified|changed|edited|written|touched)\b/i.test(normalized);
-  });
-}
-
-function terminalReviewOnlyAction(text: string): string | null {
-  const match = /^(.*?\b(?:add|apply|adjust|alter|revise|rewrite|rework|rebuild|redesign|repair|overhaul|refresh|modernize|revamp|change|edit|modify|update|remove|delete|erase|dispose|destroy|wipe|purge|discard|write|execute|run|push)\b[\s\S]*?)(?:\s*(?:[.;,:—–-]|--)+\s*|\s+)(?:(?:for\s+)?(?:review|analysis|assessment|compliance\s+(?:review|analysis|assessment))\s+only|(?:for\s+)?(?:review|analysis|assessment|compliance\s+(?:review|analysis|assessment))\s+purposes?|(?:for|as\s+part\s+of)\s+(?:a\s+)?(?:safety|security|risk|compliance)\s+(?:review|analysis|assessment)|(?:safety|security|risk|compliance)\s+(?:review|analysis|assessment)\s+only)\s*[.!?]*$/i.exec(maskQuotedSpans(text).trim());
-  return match?.[1]?.trim() || null;
-}
-
-function passiveActionAssessment(text: string): boolean {
-  const normalized = text.trim();
-  const hasDirectContinuation = /(?:^|[.!?;—-]\s*)(?:direct\s+user\s+request\s*:\s*|(?:(?:then|please)\s+)?)(?:carry(?:\s+(?:it|that))?\s+out|do\s+(?:it|that)|execute\s+(?:it|that|this|the\s+action|the\s+request|(?:the\s+)?requested\s+action)(?:\s+now)?|perform\s+(?:it|that|that\s+action|the\s+action|(?:the\s+)?requested\s+action)|act\s+on\s+(?:it|that|the\s+action|(?:the\s+)?requested\s+action)(?:\s+now)?|take\s+(?:it|that|the\s+action|(?:the\s+)?requested\s+action)|proceed(?:\s+with\s+(?:it|that))?)\b/i.test(normalized);
-  return /^(?:should|could|would|can|might)\s+(?!you\b)[^.!?]{0,180}\b(?:be|get)\s+(?:removed|deleted|erased|eliminated|disposed|dropped|destroyed|wiped|purged)\s*\?$/i.test(normalized)
-    || /^(?:should|could|would|can|might)\s+(?!you\b)[^.!?]{0,180}\b(?:be|get)\s+(?:removed|deleted|erased|eliminated|disposed|dropped|destroyed|wiped|purged)\s+for\s+(?:compliance|safety|security|risk)\s+(?:review|analysis|assessment)\s*\?$/i.test(normalized)
-    || /(?:^|[.!?;—–-]\s*)(?:analy[sz]e|assess|review|evaluate|inspect|audit)\s+whether\b[^.!?]{0,180}\b(?:execute|perform|act\s+on|take|carry\s+out|do|proceed\s+with|should\s+be\s+performed)\b/i.test(normalized)
-    || /^(?:remove|delete|erase|destroy|purge|wipe)\s+(?:no|nothing)\b[^.!?]{0,160}(?:--|\s-\s|[.;,:—–])\s*(?:then\s+)?(?:continue|resume)\s+(?:to\s+)?(?:review|reviewing|audit|auditing|inspect|inspecting|validate|validating|verify|verifying|check|checking)\b/i.test(normalized)
-    || /^(?:risk|safety|security)\s+(?:review|analysis|assessment)\s*:/i.test(normalized)
-    || /^(?:review|assess|evaluate|audit|inspect|analy[sz]e|discuss)\s*:\s*(?:quoted|copied|pasted|external)\b/i.test(normalized)
-    || (!hasDirectContinuation && /^(?:review|assess|evaluate|audit|inspect|analy[sz]e|discuss)\s*:\s*(?:should|could|would|can|might)\b/i.test(normalized))
-    || (!hasDirectContinuation && /^(?:review|assess|evaluate|audit|inspect|analy[sz]e)\s+whether\b/i.test(normalized))
-    || (!hasDirectContinuation && /^(?:review|assess|evaluate|audit|inspect|analy[sz]e|discuss)\s+(?:this\s+)?(?:copied|external)\s+instruction\b/i.test(normalized));
-}
-
-function hasTerminalExecutionCancellation(text: string): boolean {
-  return /(?:^|[.!?;]\s*)(?:please\s+)?(?:do\s+not|don't|never)\s+(?:execute|perform|act\s+on|take)(?:\s+(?:it|that|this|the\s+action|the\s+request|(?:the\s+)?(?:requested\s+action|action\s+requested)))?\s*[.!?]*\s*$/i.test(text);
-}
-
-function terminalReviewOverride(text: string): { relation: Relation; clause: string } | null {
-  if (terminalReviewOnlyAction(text)) return { relation: "OVERRIDE", clause: "Review only." };
-  const clauses = [...text.matchAll(/(?:^|[.!?;]\s*)((?:(?:cancel|stop|abort)(?:\s+(?:that|it|this|the\s+(?:action|request|task|work)))?|instead|actually)\b[\s\S]*?)[.!?]*\s*$/gi)];
-  const clause = clauses.at(-1)?.[1]?.trim();
-  if (!clause || !/\b(?:review|audit|inspect|assess|evaluate|examine|critique|discuss|summari[sz]e|check|tell\s+me\s+(?:whether|if)|analy[sz]e|analysis)\b/i.test(clause)) return null;
-  if (/\b(?:execute|perform|act\s+on|take\s+(?:it|that|the\s+action|(?:the\s+)?(?:requested\s+action|action\s+requested))|carry\s+out|do\s+it|proceed)\b/i.test(clause) && !/\b(?:do\s+not|don't|never|without)\b/i.test(clause)) return null;
-  return { relation: /^(?:cancel|stop|abort)\b/i.test(clause) ? "CANCEL" : "OVERRIDE", clause };
-}
-
-function hasCancellationDirective(text: string): boolean {
-  return /(?:^|[.!?;]\s*)(?:please\s+)?(?:cancel|stop|abort)(?:\s+(?:that|it|this|now|the\s+(?:action|request|task|work)|current\s+(?:task|work)))?\s*[.!?]*\s*$/i.test(text);
-}
-
-function inferRelation(text: string): Relation {
-  const reviewOverride = terminalReviewOverride(text);
-  if (reviewOverride) return reviewOverride.relation;
-  if (hasTerminalExecutionCancellation(text) && !/\b(?:copied|quoted|external)\s+(?:request|instruction|analysis)\b/i.test(text)) return "CANCEL";
-  const actionable = stripNegatedClauses(text);
-  if (hasCancellationDirective(actionable)) return "CANCEL";
-  if (/^(?:what(?:'s| is)\s+)?(?:the\s+)?(?:status|progress)\b|\b(where are we|what remains|status update)\b/i.test(actionable.trim())) return "STATUS";
-  if (/\b(instead|replace the request|override)\b/i.test(actionable)) return "OVERRIDE";
-  if (/\b(also|additionally|amend)\b/i.test(actionable)) return "AMEND";
-  if (/^\s*(?:continue|resume)\b[^.!?]{0,80}\b(?:new|unrelated|separate|different)\b[^.!?]{0,40}\b(?:task|objective|request|workline)\b/i.test(actionable)) return "NEW";
-  if (/(?:^|[.!?;]\s*)CONTINUE\s*(?::|—|–|\s-\s)\s*(?:continue|resume|review|audit|inspect|validate|verify|test|check|change|update|implement|repair)\b/i.test(actionable)
-    || continuationOffset(actionable.trim()) !== null || /^\s*(?:(?:please|kindly)\s+)?(?:pick up|carry on)(?:\s+with)?\b/i.test(actionable)) return "CONTINUE";
-  if (/^\s*(?:(?:(?:can|could|would)\s+you|please)\s+)?(?:explain|discuss|describe|what(?:'s| is)|how\s+does|why\s+does)\b/i.test(actionable) && !hasImperativeMutation(actionable)) return "CONVERSATION_ONLY";
-  return "NEW";
-}
-
-function stripEmbeddedReviewAction(text: string): string {
-  if (terminalReviewOnlyAction(text)) return "Review only.";
-  if (!/\b(?:delete|deleting|deletion|remove|removed|removing|removal|erase|erasing|erasure|eliminate|eliminating|disposal|dispose|disposed|disposing|drop|dropping|destroy|destroying|destruction|wipe|wiping|purge|purged|purging|obliterate|obliterating|eradicate|eradicating|expunge|expunging|discard|discarding|disappear|repository[- ]wide|repo[- ]wide|repository[- ]level|whole[- ](?:repository|repo|codebase|project)|whole\s+(?:repository|repo|codebase|project)|entire\s+(?:repository|repo|codebase|project)|codebase[- ]wide|project[- ]wide|throughout\s+(?:the\s+)?(?:repository|repo|codebase|project)|across\s+all\s+(?:repository|repo|codebase|project)\s+files|(?:all|every)\s+files?\s+in\s+(?:this|the)\s+(?:repository|repo|codebase|project))\b/i.test(text)) return text;
-  const spans = deriveRequestSpans(text);
-  const external = requestForSource(text, spans, "EXTERNAL_SOURCE");
-  return external.trim() ? classificationRequestFromSpans(text, spans) : text;
-}
-
-function stripQuotedReferencedActions(text: string): string {
-  return text
-    .replace(/(["'`])\s*(?:(?:please|then)\s+)?take\s+(?:it|that|the\s+action|(?:the\s+)?(?:requested\s+action|action\s+requested))\s*[.!?]*\1/gi, " reviewed phrase ")
-    .replace(/[“‘]\s*(?:(?:please|then)\s+)?take\s+(?:it|that|the\s+action|(?:the\s+)?(?:requested\s+action|action\s+requested))\s*[.!?]*[”’]/gi, " reviewed phrase ");
-}
-
-function inferIntent(text: string): Intent {
-  if (terminalReviewOverride(text)) return "REVIEW";
-  if (passiveActionAssessment(text)) return "REVIEW";
-  if (hasTerminalExecutionCancellation(text)) return "ANSWER";
-  const lexicallyActionable = stripQuotedReferencedActions(stripEmbeddedReviewAction(text));
-  const actionable = stripNegatedClauses(lexicallyActionable)
-    .replace(/(["'`])(?:(?:please|then)\s+)?(?:proceed(?:\s+with\s+(?:it|that))?|carry(?:\s+(?:it|that))?\s+out|do\s+(?:it|that)|go\s+ahead(?:\s+and\s+(?:do\s+(?:it|that)|carry(?:\s+(?:it|that))?\s+out))?)\1/gi, " reviewed phrase ")
-    .replace(/[“‘](?:(?:please|then)\s+)?(?:proceed(?:\s+with\s+(?:it|that))?|carry(?:\s+(?:it|that))?\s+out|do\s+(?:it|that)|go\s+ahead(?:\s+and\s+(?:do\s+(?:it|that)|carry(?:\s+(?:it|that))?\s+out))?)[”’]/gi, " reviewed phrase ")
-    .replace(/\bwithout\s+(?:actually\s+)?(?:carrying|executing|performing|doing)\s+(?:it|that|anything)\s+(?:out)?\b/gi, " without execution ");
-  if (hasExplicitNoMutationConstraint(lexicallyActionable)) {
-    if (/\b(validate|validating|validation|tests?|testing|verify|verifying|verification|checks?|checking)\b/i.test(lexicallyActionable)) return "VALIDATE";
-    if (/\b(diagnose|diagnosing|debug|debugging|root\s+cause|why\s+failing)\b/i.test(lexicallyActionable)) return "DIAGNOSE";
-    if (/\b(review|reviewing|audit|auditing|read|reading|inspect|inspecting|assess|evaluate|examine|critique|analy[sz]e|analysis)\b/i.test(lexicallyActionable)) return "REVIEW";
-    return "ANSWER";
-  }
-  if (/^(?:(?:write\s+access|writes?)\s+(?:ends?|stops?)\s+at|(?:the\s+)?write\s+(?:scope|boundary|perimeter)\s+(?:ends?|stops?)\s+at|(?:all\s+)?(?:writes?|changes?|edits?)\s+(?:are\s+)?capped\s+(?:at|by|to)|nothing\s+(?:outside|beyond)\b[^.!?]{0,120}\b(?:may|can|must)\s+change|[^.!?]{1,120}\b(?:is|are)\s+where\s+(?:all\s+)?(?:writes?|changes?|edits?)\s+(?:stop|end))\b/i.test(actionable)) return "ANSWER";
-  if (/^(?:add|implement|update|change|fix|build|create|document|test)\b[^.!?]{0,180}\b(?:parser|classifier|classification|detection|support|handling|tests?|docs?|documentation|wording|phrase|statement|claim|sentence|terms?)\b/i.test(actionable)) return "CHANGE";
-  if (/\b(cancel|stop|abort)\b/i.test(actionable)) return "OPERATE";
-  if (/\b(?:(?:please|then)\s+)?(?:proceed(?:\s+with\s+(?:it|that))?|carry(?:\s+(?:it|that))?\s+out|do\s+(?:it|that)|execute\s+(?:it|that|this|(?:the\s+)?(?:requested\s+action|action\s+requested))(?:\s+now)?|perform\s+(?:it|that|that\s+action|(?:the\s+)?(?:requested\s+action|action\s+requested))|act\s+on\s+(?:it|that|(?:the\s+)?(?:requested\s+action|action\s+requested))(?:\s+now)?|take\s+(?:it|that|the\s+action|(?:the\s+)?(?:requested\s+action|action\s+requested))|go\s+ahead(?:\s+and\s+(?:do\s+(?:it|that)|carry(?:\s+(?:it|that))?\s+out))?)(?!\s+and\s+(?:make|add|apply|fix|change|edit|modify|update|implement|build|create|remove|delete|refactor|write))\b/i.test(actionable)) return "OPERATE";
-  if (/^\s*(?:(?:(?:can|could|would|will|might)\s+you|(?:would|could|might)\s+it\s+be\s+possible\s+(?:for\s+you\s+)?to|may\s+i\s+ask\s+you\s+to|(?:i|we)\s+(?:need|want|would\s+like)\s+you\s+to)\s+)?(?:(?:please|kindly)\s+)?(?:run|execute|perform)\s+(?:(?:sudo|env|command|exec|xargs)\s+)*(?:git|gh|rm|mv|cp|chmod|chown|curl|wget|ssh|scp|rsync|sed|awk|perl|find|docker|kubectl|terraform|aws|gcloud|az|npm|pnpm|yarn|bun|npx|python|python3|pip|pip3|uv|bash|sh|zsh)\b/i.test(actionable)) return "OPERATE";
-  if (/^\s*would\s+you\s+mind\s+(?:running|executing|performing)\s+(?:(?:sudo|env|command|xargs)\s+)*(?:git|gh|rm|mv|cp|chmod|chown|curl|wget|ssh|scp|rsync|sed|awk|perl|find|docker|kubectl|terraform|aws|gcloud|az|npm|pnpm|yarn|bun|npx|python|python3|pip|pip3|uv|bash|sh|zsh)\b/i.test(actionable)) return "OPERATE";
-  const actionBoundary = /(?:^|[.;,]\s*|\b(?:and|then|after\s+that|afterwards?|also|please)\s+)(?:please\s+)?/i;
-  const requestedOperate = new RegExp(`${actionBoundary.source}(?:run|operate|deploy|publish|push|send|execute|perform|act|rotate)(?:d|s|ing)?\\b`, "i").test(actionable);
-  const requestedMutation = hasImperativeMutation(actionable);
-  const conversational = /^\s*(?:please\s+)?(?:explain|discuss|describe|critique|summari[sz]e|check|tell\s+me\s+whether|analy[sz]e|provide\s+(?:an?\s+)?analysis|what(?:'s| is)|how\s+does|why\s+does)\b/i.test(actionable);
-  const validationIndex = [
-    actionable.search(/\b(validate|validating|validation|tests?|testing|verify|verifying|verification|checks?|checking|assertions?)\b/i),
-    actionable.search(/\b(?:(?:focused|targeted|admission|unit|integration|regression|corpus|hook|security)\s+)*(?:run|execution|invocation)\b[^.!?]{0,180}\b(?:passed|failed|succeeded|completed)\b/i),
-  ].filter((index) => index >= 0).sort((left, right) => left - right)[0] ?? -1;
-  const explicitReadCandidates: Array<{ intent: Intent; index: number }> = [
-    { intent: "VALIDATE", index: validationIndex },
-    { intent: "REVIEW", index: actionable.search(/\b(review|reviewing|audit|auditing|read|reading|inspect|inspecting|critique|discuss|summari[sz]e|check|analy[sz]e)\b|tell\s+me\s+whether/i) },
-    { intent: "DIAGNOSE", index: actionable.search(/\b(diagnose|debug|root cause|why failing)\b/i) },
-  ];
-  const explicitReads = explicitReadCandidates.filter((candidate) => candidate.index >= 0);
-  if (!requestedOperate && !requestedMutation && conversational) return "ANSWER";
-  if (!requestedOperate && !requestedMutation && explicitReads.length) {
-    return explicitReads.sort((left, right) => left.index - right.index)[0]!.intent;
-  }
-  if (requestedOperate) return "OPERATE";
-  if (requestedMutation) return "CHANGE";
-  if (explicitReads.length) return explicitReads.sort((left, right) => left.index - right.index)[0]!.intent;
-  if (/\b(research|discover|explore|investigate|plan|design)\b/i.test(actionable)) return "DISCOVER";
-  return "ANSWER";
-}
-
-function inferTags(text: string, intent: Intent, relation: Relation): string[] {
-  if (relation === "CANCEL" && hasTerminalExecutionCancellation(text)) return ["always"];
-  const effectiveText = terminalReviewOverride(text)?.clause ?? text;
-  const lower = stripQuotedReferencedActions(stripEmbeddedReviewAction(effectiveText)).toLowerCase();
-  const actionable = stripNegatedClauses(lower);
-  const noMutation = hasExplicitNoMutationConstraint(effectiveText);
-  const tags = ["always"];
-  if (!noMutation && /\b(?:(?:please|then)\s+)?(?:proceed(?:\s+with\s+(?:it|that))?|carry(?:\s+(?:it|that))?\s+out|do\s+(?:it|that)|execute\s+(?:it|that|this|(?:the\s+)?(?:requested\s+action|action\s+requested))(?:\s+now)?|perform\s+(?:it|that|that\s+action|(?:the\s+)?(?:requested\s+action|action\s+requested))|act\s+on\s+(?:it|that|(?:the\s+)?(?:requested\s+action|action\s+requested))(?:\s+now)?|take\s+(?:it|that|the\s+action|(?:the\s+)?(?:requested\s+action|action\s+requested))|go\s+ahead(?:\s+and\s+(?:do\s+(?:it|that)|carry(?:\s+(?:it|that))?\s+out))?)(?!\s+and\s+(?:make|add|apply|fix|change|edit|modify|update|implement|build|create|remove|delete|refactor|write))\b/.test(actionable)) tags.push("referenced-action");
-  if (relation === "STATUS" || ["REVIEW", "DIAGNOSE", "VALIDATE"].includes(intent)) tags.push("current-state");
-  if (intent === "REVIEW") tags.push("review");
-  if (intent === "DIAGNOSE") tags.push("diagnose");
-  if (relation === "STATUS") tags.push("status");
-  if (!noMutation && /\b(typo|formatting|import cleanup|rename local)\b/.test(actionable)) tags.push("atomic-change");
-  if (!noMutation && intent === "CHANGE" && !tags.includes("atomic-change")) tags.push("behavior-change");
-  if (!noMutation && ["CHANGE", "OPERATE"].includes(intent) && /\b(public|schema|contract|api|cli flag|state change|refactor)\b/.test(actionable)) tags.push("behavior-change");
-  if (/\b(dependent|connected|multi[- ]turn|long[- ]running)\b/.test(actionable)) {
-    tags.push("multi-turn");
-    if (["CHANGE", "OPERATE"].includes(intent)) tags.push("connected");
-  }
-  if (["CHANGE", "OPERATE"].includes(intent) && /^\s*(?:(?:please|kindly)\s+)?resume\b/.test(actionable) && continuationOffset(actionable.trim()) !== null) tags.push("multi-turn", "connected");
-  if (/\b(program|epic|worklines?|multi[- ]owner|release join)\b/.test(actionable)) tags.push("program");
-  if (["CHANGE", "OPERATE"].includes(intent) && /\b(simulation|simulate|campaign|synthetic persona|synthetic actor|persona simulation)\b/.test(actionable)) {
-    tags.push("simulation");
-    if (/\b(campaign|controlled comparison|benchmark|calibration|treatments?|populations?|datasets?|claim ledger|release(?:-eligible| evidence)?|independent evaluation|repeated runs?|terminal gates?)\b/.test(actionable)) {
-      tags.push("simulation-campaign", "connected", "multi-turn");
-    }
-  }
-  if (/\b(release|release-eligible)\b/.test(actionable)) tags.push("release");
-  if (/\bdeploy\b/.test(actionable)) tags.push("deploy");
-  if (/\bmerge[- ]eligible\b/.test(actionable)) tags.push("merge-eligible");
-  if (/\b(full scan|exhaustive)\b/.test(actionable) || (!noMutation && /\brepository-wide\b/.test(actionable))) tags.push("full-scan");
-  if (/\b(?:1[0-5])\b/.test(actionable) && /\b(program|worklines?|release join)\b/.test(actionable)) tags.push("full-scan");
-  if (/\b(migration|migrate)\b/.test(actionable)) tags.push("migration");
-  if (/\b(auth|authentication|authorization|tenant)\b/.test(actionable)) tags.push("auth");
-  if (/\b(secret|credential|api key|token)\b/.test(actionable)) tags.push("secret");
-  if (/\b(payment|billing)\b/.test(actionable)) tags.push("payment");
-  if (/\b(safety|medical|legal)\b/.test(actionable)) tags.push("safety");
-  if (!noMutation && /\b(external write|send email|create issue|publish|push)\b/.test(actionable)) tags.push("external-write");
-  if (!noMutation && (/\b(privileged|sudo|production credential)\b/.test(actionable) || /\b(rotate|replace).{0,24}\b(secret|credential|api key|token)\b/.test(actionable))) tags.push("privileged");
-  const requestsDestructiveAction = !noMutation && (requestsDestructiveMutation(actionable, intent)
-    || (["CHANGE", "OPERATE"].includes(intent) && /^\s*(?:(?:please|kindly)\s+)?(?:(?:run|execute)\s+)?(?:git\s+reset\s+--hard|rm\s+-rf)\b/.test(actionable)));
-  if (requestsDestructiveAction) tags.push("destructive");
-  if (!noMutation && /\b(external write|send email|create issue|publish|push)\b/.test(actionable)) tags.push("requested-external-write");
-  if (!noMutation && (/\b(privileged|sudo|production credential)\b/.test(actionable) || /\b(rotate|replace).{0,24}\b(secret|credential|api key|token)\b/.test(actionable))) tags.push("requested-privileged");
-  if (requestsDestructiveAction) tags.push("requested-destructive");
-  if (/\b(conflicting authority)\b/.test(lower)) tags.push("conflicting-authority");
-  return unique(tags).sort();
-}
-
-function inferExternalTags(text: string): string[] {
-  const lower = text.toLowerCase();
-  const tags = ["prompt-injection"];
-  if (/\b(external write|send email|create issue|publish|push)\b/.test(lower)) tags.push("external-write");
-  if (/\b(privileged|sudo|production credential)\b/.test(lower) || /\b(rotate|replace).{0,24}\b(secret|credential|api key|token)\b/.test(lower)) tags.push("privileged");
-  if (/\b(delete|deleted|deletion|deleting|remove|removed|removal|removing|erase|erased|erasure|erasing|eliminate|eliminated|elimination|eliminating|dispose|disposed|disposal|disposing|drop|dropped|dropping|destroy|destroyed|destruction|destroying|destructive|wipe|wiped|wiping|purge|purged|purging|disappear|disappeared|obliterate|obliterated|obliterating|eradicate|eradicated|eradicating|expunge|expunged|expunging|discard|discarded|discarding|truncate|unlink|reset --hard|rm -rf)\b/.test(lower)) tags.push("destructive");
-  if (/\b(bypass|ignore|override).{0,40}\b(permission|approval|authority)\b/.test(lower)) tags.push("conflicting-authority");
-  return unique(tags).sort();
-}
-
-function claimSegments(request: string): string[] {
-  let quote: "'" | '"' | "`" | "“" | "‘" | null = null;
-  const protectedPunctuation = [...request.trim()].map((character, index, characters) => {
-    if (character === "." && /\s/u.test(characters[index - 1] ?? "") && /\s/u.test(characters[index + 1] ?? "")) return "\uE000";
-    if (character === "\\") return character;
-    if (quote) {
-      if (character === quote || quote === "“" && character === "”" || quote === "‘" && character === "’") quote = null;
-      else if (character === ".") return "\uE000";
-      return character;
-    }
-    if (["'", '"', "`", "“", "‘"].includes(character) && characters[index - 1] !== "\\") quote = character as typeof quote;
-    return character;
-  }).join("");
-  const redacted = transformNegatedContinuations(redactSensitive(protectedPunctuation), true);
-  const initial = redacted
-    .replace(/\s+/g, " ")
-    .split(/(?:;\s*|[.!]\s+(?=[A-Z0-9])|\.$|\n\s*(?:[-*+]\s+|\d+[.)]\s+)?|,\s*(?:but|so|and|then)?\s*(?=(?:acceptance|success|tests?|pass|ensure|require|preserve|keep|within|subject to|do not|don't|must not|never|without|add|implement|fix|change|build|create|update|remove|refactor|run|execute|validate|verify|review|diagnose)\b)|\s+(?:but|and|then)\s+(?=(?:acceptance|success|tests?|pass|ensure|require|preserve|keep|within|subject to|do not|don't|must not|never|without|add|implement|fix|change|build|create|update|remove|refactor|run|execute|validate|verify|review|diagnose)\b))/i)
-    .map((item) => {
-      const trimmed = item.replace(/\uE000/gu, ".").trim();
-      const quoted = /^(?:"([\s\S]*)"|'([\s\S]*)'|`([\s\S]*)`)$/u.exec(trimmed);
-      return (quoted?.[1] ?? quoted?.[2] ?? quoted?.[3] ?? trimmed).trim();
-    })
-    .filter(Boolean);
-  const result: string[] = [];
-  for (const segment of initial) {
-    const split = segment.match(/^(.*?)(\s+(?:with\s+(?:regression\s+)?tests?|through\s+terminal\s+gates?|after\s+[^,.;]+))$/i);
-    if (split && split[1]!.trim()) result.push(split[1]!.trim().replace(/\s+and$/i, ""), split[2]!.trim());
-    else result.push(segment);
-  }
-  return result.slice(0, 32);
-}
-
-function sourcedClaimSegments(request: string, spans: RequestSpan[]): Array<{ statement: string; source: RequestSpan["source"] }> {
-  return spans.flatMap((span) => claimSegments(request.slice(span.start, span.end)).map((statement) => ({ statement, source: span.source })));
-}
-
-function claimKind(statement: string, index: number): TaskClaim["kind"] {
-  if (/^USER\s+NON_GOAL\s*(?::|—|–|\s-\s)/i.test(statement)) return "NON_GOAL";
-  if (/^(?:current[- ]state(?:\s+(?:finding|observation|claim))?|current\s+status|currently|status)\s*:/i.test(statement)) return "CURRENT_STATE";
-  if (/^(?:boundary|scope\s+boundary|trust\s+boundary)\s*:/i.test(statement)) return "BOUNDARY";
-  if (/^(?:hazard|risk|security\s+risk|failure\s+risk)\s*:/i.test(statement)) return "HAZARD";
-  if (/^(?:evidence|proof|validation\s+evidence|test\s+evidence)\s*:/i.test(statement)) return "EVIDENCE";
-  if (/^(?:add|implement|update|change|document|test|review|explain|describe|quote|classify|analy[sz]e|assess|evaluate)\b[^.!?]{0,180}\b(?:parser|classifier|classification|detection|support|handling|tests?|docs?|documentation|wording|phrase|statement|claim|sentence|terms?|whether)\b/i.test(statement)) return "OUTCOME";
-  if (/^(?:the\s+)?(?:bun|npm|pnpm|yarn|pytest|ruff|mypy)(?:\s+(?:test|checks?|suite|run|command))?\b[^.!?]{0,180}\b(?:passed|failed|succeeded|completed)\b/i.test(statement)
-    || /^the\s+(?:test|validation|check)\s+(?:command|suite)\b[^.!?]{0,180}\b(?:passed|failed|succeeded|completed)\b/i.test(statement)
-    || /^(?:the\s+)?(?:latest|current|most\s+recent)\s+(?:(?:test|validation|check|admission|regression)\s+)?(?:run|suite|checks?)\b[^.!?]{0,180}\b(?:reports?|records?|shows?|confirms?|indicates?|demonstrates?)\b[^.!?]{0,120}\b(?:pass(?:ed|ing)?|fail(?:ed|ing)?|success|green|red)\b/i.test(statement)
-    || /^according\s+to\s+(?:the\s+)?(?:latest|current|most\s+recent)\s+(?:run|suite|validation|checks?)\b[^.!?]{0,180}\b(?:pass(?:ed|ing)?|fail(?:ed|ing)?|success|green|red)\b/i.test(statement)
-    || /^(?:the\s+)?(?:latest|current|most\s+recent)\s+(?:(?:test|validation|check|admission|regression)\s+)?(?:output|results?|report|summary|log|run|suite|checks?)\b[^.!?]{0,180}\b(?:says?|states?|notes?)\b[^.!?]{0,120}\b(?:pass(?:ed|ing)?|fail(?:ed|ing)?|success|green|red)\b/i.test(statement)
-    || /^(?:passing|failing|successful|failed)\s+(?:tests?|checks?|assertions?|validations?)\b[^.!?]{0,140}\b(?:appear|appears|are|were|remain|remains)\b[^.!?]{0,80}\bin\s+(?:the\s+)?(?:latest|newest|current|most\s+recent)\s+(?:receipt|report|run|output|log)\b/i.test(statement)) return "EVIDENCE";
-  if (/^(?:the\s+)?(?:newest|latest|most\s+recent)\s+(?:run|receipt|report|suite|validation|check|output|log)\b[^.!?]{0,180}\b(?:passed|failed|succeeded|completed|is\s+(?:green|red)|shows?|records?|reports?|confirms?|has|contains?|includes?|lists?)\b[^.!?]{0,120}\b(?:pass(?:ed|ing)?|fail(?:ed|ing)?|success|green|red|tests?|checks?|assertions?|results?)\b/i.test(statement)) return "EVIDENCE";
-  if (/^(?:passes?|failures?|passing|failing)\s+(?:tests?|checks?|validations?|assertions?)?\s*from\s+(?:the\s+)?(?:latest|newest|current|most\s+recent)\s+(?:run|receipt|report|suite|validation|output|log)\b/i.test(statement)
-    || /^(?:evidence|results?|findings?)\s+from\s+(?:the\s+)?(?:latest|newest|current|most\s+recent)\s+(?:run|receipt|report|suite|validation|output|log)\b[^.!?]{0,180}\b(?:records?|shows?|reports?|confirms?|contains?|lists?|establishes?)\b/i.test(statement)) return "EVIDENCE";
-  if (/\b(?:currently|presently|at\s+present|at\s+the\s+moment|as\s+of\s+now|right\s+now|on\s+(?:the\s+current|this)\s+branch|(?:in|from)\s+(?:the\s+)?(?:checked[- ]out\s+source|current\s+checkout|this\s+checkout)|(?:this|the\s+current)\s+checkout|as\s+checked\s+out|on\s+the\s+current\s+(?:source|revision)|as\s+things\s+stand|(?:repository|project|source|branch)\s+as\s+it\s+stands|(?:source|branch|repository|project)\s+today)\b/i.test(statement)
-    || /^(?:according\s+to|from)\s+(?:the\s+)?current\s+(?:source|branch|revision|implementation)\b/i.test(statement)
-    || /^today\s*,?\s+(?:the|this|our|my)?\s*(?:parser|compiler|admission|implementation|repository|repo|project|codebase|source|branch)\b[^.!?]{0,160}\b(?:is|are|remains?|has|lacks?|contains?|includes?|omits?|shows?|reveals?)\b/i.test(statement)
-    || /^(?:at|on)\s+(?:this|the\s+current)\s+(?:source|branch|revision|fixed\s+point)\b/i.test(statement)
-    || /^(?:(?:the|this|our|my)\s+)?(?:current\s+)?(?:source|branch|revision|fixed\s+point|compiler|admission|parser|harness|implementation)\b[^.!?]{0,120}\b(?:passes|fails|succeeds|works|has\s+passed|has\s+failed)\b[^.!?]{0,80}$/i.test(statement)
-    || /^(?:the|this|our|my)\s+(?:current\s+)?[^.!?]{0,140}\b(?:passes|fails|succeeds|remains?|is|are)\s+(?:still\s+|already\s+)?(?:passing|failing|blocked|ready|unchanged|open|closed|complete|incomplete|available|unavailable|present|absent)\b/i.test(statement)
-    || /^(?:[a-z][a-z0-9_-]*\s+){0,5}(?:remains?|is|are)\s+(?:still\s+|already\s+)?(?:passing|failing|broken|blocked|ready|green|stable|unchanged|open|closed|complete|incomplete|available|unavailable|present|absent)\b/i.test(statement)
-    || /^(?:the\s+)?(?:current\s+)?(?:source|branch|revision|parser|compiler|admission|repository)\b[^.!?]{0,140}\b(?:lacks?|contains?|includes?|omits?|needs?|has|does\s+not\s+have)\b/i.test(statement)
-    || /^(?:the\s+)?current\s+(?:source|branch|revision|parser|compiler|admission|repository|implementation)\b[^.!?]{0,140}\b(?:shows?|demonstrates?|indicates?|reveals?|confirms?)\b/i.test(statement)
-    || /^(?:as\s+(?:currently\s+)?implemented|in\s+the\s+current\s+implementation)\b/i.test(statement)
-    || /^(?:the|this|our|my)\s+current\s+(?:source|branch|revision|parser|compiler|admission|repository)\b[^.!?]{0,140}\b(?:still\s+)?(?:lacks?|contains?|includes?|omits?|needs?|has|does\s+not\s+have)\b/i.test(statement)
-    || /^(?:we|i|the\s+(?:repository|project|compiler|parser|admission))\s+(?:currently\s+)?(?:have|has|lack|lacks)\b[^.!?]{0,160}/i.test(statement)
-    || /^there\s+(?:is|are)\s+(?:currently\s+|still\s+)?(?:no|an?|some|several|\d+)\b[^.!?]{0,160}/i.test(statement)
-    || /^(?:today|currently|presently|as\s+of\s+(?:today|now|the\s+current\s+(?:branch|source|revision)))\s*,?\s+(?:the|this|our|my)\s+(?:repository|repo|project|codebase|source|branch|compiler|parser|admission)\b[^.!?]{0,160}\b(?:has|lacks?|contains?|includes?|omits?|shows?|reveals?|is|remains?)\b/i.test(statement)
-    || /^(?:on|in)\s+(?:the\s+)?current\s+branch\b[^.!?]{0,160}\b(?:the|this|our|my)\s+(?:repository|repo|project|codebase|source|compiler|parser|admission)\b/i.test(statement)) return "CURRENT_STATE";
-  if (/^(?:the|this|our|my)\s+(?:repository|repo|project|codebase|source|branch|compiler|parser|admission)\b[^.!?]{0,140}\b(?:is|remains?|looks?)\s+(?:stale|outdated|broken|blocked|incomplete)\b[^.!?]{0,100}\baccording\s+to\s+(?:the\s+)?current\s+(?:source|branch|revision|implementation)\b/i.test(statement)) return "CURRENT_STATE";
-  if (/\b(?:is|are|forms?|defines?|sets?|marks?)\s+(?:the\s+)?(?:write\s+)?boundary\s+beyond\s+which\s+(?:no|nothing|neither)\b[^.!?]{0,100}\b(?:writes?|changes?|edits?|modifications?)?\s*(?:may|can|must|shall)\s+(?:occur|happen|change|be\s+(?:written|changed|edited|modified|made))\b/i.test(statement)) return "BOUNDARY";
-  if (/^(?:(?:all\s+)?(?:writes?|changes?|edits?|modifications?)\s+(?:are|must\s+be|remain|must\s+remain)\s+(?:confined|restricted|limited)\s+to\b|(?:all\s+)?(?:writes?|changes?|edits?|modifications?)\s+must\s+(?:stay|remain)\s+(?:inside|within)\b|(?:all\s+)?(?:writes?|changes?|edits?|modifications?)\s+(?:are|remain)\s+bounded\s+by\b|(?:all\s+)?(?:writes?|changes?|edits?|modifications?)\s+(?:are|remain)\s+capped\s+(?:at|by|to)\b|[^.!?]{1,100}\bfiles?\s+(?:are|is)\s+the\s+only\s+(?:writable|editable|modifiable)\s+(?:area|files?|paths?)\b|only\b[^.!?]{0,120}\bfiles?\s+(?:can|may|must)\s+(?:change|be\s+(?:written|changed|edited|modified))\b|(?:nothing|no\s+(?:(?:files?|writes?|changes?|edits?|modifications?)))\s+(?:outside|beyond)\b[^.!?]{0,120}\b(?:may|can|must)\s+(?:change|be\s+(?:written|changed|edited|modified))\b|(?:the\s+)?write\s+(?:perimeter|boundary|scope)\s+(?:is|ends?|stops?)\b|(?:write\s+access|writes?)\s+(?:ends?|stops?)\s+at\b|[^.!?]{1,120}\b(?:delimits?|bounds?|caps?)\s+(?:all\s+)?(?:writes?|changes?|edits?|modifications?)\b|[^.!?]{1,120}\b(?:is|are)\s+the\s+write\s+(?:perimeter|boundary)\b|[^.!?]{1,120}\b(?:forms?|defines?|sets?|marks?)\s+the\s+write\s+(?:perimeter|boundary)\b|[^.!?]{1,120}\b(?:is|are)\s+where\s+(?:all\s+)?(?:writes?|changes?|edits?|modifications?)\s+(?:stop|end)\b)/i.test(statement)
-    || /^(?:only\s+(?:edit|touch|change|write|modify)|only\b[^.!?]{0,120}\bfiles?\s+may\s+be\s+(?:written|changed|edited|modified)\b|(?:edit|touch|change|write|modify)\b[^.!?]{0,120}(?<!-)\bonly\b|(?:do\s+not|don't|must\s+not|never)\s+(?:edit|touch|change|write|modify)\b[^.!?]{0,140}\b(?:outside|beyond)\b|leave\b[^\n]{0,160}\bunchanged\b|keep\b[^\n]{0,160}\b(?:unchanged|out\s+of\s+scope)\b|keep\b[^\n]{0,160}\b(?:writes?|changes?|edits?)\s+(?:inside|within)\b|scope\s+is\s+limited\s+to\b|(?:the\s+)?(?:allowed|owned|permitted)\s+(?:write\s+)?scope\b|(?:the\s+)?(?:sole|only)\s+(?:allowed|owned|permitted)\s+(?:write\s+)?(?:area|scope|boundary)\b|(?:the\s+)?(?:repository|project|codebase)\s+boundary\b[^.!?]{0,160}\b(?:inside|within|outside|beyond|only)\b|(?:all|every)\s+(?:repository\s+|code\s+)?(?:work|writes?|changes?|edits?)\s+(?:is|are|must\s+remain|remains?|stay|stays)\s+(?:inside|within|limited|confined|restricted)\s+(?:to\s+)?\b|(?:repository\s+)?(?:work|writes?|changes?|edits?)\s+(?:is|are)\s+(?:limited|confined|restricted)\s+to\b|(?:no\s+)?(?:repository\s+)?(?:writes?|changes?|edits?)\s+(?:may|can(?:not|'t)|must\s+not)\s+(?:leave|exit|escape)\b|(?:all\s+)?(?:repository\s+)?(?:work|writes?|changes?|edits?)\s+(?:must\s+)?(?:remain|stay)\s+within\b|(?:writes?|changes?|edits?)\s+(?:may|can|must)\s+only\s+(?:affect|touch|target)\b|(?:files?|paths?|folders?)\b[^.!?]{0,120}\b(?:outside|beyond)\b[^.!?]{0,100}\b(?:out\s+of\s+scope|off\s+limits|must\s+(?:remain\s+unchanged|not\s+change))\b|(?:put|keep|confine|bind)\s+(?:all\s+)?(?:writes?|changes?|edits?)\s+(?:inside|within|to)\b|(?:all\s+)?(?:writes?|changes?|edits?)\s+(?:stop|end)\s+at\b|(?:all\s+)?(?:writes?|changes?|edits?)\s+(?:are|remain|must\s+be)\s+(?:bound|confined|bounded)\s+(?:to|by|within)\b|nothing\s+outside\b[^.!?]{0,100}\b(?:may|can|must)\s+(?:change|be\s+(?:changed|edited|modified|written))\b|(?!(?:add|implement|update|change|document|test|review|explain|describe)\b)[^.!?]{1,120}\b(?:caps?|delimits?|bounds?)\s+(?:all\s+)?(?:writes?|changes?|edits?)\b)/i.test(statement)) return "BOUNDARY";
-  const hazardMetaWork = imperativeMutationClause(statement) || /^(?:add|implement|update|change|document|test|review|explain|describe)\b[^.!?]{0,180}\b(?:tests?|terms?|wording|classification|classifier|parser|support|handling|docs?|proposed\s+(?:action|command|change|request))\b/i.test(statement);
-  if (!hazardMetaWork && /\b(?:can|could|may|might)\b[^.!?]{0,180}\b(?:conceal|hide|mask|launder|bypass|cause|expose|corrupt|destroy|delete|overwrite|leak|execute|mutate|authorize|escalate|misclassify|trigger)\b|\b(?:creates?|poses?|presents?|introduces?)\s+(?:an?\s+)?(?:[a-z-]+\s+){0,4}(?:hazard|risk)\b|\brisk\s+of\b|\b(?:race\s+condition|toctou|prompt\s+injection|privilege\s+escalation|authority\s+bypass|data\s+loss)\b|\b(?:untrusted|dynamic|malformed|stale|forged|arbitrary)\b[^.!?]{0,140}\b(?:input|content|command|authority|receipt|state)\b[^.!?]{0,140}\b(?:enables?|permits?|allows?|causes?|triggers?|executes?|mutates?|deletes?|overwrites?|leaks?|poses?)\b/i.test(statement)) return "HAZARD";
-  if (/^(?:the\s+)?(?:(?:focused|targeted)\s+)?(?:(?:unit|integration|regression|admission|corpus|hook|security)\s+)?(?:tests?|checks?|validation|suite|corpus|probes?)\b[^.!?]{0,180}\b(?:passed|failed|succeeded|completed)\b/i.test(statement)
-    || /^(?:the\s+|an?\s+)?(?:(?:most\s+recent|latest|newest|current)\s+)?(?:(?:focused|targeted)\s+)?(?:(?:unit|integration|regression|admission|corpus|hook|security)\s+)?(?:run|execution|invocation|suite)\b[^.!?]{0,180}\b(?:passed|failed|succeeded|completed)\b/i.test(statement)
-    || /^(?:we|i|the\s+team)\s+(?:observed|recorded|saw)\b[^.!?]{0,100}\b\d+\s+passing\b[^.!?]{0,100}\b(?:tests?|checks?|assertions?)\b/i.test(statement)
-    || /^(?:the\s+)?(?:(?:latest|newest|current|focused|targeted|admission|regression|validation)\s+){0,4}(?:run|receipt|report|summary|log|output|evidence)\b[^.!?]{0,180}\b(?:records?|shows?|reports?|contains?|lists?|identifies?|flags?|documents?|notes?|confirms?|establishes?|indicates?)\b[^.!?]{0,120}(?:\b(?:pass|fail|success|completion|passed|failed|result|results|tests?|checks?)\b|$)/i.test(statement)
-    || /^(?:passing|failing|successful|failed)\s+(?:tests?|checks?|assertions?)\b[^.!?]{0,140}\b(?:are|were)\s+(?:recorded|documented|reported|shown)\s+in\s+(?:the\s+)?(?:latest|current|most\s+recent)\s+(?:receipt|report|run|output|log)\b/i.test(statement)
-    || /^(?:according\s+to\s+)?(?:the\s+)?(?:latest|current|most\s+recent)\s+(?:run|receipt|report|log|output|evidence)\b[^.!?]{0,180}\b(?:\d+\s+)?(?:tests?|checks?|assertions?)\b[^.!?]{0,100}\b(?:pass(?:ed|ing)?|fail(?:ed|ing)?)\b/i.test(statement)
-    || /^(?:the\s+)?(?:logs?|receipts?|reports?|outputs?)\s+(?:show|record|report|confirm|demonstrate)\b[^.!?]{0,180}\b(?:pass(?:ed|ing)?|fail(?:ed|ing)?|success|result|tests?|checks?)\b/i.test(statement)
-    || /^(?:test\s+)?(?:results?|evidence|findings?)\s+from\s+(?:the\s+)?(?:latest|current|most\s+recent)\s+(?:run|suite|validation|checks?)\b[^.!?]{0,180}\b(?:show|confirm|indicate|demonstrate|record)\b/i.test(statement)
-    || /^(?:the\s+)?(?:latest|current|most\s+recent)\s+(?:run|suite|validation|checks?)\s+(?:results?|findings?)\b[^.!?]{0,180}\b(?:show|confirm|indicate|demonstrate|record)\b/i.test(statement)
-    || /^(?:passing|failing|successful|failed)\s+(?:tests?|checks?|assertions?|validations?)\b[^.!?]{0,140}\b(?:appear|appears|are|were|remain|remains)\b[^.!?]{0,80}\bin\s+(?:the\s+)?(?:latest|newest|current|most\s+recent)\s+(?:receipt|report|run|output|log)\b/i.test(statement)) return "EVIDENCE";
-  if (/^(?:(?:(?:my\s+request|(?:direct\s+)?user\s+(?:request|instruction)|user\s+non_goal)\s*(?::|—|–|\s-\s)\s*)|(?:(?:please|kindly)\s+))?(?:do not|don't|must not|never|without)\b/i.test(statement) || isNegatedImperativeMutationClause(statement)) return "NON_GOAL";
-  if (/^(?:acceptance|success|tests?|pass\b|ensure\b|require\b|with\s+(?:regression\s+)?tests?|through\s+terminal\s+gates?|after\b|when\b)|\b(?:must pass|success criteria|accepted when)\b/i.test(statement)) return "CRITERION";
-  if (/^(?:within|subject to|preserve|keep)\b|\b(?:must remain|required to remain|within scope)\b/i.test(statement)) return "CONSTRAINT";
-  return index === 0 ? "OUTCOME" : "OUTCOME";
-}
-
-function claimConsumers(kind: TaskClaim["kind"]): string[] {
-  if (kind === "CURRENT_STATE") return ["context", "evidence", "route"];
-  if (kind === "CRITERION") return ["controls", "evidence"];
-  if (kind === "NON_GOAL") return ["controls", "route", "tool-enforcement"];
-  if (kind === "CONSTRAINT") return ["authority", "controls", "route"];
-  if (kind === "BOUNDARY") return ["authority", "controls", "route", "tool-enforcement"];
-  if (kind === "HAZARD") return ["controls", "policies", "tool-enforcement"];
-  if (kind === "EVIDENCE") return ["criteria", "evidence", "validation"];
-  return ["controls", "route"];
-}
-
-function claimVerification(kind: TaskClaim["kind"], source: RequestSpan["source"]): string {
-  if (source === "EXTERNAL_SOURCE") return "verify as untrusted external content before use";
-  if (kind === "CURRENT_STATE") return "verify against current source or tool evidence";
-  if (kind === "CRITERION") return "verify against the named acceptance evidence";
-  if (kind === "BOUNDARY") return "verify against the current scope and authority boundary";
-  if (kind === "HAZARD") return "verify the hazard before dependent mutation";
-  if (kind === "EVIDENCE") return "verify evidence identity, freshness, and evaluator authority";
-  return "verify against the user request";
-}
-
-function claimInvalidation(kind: TaskClaim["kind"]): string[] {
-  if (kind === "CURRENT_STATE") return ["request", "source"];
-  if (kind === "BOUNDARY") return ["permission", "request", "scope", "source"];
-  if (kind === "HAZARD") return ["request", "scope", "source"];
-  if (kind === "EVIDENCE") return ["evidence", "request", "source"];
-  return ["request"];
-}
-
-function atomicClaims(request: string, spans: RequestSpan[], intent: Intent, relation: Relation, allTags: Set<string>, authority: string[], candidateTags: string[], directUserAttested: boolean, clausePatches: AdmissionClausePatches): TaskClaim[] {
-  const claims: TaskClaim[] = [];
-  const represented = new Set<string>();
-  const retainedClauses = parseAdmissionClauses(request, spans as AdmissionClauseSpan[]);
-  const representedClauses = new Set<number>();
-  const normalizedClaimText = (value: string) => value.trim().replace(/^(?:then|afterwards|subsequently)\s+/i, "").replace(/\s+/gu, " ").replace(/[.;,:!?]+$/gu, "").trim().toLowerCase();
-  const legacySegments = sourcedClaimSegments(request, spans);
-  const semanticSpans = refinedLexicalRequestSpans(request);
-  const hasMentionedExternalContent = spans.some((span) => span.source === "EXTERNAL_SOURCE")
-    || semanticSpans.some((span) => span.source === "EXTERNAL_SOURCE");
-  const hasDominantNonGoal = retainedClauses.some((clause) => clause.specialized_claim_role === "NON_GOAL" || clause.action_polarity === "NEGATIVE")
-    && !retainedClauses.some((clause) => clause.action_polarity === "POSITIVE" && clause.action_class === "LOCAL_MUTATION");
-  const useRetainedTopology = !hasMentionedExternalContent && !hasDominantNonGoal && (retainedClauses.length > legacySegments.length
-    || retainedClauses.length < legacySegments.length && retainedClauses.some((clause) => clause.operation_subject === "SHELL"));
-  const segments = useRetainedTopology
-    ? retainedClauses.map((clause) => ({ statement: clause.text, source: clause.source }))
-    : legacySegments;
-  for (const [index, segment] of segments.entries()) {
-    const { statement: segmentedStatement, source } = segment;
-    const normalizedStatement = normalizedClaimText(segmentedStatement);
-    const retained = retainedClauses.find((clause) => !representedClauses.has(clause.index)
-      && clause.source === source
-      && clause.specialized_claim_role !== null
-      && (() => {
-        const normalizedClause = normalizedClaimText(clause.text);
-        return normalizedClause === normalizedStatement
-          || normalizedStatement.startsWith(`${normalizedClause} and`)
-          || normalizedStatement.startsWith(`${normalizedClause},`)
-          || normalizedClause.startsWith(`${normalizedStatement} `);
-      })());
-    if (retained) representedClauses.add(retained.index);
-    const statement = retained?.text ?? segmentedStatement;
-    const kind = retained?.specialized_claim_role
-      ?? clausePatches.claim_kinds?.find((patch) => normalizedClaimText(patch.segment) === normalizedStatement)?.kind
-      ?? claimKind(statement, index);
-    const localIntent = source === "EXTERNAL_SOURCE" ? "ANSWER" : kind === "NON_GOAL" ? inferIntent(statement) : index === 0 ? intent : inferIntent(statement);
-    const localRelation = source === "EXTERNAL_SOURCE" ? "NEW" : kind === "NON_GOAL" ? inferRelation(statement) : index === 0 ? relation : "NEW";
-    const clauseAuthority = source === "USER"
-      ? deriveAdmissionClausePatches(statement, [{ start: 0, end: statement.length, source: "USER" }]).add_authority_tags ?? []
-      : [];
-    const localTags = [...(source === "EXTERNAL_SOURCE" ? inferExternalTags(statement) : inferTags(statement, localIntent, localRelation)),
-      ...clauseAuthority, ...(directUserAttested ? clauseAuthority.map((tag) => `requested-${tag}`) : [])]
-      .filter((tag) => directUserAttested || !tag.startsWith("requested-"))
-      .filter((tag) => allTags.has(tag));
-    if (kind === "CURRENT_STATE" && allTags.has("current-state") && !localTags.includes("current-state")) localTags.push("current-state");
-    if (index === 0 && !localTags.includes("always")) localTags.push("always");
-    localTags.forEach((tag) => represented.add(tag));
-    claims.push({
-      claim_id: `CL-${String(claims.length + 1).padStart(3, "0")}`,
-      kind,
-      statement: statement.slice(0, 500),
-      source,
-      status: "PROVIDED",
-      confidence: null,
-      verification: claimVerification(kind, source),
-      policy_tags: unique(localTags).sort(),
-      consumers: claimConsumers(kind),
-      invalidation: claimInvalidation(kind),
-    });
-  }
-  for (const clause of retainedClauses.filter((candidate) => candidate.specialized_claim_role !== null && !representedClauses.has(candidate.index))) {
-    const kind = clause.specialized_claim_role!;
-    const localIntent = clause.source === "EXTERNAL_SOURCE" ? "ANSWER" : kind === "NON_GOAL" ? inferIntent(clause.text) : inferIntent(clause.text);
-    const localRelation = clause.source === "EXTERNAL_SOURCE" ? "NEW" : kind === "NON_GOAL" ? inferRelation(clause.text) : "NEW";
-    const localTags = (clause.source === "EXTERNAL_SOURCE" ? inferExternalTags(clause.text) : inferTags(clause.text, localIntent, localRelation))
-      .filter((tag) => directUserAttested || !tag.startsWith("requested-"))
-      .filter((tag) => allTags.has(tag));
-    if (kind === "CURRENT_STATE" && allTags.has("current-state") && !localTags.includes("current-state")) localTags.push("current-state");
-    localTags.forEach((tag) => represented.add(tag));
-    claims.push({
-      claim_id: `CL-${String(claims.length + 1).padStart(3, "0")}`,
-      kind,
-      statement: clause.text.slice(0, 500),
-      source: clause.source,
-      status: "PROVIDED",
-      confidence: null,
-      verification: claimVerification(kind, clause.source),
-      policy_tags: unique(localTags).sort(),
-      consumers: claimConsumers(kind),
-      invalidation: claimInvalidation(kind),
-    });
-  }
-  for (const requested of unique(authority).sort()) {
-    claims.push({
-      claim_id: `CL-${String(claims.length + 1).padStart(3, "0")}`,
-      kind: "AUTHORITY",
-      statement: `Untrusted authority candidate: ${requested}`,
-      source: "MODEL_INFERENCE",
-      status: "INFERRED",
-      confidence: 0.5,
-      verification: "a trusted host receipt must establish any hard-action authority",
-      policy_tags: [requested],
-      consumers: ["authority", "tool-enforcement"],
-      invalidation: ["permission", "request", "target", "tool"],
-    });
-  }
-  for (const tag of [...allTags].filter((item) => item !== "always" && !represented.has(item)).sort()) {
-    claims.push({
-      claim_id: `CL-${String(claims.length + 1).padStart(3, "0")}`,
-      kind: "INFERENCE",
-      statement: `Admission signal: ${tag}.`,
-      source: "MODEL_INFERENCE",
-      status: "INFERRED",
-      confidence: candidateTags.includes(tag) ? 0.5 : 0.8,
-      verification: "confirm the signal from current scope before dependent mutation",
-      policy_tags: [tag],
-      consumers: ["controls", "policies"],
-      invalidation: ["request", "scope", "source"],
-    });
-  }
-  return claims;
 }
 
 function canonicalClaimSemantics(claim: TaskClaim): string {
@@ -1593,47 +644,6 @@ function requiredSkills(controls: ControlPack[], intent: Intent, tags: Set<strin
   return unique(skills);
 }
 
-function inferTopology(tags: Set<string>, intent: Intent): typeof TOPOLOGY[number] {
-  if (tags.has("program")) return "PROGRAM";
-  if (tags.has("connected")) return "CONNECTED";
-  if (["ANSWER", "DISCOVER", "DIAGNOSE", "REVIEW", "VALIDATE"].includes(intent) && ["auth", "tenant", "payment", "safety"].some((tag) => tags.has(tag))) return "BOUNDED";
-  if (tags.has("atomic-change") || tags.has("privileged")) return "ATOMIC";
-  if (["CHANGE", "OPERATE"].includes(intent)) return "BOUNDED";
-  return "ATOMIC";
-}
-
-function inferEffort(tags: Set<string>, topology: typeof TOPOLOGY[number], request: string): typeof EFFORT[number] {
-  if (topology === "PROGRAM") return "EXTENDED";
-  if (tags.has("simulation")) return "MEDIUM";
-  if (topology === "CONNECTED") return /\b(long[- ]running|resume|several|multiple)\b/i.test(request) ? "LARGE" : "MEDIUM";
-  if (topology === "BOUNDED") return "MEDIUM";
-  if (tags.has("privileged") || tags.has("external-write")) return "SMALL";
-  return request.length > 160 ? "SMALL" : "MICRO";
-}
-
-function inferAuthority(tags: Set<string>, intent: Intent): AuthorityClass {
-  if (tags.has("destructive")) return "DESTRUCTIVE";
-  if (tags.has("privileged")) return "PRIVILEGED";
-  if (tags.has("external-write")) return "EXTERNAL_WRITE";
-  return ["CHANGE", "OPERATE"].includes(intent) ? "LOCAL_WRITE" : "READ_ONLY";
-}
-
-function inferDuration(tags: Set<string>, topology: typeof TOPOLOGY[number], request: string): typeof DURATION[number] {
-  if (topology === "PROGRAM") return "PROGRAM";
-  const actionable = stripNegatedClauses(request).trim();
-  if (/^\s*(?:(?:please|kindly)\s+)?(?:resume|pick up|carry on)\b/i.test(actionable) || /\b(long[- ]running|after the source identity changed)\b/i.test(actionable)) return "RESUMABLE";
-  if (topology === "CONNECTED" || topology === "BOUNDED" || tags.has("multi-turn")) return "MULTI_TURN";
-  return "TURN";
-}
-
-function inferContext(controls: ControlPack[], tags: Set<string>, topology: typeof TOPOLOGY[number], route: Route): typeof CONTEXT[number] {
-  if (controls.includes("FULL_SCAN")) return "FULL_SCAN";
-  if (topology === "BOUNDED" && ["auth", "tenant", "payment", "safety"].some((tag) => tags.has(tag)) && !["requested-external-write", "requested-privileged", "requested-destructive"].some((tag) => tags.has(tag))) return "SCOPED_SCAN";
-  if (["CONNECTED", "PROGRAM"].includes(topology) || tags.has("behavior-change")) return "SCOPED_SCAN";
-  if (["DIRECT_READ", "DIRECT_CHANGE", "BOUNDED"].includes(route) || controls.includes("SECURITY_ASSURANCE")) return "TARGETED_PROBE";
-  return "PROMPT_ONLY";
-}
-
 function envelopePayload(envelope: JsonObject): JsonObject {
   const { envelope_id: _id, integrity: _integrity, ...payload } = envelope;
   return payload;
@@ -1652,9 +662,6 @@ export function validateTaskEnvelope(envelope: unknown, bindings: TaskEnvelopeVa
   if (isObject(envelope) && envelope.policy_bundle_version !== ADMISSION_POLICY_BUNDLE) throw new CascadeError("task envelope policy bundle is stale or unsupported");
   assertJsonSchema(envelope, ENVELOPE_SCHEMA, "$");
   const value = envelope as TaskEnvelope;
-  if (bindings.require_semantic_interpretation && value.derivation_input.classifier_id !== "cascade-task-admission-semantic-v1") throw new CascadeError("normal admission requires a semantic interpretation; lexical envelopes are diagnostics only");
-  const semanticClassifier = value.derivation_input.classifier_id === "cascade-task-admission-semantic-v1";
-  if (semanticClassifier !== (value.derivation_input.provenance_mode === "STRUCTURED_PROPOSAL") || semanticClassifier !== (value.derivation_input.semantic_interpretation !== undefined)) throw new CascadeError("task envelope classifier and semantic interpretation binding differ");
   if (parseRfc3339Instant(value.produced_at) === null || parseRfc3339Instant(value.derivation_input.produced_at) === null) throw new CascadeError("task envelope produced_at is not a valid date-time");
   if (value.policy_bundle_digest !== POLICY_BUNDLE_DIGEST || value.control_catalog_digest !== CONTROL_CATALOG_DIGEST) throw new CascadeError("task envelope policy or control source digest is stale");
   const digest = sha256Text(stableJson(envelopePayload(value)));
@@ -1670,15 +677,13 @@ export function validateTaskEnvelope(envelope: unknown, bindings: TaskEnvelopeVa
       value.derivation_input.direct_user_attestation.request_digest !== value.request_digest ||
       value.derivation_input.direct_user_attestation.source_segments_digest !== value.derivation_input.source_segments_digest
     ) throw new CascadeError("task envelope trusted request provenance is invalid");
-  } else if (value.derivation_input.provenance_mode === "STRUCTURED_PROPOSAL") {
-    if (value.derivation_input.classifier_id !== "cascade-task-admission-semantic-v1" || value.derivation_input.authenticity !== "UNVERIFIED_MODEL_PROPOSAL" || value.derivation_input.direct_user_attestation !== null || stableJson(value.derivation_input.request_spans) !== stableJson([{ start: 0, end: value.derivation_input.canonical_request.length, source: "EXTERNAL_SOURCE" }])) throw new CascadeError("task envelope model proposal provenance is invalid");
   } else if (
-    value.derivation_input.provenance_mode !== "LEXICAL_FALLBACK" ||
-    value.derivation_input.authenticity !== "UNVERIFIED_LEXICAL_FALLBACK" ||
+    value.derivation_input.provenance_mode !== "UNVERIFIED_SOURCE" ||
+    value.derivation_input.authenticity !== "UNVERIFIED_SOURCE" ||
     value.derivation_input.direct_user_attestation !== null ||
-    stableJson(value.derivation_input.request_spans) !== stableJson(refinedLexicalRequestSpans(value.derivation_input.canonical_request))
-  ) throw new CascadeError("task envelope lexical request provenance is invalid");
-  const expectedClassificationRequest = value.derivation_input.provenance_mode === "STRUCTURED_PROPOSAL" ? value.derivation_input.canonical_request : classificationRequestFromSpans(value.derivation_input.canonical_request, value.derivation_input.request_spans);
+    stableJson(value.derivation_input.request_spans) !== stableJson([{ start: 0, end: value.derivation_input.canonical_request.length, source: "EXTERNAL_SOURCE" }])
+  ) throw new CascadeError("task envelope unverified request provenance is invalid");
+  const expectedClassificationRequest = classificationRequestFromSpans(value.derivation_input.canonical_request, value.derivation_input.request_spans);
   if (value.derivation_input.classification_request !== expectedClassificationRequest || value.derivation_input.classification_digest !== sha256Text(value.derivation_input.classification_request)) throw new CascadeError("task envelope exact classification input is not bound to the user-authored request spans");
   if (value.source_digest !== value.derivation_input.source_digest) throw new CascadeError("task envelope source digest is not bound to the derivation input");
   if (containsRawSecret(value.derivation_input.canonical_request)) throw new CascadeError("task envelope canonical derivation input contains unredacted secret material");
@@ -1699,7 +704,7 @@ export function validateTaskEnvelope(envelope: unknown, bindings: TaskEnvelopeVa
     if ((claim.source === "MODEL_INFERENCE") !== (claim.confidence !== null)) throw new CascadeError(`task claim ${claim.claim_id} confidence/source contract is invalid`);
     if (claim.source === "MODEL_INFERENCE" && claim.status !== "INFERRED" && claim.status !== "SUPERSEDED") throw new CascadeError(`task claim ${claim.claim_id} inference status is invalid`);
     if (claim.source === "EXTERNAL_SOURCE" && claim.policy_tags.some((tag) => tag.startsWith("requested-"))) throw new CascadeError(`task claim ${claim.claim_id} external source cannot establish requested authority`);
-    if (value.derivation_input.provenance_mode !== "TRUSTED_SOURCE_SEGMENTS" && claim.policy_tags.some((tag) => tag.startsWith("requested-"))) throw new CascadeError(`task claim ${claim.claim_id} lexical provenance cannot establish requested authority`);
+    if (value.derivation_input.provenance_mode !== "TRUSTED_SOURCE_SEGMENTS" && claim.policy_tags.some((tag) => tag.startsWith("requested-"))) throw new CascadeError(`task claim ${claim.claim_id} unverified provenance cannot establish requested authority`);
   }
   const preserved = new Set(value.reclassification.preserved_claim_ids);
   const superseded = new Set(value.reclassification.superseded_claim_ids);
@@ -1800,6 +805,13 @@ function validateAdmissionRuntimeBundle(
   return { policy_count: policyIds.length, control_count: controlIds.length };
 }
 
+function validateInterpretationContract(envelopeSchema: JsonObject, interpretationSchema: JsonObject): void {
+  const { $schema, $id, $defs, ...interpretationContract } = interpretationSchema;
+  if ($schema !== "https://json-schema.org/draft/2020-12/schema" || $id !== "https://cascade.local/schemas/admission-interpretation.v1.schema.json" || stableJson(interpretationContract) !== stableJson(envelopeSchema.$defs.interpretation)) throw new CascadeError("standalone interpretation schema differs from the compiler contract");
+  const definitions = ["claim", "digest", "intent", "nullableDigest", "relation", "stringList"];
+  if (!$defs || stableJson(Object.keys($defs).sort()) !== stableJson(definitions) || definitions.some(name => stableJson($defs[name]) !== stableJson(envelopeSchema.$defs[name]))) throw new CascadeError("standalone interpretation definitions differ from the compiler contract");
+}
+
 export function validateAdmissionRuntime(): {
   policy_count: number;
   control_count: number;
@@ -1812,15 +824,17 @@ export function validateAdmissionRuntime(): {
   ) {
     throw new CascadeError("task admission runtime schema identity is invalid");
   }
+  validateInterpretationContract(ENVELOPE_SCHEMA, INTERPRETATION_SCHEMA);
   return validateAdmissionRuntimeBundle(POLICY_BUNDLE, CONTROL_CATALOG);
 }
 
 export async function validateAdmissionRepository(): Promise<{ policy_count: number; control_count: number; case_count: number }> {
-  const [source, catalog, envelopeSchema, policySchema, policySourceSchema, controlSchema, cases, caseSchema, assessmentSchema] = await Promise.all([
+  const [source, catalog, envelopeSchema, policySchema, policySourceSchema, controlSchema, cases, caseSchema, assessmentSchema, interpretationSchema] = await Promise.all([
     readStructured<JsonObject>(POLICY_PATH, ADMISSION_POLICY_SOURCE_FILE), loadAdmissionControlCatalog(), readJson<JsonObject>(ENVELOPE_SCHEMA_PATH),
     readJson<JsonObject>(POLICY_SCHEMA_PATH), readJson<JsonObject>(POLICY_SOURCE_SCHEMA_PATH), readJson<JsonObject>(CONTROL_SCHEMA_PATH), readStructured<JsonObject>(CORPUS_PATH, "harness-evals/task-admission/cases.yaml"), readJson<JsonObject>(CASE_SCHEMA_PATH),
-    readJson<JsonObject>(ASSESSMENT_SCHEMA_PATH),
+    readJson<JsonObject>(ASSESSMENT_SCHEMA_PATH), readJson<JsonObject>(INTERPRETATION_SCHEMA_PATH),
   ]);
+  validateInterpretationContract(envelopeSchema, interpretationSchema);
   if (envelopeSchema.$id !== "https://cascade.local/schemas/task-envelope.v41.schema.json" || policySchema.$id !== "https://cascade.local/schemas/task-admission-policy.v41.schema.json" || policySourceSchema.$id !== "https://cascade.local/schemas/task-admission-policy-source.v41.schema.json" || controlSchema.$id !== "https://cascade.local/schemas/task-admission-controls.v41.schema.json" || caseSchema.$id !== "https://cascade.local/schemas/task-admission-cases.v41.schema.json" || assessmentSchema.$id !== "https://cascade.local/schemas/task-admission-assessment.v41.schema.json") throw new CascadeError("task admission public schema identity is invalid");
   const publicSchemaVersions = [envelopeSchema, policySchema, controlSchema, caseSchema, assessmentSchema].map((schema) => schema.properties?.schema_version?.const);
   if (publicSchemaVersions.some((version) => version !== ADMISSION_SCHEMA_VERSION)) throw new CascadeError("task admission public schema versions must advance together");
@@ -1868,25 +882,6 @@ function derivationInputDigest(input: TaskDerivationInput): string {
   return sha256Text(stableJson(input));
 }
 
-const OBJECTIVE_STOP_WORDS = new Set([
-  "about", "after", "again", "also", "before", "change", "changes", "current", "file", "files", "implement", "implementation",
-  "into", "later", "make", "multiple", "objective", "please", "request", "review", "some", "task", "then", "this", "update", "with", "write",
-]);
-
-function objectiveTerms(text: string): Set<string> {
-  return new Set(semanticWords(text)
-    .map((word) => word.value)
-    .filter((word) => word.length >= 4 && !OBJECTIVE_STOP_WORDS.has(word) && !MUTATION_BASE_VERBS.has(word) && !MUTATION_GERUNDS.has(word)));
-}
-
-function priorObjectiveRelated(prior: PriorDerivationSnapshot, request: string): boolean {
-  const current = objectiveTerms(request);
-  const previous = objectiveTerms(prior.claims.filter((claim) => claim.status !== "SUPERSEDED" && claim.source === "USER").map((claim) => claim.statement).join(" "));
-  const shared = [...current].filter((term) => previous.has(term));
-  if (shared.length >= 2) return true;
-  return /\b(?:it|that|those|them|same)\b/i.test(request) && shared.length >= 1;
-}
-
 function canonicalLocalWriteTarget(value: string): string | null {
   const target = value.trim();
   if (
@@ -1897,196 +892,56 @@ function canonicalLocalWriteTarget(value: string): string | null {
   return target.startsWith("./") ? target.slice(2) || null : target;
 }
 
-const LOCAL_WRITE_FILE_EXTENSION = String.raw`(?:md|mdx|json|ya?ml|toml|ts|tsx|js|jsx|py|sh|css|scss|html|txt|csv|xml)`;
-
-function extractedLocalWriteTargets(request: string): string[] {
-  const matches: Array<{ start: number; end: number; value: string }> = [];
-  const add = (start: number, value: string) => {
-    const target = canonicalLocalWriteTarget(value);
-    if (target) matches.push({ start, end: start + value.length, value: target });
-  };
-  for (const match of request.matchAll(/['"`]([^'"`\r\n]+)['"`]/gu)) {
-    const value = match[1]!;
-    if (value.includes("/") || new RegExp(`\\.${LOCAL_WRITE_FILE_EXTENSION}$`, "iu").test(value)) add(match.index! + 1, value);
+function validateInterpretation(interpretation: AdmissionInterpretation, requestDigest: string, taskId: string, sourceDigest: string | null): void {
+  assertJsonSchema(interpretation, { ...ENVELOPE_SCHEMA.$defs.interpretation, $defs: ENVELOPE_SCHEMA.$defs }, "interpretation");
+  if (interpretation.request_digest !== requestDigest || interpretation.task_id !== taskId || interpretation.source_digest !== sourceDigest) throw new CascadeError("LLM interpretation request, task or source binding is stale");
+  if (new Set(interpretation.claims.map((claim) => claim.claim_id)).size !== interpretation.claims.length) throw new CascadeError("LLM interpretation claim IDs contain duplicates");
+  for (const claim of interpretation.claims) {
+    if (claim.status === "SUPERSEDED") throw new CascadeError("LLM interpretation must supply current claims; the compiler owns supersession");
+    if (containsRawSecret(claim.statement)) throw new CascadeError("LLM interpretation contains unredacted secret material");
+    for (const tag of claim.policy_tags) if (!/^[a-z0-9-]+$/.test(tag)) throw new CascadeError("LLM interpretation policy tag syntax is invalid");
   }
-  const spacedFile = new RegExp(String.raw`(?:^|[\s(])((?:(?:\.\.?\/)?(?:[\p{L}\p{N}_.@\[\]-]+\/)+[\p{L}\p{N}_.@\[\]-]+(?: +[\p{L}\p{N}_.@\[\]-]+)*|[\p{L}\p{N}_.@\[\]-]+)\.${LOCAL_WRITE_FILE_EXTENSION})(?=$|[.\s,;:!?)}\]])`, "giu");
-  for (const match of request.matchAll(spacedFile)) add(match.index! + match[0]!.indexOf(match[1]!), match[1]!);
-  const exactPath = /(?:^|[\s(])((?:\.\.?\/)?[\p{L}\p{N}_.@\[\]-]+(?:\/[\p{L}\p{N}_.@\[\]-]+)+)(?=$|[\s,;:!?)}\]])/giu;
-  for (const match of request.matchAll(exactPath)) {
-    const start = match.index! + match[0]!.indexOf(match[1]!);
-    const end = start + match[1]!.length;
-    if (!matches.some((candidate) => start < candidate.end && end > candidate.start)) add(start, match[1]!);
-  }
-  return unique(matches.map((match) => match.value)).sort();
-}
-
-const REPOSITORY_WRITE_SCOPE = /\b(?:repository[- ]wide|repo[- ]wide|repository[- ]level|whole[- ](?:repository|repo|codebase|project)|whole\s+(?:repository|repo|codebase|project)|(?:entire|complete|full)\s+(?:repository|repo|codebase|project)(?:\s+tree)?|(?:repository|repo|codebase|project)\s+tree|codebase[- ]wide|project[- ]wide|across\s+(?:the\s+)?(?:repository|repo|codebase|project)|across\s+(?:all|every|each)\s+(?:repository|repo|codebase|project)\s+files?|throughout\s+(?:the\s+)?(?:repository|repo|codebase|project)|(?:all|every|each)\s+(?:repository|repo|codebase|project)\s+files?|(?:all|every|each)\s+files?\s+(?:in|under|within|throughout|across)\s+(?:(?:this|the|our|my|your)\s+)?(?:repository|repo|codebase|project)|(?:all|every|each)\s+(?:parts?|portions?|sections?|components?|modules?|packages?|librar(?:y|ies)|director(?:y|ies)|folders?)\s+(?:(?:of|in|under|within|throughout|across|contained\s+in|included\s+in|belong(?:ing|s)?\s+(?:to|in))\s+(?:(?:this|the|our|my|your)\s+)?(?:repository|repo|codebase|project)|(?:that|which)\s+(?:belong(?:s)?\s+(?:to|in)|are\s+contained\s+in|is\s+contained\s+in)\s+(?:(?:this|the|our|my|your)\s+)?(?:repository|repo|codebase|project)))\b/i;
-
-function hasExplicitRepositoryWriteScope(request: string): boolean {
-  if (terminalReviewOverride(request)) return false;
-  const unquoted = request
-    .replace(/"(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*'|“[^”]*”|‘[^’]*’|`(?:\\.|[^`\\])*`/gu, " reviewed phrase ");
-  return semanticClauses(unquoted).some((clause) => {
-    if (!REPOSITORY_WRITE_SCOPE.test(clause) || !imperativeMutationClause(clause)) return false;
-    if (/\b(?:wording|phrase|term|label|classifier|classification|parser|detection|handling|support|tests?|documentation)\b/i.test(clause)
-      && /\b(?:document|describe|explain|review|test|add(?=\s+(?:parser\s+)?tests?\b)|add\s+support|implement\s+(?:detection|handling|support))\b/i.test(clause)) return false;
-    return true;
-  });
-}
-
-function deriveLocalWriteScope(request: string, authority: AuthorityClass): { mode: "TARGETS" | "REPOSITORY"; targets: string[] } {
-  if (authority !== "LOCAL_WRITE") return { mode: "TARGETS", targets: [] };
-  const semanticRequest = stripEmbeddedReviewAction(request);
-  const targets = extractedLocalWriteTargets(semanticRequest);
-  if (targets.length) return { mode: "TARGETS", targets };
-  if (hasExplicitRepositoryWriteScope(semanticRequest)) return { mode: "REPOSITORY", targets: [] };
-  return { mode: "TARGETS", targets: [] };
-}
-
-const SHELL_EXECUTABLE = /^(?:git|gh|rm|mv|cp|chmod|chown|curl|wget|ssh|scp|rsync|sed|awk|perl|find|docker|kubectl|terraform|aws|gcloud|az|npm|pnpm|yarn|bun|npx|python|python3|pip|pip3|uv|bash|sh|zsh)$/i;
-
-function executableBasename(token: string): string {
-  return token.replace(/\\/g, "/").split("/").at(-1)?.toLowerCase() ?? "";
-}
-
-function shellCommandFromRequest(request: string, allowBare = false): string | null {
-  const trimmed = request.trim();
-  const polite = /^\s*(?:(?:(?:can|could|would|will|might)\s+you|(?:would|could|might)\s+it\s+be\s+possible\s+(?:for\s+you\s+)?to|may\s+i\s+ask\s+you\s+to|(?:i|we)\s+(?:need|want|would\s+like)\s+you\s+to)\s+)?(?:(?:please|kindly)\s+)?(?:run|execute|perform)\s+([\s\S]+)$/i.exec(trimmed);
-  const command = (polite?.[1] ?? (allowBare ? trimmed.replace(/^\s*(?:run|execute|perform)\s+/i, "") : "")).replace(/[.!?]+$/u, "").trim();
-  if (!command || /[\r\n]/.test(command)) return null;
-  if (classifyEnvGitAction(command)) return command;
-  const words = shellWords(command);
-  if (!words?.length || words.length > 128) return null;
-  const executable = words.find((word) => SHELL_EXECUTABLE.test(executableBasename(word.value)));
-  if (!executable) return null;
-  const executableIndex = words.indexOf(executable);
-  if (words.slice(0, executableIndex).some((word) => !/^[A-Za-z_][A-Za-z0-9_]*=/.test(word.value) && !["command", "exec", "env", "sudo", "xargs"].includes(executableBasename(word.value)) && !word.value.startsWith("-"))) return null;
-  return command;
-}
-
-/** Source-only historical diagnostic; not the semantic intake path. */
-function deriveLegacyInterpretation(input: TaskDerivationInput, directUserAttested: boolean) {
-  // Lexical framing may downgrade a trusted user span to quoted material, but
-  // it must never promote host-labelled external content into a user directive.
-  const lexicalSpans = refinedLexicalRequestSpans(input.canonical_request);
-  const semanticClauseSpans = input.request_spans.flatMap((span) => lexicalSpans.flatMap((lexical) => {
-    const start = Math.max(span.start, lexical.start);
-    const end = Math.min(span.end, lexical.end);
-    return end > start ? [{ start, end, source: span.source === "EXTERNAL_SOURCE" || lexical.source === "EXTERNAL_SOURCE" ? "EXTERNAL_SOURCE" as const : "USER" as const }] : [];
-  }));
-  const clausePatches = deriveAdmissionClausePatches(input.canonical_request, semanticClauseSpans as AdmissionClauseSpan[]);
-  const inferredRelation = input.relation_override ?? clausePatches.relation ?? inferRelation(input.classification_request);
-  const requestDigest = input.request_digest;
-  const bareContinuation = Boolean(input.prior && /^\s*(?:continue|resume)\s*[.!?]*\s*$/i.test(input.classification_request));
-  const relation = input.relation_override ?? (bareContinuation ? "CONTINUE" : input.prior && inferredRelation === "NEW"
-    ? input.prior.request_digest === requestDigest
-      ? "CONTINUE"
-      : priorObjectiveRelated(input.prior, input.classification_request) ? "AMEND" : "NEW"
-    : inferredRelation);
-  const inferredIntent = input.intent_override ?? clausePatches.intent ?? inferIntent(input.classification_request);
-  const intent = !input.intent_override && relation === "CONTINUE" && ["ANSWER", "VALIDATE"].includes(inferredIntent) && input.prior && !hasExplicitNoMutationConstraint(input.classification_request)
-    ? input.prior.intent
-    : inferredIntent;
-  const candidateTags = unique(input.candidate_tags).sort();
-  for (const tag of candidateTags) {
-    if (!/^[a-z0-9-]+$/.test(tag) || tag === "always" || tag.startsWith("requested-")) throw new CascadeError(`candidate admission tag is invalid or authority-bearing: ${tag}`);
-  }
-  const explicitExternalRequest = requestForSource(input.canonical_request, input.request_spans, "EXTERNAL_SOURCE");
-  const framedExternalRequest = requestForSource(input.classification_request, refinedLexicalRequestSpans(input.classification_request), "EXTERNAL_SOURCE");
-  const externalRequest = explicitExternalRequest || framedExternalRequest || terminalReviewOnlyAction(input.classification_request) || "";
-  const referencedActionScan = stripQuotedReferencedActions(stripEmbeddedReviewAction(input.classification_request))
-    .replace(/(["'“”‘’`])(?:(?:please|then)\s+)?(?:proceed(?:\s+with\s+(?:it|that))?|carry(?:\s+(?:it|that))?\s+out|do\s+(?:it|that)|execute\s+(?:it|that|this|(?:the\s+)?(?:requested\s+action|action\s+requested))(?:\s+now)?|perform\s+(?:it|that|that\s+action|(?:the\s+)?(?:requested\s+action|action\s+requested))|act\s+on\s+(?:it|that|(?:the\s+)?(?:requested\s+action|action\s+requested))(?:\s+now)?|take\s+(?:it|that|the\s+action|(?:the\s+)?(?:requested\s+action|action\s+requested))|go\s+ahead(?:\s+and\s+(?:do\s+(?:it|that)|carry(?:\s+(?:it|that))?\s+out))?)\s*[.!?]*\1/gi, " reviewed phrase ")
-    .replace(/[“‘](?:(?:please|then)\s+)?(?:proceed(?:\s+with\s+(?:it|that))?|carry(?:\s+(?:it|that))?\s+out|do\s+(?:it|that)|execute\s+(?:it|that|this|(?:the\s+)?(?:requested\s+action|action\s+requested))(?:\s+now)?|perform\s+(?:it|that|that\s+action|(?:the\s+)?(?:requested\s+action|action\s+requested))|act\s+on\s+(?:it|that|(?:the\s+)?(?:requested\s+action|action\s+requested))(?:\s+now)?|take\s+(?:it|that|the\s+action|(?:the\s+)?(?:requested\s+action|action\s+requested))|go\s+ahead(?:\s+and\s+(?:do\s+(?:it|that)|carry(?:\s+(?:it|that))?\s+out))?)\s*[.!?]*[”’]/gi, " reviewed phrase ")
-    .replace(/\bwithout\s+(?:actually\s+)?(?:carrying|executing|performing|doing)\s+(?:it|that|anything)\s*(?:out)?\b/gi, " without execution ");
-  const actionableReferencedActionScan = stripNegatedClauses(referencedActionScan);
-  const referencedExternalAction = !terminalReviewOverride(input.classification_request) && !passiveActionAssessment(input.classification_request) && !hasTerminalExecutionCancellation(input.classification_request) && !hasExplicitNoMutationConstraint(input.classification_request) && /\b(?:(?:please|then)\s+)?(?:proceed(?:\s+with\s+(?:it|that))?|carry(?:\s+(?:it|that))?\s+out|do\s+(?:it|that)|execute\s+(?:it|that|this|(?:the\s+)?(?:requested\s+action|action\s+requested))(?:\s+now)?|perform\s+(?:it|that|that\s+action|(?:the\s+)?(?:requested\s+action|action\s+requested))|act\s+on\s+(?:it|that|(?:the\s+)?(?:requested\s+action|action\s+requested))(?:\s+now)?|take\s+(?:it|that|the\s+action|(?:the\s+)?(?:requested\s+action|action\s+requested))|go\s+ahead(?:\s+and\s+(?:do\s+(?:it|that)|carry(?:\s+(?:it|that))?\s+out))?)(?!\s+and\s+(?:make|add|apply|fix|change|edit|modify|update|implement|build|create|remove|delete|refactor|write))\b/i.test(actionableReferencedActionScan);
-  const externalTags = clausePatches.suppress_external_authority_tags
-    ? []
-    : externalRequest ? inferExternalTags(externalRequest) : [];
-  const referencedShellCommand = referencedExternalAction && externalRequest ? shellCommandFromRequest(externalRequest, true) : null;
-  const referencedShellAction = referencedShellCommand
-    ? classifyToolAction("exec_command", { cmd: referencedShellCommand })
-    : "READ_ONLY";
-  const referencedActionTags = referencedExternalAction
-    ? unique([
-        ...externalTags.filter((tag) => ["external-write", "privileged", "destructive"].includes(tag)),
-        ...(referencedShellAction === "DESTRUCTIVE" ? ["destructive"] : referencedShellAction === "PRIVILEGED" ? ["privileged"] : referencedShellAction === "EXTERNAL_WRITE" ? ["external-write"] : []),
-      ])
-    : [];
-  const referencedRequestedTags = directUserAttested ? referencedActionTags.map((tag) => `requested-${tag}`) : [];
-  const directShellCommand = !hasExplicitNoMutationConstraint(input.classification_request) ? shellCommandFromRequest(input.classification_request) : null;
-  const directShellAction = directShellCommand ? classifyToolAction("exec_command", { cmd: directShellCommand }) : "READ_ONLY";
-  const directShellTags = directShellAction === "DESTRUCTIVE" ? ["destructive"] : directShellAction === "PRIVILEGED" ? ["privileged"] : directShellAction === "EXTERNAL_WRITE" ? ["external-write"] : [];
-  const directShellRequestedTags = directUserAttested ? directShellTags.map((tag) => `requested-${tag}`) : [];
-  const removedAuthorityTags = new Set(clausePatches.remove_authority_tags ?? []);
-  const inferredTags = unique([
-    ...inferTags(input.classification_request, intent, relation),
-    ...referencedActionTags,
-    ...referencedRequestedTags,
-    ...directShellTags,
-    ...directShellRequestedTags,
-    ...(clausePatches.add_authority_tags ?? []),
-    ...(directUserAttested ? (clausePatches.add_authority_tags ?? []).map((tag) => `requested-${tag}`) : []),
-    ...(clausePatches.add_policy_tags ?? []),
-    ...(clausePatches.shell_action_class === "DESTRUCTIVE" ? ["destructive"] : clausePatches.shell_action_class === "EXTERNAL_WRITE" ? ["external-write"] : []),
-  ])
-    .filter((tag) => !removedAuthorityTags.has(tag as "destructive" | "external-write" | "privileged"))
-    .filter((tag) => directUserAttested || !tag.startsWith("requested-"));
-  const tags = new Set([...inferredTags, ...externalTags, ...candidateTags]);
-  const claims = atomicClaims(input.canonical_request, input.request_spans, intent, relation, tags, input.authority_candidates, candidateTags, directUserAttested, clausePatches);
-  return { relation, intent, tags, inferredTags, claims, clausePatches, referencedExternalAction, externalRequest };
-}
-
-function deriveStructuredInterpretation(input: TaskDerivationInput) {
-  const proposal = input.semantic_interpretation;
-  validateAdmissionInterpretation(proposal);
-  if (proposal.request_digest !== input.request_digest || proposal.prior_envelope_id !== (input.prior?.envelope_id ?? null)) throw new CascadeError("semantic admission request or prior-envelope binding is stale");
-  if (proposal.relation === "CONTINUE" && !input.prior) throw new CascadeError("semantic continuation requires the bound prior envelope");
-  const tags = new Set(["always", ...proposal.policy_tags]);
-  const claims: TaskClaim[] = proposal.claims.map((claim, index) => ({
-    ...claim,
-    claim_id: `CL-${String(index + 1).padStart(3, "0")}`,
-    source: "MODEL_INFERENCE",
-    status: "INFERRED",
-    policy_tags: unique([...(index === 0 ? ["always"] : []), ...claim.policy_tags]).sort(),
-    verification: "LLM proposal; verify against current scoped evidence and native host authority",
-    consumers: claimConsumers(claim.kind),
-    invalidation: claimInvalidation(claim.kind),
-  }));
-  return { relation: proposal.relation, intent: proposal.intent, tags,
-    inferredTags: proposal.policy_tags, claims, clausePatches: {} as AdmissionClausePatches,
-    referencedExternalAction: false, externalRequest: "" };
+  const scope = interpretation.local_write_scope;
+  if (scope.targets.some((target) => canonicalLocalWriteTarget(target) !== target) || (scope.mode === "REPOSITORY" && scope.targets.length)) throw new CascadeError("LLM interpretation local-write scope is not canonical");
+  if (interpretation.workload.authority !== "LOCAL_WRITE" && (scope.mode !== "TARGETS" || scope.targets.length)) throw new CascadeError("non-local interpretation cannot declare a local-write scope");
+  if (!["CHANGE", "OPERATE"].includes(interpretation.intent) && interpretation.workload.authority !== "READ_ONLY") throw new CascadeError("read-only intent cannot request mutation authority");
 }
 
 function deriveTaskEnvelopePayload(input: TaskDerivationInput): JsonObject {
-  const semanticClassifier = input.classifier_id === "cascade-task-admission-semantic-v1";
-  if (semanticClassifier !== (input.provenance_mode === "STRUCTURED_PROPOSAL") || semanticClassifier !== (input.semantic_interpretation !== undefined)) throw new CascadeError("task derivation classifier and semantic interpretation binding differ");
-  validateRequestSpans(input.canonical_request, input.request_spans);
-  if (input.provenance_version !== 2 || input.source_segments_digest !== sourceSegmentsDigest(input.request_spans)) throw new CascadeError("task derivation request provenance is not canonical");
+  validateInterpretation(input.interpretation, input.request_digest, input.task_id, input.source_digest);
+  const semantic = input.interpretation;
   const directUserAttested = input.provenance_mode === "TRUSTED_SOURCE_SEGMENTS";
-  if (directUserAttested) {
-    if (
-      input.authenticity !== "TRUSTED_DIRECT_USER_ATTESTATION" ||
-      !input.direct_user_attestation ||
-      input.direct_user_attestation.request_digest !== input.request_digest ||
-      input.direct_user_attestation.source_segments_digest !== input.source_segments_digest
-    ) throw new CascadeError("task derivation trusted request provenance is invalid");
-  } else if (input.provenance_mode === "STRUCTURED_PROPOSAL") {
-    if (input.classifier_id !== "cascade-task-admission-semantic-v1" || input.authenticity !== "UNVERIFIED_MODEL_PROPOSAL" || input.direct_user_attestation !== null || stableJson(input.request_spans) !== stableJson([{ start: 0, end: input.canonical_request.length, source: "EXTERNAL_SOURCE" }])) throw new CascadeError("task derivation model proposal provenance is invalid");
-  } else if (
-    input.provenance_mode !== "LEXICAL_FALLBACK" ||
-    input.authenticity !== "UNVERIFIED_LEXICAL_FALLBACK" ||
-    input.direct_user_attestation !== null ||
-    stableJson(input.request_spans) !== stableJson(refinedLexicalRequestSpans(input.canonical_request))
-  ) throw new CascadeError("task derivation lexical request provenance is invalid");
-  const expectedClassificationRequest = input.provenance_mode === "STRUCTURED_PROPOSAL" ? input.canonical_request : classificationRequestFromSpans(input.canonical_request, input.request_spans);
-  if (input.classification_request !== expectedClassificationRequest || input.classification_digest !== sha256Text(expectedClassificationRequest)) throw new CascadeError("task derivation classification input is not bound to user-authored spans");
   const taskId = input.task_id;
-  const semantic = input.classifier_id === "cascade-task-admission-semantic-v1";
-  const interpretation = semantic ? deriveStructuredInterpretation(input) : deriveLegacyInterpretation(input, directUserAttested);
-  const { relation, intent, tags, inferredTags, clausePatches, referencedExternalAction, externalRequest } = interpretation;
   const requestDigest = input.request_digest;
-  let claims = interpretation.claims;
+  const relation = semantic.relation;
+  const intent = semantic.intent;
+  const authorityClass = semantic.workload.authority;
+  const topology = semantic.workload.topology;
+  const effort = semantic.workload.effort;
+  const duration = semantic.workload.duration;
+  const context = semantic.workload.context;
+  const localWriteScope = semantic.local_write_scope;
+  let claims = structuredClone(semantic.claims).map((claim) => ({ ...claim,
+    policy_tags: claim.policy_tags.filter((tag) => !tag.startsWith("requested-")),
+  }));
+  const structuralTags = ["always"];
+  if (["REVIEW", "DIAGNOSE"].includes(intent)) structuralTags.push(intent.toLowerCase());
+  if (relation === "STATUS") structuralTags.push("status");
+  if (["CHANGE", "OPERATE"].includes(intent) && authorityClass === "LOCAL_WRITE") structuralTags.push(topology === "ATOMIC" ? "atomic-change" : "behavior-change");
+  if (["CHANGE", "OPERATE"].includes(intent) && topology === "CONNECTED") structuralTags.push("connected");
+  if (topology === "PROGRAM") structuralTags.push("program");
+  if (context === "FULL_SCAN") structuralTags.push("full-scan");
+  if (HARD_ACTIONS.includes(authorityClass as HardActionClass)) {
+    const tag = authorityClass.toLowerCase().replace("_", "-");
+    structuralTags.push(tag);
+    if (directUserAttested && claims.some((claim) => claim.kind === "AUTHORITY" && claim.source === "USER" && claim.status === "PROVIDED")) {
+      const authorityClaim = claims.find((claim) => claim.kind === "AUTHORITY" && claim.source === "USER" && claim.status === "PROVIDED")!;
+      authorityClaim.policy_tags.push(`requested-${tag}`);
+    }
+  }
+  claims[0]!.policy_tags = unique([...claims[0]!.policy_tags, ...structuralTags]);
+  const inferredTags = unique(claims.filter((claim) => !["UNKNOWN", "CONFLICTING", "SUPERSEDED"].includes(claim.status)).flatMap((claim) => claim.policy_tags));
+  const tags = new Set(inferredTags);
   const preservedClaimIds: string[] = [];
   const supersededClaimIds: string[] = [];
   const reopenedConsumers: string[] = [];
@@ -2102,7 +957,7 @@ function deriveTaskEnvelopePayload(input: TaskDerivationInput): JsonObject {
         ? input.prior!.claims.find((candidate) => candidate.status !== "SUPERSEDED"
           && !matchedPrior.has(candidate.claim_id)
           && !(sourceIdentityChanged && candidate.invalidation.includes("source"))
-          && (semantic ? stableJson({ ...candidate, claim_id: null }) === stableJson({ ...claim, claim_id: null }) : canonicalClaimSemantics(candidate) === canonicalClaimSemantics(claim)))
+          && canonicalClaimSemantics(candidate) === canonicalClaimSemantics(claim))
         : undefined;
       if (prior) {
         matchedPrior.add(prior.claim_id);
@@ -2136,8 +991,10 @@ function deriveTaskEnvelopePayload(input: TaskDerivationInput): JsonObject {
   let assurance: typeof ASSURANCE[number] = "BASIC";
   let evidence: typeof EVIDENCE[number] = route === "NO_WORKFLOW" ? "EXPLANATION" : "TARGETED";
   const missingAuthority: string[] = [];
-  const gaps: string[] = [];
-  const conflicts: string[] = [...(clausePatches.conflicts ?? [])];
+  const gaps: string[] = [...semantic.uncertainties];
+  if (claims.some((claim) => claim.status === "UNKNOWN")) gaps.push("unresolved semantic claim");
+  if (HARD_ACTIONS.includes(authorityClass as HardActionClass) && !tags.has(`requested-${authorityClass.toLowerCase().replace("_", "-")}`)) gaps.push("verified direct-user authority claim required for hard action");
+  const conflicts: string[] = claims.filter((claim) => claim.status === "CONFLICTING").map((claim) => `conflicting claim: ${claim.claim_id}`);
   for (const policy of matched) {
     const effectiveControls = unique(policy.required_controls.flatMap((control) => expandControl(control, definitions))).sort((left, right) => CONTROL_PACKS.indexOf(left) - CONTROL_PACKS.indexOf(right));
     effectiveByPolicy.set(policy.id, effectiveControls);
@@ -2176,26 +1033,6 @@ function deriveTaskEnvelopePayload(input: TaskDerivationInput): JsonObject {
   }
   if (conflicts.length) route = "DIRECT_READ";
   const controls = [...controlSet].sort((left, right) => CONTROL_PACKS.indexOf(left) - CONTROL_PACKS.indexOf(right));
-  const userTags = new Set([...inferredTags, ...input.candidate_tags]);
-  const topology = semantic ? input.semantic_interpretation!.workload.topology : inferTopology(userTags, intent);
-  const effort = semantic ? input.semantic_interpretation!.workload.effort : inferEffort(userTags, topology, input.classification_request);
-  const inferredAuthorityClass = semantic ? input.semantic_interpretation!.workload.authority : inferAuthority(userTags, intent);
-  const authorityClass = clausePatches.shell_action_class === "READ_ONLY" && inferredAuthorityClass === "LOCAL_WRITE"
-    ? "READ_ONLY"
-    : inferredAuthorityClass;
-  const localWriteScopeRequest = !semantic && authorityClass === "LOCAL_WRITE" && referencedExternalAction && hasImperativeMutation(externalRequest)
-    ? externalRequest
-    : input.classification_request;
-  const baselineLocalWriteScope = semantic ? input.semantic_interpretation!.local_write_scope : deriveLocalWriteScope(localWriteScopeRequest, authorityClass);
-  const localWriteScope = authorityClass === "LOCAL_WRITE" && clausePatches.boundary_targets?.length
-    ? { mode: "TARGETS" as const, targets: clausePatches.boundary_targets }
-    : authorityClass === "LOCAL_WRITE" && clausePatches.boundary_present && clausePatches.conflicts?.length && !clausePatches.boundary_targets?.length
-      ? { mode: "TARGETS" as const, targets: [] }
-      : authorityClass === "LOCAL_WRITE" && baselineLocalWriteScope.mode === "TARGETS" && !baselineLocalWriteScope.targets.length && clausePatches.repository_scope === "REPOSITORY"
-        ? { mode: "REPOSITORY" as const, targets: [] }
-        : baselineLocalWriteScope;
-  const duration = semantic ? input.semantic_interpretation!.workload.duration : inferDuration(userTags, topology, input.classification_request);
-  const context = inferContext(controls, tags, topology, route);
   const allGaps = unique([...missingAuthority.map((item) => `missing authority: ${item}`), ...gaps]).sort();
   const blockers = unique([
     ...(conflicts.length ? ["dependent mutation blocked by policy conflict"] : []),
@@ -2270,7 +1107,7 @@ function deriveTaskEnvelopePayload(input: TaskDerivationInput): JsonObject {
     conflicts: unique(conflicts).sort(),
     gaps: allGaps,
     blockers,
-    non_goals: ["admission does not execute work", "admission does not dispatch agents or create worklines", "semantic interpretation and lexical diagnostics cannot establish hard-action authority"],
+    non_goals: ["admission does not execute work", "admission does not dispatch agents or create worklines", "model interpretation cannot grant runtime authority"],
     invalidation: ["request meaning", "request or source digest", "source identity", "policy bundle", "permission", "scope", "hard-action target", "tool identity"],
   };
   return payload;
@@ -2283,12 +1120,9 @@ function buildTaskDerivationInput(input: AdmissionRequest): TaskDerivationInput 
     input.source_segments,
     input.trusted_direct_user_attestation,
   );
-  const refinedLexicalSpans = verifiedProvenance ? null : refinedLexicalRequestSpans(input.request);
-  const lexicalPartition = verifiedProvenance ? null : redactRequestPartition(input.request, refinedLexicalSpans!);
-  const canonicalRequest = verifiedProvenance?.canonical_request ?? lexicalPartition!.canonical_request;
+  const canonicalRequest = verifiedProvenance?.canonical_request ?? canonicalAdmissionRequest(input.request);
   if (!canonicalRequest.trim()) throw new CascadeError("admission request is empty after canonicalization");
-  if (canonicalRequest.length > MAX_REDACTED_REQUEST_CHARACTERS) throw new CascadeError(`redacted admission request exceeds ${MAX_REDACTED_REQUEST_CHARACTERS} characters`);
-  const requestSpans = verifiedProvenance?.spans ?? lexicalPartition!.request_spans;
+  const requestSpans: RequestSpan[] = verifiedProvenance?.spans ?? [{ start: 0, end: canonicalRequest.length, source: "EXTERNAL_SOURCE" }];
   validateRequestSpans(canonicalRequest, requestSpans);
   const boundedClassificationRequest = classificationRequestFromSpans(canonicalRequest, requestSpans);
   const sourceDigest = input.source_digest ?? null;
@@ -2297,12 +1131,13 @@ function buildTaskDerivationInput(input: AdmissionRequest): TaskDerivationInput 
   if (input.prior_envelope && taskId !== input.prior_envelope.task_id) throw new CascadeError("prior task envelope belongs to a different task_id");
   return {
     schema_version: ADMISSION_SCHEMA_VERSION,
-    classifier_id: "cascade-task-admission-v41",
+    classifier_id: "cascade-semantic-admission-v1",
+    interpretation: input.interpretation!,
     canonical_request: canonicalRequest,
     classification_request: boundedClassificationRequest,
     classification_digest: sha256Text(boundedClassificationRequest),
     provenance_version: 2,
-    provenance_mode: verifiedProvenance ? "TRUSTED_SOURCE_SEGMENTS" : "LEXICAL_FALLBACK",
+    provenance_mode: verifiedProvenance ? "TRUSTED_SOURCE_SEGMENTS" : "UNVERIFIED_SOURCE",
     source_segments_digest: sourceSegmentsDigest(requestSpans),
     direct_user_attestation: verifiedProvenance?.receipt ?? null,
     request_spans: requestSpans,
@@ -2325,77 +1160,94 @@ function buildTaskDerivationInput(input: AdmissionRequest): TaskDerivationInput 
       direct_user_attestation: input.prior_envelope.derivation_input.direct_user_attestation,
       claims: structuredClone(input.prior_envelope.claims),
     } : null,
-    authenticity: verifiedProvenance ? "TRUSTED_DIRECT_USER_ATTESTATION" : "UNVERIFIED_LEXICAL_FALLBACK",
+    authenticity: verifiedProvenance ? "TRUSTED_DIRECT_USER_ATTESTATION" : "UNVERIFIED_SOURCE",
   };
 }
 
-export async function compileLegacyTaskEnvelope(input: AdmissionRequest): Promise<TaskEnvelope> {
+export interface SemanticAdmissionInterpretation {
+  schema_version: 1;
+  artifact_type: "cascade-admission-interpretation";
+  status: "RESOLVED" | "UNRESOLVED";
+  request_digest: string;
+  prior_envelope_id: string | null;
+  model_id: string;
+  relation: Relation;
+  intent: Intent;
+  policy_tags: string[];
+  workload: {
+    topology: typeof TOPOLOGY[number];
+    effort: typeof EFFORT[number];
+    authority: AuthorityClass;
+    duration: typeof DURATION[number];
+  };
+  local_write_scope: TaskEnvelope["authority"]["local_write_scope"];
+  claims: Array<{ kind: TaskClaim["kind"]; statement: string; confidence: number; policy_tags: string[] }>;
+  uncertainty: string[];
+}
+
+export function validateAdmissionInterpretation(value: unknown): asserts value is SemanticAdmissionInterpretation {
+  assertJsonSchema(value, { $schema: ENVELOPE_SCHEMA.$schema, $defs: ENVELOPE_SCHEMA.$defs, $ref: "#/$defs/admissionInterpretation" }, "$");
+  const proposal = value as SemanticAdmissionInterpretation;
+  if (proposal.status !== "RESOLVED" || proposal.uncertainty.length) throw new CascadeError("semantic admission is unresolved; repair or clarify before compiling an envelope");
+  requireString(proposal.model_id, "semantic admission model_id");
+  proposal.claims.forEach((claim) => requireString(claim.statement, "semantic admission claim"));
+  for (const tag of [...proposal.policy_tags, ...proposal.claims.flatMap((claim) => claim.policy_tags)]) {
+    if (tag === "always" || tag.startsWith("requested-")) throw new CascadeError("model admission tags cannot establish requested authority");
+  }
+  const represented = new Set(proposal.claims.flatMap((claim) => claim.policy_tags));
+  if (proposal.policy_tags.some((tag) => !represented.has(tag)) || [...represented].some((tag) => !proposal.policy_tags.includes(tag))) throw new CascadeError("semantic admission policy tags must be bound to declared claims");
+  if (proposal.claims.some((claim) => containsRawSecret(claim.statement))) throw new CascadeError("semantic admission claims contain unredacted secret material");
+  const scope = proposal.local_write_scope;
+  if (scope.targets.some((target) => canonicalLocalWriteTarget(target) !== target)) throw new CascadeError("semantic admission write targets must be canonical repository-relative paths");
+  if (scope.mode === "REPOSITORY" && scope.targets.length) throw new CascadeError("repository write scope cannot also name targets");
+  if (proposal.workload.authority !== "LOCAL_WRITE" && (scope.mode !== "TARGETS" || scope.targets.length)) throw new CascadeError("non-local admission cannot declare a local write scope");
+  if (["ANSWER", "DISCOVER", "DIAGNOSE", "REVIEW", "VALIDATE"].includes(proposal.intent) && proposal.workload.authority !== "READ_ONLY") throw new CascadeError("read-only semantic intent cannot declare mutation authority");
+}
+
+export function semanticAdmissionRequest(request: string): { request: string; request_digest: string } {
+  const canonical = canonicalAdmissionRequest(request);
+  if (!canonical.trim()) throw new CascadeError("semantic admission request is empty after redaction");
+  return { request: canonical, request_digest: sha256Text(canonical) };
+}
+
+function normalizeSemanticInterpretation(input: AdmissionRequest): AdmissionRequest {
+  if (input.semantic_interpretation === undefined) return input;
+  if (input.interpretation !== undefined) throw new CascadeError("admission cannot combine two interpretation formats");
+  if (input.relation || input.intent) throw new CascadeError("semantic admission cannot consume legacy overrides");
+  const proposal = input.semantic_interpretation;
+  validateAdmissionInterpretation(proposal);
+  if (proposal.request_digest !== canonicalAdmissionRequestDigest(input.request) || proposal.prior_envelope_id !== (input.prior_envelope?.envelope_id ?? null)) throw new CascadeError("semantic admission request or prior-envelope binding is stale");
+  if (proposal.relation === "CONTINUE" && !input.prior_envelope) throw new CascadeError("semantic continuation requires the bound prior envelope");
+  return { ...input, interpretation: {
+    schema_version: 1, interpreter: { kind: "LLM", model: proposal.model_id },
+    request_digest: proposal.request_digest,
+    task_id: input.task_id ?? input.prior_envelope?.task_id ?? "adhoc", source_digest: input.source_digest ?? null,
+    relation: proposal.relation, intent: proposal.intent,
+    claims: proposal.claims.map((claim, index) => ({
+      ...claim, claim_id: `CL-${String(index + 1).padStart(3, "0")}`,
+      source: "MODEL_INFERENCE", status: "INFERRED",
+      verification: "LLM proposal; verify against current scoped evidence and native host authority",
+      consumers: ["route", "validation", "tool-enforcement"], invalidation: ["request", "source", "permission"],
+    })),
+    workload: { ...proposal.workload, context: "TARGETED_PROBE" },
+    local_write_scope: proposal.local_write_scope, uncertainties: proposal.uncertainty,
+  } };
+}
+
+export async function compileTaskEnvelope(input: AdmissionRequest): Promise<TaskEnvelope> {
+  input = normalizeSemanticInterpretation(input);
   assertAdmissionRequestBound(input.request);
-  if (input.semantic_interpretation !== undefined) throw new CascadeError("legacy diagnostics cannot consume a semantic interpretation");
   // Normal runtime compilation validates only the policy, control, and envelope
   // contracts loaded by this process. The 981-case corpus is a source-checkout
   // regression suite and must never become a per-request runtime dependency.
   validateAdmissionRuntime();
   if (input.prior_envelope) validateTaskEnvelope(input.prior_envelope);
+  if (!input.interpretation) throw new CascadeError("LLM interpretation required; submit --interpretation using .codex/task-admission/interpretation.schema.json (no lexical fallback)");
+  if ((input.relation && input.relation !== input.interpretation.relation) || (input.intent && input.intent !== input.interpretation.intent)) throw new CascadeError("admission override conflicts with LLM interpretation");
   const derivationInput = buildTaskDerivationInput(input);
   const envelope = sealEnvelope(deriveTaskEnvelopePayload(derivationInput));
   validateTaskEnvelope(envelope);
   return envelope;
-}
-
-export async function compileTaskEnvelope(input: AdmissionRequest): Promise<TaskEnvelope> {
-  assertAdmissionRequestBound(input.request);
-  validateAdmissionRuntime();
-  validateAdmissionInterpretation(input.semantic_interpretation);
-  if (input.relation || input.intent || input.candidate_tags?.length || input.source_segments || input.trusted_direct_user_attestation) throw new CascadeError("semantic intake cannot be combined with legacy overrides or a synthetic provenance bridge");
-  if (input.prior_envelope) validateTaskEnvelope(input.prior_envelope, { require_semantic_interpretation: true });
-  const canonicalRequest = redactSensitive(input.request);
-  if (!canonicalRequest.trim() || canonicalRequest.length > MAX_REDACTED_REQUEST_CHARACTERS) throw new CascadeError("semantic admission canonical request is empty or oversized");
-  const requestSpans: RequestSpan[] = [{ start: 0, end: canonicalRequest.length, source: "EXTERNAL_SOURCE" }];
-  const sourceDigest = input.source_digest ?? null;
-  if (sourceDigest !== null && !/^[a-f0-9]{64}$/.test(sourceDigest)) throw new CascadeError("admission source_digest must be a lowercase SHA-256 digest");
-  const taskId = input.task_id ?? input.prior_envelope?.task_id ?? "adhoc";
-  if (input.prior_envelope && taskId !== input.prior_envelope.task_id) throw new CascadeError("prior task envelope belongs to a different task_id");
-  const derivation: TaskDerivationInput = {
-    schema_version: ADMISSION_SCHEMA_VERSION,
-    classifier_id: "cascade-task-admission-semantic-v1",
-    semantic_interpretation: structuredClone(input.semantic_interpretation),
-    canonical_request: canonicalRequest,
-    classification_request: canonicalRequest,
-    classification_digest: sha256Text(canonicalRequest),
-    provenance_version: 2,
-    provenance_mode: "STRUCTURED_PROPOSAL",
-    source_segments_digest: sourceSegmentsDigest(requestSpans),
-    direct_user_attestation: null,
-    request_spans: requestSpans,
-    request_digest: sha256Text(canonicalRequest),
-    source_digest: sourceDigest,
-    task_id: taskId,
-    produced_at: input.produced_at ?? utcNow(),
-    relation_override: null,
-    intent_override: null,
-    authority_candidates: unique(input.authority ?? []).sort(),
-    candidate_tags: [],
-    prior: input.prior_envelope ? {
-      envelope_id: input.prior_envelope.envelope_id, revision: input.prior_envelope.revision,
-      task_id: input.prior_envelope.task_id, request_digest: input.prior_envelope.request_digest,
-      source_digest: input.prior_envelope.source_digest, intent: input.prior_envelope.intent,
-      provenance_mode: input.prior_envelope.derivation_input.provenance_mode,
-      direct_user_attestation: input.prior_envelope.derivation_input.direct_user_attestation,
-      claims: structuredClone(input.prior_envelope.claims),
-    } : null,
-    authenticity: "UNVERIFIED_MODEL_PROPOSAL",
-  };
-  const envelope = sealEnvelope(deriveTaskEnvelopePayload(derivation));
-  validateTaskEnvelope(envelope);
-  return envelope;
-}
-
-export function semanticAdmissionRequest(request: string): { request: string; request_digest: string } {
-  assertAdmissionRequestBound(request);
-  const canonical = redactSensitive(request);
-  if (!canonical.trim()) throw new CascadeError("semantic admission request is empty after redaction");
-  return { request: canonical, request_digest: sha256Text(canonical) };
 }
 
 function toolText(input: unknown): string {
@@ -3494,88 +2346,12 @@ export async function runAdmissionCorpus(): Promise<JsonObject> {
     "harness-evals/task-admission/cases.yaml",
   );
   validateAdmissionCaseBundle(source);
-  const results: JsonObject[] = [];
-  for (const item of source.cases as JsonObject[]) {
-    const envelope = await compileLegacyTaskEnvelope({ request: item.request, task_id: item.id, authority: item.authority, produced_at: "2026-08-04T00:00:00Z" });
-    const missing = item.required_controls.filter((control: string) => !envelope.control_packs.includes(control as ControlPack));
-    const unexpected = envelope.control_packs.filter((control) => !item.required_controls.includes(control));
-    const forbidden = item.forbidden_controls.filter((control: string) => envelope.control_packs.includes(control as ControlPack));
-    const missingSkills = item.expected_skills.filter((skill: string) => !envelope.required_skills.includes(skill));
-    const unexpectedSkills = envelope.required_skills.filter((skill: string) => !item.expected_skills.includes(skill));
-    const relationMatch = envelope.relation === item.expected_relation;
-    const intentMatch = envelope.intent === item.expected_intent;
-    const workloadMatch = stableJson(envelope.workload) === stableJson(item.expected_workload);
-    const skillsMatch = !missingSkills.length && !unexpectedSkills.length;
-    const routeMatch = envelope.route === item.expected_route;
-    const blockedMatch = Boolean(envelope.blockers.length) === item.expected_blocked;
-    const persistenceMatch = item.expected_persistence === undefined || envelope.persistence.recommended === item.expected_persistence;
-    const actualClaimKinds = unique(envelope.claims.filter((claim) => claim.source === "USER" && claim.status !== "SUPERSEDED").map((claim) => claim.kind));
-    const claimsMatch = item.expected_claim_kinds === undefined || stableJson(actualClaimKinds.sort()) === stableJson([...item.expected_claim_kinds].sort());
-    const traceComplete = envelope.control_packs.every((control) => envelope.explanation_trace.some((row: JsonObject) => row.control === control));
-    const overControl = forbidden.length > 0 || unexpected.length > 0 || unexpectedSkills.length > 0 || ROUTES.indexOf(envelope.route) > ROUTES.indexOf(item.expected_route) || (!item.expected_blocked && envelope.blockers.length > 0);
-    const underControl = missing.length > 0 || missingSkills.length > 0 || ROUTES.indexOf(envelope.route) < ROUTES.indexOf(item.expected_route) || (item.expected_blocked && envelope.blockers.length === 0);
-    const status = relationMatch && intentMatch && workloadMatch && skillsMatch && persistenceMatch && claimsMatch && routeMatch && blockedMatch && !missing.length && !unexpected.length && !forbidden.length && traceComplete ? "PASS" : "FAIL";
-    results.push({
-      id: item.id,
-      criterion: item.criterion,
-      status,
-      relation_match: relationMatch,
-      intent_match: intentMatch,
-      workload_match: workloadMatch,
-      skills_match: skillsMatch,
-      persistence_match: persistenceMatch,
-      claims_match: claimsMatch,
-      expected_route: item.expected_route,
-      actual_route: envelope.route,
-      missing_controls: missing,
-      unexpected_controls: unexpected,
-      forbidden_controls: forbidden,
-      missing_skills: missingSkills,
-      unexpected_skills: unexpectedSkills,
-      blocked_match: blockedMatch,
-      trace_complete: traceComplete,
-      over_control: overControl,
-      under_control: underControl,
-    });
-  }
-  const failed = results.filter((item) => item.status !== "PASS").length;
-  const count = (field: string) => results.filter((item) => item[field] === true).length;
-  const assessment = {
-    schema_version: ADMISSION_SCHEMA_VERSION,
-    policy_bundle_version: ADMISSION_POLICY_BUNDLE,
-    case_set_version: source.case_set_version,
-    version_bijection: source.policy_bundle_version === ADMISSION_POLICY_BUNDLE && source.case_set_version === ADMISSION_SCHEMA_VERSION,
-    status: failed ? "FAIL" : "PASS",
-    total: results.length,
-    metric_population: results.length,
-    passed: results.length - failed,
-    failed,
-    over_control: results.filter((item) => item.over_control).length,
-    under_control: results.filter((item) => item.under_control).length,
-    trace_complete: results.every((item) => item.trace_complete),
-    axes_complete: results.every((item) => item.relation_match && item.intent_match && item.workload_match),
-    metrics: {
-      relation_correct: count("relation_match"),
-      intent_correct: count("intent_match"),
-      workload_correct: count("workload_match"),
-      route_correct: results.filter((item) => item.expected_route === item.actual_route).length,
-      controls_exact: results.filter((item) => !item.missing_controls.length && !item.unexpected_controls.length && !item.forbidden_controls.length).length,
-      skills_exact: count("skills_match"),
-      blocked_correct: count("blocked_match"),
-      persistence_applicable: (source.cases as JsonObject[]).filter((item) => item.expected_persistence !== undefined).length,
-      persistence_correct: (source.cases as JsonObject[]).filter((item, index) => item.expected_persistence !== undefined && results[index]!.persistence_match).length,
-      claims_applicable: (source.cases as JsonObject[]).filter((item) => item.expected_claim_kinds !== undefined).length,
-      claims_correct: (source.cases as JsonObject[]).filter((item, index) => item.expected_claim_kinds !== undefined && results[index]!.claims_match).length,
-    },
-    results,
+  return {
+    status: "NOT_RUN",
+    reason: "Historical text corpus has no independently produced, request-bound LLM interpretations; it cannot grade the semantic compiler. Use frozen model interpretation evidence, never expected fields as compiler inputs.",
+    case_count: source.cases.length,
+    policy_bundle_version: source.policy_bundle_version,
   };
-  if (!ASSESSMENT_SCHEMA) {
-    throw new CascadeError(
-      "task admission corpus assessment is available only in the source checkout",
-    );
-  }
-  assertJsonSchema(assessment, ASSESSMENT_SCHEMA, "$");
-  return assessment;
 }
 
 function compactExplanation(envelope: TaskEnvelope): string {
@@ -3602,7 +2378,7 @@ export async function readBoundedTaskEnvelope(path: string, prefix?: string, bin
   let envelope: unknown;
   try { envelope = JSON.parse(text); }
   catch { throw new CascadeError("Task Envelope is not valid JSON"); }
-  validateTaskEnvelope(envelope, { require_semantic_interpretation: true, ...bindings });
+  validateTaskEnvelope(envelope, bindings);
   return envelope;
 }
 
@@ -3619,6 +2395,15 @@ async function readBoundedAdmissionRequest(path: string): Promise<string> {
   }
   assertAdmissionRequestBound(request);
   return request;
+}
+
+async function readBoundedInterpretation(path: string): Promise<JsonObject> {
+  const bytes = await readBoundedRegularFile(boundedPath(path), "LLM interpretation", { maxBytes: 1024 * 1024 });
+  try {
+    return JSON.parse(new TextDecoder("utf-8", { fatal: true }).decode(bytes));
+  } catch {
+    throw new CascadeError("LLM interpretation must contain valid UTF-8 JSON");
+  }
 }
 
 async function readAdmissionJson(file: string, maxBytes = 65_536): Promise<JsonObject> {
@@ -3652,8 +2437,9 @@ export async function main(argv: string[]): Promise<number> {
   const [command, ...rest] = argv;
   const args = parseArgs(rest);
   if (command === "validate") {
-    const result = await validateAdmissionRepository();
-    console.log(`admission_status=PASS policies=${result.policy_count} controls=${result.control_count} cases=${result.case_count} bundle=${ADMISSION_POLICY_BUNDLE}`);
+    const sourceInstalled = await isFile(CORPUS_PATH);
+    const result = sourceInstalled ? await validateAdmissionRepository() : { ...validateAdmissionRuntime(), case_count: "NOT_INSTALLED" };
+    console.log(`admission_status=PASS scope=${sourceInstalled ? "SOURCE" : "RUNTIME"} policies=${result.policy_count} controls=${result.control_count} cases=${result.case_count} bundle=${ADMISSION_POLICY_BUNDLE}`);
     return 0;
   }
   if (command === "intake") {
@@ -3667,9 +2453,9 @@ export async function main(argv: string[]): Promise<number> {
     }
     return 0;
   }
-  if (command === "assess" || command === "explain" || command === "legacy-assess") {
+  if (command === "assess" || command === "explain") {
     const intakePath = flag(args, "intake");
-    if (intakePath && (command === "legacy-assess" || flag(args, "file") || flag(args, "request") || flag(args, "prior-envelope") || flag(args, "task-id") || args.positionals.length)) throw new CascadeError("semantic intake cannot be combined with legacy diagnostics or request/prior/task overrides");
+    if (intakePath && (flag(args, "file") || flag(args, "request") || flag(args, "prior-envelope") || flag(args, "task-id") || args.positionals.length)) throw new CascadeError("semantic intake cannot be combined with request/prior/task overrides");
     const intake = intakePath ? await readAdmissionIntake(intakePath) : undefined;
     const file = flag(args, "file");
     const request = intake?.request ?? (file ? await readBoundedAdmissionRequest(file) : flag(args, "request") ?? args.positionals.join(" "));
@@ -3682,12 +2468,15 @@ export async function main(argv: string[]): Promise<number> {
     if (flags(args, "hard-action-grant").length) throw new CascadeError("--hard-action-grant is unsupported: only the trusted host runtime can issue and atomically consume hard-action receipts");
     if (boolFlag(args, "dispatch-authorized")) throw new CascadeError("--dispatch-authorized is unsupported: task admission can recommend persistence but cannot authorize dispatch");
     const interpretationPath = flag(args, "interpretation");
-    if (command !== "legacy-assess" && !interpretationPath) throw new CascadeError("semantic admission requires --interpretation PATH; no lexical fallback is permitted");
-    if (command === "legacy-assess" && interpretationPath) throw new CascadeError("legacy diagnostics cannot consume a semantic interpretation");
-    const interpretation = interpretationPath ? await readAdmissionJson(interpretationPath) : undefined;
-    const envelope = await (command === "legacy-assess" ? compileLegacyTaskEnvelope : compileTaskEnvelope)({
-      request,
-      semantic_interpretation: interpretation,
+    const suppliedInterpretation = interpretationPath ? await readBoundedInterpretation(interpretationPath) : undefined;
+    const interpretation = suppliedInterpretation?.artifact_type === "cascade-admission-interpretation"
+      ? await readAdmissionJson(interpretationPath!, 1024 * 1024)
+      : suppliedInterpretation;
+    const interpretationInput = interpretation?.artifact_type === "cascade-admission-interpretation"
+      ? { semantic_interpretation: interpretation }
+      : { interpretation: interpretation as AdmissionInterpretation | undefined };
+    const envelope = await compileTaskEnvelope({
+      request, ...interpretationInput,
       task_id: intake?.task_id ?? flag(args, "task-id", prior?.task_id ?? "adhoc"),
       relation: relationFlag as Relation | undefined,
       intent: intentFlag as Intent | undefined,
@@ -3718,8 +2507,8 @@ export async function main(argv: string[]): Promise<number> {
   if (command === "corpus") {
     const result = await runAdmissionCorpus();
     console.log(stableJson(result, true));
-    return result.status === "PASS" ? 0 : 1;
+    return result.status === "PASS" ? 0 : 2;
   }
-  console.log("Usage: bun scripts/cascade.ts admission <validate|intake|assess|explain|check-envelope|corpus|legacy-assess> [--intake .artifacts/task-admission/FILE.json] [--interpretation .artifacts/task-admission/FILE.json] [--prior-envelope PATH] [--authority CANDIDATE] [--source-digest SHA256] [--expected-request-digest SHA256] [--expected-source-digest SHA256] [--output .artifacts/task-admission/FILE.json]");
+  console.log("Usage: bun scripts/cascade.ts admission <validate|intake|assess|explain|check-envelope|corpus> [--intake .artifacts/task-admission/FILE.json] [--interpretation PATH] [--prior-envelope PATH] [--authority CANDIDATE] [--source-digest SHA256] [--expected-request-digest SHA256] [--expected-source-digest SHA256] [--output .artifacts/task-admission/FILE.json]");
   return command ? 1 : 0;
 }

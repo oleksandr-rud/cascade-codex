@@ -20,7 +20,7 @@ only; ordinary authoring follows SKILL.md's conditional routing.
 | [Specializations](model-system/specialization-overlays.md) | Extraction schema/missing/normalization; classification labels/priority/abstention; research freshness/citations; coding scope/current source/protection/validation; tools permissions/retries/cleanup | [Task overlays](../runtime/task-overlays.md), [grounded](../runtime/grounded.md), [safety](../runtime/safety-high-stakes.md); smallest compatible set of material task overlays | Repaired numeric overlay cap and extraction malformed-input/evidence-location/edge-case omissions |
 | [Specializations](model-system/specialization-overlays.md) | Comparison disqualifiers/criteria/unknown evidence; creative freedom/originality; long-context joins/coverage; modality precision/order; realtime staleness/reconciliation | [Task overlays](../runtime/task-overlays.md) for the respective trigger | Repaired missing unknown-versus-low score, chunk joins, modality order/precision, and realtime recovery detail |
 | [Routing evaluation](model-system/routing-evaluation.md) | Separate routing from prompt quality; configuration identity/status, excluded candidates, fallback, failure ownership, comparable evidence | [Evaluation](../runtime/evaluation.md); audit/comparison/effectiveness claims, with compact design notes for ordinary routing | Repaired Test trigger, decision statuses/exclusions, and affected-case reruns; expanded open-weight configuration identity |
-| [Model registry](model-system/model-registry.yaml) | Candidate/provenance/date, eligibility versus effectiveness, explicit target and per-provider controls | [Runtime index](../runtime/model-index.yaml) then named adapter; registry only for provenance/current research/comparison | Repaired known-tier model bypass; Astra and six exact open-weight checkpoints now have reachable adapters |
+| [Model registry](model-system/model-registry.yaml) | Candidate/provenance/date, eligibility versus effectiveness, explicit target and per-provider controls | [Runtime index](../runtime/model-index.yaml) then named adapter; registry only for provenance/current research/comparison | Four exact GPT-6 checkpoints and six open-weight checkpoints have reachable adapters; older unverified entries are pinned compatibility references |
 | [Routing cases](model-system/routing-cases.yaml) | Ordinary/boundary/missing/conflicting/explicit-model/high-risk/tool/surface scenarios | [Evaluation](../runtime/evaluation.md); fixtures for future controlled execution, not instructions for every prompt | Extended version and context boundaries; structural inspection is not behavioral execution |
 
 ## Runtime-specific rules and intentional exclusions
@@ -46,7 +46,9 @@ only; ordinary authoring follows SKILL.md's conditional routing.
   Source adoption does not qualify task-domain accuracy or choose a
   generative tier. The [Qwen3.5-2B adapter](../runtime/model-qwen-small.md)
   is separately reachable through its registry/index entry.
-- [Astra](../runtime/model-astra.md), [Qwen](../runtime/model-qwen.md), and
+- [Sol 6.1](../runtime/model-sol.md), [Sol 6](../runtime/model-sol6.md),
+  [Luna 6](../runtime/model-luna6.md), [Astra](../runtime/model-astra.md),
+  [shared GPT-6 guidance](../runtime/model-gpt6.md), [Qwen](../runtime/model-qwen.md), and
   [other open weights](../runtime/model-open-weight.md) separate dated provider
   facts from Cascade's inferred composition advice. Dates do not establish
   access, runtime support, price or comparative performance.

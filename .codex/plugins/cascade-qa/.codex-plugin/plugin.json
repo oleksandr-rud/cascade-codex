@@ -1,6 +1,6 @@
 {
   "name": "cascade-qa",
-  "version": "0.1.9+codex.20260910172549",
+  "version": "0.1.14+codex.20261001201835",
   "description": "Plan quality, design tests, assess evidence, and triage defects from accepted behavior without taking product definition, host execution, test repair, or release authority.",
   "author": {
     "name": "Cascade"

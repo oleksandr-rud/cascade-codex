@@ -27,6 +27,7 @@ from build_blind_packets import (
     write_json,
 )
 from reduce_evaluation import reduce_bundle
+from model_policy import MODEL_POLICY, POLICY, DEFAULT_MODEL, DEFAULT_EFFORT, REASONING_EFFORTS, is_standard_configuration
 from validate_judge import ContractError, require, score_ratings, validate_profile
 
 
@@ -36,9 +37,6 @@ TARGET_RESPONSE_SCHEMA = PLUGIN_ROOT / "skills" / "evaluate" / "references" / "a
 BUILDER_RESPONSE_SCHEMA = PLUGIN_ROOT / "skills" / "evaluate" / "references" / "agent-builder-response.schema.json"
 JUDGE_RESPONSE_SCHEMA = PLUGIN_ROOT / "skills" / "build-judge" / "references" / "judge-response.schema.json"
 JUDGE_PACKET_SCHEMA = PLUGIN_ROOT / "skills" / "evaluate" / "references" / "judge-packet.schema.json"
-MODEL_POLICY = PLUGIN_ROOT / "skills" / "evaluate" / "references" / "model-policy.json"
-DEFAULT_MODEL = "gpt-6-astra"
-REASONING_EFFORTS = {"low", "medium", "high", "xhigh", "max", "ultra"}
 SHA256_HEX = re.compile(r"^[0-9a-f]{64}$")
 FINALIZATION_MODE = "digest-only-json-response-v1"
 
@@ -767,9 +765,6 @@ def execute(args: argparse.Namespace) -> dict[str, Any]:
     require(args.subject_root.is_dir(), "subject root is unavailable")
     require(not args.output_dir.exists(), "output directory must be new and empty")
     require_disjoint(args.output_dir, args.subject_root, "output directory and subject source must be disjoint")
-    require(args.model != "gpt-5.5", "gpt-5.5 is forbidden")
-    require(args.reasoning_effort in REASONING_EFFORTS, "reasoning effort is invalid")
-
     manifest_path = args.subject_root / "evals" / "manifest.json"
     require(args.subject_manifest.resolve() == manifest_path.resolve(), "subject manifest path must be evals/manifest.json")
     manifest = json.loads(args.subject_manifest.read_text(encoding="utf-8"))
@@ -796,6 +791,11 @@ def execute(args: argparse.Namespace) -> dict[str, Any]:
         require_bound_evaluation_asset(args.subject_root, manifest, path, relative)
 
     contract = json.loads(contract_path.read_text(encoding="utf-8"))
+    # A bound suite retains its model even after the policy for new evaluations changes.
+    args.model = args.model or contract.get("models", {}).get("target", DEFAULT_MODEL)
+    args.reasoning_effort = args.reasoning_effort or contract.get("models", {}).get("reasoning_effort", DEFAULT_EFFORT)
+    require(args.model not in POLICY["forbidden_models"], "model is forbidden by evaluation policy")
+    require(args.reasoning_effort in REASONING_EFFORTS, "reasoning effort is invalid")
     suite = json.loads(args.cases.read_text(encoding="utf-8"))
     profiles = [validate_profile(json.loads(path.read_text(encoding="utf-8"))) for path in args.profile]
     require_target_policy_blindness(args.subject_root, manifest, contract)
@@ -833,24 +833,19 @@ def execute(args: argparse.Namespace) -> dict[str, Any]:
         "contract builder, target, and judge models must equal the selected model",
     )
     require(models.get("reasoning_effort") == args.reasoning_effort, "contract reasoning effort does not match")
+    selected_models = {
+        **{f"{role}_model": args.model for role in ("builder", "target", "judge")},
+        **{f"{role}_reasoning_effort": args.reasoning_effort for role in ("builder", "target", "judge")},
+    }
     require(
-        models.get("explicit_comparison_override") is (args.model != DEFAULT_MODEL or args.reasoning_effort != "high"),
+        models.get("explicit_comparison_override") is (not is_standard_configuration(selected_models)),
         "explicit comparison declaration does not match model policy",
     )
     model_policy = json.loads(MODEL_POLICY.read_text(encoding="utf-8"))
     require(model_policy.get("forbidden_models") == ["gpt-5.5"], "model policy forbidden-model set drifted")
     require(model_policy.get("explicit_comparison_overrides_allowed") is True, "model policy forbids the declared comparison override")
     require(model_policy.get("independent_judge_context_required") is True, "model policy does not require independent judges")
-    defaults = model_policy.get("defaults", {})
-    require(
-        defaults.get("builder_model") == DEFAULT_MODEL
-        and defaults.get("target_model") == DEFAULT_MODEL
-        and defaults.get("judge_model") == DEFAULT_MODEL
-        and defaults.get("builder_reasoning_effort") == "high"
-        and defaults.get("target_reasoning_effort") == "high"
-        and defaults.get("judge_reasoning_effort") == "high",
-        "model policy defaults drifted from Astra high",
-    )
+    require(model_policy == POLICY, "model policy changed after runner initialization")
     require(all(profile["model"] == args.model for profile in profiles), "judge profile model must match the selected model")
     require(len({profile["profile_id"] for profile in profiles}) == len(profiles), "judge profile IDs must be unique")
     require(
@@ -867,6 +862,7 @@ def execute(args: argparse.Namespace) -> dict[str, Any]:
         ("scripts/run_agent_evaluation.py", Path(__file__).resolve()),
         ("scripts/build_blind_packets.py", SCRIPT_ROOT / "build_blind_packets.py"),
         ("scripts/reduce_evaluation.py", SCRIPT_ROOT / "reduce_evaluation.py"),
+        ("scripts/model_policy.py", SCRIPT_ROOT / "model_policy.py"),
         ("scripts/validate_judge.py", SCRIPT_ROOT / "validate_judge.py"),
         ("skills/evaluate/references/agent-builder-response.schema.json", BUILDER_RESPONSE_SCHEMA),
         ("skills/evaluate/references/agent-target-response.schema.json", TARGET_RESPONSE_SCHEMA),
@@ -917,7 +913,7 @@ def execute(args: argparse.Namespace) -> dict[str, Any]:
     container_runtime = None
     if sys.platform == "win32" or getattr(args, "container_image", None):
         container_runtime = prepare_docker(
-            getattr(args, "container_image", None) or "cascade-evals-codex:0.153.4",
+            getattr(args, "container_image", None) or "cascade-evals-codex:0.159.3",
             getattr(args, "codex_auth_file", None) or Path.home() / ".codex" / "auth.json",
         )
     else:
@@ -1340,7 +1336,7 @@ def execute(args: argparse.Namespace) -> dict[str, Any]:
         "target_reasoning_effort": args.reasoning_effort,
         "judge_model": args.model,
         "judge_reasoning_effort": args.reasoning_effort,
-        "explicit_comparison": args.model != DEFAULT_MODEL or args.reasoning_effort != "high",
+        "explicit_comparison": models["explicit_comparison_override"],
     }
     bundle = {
         "schema_version": 1,
@@ -1375,10 +1371,10 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--assertion-adapter", type=Path, required=True)
     parser.add_argument("--evaluation-id", required=True)
     parser.add_argument("--output-dir", type=Path, required=True)
-    parser.add_argument("--model", default=DEFAULT_MODEL)
-    parser.add_argument("--reasoning-effort", default="high")
+    parser.add_argument("--model", help="Preserve the bound suite model when omitted; new evaluation default comes from model-policy.json")
+    parser.add_argument("--reasoning-effort", help="Preserve the bound suite reasoning effort when omitted")
     parser.add_argument("--timeout-seconds", type=int, default=1800)
-    parser.add_argument("--container-image", help="Local Codex image; Windows defaults to cascade-evals-codex:0.153.4. Bound to immutable image ID before dispatch.")
+    parser.add_argument("--container-image", help="Local Codex image; Windows defaults to cascade-evals-codex:0.159.3. Bound to immutable image ID before dispatch.")
     parser.add_argument("--codex-auth-file", type=Path, help="Existing Codex login file, mounted read-only in isolated phases.")
     parser.add_argument("--execute", action="store_true")
     args = parser.parse_args(argv)

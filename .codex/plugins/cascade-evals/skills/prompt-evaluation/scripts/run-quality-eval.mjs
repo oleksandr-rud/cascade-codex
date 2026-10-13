@@ -9,7 +9,9 @@ import { resolveSubjectSkill } from "./subject-plugin.mjs";
 import { runModelPhase } from "./execution-adapters.mjs";
 import { snapshotSubject, judgeRequest, parseJudgment, assertDisjointRoots, runnerDigest, interviewEvidence, subjectReadChecks } from "./evaluation-integrity.mjs";
 import { replaySubject, replayTarget } from "./replay-evidence.mjs";
+import { mechanicalGrade } from "./mechanical-grade.mjs";
 import { runSubjectSession } from "./subject-session.mjs";
+import { evaluationDefaults } from "./model-policy.mjs";
 
 const campaignSkillRoot = dirname(dirname(fileURLToPath(import.meta.url)));
 const evalRoot = join(campaignSkillRoot, "evals");
@@ -119,60 +121,6 @@ function tryExtractFinalPrompt(response) {
   return onlyFence ? onlyFence[1].trim() : null;
 }
 
-function stripSingleFence(value) {
-  const trimmed = value.trim();
-  const match = trimmed.match(/^```(?:json)?\s*\r?\n([\s\S]*?)\r?\n```$/i);
-  return match ? match[1].trim() : trimmed;
-}
-
-function countWords(value) {
-  return value.trim().match(/\b[\p{L}\p{N}][\p{L}\p{N}'’-]*\b/gu)?.length ?? 0;
-}
-
-function stable(value) {
-  if (Array.isArray(value)) return value.map(stable);
-  if (value && typeof value === "object") {
-    return Object.fromEntries(Object.keys(value).sort().map((key) => [key, stable(value[key])]));
-  }
-  return value;
-}
-
-function mechanicalGrade(output, evaluator) {
-  const checks = [];
-  if (evaluator.mechanical_type === "exact_json") {
-    let parsed = null;
-    try {
-      parsed = JSON.parse(stripSingleFence(output));
-      checks.push({ id: "valid-json", passed: true });
-    } catch (error) {
-      checks.push({ id: "valid-json", passed: false, detail: error.message });
-      return { eligible: false, checks };
-    }
-    const actualKeys = Object.keys(parsed).sort();
-    const expectedKeys = [...evaluator.exact_keys].sort();
-    checks.push({ id: "exact-keys", passed: JSON.stringify(actualKeys) === JSON.stringify(expectedKeys), actual: actualKeys, expected: expectedKeys });
-    checks.push({ id: "exact-values", passed: JSON.stringify(stable(parsed)) === JSON.stringify(stable(evaluator.expected)), actual: parsed, expected: evaluator.expected });
-  } else if (evaluator.mechanical_type === "text_contract") {
-    const lowered = output.toLowerCase();
-    for (const heading of evaluator.required_headings ?? []) {
-      checks.push({ id: `heading:${heading}`, passed: lowered.includes(heading.toLowerCase()) });
-    }
-    for (const pattern of evaluator.required_patterns ?? []) {
-      checks.push({ id: `required:${pattern}`, passed: lowered.includes(pattern.toLowerCase()) });
-    }
-    for (const pattern of evaluator.forbidden_patterns ?? []) {
-      checks.push({ id: `forbidden:${pattern}`, passed: !lowered.includes(pattern.toLowerCase()) });
-    }
-    if (Number.isInteger(evaluator.max_words)) {
-      const actual = countWords(output);
-      checks.push({ id: "max-words", passed: actual <= evaluator.max_words, actual, expected_maximum: evaluator.max_words });
-    }
-  } else {
-    fail(`unsupported evaluator type: ${evaluator.mechanical_type}`);
-  }
-  return { eligible: checks.every((check) => check.passed), checks };
-}
-
 function judgePrompt({ profile, task, runId, evidence }) {
   return judgeRequest(profile, { task_id: task.id, run_id: runId }, evidence);
 }
@@ -272,11 +220,11 @@ if (caseFile) {
 }
 if (args["prompt-file"] && !caseFile) fail("--prompt-file requires --case-file");
 const suppliedCandidate = Boolean(args["prompt-file"]);
-args["prompt-model"] ??= matrix.defaults?.prompt_model ?? "gpt-6-astra";
-args["target-model"] ??= matrix.defaults?.target_model ?? "gpt-6-astra";
-args["reasoning-effort"] ??= matrix.defaults?.reasoning_effort ?? "high";
+args["prompt-model"] ??= evaluationDefaults.builder_model;
+args["target-model"] ??= evaluationDefaults.target_model;
+args["reasoning-effort"] ??= evaluationDefaults.target_reasoning_effort;
 const judgeReasoningEffort = args["judge-reasoning-effort"] ?? args["reasoning-effort"];
-if (args["execute-judges"]) args["judge-model"] ??= matrix.defaults?.judge_model ?? "gpt-6-astra";
+if (args["execute-judges"]) args["judge-model"] ??= evaluationDefaults.judge_model;
 for (const required of caseFile ? [] : ["task"]) {
   if (!args[required]) fail(`--${required} is required`);
 }
@@ -292,7 +240,7 @@ if (caseFile) {
   if (evaluator.schema_version !== 1 || !["exact_json", "text_contract"].includes(evaluator.mechanical_type)) fail("case evaluator requires schema_version 1 and a supported mechanical_type");
   if (task.outcome_evaluation === "deterministic" && evaluator.mechanical_type !== "exact_json") fail("deterministic case requires an exact_json evaluator");
   if (evaluator.mechanical_type === "exact_json" && (!Array.isArray(evaluator.exact_keys) || !evaluator.exact_keys.length || !evaluator.expected || typeof evaluator.expected !== "object" || JSON.stringify(Object.keys(evaluator.expected).sort()) !== JSON.stringify([...evaluator.exact_keys].sort()))) fail("exact_json evaluator requires matching expected and exact_keys");
-  if (evaluator.mechanical_type === "text_contract" && ![...(evaluator.required_headings ?? []), ...(evaluator.required_patterns ?? []), ...(evaluator.forbidden_patterns ?? [])].length && !Number.isInteger(evaluator.max_words)) fail("text_contract evaluator needs at least one mechanical check");
+  if (evaluator.mechanical_type === "text_contract" && task.outcome_evaluation !== "semantic") fail("text_contract requires independent semantic outcome evaluation");
 }
 const budgets = await readJson(join(evalRoot, "token-budgets.json"));
 const outcomeProfileText = await readFile(join(evalRoot, "judges/outcome-v4.json"), "utf8");
@@ -341,7 +289,7 @@ const defaultTuple = args["reasoning-effort"] === matrix.defaults.reasoning_effo
 const selectedConfiguration = matrix.configurations.find(c => c.id === args["configuration-id"] && (suppliedCandidate || c.prompt_model === args["prompt-model"]) && c.target_model === args["target-model"] && (caseFile ? c.tier === task.tier : c.tasks.includes(task.id)) && args["reasoning-effort"] === (c.reasoning_effort ?? matrix.defaults.reasoning_effort) && (!args["execute-judges"] || (args["judge-model"] === (c.judge_model ?? matrix.defaults.judge_model) && judgeReasoningEffort === (c.judge_reasoning_effort ?? c.reasoning_effort ?? matrix.defaults.reasoning_effort))) && c.execution_adapter === (args["target-adapter"] ?? "codex-cli"));
 const liveAdapters = ["prompt", "target", "judge"].every(p => !args[`${p}-adapter`] || args[`${p}-adapter`] === "codex-cli");
 if (liveAdapters && !defaultTuple && !selectedConfiguration) fail("nondefault live execution requires a matching --configuration-id from model-matrix.json");
-const configurationId = defaultTuple ? "default-astra-high" : selectedConfiguration?.id ?? "unverified-external-fixture";
+const configurationId = defaultTuple ? `default-${matrix.defaults.target_model}-${matrix.defaults.reasoning_effort}` : selectedConfiguration?.id ?? "unverified-external-fixture";
 const builderCacheKey = suppliedCandidate ? null : sha256(JSON.stringify({ execution_surface_sha256: surfaceDigest, runner_bundle_sha256: runnerBundleDigest, adapter_config_sha256: adapterConfigDigest, execution_policy: "tool-free-staged-subject-v1", reasoning_effort: args["reasoning-effort"], adapter: args["prompt-adapter"] ?? "codex-cli", adapter_id: args["prompt-adapter-id"] ?? null, task_id: task.id, task_version: task.version, builder_mode: task.builder_mode, target_task_contract: task.target_task_contract, builder_request: builderRequest, prompt_model: args["prompt-model"], target_model: args["target-model"], tier: task.tier, runtime_contract_digest: contractDigest }));
 const builderCachePath = builderCacheKey ? join(promptCacheRoot, `${builderCacheKey}.json`) : null;
 

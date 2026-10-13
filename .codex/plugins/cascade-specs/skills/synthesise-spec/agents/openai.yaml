@@ -1,0 +1,4 @@
+interface:
+  display_name: "Synthesise Spec"
+  short_description: "Synthesize source-grounded, reviewable specifications"
+  default_prompt: "Use $synthesise-spec to synthesize this source packet into one proportional specification with explicit readiness and acceptance evidence."

@@ -236,8 +236,18 @@ cannot independently recover that earlier prefix match.
 OpenAI's documentation describes prefix matching, appending history, and reduced
 reuse after compaction. Breakpoint support and eligibility depend on the model.
 Use an adapter capability profile rather than a universal cache threshold or TTL.
-Source checked 2026-09-08:
+Source checked 2026-10-01:
 [Prompt caching](https://developers.openai.com/api/docs/guides/prompt-caching).
+
+For a GPT-6 API adapter, use `prompt_cache_options.ttl: "30m"`; the earlier
+`prompt_cache_retention` contract does not apply. Explicit-only mode requires
+breakpoints on supported input content blocks, with at least 1,024 visible
+prefix tokens. Stable prefix equality alone does not prove an eligible lookup
+boundary. `prompt_cache_key` is optional for separate accounting on these models;
+authorization remains a live runtime check. Preserve stable tools/schemas and
+measure cache-write tokens separately from ordinary input. Validate the exact
+model/endpoint and supported effort updates before adoption; these notes do not
+implement or qualify a provider cache.
 
 Target validation must compare cold/warm requests, appended turns, changing current
 state, changed catalog, corrected memory, window eviction and scope revocation.

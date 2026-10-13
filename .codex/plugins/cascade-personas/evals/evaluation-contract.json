@@ -2,7 +2,7 @@
   "schema_version": 2,
   "plugin_id": "cascade-personas",
   "subject_kind": "agent",
-  "version": "0.1.29+codex.20260910172549",
+  "version": "0.1.34+codex.20261001201835",
   "expected_case_count": 15,
   "acceptance_threshold": 0.95,
   "minimum_dimension": 3,
@@ -187,6 +187,10 @@
     {
       "alias": "cascade-simulations:simulation-actor",
       "path": "skills/simulation-actor/references/actor-prompt.md"
+    },
+    {
+      "alias": "cascade-evals:evaluate",
+      "path": "scripts/model_policy.py"
     }
   ],
   "required_case_categories": [

@@ -109,24 +109,55 @@
         "statement": { "type": "string", "minLength": 1, "maxLength": 500 },
         "source": { "enum": ["USER", "TRUSTED_INSTRUCTION", "CURRENT_SOURCE", "TOOL_EVIDENCE", "EXTERNAL_SOURCE", "MODEL_INFERENCE"] },
         "status": { "enum": ["PROVIDED", "VERIFIED", "INFERRED", "UNKNOWN", "CONFLICTING", "SUPERSEDED"] },
-        "confidence": { "type": ["number", "null"], "minimum": 0, "maximum": 1 },
+        "confidence": { "type": ["number", "null"], "minimum": 0, "maximum": 1,
+          "description": "Use a numeric confidence only for MODEL_INFERENCE; every source-bound claim must use null."
+        },
         "verification": { "type": "string", "minLength": 1, "maxLength": 300 },
         "policy_tags": { "$ref": "#/$defs/stringList" },
         "consumers": { "$ref": "#/$defs/stringList" },
         "invalidation": { "$ref": "#/$defs/stringList" }
-      }
+      },
+      "allOf": [
+        {
+          "if": {"properties": {"source": {"const": "MODEL_INFERENCE"}}},
+          "then": {"properties": {"confidence": {"type": "number"}}},
+          "else": {"properties": {"confidence": {"type": "null"}}}
+        }
+      ]
     },
     "derivationInput": {
       "type": "object", "additionalProperties": false,
-      "required": ["schema_version", "classifier_id", "canonical_request", "classification_request", "classification_digest", "provenance_version", "provenance_mode", "source_segments_digest", "direct_user_attestation", "request_spans", "request_digest", "source_digest", "task_id", "produced_at", "relation_override", "intent_override", "authority_candidates", "candidate_tags", "prior", "authenticity"],
+      "required": [
+        "schema_version",
+        "classifier_id",
+        "canonical_request",
+        "classification_request",
+        "classification_digest",
+        "provenance_version",
+        "provenance_mode",
+        "source_segments_digest",
+        "direct_user_attestation",
+        "request_spans",
+        "request_digest",
+        "source_digest",
+        "task_id",
+        "produced_at",
+        "relation_override",
+        "intent_override",
+        "authority_candidates",
+        "candidate_tags",
+        "prior",
+        "authenticity",
+        "interpretation"
+      ],
       "properties": {
         "schema_version": { "const": 41 },
-        "classifier_id": { "enum": ["cascade-task-admission-v41", "cascade-task-admission-semantic-v1"] },
+        "classifier_id": { "const": "cascade-semantic-admission-v1" },
         "canonical_request": { "type": "string", "minLength": 1, "maxLength": 4000 },
         "classification_request": { "type": "string", "minLength": 1, "maxLength": 4000 },
         "classification_digest": { "$ref": "#/$defs/digest" },
         "provenance_version": { "const": 2 },
-        "provenance_mode": { "enum": ["TRUSTED_SOURCE_SEGMENTS", "LEXICAL_FALLBACK", "STRUCTURED_PROPOSAL"] },
+        "provenance_mode": { "enum": ["TRUSTED_SOURCE_SEGMENTS", "UNVERIFIED_SOURCE"] },
         "source_segments_digest": { "$ref": "#/$defs/digest" },
         "direct_user_attestation": {
           "type": ["object", "null"], "additionalProperties": false,
@@ -155,7 +186,7 @@
           "request_digest": { "$ref": "#/$defs/digest" },
           "source_digest": { "$ref": "#/$defs/nullableDigest" },
           "intent": { "$ref": "#/$defs/intent" },
-          "provenance_mode": { "enum": ["TRUSTED_SOURCE_SEGMENTS", "LEXICAL_FALLBACK", "STRUCTURED_PROPOSAL"] },
+          "provenance_mode": { "enum": ["TRUSTED_SOURCE_SEGMENTS", "UNVERIFIED_SOURCE"] },
           "direct_user_attestation": {
             "type": ["object", "null"], "additionalProperties": false,
             "required": ["schema_version", "attestation_id", "issuer", "request_digest", "source_segments_digest"],
@@ -169,8 +200,108 @@
           },
           "claims": { "type": "array", "minItems": 1, "maxItems": 64, "items": { "$ref": "#/$defs/claim" } }
         } },
-        "authenticity": { "enum": ["TRUSTED_DIRECT_USER_ATTESTATION", "UNVERIFIED_LEXICAL_FALLBACK", "UNVERIFIED_MODEL_PROPOSAL"] },
-        "semantic_interpretation": { "$ref": "#/$defs/admissionInterpretation" }
+        "authenticity": { "enum": ["TRUSTED_DIRECT_USER_ATTESTATION", "UNVERIFIED_SOURCE"] },
+        "interpretation": {"$ref": "#/$defs/interpretation"}
+      }
+    },
+    "requestSpan": {
+      "type": "object", "additionalProperties": false,
+      "required": ["start", "end", "source"],
+      "properties": {
+        "start": { "type": "integer", "minimum": 0, "maximum": 4000 },
+        "end": { "type": "integer", "minimum": 1, "maximum": 4000 },
+        "source": { "enum": ["USER", "EXTERNAL_SOURCE"] }
+      }
+    },
+    "workload": {
+      "type": "object", "additionalProperties": false,
+      "required": ["topology", "effort", "assurance", "authority", "evidence", "duration", "context"],
+      "properties": {
+        "topology": { "enum": ["ATOMIC", "BOUNDED", "CONNECTED", "PROGRAM"] },
+        "effort": { "enum": ["MICRO", "SMALL", "MEDIUM", "LARGE", "EXTENDED"] },
+        "assurance": { "enum": ["BASIC", "STANDARD", "HIGH", "REGULATED"] },
+        "authority": { "enum": ["READ_ONLY", "LOCAL_WRITE", "EXTERNAL_WRITE", "PRIVILEGED", "DESTRUCTIVE"] },
+        "evidence": { "$ref": "#/$defs/evidence" },
+        "duration": { "enum": ["TURN", "MULTI_TURN", "RESUMABLE", "PROGRAM"] },
+        "context": { "enum": ["PROMPT_ONLY", "TARGETED_PROBE", "SCOPED_SCAN", "FULL_SCAN"] }
+      }
+    },
+    "policyDecision": {
+      "type": "object", "additionalProperties": false,
+      "required": ["policy_id", "version", "effect", "matched_claim_ids", "controls", "reason"],
+      "properties": {
+        "policy_id": { "type": "string", "pattern": "^TAP-[0-9]{3}$" },
+        "version": { "type": "integer", "minimum": 1 },
+        "effect": { "enum": ["ALLOW", "REQUIRE", "DENY", "GAP"] },
+        "matched_claim_ids": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "type": "string", "pattern": "^CL-[0-9]{3}$" } },
+        "controls": { "type": "array", "uniqueItems": true, "items": { "$ref": "#/$defs/controlPack" } },
+        "reason": { "type": "string", "minLength": 1, "maxLength": 500 }
+      }
+    },
+    "trace": {
+      "type": "object", "additionalProperties": false,
+      "required": ["claim_id", "signal", "policy_id", "policy_version", "control", "outcome"],
+      "properties": {
+        "claim_id": { "type": "string", "pattern": "^CL-[0-9]{3}$" },
+        "signal": { "type": "string", "minLength": 1, "maxLength": 200 },
+        "policy_id": { "type": "string", "pattern": "^TAP-[0-9]{3}$" },
+        "policy_version": { "type": "integer", "minimum": 1 },
+        "control": { "$ref": "#/$defs/controlPack" },
+        "outcome": { "type": "string", "pattern": "^(NO_WORKFLOW|DIRECT_READ|DIRECT_CHANGE|BOUNDED|CONNECTED|PROGRAM)/(EXPLANATION|TARGETED|REGRESSION|INDEPENDENT|RELEASE)$" }
+      }
+    },
+    "interpretation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema_version",
+        "interpreter",
+        "request_digest",
+        "task_id",
+        "source_digest",
+        "relation",
+        "intent",
+        "claims",
+        "workload",
+        "local_write_scope",
+        "uncertainties"
+      ],
+      "properties": {
+        "schema_version": {"const": 1},
+        "interpreter": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["kind", "model"],
+          "properties": {"kind": {"const": "LLM"}, "model": {"type": "string", "minLength": 1, "maxLength": 100}}
+        },
+        "request_digest": {"$ref": "#/$defs/digest"},
+        "task_id": {"type": "string", "minLength": 1, "maxLength": 200},
+        "source_digest": {"$ref": "#/$defs/nullableDigest"},
+        "relation": {"$ref": "#/$defs/relation"},
+        "intent": {"$ref": "#/$defs/intent"},
+        "claims": {"type": "array", "minItems": 1, "maxItems": 32, "items": {"$ref": "#/$defs/claim"}},
+        "workload": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["topology", "effort", "authority", "duration", "context"],
+          "properties": {
+            "topology": {"enum": ["ATOMIC", "BOUNDED", "CONNECTED", "PROGRAM"]},
+            "effort": {"enum": ["MICRO", "SMALL", "MEDIUM", "LARGE", "EXTENDED"]},
+            "authority": {"enum": ["READ_ONLY", "LOCAL_WRITE", "EXTERNAL_WRITE", "PRIVILEGED", "DESTRUCTIVE"]},
+            "duration": {"enum": ["TURN", "MULTI_TURN", "RESUMABLE", "PROGRAM"]},
+            "context": {"enum": ["PROMPT_ONLY", "TARGETED_PROBE", "SCOPED_SCAN", "FULL_SCAN"]}
+          }
+        },
+        "local_write_scope": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["mode", "targets"],
+          "properties": {
+            "mode": {"enum": ["TARGETS", "REPOSITORY"]},
+            "targets": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1, "maxLength": 300}}
+          }
+        },
+        "uncertainties": {"$ref": "#/$defs/stringList"}
       }
     },
     "admissionInterpretation": {
@@ -187,13 +318,29 @@
       ],
       "oneOf": [
         {
-          "properties": { "status": { "const": "RESOLVED" } },
-          "required": ["relation", "intent", "policy_tags", "workload", "local_write_scope", "claims"]
+          "properties": {
+            "status": {
+              "const": "RESOLVED"
+            }
+          },
+          "required": [
+            "relation",
+            "intent",
+            "policy_tags",
+            "workload",
+            "local_write_scope",
+            "claims"
+          ]
         },
         {
           "properties": {
-            "status": { "const": "UNRESOLVED" },
-            "uncertainty": { "type": "array", "minItems": 1 }
+            "status": {
+              "const": "UNRESOLVED"
+            },
+            "uncertainty": {
+              "type": "array",
+              "minItems": 1
+            }
           }
         }
       ],
@@ -372,52 +519,6 @@
             "maxLength": 500
           }
         }
-      }
-    },
-    "requestSpan": {
-      "type": "object", "additionalProperties": false,
-      "required": ["start", "end", "source"],
-      "properties": {
-        "start": { "type": "integer", "minimum": 0, "maximum": 4000 },
-        "end": { "type": "integer", "minimum": 1, "maximum": 4000 },
-        "source": { "enum": ["USER", "EXTERNAL_SOURCE"] }
-      }
-    },
-    "workload": {
-      "type": "object", "additionalProperties": false,
-      "required": ["topology", "effort", "assurance", "authority", "evidence", "duration", "context"],
-      "properties": {
-        "topology": { "enum": ["ATOMIC", "BOUNDED", "CONNECTED", "PROGRAM"] },
-        "effort": { "enum": ["MICRO", "SMALL", "MEDIUM", "LARGE", "EXTENDED"] },
-        "assurance": { "enum": ["BASIC", "STANDARD", "HIGH", "REGULATED"] },
-        "authority": { "enum": ["READ_ONLY", "LOCAL_WRITE", "EXTERNAL_WRITE", "PRIVILEGED", "DESTRUCTIVE"] },
-        "evidence": { "$ref": "#/$defs/evidence" },
-        "duration": { "enum": ["TURN", "MULTI_TURN", "RESUMABLE", "PROGRAM"] },
-        "context": { "enum": ["PROMPT_ONLY", "TARGETED_PROBE", "SCOPED_SCAN", "FULL_SCAN"] }
-      }
-    },
-    "policyDecision": {
-      "type": "object", "additionalProperties": false,
-      "required": ["policy_id", "version", "effect", "matched_claim_ids", "controls", "reason"],
-      "properties": {
-        "policy_id": { "type": "string", "pattern": "^TAP-[0-9]{3}$" },
-        "version": { "type": "integer", "minimum": 1 },
-        "effect": { "enum": ["ALLOW", "REQUIRE", "DENY", "GAP"] },
-        "matched_claim_ids": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "type": "string", "pattern": "^CL-[0-9]{3}$" } },
-        "controls": { "type": "array", "uniqueItems": true, "items": { "$ref": "#/$defs/controlPack" } },
-        "reason": { "type": "string", "minLength": 1, "maxLength": 500 }
-      }
-    },
-    "trace": {
-      "type": "object", "additionalProperties": false,
-      "required": ["claim_id", "signal", "policy_id", "policy_version", "control", "outcome"],
-      "properties": {
-        "claim_id": { "type": "string", "pattern": "^CL-[0-9]{3}$" },
-        "signal": { "type": "string", "minLength": 1, "maxLength": 200 },
-        "policy_id": { "type": "string", "pattern": "^TAP-[0-9]{3}$" },
-        "policy_version": { "type": "integer", "minimum": 1 },
-        "control": { "$ref": "#/$defs/controlPack" },
-        "outcome": { "type": "string", "pattern": "^(NO_WORKFLOW|DIRECT_READ|DIRECT_CHANGE|BOUNDED|CONNECTED|PROGRAM)/(EXPLANATION|TARGETED|REGRESSION|INDEPENDENT|RELEASE)$" }
       }
     }
   }

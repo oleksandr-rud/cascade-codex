@@ -105,7 +105,7 @@ console.log("PASS: standalone plugin validation preserves strict YAML parsing wi
 const first = run();
 assert(first.result.status === 3, `first run failed: ${first.result.stderr}`);
 const firstSummary = await summary(first);
-assert(firstSummary.configuration.configuration_id === "default-astra-high", "default configuration identity must agree with Astra/high receipts");
+assert(firstSummary.configuration.configuration_id === "default-gpt-6.1-sol-xhigh", "default configuration identity must agree with Sol 6.1/xhigh receipts");
 assert(firstSummary.execution.prompt_builder.status === "EXECUTED", "first builder must execute");
 assert(firstSummary.execution.prompt_builder.receipts?.length === 1, "builder must have a bound direct execution receipt");
 assert(Boolean(firstSummary.execution.target.receipt?.sha256), "target must have a bound direct execution receipt");
@@ -113,7 +113,7 @@ assert(firstSummary.execution.outcome_judge.status === "DETERMINISTIC", "exact t
 assert(firstSummary.execution.trajectory_judge.status === "EXECUTED", "first trajectory judge must execute");
 for (const receipt of [...firstSummary.execution.prompt_builder.receipts, firstSummary.execution.target.receipt, firstSummary.execution.trajectory_judge.receipt]) {
   const bound = JSON.parse(await readFile(join(first.output.run_root, receipt.path), "utf8"));
-  assert(bound.model === "gpt-6-astra" && bound.reasoning_effort === "high", "omitted phase options must dispatch and record Astra/high");
+  assert(bound.model === "gpt-6.1-sol" && bound.reasoning_effort === "xhigh", "omitted phase options must dispatch and record Sol 6.1/xhigh");
 }
 assert(firstSummary.acceptance === "UNVERIFIED" && firstSummary.semantic_acceptance === "ACCEPTED", "fixture ratings may pass but external evidence must remain unverified");
 
@@ -133,7 +133,7 @@ assert(otherJudgeSummary.execution.prompt_builder.status === "REUSED_AUTOMATIC_C
 assert(otherJudgeSummary.execution.trajectory_judge.status === "EXECUTED", "a judge-effort change must not reuse an incompatible judgment");
 const judgeReceipt = JSON.parse(await readFile(join(otherJudgeEffort.output.run_root, "judge-trajectory.execution.json"), "utf8"));
 const targetReceipt = JSON.parse(await readFile(join(otherJudgeEffort.output.run_root, "target.execution.json"), "utf8"));
-assert(judgeReceipt.reasoning_effort === "max" && targetReceipt.reasoning_effort === "high", "phase receipts must bind the distinct judge and target efforts");
+assert(judgeReceipt.reasoning_effort === "max" && targetReceipt.reasoning_effort === "xhigh", "phase receipts must bind the distinct judge and target efforts");
 assert(otherJudgeSummary.configuration.judge_reasoning_effort === "max", "comparison identity must retain judge effort");
 
 const third = run({ FAKE_INELIGIBLE: "1" });

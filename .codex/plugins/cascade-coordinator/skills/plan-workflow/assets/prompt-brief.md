@@ -1,8 +1,8 @@
 # Plan Workflow prompt brief
 
-- Target: `gpt-6-astra`
-- Planning reasoning: `high`
-- Default prompt-builder, target, and judge reasoning: `high`
+- Target: `gpt-6.1-sol`
+- Planning reasoning: `xhigh`
+- Default prompt-builder, target, and judge reasoning: `xhigh`
 - Mission: compile a validated capability selection into the smallest
   dependency-safe, artifact-complete plugin DAG.
 - Required inputs: Task Envelope identity and digest, capability-catalog

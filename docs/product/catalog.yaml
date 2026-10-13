@@ -3,6 +3,13 @@ product:
   id: cascade
   name: Cascade
   summary: Standalone coding-agent workflow harness with governed product and evaluation context.
+reference_documents:
+  requirements:
+    - docs/product/contours/context-and-simulation/requirements.md
+  journeys:
+    - docs/product/contours/context-and-simulation/journeys.md
+  scenarios:
+    - docs/product/contours/context-and-simulation/scenarios.md
 domains:
   - id: PD-001
     name: Product context and simulation governance
@@ -10,7 +17,7 @@ domains:
     owner: Cascade maintainers
     summary: Governs product evidence, product-context assembly, persona-derived simulation, and reviewed refinement feedback.
     source_paths:
-      - docs/product/_index.md
+      - docs/product/contours/context-and-simulation/_index.md
       - docs/specs/persona-simulation-governance/contract.md
       - docs/specs/product-context-briefs/contract.md
       - docs/specs/simulation-intake-agent-bridge/contract.md

@@ -2,16 +2,16 @@
   "schema_version": 2,
   "plugin_id": "cascade-product",
   "subject_kind": "agent",
-  "version": "0.1.33+codex.20260910172549",
-  "expected_case_count": 16,
+  "version": "0.1.39+codex.20261002011500",
+  "expected_case_count": 24,
   "acceptance_threshold": 0.95,
   "minimum_dimension": 3,
   "evaluation_manifest": "evals/manifest.json",
   "models": {
-    "builder": "gpt-6-astra",
-    "target": "gpt-6-astra",
-    "judge": "gpt-6-astra",
-    "reasoning_effort": "high",
+    "builder": "gpt-6.1-sol",
+    "target": "gpt-6.1-sol",
+    "judge": "gpt-6.1-sol",
+    "reasoning_effort": "xhigh",
     "explicit_comparison_override": false
   },
   "expected_skills": [
@@ -56,7 +56,15 @@
   "routed_peer_aliases": [
     "cascade-market:research-market",
     "cascade-market:evaluate-market-opportunity",
-    "cascade-market:design-market-experiments"
+    "cascade-market:design-market-experiments",
+    "cascade-specs:synthesise-spec",
+    "cascade-design:create-design",
+    "cascade-design:ux-flow-review",
+    "cascade-project-management:plan-project",
+    "cascade-project-management:manage-project",
+    "cascade-project-management:define-work-item",
+    "cascade-qa:plan-quality",
+    "cascade-qa:assess-quality"
   ],
   "required_case_categories": [
     "happy",
@@ -90,7 +98,10 @@
     "skills/define-product/references/feature-investment.md",
     "skills/define-product/references/value-model.md",
     "skills/manage-product-lifecycle/references/value-strategy.md",
-    "skills/validate-product/references/outcome-evidence.md"
+    "skills/validate-product/references/outcome-evidence.md",
+    "skills/manage-product-lifecycle/references/working-process.md",
+    "skills/manage-product-lifecycle/references/source-guide.md",
+    "skills/manage-product-lifecycle/assets/product-decision-brief.md"
   ],
   "required_evaluation_assets": [
     "evals/evaluation-contract.json",
@@ -203,6 +214,42 @@
     {
       "alias": "cascade-simulations:simulate",
       "path": "skills/simulate/SKILL.md"
+    },
+    {
+      "alias": "cascade-evals:evaluate",
+      "path": "scripts/model_policy.py"
+    },
+    {
+      "alias": "cascade-specs:synthesise-spec",
+      "path": "skills/synthesise-spec/SKILL.md"
+    },
+    {
+      "alias": "cascade-design:create-design",
+      "path": "skills/create-design/SKILL.md"
+    },
+    {
+      "alias": "cascade-design:ux-flow-review",
+      "path": "skills/ux-flow-review/SKILL.md"
+    },
+    {
+      "alias": "cascade-project-management:plan-project",
+      "path": "skills/plan-project/SKILL.md"
+    },
+    {
+      "alias": "cascade-project-management:manage-project",
+      "path": "skills/manage-project/SKILL.md"
+    },
+    {
+      "alias": "cascade-project-management:define-work-item",
+      "path": "skills/define-work-item/SKILL.md"
+    },
+    {
+      "alias": "cascade-qa:plan-quality",
+      "path": "skills/plan-quality/SKILL.md"
+    },
+    {
+      "alias": "cascade-qa:assess-quality",
+      "path": "skills/assess-quality/SKILL.md"
     }
   ]
 }

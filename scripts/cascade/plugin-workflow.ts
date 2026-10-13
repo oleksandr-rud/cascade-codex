@@ -1,4 +1,5 @@
 import { basename, dirname, resolve } from "node:path";
+import { homedir } from "node:os";
 
 import {
   CascadeError,
@@ -7,6 +8,7 @@ import {
   boundedPath,
   flag,
   isDirectory,
+  isFile,
   parseArgs,
   readJson,
   readText,
@@ -308,6 +310,70 @@ export async function readPluginCapabilityCatalog(
   const catalog = await readJson<PluginCapabilityCatalog>(path);
   validateCatalogDigest(catalog);
   return catalog;
+}
+
+export function validateInstalledPluginInventory(inventory: unknown, catalog: PluginCapabilityCatalog, routes: string[] = [], lock?: JsonRecord): JsonRecord[] {
+  validateCatalogDigest(catalog);
+  if (!inventory || typeof inventory !== "object" || !Array.isArray((inventory as JsonRecord).installed)) throw new CascadeError("installed plugin inventory is malformed");
+  if (lock && (lock.schema_version !== 1 || lock.artifact_type !== "cascade-installed-plugin-lock" || lock.capability_catalog_digest !== catalog.catalog_digest || !Array.isArray(lock.plugins))) throw new CascadeError("installed plugin lock is stale or malformed");
+  if (lock && !exactStringSet(lock.plugins.map((item: JsonRecord) => `${item.name}@${item.version}`), catalog.plugins.map((item) => `${item.name}@${item.version}`))) throw new CascadeError("installed plugin lock differs from its capability catalog");
+  const skills = catalogSkillMap(catalog);
+  const names = new Set<string>();
+  const visited = new Set<string>();
+  const include = (route: string) => {
+    const skill = skills.get(route);
+    if (!skill) throw new CascadeError(`unknown installed capability: ${route}`);
+    const name = route.split(":", 1)[0]!;
+    if (visited.has(route)) return;
+    visited.add(route);
+    names.add(name);
+    for (const dependency of skill.required_dependencies ?? []) include(dependency);
+  };
+  if (routes.length) {
+    include(SELECT_CAPABILITIES_ROUTE);
+    for (const route of routes) include(route);
+  } else for (const plugin of catalog.plugins) names.add(plugin.name);
+  return [...names].sort().map((name) => {
+    const expected = catalog.plugins.find((plugin) => plugin.name === name)!;
+    const matches = (inventory as JsonRecord).installed.filter((entry: JsonRecord) => entry.name === name && entry.marketplaceName === "cascade-project");
+    if (matches.length !== 1 || matches[0].enabled !== true || matches[0].installed !== true) throw new CascadeError(`required plugin is missing, ambiguous or disabled: ${name}`);
+    if (matches[0].version !== expected.version) throw new CascadeError(`installed plugin version differs from catalog: ${name} (expected ${expected.version}, installed ${matches[0].version})`);
+    return { name, version: expected.version, marketplace: matches[0].marketplaceName, manifest_sha256: expected.manifest_sha256, descriptor_sha256: expected.descriptor_sha256 };
+  });
+}
+
+async function checkInstalledCommand(args: ReturnType<typeof parseArgs>): Promise<number> {
+  const catalog = await readPluginCapabilityCatalog();
+  const selectionPath = flag(args, "selection");
+  let routes: string[] = [];
+  if (selectionPath) {
+    const envelopePath = flag(args, "envelope");
+    if (!envelopePath) throw new CascadeError("check-installed --selection requires --envelope");
+    const selection = await readJson<CapabilitySelection>(boundedPath(selectionPath));
+    validateCapabilitySelection(selection, await readBoundedTaskEnvelope(envelopePath), catalog);
+    routes = selection.selected_candidates.map((item) => item.route);
+  }
+  const child = Bun.spawn(["codex", "plugin", "list", "--marketplace", "cascade-project", "--json"], { stdin: "ignore", stdout: "pipe", stderr: "pipe" });
+  const timer = setTimeout(() => child.kill(), 15_000);
+  let inventory: unknown;
+  try {
+    const [exitCode, stdout, stderr] = await Promise.all([
+      child.exited, new Response(child.stdout).text(), new Response(child.stderr).text(),
+    ]);
+    if (exitCode !== 0) throw new CascadeError(`installed inventory command failed: ${stderr.slice(0, 300)}`);
+    inventory = JSON.parse(stdout);
+  } finally { clearTimeout(timer); }
+  const lockPath = rootPath(".codex/plugins.lock.json");
+  const lock = await isFile(lockPath) ? await readJson<JsonRecord>(lockPath) : undefined;
+  const plugins = validateInstalledPluginInventory(inventory, catalog, routes, lock);
+  for (const plugin of plugins) {
+    const cache = resolve(Bun.env.CODEX_HOME ?? resolve(homedir(), ".codex"), "plugins/cache", plugin.marketplace, plugin.name, plugin.version);
+    for (const [path, expected] of [[".codex-plugin/plugin.json", plugin.manifest_sha256], ["capabilities.yaml", plugin.descriptor_sha256]]) {
+      if (await sha256File(resolve(cache, path)) !== expected) throw new CascadeError(`installed plugin bytes differ from catalog: ${plugin.name}/${path}`);
+    }
+  }
+  console.log(stableJson({ status: "PASS", evidence: "LIVE_INSTALLED_INVENTORY_AND_CACHE", capability_catalog_digest: catalog.catalog_digest, plugins }, true));
+  return 0;
 }
 
 function catalogSkillMap(catalog: PluginCapabilityCatalog): Map<string, JsonRecord> {
@@ -670,7 +736,7 @@ async function validatePlanCommand(args: ReturnType<typeof parseArgs>): Promise<
   const envelope = await readBoundedTaskEnvelope(envelopePath);
   const catalog = await readPluginCapabilityCatalog();
   validatePluginPlan(plan, selection, envelope, catalog);
-  console.log(`plugin_plan_status=PASS envelope=${envelope.envelope_id} nodes=${plan.selected_nodes.length} catalog=${catalog.catalog_digest}`);
+  console.log(`plugin_plan_status=PASS installation_status=NOT_CHECKED envelope=${envelope.envelope_id} nodes=${plan.selected_nodes.length} catalog=${catalog.catalog_digest}`);
   return 0;
 }
 
@@ -684,7 +750,7 @@ async function validateSelectionCommand(args: ReturnType<typeof parseArgs>): Pro
   const envelope = await readBoundedTaskEnvelope(envelopePath);
   const catalog = await readPluginCapabilityCatalog();
   validateCapabilitySelection(selection, envelope, catalog);
-  console.log(`capability_selection_status=PASS envelope=${envelope.envelope_id} routes=${selection.selected_candidates.length} catalog=${catalog.catalog_digest}`);
+  console.log(`capability_selection_status=PASS installation_status=NOT_CHECKED envelope=${envelope.envelope_id} routes=${selection.selected_candidates.length} catalog=${catalog.catalog_digest}`);
   return 0;
 }
 
@@ -692,7 +758,8 @@ export async function main(argv: string[]): Promise<number> {
   const [command, ...rest] = argv;
   const args = parseArgs(rest);
   if (command === "catalog") return checkOrWriteCatalog(args);
+  if (command === "check-installed") return checkInstalledCommand(args);
   if (command === "validate-selection") return validateSelectionCommand(args);
   if (command === "validate" || command === "validate-plan") return validatePlanCommand(args);
-  throw new CascadeError("workflow command must be catalog, validate-selection, or validate-plan");
+  throw new CascadeError("workflow command must be catalog, check-installed, validate-selection, or validate-plan");
 }

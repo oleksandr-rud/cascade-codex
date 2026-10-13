@@ -1,12 +1,12 @@
 {
   "schema_version": 1,
-  "matrix_id": "cascade-prompt-model-matrix-v2",
+  "matrix_id": "cascade-prompt-model-matrix-v3",
   "comparison_unit": "prompt_builder_model + generated_prompt + target_model + context_plan + output_controls",
   "defaults": {
-    "prompt_model": "gpt-6-astra",
-    "target_model": "gpt-6-astra",
-    "judge_model": "gpt-6-astra",
-    "reasoning_effort": "high"
+    "prompt_model": "gpt-6.1-sol",
+    "target_model": "gpt-6.1-sol",
+    "judge_model": "gpt-6.1-sol",
+    "reasoning_effort": "xhigh"
   },
   "same_version_requirements": [
     "task_catalog",
@@ -23,7 +23,7 @@
       "target_model": "gpt-5.6-luna",
       "tier": "efficient-structured",
       "execution_adapter": "codex-cli",
-      "availability": "AVAILABLE_IN_CURRENT_RUNTIME",
+      "availability": "REQUIRES_EXECUTION_VERIFICATION",
       "tasks": [
         "structured-invoice-v1",
         "support-triage-v1",
@@ -31,7 +31,8 @@
       ],
       "reasoning_effort": "max",
       "judge_model": "gpt-5.6-sol",
-      "judge_reasoning_effort": "max"
+      "judge_reasoning_effort": "max",
+      "purpose": "PINNED_COMPARISON"
     },
     {
       "id": "openai-terra-balanced",
@@ -39,7 +40,7 @@
       "target_model": "gpt-5.6-terra",
       "tier": "balanced-production",
       "execution_adapter": "codex-cli",
-      "availability": "AVAILABLE_IN_CURRENT_RUNTIME",
+      "availability": "REQUIRES_EXECUTION_VERIFICATION",
       "tasks": [
         "support-triage-v1",
         "source-conflict-brief-v1",
@@ -54,7 +55,8 @@
       ],
       "reasoning_effort": "max",
       "judge_model": "gpt-5.6-sol",
-      "judge_reasoning_effort": "max"
+      "judge_reasoning_effort": "max",
+      "purpose": "PINNED_COMPARISON"
     },
     {
       "id": "openai-sol-generalist",
@@ -62,7 +64,7 @@
       "target_model": "gpt-5.6-sol",
       "tier": "frontier-generalist",
       "execution_adapter": "codex-cli",
-      "availability": "AVAILABLE_IN_CURRENT_RUNTIME",
+      "availability": "REQUIRES_EXECUTION_VERIFICATION",
       "tasks": [
         "source-conflict-brief-v1",
         "incident-root-cause-v1",
@@ -75,7 +77,8 @@
       ],
       "reasoning_effort": "max",
       "judge_model": "gpt-5.6-sol",
-      "judge_reasoning_effort": "max"
+      "judge_reasoning_effort": "max",
+      "purpose": "PINNED_COMPARISON"
     },
     {
       "id": "openai-sol-autonomous",
@@ -83,7 +86,7 @@
       "target_model": "gpt-5.6-sol",
       "tier": "frontier-autonomous",
       "execution_adapter": "codex-cli",
-      "availability": "AVAILABLE_IN_CURRENT_RUNTIME",
+      "availability": "REQUIRES_EXECUTION_VERIFICATION",
       "tasks": [
         "migration-control-plan-v1",
         "api-version-migration-plan-v1",
@@ -91,7 +94,8 @@
       ],
       "reasoning_effort": "max",
       "judge_model": "gpt-5.6-sol",
-      "judge_reasoning_effort": "max"
+      "judge_reasoning_effort": "max",
+      "purpose": "PINNED_COMPARISON"
     },
     {
       "id": "anthropic-haiku-efficient",
@@ -107,7 +111,8 @@
       ],
       "reasoning_effort": "max",
       "judge_model": "gpt-5.6-sol",
-      "judge_reasoning_effort": "max"
+      "judge_reasoning_effort": "max",
+      "purpose": "PINNED_COMPARISON"
     },
     {
       "id": "anthropic-opus-generalist",
@@ -128,7 +133,8 @@
       ],
       "reasoning_effort": "max",
       "judge_model": "gpt-5.6-sol",
-      "judge_reasoning_effort": "max"
+      "judge_reasoning_effort": "max",
+      "purpose": "PINNED_COMPARISON"
     },
     {
       "id": "anthropic-fable-autonomous",
@@ -143,7 +149,8 @@
       ],
       "reasoning_effort": "max",
       "judge_model": "gpt-5.6-sol",
-      "judge_reasoning_effort": "max"
+      "judge_reasoning_effort": "max",
+      "purpose": "PINNED_COMPARISON"
     },
     {
       "id": "sol-to-astra-coverage-v1",
@@ -153,12 +160,13 @@
       "reasoning_effort": "max",
       "tier": "frontier-generalist",
       "execution_adapter": "codex-cli",
-      "availability": "AVAILABLE_IN_CURRENT_RUNTIME",
+      "availability": "REQUIRES_EXECUTION_VERIFICATION",
       "tasks": [
         "structured-invoice-v1",
         "source-conflict-brief-v1"
       ],
-      "judge_reasoning_effort": "max"
+      "judge_reasoning_effort": "max",
+      "purpose": "PINNED_COMPARISON"
     },
     {
       "id": "astra-high-pilot-v1",
@@ -169,10 +177,116 @@
       "judge_reasoning_effort": "max",
       "tier": "frontier-generalist",
       "execution_adapter": "codex-cli",
-      "availability": "AVAILABLE_IN_CURRENT_RUNTIME",
+      "availability": "REQUIRES_EXECUTION_VERIFICATION",
       "tasks": [
         "code-review-race-v1",
         "plugin-workflow-plan-v1"
+      ],
+      "purpose": "PINNED_COMPARISON"
+    },
+    {
+      "id": "gpt-6.1-sol-efficient-structured-xhigh",
+      "prompt_model": "gpt-6.1-sol",
+      "target_model": "gpt-6.1-sol",
+      "judge_model": "gpt-6.1-sol",
+      "reasoning_effort": "xhigh",
+      "judge_reasoning_effort": "xhigh",
+      "tier": "efficient-structured",
+      "execution_adapter": "codex-cli",
+      "availability": "REQUIRES_EXECUTION_VERIFICATION",
+      "purpose": "CURRENT_WORKLOAD_CANDIDATE",
+      "tasks": [
+        "structured-invoice-v1",
+        "support-triage-v1",
+        "brand-context-copy-v1"
+      ]
+    },
+    {
+      "id": "gpt-6.1-sol-balanced-production-xhigh",
+      "prompt_model": "gpt-6.1-sol",
+      "target_model": "gpt-6.1-sol",
+      "judge_model": "gpt-6.1-sol",
+      "reasoning_effort": "xhigh",
+      "judge_reasoning_effort": "xhigh",
+      "tier": "balanced-production",
+      "execution_adapter": "codex-cli",
+      "availability": "REQUIRES_EXECUTION_VERIFICATION",
+      "purpose": "CURRENT_WORKLOAD_CANDIDATE",
+      "tasks": [
+        "source-conflict-brief-v1",
+        "product-prioritization-v1",
+        "business-opportunity-screen-v1",
+        "pricing-package-experiment-v1"
+      ]
+    },
+    {
+      "id": "gpt-6.1-sol-frontier-generalist-xhigh",
+      "prompt_model": "gpt-6.1-sol",
+      "target_model": "gpt-6.1-sol",
+      "judge_model": "gpt-6.1-sol",
+      "reasoning_effort": "xhigh",
+      "judge_reasoning_effort": "xhigh",
+      "tier": "frontier-generalist",
+      "execution_adapter": "codex-cli",
+      "availability": "REQUIRES_EXECUTION_VERIFICATION",
+      "purpose": "CURRENT_WORKLOAD_CANDIDATE",
+      "tasks": [
+        "incident-root-cause-v1",
+        "onboarding-experiment-v1",
+        "code-review-race-v1",
+        "product-concept-scope-v1"
+      ]
+    },
+    {
+      "id": "gpt-6.1-sol-frontier-autonomous-xhigh",
+      "prompt_model": "gpt-6.1-sol",
+      "target_model": "gpt-6.1-sol",
+      "judge_model": "gpt-6.1-sol",
+      "reasoning_effort": "xhigh",
+      "judge_reasoning_effort": "xhigh",
+      "tier": "frontier-autonomous",
+      "execution_adapter": "codex-cli",
+      "availability": "REQUIRES_EXECUTION_VERIFICATION",
+      "purpose": "CURRENT_WORKLOAD_CANDIDATE",
+      "tasks": [
+        "migration-control-plan-v1",
+        "api-version-migration-plan-v1",
+        "plugin-workflow-plan-v1"
+      ]
+    },
+    {
+      "id": "gpt-6-sol-frontier-generalist-xhigh",
+      "prompt_model": "gpt-6-sol",
+      "target_model": "gpt-6-sol",
+      "judge_model": "gpt-6.1-sol",
+      "reasoning_effort": "xhigh",
+      "judge_reasoning_effort": "xhigh",
+      "tier": "frontier-generalist",
+      "execution_adapter": "codex-cli",
+      "availability": "REQUIRES_EXECUTION_VERIFICATION",
+      "purpose": "CURRENT_WORKLOAD_CANDIDATE",
+      "tasks": [
+        "incident-root-cause-v1",
+        "onboarding-experiment-v1",
+        "code-review-race-v1",
+        "product-concept-scope-v1"
+      ]
+    },
+    {
+      "id": "gpt-6-luna-efficient-structured-medium",
+      "prompt_model": "gpt-6-luna",
+      "target_model": "gpt-6-luna",
+      "judge_model": "gpt-6.1-sol",
+      "reasoning_effort": "medium",
+      "judge_reasoning_effort": "xhigh",
+      "tier": "efficient-structured",
+      "execution_adapter": "codex-cli",
+      "availability": "REQUIRES_EXECUTION_VERIFICATION",
+      "purpose": "CURRENT_WORKLOAD_CANDIDATE",
+      "tasks": [
+        "structured-invoice-v1",
+        "support-triage-v1",
+        "brand-context-copy-v1"
       ]
     }
   ]

@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "profile_id": "cascade-prompt-interview-v4",
-  "purpose": "Judge adaptive interview behavior without replacing deterministic state, question-count, intent, and final-prompt checks.",
+  "purpose": "Judge adaptive interview meaning, material gaps, question intent, source authority, answer integration and final prompt coverage independently; the host checks only exact format, state and bounds.",
   "scale": {
     "0": "Absent, unusable, or directly harmful.",
     "1": "Major failures dominate; substantial repair is required.",

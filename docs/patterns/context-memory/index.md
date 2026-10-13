@@ -120,21 +120,19 @@ Write memory to the narrowest durable owner:
 
 | Memory type | Target |
 |---|---|
-| Active execution state | `docs/work/active.md` |
-| Lane-specific criteria, definitions/decisions, worklines, dependencies, evidence, and replanning history | `docs/work/lanes/` |
-| Copyable lane examples | `docs/work/examples/` |
+| Task outcome, current state, decisions, checks and next handoff | `docs/work/tasks/{task_id}.md` |
 | Durable research memory summary and research-to-spec wiring | `docs/patterns/context-memory/index.md` |
-| Durable handoff or blocked/deferred report | `docs/work/reports/` |
+| Blocked or deferred work | The same numbered task record |
 | Reusable workflow rule | `.codex/skills/`, `.codex/agents/`, or `docs/patterns/` |
 | Product, design, brand, or spec fact | `docs/product/`, `docs/design/`, `docs/brand/`, or `docs/specs/` |
 | Codebase vocabulary | `docs/glossary.md` |
-| Durable rejected scope | Narrowest existing backlog, pattern, decision, or work report |
+| Durable rejected scope | Narrowest existing pattern, decision or numbered task |
 
 Store rejected scope only when it prevents repeated bad suggestions. Do not
 create a generic learned-lessons dump.
 
 Research memory entries must stay compact. Put the detailed evidence in
-`docs/work/reports/`, the durable rules in `docs/patterns/` or `.codex/skills/`,
+the relevant numbered Work task, the durable rules in `docs/patterns/` or `.codex/skills/`,
 and the plan-ready packets in `docs/specs/{slice-slug}/`; the research-memory
 row should only connect those owners.
 

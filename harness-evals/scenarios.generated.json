@@ -1,7 +1,7 @@
 {
   "agent_count": 9,
   "agent_scenario_count": 9,
-  "catalog_digest": "d45554155f896a74ef78ac9515fe27a9a7bb64cc98f4f92f7d293ec953907bf5",
+  "catalog_digest": "1c6a8bea2848741b02a2b615e53a974efbe27141ae808271a8f33493dfaf4dfa",
   "generated_by": "scripts/cascade/evals.ts",
   "scenario_count": 45,
   "scenarios": [
@@ -1174,7 +1174,7 @@
         },
         {
           "path": ".codex/agents/agent-engineer/skills.yaml",
-          "sha256": "6e6c9bbb7e5306202f89381f99d86b6033203c0522d23e31db50f4b9da1ad45c"
+          "sha256": "39ac17566872840cd0e11c4025ef0180c228c83052d3c13409cb713d7a58f483"
         },
         {
           "path": ".codex/plugins/cascade-coding-agent/skills/audit-harness/SKILL.md",
@@ -1182,16 +1182,16 @@
         },
         {
           "path": "AGENTS.md",
-          "sha256": "d7b66cf8135e6086b6cf5bb1d7b2c2e11038f7d4d326c691f6fd40f43f8d0641"
+          "sha256": "f7a7a9edeaffd467d24e5947ea8f83cb5acced053356c7f3c3c1925aef9b4d93"
         },
         {
           "path": "CODEX.md",
-          "sha256": "7918decaa1ebb57b66854c5c5fc836c6f69a54c7730862a57add3e52254c9599"
+          "sha256": "16d0995cf325a8f616346744780437fc4353bf73286745c8d9f1f6b79e96e31e"
         }
       ],
       "execution": {
-        "model": "gpt-6-astra",
-        "reasoning_effort": "high",
+        "model": "gpt-6.1-sol",
+        "reasoning_effort": "xhigh",
         "sandbox_mode": "default"
       },
       "expectation": {
@@ -1246,8 +1246,8 @@
         }
       ],
       "execution": {
-        "model": "gpt-6-astra",
-        "reasoning_effort": "high",
+        "model": "gpt-6.1-sol",
+        "reasoning_effort": "xhigh",
         "sandbox_mode": "read-only"
       },
       "expectation": {
@@ -1304,12 +1304,12 @@
         },
         {
           "path": ".codex/skills/plan-change/SKILL.md",
-          "sha256": "60eb6b8fb58503dbc8d09f4be2b76034c6d947e3b79b8bae5b5c22fa1100f10c"
+          "sha256": "9238b6326c8e192224b19b92a7984402466b65b25a54d64a79eb99de2f73a826"
         }
       ],
       "execution": {
-        "model": "gpt-6-astra",
-        "reasoning_effort": "high",
+        "model": "gpt-6.1-sol",
+        "reasoning_effort": "xhigh",
         "sandbox_mode": "default"
       },
       "expectation": {
@@ -1353,21 +1353,21 @@
     {
       "context_bindings": [
         {
-          "path": "docs/product/requirements.md",
-          "sha256": "7df5ecc340104f1bc63c403443ea06ef81354111f6a3aa38177e8a13f16dff6b"
+          "path": "docs/product/contours/context-and-simulation/requirements.md",
+          "sha256": "08b3baffaf56f96169a41691f2c7d9d4ddc29b047161bfcf60c40d4451092108"
         },
         {
-          "path": "docs/product/scenarios.md",
-          "sha256": "ceec912acc2629d46e8dc66e7455c7289c4d6cc934e2c3c7fe4509d9476ddb27"
+          "path": "docs/product/contours/context-and-simulation/scenarios.md",
+          "sha256": "5df75e1d20354638f567bd842ab8c0fcf970f8d610768c3345b63dcec23ee975"
         },
         {
           "path": "docs/specs/persona-simulation-governance/contract.md",
-          "sha256": "8d2fde0eabe8c9685e145a49bb9fb0ced53029fd1dd2167e77bf1e09c869a881"
+          "sha256": "ac644b1410c81ce85f90567d2848e04c0f0348e15571a5ac87f29d8847c25a63"
         }
       ],
       "execution": {
-        "model": "gpt-6-astra",
-        "reasoning_effort": "high",
+        "model": "gpt-6.1-sol",
+        "reasoning_effort": "xhigh",
         "sandbox_mode": "default"
       },
       "expectation": {
@@ -1391,8 +1391,8 @@
         "next_route": "",
         "primary_skill": "plan-change",
         "required_evidence_paths": [
-          "docs/product/requirements.md",
-          "docs/product/scenarios.md"
+          "docs/product/contours/context-and-simulation/requirements.md",
+          "docs/product/contours/context-and-simulation/scenarios.md"
         ],
         "status_any": [
           "PASS",
@@ -1404,7 +1404,7 @@
       "kind": "agent-outcome",
       "owner": "orchestrator",
       "product_context_required": true,
-      "prompt": "Prepare the smallest implementation-ready plan for a product-visible change to the current Cascade persona-simulation workflow. Use docs/product/requirements.md, docs/product/scenarios.md, and docs/specs/persona-simulation-governance/contract.md as the routed product sources. Keep specifications proportional, avoid creating a work graph unless the request truly needs one, and identify the appropriate implementation handoff.",
+      "prompt": "Prepare the smallest implementation-ready plan for a product-visible change to the current Cascade persona-simulation workflow. Use docs/product/contours/context-and-simulation/requirements.md, docs/product/contours/context-and-simulation/scenarios.md, and docs/specs/persona-simulation-governance/contract.md as the routed product sources. Keep specifications proportional, avoid creating a work graph unless the request truly needs one, and identify the appropriate implementation handoff.",
       "risk": "Role baseline: orchestrator source loading, ownership, output and evidence boundaries.",
       "source": "harness-evals/agent-outcomes.yaml",
       "target_skill": "plan-change"
@@ -1413,11 +1413,11 @@
       "context_bindings": [
         {
           "path": ".codex/agents/product-designer/AGENT.md",
-          "sha256": "c3a7a4e082289211b64141daf9ae80ba424b48c79f81751d7f7df5316ceebc56"
+          "sha256": "834a539ac47ca976d12c961cc3ab5c2568beb7147e1748ef5d2985bb44db17f4"
         },
         {
           "path": ".codex/agents/product-designer/skills.yaml",
-          "sha256": "2980a10eaf2f05747c84d238b4a8a3dd4195e46d7a7a9d17ea9a2362e89a63ee"
+          "sha256": "75ee817ebd619ad511937a5ff38de8c1bab4c2dc7bad32195ae44a6cfeb8ba62"
         },
         {
           "path": ".codex/plugins/cascade-design/skills/create-design/SKILL.md",
@@ -1425,8 +1425,8 @@
         }
       ],
       "execution": {
-        "model": "gpt-6-astra",
-        "reasoning_effort": "high",
+        "model": "gpt-6.1-sol",
+        "reasoning_effort": "xhigh",
         "sandbox_mode": "default"
       },
       "expectation": {
@@ -1474,17 +1474,17 @@
           "sha256": "7347b9cf215296fcd23eea5ad60d812f49428bdc0d121355ed2418e80fe62d3c"
         },
         {
-          "path": "docs/product/requirements.md",
-          "sha256": "7df5ecc340104f1bc63c403443ea06ef81354111f6a3aa38177e8a13f16dff6b"
+          "path": "docs/product/contours/context-and-simulation/requirements.md",
+          "sha256": "08b3baffaf56f96169a41691f2c7d9d4ddc29b047161bfcf60c40d4451092108"
         },
         {
           "path": "docs/specs/persona-simulation-governance/contract.md",
-          "sha256": "8d2fde0eabe8c9685e145a49bb9fb0ced53029fd1dd2167e77bf1e09c869a881"
+          "sha256": "ac644b1410c81ce85f90567d2848e04c0f0348e15571a5ac87f29d8847c25a63"
         }
       ],
       "execution": {
-        "model": "gpt-6-astra",
-        "reasoning_effort": "high",
+        "model": "gpt-6.1-sol",
+        "reasoning_effort": "xhigh",
         "sandbox_mode": "read-only"
       },
       "expectation": {
@@ -1509,7 +1509,7 @@
         "primary_skill": "cascade-security:secure-design",
         "required_evidence_paths": [
           "docs/patterns/boundaries/index.md",
-          "docs/product/requirements.md",
+          "docs/product/contours/context-and-simulation/requirements.md",
           "docs/specs/persona-simulation-governance/contract.md"
         ],
         "status_any": [
@@ -1523,7 +1523,7 @@
       "kind": "agent-outcome",
       "owner": "security",
       "product_context_required": true,
-      "prompt": "Perform a read-only security design review of the product simulation adapter and its cross-interface permissions. Use docs/product/requirements.md, docs/specs/persona-simulation-governance/contract.md, and docs/patterns/boundaries/index.md; distinguish evidence from assumptions and identify the appropriate next route.",
+      "prompt": "Perform a read-only security design review of the product simulation adapter and its cross-interface permissions. Use docs/product/contours/context-and-simulation/requirements.md, docs/specs/persona-simulation-governance/contract.md, and docs/patterns/boundaries/index.md; distinguish evidence from assumptions and identify the appropriate next route.",
       "risk": "Role baseline: security source loading, ownership, output and evidence boundaries.",
       "source": "harness-evals/agent-outcomes.yaml",
       "target_skill": "cascade-security:secure-design"
@@ -1532,7 +1532,7 @@
       "context_bindings": [
         {
           "path": ".codex/agents/simulation-evaluator/AGENT.md",
-          "sha256": "3158f28e9944940e1f230d7c9fd52cf68e56075ceb33467f9323fc095406fc8d"
+          "sha256": "5e973d55267e0d058179c9bee587539279e6bba2f38a1a2cd02451595f93d22f"
         },
         {
           "path": ".codex/plugins/cascade-evals/skills/simulation-evaluation/SKILL.md",
@@ -1544,8 +1544,8 @@
         }
       ],
       "execution": {
-        "model": "gpt-6-astra",
-        "reasoning_effort": "high",
+        "model": "gpt-6.1-sol",
+        "reasoning_effort": "xhigh",
         "sandbox_mode": "read-only"
       },
       "expectation": {
@@ -1604,8 +1604,8 @@
         }
       ],
       "execution": {
-        "model": "gpt-6-astra",
-        "reasoning_effort": "high",
+        "model": "gpt-6.1-sol",
+        "reasoning_effort": "xhigh",
         "sandbox_mode": "workspace-write"
       },
       "expectation": {
@@ -1658,12 +1658,12 @@
         },
         {
           "path": ".codex/skills/plan-change/SKILL.md",
-          "sha256": "60eb6b8fb58503dbc8d09f4be2b76034c6d947e3b79b8bae5b5c22fa1100f10c"
+          "sha256": "9238b6326c8e192224b19b92a7984402466b65b25a54d64a79eb99de2f73a826"
         }
       ],
       "execution": {
-        "model": "gpt-6-astra",
-        "reasoning_effort": "high",
+        "model": "gpt-6.1-sol",
+        "reasoning_effort": "xhigh",
         "sandbox_mode": "default"
       },
       "expectation": {

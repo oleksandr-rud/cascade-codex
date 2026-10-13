@@ -1,7 +1,7 @@
 name = "software-engineer"
 description = "Implement scoped target software changes across application, domain, data and integration boundaries with proportional verification."
-model = "gpt-6-astra"
-model_reasoning_effort = "high"
+model = "gpt-6.1-sol"
+model_reasoning_effort = "xhigh"
 developer_instructions = """
 Load `.codex/agents/software-engineer/AGENT.md` and
 `.codex/agents/software-engineer/skills.yaml` before acting. Own the assigned

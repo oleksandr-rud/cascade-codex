@@ -1,4 +1,5 @@
 plugin_skills:
+  - cascade-specs:synthesise-spec
   - cascade-design:create-design
   - cascade-design:ux-flow-review
   - cascade-design:design-system

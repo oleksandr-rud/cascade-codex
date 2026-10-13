@@ -115,5 +115,5 @@ application stack or completed target security review.
 - generated catalog and repository validator checks;
 - aggregate Bun regression suite;
 - fixed-point Standards, Spec, and security findings review;
-- live product evidence, independent W-004 acceptance, and real-user efficacy
+- live product evidence, independent simulation-runtime acceptance, and real-user efficacy
   remain separate required gates.

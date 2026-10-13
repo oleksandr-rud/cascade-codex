@@ -34,21 +34,18 @@ conditional QA branch, lives in
 Atomic mechanical edits may bypass planning. Bounded one-owner work uses a short
 inline plan and creates no spec, lane, graph, report, receipt, or archive record.
 
-## Active Work
+## Work Records
 
-`docs/work/active.md` is the current registry. Create a lane packet only when
-the work needs its own status across tasks, an independent owner or handoff, a
-real dependency, or separately accepted evidence. A row or chat plan is enough
-otherwise.
+Record implementation tasks in `docs/work/tasks/{task_id}.md`. Use the internal
+number and a real product/tracker identity when supplied. Keep one flat layout
+until an actual product-task division is adopted. The task contains explicit
+status, owner, handoff and check results; planning remains inline.
 
-Before resuming a lane, compare its source identity and acceptance criteria with
-current code and evidence. Mark only affected claims or consumers stale.
-Completed or unrelated lanes are historical context and must not be loaded into
-ordinary task planning.
-
-A lane or graph is declarative state. It grants no permission, performs no
-dispatch, and does not imply a branch, worktree, external action, or provider
-spend.
+Before resuming, compare the named record with current source and evidence.
+Update only affected claims or consumers. Use an accepted Project Management
+coordination artifact only when real dependencies or independent evidence joins
+require it. Neither a record nor such an artifact grants execution authority.
+Do not recreate lane, graph, report, archive or backlog directories.
 
 ## Iteration Planning
 
@@ -212,18 +209,15 @@ existing active record, or a reusable handoff. If not, the final response is
 sufficient.
 
 When durable state is affected, update only the owner documents or active
-records, record exact evidence states, and preserve unresolved risk. A report is
-warranted only when a future task cannot cheaply recover the handoff from
-current source and tests.
+records, record exact evidence states, and preserve unresolved risk. Keep a compact handoff in the numbered task when it cannot be recovered
+cheaply from current source and tests.
 
 ## Memory
 
-- Current resumable state belongs in `docs/work/active.md` and necessary lane
-  or graph records.
+- Current task state and scoped checks belong in `docs/work/tasks/{task_id}.md`.
 - Reusable rules belong in the narrowest skill, role, or pattern owner.
 - Product, design, brand, and spec facts remain in their owning trees.
-- Reports are exceptional handoffs, not a transcript of every task.
-- Archives are explicit historical cleanup and never current authority.
+- Keep handoffs in the same task record; do not accumulate reports or archives.
 
 Compact repetition, but preserve identity, provenance, status, permissions,
 negative constraints, and the difference between authored, executed, judged,

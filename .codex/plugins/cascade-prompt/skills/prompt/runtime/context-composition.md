@@ -74,6 +74,11 @@ encode chronology. Follow trained layouts rather than imposing this pack's
 generic stable-before-volatile convention on a native decision compiler.
 Test order and evidence extent as controlled variants when material.
 
+For a named GPT-6 target, the selected exact-model adapter and
+[shared GPT-6 guidance](model-gpt6.md) own API cache settings and breakpoint
+compatibility. Keep those controls in the host request, separate from prompt
+prose and local rendered-block caching.
+
 For schema output, validate the final answer against the supplied schema and
 claim/evidence rules. A schema-valid unsupported answer still fails. One bounded
 repair may consume concrete validation errors; unavailable tools or missing

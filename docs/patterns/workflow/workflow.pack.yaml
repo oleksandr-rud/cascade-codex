@@ -45,7 +45,7 @@ routing:
     - "A repeated proportional-routing, durable-coordination, planning, closeout, or research-coverage rule changes."
     - "A validated harness change updates the Doc Routing Decision Matrix, lane model, or memory routing."
   defer_when:
-    - "The fact is product-specific and belongs in docs/product, docs/design, docs/brand, docs/specs, or docs/backlog."
+    - "The fact is product-specific and belongs in docs/product, docs/design, docs/brand, docs/specs, or a numbered Work task."
   primary_skills:
     - context
     - cascade-project-management:manage-project

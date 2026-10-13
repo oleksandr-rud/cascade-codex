@@ -69,6 +69,7 @@ export interface ProductCapability {
 export interface ProductCatalog {
   schema_version: number;
   product: { id: string; name: string; summary: string };
+  reference_documents?: Record<"requirements" | "journeys" | "scenarios", string[]>;
   domains: ProductDomain[];
   capabilities: ProductCapability[];
 }
@@ -123,6 +124,8 @@ export interface BriefManifest {
 interface MarkdownTable {
   headers: string[];
   rows: string[][];
+  rowSources?: Record<string, string>;
+  sourceFiles?: Record<string, { content: string; sha256: string }>;
 }
 
 export interface ResolvedBrief {
@@ -362,10 +365,30 @@ function validateEvaluationRef(value: unknown, label: string): EvaluationRef {
 
 export function validateCatalogShape(value: unknown): ProductCatalog {
   const catalog = object(value, "product catalog");
-  exactKeys(catalog, ["schema_version", "product", "domains", "capabilities"], "product catalog");
+  exactKeys(catalog, ["schema_version", "product", "reference_documents", "domains", "capabilities"], "product catalog");
   if (catalog.schema_version !== 1) throw new CascadeError("product catalog schema_version must be 1");
   const product = object(catalog.product, "product catalog product");
   exactKeys(product, ["id", "name", "summary"], "product catalog product");
+  let referenceDocuments: ProductCatalog["reference_documents"];
+  if (catalog.reference_documents !== undefined) {
+    const documents = object(catalog.reference_documents, "reference_documents");
+    exactKeys(documents, ["requirements", "journeys", "scenarios"], "reference_documents");
+    referenceDocuments = {} as NonNullable<ProductCatalog["reference_documents"]>;
+    for (const kind of ["requirements", "journeys", "scenarios"] as const) {
+      const paths = stringArray(documents[kind], `reference_documents.${kind}`);
+      const selectedPaths = new Set<string>();
+      for (const path of paths) {
+        if (!path.startsWith("docs/product/") || !path.endsWith(".md") ||
+            path.includes("\\") || path.includes("\0") ||
+            path.split("/").some((part) => !part || part === "." || part === "..")) {
+          throw new CascadeError(`invalid product owner document path: ${path}`);
+        }
+        if (selectedPaths.has(path)) throw new CascadeError(`duplicate product owner document path: ${path}`);
+        selectedPaths.add(path);
+      }
+      referenceDocuments[kind] = paths;
+    }
+  }
   const domains = (catalog.domains as unknown[] | undefined)?.map((value, index) => {
     const item = object(value, `domains[${index}]`);
     exactKeys(item, ["id", "name", "status", "owner", "summary", "source_paths"], `domains[${index}]`);
@@ -420,6 +443,7 @@ export function validateCatalogShape(value: unknown): ProductCatalog {
       name: string(product.name, "product.name"),
       summary: string(product.summary, "product.summary"),
     },
+    ...(referenceDocuments ? { reference_documents: referenceDocuments } : {}),
     domains,
     capabilities,
   };
@@ -439,16 +463,56 @@ async function personaPaths(): Promise<Map<string, string>> {
   return result;
 }
 
-async function productTables(): Promise<{
+export function mergeProductOwnerTables(
+  sources: Array<{ path: string; content: string }>,
+  idPattern: RegExp,
+  label: string,
+): MarkdownTable {
+  const result: MarkdownTable = { headers: [], rows: [], rowSources: {} };
+  const seen = new Set<string>();
+  for (const source of sources) {
+    const table = ownerTable(source.content, idPattern, `${label} ${source.path}`);
+    if (!result.headers.length) result.headers = table.headers;
+    if (stableJson(result.headers) !== stableJson(table.headers)) {
+      throw new CascadeError(`${label} owner table columns differ: ${source.path}`);
+    }
+    for (const row of table.rows) {
+      const value = row[0]!.replaceAll("`", "");
+      if (!idPattern.test(value)) throw new CascadeError(`invalid ${label} owner row ID: ${value}`);
+      if (seen.has(value)) throw new CascadeError(`duplicate ${label} owner row ID: ${value}`);
+      seen.add(value);
+      result.rows.push(row);
+      result.rowSources![value] = source.path;
+    }
+  }
+  return result;
+}
+
+async function productTables(catalog: ProductCatalog): Promise<{
   requirements: MarkdownTable;
   journeys: MarkdownTable;
   scenarios: MarkdownTable;
 }> {
-  return {
-    requirements: ownerTable(await readText(PRODUCT_FILES.requirements), /^PR-\d{3}$/, "requirements"),
-    journeys: ownerTable(await readText(PRODUCT_FILES.journeys), /^J-\d{3}$/, "journeys"),
-    scenarios: ownerTable(await readText(PRODUCT_FILES.scenarios), /^PS-\d{3}$/, "scenarios"),
-  };
+  const result = {} as Record<"requirements" | "journeys" | "scenarios", MarkdownTable>;
+  const patterns = { requirements: /^PR-\d{3}$/, journeys: /^J-\d{3}$/, scenarios: /^PS-\d{3}$/ };
+  const documents = new Map<string, { path: string; content: string; sha256: string }>();
+  for (const kind of ["requirements", "journeys", "scenarios"] as const) {
+    const paths = catalog.reference_documents?.[kind] ?? [rel(PRODUCT_FILES[kind])];
+    const sources = [];
+    for (const path of paths) {
+      if (!documents.has(path)) {
+        const absolute = await assertRepoFile(path, `${kind} owner document`, "docs/product/");
+        const source = await readBoundedUtf8(absolute, `${kind} owner document`, 256 * 1024);
+        documents.set(path, { path, content: source.text, sha256: source.sha256 });
+      }
+      sources.push(documents.get(path)!);
+    }
+    result[kind] = mergeProductOwnerTables(sources, patterns[kind], kind);
+    result[kind].sourceFiles = Object.fromEntries(sources.map((source) => [source.path, {
+      content: source.content, sha256: source.sha256,
+    }]));
+  }
+  return result;
 }
 
 async function assertRepoFile(path: string, label: string, prefix?: string): Promise<string> {
@@ -462,7 +526,7 @@ export async function loadAndValidateProductCatalog(
 ): Promise<ProductCatalog> {
   const catalog = validateCatalogShape(await loadYaml<unknown>(path, "product catalog"));
   const domainIds = new Set(catalog.domains.map((item) => item.id));
-  const tables = await productTables();
+  const tables = await productTables(catalog);
   const personas = await personaPaths();
   const available = {
     requirement_ids: new Set(rowIds(tables.requirements)),
@@ -796,7 +860,7 @@ export async function resolveBrief(value: string): Promise<ResolvedBrief> {
   }
   validateBriefCoverage(manifest, capability);
   validateCompleteBriefBindings(manifest, capability);
-  const tables = await productTables();
+  const tables = await productTables(catalog);
   const personas = await personaPaths();
   selectRows(tables.requirements, manifest.product_refs.requirement_ids, "requirement");
   selectRows(tables.journeys, manifest.product_refs.journey_ids, "journey");
@@ -806,10 +870,22 @@ export async function resolveBrief(value: string): Promise<ResolvedBrief> {
   }
   const sourceDigests: Array<{ path: string; sha256: string }> = [];
   const sourceContents: Array<{ path: string; content: string }> = [];
-  for (const source of manifest.source_documents) {
+  const ownerPaths = new Set<string>();
+  const ownerSources = new Map<string, { content: string; sha256: string }>();
+  for (const kind of ["requirements", "journeys", "scenarios"] as const) {
+    const refs = manifest.product_refs[kind === "requirements" ? "requirement_ids" : kind === "journeys" ? "journey_ids" : "scenario_ids"];
+    for (const ref of refs) {
+      const path = tables[kind].rowSources![ref]!;
+      ownerPaths.add(path);
+      ownerSources.set(path, tables[kind].sourceFiles![path]!);
+    }
+  }
+  for (const source of [...new Set([...manifest.source_documents, ...ownerPaths])]) {
     const absolute = await assertRepoFile(source, "brief source", "docs/");
-    sourceDigests.push({ path: source, sha256: await sha256File(absolute) });
-    sourceContents.push({ path: source, content: await readText(absolute) });
+    const cached = ownerSources.get(source);
+    const snapshot = cached ?? await readBoundedUtf8(absolute, "brief source", MAX_BRIEF_MANIFEST_BYTES);
+    sourceDigests.push({ path: source, sha256: snapshot.sha256 });
+    sourceContents.push({ path: source, content: "content" in snapshot ? snapshot.content : snapshot.text });
   }
   validateEvidenceSupportBindings(manifest.evidence, sourceContents);
   for (const evidence of manifest.evidence) {

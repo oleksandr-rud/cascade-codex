@@ -69,8 +69,8 @@ bundle that omits it.
 
 ## Durable work
 
-If an existing lane or Coordination Graph is in scope, update only its affected
-acceptance and evidence references after the checks complete. Ordinary bounded
+Update only the relevant numbered Work task and its check results after
+validation. Preserve the real product/tracker reference and evidence limits. Ordinary bounded
 validation does not create a lane, graph, spec, receipt, or report.
 
 ## Output

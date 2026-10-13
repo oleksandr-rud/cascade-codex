@@ -1,31 +1,17 @@
 import { describe, expect, test } from "bun:test";
 
-import { compileTaskEnvelope, semanticAdmissionRequest, type AdmissionRequest } from "./admission";
+import { compileTaskEnvelope } from "./fixtures/admission";
 import {
   buildPluginCapabilityCatalog,
   capabilitySelectionDigest,
   type CapabilitySelection,
   validatePluginPlan,
   validateCapabilitySelection,
+  validateInstalledPluginInventory,
 } from "./plugin-workflow";
 
-function fixtureInterpretation(request: string) {
-  return {
-    schema_version: 1, artifact_type: "cascade-admission-interpretation", status: "RESOLVED",
-    request_digest: semanticAdmissionRequest(request).request_digest, prior_envelope_id: null,
-    model_id: "authored-routing-fixture-NOT_MODEL_INFERENCE", relation: "NEW", intent: "REVIEW",
-    policy_tags: ["review"], workload: { topology: "ATOMIC", effort: "SMALL", authority: "READ_ONLY", duration: "TURN" },
-    local_write_scope: { mode: "TARGETS", targets: [] },
-    claims: [{ kind: "OUTCOME", statement: request, confidence: 0.8, policy_tags: ["review"] }], uncertainty: [],
-  };
-}
-
-function compileFixture(input: AdmissionRequest) {
-  return compileTaskEnvelope({ ...input, semantic_interpretation: fixtureInterpretation(input.request) });
-}
-
 const catalog = await buildPluginCapabilityCatalog();
-const envelope = await compileFixture({
+const envelope = await compileTaskEnvelope({
   request: "Plan the requested work using accepted inputs and current plugin contracts.",
   task_id: "plugin-input-regressions",
   produced_at: "2026-09-10T00:00:00+00:00",
@@ -45,8 +31,8 @@ function fixture(routes: string[], inputs: string[], alternatives: Record<string
     capability_catalog_digest: catalog.catalog_digest,
     selection_digest: "0".repeat(64),
     selector: {
-      route: "cascade-coordinator:select-capabilities", model: "gpt-6-astra",
-      reasoning_effort: "high", prompt_sha256: "a".repeat(64),
+      route: "cascade-coordinator:select-capabilities", model: "gpt-6.1-sol",
+      reasoning_effort: "xhigh", prompt_sha256: "a".repeat(64),
     },
     input_artifacts: ["task-envelope", "plugin-capability-catalog", ...inputs],
     selected_candidates: descriptors.map((skill) => ({
@@ -67,8 +53,8 @@ function fixture(routes: string[], inputs: string[], alternatives: Record<string
     capability_catalog_digest: catalog.catalog_digest,
     capability_selection_digest: selection.selection_digest,
     planner: {
-      route: "cascade-coordinator:plan-workflow", model: "gpt-6-astra",
-      reasoning_effort: "high", prompt_sha256: "b".repeat(64),
+      route: "cascade-coordinator:plan-workflow", model: "gpt-6.1-sol",
+      reasoning_effort: "xhigh", prompt_sha256: "b".repeat(64),
     },
     input_artifacts: selection.input_artifacts,
     selected_nodes: descriptors.map((skill, index) => ({
@@ -106,10 +92,23 @@ const supportedModes: [string, string[], string[]?][] = [
   ["cascade-project-management:close-project", ["project-plan", "execution-receipts"]],
   ["cascade-market:brand-positioning", ["product-contract"], ["product-contract"]],
   ["cascade-evals:prompt-evaluation", ["prompt-candidate", "prompt-evaluation-cases"]],
+  ["cascade-qa:design-tests", ["change-contract"], ["change-contract"]],
   ["cascade-simulations:simulation-persona", ["persona-projection"]],
 ];
 
 describe("source-supported plugin input modes", () => {
+  test("installed versions, enabled state and target lock must match the catalog", () => {
+    const installed = catalog.plugins.map((plugin) => ({ name: plugin.name, marketplaceName: "cascade-project", version: plugin.version, installed: true, enabled: true }));
+    const lock = { schema_version: 1, artifact_type: "cascade-installed-plugin-lock", capability_catalog_digest: catalog.catalog_digest, plugins: catalog.plugins.map((plugin) => ({ name: plugin.name, version: plugin.version })) };
+    expect(validateInstalledPluginInventory({ installed }, catalog, [], lock)).toHaveLength(15);
+    const stale = structuredClone(installed); stale[0]!.version = "old";
+    expect(() => validateInstalledPluginInventory({ installed: stale }, catalog)).toThrow("version differs");
+    const disabled = structuredClone(installed); disabled[0]!.enabled = false;
+    expect(() => validateInstalledPluginInventory({ installed: disabled }, catalog)).toThrow("disabled");
+    expect(() => validateInstalledPluginInventory({ installed }, catalog, [], { ...lock, capability_catalog_digest: "0".repeat(64) })).toThrow("lock is stale");
+    const wrong = structuredClone(lock); wrong.plugins[0]!.version = "old";
+    expect(() => validateInstalledPluginInventory({ installed }, catalog, [], wrong)).toThrow("lock differs");
+  });
   test("Git integration cannot borrow read-only planning authority even with a supplied subject", () => {
     const route = "cascade-coding-agent:pull-and-integrate";
     expect(fixture([route], ["git-integration-request"]).check).toThrow("exceeds Task Envelope authority");
@@ -131,6 +130,7 @@ describe("source-supported plugin input modes", () => {
     ["cascade-design:ux-flow-review", "design-evidence"],
     ["cascade-market:brand-positioning", "brand-brief"],
     ["cascade-qa:plan-quality", "accepted-behavior"],
+    ["cascade-qa:design-tests", "accepted-behavior"],
     ["cascade-qa:plan-quality", "accepted-requirements"],
     ["cascade-qa:plan-quality", "accepted-journeys"],
     ["cascade-qa:plan-quality", "accepted-scenarios"],

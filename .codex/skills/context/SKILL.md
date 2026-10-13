@@ -15,14 +15,13 @@ skill reads state; it does not authorize or perform implementation.
 - **Discovery**: additionally build a compact inventory of observed facts,
   user-provided facts, assumptions, conflicts, source locators, and the earliest
   missing decision, then select the smallest namespaced plugin owner.
-- **Resume**: additionally recover the named active lane, its latest evidence,
+- **Resume**: additionally recover the named numbered task record, its latest evidence,
   blockers, and next safe action.
 - **Graph**: additionally recover the named Coordination Graph and only the
   worklines or joins needed for the requested decision.
 
-Do not load every active lane, archived report, or repository document merely
-because it exists. Use archives only when the user asks for history or current
-sources explicitly point there.
+Do not load every task record or repository document merely
+because it exists. Load historical evidence only when the request or a current source needs it.
 
 ## Build the snapshot
 

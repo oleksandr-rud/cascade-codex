@@ -1,4 +1,5 @@
 plugin_skills:
+  - cascade-specs:synthesise-spec
   - cascade-coding-agent:pull-and-integrate
   - cascade-ai-architect:architect-ai-system
   - cascade-ai-architect:map-agent-capabilities
@@ -29,6 +30,7 @@ skills:
   - name: create-spec
     source: .codex/skills/create-spec/SKILL.md
     delegates:
+      - cascade-specs:synthesise-spec
       - cascade-product:define-product
       - cascade-product:manage-product-lifecycle
       - cascade-personas:build-persona

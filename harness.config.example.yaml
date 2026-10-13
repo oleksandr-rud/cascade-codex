@@ -32,11 +32,12 @@ project:
       e2e: "<E2E_TEST_RUNNER_OR_NONE>"
 
 models:
-  default: "gpt-6-astra"
-  planning: "gpt-6-astra"
-  judged_evaluation: "gpt-6-astra"
-  subagent_execution: "gpt-6-astra"
-  read_heavy: "gpt-6-astra"
+  default: "gpt-6.1-sol"
+  planning: "gpt-6.1-sol"
+  judged_evaluation: "gpt-6.1-sol"
+  subagent_execution: "gpt-6.1-sol"
+  read_heavy: "gpt-6.1-sol"
+  reasoning_effort: "xhigh"
 
 plugin_architecture:
   mode: "plugin-first"
@@ -50,6 +51,7 @@ plugin_architecture:
   durable_persistence_owner: "closeout"
 
 paths:
+  product_unit_template: "docs/product/unit-template.md"
   source_roots:
     - "<SRC_ROOT>"
   test_roots:
@@ -68,7 +70,9 @@ paths:
   docs_root: "docs"
   structure: "docs/structure.md"
   glossary: "docs/glossary.md"
-  active_work: "docs/work/active.md"
+  active_work: "docs/work/tasks"
+  work_task_template: "docs/work/task-template.md"
+  work_task_schema: "docs/work/task.schema.json"
   patterns: "docs/patterns"
   pattern_context_builder: ".codex/runtime/cascade.js"
   task_admission_schema: ".codex/task-admission/task-envelope.schema.json"
@@ -120,7 +124,6 @@ memory:
   product: "docs/product"
   specs: "docs/specs"
   patterns: "docs/patterns"
-  backlog: "docs/backlog"
 
 patterns:
   root: "docs/patterns"

@@ -74,6 +74,24 @@ test("retains raw evidence and exact runtime identity in one phase receipt", asy
   assert.deepEqual(await readFile(join(root, result.execution_receipt.path)), bytes);
 });
 
+test("dispatch and receipt share the policy effort while preserving explicit baselines", async () => {
+  const echoAdapter = join(root, "echo-model-options.cjs");
+  const echoConfig = join(root, "echo-model-options.json");
+  await writeFile(echoAdapter, `const request=JSON.parse(require("node:fs").readFileSync(0,"utf8"));process.stdout.write(JSON.stringify({text:JSON.stringify({model:request.model,effort:request.reasoning_effort})}));`);
+  await writeFile(echoConfig, JSON.stringify({schema_version:1,adapters:{fixture:{command:process.execPath,args:[echoAdapter]}}}));
+  for (const [phase, model, reasoningEffort, expected] of [
+    ["policy-default", "gpt-6.1-sol", undefined, "xhigh"],
+    ["preserved-baseline", "gpt-6-astra", "high", "high"],
+  ]) {
+    const result = await runModelPhase({...configuration,adapterConfig:echoConfig,phase,runId:"options-v1",runRoot:root,model,reasoningEffort});
+    assert.equal(result.status, "COMPLETED");
+    assert.deepEqual(JSON.parse(result.final_text), {model,effort:expected});
+    const receipt = JSON.parse(await readFile(join(root,result.execution_receipt.path)));
+    assert.equal(receipt.model, model);
+    assert.equal(receipt.reasoning_effort, expected);
+  }
+});
+
 test("never replays an invocation left in DISPATCHED state", async () => {
   const path = join(root, "uncertain.execution.json");
   const before = JSON.stringify({ status: "DISPATCHED" });
@@ -303,7 +321,7 @@ test("campaign and challenge model overrides are bound before dispatch", async (
     assert.equal(JSON.parse(result.stdout).jobs_finished, 0);
     const challenge = (await import("node:url")).fileURLToPath(new URL("./run-judge-challenges.mjs", import.meta.url));
     for (const [id, options, model, effort, comparison] of [
-      ["default", [], "gpt-6-astra", "high", false],
+      ["default", [], "gpt-6.1-sol", "xhigh", false],
       ["sol-comparison", ["--judge-model", "gpt-5.6-sol", "--judge-reasoning-effort", "max"], "gpt-5.6-sol", "max", true],
     ]) {
       const result = await runCommand({ command: process.execPath, args: [challenge, "--cases", "j01",

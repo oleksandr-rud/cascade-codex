@@ -57,7 +57,7 @@ documents:
         title: Scenario Tests
         anchor: "## Scenario Tests"
         summary: "Traceability and fixture rules for product scenarios and functional tests."
-        routing_description: "Use when docs/product/scenarios or work lanes need executable scenario coverage."
+        routing_description: "Use when catalog-declared product scenario owners or numbered Work tasks need executable coverage."
         tags:
           - scenarios
           - cascade-qa:design-tests

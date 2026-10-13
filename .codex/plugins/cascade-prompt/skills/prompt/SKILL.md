@@ -9,7 +9,7 @@ Deliver a prompt rather than solve the task unless the user requests both.
 
 ## Runtime and source policy
 
-Default authoring recommendation: `gpt-6-astra` with host reasoning `high`.
+Default authoring recommendation: `gpt-6.1-sol` with host reasoning `xhigh`.
 An installed skill inherits the active host model; prose cannot switch it.
 This authoring default does not select the generated prompt's target model:
 preserve the user's target and adapt only its relevant surface. Frozen Evals
@@ -50,12 +50,15 @@ Load only the smallest conditional material:
   compatibility. Do not assign a generative tier to these decision targets.
 - `runtime/model-index.yaml` for a named generative model or model-specific
   adaptation, even when its tier is already known. Load only that entry's `prompt_adapter`
-  when present; paths are relative to this skill. An unknown version requires
+  when present, plus shared guidance explicitly linked by that adapter; paths are relative to this skill. An unknown version requires
   current provider evidence, not the nearest family's settings.
   Preserve an explicit capable model/tier. Use the detailed registry only for
   current research, provenance, or multi-candidate comparison.
   Entry-level `checked_at` overrides the catalog date; undated entries retain
-  the older catalog date. Verify current availability before recommending a
+  the older catalog date. `needs-verification` entries are historical compatibility
+  references, excluded from current recommendations until provider verification
+  updates that exact entry. A frozen evaluation may retain its own model policy.
+  Verify current availability before recommending a
   purchase or changing a provider configuration; a candidate is not a measured winner.
 - `runtime/context-composition.md` for an explicit context-template/layout
   request or material multi-source/history composition. Combining public web

@@ -1,6 +1,6 @@
 {
   "name": "cascade-coding-agent",
-  "version": "0.3.3+codex.20260910204851",
+  "version": "0.3.6+codex.20261002010000",
   "description": "Integrates develop or the primary branch, resolves conflicts by authority, prepares reviewed changes for push, and engineers coding-agent harnesses.",
   "author": {
     "name": "Cascade"

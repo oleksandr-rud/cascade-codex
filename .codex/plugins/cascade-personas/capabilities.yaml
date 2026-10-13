@@ -1,11 +1,11 @@
 schema_version: 1
 plugin:
   name: cascade-personas
-  version: 0.1.29+codex.20260910172549
+  version: "0.1.34+codex.20261001201835"
 model_policy:
-  model: gpt-6-astra
-  planning_reasoning_effort: high
-  evaluation_reasoning_effort: high
+  model: gpt-6.1-sol
+  planning_reasoning_effort: xhigh
+  evaluation_reasoning_effort: xhigh
 skills:
   - route: cascade-personas:build-persona
     description: Create or revise a canonical source-grounded Persona with provenance, stable traits, dynamic state, uncertainty, and privacy controls.

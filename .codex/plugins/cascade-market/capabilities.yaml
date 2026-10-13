@@ -1,11 +1,11 @@
 schema_version: 1
 plugin:
   name: cascade-market
-  version: 0.2.9+codex.20260910172549
+  version: "0.2.15+codex.20261001202110"
 model_policy:
-  model: gpt-6-astra
-  planning_reasoning_effort: high
-  evaluation_reasoning_effort: high
+  model: gpt-6.1-sol
+  planning_reasoning_effort: xhigh
+  evaluation_reasoning_effort: xhigh
 skills:
   - route: cascade-market:research-market
     description: Explore and compare market niches using current evidence of jobs, demand, alternatives, pricing, buying behavior and entrant reachability.

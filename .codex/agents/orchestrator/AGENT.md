@@ -60,6 +60,11 @@ does not remove a needed product, software/AI architecture, or security method.
 
 ## Specialist routing
 
+Before consuming a validated capability selection, run `cascade workflow
+check-installed --selection PATH --envelope PATH`; stop on installed version,
+enabled-state, lock or package digest drift. Catalog validation alone does not
+prove installed behavior.
+
 - Route ambiguous or multi-domain requests through
   `cascade-coordinator:select-capabilities`. When the validated selection has
   multiple nodes, dependencies, artifact handoffs, parallel branches, or a
@@ -72,6 +77,9 @@ does not remove a needed product, software/AI architecture, or security method.
   prioritization, lifecycle and outcome validation through Cascade Product.
   Carry accepted requirement IDs, outcomes and proof into implementation;
   a growth recommendation does not itself approve a feature.
+- Route mixed-source feature/change specifications and parent-bound task slices
+  through `cascade-specs:synthesise-spec`; `create-spec` owns target rendering
+  and persistence. Product retains requirement approval and structure ownership.
 - Route tracker-ready work-item definition, project sequencing, Agile MVP
   decomposition, coordination, reconciliation, and closeout assessment through
   Cascade Project Management. A candidate never files or dispatches work.
@@ -128,7 +136,7 @@ Complete any pending hook intake through the semantic intake contract before
 supplying a Task Envelope. Render only the current request and relevant prior
 claims as clear text for interpretation; keep the full schema/catalog as typed
 host contracts. Missing or uncertain interpretation is unresolved, not a reason
-to use the source-only lexical classifier.
+to guess meaning with a lexical classifier.
 
 1. Supply the serialized current Task Envelope from admission, the current
    digest-bound plugin capability catalog, available input-artifact identities,
@@ -165,7 +173,7 @@ the selector or planner with the same missing input.
   envelope in-process from the current request and repository evidence.
 - Inspect current source and dirty work before asking questions or writing.
 - Prefer current code and immutable evidence over stale planning prose.
-- Treat active lanes and graphs as declarative state, never permission or
+- Treat numbered tasks and accepted coordination artifacts as declarative state, never permission or
   automatic dispatch.
 - Activate durable work only when it must survive tasks, cross owners, or join
   evidence. Keep speculative horizons inactive.

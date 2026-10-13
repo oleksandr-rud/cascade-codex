@@ -1,14 +1,28 @@
 {
   "schema_version": 1,
-  "policy_id": "cascade-evals-model-policy-v2",
+  "policy_id": "cascade-evals-model-policy-v3",
   "defaults": {
-    "builder_model": "gpt-6-astra",
-    "builder_reasoning_effort": "high",
-    "target_model": "gpt-6-astra",
-    "target_reasoning_effort": "high",
-    "judge_model": "gpt-6-astra",
-    "judge_reasoning_effort": "high"
+    "builder_model": "gpt-6.1-sol",
+    "builder_reasoning_effort": "xhigh",
+    "target_model": "gpt-6.1-sol",
+    "target_reasoning_effort": "xhigh",
+    "judge_model": "gpt-6.1-sol",
+    "judge_reasoning_effort": "xhigh"
   },
+  "preserved_baselines": [
+    {
+      "id": "astra-high-v2",
+      "purpose": "Compatibility with explicitly bound pre-v3 evaluation packs and receipts; never selected for a new unbound evaluation.",
+      "models": {
+        "builder_model": "gpt-6-astra",
+        "builder_reasoning_effort": "high",
+        "target_model": "gpt-6-astra",
+        "target_reasoning_effort": "high",
+        "judge_model": "gpt-6-astra",
+        "judge_reasoning_effort": "high"
+      }
+    }
+  ],
   "explicit_comparison_overrides_allowed": true,
   "independent_judge_context_required": true,
   "forbidden_models": [

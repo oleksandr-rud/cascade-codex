@@ -6,6 +6,7 @@ import {positiveTimeout,requireCompleted,DEFAULT_TIMEOUTS_MS} from "./execution-
 import {snapshotSubject,judgeRequest,parseJudgment,digest,runnerDigest,assertDisjointRoots} from "./evaluation-integrity.mjs";
 import {resolveSubjectSkill} from "./subject-plugin.mjs";
 import {runModelPhase} from "./execution-adapters.mjs";
+import {evaluationDefaults} from "./model-policy.mjs";
 const scripts=dirname(fileURLToPath(import.meta.url));
 const value=name=>{const i=process.argv.indexOf(`--${name}`);return i<0?undefined:process.argv[i+1];};
 const subject=await resolveSubjectSkill({explicitPath:value("subject-skill-root")});
@@ -19,10 +20,10 @@ const runId=value("run-id")??`knowledge-${item.path.split("/").at(-1).replace(/[
 if(!/^[a-zA-Z0-9][a-zA-Z0-9._-]*$/.test(runId))throw new Error("unsafe run ID");
 const root=join(output,runId);await mkdir(root);const workspace=join(root,"workspace");await mkdir(workspace);
 const evidence={reference:{path:item.path,content:snapshot.files[item.path]},entrypoint:snapshot.files["SKILL.md"],consumers:item.consumers.map(path=>({path,content:snapshot.files[path]}))};
-const contract={run_id:runId,reference:item.path,scope:"Static semantic reference-to-runtime audit; behavioral execution is separate.",subject_sha256:snapshot.sha256,profile_sha256:digest(JSON.stringify(profile)),runner_bundle_sha256:await runnerDigest(scripts),evidence_sha256:digest(JSON.stringify(evidence)),model:"gpt-6-astra",reasoning_effort:"high",human_calibration:"NOT_RUN"};
+const contract={run_id:runId,reference:item.path,scope:"Static semantic reference-to-runtime audit; behavioral execution is separate.",subject_sha256:snapshot.sha256,profile_sha256:digest(JSON.stringify(profile)),runner_bundle_sha256:await runnerDigest(scripts),evidence_sha256:digest(JSON.stringify(evidence)),model:evaluationDefaults.judge_model,reasoning_effort:evaluationDefaults.judge_reasoning_effort,human_calibration:"NOT_RUN"};
 await writeFile(join(root,"run-contract.json"),JSON.stringify(contract,null,2));await writeFile(join(root,"evidence.json"),JSON.stringify(evidence,null,2));
 const identity={fixture_id:item.path,run_id:runId};
-const run=requireCompleted(await runModelPhase({phase:"knowledge-judge",runId,runRoot:root,model:"gpt-6-astra",reasoningEffort:"high",prompt:judgeRequest(profile,identity,evidence),cwd:workspace,timeoutMs:positiveTimeout(value("judge-timeout-ms"),DEFAULT_TIMEOUTS_MS.knowledge_judge,"--judge-timeout-ms"),adapter:"codex-cli"}),{phase:"knowledge-judge",runRoot:root});
+const run=requireCompleted(await runModelPhase({phase:"knowledge-judge",runId,runRoot:root,model:contract.model,reasoningEffort:contract.reasoning_effort,prompt:judgeRequest(profile,identity,evidence),cwd:workspace,timeoutMs:positiveTimeout(value("judge-timeout-ms"),DEFAULT_TIMEOUTS_MS.knowledge_judge,"--judge-timeout-ms"),adapter:"codex-cli"}),{phase:"knowledge-judge",runRoot:root});
 await writeFile(join(root,"judge.jsonl"),run.stdout??"");
 const judgment=run.status==="COMPLETED"?parseJudgment(run.final_text,profile,identity,evidence):{valid:false,error:run.status};
 const summary={...contract,judgment,receipt:run.execution_receipt,status:judgment.valid?judgment.harness_verdict:"INVALID",acceptance:judgment.valid?(judgment.harness_verdict==="PASS"?"ACCEPTED":judgment.harness_verdict==="FAIL"?"REJECTED":"BLOCKED"):"INVALID",evidence_grade:run.status==="COMPLETED"?"LIVE_CODEX_TOOL_FREE":"INCOMPLETE"};

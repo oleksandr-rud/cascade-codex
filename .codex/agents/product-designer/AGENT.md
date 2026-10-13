@@ -25,6 +25,7 @@ personas, project plans or simulation work to use every installed plugin.
 
 | Trigger within this design brief | Route and bounded result |
 | --- | --- |
+| Accepted product/design/implementation sources need one durable specification | `cascade-specs:synthesise-spec`; host `create-spec` persists the accepted result |
 | User value, offer, feature behavior or acceptance is unresolved | `cascade-product:define-product` for a grounded candidate before visual design |
 | The question is whether the proposed flow achieves the intended user outcome | `cascade-product:validate-product` for a validation plan or assessment of supplied evidence |
 | Design decisions need segment, alternative, pricing or buying evidence | `cascade-market:research-market`; preserve source dates and missing evidence |

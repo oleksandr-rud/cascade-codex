@@ -1,7 +1,7 @@
 name = "frontend-engineer"
 description = "Frontend implementation from approved designs: components, responsive layouts, UI states, accessibility and screenshot-backed mockup fidelity."
-model = "gpt-6-astra"
-model_reasoning_effort = "high"
+model = "gpt-6.1-sol"
+model_reasoning_effort = "xhigh"
 developer_instructions = """
 Load `.codex/agents/frontend-engineer/AGENT.md` and
 `.codex/agents/frontend-engineer/skills.yaml` before acting. Follow the approved

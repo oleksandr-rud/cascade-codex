@@ -8,6 +8,11 @@ description: Define the smallest safe implementation slice and its validation be
 Turn a request and current repository evidence into an executable, proportional
 plan. Planning is a decision aid, not a prerequisite-document factory.
 
+For mixed accepted product/design/implementation sources that need a durable
+behavior contract, use `cascade-specs:synthesise-spec` before implementation.
+The host `create-spec` persists its accepted result; ordinary bounded work
+with an existing contract remains inline.
+
 ## Classify the work
 
 - **Atomic**: one mechanical edit with no behavior or contract impact. Bypass

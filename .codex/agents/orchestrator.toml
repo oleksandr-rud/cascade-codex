@@ -1,7 +1,7 @@
 name = "orchestrator"
 description = "Normal Cascade task routing across context, planning, implementation, review, validation, repair, and closeout."
-model = "gpt-6-astra"
-model_reasoning_effort = "high"
+model = "gpt-6.1-sol"
+model_reasoning_effort = "xhigh"
 developer_instructions = """
 Load `.codex/agents/orchestrator/AGENT.md` and
 `.codex/agents/orchestrator/skills.yaml` before acting. Follow that role

@@ -1,29 +1,34 @@
 ---
 name: define-product
-description: Form or revise product value models, offers and feature candidates, then define traceable requirements, journeys, metrics and MVP boundaries. Use for product formation or definition; exclude implementation of an already accepted mechanical change.
+description: Frame product problems, synthesize source-linked research, compare solutions/value models and define traceable requirements, journeys, metrics and useful slices. Use for discovery or definition; accepted mechanical implementation belongs to the host.
 ---
 
 # Define Product
 
 ## Delivery mode
 
-Choose the delivery mode before following artifact-production steps below.
-For a standalone explanation, recommendation, review or prose draft without a
-structured-output request, return one useful answer. Preserve every applicable
-substantive requirement: evidence and source authority, uncertainty, conflicts,
-permissions, acceptance/recovery conditions, decision status and next action.
-The output lists specify information to cover, not extra files or repeated prose.
-Do not invent IDs, hashes, receipts or approval to make a prose answer look formal.
-Do not label that answer a validated canonical artifact or completed handoff.
+For a standalone explanation, recommendation, review or prose draft, return
+one useful answer with applicable evidence, uncertainty/conflicts, authority,
+acceptance/recovery, decision status and next action. Do not invent identities,
+hashes or approval, or call prose a validated artifact/completed handoff.
 
-For an explicitly requested structured/canonical artifact, persistence,
-evaluation, or actual cross-plugin handoff, apply all artifact-production steps,
-required schemas, fields, source bindings, ledgers, digests, validators and gates
-below unchanged. Provide the artifact once; add only the explanation needed to
-use it. A prose projection never substitutes for required machine-readable data.
-Missing material evidence or authority remains a gap or blocker in either mode.
+For requested structured/canonical output, persistence, evaluation or an actual
+cross-plugin handoff, apply every schema, field, source binding, ledger, digest,
+validator and gate below. Provide each artifact once. Prose cannot replace
+required machine-readable data. Material evidence or authority gaps remain
+visible in either mode; output lists do not require extra files or duplicate prose.
 
 ## Value model and feature formation
+
+For uncertain problem framing, user-research synthesis or solution discovery,
+read [the working process](../manage-product-lifecycle/references/working-process.md).
+Preserve observations, source locators, supported findings, contradictions and
+alternatives before selecting behavior. Apply only methods relevant to the
+decision; existing accepted requirements can go directly to the host.
+For a requested brief, use
+[the blank decision brief](../manage-product-lifecycle/assets/product-decision-brief.md).
+For external method or harness sources, read
+[the source guide](../manage-product-lifecycle/references/source-guide.md).
 
 Use this skill to form value, offer and feature proposals as well as to define
 accepted behavior. For an undecided outcome, delivery mechanism, pricing,
@@ -38,6 +43,12 @@ A growth proposal from cascade-market:plan-growth can inform a feature candidate
 it cannot approve product behavior. Keep candidates, alternatives and value
 models in the existing typed sections and connect accepted requirements through
 traceability, without adding undeclared schema fields.
+
+Use source-linked LLM claims and explicit uncertainty to interpret meaning.
+Never substitute keyword matching, regexes, phrase lists or lexical scores for
+research synthesis, intent or opportunity judgments, including examples,
+defaults and fallbacks. Count only declared identities after interpretation;
+duplicate observations do not establish population prevalence.
 
 For a user-facing feature, bind the useful outcome to the visible state,
 information needed to decide, primary action, confirmation, and recovery.
@@ -54,6 +65,11 @@ practice does not add a backend, agent or protocol requirement.
 
 Use cascade-design:ux-flow-review for interaction burden and
 cascade-ai-architect:design-agent-blueprint for a selected agent mechanism.
+Use cascade-design:create-design for concrete mockups. When accepted mixed
+sources need a combined implementation contract, use
+cascade-specs:synthesise-spec; the host owns authorized persistence and code.
+Use cascade-project-management:define-work-item only for a tracker-ready item,
+not to create a second Product backlog or automatically file an issue.
 Use cascade-product:manage-product-lifecycle for investment/gate decisions and
 cascade-product:validate-product for uncertain outcome measures.
 
@@ -137,7 +153,11 @@ Use cascade-personas:compile-persona when a canonical persona needs a purpose-li
    `source_artifacts`; use an empty array when an unsupported GAP or NOT_RUN
    item has no source evidence. Never omit the key, even when the array is
    empty.
-4. Define visible behavior with positive, negative, stale-state, permission, failure, recovery, and adjacent-mode examples when applicable.
+4. Compare credible alternatives and their separate value, usability,
+   feasibility and viability risks. Select a complete useful slice and define
+   visible behavior with positive, negative, stale-state, permission, failure,
+   recovery and adjacent-mode acceptance when applicable. A proposed narrative
+   or appetite does not establish customer evidence or delivery feasibility.
 5. Separate what users need, what the product must do, and how implementation may satisfy it.
 6. Check internal consistency across actors, journeys, requirements, metrics, non-goals, and handoffs.
 7. Emit the definition as a typed PRODUCT_DEFINITION through

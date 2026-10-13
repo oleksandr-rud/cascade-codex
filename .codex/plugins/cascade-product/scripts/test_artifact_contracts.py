@@ -220,7 +220,31 @@ class ProductArtifactContractTests(unittest.TestCase):
         value["gate_status"] = "READY"
         errors = validate_decision(value)
         self.assertTrue(any("ownerless forward gate must be BLOCKED" in error for error in errors))
-        self.assertTrue(any("authority unmet condition" in error for error in errors))
+        value["gate_status"] = "BLOCKED"
+        self.assertTrue(any("BLOCKED gate lacks unmet conditions" in error for error in validate_decision(value)))
+
+    def test_authority_uses_structured_fields_in_any_language(self) -> None:
+        value = decision()
+        value["decision_owner"] = None
+        value["approval_status"] = "PROPOSED"
+        value["transition_authority"] = None
+        value["gate_status"] = "BLOCKED"
+        value["confidence"] = {
+            "level": "LOW",
+            "basis": "The structured decision owner is absent.",
+            "limitations": ["No transition can be accepted."],
+        }
+        for condition in (
+            "Потрібно визначити відповідального за рішення.",
+            "決定責任者を指定してください。",
+            "Assign the responsible decision maker.",
+        ):
+            with self.subTest(condition=condition):
+                value["unmet_conditions"] = [condition]
+                self.assertEqual(validate_decision(value), [])
+        value["unmet_conditions"] = ["The owner has authority to approve."]
+        value["approval_status"] = "APPROVED"
+        self.assertNotEqual(validate_decision(value), [])
 
     def test_handoff_rejects_unbound_version_and_unclosed_terminal_output(self) -> None:
         value = handoff()

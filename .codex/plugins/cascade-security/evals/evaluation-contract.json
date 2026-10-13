@@ -2,7 +2,7 @@
   "schema_version": 2,
   "plugin_id": "cascade-security",
   "subject_kind": "agent",
-  "version": "0.1.10+codex.20260910172549",
+  "version": "0.1.16+codex.20261001201835",
   "expected_case_count": 9,
   "acceptance_threshold": 0.95,
   "minimum_dimension": 3,
@@ -178,6 +178,10 @@
     {
       "alias": "cascade-qa:design-tests",
       "path": "skills/design-tests/SKILL.md"
+    },
+    {
+      "alias": "cascade-evals:evaluate",
+      "path": "scripts/model_policy.py"
     }
   ]
 }

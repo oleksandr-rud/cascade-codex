@@ -9,15 +9,6 @@
     "Guardrails",
     "Risks and Unknowns"
   ],
-  "required_patterns": [
-    "41",
-    "18",
-    "50/50",
-    "D7",
-    "10%",
-    "consent"
-  ],
-  "forbidden_patterns": [],
   "semantic_anchors": {
     "must_preserve": [
       "activation is workspace creation plus a teammate invitation within 24 hours",

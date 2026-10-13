@@ -67,10 +67,11 @@ const tokenBudgets = await readJson(join(evalRoot, "token-budgets.json"));
 
 check(catalog.schema_version === 2, "task catalog schema_version must be 2");
 check(matrix.schema_version === 1, "model matrix schema_version must be 1");
-check(matrix.defaults?.prompt_model === "gpt-6-astra", "default prompt model must be gpt-6-astra");
-check(matrix.defaults?.target_model === "gpt-6-astra", "default target model must be gpt-6-astra");
-check(matrix.defaults?.judge_model === "gpt-6-astra", "default judge model must be gpt-6-astra");
-check(matrix.defaults?.reasoning_effort === "high", "default reasoning effort must be high");
+const { evaluationDefaults } = await import("./model-policy.mjs");
+check(matrix.defaults?.prompt_model === evaluationDefaults.builder_model, "default prompt model differs from shared policy");
+check(matrix.defaults?.target_model === evaluationDefaults.target_model, "default target model differs from shared policy");
+check(matrix.defaults?.judge_model === evaluationDefaults.judge_model, "default judge model differs from shared policy");
+check(matrix.defaults?.reasoning_effort === evaluationDefaults.target_reasoning_effort, "default reasoning effort differs from shared policy");
 check(responseSchema.type === "object", "judge response schema must define an object");
 check(calibration.calibration_status === "NOT_RUN", "synthetic fixtures must not claim calibration");
 check(calibration.human_labeled === false, "synthetic fixtures must not claim human labels");
@@ -128,8 +129,7 @@ for (const task of catalog.tasks ?? []) {
     check(JSON.stringify(Object.keys(evaluator.expected ?? {}).sort()) === JSON.stringify([...(evaluator.exact_keys ?? [])].sort()), `${task.id}: expected keys must equal exact_keys`);
     check(task.outcome_evaluation === "deterministic", `${task.id}: exact_json tasks must use deterministic outcome evaluation`);
   } else {
-    check(Array.isArray(evaluator.required_patterns) && evaluator.required_patterns.length > 0, `${task.id}: text_contract needs required_patterns`);
-    check(Array.isArray(evaluator.forbidden_patterns), `${task.id}: text_contract needs forbidden_patterns`);
+    check(!evaluator.required_patterns && !evaluator.forbidden_patterns, `${task.id}: lexical semantic gates are prohibited`);
     if (evaluator.max_words !== undefined) check(Number.isInteger(evaluator.max_words) && evaluator.max_words > 0, `${task.id}: max_words must be a positive integer`);
     check(task.outcome_evaluation === "semantic", `${task.id}: text_contract tasks must use semantic outcome evaluation`);
   }
@@ -222,7 +222,7 @@ validateProfile(await readJson(join(evalRoot, "judges/knowledge-coverage-v2.json
 
 const allowedStates = new Set(["READY", "NEEDS_INPUT", "BLOCKED"]);
 const allowedModes = new Set(["Quick", "Guided", "Advanced"]);
-const allowedIntents = new Set(Object.keys(interviewCatalog.intent_patterns ?? {}));
+const allowedIntents = new Set(interviewCatalog.semantic_intents ?? []);
 const fixtureIds = new Set();
 for (const fixture of interviewCatalog.fixtures ?? []) {
   check(typeof fixture.id === "string" && fixture.id.length > 0, "every interview fixture needs an id");
@@ -239,7 +239,7 @@ for (const fixture of interviewCatalog.fixtures ?? []) {
     check(Number.isInteger(turn.max_questions) && turn.max_questions >= turn.min_questions && turn.max_questions <= 3, `${fixture.id}/${turnName}: invalid max_questions`);
     if (turn.state === "NEEDS_INPUT") check(turn.min_questions >= 1, `${fixture.id}/${turnName}: NEEDS_INPUT must ask at least one question`);
     if (turn.state === "READY") check(turn.max_questions === 0, `${fixture.id}/${turnName}: READY must ask zero questions`);
-    for (const group of turn.required_response_pattern_groups ?? []) check(Array.isArray(group) && group.length > 0 && group.every(p => typeof p === "string" && p.length > 0), `${fixture.id}/${turnName}: invalid equivalent response markers`);
+    for (const group of turn.semantic_alternatives ?? []) check(Array.isArray(group) && group.length > 0 && group.every(p => typeof p === "string" && p.length > 0), `${fixture.id}/${turnName}: invalid equivalent response markers`);
     for (const intent of [...(turn.required_intents ?? []), ...(turn.forbidden_intents ?? [])]) check(allowedIntents.has(intent), `${fixture.id}/${turnName}: unknown intent ${intent}`);
   }
   check(Boolean(fixture.second_user_message) === Boolean(fixture.second_turn), `${fixture.id}: second_user_message and second_turn must appear together`);
@@ -247,8 +247,8 @@ for (const fixture of interviewCatalog.fixtures ?? []) {
     check(/^\{\{[A-Z0-9_]+\}\}$/.test(fixture.target.input_placeholder ?? ""), `${fixture.id}: invalid target placeholder`);
     check(fixture.prompt_build_request.includes(fixture.target.input_placeholder), `${fixture.id}: target placeholder must appear in request`);
     check(typeof fixture.target.input === "string" && fixture.target.input.length > 0, `${fixture.id}: target input is required`);
-    check((Array.isArray(fixture.target.required_patterns) && fixture.target.required_patterns.length > 0) || (fixture.target.json_contract && Object.keys(fixture.target.json_contract).length > 0 && Object.values(fixture.target.json_contract).every(type => type === "string_array")), `${fixture.id}: target requires patterns or a supported JSON contract`);
-    check(fixture.target.forbidden_patterns === undefined || Array.isArray(fixture.target.forbidden_patterns), `${fixture.id}: target forbidden patterns must be an array`);
+    check((Array.isArray(fixture.target.semantic_requirements) && fixture.target.semantic_requirements.length > 0) || (fixture.target.json_contract && Object.keys(fixture.target.json_contract).length > 0 && Object.values(fixture.target.json_contract).every(type => type === "string_array")), `${fixture.id}: target requires semantic expectations or a supported JSON contract`);
+    check(fixture.target.semantic_prohibitions === undefined || Array.isArray(fixture.target.semantic_prohibitions), `${fixture.id}: target semantic prohibitions must be an array`);
   }
 }
 const coverage = JSON.parse(await readFile(join(evalRoot, "rule-coverage.json"), "utf8"));

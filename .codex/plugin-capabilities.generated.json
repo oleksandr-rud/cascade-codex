@@ -1,17 +1,17 @@
 {
   "artifact_type": "cascade-plugin-capability-catalog",
-  "catalog_digest": "14d744e11f5faed97f46762ddc113439257c98b05087a9f7f52fc95f0657b098",
+  "catalog_digest": "69c7a44d205b6e263052537f025eb97cbd34f6e78dabc9d391bbe1fed70b6b18",
   "marketplace": ".agents/plugins/marketplace.json",
   "plugins": [
     {
       "descriptor_path": ".codex/plugins/cascade-prompt/capabilities.yaml",
-      "descriptor_sha256": "99431d0bb8500e522e9635b3eab6629951c891591794f7ebcc0c1fd91cb4ff8c",
+      "descriptor_sha256": "3ed8c1798b38706a427afa7e22f476b728c99ec1d675ad3f2037856a33b179a5",
       "manifest_path": ".codex/plugins/cascade-prompt/.codex-plugin/plugin.json",
-      "manifest_sha256": "db7c7c36f8906ef7b60d3147d32fabebbb44741d700c0d5373c202fc1da25320",
+      "manifest_sha256": "954ab72620a931ac7329f349a1f8c3720b8427256c58fac9f6c356bf5f2e5ea7",
       "model_policy": {
-        "evaluation_reasoning_effort": "high",
-        "model": "gpt-6-astra",
-        "planning_reasoning_effort": "high"
+        "evaluation_reasoning_effort": "xhigh",
+        "model": "gpt-6.1-sol",
+        "planning_reasoning_effort": "xhigh"
       },
       "name": "cascade-prompt",
       "skills": [
@@ -54,17 +54,17 @@
           ]
         }
       ],
-      "version": "0.7.14+codex.20261003232324"
+      "version": "0.7.17+codex.20261005082000"
     },
     {
       "descriptor_path": ".codex/plugins/cascade-simulations/capabilities.yaml",
-      "descriptor_sha256": "b4ce2eee97e24e162cefead2bf5aa2331a7eaa60d1fb3089f5047ebceccbe602",
+      "descriptor_sha256": "47130d81da0c9d9b77036da69918a3c9e4a9fc8ae8fc195886fd69f248f6531d",
       "manifest_path": ".codex/plugins/cascade-simulations/.codex-plugin/plugin.json",
-      "manifest_sha256": "3d46a717c332d7aa417041883ae4b1aa0f754a1634a604e9ff26c3b899d4a9a5",
+      "manifest_sha256": "8e401303958c658d638f3093c3b3249e67f3b4073efde1ce91046c93d5807467",
       "model_policy": {
-        "evaluation_reasoning_effort": "high",
-        "model": "gpt-6-astra",
-        "planning_reasoning_effort": "high"
+        "evaluation_reasoning_effort": "xhigh",
+        "model": "gpt-6.1-sol",
+        "planning_reasoning_effort": "xhigh"
       },
       "name": "cascade-simulations",
       "skills": [
@@ -342,17 +342,17 @@
           ]
         }
       ],
-      "version": "0.2.9+codex.20260910172549"
+      "version": "0.2.10+codex.20261001182706"
     },
     {
       "descriptor_path": ".codex/plugins/cascade-evals/capabilities.yaml",
-      "descriptor_sha256": "7ccdcf5f43d2c4ba3261982cb0b06b5a45ef4d5b1ed3648e6ed39831512be65b",
+      "descriptor_sha256": "e27493d3ceb19560ab32328f411797a0da9a39b1c2f756cbdfd2225d31f6ff1d",
       "manifest_path": ".codex/plugins/cascade-evals/.codex-plugin/plugin.json",
-      "manifest_sha256": "9abbc1e24483ba5712e8f58e9bfb96e543d1f0514560482cacaeb68c7634bb4a",
+      "manifest_sha256": "32e30a337ea0dee553d32bc838e5da8dcd81797f58e37ed123ba682c60c98704",
       "model_policy": {
-        "evaluation_reasoning_effort": "high",
-        "model": "gpt-6-astra",
-        "planning_reasoning_effort": "high"
+        "evaluation_reasoning_effort": "xhigh",
+        "model": "gpt-6.1-sol",
+        "planning_reasoning_effort": "xhigh"
       },
       "name": "cascade-evals",
       "skills": [
@@ -547,17 +547,17 @@
           ]
         }
       ],
-      "version": "0.3.26+codex.20261003232324"
+      "version": "0.3.27+codex.20261005082000"
     },
     {
       "descriptor_path": ".codex/plugins/cascade-ai-architect/capabilities.yaml",
-      "descriptor_sha256": "ad5a4604e7286151d6e0128828525bc35f48fd7d2273106e1f1b875eb9964e8d",
+      "descriptor_sha256": "4f4bbfb11e2aed984cf4fbd1fedf1acf5ca12d7b2b5272aac60d0a5e5016452b",
       "manifest_path": ".codex/plugins/cascade-ai-architect/.codex-plugin/plugin.json",
-      "manifest_sha256": "1bf8782cf93480970b5afe4517b81ebce5dae184662484aa0c0f01ce7e72ac0f",
+      "manifest_sha256": "5435c4ff7d69471050e16bb56cec184c472b55a450973f8b7ac5b93a92d261f0",
       "model_policy": {
-        "evaluation_reasoning_effort": "high",
-        "model": "gpt-6-astra",
-        "planning_reasoning_effort": "high"
+        "evaluation_reasoning_effort": "xhigh",
+        "model": "gpt-6.1-sol",
+        "planning_reasoning_effort": "xhigh"
       },
       "name": "cascade-ai-architect",
       "skills": [
@@ -870,17 +870,17 @@
           ]
         }
       ],
-      "version": "0.1.12+codex.20261003232324"
+      "version": "0.1.14+codex.20261005082000"
     },
     {
       "descriptor_path": ".codex/plugins/cascade-software-architect/capabilities.yaml",
-      "descriptor_sha256": "72f6e69c5ad50336af285314b5073b3525b71d37054d559b2c34cec83d8dab2f",
+      "descriptor_sha256": "4fe5fe8cef1055745a126f3cf74a183bba993b6871dfe37f499bec5166bd377b",
       "manifest_path": ".codex/plugins/cascade-software-architect/.codex-plugin/plugin.json",
-      "manifest_sha256": "882a59b0b603d96620080504d7a17bdf900012f395c82ae5aaf856d32d5c9efd",
+      "manifest_sha256": "e121fe3dec73ef25810499ca21989997e9f2ac3e3913c44a43c9283b599706a5",
       "model_policy": {
-        "evaluation_reasoning_effort": "high",
-        "model": "gpt-6-astra",
-        "planning_reasoning_effort": "high"
+        "evaluation_reasoning_effort": "xhigh",
+        "model": "gpt-6.1-sol",
+        "planning_reasoning_effort": "xhigh"
       },
       "name": "cascade-software-architect",
       "skills": [
@@ -1030,17 +1030,17 @@
           ]
         }
       ],
-      "version": "0.2.5+codex.20261003232324"
+      "version": "0.2.6+codex.20261005082000"
     },
     {
       "descriptor_path": ".codex/plugins/cascade-coding-agent/capabilities.yaml",
-      "descriptor_sha256": "de34156e4ee409dbf4994bc5b1c4f84e463c2555088b0521501fabce40d3cb65",
+      "descriptor_sha256": "958022fb78491742a82e63d633204418f55421a9989f3800c08ed88e0c47aaf0",
       "manifest_path": ".codex/plugins/cascade-coding-agent/.codex-plugin/plugin.json",
-      "manifest_sha256": "4db8eb52b58887eca5b6fdbde3c0cbcde5935e4c970818691531796015142f99",
+      "manifest_sha256": "664e0dd35fe265df3a3dc0fcf9514cbe6a51dde04fec20545f440c2d94d8f0e7",
       "model_policy": {
-        "evaluation_reasoning_effort": "high",
-        "model": "gpt-6-astra",
-        "planning_reasoning_effort": "high"
+        "evaluation_reasoning_effort": "xhigh",
+        "model": "gpt-6.1-sol",
+        "planning_reasoning_effort": "xhigh"
       },
       "name": "cascade-coding-agent",
       "skills": [
@@ -1234,17 +1234,17 @@
           ]
         }
       ],
-      "version": "0.3.3+codex.20260910204851"
+      "version": "0.3.6+codex.20261002010000"
     },
     {
       "descriptor_path": ".codex/plugins/cascade-personas/capabilities.yaml",
-      "descriptor_sha256": "f1bdaee862448e96c4f34814497fef3192377e7fc04cca2d3cdcaa50123db4da",
+      "descriptor_sha256": "932ea46ce1a6746877cff22d82e7bb8e992016d8aeba215bc1b32ecb168f11fb",
       "manifest_path": ".codex/plugins/cascade-personas/.codex-plugin/plugin.json",
-      "manifest_sha256": "9d659e7fb4c3bfb2e953ca768da8b9c49a4d3d913a5a375334750db40f828ed3",
+      "manifest_sha256": "839d78a6bc894f80fbfa95700dd53673d3bff7133f612d4653c8f0b4f23fcad2",
       "model_policy": {
-        "evaluation_reasoning_effort": "high",
-        "model": "gpt-6-astra",
-        "planning_reasoning_effort": "high"
+        "evaluation_reasoning_effort": "xhigh",
+        "model": "gpt-6.1-sol",
+        "planning_reasoning_effort": "xhigh"
       },
       "name": "cascade-personas",
       "skills": [
@@ -1342,17 +1342,17 @@
           ]
         }
       ],
-      "version": "0.1.29+codex.20260910172549"
+      "version": "0.1.34+codex.20261001201835"
     },
     {
       "descriptor_path": ".codex/plugins/cascade-product/capabilities.yaml",
-      "descriptor_sha256": "860407806389c4f74e347c9922e09d9490d165b8d0e152135421bcf7964edc67",
+      "descriptor_sha256": "cd1017493dceed6695770ee900d8b4a5f3e923eaae3614c71d73c5d9ced796d5",
       "manifest_path": ".codex/plugins/cascade-product/.codex-plugin/plugin.json",
-      "manifest_sha256": "f42b7a2f2ee17343237fa5cbb3b8e22862cf2aeb3c1f85b4a890c20d1491705b",
+      "manifest_sha256": "2959a0180a2d552a4b55a21f14e62e65170c78208f192aead92df0a56f9c9d5f",
       "model_policy": {
-        "evaluation_reasoning_effort": "high",
-        "model": "gpt-6-astra",
-        "planning_reasoning_effort": "high"
+        "evaluation_reasoning_effort": "xhigh",
+        "model": "gpt-6.1-sol",
+        "planning_reasoning_effort": "xhigh"
       },
       "name": "cascade-product",
       "skills": [
@@ -1364,7 +1364,7 @@
           "consumes": [
             "product-evidence"
           ],
-          "description": "Manage value strategy, portfolio allocation, product priorities, owner-held gates and evidence-driven re-entry without implementation.",
+          "description": "Manage product strategy, investment priorities, owner-held gates, launch learning, live review and retirement proposals without implementation.",
           "effect": "CANDIDATE_WRITE",
           "evaluation_cases": [
             "owner-held-gate",
@@ -1379,8 +1379,20 @@
             "cascade-market:research-market",
             "cascade-market:evaluate-market-opportunity",
             "cascade-market:plan-growth",
+            "cascade-personas:build-persona",
             "cascade-personas:compile-persona",
-            "cascade-project-management:plan-project"
+            "cascade-project-management:plan-project",
+            "cascade-project-management:manage-project",
+            "cascade-specs:synthesise-spec",
+            "cascade-design:create-design",
+            "cascade-design:ux-flow-review",
+            "cascade-qa:plan-quality",
+            "cascade-qa:assess-quality",
+            "cascade-prompt:prompt",
+            "cascade-simulations:simulate",
+            "cascade-evals:prompt-evaluation",
+            "cascade-evals:agent-evaluation",
+            "cascade-evals:evaluate"
           ],
           "policy_tags": [
             "product",
@@ -1393,7 +1405,8 @@
           "route": "cascade-product:manage-product-lifecycle",
           "triggers": [
             "product strategy or investment allocation is requested",
-            "product lifecycle or evidence-driven gate routing is requested"
+            "product lifecycle or evidence-driven gate routing is requested",
+            "launch learning or retirement needs a product decision"
           ]
         },
         {
@@ -1405,7 +1418,7 @@
           "consumes": [
             "product-evidence"
           ],
-          "description": "Model product value and offers, form and compare feature candidates, and define traceable requirements, acceptance behavior and the MVP.",
+          "description": "Frame problems, synthesize source-linked research, compare solutions and value models, and define traceable requirements, journeys and a useful slice.",
           "effect": "CANDIDATE_WRITE",
           "evaluation_cases": [
             "traceable-requirements",
@@ -1422,9 +1435,16 @@
           "optional_dependencies": [
             "cascade-prompt:prompt",
             "cascade-market:plan-growth",
+            "cascade-market:evaluate-market-opportunity",
+            "cascade-personas:compile-persona",
+            "cascade-design:create-design",
             "cascade-design:ux-flow-review",
             "cascade-design:design-system",
-            "cascade-ai-architect:design-agent-blueprint"
+            "cascade-ai-architect:design-agent-blueprint",
+            "cascade-specs:synthesise-spec",
+            "cascade-project-management:define-work-item",
+            "cascade-product:manage-product-lifecycle",
+            "cascade-product:validate-product"
           ],
           "policy_tags": [
             "product",
@@ -1437,7 +1457,7 @@
           "route": "cascade-product:define-product",
           "triggers": [
             "a product value or offer model needs definition",
-            "features must be generated or compared",
+            "product research needs synthesis or solutions must be compared",
             "the product definition or accepted behavior is the work product"
           ]
         },
@@ -1459,8 +1479,17 @@
           ],
           "optional_dependencies": [
             "cascade-market:design-market-experiments",
+            "cascade-personas:compile-persona",
+            "cascade-design:ux-flow-review",
+            "cascade-qa:plan-quality",
+            "cascade-qa:assess-quality",
+            "cascade-prompt:prompt",
             "cascade-simulations:simulate",
-            "cascade-evals:evaluate"
+            "cascade-evals:prompt-evaluation",
+            "cascade-evals:agent-evaluation",
+            "cascade-evals:build-judge",
+            "cascade-evals:evaluate",
+            "cascade-product:manage-product-lifecycle"
           ],
           "policy_tags": [
             "product",
@@ -1476,17 +1505,17 @@
           ]
         }
       ],
-      "version": "0.1.33+codex.20260910172549"
+      "version": "0.1.39+codex.20261002011500"
     },
     {
       "descriptor_path": ".codex/plugins/cascade-market/capabilities.yaml",
-      "descriptor_sha256": "747e4455786184a98cce6bdec9b7024966fc02cc00ef580a0d0dea53d7fac8e5",
+      "descriptor_sha256": "7d7374ac2f176ed5da810810b9204fdcb1ff4126b3a0c4d8b2ede2d9ad252f3f",
       "manifest_path": ".codex/plugins/cascade-market/.codex-plugin/plugin.json",
-      "manifest_sha256": "e6ba81732835457fb11d2206a15e1d016689b743c93a36dc1fab49e42d54fcb6",
+      "manifest_sha256": "6b5019f4afbd8cdbe7a74f417088071eef54bc5ad1b3932e5ddf82624c6c30ae",
       "model_policy": {
-        "evaluation_reasoning_effort": "high",
-        "model": "gpt-6-astra",
-        "planning_reasoning_effort": "high"
+        "evaluation_reasoning_effort": "xhigh",
+        "model": "gpt-6.1-sol",
+        "planning_reasoning_effort": "xhigh"
       },
       "name": "cascade-market",
       "skills": [
@@ -1687,17 +1716,17 @@
           ]
         }
       ],
-      "version": "0.2.9+codex.20260910172549"
+      "version": "0.2.15+codex.20261001202110"
     },
     {
       "descriptor_path": ".codex/plugins/cascade-design/capabilities.yaml",
-      "descriptor_sha256": "28485a624263abeb36e58bfd411549bea5d1ff493a88353a195d2e86db381bff",
+      "descriptor_sha256": "77cfac3106b4ed6f8d38a39aba3a2290ebb7fc63e71bf2293a1ba32657c28b0f",
       "manifest_path": ".codex/plugins/cascade-design/.codex-plugin/plugin.json",
-      "manifest_sha256": "9ea411bd8f1afdefc94cdb4de6a4fef242a59703230c45a2e71282613dff9375",
+      "manifest_sha256": "d427e7f3d1a454fd58547df9214e909ad5e4328ff1ca325260d6fa67509594e5",
       "model_policy": {
-        "evaluation_reasoning_effort": "high",
-        "model": "gpt-6-astra",
-        "planning_reasoning_effort": "high"
+        "evaluation_reasoning_effort": "xhigh",
+        "model": "gpt-6.1-sol",
+        "planning_reasoning_effort": "xhigh"
       },
       "name": "cascade-design",
       "skills": [
@@ -1884,17 +1913,17 @@
           ]
         }
       ],
-      "version": "0.1.10+codex.20260910172549"
+      "version": "0.1.16+codex.20261001202110"
     },
     {
       "descriptor_path": ".codex/plugins/cascade-security/capabilities.yaml",
-      "descriptor_sha256": "73ffb16aba7f40b76550c1e6fcb650cd4dbad6cac285cb54552011041d975c01",
+      "descriptor_sha256": "c877e841e5e268c7325eb9f6dc6b7845e539b182e72e7a34a6d23cf800f57642",
       "manifest_path": ".codex/plugins/cascade-security/.codex-plugin/plugin.json",
-      "manifest_sha256": "d118bfca6a75b1f48f9f84e344ab8e3eab5675e01dc5abe9a474fa722eb399af",
+      "manifest_sha256": "2b9aec971b696658b1a3cc0f47755d73f53a7c6d7c0c66911b54e3f68582d2e1",
       "model_policy": {
-        "evaluation_reasoning_effort": "high",
-        "model": "gpt-6-astra",
-        "planning_reasoning_effort": "high"
+        "evaluation_reasoning_effort": "xhigh",
+        "model": "gpt-6.1-sol",
+        "planning_reasoning_effort": "xhigh"
       },
       "name": "cascade-security",
       "skills": [
@@ -2003,17 +2032,17 @@
           ]
         }
       ],
-      "version": "0.1.10+codex.20260910172549"
+      "version": "0.1.16+codex.20261001201835"
     },
     {
       "descriptor_path": ".codex/plugins/cascade-project-management/capabilities.yaml",
-      "descriptor_sha256": "736696c8c0604d3905dce5ed087af3641ec43d365cc4e0a75c6f321434483cf0",
+      "descriptor_sha256": "ce2c5ff4b645cb44d8f2d3dace32207a93dbab6e3f2145921e8f18ff2cc86c35",
       "manifest_path": ".codex/plugins/cascade-project-management/.codex-plugin/plugin.json",
-      "manifest_sha256": "c79fceb266f65ed1bf1933ce7ee3c6cf1dc8a6e0b96fee0f2a8775d44ec76d20",
+      "manifest_sha256": "db75775e0a96cd2f2212f6d9706f09753cb132c6e9ffd1ce422b5ec97d3cad06",
       "model_policy": {
-        "evaluation_reasoning_effort": "high",
-        "model": "gpt-6-astra",
-        "planning_reasoning_effort": "high"
+        "evaluation_reasoning_effort": "xhigh",
+        "model": "gpt-6.1-sol",
+        "planning_reasoning_effort": "xhigh"
       },
       "name": "cascade-project-management",
       "skills": [
@@ -2150,17 +2179,17 @@
           ]
         }
       ],
-      "version": "0.1.9+codex.20260910172549"
+      "version": "0.1.14+codex.20261001201835"
     },
     {
       "descriptor_path": ".codex/plugins/cascade-qa/capabilities.yaml",
-      "descriptor_sha256": "5000d9479219595d650b2db0cd0c9e61df4f5e091b53b205e9a15aaab0bb33f7",
+      "descriptor_sha256": "46cb25e8ace24e267c3d1024ea31f807584dd5c0ebeb7e27f61687a5e7c139c5",
       "manifest_path": ".codex/plugins/cascade-qa/.codex-plugin/plugin.json",
-      "manifest_sha256": "505717a36e7616994f8d212998ca31b7828f45548aea4df6237040bc789326df",
+      "manifest_sha256": "87b4a303b2dcff90cd57721498f173a353ed5202dbb70f7b576aa705c7d5ecec",
       "model_policy": {
-        "evaluation_reasoning_effort": "high",
-        "model": "gpt-6-astra",
-        "planning_reasoning_effort": "high"
+        "evaluation_reasoning_effort": "xhigh",
+        "model": "gpt-6.1-sol",
+        "planning_reasoning_effort": "xhigh"
       },
       "name": "cascade-qa",
       "skills": [
@@ -2205,15 +2234,23 @@
             "tests must be run or product behavior is unresolved"
           ],
           "authority": "READ_ONLY",
-          "consumes": [
-            "quality-plan",
-            "product-contract"
+          "consumes": [],
+          "consumes_any_of": [
+            "product-contract",
+            "change-contract",
+            "accepted-behavior",
+            "accepted-requirements",
+            "accepted-journeys",
+            "accepted-scenarios"
           ],
           "description": "Design traceable test cases, data, oracles, and execution requests from accepted behavior and quality scope.",
           "effect": "CANDIDATE_WRITE",
           "evaluation_cases": [
             "traceable-oracle",
             "no-execution"
+          ],
+          "optional_consumes": [
+            "quality-plan"
           ],
           "optional_dependencies": [
             "cascade-prompt:prompt",
@@ -2294,17 +2331,17 @@
           ]
         }
       ],
-      "version": "0.1.9+codex.20260910172549"
+      "version": "0.1.14+codex.20261001201835"
     },
     {
       "descriptor_path": ".codex/plugins/cascade-coordinator/capabilities.yaml",
-      "descriptor_sha256": "b3d95698aebee113a12ee4aac5ca92b5e05d89ddd53f24e959bf03eb0854a6a1",
+      "descriptor_sha256": "9784b9bcaa71a12d7fcf0a9adacdb101c69f26ff6582a9ed337212e3934b1304",
       "manifest_path": ".codex/plugins/cascade-coordinator/.codex-plugin/plugin.json",
-      "manifest_sha256": "43c31e51e2f88a59247a39b48c397c434d11c0983b13b924981f5ce9e907fb8f",
+      "manifest_sha256": "42b26162e9d957cb0ee9892c5f4e68fd187fc0383ec047ba4987adeffe3be0ca",
       "model_policy": {
-        "evaluation_reasoning_effort": "high",
-        "model": "gpt-6-astra",
-        "planning_reasoning_effort": "high"
+        "evaluation_reasoning_effort": "xhigh",
+        "model": "gpt-6.1-sol",
+        "planning_reasoning_effort": "xhigh"
       },
       "name": "cascade-coordinator",
       "skills": [
@@ -2383,7 +2420,68 @@
           ]
         }
       ],
-      "version": "0.2.3+codex.20260910200733"
+      "version": "0.2.5+codex.20261001200404"
+    },
+    {
+      "descriptor_path": ".codex/plugins/cascade-specs/capabilities.yaml",
+      "descriptor_sha256": "51811c957277d89d9e81d6cc6ef86783009c87e62271d728c4035bacc946d371",
+      "manifest_path": ".codex/plugins/cascade-specs/.codex-plugin/plugin.json",
+      "manifest_sha256": "b20ebdb61aa8ec4487040dcc3d907c012060eb98d79fe1f3db2b63b5a3c6e566",
+      "model_policy": {
+        "evaluation_reasoning_effort": "xhigh",
+        "model": "gpt-6.1-sol",
+        "planning_reasoning_effort": "xhigh"
+      },
+      "name": "cascade-specs",
+      "skills": [
+        {
+          "anti_triggers": [
+            "product discovery or approval is the work product",
+            "a pure API schema or routine accepted change is sufficient"
+          ],
+          "authority": "READ_ONLY",
+          "consumes": [
+            "source-packet"
+          ],
+          "description": "Synthesize mixed accepted sources into one proportional feature/change specification or parent-bound task slice with explicit readiness, boundaries and acceptance.",
+          "effect": "CANDIDATE_WRITE",
+          "evaluation_cases": [
+            "parent-bound-slice",
+            "conflicting-control",
+            "missing-enforcement",
+            "source-injection"
+          ],
+          "optional_consumes": [
+            "product-contract",
+            "design-handoff",
+            "software-architecture",
+            "agent-blueprint"
+          ],
+          "optional_dependencies": [
+            "cascade-product:define-product",
+            "cascade-design:create-design",
+            "cascade-software-architect:architect-software-system",
+            "cascade-ai-architect:design-agent-blueprint",
+            "cascade-prompt:prompt",
+            "cascade-evals:prompt-evaluation"
+          ],
+          "policy_tags": [
+            "specification",
+            "grounded-synthesis"
+          ],
+          "produces": [
+            "specification-packet"
+          ],
+          "required_dependencies": [],
+          "route": "cascade-specs:synthesise-spec",
+          "triggers": [
+            "mixed software sources need a coherent specification",
+            "a specification requires source conflict or readiness analysis",
+            "an implementation slice needs synthesis from an approved parent"
+          ]
+        }
+      ],
+      "version": "0.1.0+codex.20261002010000"
     }
   ],
   "schema_version": 1

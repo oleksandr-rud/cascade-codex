@@ -6,10 +6,10 @@
 - Brief: `PB-001` revision `1`
 - Status: `reviewed`
 - Coverage: `complete`
-- Catalog digest: `df37463e28d651950ec6e9146a1a1643cfa328ce44643baaf8d8ae608c09b110`
+- Catalog digest: `5e6b263b4f1ce9a4b7cef1e60fc60744de6d87634305503978d47ff7740bfb84`
 - Manifest digest: `ca2a2840fd9cf0a4c720d9836623d479f35e27bbd665b98bb5b2e424368a4174`
-- Selected-source digest: `4567fa120a807ba817efe1d4a86ffab4a14111065eb790f56205ed8a31e7d758`
-- Compiler-contract digest: `4cfeada5833d864235315bb41aa63acf157b08f15c247f2914c23fc84fd9acd1`
+- Selected-source digest: `a395ff2edbb66b19ae32c3e0fd51f1aa8bf13daea42f9fdcafe344a6031e4633`
+- Compiler-contract digest: `6cd5a7c76ea5a751ae51aee06aaac1786c197ae6682aaa88d6cfbf2367fa923b`
 
 ## Purpose And Audience
 
@@ -30,9 +30,11 @@ Assemble the current product, evidence, simulation-authority, and reusable-rule 
 
 | Path | SHA-256 |
 |---|---|
-| `docs/specs/persona-simulation-governance/contract.md` | `8d2fde0eabe8c9685e145a49bb9fb0ced53029fd1dd2167e77bf1e09c869a881` |
+| `docs/specs/persona-simulation-governance/contract.md` | `ac644b1410c81ce85f90567d2848e04c0f0348e15571a5ac87f29d8847c25a63` |
 | `docs/product/personas/_index.md` | `348d18bc95085ce46e6463ee4d222c930e12ffdae67d850e9905a048009c626a` |
-| `docs/specs/product-context-briefs/contract.md` | `a0e5ad2910e3a475cf7ea9a306d4bacd52fe4ea4b0b3c86872562e6306f5e44e` |
+| `docs/specs/product-context-briefs/contract.md` | `f1ab9970145e8b9206169bdc9ceab2d1769576b1482ec4022ad5c6f282804f69` |
+| `docs/product/contours/context-and-simulation/requirements.md` | `08b3baffaf56f96169a41691f2c7d9d4ddc29b047161bfcf60c40d4451092108` |
+| `docs/product/contours/context-and-simulation/scenarios.md` | `5df75e1d20354638f567bd842ab8c0fcf970f8d610768c3345b63dcec23ee975` |
 
 ## Requirements
 
@@ -125,6 +127,15 @@ paths, existing owner references, explicit evaluation authority, and no orphan
 product rows. Update the catalog and owner docs together when a relationship
 changes.
 
+Use the target's actual structural units: contours, modules, features, models
+or another accepted vocabulary. Catalog reference_documents selects exact
+owner ledgers; one small unit document may contain distinct requirement,
+journey and scenario tables. Split only for actual ownership or consumption.
+Legacy catalogs retain flat owners. No file path determines product meaning.
+Generic Product rendering uses the unit template; mixed-source specification
+synthesis belongs to cascade-specs:synthesise-spec, with host create-spec
+owning authorized persistence. Do not maintain copied authoring methods.
+
 ### product-context-core / brief-manifest-and-compilation
 
 Source boundary: `docs/patterns/product-context/index.md`
@@ -210,9 +221,9 @@ Source boundary: `docs/patterns/testing/index.md`
 Traceability:
 
 ```text
-docs/product/scenarios.md
+docs/product/contours/context-and-simulation/scenarios.md
   -> executable scenario or functional test
-  -> docs/work/active.md or docs/work/lanes/*.md for the active work overlay
+  -> docs/work/tasks/{task_id}.md for current task state and checks
 ```
 
 Rules:

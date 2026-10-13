@@ -24,16 +24,16 @@ entries when reusable rules are discovered.
 
 | Phase | Status | Skill Route | Evidence To Collect | Owner Targets |
 |---|---|---|---|---|
-| `ON-00` context inventory | `[ ]` | `context`, `cascade-coding-agent:adapt-harness` | inventory digest, source revision/snapshot, repo root, branch, harness files, docs roots, manifests, entry points, contracts, feature-surface candidates, blockers | onboarding manifest, `docs/work/active.md`, `docs/work/reports/` when needed |
+| `ON-00` context inventory | `[ ]` | `context`, `cascade-coding-agent:adapt-harness` | inventory digest, source revision/snapshot, repo root, branch, harness files, docs roots, manifests, entry points, contracts, feature-surface candidates, blockers | onboarding manifest, the numbered `docs/work/tasks/{task_id}.md` record |
 | `ON-01` stack and commands | `[ ]` | `cascade-coding-agent:adapt-harness` | runtime stack, package managers, source roots, test roots, commands, runners, target-config validation | `harness.config.yaml`, onboarding manifest, `docs/glossary.md` |
 | `ON-02` code area specs | `[ ]` | `cascade-coding-agent:adapt-harness`, `cascade-software-architect:review-architecture` | backend, frontend, shared, data, integration, tooling, runtime areas and public contracts | `docs/specs/{slice-slug}/`, `docs/patterns/boundaries/index.md` |
 | `ON-03` architecture boundaries | `[ ]` | `cascade-software-architect:review-architecture`, `create-spec`, `pattern-context` | layer boundaries, consumers, side effects, public contract rules, adapter rules | `docs/patterns/boundaries/`, other bounded pattern entries, `docs/glossary.md` |
-| `ON-04` security and data handling | `[ ]` | `cascade-security:codebase-audit`, `cascade-security:auth-analysis`, `cascade-security:secure-design`, `pattern-context` | auth, role gates, tenant or owner boundaries, secrets, external sends, auditability, abuse cases | `docs/patterns/boundaries/`, `docs/patterns/testing/`, bounded security entry only when evidence exists, `docs/work/reports/`, `docs/backlog/_index.md` |
-| `ON-05` product relationship and feature catalog | `[ ]` | `context` Discovery mode, `cascade-product:define-product`, `create-spec`, `pattern-context` | target-evidence-backed `PD-XXX` domains and `PC-XXX` capabilities, visible features, routes, jobs, user-facing copy, API contracts, existing specs, tests, copied-scaffold disposition, optional `PB-XXX` brief selection | `docs/product/catalog.yaml`, product owner ledgers, `docs/specs/{slice-slug}/`, `docs/patterns/product-context/`, `docs/backlog/_index.md` |
-| `ON-06` visual/design/brand capture | `[ ]` | namespaced Cascade Design skills, `cascade-market:brand-positioning` | screenshots or UI evidence, layout, responsive behavior, states, tokens, components, tone, naming, visual direction | `docs/design/`, `docs/brand/`, `docs/product/`, `docs/work/reports/` |
-| `ON-07` functional acceptance and simulation map | `[ ]` | `cascade-qa:plan-quality`, `cascade-qa:design-tests`, `cascade-simulations:manage-simulation-campaign`, `create-spec` | scenarios, acceptance checks, product simulation ID/owner, API/browser/CLI/manual proof routes, runner gaps, explicit separation from harness fixtures | `docs/product/scenarios.md`, `product-evals/simulations/product/`, `product-evals/simulations/harness/`, `product-evals/campaigns/`, `docs/patterns/testing/index.md`, `harness.config.yaml` |
+| `ON-04` security and data handling | `[ ]` | `cascade-security:codebase-audit`, `cascade-security:auth-analysis`, `cascade-security:secure-design`, `pattern-context` | auth, role gates, tenant or owner boundaries, secrets, external sends, auditability, abuse cases | `docs/patterns/boundaries/`, `docs/patterns/testing/`, bounded security entry only when evidence exists, the numbered Work task |
+| `ON-05` product relationship and feature catalog | `[ ]` | `context` Discovery mode, `cascade-product:define-product`, `create-spec`, `pattern-context` | target-evidence-backed product units (contours/modules/features/models), stable `PD-XXX`/`PC-XXX` identities and explicit owner-document paths, visible features, routes, jobs, user-facing copy, API contracts, existing specs, tests, copied-scaffold disposition, optional `PB-XXX` brief selection | `docs/product/catalog.yaml`, product owner ledgers, `docs/specs/{slice-slug}/`, `docs/patterns/product-context/`, the numbered Work task |
+| `ON-06` visual/design/brand capture | `[ ]` | namespaced Cascade Design skills, `cascade-market:brand-positioning` | screenshots or UI evidence, layout, responsive behavior, states, tokens, components, tone, naming, visual direction | `docs/design/`, `docs/brand/`, `docs/product/`, the numbered Work task |
+| `ON-07` functional acceptance and simulation map | `[ ]` | `cascade-qa:plan-quality`, `cascade-qa:design-tests`, `cascade-simulations:manage-simulation-campaign`, `create-spec` | scenarios, acceptance checks, product simulation ID/owner, API/browser/CLI/manual proof routes, runner gaps, explicit separation from harness fixtures | catalog-declared product scenario owners, `product-evals/simulations/product/`, `product-evals/simulations/harness/`, `product-evals/campaigns/`, `docs/patterns/testing/index.md`, `harness.config.yaml` |
 | `ON-08` context-memory routing | `[ ]` | `create-spec`, `pattern-context`, `closeout` | source identity, durable facts, pattern packs, gaps, deferred work, rejected scope worth preserving | narrow owner docs, `docs/patterns/context-memory/`, bounded pattern entries |
-| `ON-09` validation and handoff | `[ ]` | `validate-change`, `closeout` | target-mode Cascade validator, configured-command availability and per-command dispositions, complete manifest, preservation hashes, current drift result, target checks, stale searches, files written/skipped/blocked | `docs/work/onboarding-manifest.yaml`, `docs/work/reports/`, final response |
+| `ON-09` validation and handoff | `[ ]` | `validate-change`, `closeout` | target-mode Cascade validator, configured-command availability and per-command dispositions, complete manifest, preservation hashes, current drift result, target checks, stale searches, files written/skipped/blocked | `docs/work/onboarding-manifest.yaml`, the numbered Work task, final response |
 
 ## Project-Part Spec Requirements
 
@@ -84,9 +84,10 @@ Each project-part spec must include:
 - Source-context and memory rules go to `docs/patterns/context-memory/`.
 - Every pattern entry must have `index.md` and at least one `*.pack.yaml` with
   summary, routing, graph-like documents, and selectable sections.
-- Reports, blocked handoffs, and evidence summaries go to
-  `docs/work/reports/` only when they are requested, complex, blocked, or
-  decision-heavy.
+- Put status, blocked handoffs and scoped evidence in the same numbered Work
+  task. Keep the layout flat until a real product-task division is adopted;
+  bind the exact product/tracker ID and reference when supplied. Do not
+  recreate separate lanes, reports, archives or backlog files.
 - Do not create broad dump folders for security, backend, frontend, or memory.
   Target-project security entries are allowed only when source evidence exists
   and `pattern-context` creates a bounded entry with pack metadata.

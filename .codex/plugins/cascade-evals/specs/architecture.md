@@ -72,8 +72,10 @@ stays blocked even when a checkout or another cached version is present.
 
 ## Model policy
 
-`gpt-6-astra` with `high` reasoning is the default builder, target, and judge
-configuration. A versioned evaluation may declare another
+The shared `model-policy.json` binds new builder, target, and judge invocations
+to `gpt-6.1-sol` with `xhigh` reasoning. Exact pre-v3 Astra/High packs remain
+preserved baselines; omitted agent-runner options preserve their bound suite.
+A versioned evaluation may declare another
 supported model or reasoning effort only as an explicit comparison
 configuration. Every model and reasoning-effort value is frozen into the
 bundle and copied into the receipt. Target and judge invocations remain

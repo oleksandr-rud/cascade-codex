@@ -1,11 +1,11 @@
 schema_version: 1
 plugin:
   name: cascade-coordinator
-  version: 0.2.3+codex.20260910200733
+  version: 0.2.5+codex.20261001200404
 model_policy:
-  model: gpt-6-astra
-  planning_reasoning_effort: high
-  evaluation_reasoning_effort: high
+  model: gpt-6.1-sol
+  planning_reasoning_effort: xhigh
+  evaluation_reasoning_effort: xhigh
 skills:
   - route: cascade-coordinator:select-capabilities
     description: Select the smallest sufficient Cascade capability set from request claims, triggers, exclusions, artifacts, authority, and current plugin identities.

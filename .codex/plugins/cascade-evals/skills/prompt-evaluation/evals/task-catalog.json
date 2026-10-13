@@ -57,7 +57,7 @@
     },
     {
       "id": "source-conflict-brief-v1",
-      "version": 2,
+      "version": 3,
       "builder_mode": "ONE_SHOT",
       "tier": "balanced-production",
       "task_family": "grounded-conflict-synthesis",
@@ -85,7 +85,7 @@
     },
     {
       "id": "incident-root-cause-v1",
-      "version": 1,
+      "version": 2,
       "builder_mode": "ONE_SHOT",
       "tier": "frontier-generalist",
       "task_family": "technical-diagnosis",
@@ -113,7 +113,7 @@
     },
     {
       "id": "migration-control-plan-v1",
-      "version": 2,
+      "version": 3,
       "builder_mode": "ONE_SHOT",
       "tier": "frontier-autonomous",
       "task_family": "long-horizon-agent-planning",
@@ -142,7 +142,7 @@
     },
     {
       "id": "product-prioritization-v1",
-      "version": 1,
+      "version": 2,
       "builder_mode": "ONE_SHOT",
       "tier": "balanced-production",
       "task_family": "evidence-bound-product-decision",
@@ -170,7 +170,7 @@
     },
     {
       "id": "onboarding-experiment-v1",
-      "version": 2,
+      "version": 3,
       "builder_mode": "ONE_SHOT",
       "tier": "frontier-generalist",
       "task_family": "product-experiment-design",
@@ -198,7 +198,7 @@
     },
     {
       "id": "code-review-race-v1",
-      "version": 2,
+      "version": 3,
       "builder_mode": "ONE_SHOT",
       "tier": "frontier-generalist",
       "task_family": "code-review-and-patch-design",
@@ -226,7 +226,7 @@
     },
     {
       "id": "api-version-migration-plan-v1",
-      "version": 1,
+      "version": 2,
       "builder_mode": "ONE_SHOT",
       "tier": "frontier-autonomous",
       "task_family": "repository-change-planning",
@@ -284,7 +284,7 @@
     },
     {
       "id": "brand-context-copy-v1",
-      "version": 1,
+      "version": 2,
       "builder_mode": "ONE_SHOT",
       "tier": "efficient-structured",
       "task_family": "context-constrained-copy",
@@ -310,7 +310,7 @@
     },
     {
       "id": "business-opportunity-screen-v1",
-      "version": 2,
+      "version": 3,
       "builder_mode": "ONE_SHOT",
       "tier": "balanced-production",
       "task_family": "business-opportunity-screening",
@@ -338,7 +338,7 @@
     },
     {
       "id": "product-concept-scope-v1",
-      "version": 2,
+      "version": 3,
       "builder_mode": "ONE_SHOT",
       "tier": "frontier-generalist",
       "task_family": "product-idea-shaping",
@@ -366,7 +366,7 @@
     },
     {
       "id": "pricing-package-experiment-v1",
-      "version": 2,
+      "version": 3,
       "builder_mode": "ONE_SHOT",
       "tier": "balanced-production",
       "task_family": "pricing-and-packaging-validation",

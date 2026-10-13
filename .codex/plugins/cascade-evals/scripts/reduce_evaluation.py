@@ -12,10 +12,7 @@ import sys
 from typing import Any
 
 from validate_judge import ContractError, require, validate_profile, validate_response
-
-
-DEFAULT_MODEL = "gpt-6-astra"
-REASONING_EFFORTS = {"low", "medium", "high", "xhigh", "max", "ultra"}
+from model_policy import POLICY, REASONING_EFFORTS, is_standard_configuration
 
 
 def canonical_digest(value: Any) -> str:
@@ -45,14 +42,13 @@ def validate_models(models: Any) -> dict[str, Any]:
     require(isinstance(models, dict), "models must be an object")
     for field in ("builder_model", "target_model", "judge_model"):
         require(isinstance(models.get(field), str) and models[field], f"{field} is required")
-        require(models[field] != "gpt-5.5", "gpt-5.5 is forbidden")
+        require(models[field] not in POLICY["forbidden_models"], "model is forbidden by evaluation policy")
     for field in ("builder_reasoning_effort", "target_reasoning_effort", "judge_reasoning_effort"):
         require(models.get(field) in REASONING_EFFORTS, f"{field} is invalid")
     explicit = models.get("explicit_comparison", False)
     require(isinstance(explicit, bool), "explicit_comparison must be boolean")
     if not explicit:
-        require(all(models[field] == DEFAULT_MODEL for field in ("builder_model", "target_model", "judge_model")), "default evaluation models must be gpt-6-astra")
-        require(all(models[field] == "high" for field in ("builder_reasoning_effort", "target_reasoning_effort", "judge_reasoning_effort")), "default evaluation reasoning effort must be high")
+        require(is_standard_configuration(models), "models must match current defaults, an exact preserved baseline, or an explicit comparison")
     return models
 
 

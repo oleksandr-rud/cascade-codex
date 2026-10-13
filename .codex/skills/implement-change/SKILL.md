@@ -14,7 +14,8 @@ the user's authority and the plan's mutation boundary.
 - Inspect current source and nearby dirty work; never assume the worktree is
   clean.
 - Resolve blocker questions that would materially change the implementation.
-- For an existing lane or graph, confirm its source is current. Ordinary bounded
+- For an existing numbered task record or accepted coordination artifact, confirm
+  its source is current. Ordinary bounded
   work needs no lane, graph, spec, or receipt.
 
 ## Implement

@@ -1,11 +1,11 @@
 schema_version: 1
 plugin:
   name: cascade-evals
-  version: 0.3.26+codex.20261003232324
+  version: 0.3.27+codex.20261005082000
 model_policy:
-  model: gpt-6-astra
-  planning_reasoning_effort: high
-  evaluation_reasoning_effort: high
+  model: gpt-6.1-sol
+  planning_reasoning_effort: xhigh
+  evaluation_reasoning_effort: xhigh
 skills:
   - route: cascade-evals:evaluate
     description: Design, validate, reduce, or audit a versioned evaluation with mechanical gates and independent semantic judges.

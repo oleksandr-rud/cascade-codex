@@ -31,6 +31,15 @@ paths, existing owner references, explicit evaluation authority, and no orphan
 product rows. Update the catalog and owner docs together when a relationship
 changes.
 
+Use the target's actual structural units: contours, modules, features, models
+or another accepted vocabulary. Catalog reference_documents selects exact
+owner ledgers; one small unit document may contain distinct requirement,
+journey and scenario tables. Split only for actual ownership or consumption.
+Legacy catalogs retain flat owners. No file path determines product meaning.
+Generic Product rendering uses the unit template; mixed-source specification
+synthesis belongs to cascade-specs:synthesise-spec, with host create-spec
+owning authorized persistence. Do not maintain copied authoring methods.
+
 ## Brief Manifest And Compilation
 
 A brief manifest is a deterministic source-selection contract. It names one

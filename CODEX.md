@@ -55,9 +55,9 @@ remain mechanical operations. Model output never grants runtime authority.
 Normal admission requires a digest-bound LLM interpretation and validates its
 typed claims before applying code-owned policy. Follow the
 [semantic intake contract](.codex/task-admission/semantic-intake.md). Missing,
-invalid or uncertain interpretation remains unresolved. The retained lexical
-classifier is available only through explicit source diagnostics; its corpus
-does not establish semantic qualification or a trusted permission adapter.
+invalid or uncertain interpretation remains unresolved. Both interpretation
+transports normalize into the same request/task/source-bound derivation. Historical corpus data does not establish semantic qualification
+or a trusted permission adapter; lexical interpretation is not restored.
 
 ## Plugin-First Capability Routing
 
@@ -67,6 +67,7 @@ durable paths, target commands, campaign state, and acceptance.
 
 | Capability | Plugin route | Host owner |
 |---|---|---|
+| Source-grounded specification synthesis | `cascade-specs:synthesise-spec` | Requesting role; `create-spec` for target persistence |
 | Prompt creation and prompt diagnosis | `cascade-prompt:prompt` | Requesting role |
 | Semantic capability selection and cross-plugin artifact ordering | `cascade-coordinator:select-capabilities` then `cascade-coordinator:plan-workflow` when a graph is needed | Orchestrator |
 | Software, plugin, and workflow architecture, patterns, and independent review | `cascade-software-architect:<skill>` | Software Engineer for software design; Code Reviewer for independent review; Agent Engineer for host integration |
@@ -105,6 +106,12 @@ current evidence and the advisory Stop hook.
 Resolve required namespaced skills from the enabled installed inventory. Missing
 required dependencies are `BLOCKED`; do not restore copied local
 implementations or search caches as a hidden fallback.
+Before consuming a validated selected route, run `cascade workflow
+check-installed --selection PATH --envelope PATH`. It checks the live enabled
+inventory, catalog/target lock versions and installed manifest/descriptor bytes
+for selected plugins and required dependencies. Without a selection,
+`check-installed` checks the complete catalog. Selection/plan schema validation
+alone reports `installation_status=NOT_CHECKED` and is not installation proof.
 For this repository-owned marketplace, a resolved route
 `cascade-<plugin>:<skill>` has the deterministic source path
 `.codex/plugins/cascade-<plugin>/skills/<skill>/SKILL.md`, and a selected local
@@ -186,12 +193,13 @@ tools, preserving standalone plugin behavior.
 
 ## Model Routing
 
-Use `gpt-6-astra` with `high` reasoning by default for the primary session,
+Use `gpt-6.1-sol` with `xhigh` reasoning by default for the primary session,
 custom agents, all Cascade plugin recommendations, and new evaluation builder,
 target and independent judge invocations. The exact configured model and effort
 in `.codex/config.toml`, agent TOML and versioned evaluation contracts govern
-execution. This default was explicitly selected by the user after a bounded
-judge pilot; it does not claim comparative qualification of every plugin.
+execution. This default was explicitly selected by the user on 2026-10-01.
+It does not claim comparative qualification of every plugin; the requested diagnostic uses
+`max` reasoning separately.
 
 Workflow nodes bind their owning plugin's catalog model and declared evaluation
 effort. Loading a skill never switches the already running model. Preserve an
@@ -216,11 +224,11 @@ bindings, enums and claims; it never fills missing meaning with lexical rules.
 Use the semantic intake contract for the plain-text projection and bounded
 output. Independent semantic qualification is separate from structural tests.
 
-Normal admission loads only the versioned policy, control catalog, and Task
-Envelope schema. The 981-case lexical admission corpus is source diagnostic
+Normal admission loads only the versioned policy, control catalog, Task
+Envelope and canonical interpretation schemas. The 981-case lexical admission corpus is source diagnostic
 data and must not be read, copied, or validated on every target request. The
-core runtime exposes `admission validate`, but keeps `admission corpus` and
-`legacy-assess` source-only.
+core runtime exposes `admission validate` and `admission intake`;
+`admission corpus` remains source-only and no lexical diagnostic compiler is restored.
 
 `UserPromptSubmit` atomically stores a pending intake under ignored
 `.artifacts/task-admission/` and clears only that session's old current envelope.
@@ -304,37 +312,34 @@ request to create or fork one.
 
 ## Work State And Coordination
 
-Start with one inline slice. Create durable state only when work must survive
-tasks, cross owners, carry a real dependency, or join independently accepted
-evidence.
+Keep planning inline. Record implementation work in one short
+`docs/work/tasks/T-NNN.md` entry using `docs/work/task-template.md` and its
+metadata schema. Read `docs/work/_index.md` for allocation and status rules.
+Use the real product/tracker task identity and reference when available; keep
+one flat layout until an actual product-task division is adopted.
 
-For a request to check current work, run the read-only projection first:
+For a request to check current work, run the read-only projection:
 
 ```bash
 npx --offline --yes bun@1.3.3 scripts/cascade.ts work audit --json --check
 ```
 
-Read only the named lanes or graph needed to explain a collision, blocker,
-handoff, or acceptance decision. Do not scan every report or revision.
+Read only the relevant numbered task records and accepted source artifacts.
+Status and check results are explicit metadata, never inferred from prose.
+Update the same task through its handoff and completion; do not recreate lane,
+report, archive or backlog directories. Independent review remains independent,
+and unrun or failed required checks cannot become completion evidence.
 
-Use `docs/work/active.md` as the current registry. Advanced Task Graph and
-Coordination Graph states, joins, revisions, and partial repair live in
-`docs/patterns/workflow/graph-shaped-work.md`. A graph is declarative and never
-permission or automatic dispatch.
+Complex coordination can reference an accepted Cascade Project Management
+artifact. See `docs/patterns/workflow/graph-shaped-work.md` only when real
+cross-owner dependencies or evidence joins require it. Such an artifact grants
+no permission or automatic dispatch.
 
 | Execution surface | Authority |
 |---|---|
 | `root` | Current scoped request |
 | `internal-subagent` | Explicit delegation or parallel-agent authorization |
 | `user-visible-task` | Explicit request to create, open, or fork a task |
-
-A request to refresh a named active record permits a read-only audit and
-in-scope local status synchronization. Mark it complete only when current
-source, dependencies, criteria, and required validation pass. Historical,
-partial, candidate-branch, blocked, or `NOT_RUN` evidence stays open.
-
-Closeout may retire an accepted active projection. Archival is explicit and is
-never an automatic closeout chain.
 
 ## Documentation And Context
 
@@ -345,13 +350,13 @@ Keep durable facts in the narrowest owner:
 - interaction, accessibility, component, and visual rules: `docs/design/`;
 - positioning, naming, tone, and content rules: `docs/brand/`;
 - approved public or implementation contracts: `docs/specs/`;
-- current resumable state: `docs/work/`;
+- numbered tasks, current state and check results: `docs/work/tasks/`;
 - reusable workflow and architecture rules: `docs/patterns/`;
 - vocabulary: `docs/glossary.md`.
 
 Use `create-spec` only when durable source preservation or specification
 persistence is warranted. Prefer links or generated projections over copied
-prose, update only true consumers, and preserve dated reports as history. A
+prose and update only true consumers. A
 code-only refactor with no durable fact change needs no documentation map.
 
 Create a durable spec only for an approved public contract, work that must

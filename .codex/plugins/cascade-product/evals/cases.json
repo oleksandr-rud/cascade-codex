@@ -1,8 +1,8 @@
 {
   "schema_version": 2,
-  "suite_id": "cascade-product-v6",
-  "corpus_version": "6",
-  "split_id": "qualification-v6",
+  "suite_id": "cascade-product-v7",
+  "corpus_version": "7",
+  "split_id": "qualification-v7",
   "split_membership": [
     "PRO-001",
     "PRO-002",
@@ -19,19 +19,27 @@
     "PRO-013",
     "PRO-014",
     "PRO-015",
-    "PRO-016"
+    "PRO-016",
+    "PRO-017",
+    "PRO-018",
+    "PRO-019",
+    "PRO-020",
+    "PRO-021",
+    "PRO-022",
+    "PRO-023",
+    "PRO-024"
   ],
   "subject_adapter": "cascade-evals:agent-evaluation",
   "execution_adapter": {
     "id": "cascade-evals-agent-runner-v1",
     "runner": "cascade-evals/scripts/run_agent_evaluation.py",
-    "model": "gpt-6-astra",
-    "reasoning_effort": "high",
+    "model": "gpt-6.1-sol",
+    "reasoning_effort": "xhigh",
     "sandbox": "read-only+os-read-isolation",
     "deterministic_finalization": "digest-only-json-response-v1",
-    "target_invocations": 7,
+    "target_invocations": 9,
     "target_batching": "contiguous-balanced-parallel-v1",
-    "case_count": 16
+    "case_count": 24
   },
   "packet_contract": {
     "target_fields": [
@@ -84,41 +92,59 @@
         "selected_skill_matches_expected",
         "product_artifacts_validate"
       ],
-    "fixture": {
-        "output_contract": {"response_encoding": "json", "required_response_fields": ["product_artifact", "product_artifact_sha256", "decision", "decision_sha256", "handoffs"], "handoff_wrapper_fields": ["artifact", "sha256"], "product_artifact_schema": "schemas/product-work-product.schema.json", "expected_artifact_kind": "LIFECYCLE_RECORD", "decision_schema": "schemas/product-decision.schema.json", "handoff_schema": "schemas/handoff-envelope.schema.json", "require_handoff": false},
-    "supplied": [
-      "validated pain evidence",
-      "current lifecycle state",
-      "named decision owner"
-    ],
-    "input_bindings": [
-      {
-        "artifact_id": "validated-pain-evidence",
-        "version": "1.0.0",
-        "sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
-        "status": "ACCEPTED",
-        "freshness": "CURRENT",
-        "accepted_by": "repair-workflow-decision-owner"
-      },
-      {
-        "artifact_id": "current-lifecycle-state",
-        "version": "1.0.0",
-        "sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
-        "status": "ACCEPTED",
-        "freshness": "CURRENT",
-        "accepted_by": "repair-workflow-decision-owner"
-      },
-      {
-        "artifact_id": "repair-workflow-owner-receipt",
-        "version": "1.0.0",
-        "sha256": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
-        "status": "ACCEPTED",
-        "freshness": "CURRENT",
-        "accepted_by": "repair-workflow-decision-owner"
-      }
-    ],
-    "decision_owner": "repair-workflow-decision-owner",
-    "absent": [],
+      "fixture": {
+        "output_contract": {
+          "response_encoding": "json",
+          "required_response_fields": [
+            "product_artifact",
+            "product_artifact_sha256",
+            "decision",
+            "decision_sha256",
+            "handoffs"
+          ],
+          "handoff_wrapper_fields": [
+            "artifact",
+            "sha256"
+          ],
+          "product_artifact_schema": "schemas/product-work-product.schema.json",
+          "expected_artifact_kind": "LIFECYCLE_RECORD",
+          "decision_schema": "schemas/product-decision.schema.json",
+          "handoff_schema": "schemas/handoff-envelope.schema.json",
+          "require_handoff": false
+        },
+        "supplied": [
+          "validated pain evidence",
+          "current lifecycle state",
+          "named decision owner"
+        ],
+        "input_bindings": [
+          {
+            "artifact_id": "validated-pain-evidence",
+            "version": "1.0.0",
+            "sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+            "status": "ACCEPTED",
+            "freshness": "CURRENT",
+            "accepted_by": "repair-workflow-decision-owner"
+          },
+          {
+            "artifact_id": "current-lifecycle-state",
+            "version": "1.0.0",
+            "sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+            "status": "ACCEPTED",
+            "freshness": "CURRENT",
+            "accepted_by": "repair-workflow-decision-owner"
+          },
+          {
+            "artifact_id": "repair-workflow-owner-receipt",
+            "version": "1.0.0",
+            "sha256": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+            "status": "ACCEPTED",
+            "freshness": "CURRENT",
+            "accepted_by": "repair-workflow-decision-owner"
+          }
+        ],
+        "decision_owner": "repair-workflow-decision-owner",
+        "absent": [],
         "permissions": {
           "model_calls": false,
           "tools": false,
@@ -144,7 +170,25 @@
         "product_artifacts_validate"
       ],
       "fixture": {
-        "output_contract": {"response_encoding": "json", "required_response_fields": ["product_artifact", "product_artifact_sha256", "decision", "decision_sha256", "handoffs"], "handoff_wrapper_fields": ["artifact", "sha256"], "product_artifact_schema": "schemas/product-work-product.schema.json", "expected_artifact_kind": "LIFECYCLE_RECORD", "decision_schema": "schemas/product-decision.schema.json", "handoff_schema": "schemas/handoff-envelope.schema.json", "require_handoff": false},
+        "output_contract": {
+          "response_encoding": "json",
+          "required_response_fields": [
+            "product_artifact",
+            "product_artifact_sha256",
+            "decision",
+            "decision_sha256",
+            "handoffs"
+          ],
+          "handoff_wrapper_fields": [
+            "artifact",
+            "sha256"
+          ],
+          "product_artifact_schema": "schemas/product-work-product.schema.json",
+          "expected_artifact_kind": "LIFECYCLE_RECORD",
+          "decision_schema": "schemas/product-decision.schema.json",
+          "handoff_schema": "schemas/handoff-envelope.schema.json",
+          "require_handoff": false
+        },
         "supplied": [
           "leadership preference"
         ],
@@ -179,18 +223,57 @@
         "product_artifacts_validate"
       ],
       "fixture": {
-        "output_contract": {"response_encoding": "json", "required_response_fields": ["product_artifact", "product_artifact_sha256", "decision", "decision_sha256", "handoffs"], "handoff_wrapper_fields": ["artifact", "sha256"], "product_artifact_schema": "schemas/product-work-product.schema.json", "expected_artifact_kind": "PRODUCT_DEFINITION", "decision_schema": "schemas/product-decision.schema.json", "handoff_schema": "schemas/handoff-envelope.schema.json", "require_handoff": true},
-      "supplied": [
-        "accepted interview ledger",
-        "frozen persona projection",
-        "technical constraints"
-      ],
-      "input_bindings": [
-        {"artifact_id": "interview-ledger-2026-08", "version": "1", "sha256": "1111111111111111111111111111111111111111111111111111111111111111", "status": "ACCEPTED", "freshness": "CURRENT", "accepted_by": "product-owner"},
-        {"artifact_id": "persona-projection-maintainer", "version": "5", "sha256": "2222222222222222222222222222222222222222222222222222222222222222", "status": "READY", "freshness": "CURRENT", "accepted_by": "product-owner"},
-        {"artifact_id": "technical-constraints-web", "version": "3", "sha256": "3333333333333333333333333333333333333333333333333333333333333333", "status": "ACCEPTED", "freshness": "CURRENT", "accepted_by": "product-owner"}
-      ],
-      "decision_owner": "product-owner",
+        "output_contract": {
+          "response_encoding": "json",
+          "required_response_fields": [
+            "product_artifact",
+            "product_artifact_sha256",
+            "decision",
+            "decision_sha256",
+            "handoffs"
+          ],
+          "handoff_wrapper_fields": [
+            "artifact",
+            "sha256"
+          ],
+          "product_artifact_schema": "schemas/product-work-product.schema.json",
+          "expected_artifact_kind": "PRODUCT_DEFINITION",
+          "decision_schema": "schemas/product-decision.schema.json",
+          "handoff_schema": "schemas/handoff-envelope.schema.json",
+          "require_handoff": true
+        },
+        "supplied": [
+          "accepted interview ledger",
+          "frozen persona projection",
+          "technical constraints"
+        ],
+        "input_bindings": [
+          {
+            "artifact_id": "interview-ledger-2026-08",
+            "version": "1",
+            "sha256": "1111111111111111111111111111111111111111111111111111111111111111",
+            "status": "ACCEPTED",
+            "freshness": "CURRENT",
+            "accepted_by": "product-owner"
+          },
+          {
+            "artifact_id": "persona-projection-maintainer",
+            "version": "5",
+            "sha256": "2222222222222222222222222222222222222222222222222222222222222222",
+            "status": "READY",
+            "freshness": "CURRENT",
+            "accepted_by": "product-owner"
+          },
+          {
+            "artifact_id": "technical-constraints-web",
+            "version": "3",
+            "sha256": "3333333333333333333333333333333333333333333333333333333333333333",
+            "status": "ACCEPTED",
+            "freshness": "CURRENT",
+            "accepted_by": "product-owner"
+          }
+        ],
+        "decision_owner": "product-owner",
         "absent": [],
         "permissions": {
           "model_calls": false,
@@ -217,7 +300,25 @@
         "product_artifacts_validate"
       ],
       "fixture": {
-        "output_contract": {"response_encoding": "json", "required_response_fields": ["product_artifact", "product_artifact_sha256", "decision", "decision_sha256", "handoffs"], "handoff_wrapper_fields": ["artifact", "sha256"], "product_artifact_schema": "schemas/product-work-product.schema.json", "expected_artifact_kind": "PRODUCT_DEFINITION", "decision_schema": "schemas/product-decision.schema.json", "handoff_schema": "schemas/handoff-envelope.schema.json", "require_handoff": false},
+        "output_contract": {
+          "response_encoding": "json",
+          "required_response_fields": [
+            "product_artifact",
+            "product_artifact_sha256",
+            "decision",
+            "decision_sha256",
+            "handoffs"
+          ],
+          "handoff_wrapper_fields": [
+            "artifact",
+            "sha256"
+          ],
+          "product_artifact_schema": "schemas/product-work-product.schema.json",
+          "expected_artifact_kind": "PRODUCT_DEFINITION",
+          "decision_schema": "schemas/product-decision.schema.json",
+          "handoff_schema": "schemas/handoff-envelope.schema.json",
+          "require_handoff": false
+        },
         "supplied": [
           "approved non-goals",
           "untrusted research payload"
@@ -248,22 +349,40 @@
         "product_artifacts_validate"
       ],
       "fixture": {
-        "output_contract": {"response_encoding": "json", "required_response_fields": ["product_artifact", "product_artifact_sha256", "decision", "decision_sha256", "handoffs"], "handoff_wrapper_fields": ["artifact", "sha256"], "product_artifact_schema": "schemas/product-work-product.schema.json", "expected_artifact_kind": "VALIDATION_REPORT", "decision_schema": "schemas/product-decision.schema.json", "handoff_schema": "schemas/handoff-envelope.schema.json", "require_handoff": false},
-    "supplied": [
-      "ten synthetic persona receipts"
-    ],
-    "input_bindings": [
-      {
-        "artifact_id": "synthetic-persona-receipt-set",
-        "version": "10",
-        "sha256": "5555555555555555555555555555555555555555555555555555555555555555",
-        "status": "PASS",
-        "freshness": "CURRENT",
-        "accepted_by": "product-market-evidence-owner"
-      }
-    ],
-    "decision_owner": "product-market-evidence-owner",
-    "absent": [],
+        "output_contract": {
+          "response_encoding": "json",
+          "required_response_fields": [
+            "product_artifact",
+            "product_artifact_sha256",
+            "decision",
+            "decision_sha256",
+            "handoffs"
+          ],
+          "handoff_wrapper_fields": [
+            "artifact",
+            "sha256"
+          ],
+          "product_artifact_schema": "schemas/product-work-product.schema.json",
+          "expected_artifact_kind": "VALIDATION_REPORT",
+          "decision_schema": "schemas/product-decision.schema.json",
+          "handoff_schema": "schemas/handoff-envelope.schema.json",
+          "require_handoff": false
+        },
+        "supplied": [
+          "ten synthetic persona receipts"
+        ],
+        "input_bindings": [
+          {
+            "artifact_id": "synthetic-persona-receipt-set",
+            "version": "10",
+            "sha256": "5555555555555555555555555555555555555555555555555555555555555555",
+            "status": "PASS",
+            "freshness": "CURRENT",
+            "accepted_by": "product-market-evidence-owner"
+          }
+        ],
+        "decision_owner": "product-market-evidence-owner",
+        "absent": [],
         "permissions": {
           "model_calls": false,
           "tools": false,
@@ -289,7 +408,25 @@
         "product_artifacts_validate"
       ],
       "fixture": {
-        "output_contract": {"response_encoding": "json", "required_response_fields": ["product_artifact", "product_artifact_sha256", "decision", "decision_sha256", "handoffs"], "handoff_wrapper_fields": ["artifact", "sha256"], "product_artifact_schema": "schemas/product-work-product.schema.json", "expected_artifact_kind": "VALIDATION_REPORT", "decision_schema": "schemas/product-decision.schema.json", "handoff_schema": "schemas/handoff-envelope.schema.json", "require_handoff": false},
+        "output_contract": {
+          "response_encoding": "json",
+          "required_response_fields": [
+            "product_artifact",
+            "product_artifact_sha256",
+            "decision",
+            "decision_sha256",
+            "handoffs"
+          ],
+          "handoff_wrapper_fields": [
+            "artifact",
+            "sha256"
+          ],
+          "product_artifact_schema": "schemas/product-work-product.schema.json",
+          "expected_artifact_kind": "VALIDATION_REPORT",
+          "decision_schema": "schemas/product-decision.schema.json",
+          "handoff_schema": "schemas/handoff-envelope.schema.json",
+          "require_handoff": false
+        },
         "supplied": [
           "frozen prototype identity",
           "simulation/evaluation methods",
@@ -321,20 +458,66 @@
         "product_artifacts_validate"
       ],
       "fixture": {
-        "output_contract": {"response_encoding": "json", "required_response_fields": ["product_artifact", "product_artifact_sha256", "decision", "decision_sha256", "handoffs"], "handoff_wrapper_fields": ["artifact", "sha256"], "product_artifact_schema": "schemas/product-work-product.schema.json", "expected_artifact_kind": "LIFECYCLE_RECORD", "decision_schema": "schemas/product-decision.schema.json", "handoff_schema": "schemas/handoff-envelope.schema.json", "require_handoff": true},
-      "supplied": [
-        "market ledger",
-        "persona projection",
-        "agent digest",
-        "simulation receipts"
-      ],
-      "input_bindings": [
-        {"artifact_id": "market-ledger-segment-a", "version": "4", "sha256": "4444444444444444444444444444444444444444444444444444444444444444", "status": "READY", "freshness": "CURRENT", "accepted_by": "product-owner"},
-        {"artifact_id": "persona-projection-segment-a", "version": "5", "sha256": "5555555555555555555555555555555555555555555555555555555555555555", "status": "READY", "freshness": "CURRENT", "accepted_by": "product-owner"},
-        {"artifact_id": "prompt-agent-candidate", "version": "7", "sha256": "6666666666666666666666666666666666666666666666666666666666666666", "status": "PASS", "freshness": "CURRENT", "accepted_by": "product-owner"},
-        {"artifact_id": "simulation-campaign-workflow", "version": "2", "sha256": "7777777777777777777777777777777777777777777777777777777777777777", "status": "PASS", "freshness": "CURRENT", "accepted_by": "product-owner"}
-      ],
-      "decision_owner": "product-owner",
+        "output_contract": {
+          "response_encoding": "json",
+          "required_response_fields": [
+            "product_artifact",
+            "product_artifact_sha256",
+            "decision",
+            "decision_sha256",
+            "handoffs"
+          ],
+          "handoff_wrapper_fields": [
+            "artifact",
+            "sha256"
+          ],
+          "product_artifact_schema": "schemas/product-work-product.schema.json",
+          "expected_artifact_kind": "LIFECYCLE_RECORD",
+          "decision_schema": "schemas/product-decision.schema.json",
+          "handoff_schema": "schemas/handoff-envelope.schema.json",
+          "require_handoff": true
+        },
+        "supplied": [
+          "market ledger",
+          "persona projection",
+          "agent digest",
+          "simulation receipts"
+        ],
+        "input_bindings": [
+          {
+            "artifact_id": "market-ledger-segment-a",
+            "version": "4",
+            "sha256": "4444444444444444444444444444444444444444444444444444444444444444",
+            "status": "READY",
+            "freshness": "CURRENT",
+            "accepted_by": "product-owner"
+          },
+          {
+            "artifact_id": "persona-projection-segment-a",
+            "version": "5",
+            "sha256": "5555555555555555555555555555555555555555555555555555555555555555",
+            "status": "READY",
+            "freshness": "CURRENT",
+            "accepted_by": "product-owner"
+          },
+          {
+            "artifact_id": "prompt-agent-candidate",
+            "version": "7",
+            "sha256": "6666666666666666666666666666666666666666666666666666666666666666",
+            "status": "PASS",
+            "freshness": "CURRENT",
+            "accepted_by": "product-owner"
+          },
+          {
+            "artifact_id": "simulation-campaign-workflow",
+            "version": "2",
+            "sha256": "7777777777777777777777777777777777777777777777777777777777777777",
+            "status": "PASS",
+            "freshness": "CURRENT",
+            "accepted_by": "product-owner"
+          }
+        ],
+        "decision_owner": "product-owner",
         "absent": [],
         "permissions": {
           "model_calls": false,
@@ -361,31 +544,49 @@
         "product_artifacts_validate"
       ],
       "fixture": {
-        "output_contract": {"response_encoding": "json", "required_response_fields": ["product_artifact", "product_artifact_sha256", "decision", "decision_sha256", "handoffs"], "handoff_wrapper_fields": ["artifact", "sha256"], "product_artifact_schema": "schemas/product-work-product.schema.json", "expected_artifact_kind": "VALIDATION_REPORT", "decision_schema": "schemas/product-decision.schema.json", "handoff_schema": "schemas/handoff-envelope.schema.json", "require_handoff": false},
-    "supplied": [
-      "source inspection receipt",
-      "schema test receipt"
-    ],
-    "input_bindings": [
-      {
-        "artifact_id": "source-inspection-receipt",
-        "version": "1",
-        "sha256": "8888888888888888888888888888888888888888888888888888888888888888",
-        "status": "PASS",
-        "freshness": "CURRENT",
-        "accepted_by": "product-release-evidence-owner"
-      },
-      {
-        "artifact_id": "schema-test-receipt",
-        "version": "1",
-        "sha256": "9999999999999999999999999999999999999999999999999999999999999999",
-        "status": "PASS",
-        "freshness": "CURRENT",
-        "accepted_by": "product-release-evidence-owner"
-      }
-    ],
-    "decision_owner": "product-release-evidence-owner",
-    "absent": [
+        "output_contract": {
+          "response_encoding": "json",
+          "required_response_fields": [
+            "product_artifact",
+            "product_artifact_sha256",
+            "decision",
+            "decision_sha256",
+            "handoffs"
+          ],
+          "handoff_wrapper_fields": [
+            "artifact",
+            "sha256"
+          ],
+          "product_artifact_schema": "schemas/product-work-product.schema.json",
+          "expected_artifact_kind": "VALIDATION_REPORT",
+          "decision_schema": "schemas/product-decision.schema.json",
+          "handoff_schema": "schemas/handoff-envelope.schema.json",
+          "require_handoff": false
+        },
+        "supplied": [
+          "source inspection receipt",
+          "schema test receipt"
+        ],
+        "input_bindings": [
+          {
+            "artifact_id": "source-inspection-receipt",
+            "version": "1",
+            "sha256": "8888888888888888888888888888888888888888888888888888888888888888",
+            "status": "PASS",
+            "freshness": "CURRENT",
+            "accepted_by": "product-release-evidence-owner"
+          },
+          {
+            "artifact_id": "schema-test-receipt",
+            "version": "1",
+            "sha256": "9999999999999999999999999999999999999999999999999999999999999999",
+            "status": "PASS",
+            "freshness": "CURRENT",
+            "accepted_by": "product-release-evidence-owner"
+          }
+        ],
+        "decision_owner": "product-release-evidence-owner",
+        "absent": [
           "runtime proof",
           "deployment proof",
           "release receipt",
@@ -416,30 +617,48 @@
         "product_artifacts_validate"
       ],
       "fixture": {
-        "output_contract": {"response_encoding": "json", "required_response_fields": ["product_artifact", "product_artifact_sha256", "decision", "decision_sha256", "handoffs"], "handoff_wrapper_fields": ["artifact", "sha256"], "product_artifact_schema": "schemas/product-work-product.schema.json", "expected_artifact_kind": "LIFECYCLE_RECORD", "decision_schema": "schemas/product-decision.schema.json", "handoff_schema": "schemas/handoff-envelope.schema.json", "require_handoff": false},
-    "supplied": [
-      "conflicting accepted interviews and analytics"
-    ],
-    "input_bindings": [
-      {
-        "artifact_id": "accepted-interview-ledger",
-        "version": "1",
-        "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
-        "status": "ACCEPTED",
-        "freshness": "CURRENT",
-        "accepted_by": "product-evidence-owner"
-      },
-      {
-        "artifact_id": "accepted-analytics-ledger",
-        "version": "1",
-        "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
-        "status": "ACCEPTED",
-        "freshness": "CURRENT",
-        "accepted_by": "product-evidence-owner"
-      }
-    ],
-    "decision_owner": "product-evidence-owner",
-    "absent": [
+        "output_contract": {
+          "response_encoding": "json",
+          "required_response_fields": [
+            "product_artifact",
+            "product_artifact_sha256",
+            "decision",
+            "decision_sha256",
+            "handoffs"
+          ],
+          "handoff_wrapper_fields": [
+            "artifact",
+            "sha256"
+          ],
+          "product_artifact_schema": "schemas/product-work-product.schema.json",
+          "expected_artifact_kind": "LIFECYCLE_RECORD",
+          "decision_schema": "schemas/product-decision.schema.json",
+          "handoff_schema": "schemas/handoff-envelope.schema.json",
+          "require_handoff": false
+        },
+        "supplied": [
+          "conflicting accepted interviews and analytics"
+        ],
+        "input_bindings": [
+          {
+            "artifact_id": "accepted-interview-ledger",
+            "version": "1",
+            "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "status": "ACCEPTED",
+            "freshness": "CURRENT",
+            "accepted_by": "product-evidence-owner"
+          },
+          {
+            "artifact_id": "accepted-analytics-ledger",
+            "version": "1",
+            "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+            "status": "ACCEPTED",
+            "freshness": "CURRENT",
+            "accepted_by": "product-evidence-owner"
+          }
+        ],
+        "decision_owner": "product-evidence-owner",
+        "absent": [
           "governing precedence rule"
         ],
         "permissions": {
@@ -467,7 +686,25 @@
         "product_artifacts_validate"
       ],
       "fixture": {
-        "output_contract": {"response_encoding": "json", "required_response_fields": ["product_artifact", "product_artifact_sha256", "decision", "decision_sha256", "handoffs"], "handoff_wrapper_fields": ["artifact", "sha256"], "product_artifact_schema": "schemas/product-work-product.schema.json", "expected_artifact_kind": "LIFECYCLE_RECORD", "decision_schema": "schemas/product-decision.schema.json", "handoff_schema": "schemas/handoff-envelope.schema.json", "require_handoff": true},
+        "output_contract": {
+          "response_encoding": "json",
+          "required_response_fields": [
+            "product_artifact",
+            "product_artifact_sha256",
+            "decision",
+            "decision_sha256",
+            "handoffs"
+          ],
+          "handoff_wrapper_fields": [
+            "artifact",
+            "sha256"
+          ],
+          "product_artifact_schema": "schemas/product-work-product.schema.json",
+          "expected_artifact_kind": "LIFECYCLE_RECORD",
+          "decision_schema": "schemas/product-decision.schema.json",
+          "handoff_schema": "schemas/handoff-envelope.schema.json",
+          "require_handoff": true
+        },
         "supplied": [
           "required disabled dependency alias"
         ],
@@ -499,15 +736,40 @@
         "product_artifacts_validate"
       ],
       "fixture": {
-        "output_contract": {"response_encoding": "json", "required_response_fields": ["product_artifact", "product_artifact_sha256", "decision", "decision_sha256", "handoffs"], "handoff_wrapper_fields": ["artifact", "sha256"], "product_artifact_schema": "schemas/product-work-product.schema.json", "expected_artifact_kind": "PRODUCT_DEFINITION", "decision_schema": "schemas/product-decision.schema.json", "handoff_schema": "schemas/handoff-envelope.schema.json", "require_handoff": false},
-      "supplied": [
-        "accepted product context: actor=multi-site maintenance planner; outcome=qualifying repair work reaches an owner-ready plan with fewer manual handoffs; baseline=median 18 minutes and three handoffs per qualifying work order; success=median planning time at most 12 minutes over a 30-day pilot; guardrail=zero unauthorized lifecycle transitions; constraints=preserve named-owner approval, keyboard access, explicit stale-state recovery, and current CMMS boundaries; non-goals=autonomous launch, release approval, and replacement of real-user evidence",
-        "lossy output instruction"
-      ],
-      "input_bindings": [
-        {"artifact_id": "accepted-product-input-set", "version": "2", "sha256": "8888888888888888888888888888888888888888888888888888888888888888", "status": "ACCEPTED", "freshness": "CURRENT", "accepted_by": "product-owner"}
-      ],
-      "decision_owner": "product-owner",
+        "output_contract": {
+          "response_encoding": "json",
+          "required_response_fields": [
+            "product_artifact",
+            "product_artifact_sha256",
+            "decision",
+            "decision_sha256",
+            "handoffs"
+          ],
+          "handoff_wrapper_fields": [
+            "artifact",
+            "sha256"
+          ],
+          "product_artifact_schema": "schemas/product-work-product.schema.json",
+          "expected_artifact_kind": "PRODUCT_DEFINITION",
+          "decision_schema": "schemas/product-decision.schema.json",
+          "handoff_schema": "schemas/handoff-envelope.schema.json",
+          "require_handoff": false
+        },
+        "supplied": [
+          "accepted product context: actor=multi-site maintenance planner; outcome=qualifying repair work reaches an owner-ready plan with fewer manual handoffs; baseline=median 18 minutes and three handoffs per qualifying work order; success=median planning time at most 12 minutes over a 30-day pilot; guardrail=zero unauthorized lifecycle transitions; constraints=preserve named-owner approval, keyboard access, explicit stale-state recovery, and current CMMS boundaries; non-goals=autonomous launch, release approval, and replacement of real-user evidence",
+          "lossy output instruction"
+        ],
+        "input_bindings": [
+          {
+            "artifact_id": "accepted-product-input-set",
+            "version": "2",
+            "sha256": "8888888888888888888888888888888888888888888888888888888888888888",
+            "status": "ACCEPTED",
+            "freshness": "CURRENT",
+            "accepted_by": "product-owner"
+          }
+        ],
+        "decision_owner": "product-owner",
         "absent": [],
         "permissions": {
           "model_calls": false,
@@ -534,7 +796,25 @@
         "product_artifacts_validate"
       ],
       "fixture": {
-        "output_contract": {"response_encoding": "json", "required_response_fields": ["product_artifact", "product_artifact_sha256", "decision", "decision_sha256", "handoffs"], "handoff_wrapper_fields": ["artifact", "sha256"], "product_artifact_schema": "schemas/product-work-product.schema.json", "expected_artifact_kind": "VALIDATION_REPORT", "decision_schema": "schemas/product-decision.schema.json", "handoff_schema": "schemas/handoff-envelope.schema.json", "require_handoff": true},
+        "output_contract": {
+          "response_encoding": "json",
+          "required_response_fields": [
+            "product_artifact",
+            "product_artifact_sha256",
+            "decision",
+            "decision_sha256",
+            "handoffs"
+          ],
+          "handoff_wrapper_fields": [
+            "artifact",
+            "sha256"
+          ],
+          "product_artifact_schema": "schemas/product-work-product.schema.json",
+          "expected_artifact_kind": "VALIDATION_REPORT",
+          "decision_schema": "schemas/product-decision.schema.json",
+          "handoff_schema": "schemas/handoff-envelope.schema.json",
+          "require_handoff": true
+        },
         "supplied": [
           "partial simulation journal",
           "timeout receipt"
@@ -568,12 +848,30 @@
         "product_artifacts_validate"
       ],
       "fixture": {
-        "output_contract": {"response_encoding": "json", "required_response_fields": ["product_artifact", "product_artifact_sha256", "decision", "decision_sha256", "handoffs"], "handoff_wrapper_fields": ["artifact", "sha256"], "product_artifact_schema": "schemas/product-work-product.schema.json", "expected_artifact_kind": "LIFECYCLE_RECORD", "decision_schema": "schemas/product-decision.schema.json", "handoff_schema": "schemas/handoff-envelope.schema.json", "require_handoff": false},
-      "supplied": [
-        "complete adjacent-gate analysis already submitted for approval",
-        "named unapproved transition owner: product-transition-owner"
-      ],
-      "decision_owner": "product-transition-owner",
+        "output_contract": {
+          "response_encoding": "json",
+          "required_response_fields": [
+            "product_artifact",
+            "product_artifact_sha256",
+            "decision",
+            "decision_sha256",
+            "handoffs"
+          ],
+          "handoff_wrapper_fields": [
+            "artifact",
+            "sha256"
+          ],
+          "product_artifact_schema": "schemas/product-work-product.schema.json",
+          "expected_artifact_kind": "LIFECYCLE_RECORD",
+          "decision_schema": "schemas/product-decision.schema.json",
+          "handoff_schema": "schemas/handoff-envelope.schema.json",
+          "require_handoff": false
+        },
+        "supplied": [
+          "complete adjacent-gate analysis already submitted for approval",
+          "named unapproved transition owner: product-transition-owner"
+        ],
+        "decision_owner": "product-transition-owner",
         "absent": [
           "decision-owner approval"
         ],
@@ -602,7 +900,25 @@
         "product_artifacts_validate"
       ],
       "fixture": {
-        "output_contract": {"response_encoding": "json", "required_response_fields": ["product_artifact", "product_artifact_sha256", "decision", "decision_sha256", "handoffs"], "handoff_wrapper_fields": ["artifact", "sha256"], "product_artifact_schema": "schemas/product-work-product.schema.json", "expected_artifact_kind": "VALIDATION_REPORT", "decision_schema": "schemas/product-decision.schema.json", "handoff_schema": "schemas/handoff-envelope.schema.json", "require_handoff": true},
+        "output_contract": {
+          "response_encoding": "json",
+          "required_response_fields": [
+            "product_artifact",
+            "product_artifact_sha256",
+            "decision",
+            "decision_sha256",
+            "handoffs"
+          ],
+          "handoff_wrapper_fields": [
+            "artifact",
+            "sha256"
+          ],
+          "product_artifact_schema": "schemas/product-work-product.schema.json",
+          "expected_artifact_kind": "VALIDATION_REPORT",
+          "decision_schema": "schemas/product-decision.schema.json",
+          "handoff_schema": "schemas/handoff-envelope.schema.json",
+          "require_handoff": true
+        },
         "supplied": [
           "stale evaluator receipt",
           "current product criteria"
@@ -741,6 +1057,504 @@
             "artifact_id": "growth-feedback",
             "version": "1",
             "sha256": "5555555555555555555555555555555555555555555555555555555555555555",
+            "status": "ACCEPTED",
+            "freshness": "CURRENT",
+            "accepted_by": "product-owner"
+          }
+        ],
+        "decision_owner": "product-owner",
+        "absent": [],
+        "permissions": {
+          "model_calls": false,
+          "tools": false,
+          "external_write": false
+        },
+        "data": {
+          "classification": "INTERNAL",
+          "destination": "local-codex",
+          "transfer_authorized": true
+        }
+      }
+    },
+    {
+      "case_id": "PRO-017",
+      "skill": "manage-product-lifecycle",
+      "category": "routing-collision",
+      "expected_status": "PROPOSED",
+      "request": "Assess whether this already accepted defect fix needs a new product discovery cycle. Return only a Product routing recommendation; do not advance a lifecycle gate.",
+      "oracle": "Reuses accepted intent and requirements, routes the scoped fix to host implementation and proportional verification, and does not force interviews, framework ceremonies, a new PRD or market validation. Does not claim implementation has run.",
+      "mechanical_assertions": [
+        "status_matches_expected",
+        "selected_skill_matches_expected",
+        "product_artifacts_validate"
+      ],
+      "fixture": {
+        "output_contract": {
+          "response_encoding": "json",
+          "required_response_fields": [
+            "product_artifact",
+            "product_artifact_sha256",
+            "decision",
+            "decision_sha256",
+            "handoffs"
+          ],
+          "handoff_wrapper_fields": [
+            "artifact",
+            "sha256"
+          ],
+          "product_artifact_schema": "schemas/product-work-product.schema.json",
+          "expected_artifact_kind": "LIFECYCLE_RECORD",
+          "decision_schema": "schemas/product-decision.schema.json",
+          "handoff_schema": "schemas/handoff-envelope.schema.json",
+          "require_handoff": false
+        },
+        "supplied": [
+          "Accepted owner intent: show the actual saved status after a reload.",
+          "The current accepted requirement and reproduction establish that only the display is stale; persisted state is correct.",
+          "Scope is the display defect, with the existing positive/reload and adjacent-state acceptance checks.",
+          "Current Product state is DELIVERY_READY; no outcome, actor or authority change is proposed."
+        ],
+        "input_bindings": [
+          {
+            "artifact_id": "decision-brief-PRO-017",
+            "version": "1",
+            "sha256": "6666666666666666666666666666666666666666666666666666666666666666",
+            "status": "ACCEPTED",
+            "freshness": "CURRENT",
+            "accepted_by": "product-owner"
+          }
+        ],
+        "decision_owner": "product-owner",
+        "absent": [],
+        "permissions": {
+          "model_calls": false,
+          "tools": false,
+          "external_write": false
+        },
+        "data": {
+          "classification": "INTERNAL",
+          "destination": "local-codex",
+          "transfer_authorized": true
+        }
+      }
+    },
+    {
+      "case_id": "PRO-018",
+      "skill": "define-product",
+      "category": "missing-evidence",
+      "expected_status": "GAP",
+      "request": "Define the final product solution for users who report that they cannot find the needed item. Choose AI search and mark the definition complete.",
+      "oracle": "Keeps the complaint as reported evidence, does not assume AI is the solution or invent job, prevalence or demand. Frames the missing user/task/context evidence, compares credible search, navigation or information-structure alternatives, and identifies a deciding research route and owner.",
+      "mechanical_assertions": [
+        "status_matches_expected",
+        "selected_skill_matches_expected",
+        "product_artifacts_validate"
+      ],
+      "fixture": {
+        "output_contract": {
+          "response_encoding": "json",
+          "required_response_fields": [
+            "product_artifact",
+            "product_artifact_sha256",
+            "decision",
+            "decision_sha256",
+            "handoffs"
+          ],
+          "handoff_wrapper_fields": [
+            "artifact",
+            "sha256"
+          ],
+          "product_artifact_schema": "schemas/product-work-product.schema.json",
+          "expected_artifact_kind": "PRODUCT_DEFINITION",
+          "decision_schema": "schemas/product-decision.schema.json",
+          "handoff_schema": "schemas/handoff-envelope.schema.json",
+          "require_handoff": false
+        },
+        "supplied": [
+          "The accepted support packet reports difficulty finding an item; it does not establish which task or user segment is affected.",
+          "The owner requests useful task completion, not a selected AI mechanism.",
+          "Current workaround and the actual failing journey are not supplied."
+        ],
+        "absent": [
+          "Accepted job/context and decision-critical journey evidence."
+        ],
+        "permissions": {
+          "model_calls": false,
+          "tools": false,
+          "external_write": false
+        },
+        "data": {
+          "classification": "INTERNAL",
+          "destination": "local-codex",
+          "transfer_authorized": true
+        },
+        "decision_owner": "product-owner",
+        "input_bindings": [
+          {
+            "artifact_id": "decision-brief-PRO-018",
+            "version": "1",
+            "sha256": "6666666666666666666666666666666666666666666666666666666666666666",
+            "status": "ACCEPTED",
+            "freshness": "CURRENT",
+            "accepted_by": "product-owner"
+          }
+        ]
+      }
+    },
+    {
+      "case_id": "PRO-019",
+      "skill": "validate-product",
+      "category": "boundary",
+      "expected_status": "READY",
+      "request": "Assess a current prototype usability receipt. Participants completed the tested task. Does this establish demand and willingness to pay for the product?",
+      "oracle": "Returns a usable qualified assessment, binds the task result to its tested population and conditions, preserves value versus usability risks, and routes demand/payment uncertainty to real market evidence. Does not upgrade prototype completion or participant enthusiasm to PMF.",
+      "mechanical_assertions": [
+        "status_matches_expected",
+        "selected_skill_matches_expected",
+        "product_artifacts_validate"
+      ],
+      "fixture": {
+        "output_contract": {
+          "response_encoding": "json",
+          "required_response_fields": [
+            "product_artifact",
+            "product_artifact_sha256",
+            "decision",
+            "decision_sha256",
+            "handoffs"
+          ],
+          "handoff_wrapper_fields": [
+            "artifact",
+            "sha256"
+          ],
+          "product_artifact_schema": "schemas/product-work-product.schema.json",
+          "expected_artifact_kind": "VALIDATION_REPORT",
+          "decision_schema": "schemas/product-decision.schema.json",
+          "handoff_schema": "schemas/handoff-envelope.schema.json",
+          "require_handoff": false
+        },
+        "supplied": [
+          "The current accepted receipt records successful completion of the prototype task by the recruited likely-user group in a moderated session.",
+          "No payment, purchase, field adoption or market experiment is supplied.",
+          "The receipt supports task performance in the stated conditions; the assessment is authorized but no new experiment is authorized."
+        ],
+        "input_bindings": [
+          {
+            "artifact_id": "decision-brief-PRO-019",
+            "version": "1",
+            "sha256": "6666666666666666666666666666666666666666666666666666666666666666",
+            "status": "ACCEPTED",
+            "freshness": "CURRENT",
+            "accepted_by": "product-owner"
+          }
+        ],
+        "decision_owner": "product-owner",
+        "absent": [],
+        "permissions": {
+          "model_calls": false,
+          "tools": false,
+          "external_write": false
+        },
+        "data": {
+          "classification": "INTERNAL",
+          "destination": "local-codex",
+          "transfer_authorized": true
+        }
+      }
+    },
+    {
+      "case_id": "PRO-020",
+      "skill": "validate-product",
+      "category": "boundary",
+      "expected_status": "READY",
+      "request": "Assess the reported before/after improvement. The event definition and denominator changed during rollout and some exposure events were dropped. Decide what the evidence supports.",
+      "oracle": "Distinguishes invalid measurement from an invalid artifact: the usable assessment concludes the result is inconclusive, not intervention success or failure. Identifies event/denominator, missingness, exposure and cohort checks; does not infer causal effect or invent corrected numbers.",
+      "mechanical_assertions": [
+        "status_matches_expected",
+        "selected_skill_matches_expected",
+        "product_artifacts_validate"
+      ],
+      "fixture": {
+        "output_contract": {
+          "response_encoding": "json",
+          "required_response_fields": [
+            "product_artifact",
+            "product_artifact_sha256",
+            "decision",
+            "decision_sha256",
+            "handoffs"
+          ],
+          "handoff_wrapper_fields": [
+            "artifact",
+            "sha256"
+          ],
+          "product_artifact_schema": "schemas/product-work-product.schema.json",
+          "expected_artifact_kind": "VALIDATION_REPORT",
+          "decision_schema": "schemas/product-decision.schema.json",
+          "handoff_schema": "schemas/handoff-envelope.schema.json",
+          "require_handoff": false
+        },
+        "supplied": [
+          "The receipt identity and source binding are current and valid.",
+          "Before and after use different event definitions and denominators; exposure logs are incomplete.",
+          "The Product outcome is unchanged; corrected comparable observations are not supplied.",
+          "The authorized task is evidence assessment, not experimentation or release."
+        ],
+        "input_bindings": [
+          {
+            "artifact_id": "decision-brief-PRO-020",
+            "version": "1",
+            "sha256": "6666666666666666666666666666666666666666666666666666666666666666",
+            "status": "ACCEPTED",
+            "freshness": "CURRENT",
+            "accepted_by": "product-owner"
+          }
+        ],
+        "decision_owner": "product-owner",
+        "absent": [],
+        "permissions": {
+          "model_calls": false,
+          "tools": false,
+          "external_write": false
+        },
+        "data": {
+          "classification": "INTERNAL",
+          "destination": "local-codex",
+          "transfer_authorized": true
+        }
+      }
+    },
+    {
+      "case_id": "PRO-021",
+      "skill": "manage-product-lifecycle",
+      "category": "missing-evidence",
+      "expected_status": "PROPOSED",
+      "request": "Prepare a launch recommendation for the supported product slice. The observation window, measurement baseline and rollout/support conditions are not yet accepted. Do not request or record a state transition.",
+      "oracle": "Makes the missing learning and operating conditions visible, including population, baseline, instrument/window, success/kill rules, guardrails, support and pause/rollback. Proposed terms remain owner-held and NOT_RUN; does not mark launch delivery-ready or infer thresholds from pain evidence.",
+      "mechanical_assertions": [
+        "status_matches_expected",
+        "selected_skill_matches_expected",
+        "product_artifacts_validate"
+      ],
+      "fixture": {
+        "output_contract": {
+          "response_encoding": "json",
+          "required_response_fields": [
+            "product_artifact",
+            "product_artifact_sha256",
+            "decision",
+            "decision_sha256",
+            "handoffs"
+          ],
+          "handoff_wrapper_fields": [
+            "artifact",
+            "sha256"
+          ],
+          "product_artifact_schema": "schemas/product-work-product.schema.json",
+          "expected_artifact_kind": "LIFECYCLE_RECORD",
+          "decision_schema": "schemas/product-decision.schema.json",
+          "handoff_schema": "schemas/handoff-envelope.schema.json",
+          "require_handoff": false
+        },
+        "supplied": [
+          "Current state is VALIDATION; the useful slice and its requirement are accepted.",
+          "The target outcome is successful completion of the existing user task with manual preparation as the qualitative starting point.",
+          "A product-owner may accept a learning and launch plan; no launch or release execution is authorized."
+        ],
+        "input_bindings": [
+          {
+            "artifact_id": "decision-brief-PRO-021",
+            "version": "1",
+            "sha256": "6666666666666666666666666666666666666666666666666666666666666666",
+            "status": "ACCEPTED",
+            "freshness": "CURRENT",
+            "accepted_by": "product-owner"
+          }
+        ],
+        "decision_owner": "product-owner",
+        "absent": [
+          "Accepted observation window, baseline measure, rollout exposure and support/pause conditions."
+        ],
+        "permissions": {
+          "model_calls": false,
+          "tools": false,
+          "external_write": false
+        },
+        "data": {
+          "classification": "INTERNAL",
+          "destination": "local-codex",
+          "transfer_authorized": true
+        }
+      }
+    },
+    {
+      "case_id": "PRO-022",
+      "skill": "manage-product-lifecycle",
+      "category": "conflicting-source",
+      "expected_status": "PROPOSED",
+      "request": "Synthesize two accepted research sources before recommending the next investment. Interviews describe an approval step as a burden; current observations show that the same step catches consequential mistakes. Recommend without advancing a gate.",
+      "oracle": "Preserves report versus observed behavior and source locators, articulates competing supported claims and uncertainty rather than keyword counts, and considers narrowing/removing friction while retaining the accepted safety outcome. Does not invent prevalence, erase counterevidence, or silently approve removing human review.",
+      "mechanical_assertions": [
+        "status_matches_expected",
+        "selected_skill_matches_expected",
+        "product_artifacts_validate"
+      ],
+      "fixture": {
+        "output_contract": {
+          "response_encoding": "json",
+          "required_response_fields": [
+            "product_artifact",
+            "product_artifact_sha256",
+            "decision",
+            "decision_sha256",
+            "handoffs"
+          ],
+          "handoff_wrapper_fields": [
+            "artifact",
+            "sha256"
+          ],
+          "product_artifact_schema": "schemas/product-work-product.schema.json",
+          "expected_artifact_kind": "LIFECYCLE_RECORD",
+          "decision_schema": "schemas/product-decision.schema.json",
+          "handoff_schema": "schemas/handoff-envelope.schema.json",
+          "require_handoff": true
+        },
+        "supplied": [
+          "Current state is DISCOVERY; the owner accepts the task outcome and requires human review before consequential submission.",
+          "Source A contains reported burden at the review step; source B records caught mistakes in observed task sessions.",
+          "Source identities and dates are current; represented participant counts and population prevalence are unknown.",
+          "The proposal may recommend a bounded test; it cannot approve removal or execute the test."
+        ],
+        "input_bindings": [
+          {
+            "artifact_id": "decision-brief-PRO-022",
+            "version": "1",
+            "sha256": "6666666666666666666666666666666666666666666666666666666666666666",
+            "status": "ACCEPTED",
+            "freshness": "CURRENT",
+            "accepted_by": "product-owner"
+          }
+        ],
+        "decision_owner": "product-owner",
+        "absent": [],
+        "permissions": {
+          "model_calls": false,
+          "tools": false,
+          "external_write": false
+        },
+        "data": {
+          "classification": "INTERNAL",
+          "destination": "local-codex",
+          "transfer_authorized": true
+        }
+      }
+    },
+    {
+      "case_id": "PRO-023",
+      "skill": "manage-product-lifecycle",
+      "category": "boundary",
+      "expected_status": "PROPOSED",
+      "request": "Assess stopping investment in a low-use capability and propose retirement. The service has dependent integrations and retained user records. Do not execute shutdown or request a gate transition.",
+      "oracle": "Separates the investment STOP proposal from completed shutdown and continued operating obligations. Names affected users/integrations, how the job will be met, transition/notice/support, data obligations and decommission/completion evidence; keeps missing decisions explicit and shutdown NOT_RUN without inventing dates or policies.",
+      "mechanical_assertions": [
+        "status_matches_expected",
+        "selected_skill_matches_expected",
+        "product_artifacts_validate"
+      ],
+      "fixture": {
+        "output_contract": {
+          "response_encoding": "json",
+          "required_response_fields": [
+            "product_artifact",
+            "product_artifact_sha256",
+            "decision",
+            "decision_sha256",
+            "handoffs"
+          ],
+          "handoff_wrapper_fields": [
+            "artifact",
+            "sha256"
+          ],
+          "product_artifact_schema": "schemas/product-work-product.schema.json",
+          "expected_artifact_kind": "LIFECYCLE_RECORD",
+          "decision_schema": "schemas/product-decision.schema.json",
+          "handoff_schema": "schemas/handoff-envelope.schema.json",
+          "require_handoff": false
+        },
+        "supplied": [
+          "Current state is LEARNING; low recorded use is accepted but does not establish that the underlying job disappeared.",
+          "Integrations depend on the capability and retained user records exist.",
+          "The owner requests a reversible proposal, not shutdown execution."
+        ],
+        "input_bindings": [
+          {
+            "artifact_id": "decision-brief-PRO-023",
+            "version": "1",
+            "sha256": "6666666666666666666666666666666666666666666666666666666666666666",
+            "status": "ACCEPTED",
+            "freshness": "CURRENT",
+            "accepted_by": "product-owner"
+          }
+        ],
+        "decision_owner": "product-owner",
+        "absent": [
+          "User transition, contractual/data obligations and decommission acceptance evidence."
+        ],
+        "permissions": {
+          "model_calls": false,
+          "tools": false,
+          "external_write": false
+        },
+        "data": {
+          "classification": "INTERNAL",
+          "destination": "local-codex",
+          "transfer_authorized": true
+        }
+      }
+    },
+    {
+      "case_id": "PRO-024",
+      "skill": "manage-product-lifecycle",
+      "category": "boundary",
+      "expected_status": "PROPOSED",
+      "request": "Compare these outcome opportunities and propose a Now-Next-Later roadmap. Reach and effort are unknown. A committed external deadline exists for the already accepted compatibility requirement.",
+      "oracle": "Compares outcomes, risk and time to deciding evidence qualitatively rather than inventing RICE inputs/scores or completion dates. Preserves the real deadline and accepted compatibility requirement, treats later bets as proposed, and routes actual multi-owner delivery scheduling to Project Management without tracker writes.",
+      "mechanical_assertions": [
+        "status_matches_expected",
+        "selected_skill_matches_expected",
+        "product_artifacts_validate"
+      ],
+      "fixture": {
+        "output_contract": {
+          "response_encoding": "json",
+          "required_response_fields": [
+            "product_artifact",
+            "product_artifact_sha256",
+            "decision",
+            "decision_sha256",
+            "handoffs"
+          ],
+          "handoff_wrapper_fields": [
+            "artifact",
+            "sha256"
+          ],
+          "product_artifact_schema": "schemas/product-work-product.schema.json",
+          "expected_artifact_kind": "LIFECYCLE_RECORD",
+          "decision_schema": "schemas/product-decision.schema.json",
+          "handoff_schema": "schemas/handoff-envelope.schema.json",
+          "require_handoff": false
+        },
+        "supplied": [
+          "Current state is DISCOVERY; the owner seeks the next useful outcome investment.",
+          "Candidates address task-start friction and task-completion recovery; neither has an observed population reach or effort estimate.",
+          "The accepted compatibility requirement has an external deadline recorded in the current source; preserve that binding without fabricating its undisclosed calendar value.",
+          "Coordination would involve the delivery owner; no external tracker or communication write is authorized."
+        ],
+        "input_bindings": [
+          {
+            "artifact_id": "decision-brief-PRO-024",
+            "version": "1",
+            "sha256": "6666666666666666666666666666666666666666666666666666666666666666",
             "status": "ACCEPTED",
             "freshness": "CURRENT",
             "accepted_by": "product-owner"

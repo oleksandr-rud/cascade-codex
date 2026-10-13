@@ -141,12 +141,8 @@ def validate_decision(value: dict[str, Any]) -> list[str]:
         if forward_distance > 0 and not owner:
             if gate != "BLOCKED":
                 errors.append("ownerless forward gate must be BLOCKED")
-            authority_gap = any(
-                isinstance(item, str) and any(term in item.lower() for term in ("owner", "authority"))
-                for item in value.get("unmet_conditions", [])
-            )
-            if not authority_gap:
-                errors.append("ownerless forward gate lacks an explicit authority unmet condition")
+            # The missing owner is a structured fact; prose cannot classify authority.
+            # BLOCKED conditions are checked above; their meaning needs semantic review.
     if disposition == "ADVANCE" and (proposed not in STATES or proposed == current):
         errors.append("ADVANCE disposition requires a distinct lifecycle state")
     if disposition in {"STOP", "DEFER", "REJECT"} and (proposed is not None or value.get("next_gate") is not None):

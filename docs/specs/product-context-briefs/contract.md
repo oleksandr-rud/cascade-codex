@@ -26,6 +26,18 @@ domain folder is not inferred from a path or title. Domain-owned product
 folders are introduced only through an explicit catalog decision and updated
 structure contract.
 
+Owner ledgers may follow actual contours, modules, features, models or other
+accepted product units. Catalog `reference_documents` explicitly selects
+requirements/journeys/scenarios paths under docs/product/; absent fields
+retain the legacy flat owners. Declared paths are canonical repository files,
+Each kind selects its own table; different kinds may share one unit document.
+Duplicate paths within a kind are rejected. IDs are globally unique and columns
+agree within each kind. Empty selections
+are allowed only where no corresponding rows are required. Selected owner
+documents and their rows use the same read snapshot for digest binding;
+no lexical rule infers
+unit meaning, ownership or claim support.
+
 ## PCB-002 Brief Manifest And Generation
 
 One `docs/specs/<slice>/brief.yaml` manifest owns a `PB-XXX` selection. It

@@ -11,12 +11,12 @@ agents:
     max_loaded_roles: 1
     max_loaded_skills: 2
     max_output_chars: 6000
-    model: gpt-6-astra
+    model: gpt-6.1-sol
     next_route: ""
     primary_skill: plan-change
     product_context_required: false
     prompt: Plan a scoped frontend implementation from an approved mockup using the Frontend Engineer role and the supplied fidelity contract. No actual target UI, mockup frame or screenshot is provided. Identify the missing target sources and the implement-render-compare-repair path, distinguish design ownership from implementation, and state which evidence is required before a pixel-perfect claim. Stay read-only, do not invent a design or claim rendered parity, and do not spawn an agent.
-    reasoning_effort: high
+    reasoning_effort: xhigh
     required_evidence_paths:
       - .codex/agents/frontend-engineer/AGENT.md
       - .codex/plugins/cascade-design/skills/design-system/references/design-system-contract.md
@@ -27,22 +27,22 @@ agents:
     allowed_supporting:
       - context
     context_sources:
-      - docs/product/requirements.md
-      - docs/product/scenarios.md
+      - docs/product/contours/context-and-simulation/requirements.md
+      - docs/product/contours/context-and-simulation/scenarios.md
       - docs/specs/persona-simulation-governance/contract.md
     max_commands: 10
     max_loaded_roles: 1
     max_loaded_skills: 3
     max_output_chars: 7000
-    model: gpt-6-astra
+    model: gpt-6.1-sol
     next_route: ""
     primary_skill: plan-change
     product_context_required: true
-    prompt: Prepare the smallest implementation-ready plan for a product-visible change to the current Cascade persona-simulation workflow. Use docs/product/requirements.md, docs/product/scenarios.md, and docs/specs/persona-simulation-governance/contract.md as the routed product sources. Keep specifications proportional, avoid creating a work graph unless the request truly needs one, and identify the appropriate implementation handoff.
-    reasoning_effort: high
+    prompt: Prepare the smallest implementation-ready plan for a product-visible change to the current Cascade persona-simulation workflow. Use docs/product/contours/context-and-simulation/requirements.md, docs/product/contours/context-and-simulation/scenarios.md, and docs/specs/persona-simulation-governance/contract.md as the routed product sources. Keep specifications proportional, avoid creating a work graph unless the request truly needs one, and identify the appropriate implementation handoff.
+    reasoning_effort: xhigh
     required_evidence_paths:
-      - docs/product/requirements.md
-      - docs/product/scenarios.md
+      - docs/product/contours/context-and-simulation/requirements.md
+      - docs/product/contours/context-and-simulation/scenarios.md
     sandbox_mode: default
     status_any:
       - PASS
@@ -59,12 +59,12 @@ agents:
     max_loaded_roles: 1
     max_loaded_skills: 1
     max_output_chars: 7000
-    model: gpt-6-astra
+    model: gpt-6.1-sol
     next_route: ""
     primary_skill: cascade-coding-agent:audit-harness
     product_context_required: false
     prompt: Audit whether the current Cascade agent manifests, role contracts, and skill maps are ported consistently. Use AGENTS.md, CODEX.md, .codex/agents/agent-engineer/AGENT.md, .codex/agents/agent-engineer/skills.yaml, and the existing validator as the bounded source set. Separate mechanical wiring checks from semantic model behavior, identify only concrete gaps, and propose the smallest correction without editing files.
-    reasoning_effort: high
+    reasoning_effort: xhigh
     required_evidence_paths:
       - .codex/agents/agent-engineer/AGENT.md
     sandbox_mode: default
@@ -75,21 +75,21 @@ agents:
     allowed_supporting:
       - cascade-software-architect:review-architecture
     context_sources:
-      - docs/product/requirements.md
+      - docs/product/contours/context-and-simulation/requirements.md
       - docs/specs/persona-simulation-governance/contract.md
       - docs/patterns/boundaries/index.md
     max_commands: 10
     max_loaded_roles: 1
     max_loaded_skills: 2
     max_output_chars: 7000
-    model: gpt-6-astra
+    model: gpt-6.1-sol
     next_route: ""
     primary_skill: cascade-security:secure-design
     product_context_required: true
-    prompt: Perform a read-only security design review of the product simulation adapter and its cross-interface permissions. Use docs/product/requirements.md, docs/specs/persona-simulation-governance/contract.md, and docs/patterns/boundaries/index.md; distinguish evidence from assumptions and identify the appropriate next route.
-    reasoning_effort: high
+    prompt: Perform a read-only security design review of the product simulation adapter and its cross-interface permissions. Use docs/product/contours/context-and-simulation/requirements.md, docs/specs/persona-simulation-governance/contract.md, and docs/patterns/boundaries/index.md; distinguish evidence from assumptions and identify the appropriate next route.
+    reasoning_effort: xhigh
     required_evidence_paths:
-      - docs/product/requirements.md
+      - docs/product/contours/context-and-simulation/requirements.md
       - docs/specs/persona-simulation-governance/contract.md
       - docs/patterns/boundaries/index.md
     sandbox_mode: read-only
@@ -109,12 +109,12 @@ agents:
     max_loaded_roles: 1
     max_loaded_skills: 1
     max_output_chars: 5000
-    model: gpt-6-astra
+    model: gpt-6.1-sol
     next_route: ""
     primary_skill: cascade-simulations:execute-simulation-campaign
     product_context_required: false
     prompt: Preflight the simulation-contract-smoke campaign for execution, but treat approval and resolved runtime intake as unavailable. Do not execute, widen permissions, judge results, or edit artifacts; report the precise blocking inputs.
-    reasoning_effort: high
+    reasoning_effort: xhigh
     required_evidence_paths:
       - .codex/agents/simulation-operator/AGENT.md
       - .codex/plugins/cascade-simulations/skills/execute-simulation-campaign/SKILL.md
@@ -134,12 +134,12 @@ agents:
     max_loaded_roles: 1
     max_loaded_skills: 2
     max_output_chars: 5000
-    model: gpt-6-astra
+    model: gpt-6.1-sol
     next_route: ""
     primary_skill: cascade-evals:simulation-evaluation
     product_context_required: false
     prompt: Evaluate whether the simulation-contract-smoke campaign supports a product claim when the campaign definition exists but no frozen run package, oracle results, or independent judgments are supplied. Apply mechanical gates first, remain read-only, and do not infer release eligibility.
-    reasoning_effort: high
+    reasoning_effort: xhigh
     required_evidence_paths:
       - .codex/agents/simulation-evaluator/AGENT.md
       - .codex/plugins/cascade-evals/skills/simulation-evaluation/SKILL.md
@@ -158,12 +158,12 @@ agents:
     max_loaded_roles: 1
     max_loaded_skills: 2
     max_output_chars: 6000
-    model: gpt-6-astra
+    model: gpt-6.1-sol
     next_route: ""
     primary_skill: cascade-design:create-design
     product_context_required: false
     prompt: Plan mockup creation and a frontend handoff for a saved-items screen using the Product Designer role. The request establishes a reader filtering saved items, desktop/mobile layouts, default and empty states. No target design files or preview tools are supplied and this run is read-only. Bind the useful input, expose missing visual artifacts, distinguish candidate readiness from approval, and do not invent frame paths or spawn agents.
-    reasoning_effort: high
+    reasoning_effort: xhigh
     required_evidence_paths:
       - .codex/agents/product-designer/AGENT.md
       - .codex/plugins/cascade-design/skills/create-design/SKILL.md
@@ -179,12 +179,12 @@ agents:
     max_loaded_roles: 1
     max_loaded_skills: 2
     max_output_chars: 6000
-    model: gpt-6-astra
+    model: gpt-6.1-sol
     next_route: ""
     primary_skill: plan-change
     product_context_required: false
     prompt: Use Software Engineer to plan a retry-safe application use case in a target project. No target repository, API contract or persistence implementation is supplied. Explain the required source inspection and proportional behavior verification, preserve frontend and harness ownership boundaries, and return missing inputs instead of inventing a stack, editing files or spawning agents.
-    reasoning_effort: high
+    reasoning_effort: xhigh
     required_evidence_paths:
       - .codex/agents/software-engineer/AGENT.md
       - .codex/skills/plan-change/SKILL.md
@@ -200,12 +200,12 @@ agents:
     max_loaded_roles: 1
     max_loaded_skills: 2
     max_output_chars: 6000
-    model: gpt-6-astra
+    model: gpt-6.1-sol
     next_route: ""
     primary_skill: cascade-software-architect:review-change
     product_context_required: false
     prompt: Use Code Reviewer to assess a claimed bug fix when only a success summary is supplied and the actual request, base/head diff and verification evidence are absent. Stay read-only, identify the review gaps, do not fabricate findings or a clean verdict, and do not confuse code review with harness trace judgment or independent context creation.
-    reasoning_effort: high
+    reasoning_effort: xhigh
     required_evidence_paths:
       - .codex/agents/code-reviewer/AGENT.md
       - .codex/plugins/cascade-software-architect/skills/review-change/SKILL.md

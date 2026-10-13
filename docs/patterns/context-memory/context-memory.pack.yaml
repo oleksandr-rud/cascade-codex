@@ -25,7 +25,7 @@ routing:
     - "A reusable context selection, planning-preservation, memory routing, package, compaction, research-memory, or observability rule changes."
     - "Research-heavy closeout needs a compact research-memory row."
   defer_when:
-    - "The fact is an active lane detail better stored in docs/work/active.md or docs/work/lanes."
+    - "The fact is a task detail better stored in docs/work/tasks."
   primary_skills:
     - context
     - plan-change

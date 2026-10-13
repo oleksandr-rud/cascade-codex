@@ -10,6 +10,7 @@ import { runModelPhase } from "./execution-adapters.mjs";
 import { snapshotSubject, judgeRequest, parseJudgment, interviewEvidence, assertDisjointRoots, runnerDigest, subjectReadChecks } from "./evaluation-integrity.mjs";
 import { replaySubject, replayTarget } from "./replay-evidence.mjs";
 import { runSubjectSession } from "./subject-session.mjs";
+import { evaluationDefaults } from "./model-policy.mjs";
 
 const campaignSkillRoot = dirname(dirname(fileURLToPath(import.meta.url)));
 const evalRoot = join(campaignSkillRoot, "evals");
@@ -115,15 +116,13 @@ function extractQuestions(text) {
     const named = line.match(/^\s*(?:\*\*)?(?:Required\s+)?Question(?:\s+\d+)?(?:\*\*)?\s*:\s*(.+?\?)\s*$/i)?.[1];
     const numbered = line.match(/^\s*\d+[.)]\s+(.+?\?)\s*$/)?.[1];
     const direct = line.match(/^\s*(?![-*]|\d+[.)])([^?]+\?)/)?.[1];
-    const imperative = line.match(/^\s*(Please\s+(?:specify|choose|confirm|provide)\b.+?):\s*$/i)?.[1];
-    const boundary = line.match(/^\s*(One\s+(?:permission|authority|output)\b.+?must be resolved.+?):\s*$/i)?.[1];
-    const question = named ?? numbered ?? direct ?? imperative ?? boundary;
+    const question = named ?? numbered ?? direct;
     if (question) questions.push(question);
   }
   return questions;
 }
 
-function inspectResponse(text, intentPatterns) {
+function inspectResponse(text) {
   const finalPrompt = tryExtractFinalPrompt(text);
   const metadata = text.replace(/```[^\n]*\r?\n[\s\S]*?\r?\n```/g, "");
   let state = "INVALID";
@@ -131,13 +130,11 @@ function inspectResponse(text, intentPatterns) {
   else if (/Interview Status:\s*BLOCKED/i.test(metadata) || /(?:^|\n)\s*(?:#{1,6}\s*)?BLOCKED\b/i.test(metadata)) state = "BLOCKED";
   else if (finalPrompt) state = "READY";
   const questions = extractQuestions(metadata);
-  const questionText = questions.join(" ").toLowerCase();
-  const intents = Object.entries(intentPatterns).filter(([, patterns]) => patterns.some((pattern) => questionText.includes(pattern.toLowerCase()))).map(([intent]) => intent);
-  return { state, final_prompt: finalPrompt, questions, intents };
+  return { state, final_prompt: finalPrompt, questions };
 }
 
-function validateTurn(label, expected, response, intentPatterns) {
-  const inspected = inspectResponse(response, intentPatterns);
+function validateTurn(label, expected, response) {
+  const inspected = inspectResponse(response);
   const checks = [];
   const add = (id, passed, detail = undefined) => checks.push({ id: `${label}:${id}`, passed, ...(detail ? { detail } : {}) });
   add("state", inspected.state === expected.state, `expected ${expected.state}, received ${inspected.state}`);
@@ -145,12 +142,6 @@ function validateTurn(label, expected, response, intentPatterns) {
   add("question-max", inspected.questions.length <= expected.max_questions, `received ${inspected.questions.length}`);
   if (expected.state === "NEEDS_INPUT") add("no-final-prompt", !inspected.final_prompt);
   if (expected.state === "READY") add("has-final-prompt", Boolean(inspected.final_prompt));
-  for (const intent of expected.required_intents ?? []) add(`required-intent:${intent}`, inspected.intents.includes(intent), `detected ${inspected.intents.join(", ") || "none"}`);
-  for (const intent of expected.forbidden_intents ?? []) add(`forbidden-intent:${intent}`, !inspected.intents.includes(intent), `detected ${inspected.intents.join(", ") || "none"}`);
-  const lowered = response.toLowerCase();
-  for (const pattern of expected.required_response_patterns ?? []) add(`required-pattern:${pattern}`, lowered.includes(pattern.toLowerCase()));
-  for (const group of expected.required_response_pattern_groups ?? []) add(`required-pattern-group:${group[0]}`, group.some(pattern => lowered.includes(pattern.toLowerCase())));
-  for (const pattern of expected.forbidden_response_patterns ?? []) add(`forbidden-pattern:${pattern}`, !lowered.includes(pattern.toLowerCase()));
   return { inspected, checks, eligible: checks.every((check) => check.passed) };
 }
 
@@ -186,11 +177,11 @@ if (command === "list") {
 }
 if (command !== "run") fail(`unknown command: ${command}`);
 if (!args.fixture) fail("--fixture is required");
-args.model ??= "gpt-6-astra";
-args["reasoning-effort"] ??= "high";
+args.model ??= evaluationDefaults.builder_model;
+args["reasoning-effort"] ??= evaluationDefaults.builder_reasoning_effort;
 const judgeReasoningEffort = args["judge-reasoning-effort"] ?? args["reasoning-effort"];
-if (args["execute-judge"]) args["judge-model"] ??= "gpt-6-astra";
-if (args["execute-target"]) args["target-model"] ??= "gpt-6-astra";
+if (args["execute-judge"]) args["judge-model"] ??= evaluationDefaults.judge_model;
+if (args["execute-target"]) args["target-model"] ??= evaluationDefaults.target_model;
 
 const fixture = catalog.fixtures.find((candidate) => candidate.id === args.fixture);
 if (!fixture) fail(`unknown fixture: ${args.fixture}`);
@@ -237,7 +228,7 @@ else {
   await writeFile(join(runRoot, "first-turn.stderr.log"), firstRun.stderr);
 }
 await writeFile(join(runRoot, "first-response.md"), firstResponse);
-const first = validateTurn("first", fixture.first_turn, firstResponse, catalog.intent_patterns);
+const first = validateTurn("first", fixture.first_turn, firstResponse);
 
 let secondRun = null;
 let secondResponse = null;
@@ -252,7 +243,7 @@ if (fixture.second_user_message) {
     await writeFile(join(runRoot, "second-turn.stderr.log"), secondRun.stderr);
   }
   await writeFile(join(runRoot, "second-response.md"), secondResponse);
-  second = validateTurn("second", fixture.second_turn, secondResponse, catalog.intent_patterns);
+  second = validateTurn("second", fixture.second_turn, secondResponse);
   const firstQuestions = new Set(first.inspected.questions.map((question) => question.toLowerCase().replace(/\s+/g, " ").trim()));
   const repeated = second.inspected.questions.filter((question) => firstQuestions.has(question.toLowerCase().replace(/\s+/g, " ").trim()));
   // Repetition is only a defect when the user already resolved that question.
@@ -281,9 +272,7 @@ if (args["execute-target"]) {
       const expected = fixture.target.json_contract;
       targetChecks.push({ id: "target:json-contract", passed: Boolean(parsed && !Array.isArray(parsed) && JSON.stringify(Object.keys(parsed).sort()) === JSON.stringify(Object.keys(expected).sort()) && Object.entries(expected).every(([key, type]) => type === "string_array" && Array.isArray(parsed[key]) && parsed[key].every(value => typeof value === "string"))) });
     }
-    const lowered = targetRun.final_text.toLowerCase();
-    for (const pattern of fixture.target.required_patterns ?? []) targetChecks.push({ id: `target:required:${pattern}`, passed: lowered.includes(pattern.toLowerCase()) });
-    for (const pattern of fixture.target.forbidden_patterns ?? []) targetChecks.push({ id: `target:forbidden:${pattern}`, passed: !lowered.includes(pattern.toLowerCase()) });
+
   } else targetExecutionStatus = "SKIPPED_INVALID_READY_RESPONSE";
 }
 
@@ -294,7 +283,7 @@ const mechanicalEligible = allChecks.every((check) => check.passed);
 let judgeRun = null;
 let judge = { status: "NOT_RUN", result: null };
 if (args["execute-judge"] && mechanicalEligible) {
-  const evidence = interviewEvidence(fixture, firstResponse, secondResponse, subjectSnapshot);
+  const evidence = { ...interviewEvidence(fixture, firstResponse, secondResponse, subjectSnapshot), task_input: args["execute-target"] ? fixture.target?.input ?? null : null, target_output: targetRun?.final_text ?? null };
   judgeRun = await executePhase({ phaseName: "judge", model: args["judge-model"], prompt: judgePrompt(profile, fixture, runId, evidence), timeoutMs: timeouts.judge, adapter: args["judge-adapter"] ?? "codex-cli", adapterId: args["judge-adapter-id"] });
   await writeFile(join(runRoot, "judge.jsonl"), judgeRun.stdout);
   const result = parseJudge(judgeRun.final_text, profile, fixture.id, runId, evidence);
@@ -314,8 +303,8 @@ const budgetChecks = {
   second_turn: budgetResult(execution.second_turn, budgets.interview.answer_turn),
   target: budgetResult(execution.target, budgets.target)
 };
-const accepted = mechanicalEligible && (!args["execute-judge"] || (judge.status === "JUDGED" && judge.result.harness_verdict === "PASS"));
-const semanticAcceptance = !mechanicalEligible ? "REJECTED" : args["execute-judge"] ? (["BLOCKED", "INVALID"].includes(judge.status) ? judge.status : accepted ? "ACCEPTED" : "REJECTED") : "MECHANICALLY_ELIGIBLE";
+const accepted = mechanicalEligible && judge.status === "JUDGED" && judge.result.harness_verdict === "PASS";
+const semanticAcceptance = !mechanicalEligible ? "REJECTED" : args["execute-judge"] ? (["BLOCKED", "INVALID"].includes(judge.status) ? judge.status : accepted ? "ACCEPTED" : "REJECTED") : "NOT_RUN";
 const evidenceGrade = [args["model-adapter"], args["target-adapter"], args["judge-adapter"]].every(a => !a || a === "codex-cli") && !args["first-response-file"] && !args["second-response-file"] ? "LIVE_CODEX_TOOL_FREE" : "UNVERIFIED_EXTERNAL_OR_FIXTURE";
 const acceptance = ["ACCEPTED", "REJECTED"].includes(semanticAcceptance) && evidenceGrade !== "LIVE_CODEX_TOOL_FREE" ? "UNVERIFIED" : semanticAcceptance;
 const summary = {
@@ -335,13 +324,13 @@ const summary = {
   execution,
   token_budgets: budgetChecks,
   turns: { first: { ...first, response_sha256: sha256(firstResponse) }, second: second ? { ...second, response_sha256: sha256(secondResponse) } : null },
-  target: { status: args["execute-target"] ? (targetChecks.every((check) => check.passed) ? "PASS" : "FAIL") : "NOT_RUN", checks: targetChecks },
+  target: { status: args["execute-target"] ? (targetChecks.every((check) => check.passed) ? "MECHANICALLY_ELIGIBLE" : "FAIL") : "NOT_RUN", checks: targetChecks },
   mechanical: { status: mechanicalEligible ? "MECHANICALLY_ELIGIBLE" : "INELIGIBLE", eligible: mechanicalEligible, checks: allChecks },
   judge,
   acceptance,
   evidence_grade: evidenceGrade,
   semantic_acceptance: semanticAcceptance,
-  limitations: ["Intent patterns are deterministic eligibility aids, not semantic proof.", "No global model ranking is implied.", "Token budgets are provisional diagnostics."]
+  limitations: ["Meaning, question intent and prose contract coverage require an independent LLM judge; mechanical eligibility alone cannot accept them.", "No global model ranking is implied.", "Token budgets are provisional diagnostics."]
 };
 await writeJson(join(runRoot, "run-summary.json"), summary);
 console.log(JSON.stringify({ run_root: runRoot, run_id: runId, first_state: first.inspected.state, second_state: second?.inspected.state ?? null, target_status: summary.target.status, judge_status: judge.status, mechanical_status: summary.mechanical.status, acceptance }, null, 2));

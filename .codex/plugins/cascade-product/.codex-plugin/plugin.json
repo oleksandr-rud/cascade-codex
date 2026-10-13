@@ -1,7 +1,7 @@
 {
   "name": "cascade-product",
-  "version": "0.1.33+codex.20260910172549",
-  "description": "Model product value and offers, form evidence-linked features, manage investment gates, and connect accepted behavior to delivery and outcome learning.",
+  "version": "0.1.39+codex.20261002011500",
+  "description": "Apply practical product discovery, source-linked synthesis, value and feature methods, investment gates, launch learning and retirement handoffs.",
   "author": {
     "name": "Cascade"
   },
@@ -17,7 +17,7 @@
   "interface": {
     "displayName": "Cascade Product",
     "shortDescription": "Shape product value, features and learning.",
-    "longDescription": "Turn market and growth evidence into value models, offers, feature decisions, requirements, measurable outcomes and delivery handoffs under existing product approval gates.",
+    "longDescription": "Frame product decisions, synthesize real research, compare solutions and risks, define useful slices, and connect accepted behavior to delivery, launch learning and retirement under existing owner-held gates.",
     "developerName": "Cascade",
     "category": "Productivity",
     "capabilities": [

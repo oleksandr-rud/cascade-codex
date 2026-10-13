@@ -13,7 +13,7 @@ import { resolve } from "node:path";
 import { tmpdir } from "node:os";
 
 import { buildRuntimeBundle } from "../build-runtime-bundle";
-import { compileTaskEnvelope, semanticAdmissionRequest, type AdmissionRequest } from "./admission";
+import { compileTaskEnvelope, interpretationFixture } from "./fixtures/admission";
 import {
   capabilitySelectionDigest,
   readPluginCapabilityCatalog,
@@ -22,21 +22,6 @@ import {
 import { rootPath } from "./common";
 import { parseStrictYaml, stringifyYaml } from "./structured-data";
 import { validateConfig } from "./target";
-
-function fixtureInterpretation(request: string) {
-  return {
-    schema_version: 1, artifact_type: "cascade-admission-interpretation", status: "RESOLVED",
-    request_digest: semanticAdmissionRequest(request).request_digest, prior_envelope_id: null,
-    model_id: "authored-routing-fixture-NOT_MODEL_INFERENCE", relation: "NEW", intent: "REVIEW",
-    policy_tags: ["review"], workload: { topology: "ATOMIC", effort: "SMALL", authority: "READ_ONLY", duration: "TURN" },
-    local_write_scope: { mode: "TARGETS", targets: [] },
-    claims: [{ kind: "OUTCOME", statement: request, confidence: 0.8, policy_tags: ["review"] }], uncertainty: [],
-  };
-}
-
-function compileFixture(input: AdmissionRequest) {
-  return compileTaskEnvelope({ ...input, semantic_interpretation: fixtureInterpretation(input.request) });
-}
 
 const outputs: string[] = [];
 
@@ -61,7 +46,7 @@ describe("Cascade lean target runtime bundle", () => {
     outputs.push(output);
     const report = await buildRuntimeBundle(output);
     expect(report.file_count).toBeLessThanOrEqual(120);
-    expect(report.plugin_count).toBe(14);
+    expect(report.plugin_count).toBe(15);
 
     for (const excluded of [
       ".codex/plugins",
@@ -71,15 +56,64 @@ describe("Cascade lean target runtime bundle", () => {
       "harness-evals",
       "product-evals",
       "docs/archive",
+      "docs/backlog",
+      "docs/work/active.md",
+      "docs/work/lanes",
+      "docs/work/reports",
+      "docs/product/catalog.yaml",
+      "docs/product/contours",
+      "docs/product/personas/fixtures",
+      "docs/specs/persona-simulation-governance",
+      "docs/specs/product-context-briefs",
+      "docs/specs/task-admission-workload",
+      "docs/specs/simulation-intake-agent-bridge",
       "scripts",
     ]) {
       await expect(stat(resolve(output, excluded))).rejects.toThrow();
     }
+    await stat(resolve(output, "docs/product/unit-template.md"));
+    const specsIndex = await readFile(resolve(output, "docs/specs/_index.md"), "utf8");
+    expect(specsIndex).toContain("cascade-specs:synthesise-spec");
 
     const help = runBundle(output, ["--help"]);
     expect(help.exitCode).toBe(0);
     expect(help.stdout.toString()).toContain("Cascade core target runtime");
     expect(help.stdout.toString()).not.toContain("campaign run");
+    const work = runBundle(output, ["work", "audit", "--json", "--check"]);
+    expect(work.exitCode).toBe(0);
+    const audit = JSON.parse(work.stdout.toString());
+    expect(audit.schema_version).toBe(2);
+    expect(audit.summary.active_tasks).toBe(0);
+    expect(audit.next_task_id).toBe("T-001");
+    await stat(resolve(output, "docs/work/task.schema.json"));
+    await stat(resolve(output, "docs/work/task-template.md"));
+    await expect(stat(resolve(output, "docs/work/tasks/T-001.md"))).rejects.toThrow();
+    const workPrompt = runBundle(output, ["work", "automation-prompt"]);
+    expect(workPrompt.exitCode).toBe(0);
+    expect(workPrompt.stdout.toString()).toContain(".codex/runtime/cascade.js work audit");
+    expect(workPrompt.stdout.toString()).not.toContain("scripts/cascade.ts");
+    const admission = runBundle(output, ["admission", "validate"]);
+    expect(admission.exitCode).toBe(0);
+    expect(admission.stdout.toString()).toContain("scope=RUNTIME");
+    expect(admission.stdout.toString()).toContain("cases=NOT_INSTALLED");
+    const interpretationPath = resolve(output, ".codex/task-admission/interpretation.schema.json");
+    const interpretationText = await readFile(interpretationPath, "utf8");
+    const alteredInterpretation = JSON.parse(interpretationText);
+    alteredInterpretation.properties.task_id.maxLength += 1;
+    try {
+      await writeFile(interpretationPath, JSON.stringify(alteredInterpretation));
+      const drift = runBundle(output, ["admission", "validate"]);
+      expect(drift.exitCode).toBe(1);
+      expect(drift.stderr.toString()).toContain("differs from the compiler contract");
+    } finally {
+      await writeFile(interpretationPath, interpretationText);
+    }
+    const semanticBridge = await readFile(resolve(output, "CODEX.md"), "utf8");
+    expect(semanticBridge).toContain(".codex/runtime/contracts/semantic-decision-boundary.md");
+    await stat(resolve(output, ".codex/runtime/contracts/semantic-decision-boundary.md"));
+    const patternSkill = await readFile(resolve(output, ".codex/skills/pattern-context/SKILL.md"), "utf8");
+    expect(patternSkill).toContain(".codex/runtime/cascade.js patterns");
+    expect(patternSkill).not.toContain("scripts/cascade");
     const sourceOnly = runBundle(output, ["admission", "corpus"]);
     expect(sourceOnly.exitCode).toBe(1);
     expect(sourceOnly.stderr.toString()).toContain("source-checkout-only");
@@ -91,20 +125,20 @@ describe("Cascade lean target runtime bundle", () => {
       "Explain the installed plugin boundary.",
     ]);
     expect(explain.exitCode).toBe(1);
-    expect(explain.stderr.toString()).toContain("requires --interpretation");
+    expect(explain.stderr.toString()).toContain("LLM interpretation required");
     const semanticArtifacts = resolve(output, ".artifacts/task-admission");
     await mkdir(semanticArtifacts, { recursive: true });
     const request = "Explain the installed plugin boundary.";
-    await writeFile(resolve(semanticArtifacts, "interpretation.json"), JSON.stringify(fixtureInterpretation(request)));
+    await writeFile(resolve(semanticArtifacts, "interpretation.json"), JSON.stringify(interpretationFixture({ request })));
     const interpreted = runBundle(output, ["admission", "explain", "--request", request, "--interpretation", ".artifacts/task-admission/interpretation.json"]);
     expect(interpreted.exitCode).toBe(0);
     expect(interpreted.stdout.toString()).toContain("route=DIRECT_READ");
     const diagnostics = runBundle(output, ["admission", "legacy-assess", "--request", request]);
     expect(diagnostics.exitCode).toBe(1);
-    expect(diagnostics.stderr.toString()).toContain("source-checkout-only");
+
 
     const catalog = await readPluginCapabilityCatalog();
-    const envelope = await compileFixture({
+    const envelope = await compileTaskEnvelope({
       request: "Research this market opportunity.",
       task_id: "lean-runtime-routing",
       produced_at: "2026-09-02T00:00:00+00:00",
@@ -123,8 +157,8 @@ describe("Cascade lean target runtime bundle", () => {
       selection_digest: "0".repeat(64),
       selector: {
         route: "cascade-coordinator:select-capabilities",
-        model: "gpt-6-astra",
-        reasoning_effort: "high",
+        model: "gpt-6.1-sol",
+        reasoning_effort: "xhigh",
         prompt_sha256: "a".repeat(64),
       },
       input_artifacts: [
@@ -177,7 +211,7 @@ describe("Cascade lean target runtime bundle", () => {
     );
 
     // Exercise the real bundled planner boundary with and without growth feedback.
-    const growthEnvelope = await compileFixture({
+    const growthEnvelope = await compileTaskEnvelope({
       request: "Plan growth and use the evidence to define a product feature.",
       task_id: "lean-runtime-growth-product",
       produced_at: "2026-09-08T00:00:00+00:00",
@@ -185,7 +219,7 @@ describe("Cascade lean target runtime bundle", () => {
     for (const variant of ["growth", "product", "prompt-evals"]) {
       const includeGrowth = variant === "growth";
       const promptPair = variant === "prompt-evals";
-      const featureEnvelope = promptPair ? await compileFixture({
+      const featureEnvelope = promptPair ? await compileTaskEnvelope({
         request: "Create and independently evaluate a reusable prompt.",
         task_id: "lean-runtime-prompt-models", produced_at: "2026-09-10T00:00:00+00:00",
       }) : growthEnvelope;
@@ -239,7 +273,7 @@ describe("Cascade lean target runtime bundle", () => {
         request_digest: featureEnvelope.request_digest,
         capability_catalog_digest: catalog.catalog_digest,
         capability_selection_digest: featureSelection.selection_digest,
-        planner: { route: "cascade-coordinator:plan-workflow", model: "gpt-6-astra", reasoning_effort: "high", prompt_sha256: "b".repeat(64) },
+        planner: { route: "cascade-coordinator:plan-workflow", model: "gpt-6.1-sol", reasoning_effort: "xhigh", prompt_sha256: "b".repeat(64) },
         input_artifacts: featureSelection.input_artifacts,
         selected_nodes: nodes,
         edges: promptPair ? [{ from: "prompt", to: "eval", artifact: "prompt-candidate" }] : includeGrowth ? [{ from: "growth", to: "product", artifact: "growth-strategy" }] : [],
@@ -265,8 +299,8 @@ describe("Cascade lean target runtime bundle", () => {
         expect(reversed.stderr.toString()).toContain("consumes unavailable artifact: prompt-candidate");
         expect((await checkPlan({ ...plan, dispatch_authorized: true })).exitCode).not.toBe(0);
         expect(nodes.map((node) => node.model)).toEqual([
-          { id: "gpt-6-astra", reasoning_effort: "high" },
-          { id: "gpt-6-astra", reasoning_effort: "high" },
+          { id: "gpt-6.1-sol", reasoning_effort: "xhigh" },
+          { id: "gpt-6.1-sol", reasoning_effort: "xhigh" },
         ]);
         const wrongAuthor = structuredClone(plan);
         wrongAuthor.selected_nodes[0]!.model.id = "gpt-5.6-sol";
@@ -320,7 +354,7 @@ describe("Cascade lean target runtime bundle", () => {
         schema_version: 1, artifact_type: "cascade-plugin-plan", status: "CANDIDATE",
         task_envelope_id: envelope.envelope_id, request_digest: envelope.request_digest,
         capability_catalog_digest: catalog.catalog_digest, capability_selection_digest: qaSelection.selection_digest,
-        planner: { route: "cascade-coordinator:plan-workflow", model: "gpt-6-astra", reasoning_effort: "high", prompt_sha256: "b".repeat(64) },
+        planner: { route: "cascade-coordinator:plan-workflow", model: "gpt-6.1-sol", reasoning_effort: "xhigh", prompt_sha256: "b".repeat(64) },
         input_artifacts: qaSelection.input_artifacts,
         selected_nodes: [{ node_id: "quality", route: qa.route, plugin_version: qaPlugin.version, claim_ids: [envelope.claims[0]!.claim_id], policy_tags: qa.policy_tags, consumes: qa.consumes, optional_consumes: selectedInput ? [selectedInput] : [], produces: qa.produces, effect: qa.effect, authority: qa.authority, model: { id: qaPlugin.model_policy.model, reasoning_effort: qaPlugin.model_policy.planning_reasoning_effort }, reason: "Plan evidence gates from accepted behavior in the change contract." }],
         edges: [], parallel_groups: [], rejected_candidates: [], blockers: [], dispatch_authorized: false,

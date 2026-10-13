@@ -27,9 +27,9 @@
             "additionalProperties": false,
             "required": ["model", "planning_reasoning_effort", "evaluation_reasoning_effort"],
             "properties": {
-              "model": { "enum": ["gpt-5.6-sol", "gpt-6-astra"] },
-              "planning_reasoning_effort": { "enum": ["high", "max"] },
-              "evaluation_reasoning_effort": { "enum": ["high", "max"] }
+              "model": { "enum": ["gpt-5.6-sol", "gpt-6-astra", "gpt-6.1-sol", "gpt-6-sol", "gpt-6-luna"] },
+              "planning_reasoning_effort": { "enum": ["high", "xhigh", "max"] },
+              "evaluation_reasoning_effort": { "enum": ["high", "xhigh", "max"] }
             }
           },
           "skills": { "type": "array", "minItems": 1, "items": { "type": "object" } }

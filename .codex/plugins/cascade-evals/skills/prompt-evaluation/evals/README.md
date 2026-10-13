@@ -101,8 +101,8 @@ placeholder, while the evaluator stays outside the target request.
 
 For `exact_json`, `evaluator.json` has `schema_version: 1`,
 `mechanical_type: "exact_json"`, matching `exact_keys` and `expected` fields.
-For a prose task use `mechanical_type: "text_contract"` with at least one
-`required_headings`, `required_patterns`, `forbidden_patterns`, or `max_words`
+For a prose task use `mechanical_type: "text_contract"` with optional
+`required_headings` or `max_words`
 check, and set `outcome_evaluation` to `semantic`. Semantic quality still
 requires an independent outcome judge. A caller-supplied case is the oracle
 chosen by that caller; this runner does not certify that the oracle is correct.
@@ -305,9 +305,10 @@ an embedded request for a favorable score, and absent evidence. These labels are
 synthetic author expectations, not human calibration. The historical v3 parser retains
 mechanical regressions for fabricated quotes, missing references and missing data.
 
-The challenge runner defaults to Astra/high. For an explicit comparison use
-`--judge-model gpt-5.6-sol --judge-reasoning-effort max`; Astra/max and Sol/high
-are also supported. The run contract and each execution receipt bind these values.
+The challenge runner inherits Sol 6.1/xhigh from the shared Evals model policy.
+For an explicit comparison use
+`--judge-model gpt-5.6-sol --judge-reasoning-effort max`; named GPT-6 model and
+compatible Codex effort overrides are also supported. The run contract and each execution receipt bind these values.
 Use a new run ID for every repetition and keep corpus, rubric and runtime fixed.
 Passing these synthetic challenges does not qualify a different domain rubric
 or change any production model default.
@@ -432,3 +433,5 @@ that boundary separate from source-packet target runs or live tool evaluation.
 Measure useful output, preserved requirements and unnecessary commentary
 together; shorter text alone is not a quality pass. A one-run pilot does not
 establish variance or justify changing every harness role's recommended model.
+
+Meaning-dependent requirements and prohibitions belong to the task contract and semantic judge. Phrase matching and keyword intent gates are prohibited. A mechanically eligible prose/interview run without a judge remains `NOT_RUN`.

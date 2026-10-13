@@ -1,0 +1,19 @@
+{
+  "name": "cascade-specs",
+  "version": "0.1.0+codex.20261002010000",
+  "description": "Synthesize source-grounded software specifications with explicit readiness, integration contracts and observable acceptance.",
+  "author": {"name": "Cascade"},
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Cascade Specs",
+    "shortDescription": "Synthesize clear, source-grounded specifications",
+    "longDescription": "Build one proportional feature/change specification or parent-bound task slice from accepted product, design and implementation sources. Preserve source authority, material gaps, durable enforcement and honest evidence. The host retains persistence and execution authority.",
+    "developerName": "Cascade",
+    "category": "Productivity",
+    "capabilities": ["Interactive", "Write"],
+    "defaultPrompt": ["Synthesize these sources into one reviewable specification.", "Audit this specification for conflicts, missing enforcement and acceptance gaps."],
+    "brandColor": "#4F46E5",
+    "composerIcon": "./assets/composer-icon.svg",
+    "logo": "./assets/logo.svg"
+  }
+}

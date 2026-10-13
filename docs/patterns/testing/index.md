@@ -56,9 +56,9 @@ executed platform-specific safety outcomes, not skipped checks.
 Traceability:
 
 ```text
-docs/product/scenarios.md
+docs/product/contours/context-and-simulation/scenarios.md
   -> executable scenario or functional test
-  -> docs/work/active.md or docs/work/lanes/*.md for the active work overlay
+  -> docs/work/tasks/{task_id}.md for current task state and checks
 ```
 
 Rules:

@@ -29,7 +29,7 @@ This file is the thin repository boot contract for coding agents. Detailed stack
 - Codebase vocabulary: `docs/glossary.md`.
 - Product/design/brand/spec facts: `docs/product/`, `docs/design/`,
   `docs/brand/`, `docs/specs/`.
-- Active execution state and reports: `docs/work/`.
+- Numbered task state and checks: `docs/work/`.
 - Reusable workflow rules and role contracts: `.codex/skills/`,
   `.codex/agents/`, `docs/patterns/`.
 

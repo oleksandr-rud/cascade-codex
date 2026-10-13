@@ -78,7 +78,7 @@ it is not evaluation evidence.
 Build the declared Codex runtime once from the installed Cascade Evals root:
 
 ```powershell
-docker build -t cascade-evals-codex:0.153.4 -f scripts/codex-isolation.Dockerfile scripts
+docker build -t cascade-evals-codex:0.159.3 -f scripts/codex-isolation.Dockerfile scripts
 ```
 
 Use the normal `run_agent_evaluation.py ... --execute` command on Windows with

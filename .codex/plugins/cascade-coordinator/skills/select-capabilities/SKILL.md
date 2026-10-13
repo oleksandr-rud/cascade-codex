@@ -43,6 +43,10 @@ whether to select them; the descriptor trigger, anti-trigger, artifact,
 dependency, effect, authority, version, and evaluation fields are the routing
 surface. Open another plugin skill only after host validation selects it for
 actual work.
+The host must run `cascade workflow check-installed --selection PATH --envelope
+PATH` before consuming the selection. An enabled exact version and current
+installed manifest/descriptor digests must match the catalog and target lock.
+Selection schema validation alone is not installed-package evidence.
 
 ## Selection
 
@@ -70,7 +74,7 @@ actual work.
 6. Preserve the Task Envelope authority ceiling. A selection never grants
    permission, dispatches an agent, executes a tool, mutates a target, schedules
    project work, or accepts its own result.
-7. Use `gpt-6-astra` with the current planning effort and a non-null digest of
+7. Use `gpt-6.1-sol` with the current planning effort and a non-null digest of
    the exact selection prompt. Emit `dispatch_authorized: false`.
 
 ## Route disposition

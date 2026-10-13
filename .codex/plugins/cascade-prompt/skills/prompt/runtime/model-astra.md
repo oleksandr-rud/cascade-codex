@@ -1,6 +1,7 @@
 # GPT-6 Astra surface adapter
 
-Applies only to `gpt-6-astra`. Sources checked 2026-09-09. This adapter
+Applies only to `gpt-6-astra`. Sources checked 2026-10-01. Load
+[shared GPT-6 guidance](model-gpt6.md) with this exact-model adapter. This adapter
 specializes the selected tier; it neither selects a new model nor grants tools.
 
 ## Prompt rules

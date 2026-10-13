@@ -1,79 +1,30 @@
-# Work Index
+# Work
 
-Use this folder as the active work memory for Orchestrator.
+Use one short record for each implementation task under `tasks/T-NNN.md`.
+The YAML frontmatter is the status source; the body holds only the outcome,
+scope, current handoff and material decisions. Do not maintain a second status
+registry or create separate lanes, reports, archives or backlog files.
 
-## Files
+Start at `T-001`; allocate the next number after the highest existing internal
+ID, never renumber or reuse an ID. `cascade work audit` reports the next number
+without reserving it. Recheck before writing when another owner is active.
+Copy [task-template.md](task-template.md) and follow
+[task.schema.json](task.schema.json).
 
-- `active.md`: active work lanes and active work-graph projection only.
-- `bun scripts/cascade.ts work audit --json --check`: read-only active-lane and
-  work-graph queue audit for interactive or scheduled use.
-- `bun scripts/cascade.ts work automation-prompt --mode audit|orchestrate`:
-  print a bounded Codex heartbeat prompt; orchestration mode continues only
-  already-authorized local work and executes at most one slice per run.
-- `lane-template.md`: template for a lane packet when one row is not enough.
-- `work-graph-template.md`: defaults for multi-workline dependency, dispatch,
-  evidence, invalidation, and closeout graphs.
-- `graph-template.md`: template for a first-class cross-workline Coordination
-  Graph when real dependency, join, materialization, invalidation, or repair
-  relationships exist.
-- `.codex/skills/plan-change/templates/definition-ready-plan.md`: reusable
-  planning overlay for preserving definitions, boundaries, adaptive worklines,
-  traceability, and replanning history inside a lane or returned plan.
-- `lanes/`: optional per-lane packets for parallel work.
-- `graphs/`: versioned cross-workline Coordination Graph entries and their
-  index; these are separate work entities, not lanes or specs.
-- `examples/`: optional non-active lane examples when the harness ships any.
-- `reports/`: durable reports, completed work graphs, and blocked/deferred
-  handoffs.
-- `../archive/work-reports/`: compact archive capsules and relocated frozen
-  lane, graph, and report artifacts after an explicitly authorized closeout.
+Keep the layout flat while the project has no accepted product-task division.
+When a real product or tracker task exists, set `product_task.id` and
+`product_task.reference` to its exact identity and source. Keep the internal ID
+for local continuity. Do not invent an external number or product hierarchy.
 
-## Rules
+`PLANNED`, `READY`, `IN_PROGRESS`, `IN_REVIEW`, `BLOCKED`, `COMPLETE` and
+`CANCELLED` are explicit states. Record checks as `PASS`, `FAIL`, `BLOCKED`,
+`NOT_RUN` or `NOT_APPLICABLE`, with scope and evidence. `COMPLETE` requires a
+result for every required check and `next_action: null`; optional unrun checks
+remain `NOT_RUN`. These fields record evidence, not independent acceptance or
+permission. Code validates them; it never derives status from prose.
 
-- Keep small work in `active.md` only.
-- Treat `active.md` as a derived projection. A lane packet owns lane-local Task
-  Graph state; a `graphs/CG-XXX-slug.md` entry owns cross-workline topology,
-  joins, worktree dispatch, materialization, integrated validation, repair,
-  and terminal aggregation when applicable.
-- Create a lane packet when work needs more than a row: separate acceptance
-  criteria, behavior examples, definitions, connected worklines, commands,
-  blockers, or independent validation.
-- Derive the number of worklines from inspected outcomes and boundaries. Do not
-  require the user to specify a count; materialize only worklines that need
-  independent state, ownership, validation, merge, or handoff.
-- Preserve compact source, definition/decision, constraint, boundary,
-  traceability, and replanning ledgers; keep detailed content in its
-  authoritative owner.
-- Copy from `examples/` only when a relevant example exists; do not treat
-  example lanes as active work.
-- Lanes may run in parallel only when they do not write the same files, require
-  each other's output, or share an unresolved product decision.
-- Use a work graph only when several worklines, dependency gates, merge
-  ownership, dispatch surfaces, or evidence joins need explicit coordination.
-  A work graph is declarative and never dispatches itself.
-- Name work graphs with a three-digit `WG` prefix; extend that exact graph ID
-  with `N` plus two digits for nodes and `G` plus an alphanumeric suffix for
-  gates. Keep IDs graph-scoped, unique, never reused, and resolvable from every
-  live planning/work reference.
-- Create a Coordination Graph only for two or more worklines with at least one
-  real cross-workline dependency, evidence/batch join, materialization or
-  integrated-validation boundary, invalidation relationship, or partial-repair
-  route. Several unrelated worklines do not require one.
-- Keep graph boilerplate out of product, design, brand, source, and generated
-  spec documents; graphs reference their stable IDs, versions, and paths.
-- Use one coordination-state/materialization owner and a direct authority
-  cutover. Do not keep duplicate authoritative graph state in lane packets.
-- Join lane evidence through the Coordination Graph when one exists, then
-  reconcile its derived `active.md` projection before closeout.
-- Preserve durable reports and receipts, then remove completed worklines and
-  completed or superseded graph projections from `active.md` in the same
-  closeout.
-- For research-heavy work, add detailed evidence to `reports/` and add compact
-  durable research-memory entries to `docs/patterns/context-memory/index.md`.
-- Do not accumulate completed history indefinitely in the live work tree.
-  After a lane or graph may be complete,
-  `cascade-project-management:close-project` assesses terminal, dependency,
-  consumer, and retention readiness. `closeout` may create a digest-bound
-  capsule and move only exact `RETIRE_PROPOSED` originals under current host
-  authority. If preflight cannot pass, retain the files and record
-  `ARCHIVE_DEFERRED`; nothing invokes retention automatically.
+Read only the relevant task record when resuming. Planning remains inline;
+a task record is not a specification, work graph or transcript. Keep reusable
+facts in their existing product, design, specification or pattern owner.
+The optional `onboarding-manifest.yaml` is an onboarding receipt, not a task
+registry. Local generated checks belong under ignored `.artifacts/`.

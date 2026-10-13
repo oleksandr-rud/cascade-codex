@@ -82,17 +82,13 @@ function currentEnvelopePath(input: JsonObject): string | undefined {
   return sessionEnvelopePath(input);
 }
 
-async function clearSessionEnvelope(input: JsonObject, includeIntake = false): Promise<void> {
-  const paths = [Bun.env.CASCADE_TASK_ENVELOPE ? undefined : sessionEnvelopePath(input)];
-  if (includeIntake && typeof input.session_id === "string" && input.session_id) {
-    paths.push(boundedPath(`${TASK_ENVELOPE_PREFIX}intake-${sha256Text(input.session_id).slice(0, 24)}.json`, TASK_ENVELOPE_PREFIX));
-  }
+async function clearCurrentEnvelope(input: JsonObject, includeIntake = false): Promise<void> {
+  const paths = [currentEnvelopePath(input)];
+  if (includeIntake && typeof input.session_id === "string" && input.session_id) paths.push(boundedPath(`${TASK_ENVELOPE_PREFIX}intake-${sha256Text(input.session_id).slice(0, 24)}.json`, TASK_ENVELOPE_PREFIX));
   for (const path of paths) {
     if (!path) continue;
     try { await unlink(path); }
-    catch (error) {
-      if (!(error && typeof error === "object" && "code" in error && error.code === "ENOENT")) throw error;
-    }
+    catch (error) { if (!(error && typeof error === "object" && "code" in error && error.code === "ENOENT")) throw error; }
   }
 }
 
@@ -115,29 +111,26 @@ export async function handleHook(input: JsonObject): Promise<JsonObject> {
     if (typeof input.session_id !== "string" || !input.session_id) throw new Error("UserPromptSubmit session_id is required to persist the current Task Envelope");
     if (input.session_id.length > 200) throw new Error("UserPromptSubmit session_id is oversized");
     const prior = await currentEnvelope(input);
-    if (input.admission_interpretation === undefined) {
-      const request = semanticAdmissionRequest(input.prompt);
-      const envelopePath = currentEnvelopePath(input)!;
-      const intakePath = boundedPath(`${TASK_ENVELOPE_PREFIX}intake-${sha256Text(input.session_id).slice(0, 24)}.json`, TASK_ENVELOPE_PREFIX);
-      // Preserve the prior inside the pending intake, then clear only this
-      // session's old current envelope. It must not represent the new request.
+    await clearCurrentEnvelope(input, true);
+    const request = semanticAdmissionRequest(input.prompt);
+    const intakePath = boundedPath(`${TASK_ENVELOPE_PREFIX}intake-${sha256Text(input.session_id).slice(0, 24)}.json`, TASK_ENVELOPE_PREFIX);
+    if (input.interpretation === undefined && input.admission_interpretation === undefined) {
       await writeJsonAtomic(intakePath, {
         schema_version: 1, artifact_type: "cascade-admission-intake", status: "REQUIRES_INTERPRETATION",
-        task_id: input.session_id, ...request, envelope_path: rel(envelopePath),
-        prior_envelope: prior.envelope ?? null,
+        task_id: input.session_id, ...request, envelope_path: rel(currentEnvelopePath(input)!), prior_envelope: prior.envelope ?? null,
       }, { fileMode: 0o600, directoryMode: 0o700 });
-      await clearSessionEnvelope(input);
-      return { hookSpecificOutput: { hookEventName: "UserPromptSubmit",
-        additionalContext: `Semantic task intake requires LLM interpretation: intake_path=${rel(intakePath)}; request_digest=${request.request_digest}; prior_envelope=${prior.envelope?.envelope_id ?? "none"}. Read admission intake --file PATH for the plain-text request/prior projection and .codex/task-admission/semantic-intake.md for the bounded authoring contract. Submit the typed interpretation with admission assess --intake PATH --interpretation PATH. Missing, invalid or uncertain interpretation remains unresolved; no lexical fallback. This advisory cannot grant permission or dispatch work.${prior.error ? " Prior envelope invalid; not consumed." : ""}`,
-      } };
+      return { hookSpecificOutput: { hookEventName: "UserPromptSubmit", additionalContext:
+        `Task admission NEEDS_INTERPRETATION; semantic task intake requires LLM interpretation: intake_path=${rel(intakePath)}; request_digest=${request.request_digest}; prior_envelope=${prior.envelope?.envelope_id ?? "none"}. Read admission intake --file PATH and .codex/task-admission/semantic-intake.md, then submit admission assess --intake PATH --interpretation PATH. No lexical fallback, authority grant, or dispatch.${prior.error ? " Prior envelope invalid; not consumed." : ""}` } };
     }
     const envelope = await compileTaskEnvelope({
-      request: input.prompt,
+      request: request.request,
+      interpretation: input.interpretation,
+      semantic_interpretation: input.admission_interpretation,
       task_id: input.session_id,
       produced_at: new Date().toISOString(),
       prior_envelope: prior.envelope,
-      semantic_interpretation: input.admission_interpretation,
     });
+    await unlink(intakePath).catch((error) => { if (error.code !== "ENOENT") throw error; });
     const envelopePath = currentEnvelopePath(input)!;
     await writeJsonAtomic(envelopePath, envelope, {
       fileMode: 0o600,
@@ -153,7 +146,7 @@ export async function handleHook(input: JsonObject): Promise<JsonObject> {
     };
   }
   if (input.hook_event_name === "Interrupt") {
-    await clearSessionEnvelope(input, true);
+    await clearCurrentEnvelope(input, true);
     return {};
   }
   throw new Error(`unsupported task admission hook event: ${String(input.hook_event_name)}`);

@@ -92,13 +92,13 @@ node scripts/validate-quality-evals.mjs
 node scripts/run-quality-eval.mjs list
 node scripts/run-quality-eval.mjs run \
   --task structured-invoice-v1 \
-  --prompt-model gpt-6-astra \
-  --target-model gpt-6-astra \
-  --reasoning-effort high
+  --prompt-model gpt-6.1-sol \
+  --target-model gpt-6.1-sol \
+  --reasoning-effort xhigh
 node scripts/run-interview-eval.mjs list
 node scripts/run-variance-eval.mjs --task structured-invoice-v1 \
-  --prompt-model gpt-6-astra --target-model gpt-6-astra \
-  --reasoning-effort high --repetitions 3
+  --prompt-model gpt-6.1-sol --target-model gpt-6.1-sol \
+  --reasoning-effort xhigh --repetitions 3
 ```
 
 Use `run-prompt-campaign.mjs --inspect /absolute/campaign-or-run` to recover
@@ -126,7 +126,7 @@ authoring, or calibration work, read `evals/README.md` for the complete contract
   model, adapter, runner, rubric, and evidence digests.
 - External adapter credentials stay in the adapter environment and never enter
   campaign artifacts.
-- `gpt-6-astra` with `high` reasoning is the default prompt-builder, target,
+- `gpt-6.1-sol` with `xhigh` reasoning is the default prompt-builder, target,
   and judge configuration.
   Other supported models require an explicit comparison configuration.
 - For a model/effort comparison, keep the judge fixed with

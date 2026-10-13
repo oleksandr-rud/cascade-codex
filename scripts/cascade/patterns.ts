@@ -91,9 +91,7 @@ function textBlob(value: unknown): string {
   return String(value ?? "");
 }
 
-function sectionMatches(
-  pack: Pack,
-  document: PackDocument,
+export function sectionMatches(
   section: PackSection,
   args: ReturnType<typeof parseArgs>,
 ): boolean {
@@ -108,7 +106,7 @@ function sectionMatches(
   const query = flag(args, "query")?.toLowerCase();
   if (
     query &&
-    !textBlob({ pack, document, section }).toLowerCase().includes(query)
+    !textBlob(section).toLowerCase().includes(query)
   ) {
     return false;
   }
@@ -116,7 +114,11 @@ function sectionMatches(
 }
 
 export async function extractSection(path: string, anchor: string): Promise<string> {
-  const lines = (await readText(path)).split("\n");
+  return extractSectionText(await readText(path), path, anchor);
+}
+
+function extractSectionText(text: string, path: string, anchor: string): string {
+  const lines = text.split("\n");
   const start = lines.findIndex((line) => line.trim() === anchor.trim());
   if (start < 0) throw new CascadeError(`${rel(path)} missing anchor: ${anchor}`);
   const heading = /^(#+)\s/.exec(lines[start] ?? "");
@@ -159,6 +161,7 @@ export async function compilePatternSelections(
   }
 
   const compiled: CompiledPatternSection[] = [];
+  const documents = new Map<string, string>();
   const selectedKeys = new Set<string>();
   for (const selection of selections) {
     const resolved = packs.get(selection.pack_id);
@@ -185,13 +188,14 @@ export async function compilePatternSelections(
       }
       if (!match) throw new CascadeError(`unknown pattern section: ${key}`);
       const source = resolve(ROOT, match.document.path);
+      if (match.section.anchor && !documents.has(source)) documents.set(source, await readText(source));
       compiled.push({
         pack_id: selection.pack_id,
         section_id: sectionId,
         title: match.section.title ?? sectionId,
         source_path: match.document.path,
         content: match.section.anchor
-          ? await extractSection(source, match.section.anchor)
+          ? extractSectionText(documents.get(source)!, source, match.section.anchor)
           : (match.section.summary ?? ""),
       });
     }
@@ -219,9 +223,10 @@ async function renderPack(
   ];
   if (boolFlag(args, "summary-only")) return `${lines.join("\n").trimEnd()}\n`;
   let matched = 0;
+  const documents = new Map<string, string>();
   for (const document of pack.documents ?? []) {
     for (const section of document.sections ?? []) {
-      if (!sectionMatches(pack, document, section, args)) continue;
+      if (!sectionMatches(section, args)) continue;
       matched += 1;
       const source = resolve(ROOT, document.path);
       lines.push(
@@ -230,7 +235,10 @@ async function renderPack(
         `Source: \`${document.path}\``,
         "",
       );
-      if (section.anchor) lines.push(await extractSection(source, section.anchor), "");
+      if (section.anchor) {
+        if (!documents.has(source)) documents.set(source, await readText(source));
+        lines.push(extractSectionText(documents.get(source)!, source, section.anchor), "");
+      }
       else if (section.summary) lines.push(section.summary, "");
     }
   }

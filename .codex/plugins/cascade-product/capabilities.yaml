@@ -1,34 +1,34 @@
 schema_version: 1
 plugin:
   name: cascade-product
-  version: 0.1.33+codex.20260910172549
+  version: "0.1.39+codex.20261002011500"
 model_policy:
-  model: gpt-6-astra
-  planning_reasoning_effort: high
-  evaluation_reasoning_effort: high
+  model: gpt-6.1-sol
+  planning_reasoning_effort: xhigh
+  evaluation_reasoning_effort: xhigh
 skills:
   - route: cascade-product:manage-product-lifecycle
-    description: Manage value strategy, portfolio allocation, product priorities, owner-held gates and evidence-driven re-entry without implementation.
-    triggers: [product strategy or investment allocation is requested, product lifecycle or evidence-driven gate routing is requested]
+    description: Manage product strategy, investment priorities, owner-held gates, launch learning, live review and retirement proposals without implementation.
+    triggers: [product strategy or investment allocation is requested, product lifecycle or evidence-driven gate routing is requested, launch learning or retirement needs a product decision]
     anti_triggers: [only implementation of accepted product decisions or project scheduling is needed]
     consumes: [product-evidence]
     optional_consumes: [market-opportunity-assessment, persona-projection, growth-strategy]
     produces: [product-lifecycle-decision]
     required_dependencies: []
-    optional_dependencies: [cascade-market:research-market, cascade-market:evaluate-market-opportunity, cascade-market:plan-growth, cascade-personas:compile-persona, cascade-project-management:plan-project]
+    optional_dependencies: [cascade-market:research-market, cascade-market:evaluate-market-opportunity, cascade-market:plan-growth, cascade-personas:build-persona, cascade-personas:compile-persona, cascade-project-management:plan-project, cascade-project-management:manage-project, cascade-specs:synthesise-spec, cascade-design:create-design, cascade-design:ux-flow-review, cascade-qa:plan-quality, cascade-qa:assess-quality, cascade-prompt:prompt, cascade-simulations:simulate, cascade-evals:prompt-evaluation, cascade-evals:agent-evaluation, cascade-evals:evaluate]
     policy_tags: [product, lifecycle]
     effect: CANDIDATE_WRITE
     authority: READ_ONLY
     evaluation_cases: [owner-held-gate, no-project-status]
   - route: cascade-product:define-product
-    description: Model product value and offers, form and compare feature candidates, and define traceable requirements, acceptance behavior and the MVP.
-    triggers: [a product value or offer model needs definition, features must be generated or compared, the product definition or accepted behavior is the work product]
+    description: Frame problems, synthesize source-linked research, compare solutions and value models, and define traceable requirements, journeys and a useful slice.
+    triggers: [a product value or offer model needs definition, product research needs synthesis or solutions must be compared, the product definition or accepted behavior is the work product]
     anti_triggers: [fresh market evidence is required, implementation of an already specified change is the task]
     consumes: [product-evidence]
     optional_consumes: [product-lifecycle-decision, market-opportunity-assessment, persona-projection, growth-strategy]
     produces: [product-contract]
     required_dependencies: []
-    optional_dependencies: [cascade-prompt:prompt, cascade-market:plan-growth, cascade-design:ux-flow-review, cascade-design:design-system, cascade-ai-architect:design-agent-blueprint]
+    optional_dependencies: [cascade-prompt:prompt, cascade-market:plan-growth, cascade-market:evaluate-market-opportunity, cascade-personas:compile-persona, cascade-design:create-design, cascade-design:ux-flow-review, cascade-design:design-system, cascade-ai-architect:design-agent-blueprint, cascade-specs:synthesise-spec, cascade-project-management:define-work-item, cascade-product:manage-product-lifecycle, cascade-product:validate-product]
     policy_tags: [product, definition]
     effect: CANDIDATE_WRITE
     authority: READ_ONLY
@@ -40,7 +40,7 @@ skills:
     consumes: [product-contract, product-evidence]
     produces: [product-validation-plan]
     required_dependencies: []
-    optional_dependencies: [cascade-market:design-market-experiments, cascade-simulations:simulate, cascade-evals:evaluate]
+    optional_dependencies: [cascade-market:design-market-experiments, cascade-personas:compile-persona, cascade-design:ux-flow-review, cascade-qa:plan-quality, cascade-qa:assess-quality, cascade-prompt:prompt, cascade-simulations:simulate, cascade-evals:prompt-evaluation, cascade-evals:agent-evaluation, cascade-evals:build-judge, cascade-evals:evaluate, cascade-product:manage-product-lifecycle]
     policy_tags: [product, validation]
     effect: CANDIDATE_WRITE
     authority: READ_ONLY

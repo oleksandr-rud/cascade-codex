@@ -1,11 +1,11 @@
 schema_version: 1
 plugin:
   name: cascade-coding-agent
-  version: 0.3.3+codex.20260910204851
+  version: 0.3.6+codex.20261002010000
 model_policy:
-  model: gpt-6-astra
-  planning_reasoning_effort: high
-  evaluation_reasoning_effort: high
+  model: gpt-6.1-sol
+  planning_reasoning_effort: xhigh
+  evaluation_reasoning_effort: xhigh
 skills:
   - route: cascade-coding-agent:pull-and-integrate
     description: Integrate develop or the actual primary branch when develop is absent; resolve Git conflicts by branch authority rather than chronology and prepare reviewed changes for push with explicit readiness.

@@ -2,7 +2,7 @@
   "schema_version": 2,
   "plugin_id": "cascade-qa",
   "subject_kind": "agent",
-  "version": "0.1.9+codex.20260910172549",
+  "version": "0.1.14+codex.20261001201835",
   "expected_case_count": 12,
   "acceptance_threshold": 0.95,
   "minimum_dimension": 3,
@@ -152,6 +152,10 @@
     {
       "alias": "cascade-evals:build-judge",
       "path": "skills/build-judge/references/judge-response.schema.json"
+    },
+    {
+      "alias": "cascade-evals:evaluate",
+      "path": "scripts/model_policy.py"
     }
   ]
 }

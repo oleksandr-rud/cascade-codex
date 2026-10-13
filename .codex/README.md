@@ -43,6 +43,7 @@ exact namespaced plugin skill and fail closed; it cannot embed a fallback copy.
 | Cascade Personas | Canonical human models, purpose-limited projections, and persona evaluation |
 | Cascade Simulations | Runtime actors, persona consumption, briefs, outcomes, adapters, campaign governance/execution, bounded actor loops, and frozen-run review |
 | Cascade Evals | Generic evaluation lifecycle, judge contracts, response validation, score reduction, calibration state, and receipts |
+| Cascade Specs | Source-grounded feature/change specifications and parent-bound implementation slices; host-owned persistence |
 | Cascade Product | Product definition, lifecycle decisions, and product validation |
 | Cascade Market | Market research, opportunity assessment, experiments, positioning, category, proof, messaging, naming, tone, and trust language |
 | Cascade Design | UX, accessibility, visual, and reusable design-system review |
@@ -90,10 +91,10 @@ request/prior projection through the [semantic intake contract](task-admission/s
 The normal compiler requires that typed interpretation and exact digest binding.
 Missing, malformed or uncertain meaning remains unresolved without lexical fallback.
 
-The runtime compiler loads only its policy, control catalog, and envelope
-schema. `harness-evals/task-admission/cases.yaml` is a 981-case source
+The runtime compiler loads only its policy, control catalog, envelope and
+canonical interpretation schemas. `harness-evals/task-admission/cases.yaml` is a 981-case source
 regression corpus and is never read during normal request admission. The core
-target profile blocks the corpus and legacy-assess commands as source-only diagnostics.
+target profile blocks source-only diagnostics; lexical classification is not restored.
 
 Core non-atomic fallback:
 

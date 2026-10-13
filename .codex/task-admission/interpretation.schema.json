@@ -1,0 +1,303 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://cascade.local/schemas/admission-interpretation.v1.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "interpreter",
+    "request_digest",
+    "task_id",
+    "source_digest",
+    "relation",
+    "intent",
+    "claims",
+    "workload",
+    "local_write_scope",
+    "uncertainties"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "interpreter": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "model"
+      ],
+      "properties": {
+        "kind": {
+          "const": "LLM"
+        },
+        "model": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 100
+        }
+      }
+    },
+    "request_digest": {
+      "$ref": "#/$defs/digest"
+    },
+    "task_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 200
+    },
+    "source_digest": {
+      "$ref": "#/$defs/nullableDigest"
+    },
+    "relation": {
+      "$ref": "#/$defs/relation"
+    },
+    "intent": {
+      "$ref": "#/$defs/intent"
+    },
+    "claims": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 32,
+      "items": {
+        "$ref": "#/$defs/claim"
+      }
+    },
+    "workload": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "topology",
+        "effort",
+        "authority",
+        "duration",
+        "context"
+      ],
+      "properties": {
+        "topology": {
+          "enum": [
+            "ATOMIC",
+            "BOUNDED",
+            "CONNECTED",
+            "PROGRAM"
+          ]
+        },
+        "effort": {
+          "enum": [
+            "MICRO",
+            "SMALL",
+            "MEDIUM",
+            "LARGE",
+            "EXTENDED"
+          ]
+        },
+        "authority": {
+          "enum": [
+            "READ_ONLY",
+            "LOCAL_WRITE",
+            "EXTERNAL_WRITE",
+            "PRIVILEGED",
+            "DESTRUCTIVE"
+          ]
+        },
+        "duration": {
+          "enum": [
+            "TURN",
+            "MULTI_TURN",
+            "RESUMABLE",
+            "PROGRAM"
+          ]
+        },
+        "context": {
+          "enum": [
+            "PROMPT_ONLY",
+            "TARGETED_PROBE",
+            "SCOPED_SCAN",
+            "FULL_SCAN"
+          ]
+        }
+      }
+    },
+    "local_write_scope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "mode",
+        "targets"
+      ],
+      "properties": {
+        "mode": {
+          "enum": [
+            "TARGETS",
+            "REPOSITORY"
+          ]
+        },
+        "targets": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 300
+          }
+        }
+      }
+    },
+    "uncertainties": {
+      "$ref": "#/$defs/stringList"
+    }
+  },
+  "$defs": {
+    "digest": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "nullableDigest": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "stringList": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 300
+      }
+    },
+    "relation": {
+      "enum": [
+        "NEW",
+        "CONTINUE",
+        "AMEND",
+        "OVERRIDE",
+        "STATUS",
+        "CANCEL",
+        "CONVERSATION_ONLY"
+      ]
+    },
+    "intent": {
+      "enum": [
+        "ANSWER",
+        "DISCOVER",
+        "DIAGNOSE",
+        "REVIEW",
+        "VALIDATE",
+        "CHANGE",
+        "OPERATE"
+      ]
+    },
+    "claim": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "claim_id",
+        "kind",
+        "statement",
+        "source",
+        "status",
+        "confidence",
+        "verification",
+        "policy_tags",
+        "consumers",
+        "invalidation"
+      ],
+      "properties": {
+        "claim_id": {
+          "type": "string",
+          "pattern": "^CL-[0-9]{3}$"
+        },
+        "kind": {
+          "enum": [
+            "OUTCOME",
+            "CURRENT_STATE",
+            "CRITERION",
+            "CONSTRAINT",
+            "NON_GOAL",
+            "BOUNDARY",
+            "HAZARD",
+            "AUTHORITY",
+            "EVIDENCE",
+            "INFERENCE"
+          ]
+        },
+        "statement": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 500
+        },
+        "source": {
+          "enum": [
+            "USER",
+            "TRUSTED_INSTRUCTION",
+            "CURRENT_SOURCE",
+            "TOOL_EVIDENCE",
+            "EXTERNAL_SOURCE",
+            "MODEL_INFERENCE"
+          ]
+        },
+        "status": {
+          "enum": [
+            "PROVIDED",
+            "VERIFIED",
+            "INFERRED",
+            "UNKNOWN",
+            "CONFLICTING",
+            "SUPERSEDED"
+          ]
+        },
+        "confidence": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Use a numeric confidence only for MODEL_INFERENCE; every source-bound claim must use null."
+        },
+        "verification": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 300
+        },
+        "policy_tags": {
+          "$ref": "#/$defs/stringList"
+        },
+        "consumers": {
+          "$ref": "#/$defs/stringList"
+        },
+        "invalidation": {
+          "$ref": "#/$defs/stringList"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "source": {
+                "const": "MODEL_INFERENCE"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "confidence": {
+                "type": "number"
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "confidence": {
+                "type": "null"
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

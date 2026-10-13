@@ -2,7 +2,7 @@
   "schema_version": 2,
   "plugin_id": "cascade-design",
   "subject_kind": "agent",
-  "version": "0.1.10+codex.20260910172549",
+  "version": "0.1.16+codex.20261001202110",
   "expected_case_count": 19,
   "expected_cases_per_skill": {
     "ux-flow-review": 3,
@@ -223,6 +223,10 @@
     {
       "alias": "cascade-simulations:simulate",
       "path": "skills/simulate/SKILL.md"
+    },
+    {
+      "alias": "cascade-evals:evaluate",
+      "path": "scripts/model_policy.py"
     }
   ]
 }

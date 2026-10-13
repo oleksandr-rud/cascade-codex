@@ -1,26 +1,14 @@
 # Documentation Index
 
-This Cascade docs structure is intentionally generic. After installation,
-fill it with the target repository's product, design, architecture, testing,
-and work references.
+Use [structure.md](structure.md) for the folder and write-target map.
 
-## Core Areas
+- [Work](work/_index.md): flat numbered task records, current state and checks.
+- [Specifications](specs/_index.md): accepted public contracts and durable sources.
+- [Product](product/_index.md): Cascade intent, requirements, journeys and scenarios.
+- [Design](design/_index.md): templates, interaction rules and tokens.
+- [Brand](brand/_index.md): naming, tone and content rules.
+- [Patterns](patterns/_index.md): reusable workflow, architecture and testing knowledge.
+- [Glossary](glossary.md): stable repository vocabulary.
 
-- `docs/work/`: active work lanes, lane examples, lane packets, reports, and
-  handoffs.
-- `docs/archive/work-reports/`: compact archive capsules and relocated frozen
-  work history from automatic post-closeout or direct historical maintenance.
-- `docs/specs/`: source and spec packets.
-- `docs/product/`: product intent, journeys, personas, scenarios, requirements.
-- `docs/design/`: interaction model, design references, tokens, components.
-- `docs/brand/`: voice, naming, content, and product-language rules.
-- `docs/patterns/`: durable engineering, testing, context-memory, research
-  memory, and process patterns.
-- `docs/backlog/`: follow-up candidates with acceptance criteria.
-- `docs/glossary.md`: codebase vocabulary and project terms.
-- `docs/structure.md`: folder map and write targets.
-
-## Source-Of-Truth Rule
-
-When code and docs disagree, follow current code for implementation and report
-the documentation drift.
+Current code owns implementation truth. Product and design documents own their
+accepted intent. Task records link those sources instead of copying them.

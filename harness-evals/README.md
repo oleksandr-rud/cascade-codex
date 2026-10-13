@@ -179,7 +179,7 @@ project-part/doc-routing checks, preservation hashes, and source drift without
 running a live model or configured target commands.
 
 The default `execution` and `planning` profiles pin target probes to
-`gpt-6-astra`; judge profiles independently pin `gpt-6-astra` and high
+`gpt-6.1-sol`; judge profiles independently pin `gpt-6.1-sol` and extra-high
 reasoning effort. `--model` remains an explicit
 diagnostic override and is recorded as the `custom` profile.
 
@@ -198,7 +198,7 @@ diagnostic.
 The per-case `effectiveness_score` is the lower required-judge score, while the
 coverage ledger retains both profile scores and their distributions.
 
-The CLI enables the Code Mode host needed for Astra's local source-reading
+The CLI enables the Code Mode host needed for local source-reading
 commands and disables multi-agent dispatch, plugins, apps and visual/network
 surfaces. Read-only sandboxing and trace checks still apply. Disabling the host
 can make every source read fail before a role is exercised; classify that as
