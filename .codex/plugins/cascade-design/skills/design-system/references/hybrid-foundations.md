@@ -4,6 +4,10 @@ Rule: CASCADE-HYBRID-1. Owner: Cascade Design.
 Authority: the user's explicit selection of Hybrid as the default on 2026-09-08.
 Applies with the scope and source precedence of [the outcome UI standard](outcome-ui-standard.md).
 
+The local [direction procedure](../../../references/process/direction.md) binds
+when this foundation governs. A selected replacement governs only its authorized
+scope; an extension preserves the accepted target identity.
+
 Hybrid combines a quiet, opaque information layer with a restrained liquid
 control layer. Use it for new application pages and relevant marketing actions.
 Keep accepted target identity and behavior. The small reference kit supplies

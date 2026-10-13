@@ -118,7 +118,7 @@ def evaluate(suite: dict[str, Any], target_output: dict[str, Any]) -> dict[str, 
         "subject_digest": target_output.get("subject_digest"),
         "status": "PASS" if passed else "INVALID",
         "semantic_status": "NOT_RUN",
-        "semantic_owner": "cascade-evals:independent-judges",
+        "semantic_owner": "cascade-quality:independent-judges",
         "case_count": len(expected_cases),
         "findings": findings,
     }

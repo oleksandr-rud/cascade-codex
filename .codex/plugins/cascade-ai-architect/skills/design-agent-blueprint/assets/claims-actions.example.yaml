@@ -1,0 +1,31 @@
+{
+  "schema_version": "analysis.v1",
+  "claims": [
+    {
+      "id": "reported-budget",
+      "subject": "project-atlas",
+      "predicate": "budget",
+      "value": {
+        "amount": 5000,
+        "currency": "USD"
+      },
+      "support": "REPORTED",
+      "confidence": 1,
+      "evidence_refs": [
+        "user-budget"
+      ],
+      "uncertainty": null
+    }
+  ],
+  "actions": [
+    {
+      "id": "confirm-budget",
+      "kind": "CLARIFY",
+      "claim_refs": [
+        "reported-budget"
+      ],
+      "question": "Should this reported budget be used for planning?"
+    }
+  ],
+  "uncertainties": []
+}

@@ -1,18 +1,28 @@
 # Learn Routing Table
 
-Route only useful durable facts to their existing owner.
+Use this table when deciding whether a lesson should become durable repository
+memory.
 
 | Lesson type | Target |
 |---|---|
 | Skill behavior | Relevant `.codex/skills/{name}/SKILL.md` |
 | Role behavior | Relevant `.codex/agents/{name}/AGENT.md` |
-| Reusable implementation rule | Relevant `docs/patterns/` entry |
-| Product behavior | Existing product spec, scenario or regression test |
-| Changed durable owner fact | Existing owner doc via `templates/thin-doc-diff.md` |
-| Stable codebase term | `docs/glossary.md` |
-| Current outcome, blocker, rejected scope or handoff | The same numbered `docs/work/tasks/{task_id}.md` record |
+| Reusable implementation pattern | `docs/patterns/workflow/index.md`, `docs/patterns/boundaries/index.md`, `docs/patterns/testing/index.md`, or `docs/patterns/context-memory/index.md` plus `docs/patterns/_index.md` |
+| Product behavior | Product spec, product scenario, task scenario, or regression test |
+| Product/spec/design/brand/architecture change found at closeout | Existing owner doc via `templates/thin-doc-diff.md` |
+| New codebase term | `docs/glossary.md` |
+| Durable rejected scope | Existing backlog note, pattern, decision, or work report |
+| Historical note only | `docs/work/reports/YYYY-MM-DD-{slug}.md` |
 
-Do not create a report, archive or backlog as a closeout side effect. Keep
-check results and evidence limits in the task record. A follow-up becomes a new
-numbered task only when it is accepted work; record a real product/tracker
-reference when available. Skip durable lessons that add no reusable value.
+## Report Decision
+
+| Condition | Action |
+|---|---|
+| Work spans turns or records a durable decision | Write a work report |
+| Single-file cosmetic change | Skip report |
+| Investigation produces follow-up work | Create a backlog candidate with acceptance criteria |
+| Trivial investigation | Skip durable memory |
+
+Do not maintain a generic learned-pattern dumping ground. If a lesson cannot
+update a skill, role, pattern, product spec, test, glossary, or work report,
+it is probably not durable enough to keep.

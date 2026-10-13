@@ -1,0 +1,90 @@
+schema_version: 1
+plugin:
+  name: specification-kit
+  version: 0.4.1+codex.20261013.sync.1
+# Host catalog metadata. Standalone skills preserve the user's current model.
+model_policy:
+  model: gpt-6.1-sol
+  planning_reasoning_effort: xhigh
+  evaluation_reasoning_effort: xhigh
+skills:
+  - route: specification-kit:build-spec
+    description: Interview and compose a complete specification from selected content and development policies.
+    triggers:
+      - a coherent application, product, company, scenario or test specification is needed
+      - an added feature needs a specification bound to its existing baseline
+    anti_triggers:
+      - only a focused diagram or test design is requested
+      - only implementation, test execution or accepted persistence is requested
+      - an already sufficient bounded task contract needs no specification
+    consumes: [specification-brief]
+    optional_consumes: [product-contract, company-source, accepted-behavior, test-design, architecture-candidate, design-evidence, codebase-source, repository-context, external-sources, spec-diagram-set, spec-test-design, spec-campaign-plan]
+    produces: [specification-candidate, spec-composition]
+    required_dependencies: []
+    optional_dependencies:
+      - specification-kit:spec-diagrams
+      - specification-kit:spec-test-design
+      - cascade-discovery:define-product
+      - cascade-discovery:research-market
+      - cascade-engineering:architect-software-system
+      - cascade-engineering:select-architecture-patterns
+      - cascade-design:create-design
+      - cascade-design:ux-flow-review
+      - cascade-design:design-system
+      - cascade-design:accessibility-review
+      - cascade-design:visual-qa
+      - cascade-security:secure-design
+      - cascade-quality:plan-quality
+      - cascade-quality:design-tests
+      - cascade-simulations:manage-simulation-campaign
+      - cascade-simulations:simulation-brief
+      - cascade-simulations:simulation-outcome
+      - cascade-simulations:simulation-actor
+      - cascade-simulations:simulation-persona
+    policy_tags: [specification, source-grounding]
+    effect: CANDIDATE_WRITE
+    authority: READ_ONLY
+    evaluation_cases: [whole-application, company-operating-model, feature-baseline, proposed-acceptance, design-gap, conditional-campaign]
+  - route: specification-kit:spec-diagrams
+    description: Author or review focused specification diagrams against exact owning contracts and evidence bindings.
+    triggers:
+      - a specification relationship needs an inspectable diagram
+      - changed contracts require a scoped diagram and evidence review
+    anti_triggers:
+      - a diagram would substitute for a missing contract
+      - only visual product design or application execution is requested
+    consumes: [spec-diagram-brief]
+    optional_consumes: [specification-candidate, accepted-behavior, architecture-candidate, design-evidence, codebase-source, spec-test-design]
+    produces: [spec-diagram-set]
+    required_dependencies: []
+    optional_dependencies: []
+    policy_tags: [specification, source-grounding]
+    effect: CANDIDATE_WRITE
+    authority: READ_ONLY
+    evaluation_cases: [bound-notation-adaptation, stale-owner-review, missing-owner-contract]
+  - route: specification-kit:spec-test-design
+    description: Derive cases, fixtures, levels and oracles from source-bound behavior and conditionally plan coordinated test or user-simulation campaigns.
+    triggers:
+      - specification behavior needs focused test cases and observable acceptance
+      - an actual case coordination need requires a candidate campaign plan
+    anti_triggers:
+      - only test implementation or execution is requested
+      - behavior is missing and context would be used to invent acceptance
+      - an operational world model is requested
+    consumes: [spec-test-brief]
+    optional_consumes: [accepted-behavior, specification-candidate, test-design, quality-plan, codebase-source, repository-context]
+    produces: [spec-test-design, spec-campaign-plan]
+    required_dependencies: []
+    optional_dependencies:
+      - specification-kit:spec-diagrams
+      - cascade-quality:plan-quality
+      - cascade-quality:design-tests
+      - cascade-simulations:manage-simulation-campaign
+      - cascade-simulations:simulation-brief
+      - cascade-simulations:simulation-outcome
+      - cascade-simulations:simulation-actor
+      - cascade-simulations:simulation-persona
+    policy_tags: [specification, source-grounding]
+    effect: CANDIDATE_WRITE
+    authority: READ_ONLY
+    evaluation_cases: [distinct-test-boundaries, unknown-commit-outcome, campaign-not-needed, native-persona-gap]

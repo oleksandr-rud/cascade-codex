@@ -111,8 +111,8 @@ Use before marking a non-atomic plan `DEFINITION_READY`, before marking it
 - [ ] Every request criterion has exactly one primary slice owner; protected
       consumers and dependencies are visible.
 - [ ] Multi-horizon scope routes to
-      `cascade-project-management:plan-project`; only its committed current
-      scope may route to `cascade-project-management:manage-project` for
+      `cascade-workflows:plan-project`; only its committed current
+      scope may route to `cascade-workflows:manage-project` for
       coordination.
 - [ ] Creating slices or future candidates does not imply delegation, active
       lane creation, graph state, or parallel execution.
@@ -134,7 +134,7 @@ Use before marking a non-atomic plan `DEFINITION_READY`, before marking it
 - [ ] The highest useful validation seam proves behavior without coupling only
       to private implementation shape.
 - [ ] The plan identifies either one current coherent slice or a required
-      `cascade-project-management:plan-project` handoff; future scope is not
+      `cascade-workflows:plan-project` handoff; future scope is not
       treated as active work.
 
 ## Replanning And Handoff

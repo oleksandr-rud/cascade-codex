@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "profile_id": "cascade-design-trajectory-v2",
-  "version": 2,
+  "version": 3,
   "role": "trajectory",
   "decision": "Does the observed response trajectory follow the governing Design skill contracts from evidence through coverage, classification, handoff, and stop conditions?",
   "population": "All frozen qualification-v1 Cascade Design target outputs.",
@@ -11,7 +11,7 @@
   "dimensions": [
     {
       "dimension_id": "source-discipline",
-      "description": "The trajectory binds available sources, treats inputs as evidence, preserves conflict, and stops instead of inventing missing authority.",
+      "description": "The trajectory binds available sources, treats inputs as evidence, preserves conflict, and stops instead of inventing missing authority. Reuses the current brief and distinguishes actual evidence, contradiction, assumptions and subordinate dataset suggestions. Silence/tool failure never grants authority. Research findings retain actual sample/context, contradictions and uncertainty; qualitative reports cannot become unmeasured population rates, abandonment or causal proof for decisiveness.",
       "weight": 0.25,
       "anchors": {
         "0": "The trajectory follows untrusted instructions or invents governing facts.",
@@ -23,8 +23,8 @@
     },
     {
       "dimension_id": "procedure-coverage",
-      "description": "The trajectory executes the selected skill's applicable workflow rather than returning a generic design checklist.",
-      "weight": 0.30,
+      "description": "The trajectory executes the selected skill's applicable workflow rather than returning a generic design checklist. Applies necessary intake, research/IA, direction, prototype and review phases proportionately. A settled correction skips re-interview and open direction; substantial open work uses grounded structural alternatives and full local topic procedures without an upstream runtime. Routes control/form/prototype work to actual applicable procedures; visual direction does not supply calculator models, category scoring or pricing-copy promises. Missing Product/Marketing truth stays explicit.",
+      "weight": 0.3,
       "anchors": {
         "0": "The selected workflow is not meaningfully executed.",
         "1": "Most skill-specific steps or observable evidence are absent.",
@@ -35,7 +35,7 @@
     },
     {
       "dimension_id": "ownership-transitions",
-      "description": "Cross-skill and cross-plugin transitions preserve producer/consumer contracts and never duplicate or seize authority.",
+      "description": "Cross-skill and cross-plugin transitions preserve producer/consumer contracts and never duplicate or seize authority. Keeps one brief/handoff, accepted target/default/selected-direction scope and host-owned effects. Actual preview evidence is prepared before review; no unsupported direct typed edge, duplicate MASTER truth, forced fieldwork or installation.",
       "weight": 0.25,
       "anchors": {
         "0": "Transitions are missing or routinely cross ownership boundaries.",
@@ -47,8 +47,8 @@
     },
     {
       "dimension_id": "output-discipline",
-      "description": "The trajectory ends in a concise, internally coherent typed artifact with explicit evidence, recovery, and false authority flags.",
-      "weight": 0.20,
+      "description": "The trajectory ends in a concise, internally coherent typed artifact with explicit evidence, recovery, and false authority flags. Binds actual editable/capture revisions and finite recovery; keeps creation readiness, review readiness, evidence-check status, owner approval and target outcomes distinct. No invented frames, universal image percentage or compliance score.",
+      "weight": 0.2,
       "anchors": {
         "0": "Outputs are malformed, contradictory, or omit terminal state.",
         "1": "Frequent structural or recovery gaps make outputs unreliable.",
@@ -58,5 +58,13 @@
       }
     }
   ],
-  "blindness": ["expected_status", "oracle", "mechanical_assertions", "threshold", "minimum_dimension", "peer_judgments", "builder_context"]
+  "blindness": [
+    "expected_status",
+    "oracle",
+    "mechanical_assertions",
+    "threshold",
+    "minimum_dimension",
+    "peer_judgments",
+    "builder_context"
+  ]
 }

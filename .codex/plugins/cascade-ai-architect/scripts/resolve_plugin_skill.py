@@ -380,7 +380,11 @@ def resolve(
             EXIT_INVALID,
         )
 
-    skill_path = (skills_root / skill_name / "SKILL.md").resolve()
+    # Match an exact advertised skill identity within this installed version only.
+    skill_matches = [path for path in skills_root.rglob("SKILL.md") if path.parent.name == skill_name]
+    if len(skill_matches) > 1:
+        return receipt("INVALID", "SKILL_IDENTITY_AMBIGUOUS", "The installed skill identity is not unique.", **base), EXIT_INVALID
+    skill_path = (skill_matches[0] if skill_matches else skills_root / skill_name / "SKILL.md").resolve()
     try:
         skill_path.relative_to(skills_root)
     except ValueError:

@@ -14,7 +14,7 @@ when a separately validated simulation projection exists.
 
 ## Source order
 
-1. Frozen `cascade-personas:compile-persona` agent-architecture projection,
+1. Frozen `cascade-discovery:compile-persona` agent-architecture projection,
    canonical source identity/version/digest, mapping version, and privacy
    receipt.
 2. Named agent-architecture decision and the smallest required user-model
@@ -45,9 +45,9 @@ requirements, examples, defaults or fallbacks.
 4. Route the requirements and projection digest to
    `design-agent-blueprint`. Do not alter the projection or canonical Persona.
 5. If source evidence or canonical fields must change, invoke
-   `cascade-personas:build-persona`; if quality must be judged, invoke
-   `cascade-personas:evaluate-persona`; if the required consumer view is
-   absent, invoke `cascade-personas:compile-persona`.
+   `cascade-discovery:build-persona`; if quality must be judged, invoke
+   `cascade-discovery:evaluate-persona`; if the required consumer view is
+   absent, invoke `cascade-discovery:compile-persona`.
 6. When simulation is requested, hand the distinct validated simulation
    projection to external `cascade-simulations:simulation-persona`, followed by
    `cascade-simulations:simulation-actor`. Architecture context alone is not an

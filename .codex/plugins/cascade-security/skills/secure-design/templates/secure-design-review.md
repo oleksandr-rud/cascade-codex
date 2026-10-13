@@ -66,7 +66,7 @@
 
 | Owner workflow | Subtask | Done evidence |
 |---|---|---|
-| cascade-security:codebase-audit / cascade-security:auth-analysis / cascade-software-architect:review-architecture / cascade-qa:design-tests / target-host | | |
+| cascade-security:codebase-audit / cascade-security:auth-analysis / cascade-engineering:review-architecture / cascade-quality:design-tests / target-host | | |
 
 ## Open Questions
 

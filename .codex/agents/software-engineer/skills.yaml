@@ -1,10 +1,10 @@
 plugin_skills:
-  - cascade-coding-agent:pull-and-integrate
-  - cascade-software-architect:review-change
-  - cascade-software-architect:review-architecture
-  - cascade-qa:triage-defects
-  - cascade-software-architect:architect-software-system
-  - cascade-software-architect:select-architecture-patterns
+  - cascade-engineering:pull-and-integrate
+  - cascade-engineering:review-change
+  - cascade-engineering:review-architecture
+  - cascade-quality:triage-defects
+  - cascade-engineering:architect-software-system
+  - cascade-engineering:select-architecture-patterns
 skills:
   - name: context
     source: .codex/skills/context/SKILL.md
@@ -17,9 +17,13 @@ skills:
   - name: run-qa-plan
     source: .codex/skills/run-qa-plan/SKILL.md
     delegates:
-      - cascade-qa:design-tests
-      - cascade-qa:assess-quality
-      - cascade-qa:triage-defects
+      - cascade-quality:design-tests
+      - cascade-quality:assess-quality
+      - cascade-quality:triage-defects
   - name: closeout
     source: .codex/skills/closeout/SKILL.md
-    delegate: cascade-project-management:close-project
+    delegate: cascade-workflows:close-project
+  - name: resolve-validation-failure
+    source: .codex/skills/resolve-validation-failure/SKILL.md
+    delegates:
+      - cascade-quality:triage-defects

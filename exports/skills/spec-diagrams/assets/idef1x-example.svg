@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="850" height="350" viewBox="0 0 850 350" role="img" aria-labelledby="title desc">
+  <title id="title">IDEF1X identifying relationship fragment</title>
+  <desc id="desc">PROJECT has primary key project_id. TASK has composite primary key project_id and task_number. The solid identifying relationship propagates the project key into TASK. Each task belongs to one project; a project may have zero or many tasks.</desc>
+  <rect width="850" height="350" fill="#fff"/>
+  <g font-family="Arial, sans-serif" fill="#172033" font-size="17" stroke="#172033">
+    <text x="30" y="35" stroke="none" font-size="22">IDEF1X · Identifying relationship fragment</text>
+    <text x="50" y="92" stroke="none">PROJECT</text>
+    <rect x="40" y="110" width="245" height="130" fill="#f5f7fa" stroke-width="2"/>
+    <text x="60" y="144" stroke="none">project_id</text>
+    <path d="M40 160 H285" stroke-width="2"/>
+    <text x="60" y="194" stroke="none">name</text>
+    <text x="520" y="92" stroke="none">TASK</text>
+    <rect x="510" y="110" width="285" height="160" rx="16" fill="#f5f7fa" stroke-width="2"/>
+    <text x="530" y="144" stroke="none">project_id (FK)</text>
+    <text x="530" y="170" stroke="none">task_number</text>
+    <path d="M510 186 H795" stroke-width="2"/>
+    <text x="530" y="220" stroke="none">title</text>
+    <path d="M285 142 H510" fill="none" stroke-width="2"/>
+    <circle cx="510" cy="142" r="5" fill="#172033"/>
+    <text x="342" y="121" stroke="none">contains</text>
+    <text x="30" y="311" stroke="none">TASK key = (project_id, task_number); each task has exactly one project.</text>
+    <text x="30" y="337" stroke="none">The relationship is identifying; a project may have zero or many tasks.</text>
+  </g>
+</svg>

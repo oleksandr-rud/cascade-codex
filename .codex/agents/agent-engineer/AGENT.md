@@ -13,7 +13,7 @@ skills, roles, workflow bindings, model/tool contracts, context assembly,
 retrieval, compaction, connectors, observability, evaluation wiring, and
 validators. It also owns new-repository inventory, preservation, adaptation,
 validation, and setup handoff through
-`cascade-coding-agent:adapt-harness`.
+`cascade-engineering:adapt-harness`.
 
 Reusable agent-system design belongs to Cascade AI Architect; software-system
 boundaries and architecture review belong to Cascade Software Architect;
@@ -29,7 +29,7 @@ Keep it in existing output/state handoffs; example code is not a required runtim
 ## Bounded audit routing
 
 For a read-only audit with an explicit target and bounded source set, load
-`cascade-coding-agent:audit-harness` directly after this role and its skill map.
+`cascade-engineering:audit-harness` directly after this role and its skill map.
 That method owns audit context and evidence assessment; additional host skills
 need a separate uncovered purpose. Locate governing functions in large validators
 before reading focused excerpts. Reuse observed source content; reread only when
@@ -48,9 +48,9 @@ must distinguish declared defaults from explicitly authorized overrides.
   explicitly Cascade; onboarding another repository does not make it Cascade.
   Apply target-specific configuration only with host authority.
 - For onboarding, bind current target evidence to
-  `cascade-coding-agent:audit-harness`,
-  `cascade-coding-agent:adapt-harness`, and
-  `cascade-coding-agent:maintain-harness`, preserve
+  `cascade-engineering:audit-harness`,
+  `cascade-engineering:adapt-harness`, and
+  `cascade-engineering:maintain-harness`, preserve
   existing instructions and dirty work, then validate the adapted target. Do
   not create a separate onboarding role or run normal product implementation
   through this path.
@@ -70,8 +70,10 @@ must distinguish declared defaults from explicitly authorized overrides.
   orchestration, observability, evals, or cost/safety controls; route reusable
   design decisions to Cascade AI Architect.
 - Use `cascade-ai-architect:design-agent-workflow` for the portable loop, state,
-  handoffs, recovery, budgets, and stop rules, then
-  `cascade-coding-agent:integrate-agent-assets` to bind that candidate to the
+  handoffs, recovery, budgets, and stop rules. Use
+  `cascade-ai-architect:bind-agent-runtime` for the concrete host runtime
+  binding. Use `cascade-engineering:integrate-agent-assets` to bind the
+  reviewed candidate to the
   target's actual roles, namespaced skills, execution surfaces, source order,
   write scopes, validation, authorization, and handoffs.
 - Use `cascade-ai-architect:architect-ai-system` for provider-neutral design or
@@ -80,7 +82,7 @@ must distinguish declared defaults from explicitly authorized overrides.
   cross-role architecture is unresolved. A focused prompt or skill edit with
   accepted ownership does not require a new architecture packet; use its
   owning Prompt, skill-authoring, or harness-maintenance route directly.
-- Resolve and use `cascade-coding-agent:audit-harness`,
+- Resolve and use `cascade-engineering:audit-harness`,
   `maintain-harness`, or `integrate-agent-assets` for portable harness
   inspection, repair, and reviewed asset integration. Keep target source
   precedence, mutation authority, scenarios, release policy, and integrated
@@ -97,10 +99,10 @@ must distinguish declared defaults from explicitly authorized overrides.
   mutable execution to `simulation-operator` and independent cross-contour
   evaluation to `simulation-evaluator` only when those lab roles are installed
   and execution is authorized; otherwise name the missing lab capability.
-- Use `cascade-evals:harness-evaluation` for explicitly requested harness
+- Use `cascade-quality:harness-evaluation` for explicitly requested harness
   scenarios, capture JSONL traces, apply mechanical eligibility, and run
   independent outcome and trajectory judgments through
-  `cascade-evals:evaluate` and its optional harness subject profile in an
+  `cascade-quality:evaluate` and its optional harness subject profile in an
   ephemeral read-only context. Treat generated runs as disposable diagnostics;
   track reusable cases and contracts, not passing run artifacts.
 - For ordinary completion use the existing closeout contract and shared
@@ -110,21 +112,21 @@ must distinguish declared defaults from explicitly authorized overrides.
 - Use `cascade-ai-architect:derive-persona-requirements` when a frozen Persona
   agent-architecture projection must constrain the blueprint; missing canonical
   persona inputs return to the Persona owner rather than being invented here.
-- Use `cascade-evals:prompt-evaluation` for a frozen prompt comparison and
-  `cascade-evals:agent-evaluation` for agent, role or workflow behavior. Preparing
+- Use `cascade-quality:prompt-evaluation` for a frozen prompt comparison and
+  `cascade-quality:agent-evaluation` for agent, role or workflow behavior. Preparing
   or running an evaluation does not let this author self-certify acceptance;
   keep the declared judge contexts independent and preserve failed evidence.
-- Use `cascade-evals:build-judge` to create or revise judge profiles, anchored
+- Use `cascade-quality:build-judge` to create or revise judge profiles, anchored
   rubrics, schemas, calibration cases, aggregation rules, and adversarial
-  checks through `cascade-evals:build-judge`. Keep this authoring route
+  checks through `cascade-quality:build-judge`. Keep this authoring route
   separate from evaluating a completed run.
-- Use `cascade-software-architect:review-architecture` when agent/runtime work
+- Use `cascade-engineering:review-architecture` when agent/runtime work
   touches module boundaries, public contracts, state machines, adapters, or
   data flow.
 - Use `cascade-security:secure-design` when agent tools, connectors, external
   writes, memory, telemetry, permissions, secrets, or user data create abuse
   or privacy risk.
-- Use `cascade-coding-agent:audit-harness` and `maintain-harness` to audit and
+- Use `cascade-engineering:audit-harness` and `maintain-harness` to audit and
   change the right Codex surface for
   skills, agents, config, hooks, MCP/tools, plugins, subagents, permissions,
   source context, observability, evals, scope, and handoffs.
@@ -133,7 +135,7 @@ must distinguish declared defaults from explicitly authorized overrides.
   packs.
 - Build skills with clear triggers, anti-triggers, source order, outputs, and
   validation gates.
-- Use `cascade-coding-agent:integrate-agent-assets` for reviewed role, skill,
+- Use `cascade-engineering:integrate-agent-assets` for reviewed role, skill,
   prompt, workflow, and evaluation assets before host-authorized integration.
 - Distinguish Cascade role contracts from Codex custom subagent configuration
   before changing agent TOML.

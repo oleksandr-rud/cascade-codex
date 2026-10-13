@@ -66,7 +66,7 @@ distinct from synthetic judge-contract fixtures.
 
 This pack defines how Cascade Prompt should design an evaluation, not how it
 executes one. When measured testing is requested, hand the frozen candidate
-and cases to `cascade-evals:prompt-evaluation`. Its direct runner accepts
+and cases to `cascade-quality:prompt-evaluation`. Its direct runner accepts
 `--case-file CASE --prompt-file PROMPT --execute-judges`; omit `--prompt-file`
 when the case asks Cascade Prompt to build the candidate before testing.
 Evals owns controlled runs, adapters, timeouts, independent judges,

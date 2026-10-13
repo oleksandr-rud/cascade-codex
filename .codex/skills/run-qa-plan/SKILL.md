@@ -6,9 +6,9 @@ description: Execute an authorized, frozen Cascade QA test design through the cu
 # Run QA Plan
 
 This is a target-host execution adapter. Portable quality planning and test
-semantics belong to `cascade-qa:plan-quality` and
-`cascade-qa:design-tests`; quality reduction belongs to
-`cascade-qa:assess-quality`.
+semantics belong to `cascade-quality:plan-quality` and
+`cascade-quality:design-tests`; quality reduction belongs to
+`cascade-quality:assess-quality`.
 
 ## Execute
 
@@ -28,8 +28,8 @@ semantics belong to `cascade-qa:plan-quality` and
    scope. Preserve `PASS`, `FAIL`, `BLOCKED`, `NOT_RUN`, `GAP`, and `STALE`.
 6. Clean up only case-owned transient state and retain the evidence required by
    the plan. Never delete failed receipts.
-7. Hand the frozen artifact and receipts to `cascade-qa:assess-quality`. Route
-   failures to `cascade-qa:triage-defects` before implementation or test repair.
+7. Hand the frozen artifact and receipts to `cascade-quality:assess-quality`. Route
+   failures to `cascade-quality:triage-defects` before implementation or test repair.
 
 ## Output
 

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Build Spec"
+  short_description: "Compose complete specifications from policy blocks"
+  default_prompt: "Use $build-spec to interview me and compose a complete application specification with concrete contracts and diagrams."

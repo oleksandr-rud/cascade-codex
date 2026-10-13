@@ -1,7 +1,7 @@
 schema_version: 1
 plugin:
   name: cascade-prompt
-  version: 0.7.17+codex.20261005082000
+  version: 0.7.19+codex.20261013.sync.1
 model_policy:
   model: gpt-6.1-sol
   planning_reasoning_effort: xhigh
@@ -14,7 +14,7 @@ skills:
     consumes: [prompt-brief, authoritative-sources]
     produces: [prompt-candidate]
     required_dependencies: []
-    optional_dependencies: [cascade-evals:prompt-evaluation]
+    optional_dependencies: [cascade-quality:prompt-evaluation]
     policy_tags: [prompt-authoring, context-planning]
     effect: CANDIDATE_WRITE
     authority: READ_ONLY

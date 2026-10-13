@@ -33,9 +33,9 @@ plugin procedures.
   regulated sensitive data, raw logs, and sensitive screenshots in outputs.
 - Map security concerns to the smallest useful route:
   `cascade-security:codebase-audit`, `cascade-security:auth-analysis`,
-  `cascade-security:secure-design`, `cascade-software-architect:review-architecture`,
-  `cascade-qa:plan-quality`, `cascade-qa:design-tests`,
-  `cascade-qa:assess-quality`, `validate-change`, or implementation planning.
+  `cascade-security:secure-design`, `cascade-engineering:review-architecture`,
+  `cascade-quality:plan-quality`, `cascade-quality:design-tests`,
+  `cascade-quality:assess-quality`, `validate-change`, or implementation planning.
 - Recommend validation probes for revocation, tenant isolation, role access,
   audit coverage, external sends, telemetry redaction, and abuse cases when
   relevant.
@@ -49,9 +49,9 @@ plugin procedures.
 - Proposed feature, workflow, architecture, agent/tool plan, external
   integration, or product decision: `cascade-security:secure-design`.
 - Boundary or module-contract uncertainty:
-  `cascade-software-architect:review-architecture`.
+  `cascade-engineering:review-architecture`.
 - Security acceptance planning and test design:
-  `cascade-qa:plan-quality` and `cascade-qa:design-tests`; target execution is
+  `cascade-quality:plan-quality` and `cascade-quality:design-tests`; target execution is
   a separate host adapter owned by the orchestrator or simulation operator.
 - Evidence aggregation before closeout: `validate-change`.
 
@@ -77,6 +77,6 @@ plugin procedures.
 - artifacts read or written
 - findings ordered by severity with file or doc evidence
 - validation commands or probes
-- next route: `cascade-software-architect:review-architecture`, `cascade-qa:plan-quality`,
-  `cascade-qa:design-tests`, `cascade-qa:assess-quality`, `validate-change`,
+- next route: `cascade-engineering:review-architecture`, `cascade-quality:plan-quality`,
+  `cascade-quality:design-tests`, `cascade-quality:assess-quality`, `validate-change`,
   `plan-change`, `implement-change`, `create-spec`, or `stop`

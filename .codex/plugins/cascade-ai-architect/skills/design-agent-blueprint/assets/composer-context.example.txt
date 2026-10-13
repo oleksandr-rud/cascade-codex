@@ -1,17 +1,29 @@
 [Current input]
 "Я Олена. Я хвилююся. Поясни по одному кроку, без пошуку."
 
-[Known facts]
-Name — "Олена"
-Source — "Користувач повідомив сам"
+[Admitted claims]
+•
+  Id — "reported-name"
+  Subject — "current-user"
+  Predicate — "preferred_name"
+  Value — "Олена"
+  Support — "REPORTED"
+  Evidence
+    • "e1"
+•
+  Id — "reported-concern"
+  Subject — "current-user"
+  Predicate — "emotion_report"
+  Value — "Хвилюється"
+  Support — "REPORTED"
+  Evidence
+    • "e2"
 
 [Response task]
 "Уточнити, що саме потрібно пояснити."
 
 [Response guidance]
 Language — "Українська"
-Tone — "Спокійний, підтримувальний"
 Format — "По одному кроку; проста мова"
-Limits — "До 4 речень, не більше одного запитання"
-Required — "Визнати хвилювання та запитати, що потрібно пояснити"
+Limits — "До 4 речень, одне запитання"
 Restrictions — "Без пошуку, вигаданих фактів і безпідставних запевнень"

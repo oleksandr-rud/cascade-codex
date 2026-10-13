@@ -8,7 +8,7 @@
 - Coverage: `complete`
 - Catalog digest: `5e6b263b4f1ce9a4b7cef1e60fc60744de6d87634305503978d47ff7740bfb84`
 - Manifest digest: `ca2a2840fd9cf0a4c720d9836623d479f35e27bbd665b98bb5b2e424368a4174`
-- Selected-source digest: `a395ff2edbb66b19ae32c3e0fd51f1aa8bf13daea42f9fdcafe344a6031e4633`
+- Selected-source digest: `967e23c024f9b4688e81837334970a65223de655e8ed13bc1b447498260f80ab`
 - Compiler-contract digest: `6cd5a7c76ea5a751ae51aee06aaac1786c197ae6682aaa88d6cfbf2367fa923b`
 
 ## Purpose And Audience
@@ -223,7 +223,7 @@ Traceability:
 ```text
 docs/product/contours/context-and-simulation/scenarios.md
   -> executable scenario or functional test
-  -> docs/work/tasks/{task_id}.md for current task state and checks
+  -> docs/work/active.md or docs/work/lanes/*.md for the active work overlay
 ```
 
 Rules:

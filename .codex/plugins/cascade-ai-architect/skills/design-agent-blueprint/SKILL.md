@@ -1,6 +1,6 @@
 ---
 name: design-agent-blueprint
-description: Turn a grounded capability map into a complete AI agent or agentic-system behavior blueprint. Use when selecting a single-agent versus multi-agent topology, defining per-agent missions and ownership, or specifying loops, state, context, memory, tools, permissions, skills, prompts, handoffs, recovery, observability, evaluation, rollout, and rollback before implementation, including an optional LangGraph runtime binding for a selected stateful architecture.
+description: Turn a grounded capability map into a complete AI agent or agentic-system behavior blueprint. Use when selecting a single-agent versus multi-agent topology, defining per-agent missions and ownership, or specifying loops, state, context, memory, tools, permissions, skills, prompts, handoffs, recovery, observability, evaluation, rollout, and rollback before implementation. Record a justified graph selection; hand concrete runtime binding to bind-agent-runtime.
 ---
 
 # Design Agent Blueprint
@@ -19,7 +19,7 @@ blocks; the frontend retains components and interactions. The reference demo's
 event format is optional and does not prescribe a backend or agent architecture.
 
 When a versioned host pattern catalog materially constrains topology, consume
-`cascade-software-architect:select-architecture-patterns`; do not copy its
+`cascade-engineering:select-architecture-patterns`; do not copy its
 pattern-selection procedure or treat a default as a mandate.
 
 ## Select the topology
@@ -69,17 +69,18 @@ Define all fourteen behavior blocks in `references/behavior-blocks.md`. Then def
 
 Do not hide application state in prompt history. The harness owns durable state, permissions, budgets, and tool enforcement. Prompts explain behavior but do not grant authority.
 
-For evolving evidence, corrections, partial state or task memory, consider
-[selective state, claims and memory](references/selective-state-claims-memory.md).
-Choose domain records versus claims by authority/provenance needs, keep deltas
-as proposals, and define each context section's sources, dependencies and gaps.
-Its runnable prepared-data example is optional backend evidence, not a full
-StateDelta runtime or measured LLM quality. Do not turn every property into a claim.
+For evolving evidence, corrections or task memory, use
+[state, claims and observations](references/selective-state-claims-memory.md).
+Keep authoritative domain state, source observations, model claims and derived memory
+distinct. Their provenance, uncertainty and host authority determine their use.
 
-Within an explicitly selected stateful profile, prefer
-[semantic Analyzer findings](references/analyzer-findings.md) for its compact
-claims/intent/gaps/optional-plan subset. Bind model output through the supplied
-adapter into internal StateDelta; richer operation profiles stay conditional.
+Within the explicitly adopted profile, use
+[claims/actions admission](references/claims-actions-admission.md): Analyzer emits
+typed claims and action requests, Admission validates them, Policy Engine orchestrates
+Researcher or Composer, and every role has its own fresh Context Builder.
+The host owns persistence and publication. There is no conversion to writable model
+operations. The executable reference proves bounded callback behavior, not provider
+quality or an already integrated target application.
 
 ## Check completeness
 

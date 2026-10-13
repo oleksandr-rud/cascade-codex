@@ -1,0 +1,59 @@
+schema_version: 1
+plugin:
+  name: cascade-project-management
+  version: 0.1.10+codex.20261005203443
+model_policy:
+  model: gpt-6-astra
+  planning_reasoning_effort: high
+  evaluation_reasoning_effort: high
+skills:
+  - route: cascade-workflows:define-work-item
+    description: Draft one grounded tracker-ready issue, bug, story, task, enabler, or experiment without filing or activating it.
+    triggers: [a durable tracker-ready work-item body is requested]
+    anti_triggers: ["only validation, defect classification, project planning, or implementation is requested"]
+    consumes: []
+    consumes_any_of: [user-report, accepted-behavior, frozen-findings]
+    produces: [work-item-definition]
+    required_dependencies: []
+    optional_dependencies: [cascade-discovery:manage-product-lifecycle, cascade-quality:triage-defects]
+    policy_tags: [project-management, work-item]
+    effect: CANDIDATE_WRITE
+    authority: READ_ONLY
+    evaluation_cases: [grounded-bug, missing-evidence, no-external-filing]
+  - route: cascade-workflows:plan-project
+    description: Build or revise a lean delivery plan with horizons, milestones, dependencies, risks, and evidence gates from accepted objectives.
+    triggers: [multi-horizon or multi-owner delivery planning is required]
+    anti_triggers: [one bounded implementation slice or product priority decision is requested]
+    consumes: [accepted-objective, accepted-domain-artifacts]
+    produces: [project-plan]
+    required_dependencies: []
+    optional_dependencies: [cascade-discovery:manage-product-lifecycle, cascade-quality:plan-quality]
+    policy_tags: [project-management, planning]
+    effect: CANDIDATE_WRITE
+    authority: READ_ONLY
+    evaluation_cases: [lean-plan, no-invented-owner]
+  - route: cascade-workflows:manage-project
+    description: Assess, coordinate, update, or reconcile an existing project plan from current artifacts, blockers, dependencies, and receipts.
+    triggers: ["an existing project has blockers, collisions, stale state, or handoffs"]
+    anti_triggers: [no durable project state exists]
+    consumes: [project-plan, execution-receipts]
+    produces: [project-status-proposal]
+    required_dependencies: []
+    optional_dependencies: [cascade-quality:assess-quality]
+    policy_tags: [project-management, coordination]
+    effect: CANDIDATE_WRITE
+    authority: READ_ONLY
+    evaluation_cases: [stale-state, no-auto-dispatch]
+  - route: cascade-workflows:close-project
+    description: Assess terminal project completion and propose evidence-preserving retention without archiving or rewriting history.
+    triggers: ["an existing project may be complete, superseded, or abandoned"]
+    anti_triggers: [target archival or ordinary bounded completion is requested]
+    consumes: [project-plan, execution-receipts]
+    optional_consumes: [quality-assessment]
+    produces: [project-closeout-proposal]
+    required_dependencies: []
+    optional_dependencies: [cascade-quality:assess-quality]
+    policy_tags: [project-management, closeout]
+    effect: CANDIDATE_WRITE
+    authority: READ_ONLY
+    evaluation_cases: [terminal-evidence, no-archive-effect]

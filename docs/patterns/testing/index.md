@@ -58,7 +58,7 @@ Traceability:
 ```text
 docs/product/contours/context-and-simulation/scenarios.md
   -> executable scenario or functional test
-  -> docs/work/tasks/{task_id}.md for current task state and checks
+  -> docs/work/active.md or docs/work/lanes/*.md for the active work overlay
 ```
 
 Rules:

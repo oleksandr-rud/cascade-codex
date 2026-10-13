@@ -1,0 +1,120 @@
+schema_version: 1
+selection: LLM interpretation of the actual subject, decisions and existing contracts; no keyword routing.
+development_policies:
+  W01: development-policies/W01-idea-space.md
+  W02: development-policies/W02-research.md
+  W03: development-policies/W03-solution.md
+  W04: development-policies/W04-test-design.md
+  W05: development-policies/W05-consistency.md
+  W06: development-policies/W06-design.md
+  W07: development-policies/W07-campaigns.md
+profiles:
+  FULL_APPLICATION:
+    template: ../assets/templates/FULL_APPLICATION.md
+    baseline: [S01, S02, S03, S04, S05, S07, S08, S13, S14, S15, S18]
+  PRODUCT:
+    template: ../assets/templates/PRODUCT.md
+    baseline: [S01, S02, S03, S04, S14]
+  COMPANY:
+    template: ../assets/templates/COMPANY.md
+    baseline: [S01, S03, S04, S14, S17]
+  SCENARIO:
+    template: ../assets/templates/SCENARIO.md
+    baseline: [S01, S03, S14]
+  TEST:
+    template: ../assets/templates/TEST.md
+    baseline: [S01, S14]
+  FEATURE_CHANGE:
+    template: ../assets/templates/FEATURE_CHANGE.md
+    baseline: [S01, S03, S14, S16]
+policies:
+  - id: S01
+    file: policies/S01-interview-scope.md
+    applies_when: Every specification, reusing known answers.
+    requires: []
+    diagram: Scope and actor context
+  - id: S02
+    file: policies/S02-functions.md
+    applies_when: A product or system has capabilities to enumerate and decompose.
+    requires: [S01]
+    diagram: Function hierarchy and ICOM view
+  - id: S03
+    file: policies/S03-scenarios.md
+    applies_when: The subject describes user or business behavior.
+    requires: [S01]
+    diagram: Process flow with meaningful alternative paths
+  - id: S04
+    file: policies/S04-domain-information.md
+    applies_when: Shared domain concepts or information need precise meaning.
+    requires: [S01]
+    diagram: Domain concept and information relationship map
+  - id: S05
+    file: policies/S05-architecture.md
+    applies_when: Technical components and responsibility boundaries need specification.
+    requires: [S02, S03]
+    diagram: C4 context or container view, with component detail where material
+  - id: S06
+    file: policies/S06-frontend.md
+    applies_when: Human-facing screens or interactions are in scope.
+    requires: [S03]
+    diagram: Screen navigation and action-response flow
+  - id: S07
+    file: policies/S07-api.md
+    applies_when: A public or internal programmatic boundary is in scope.
+    requires: [S05]
+    diagram: Boundary sequence tied to operation IDs
+  - id: S08
+    file: policies/S08-handlers.md
+    applies_when: Implementation needs handler, service or domain-function behavior.
+    requires: [S05]
+    diagram: Call dependency and handler algorithm view
+  - id: S09
+    file: policies/S09-database.md
+    applies_when: Persistent data must be modeled and implemented.
+    requires: [S04, S05]
+    diagram: ER or formal IDEF1X view appropriate to the selected storage
+  - id: S10
+    file: policies/S10-rules-access.md
+    applies_when: Business rules, differentiated access or trust boundaries matter.
+    requires: [S03, S04]
+    diagram: Rule-to-enforcement flow or annotated trust dataflow
+  - id: S11
+    file: policies/S11-state-concurrency.md
+    applies_when: Lifecycles, competing writes, retries or consequential effects exist.
+    requires: [S03, S08]
+    diagram: State transitions plus a race sequence when needed
+  - id: S12
+    file: policies/S12-integrations-jobs.md
+    applies_when: Providers, workers, webhooks, events or background tasks are in scope.
+    requires: [S05, S08]
+    diagram: Delivery and failure sequence across participating components
+  - id: S13
+    file: policies/S13-delivery-operations.md
+    applies_when: The application needs reproducible startup, deployment or recovery.
+    requires: [S05]
+    diagram: Deployment topology or installation process
+  - id: S14
+    file: policies/S14-acceptance-tests.md
+    applies_when: Every specification needs observable acceptance.
+    requires: [S01]
+    diagram: Requirement-to-scenario-to-contract-to-test trace
+  - id: S15
+    file: policies/S15-decisions-context.md
+    applies_when: Consequential product, process, test or technical choices, or existing repository practices, constrain the subject.
+    requires: [S01]
+    diagram: Decision and affected contract dependency map
+  - id: S16
+    file: policies/S16-feature-change.md
+    applies_when: The subject changes an existing specification or application.
+    requires: [S01, S03, S14]
+    diagram: Changed dependency and compatibility impact view
+  - id: S17
+    file: policies/S17-company.md
+    applies_when: Company offerings, responsibilities and operating processes are the subject.
+    requires: [S01, S03, S04]
+    diagram: Actor handoff or responsibility swimlane
+  - id: S18
+    file: policies/S18-quality-capacity.md
+    applies_when: Reliability, usability, performance or resource targets affect acceptance.
+    requires: [S01, S14]
+    diagram: Critical path or resource/queue view when material

@@ -212,7 +212,7 @@ def cross_field_errors(artifact: dict[str, Any]) -> list[str]:
         expected_output = " ".join(str(handoff.get("expected_output", "")).lower().split())
         if required_input == expected_output:
             errors.append(f"handoff input repeats its expected output: {handoff.get('route')}")
-        if handoff.get("route") == "cascade-product:define-product" and handoff.get("status") == "REQUIRED":
+        if handoff.get("route") == "cascade-discovery:define-product" and handoff.get("status") == "REQUIRED":
             circular_phrases = ("accepted product definition", "accepted product contract", "versioned product definition")
             if any(phrase in required_input for phrase in circular_phrases):
                 errors.append("product-definition handoff requires the missing product output as its own input")

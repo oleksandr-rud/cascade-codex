@@ -13,9 +13,9 @@ routing:
     - "The task is backend-only, native-only, CLI-only, experiment-only, or an atomic frontend edit inside an established boundary."
     - "The target already has a coherent enforced frontend architecture and no boundary or policy change is proposed."
   load_when:
-    - route: cascade-software-architect:review-architecture
+    - route: cascade-engineering:review-architecture
       use_when: "A frontend boundary, stack, state, data, cache, realtime, or UI-platform decision needs a reference default."
-    - route: cascade-coding-agent:adapt-harness
+    - route: cascade-engineering:adapt-harness
       use_when: "Target onboarding detects a browser client and needs a bounded frontend comparison."
     - route: plan-change
       use_when: "A new frontend or material frontend policy needs an implementation-draft structure."
@@ -30,8 +30,8 @@ routing:
     - "The rule is feature-specific and belongs in the target feature spec, design owner, or work lane."
     - "A native platform concern should use the native archetype rather than the web frontend family."
   primary_skills:
-    - cascade-software-architect:review-architecture
-    - cascade-coding-agent:adapt-harness
+    - cascade-engineering:review-architecture
+    - cascade-engineering:adapt-harness
     - plan-change
     - cascade-design:design-system
     - pattern-context

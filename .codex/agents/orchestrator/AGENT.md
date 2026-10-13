@@ -9,7 +9,7 @@ description: Route normal Cascade work proportionally across current context, a 
 
 Orchestrator owns normal task routing and target-repository integration. Reusable
 Product, Persona, Market, Design, Prompt, Simulation, Evaluation, Agent
-Architect, Security, Project Management, QA, and Cascade Coding Agent
+Architect, Security, Specs, Project Management, QA, and Cascade Coding Agent
 methods live in their namespaced plugins; this role supplies current repository
 context, authority, persistence, execution adapters, and acceptance boundaries.
 
@@ -33,23 +33,23 @@ Add a stage only when its trigger is present:
   validated artifact must become a durable target specification;
 - `context` in Discovery mode when essential target evidence is missing;
 - `pattern-context` for reusable pattern entries or compiled context packs;
-- `cascade-project-management:plan-project` for a requested roadmap,
+- `cascade-workflows:plan-project` for a requested roadmap,
   genuinely multi-horizon forecast, or Agile MVP/version/iteration plan;
-- `cascade-project-management:manage-project` for independently owned,
+- `cascade-workflows:manage-project` for independently owned,
   resumable work, evidence joins, status, or reconciliation;
-- `cascade-qa:plan-quality` and `cascade-qa:design-tests` only when accepted
+- `cascade-quality:plan-quality` and `cascade-quality:design-tests` only when accepted
   behavior has a material quality or evidence gate;
 - `run-qa-plan` only when an authorized frozen QA artifact requires target
-  execution, followed by `cascade-qa:assess-quality`;
-- `cascade-software-architect:review-change` for public, cross-boundary,
+  execution, followed by `cascade-quality:assess-quality`;
+- `cascade-engineering:review-change` for public, cross-boundary,
   security-sensitive, harness semantic, large, or explicitly requested review;
-- `cascade-qa:triage-defects` when failure ownership is uncertain, then
-  `repair-tests` only for proven `TEST_DRIFT`;
+- `cascade-quality:triage-defects` when failure ownership is uncertain, then
+  `resolve-validation-failure` only for proven `TEST_DRIFT`;
 - `closeout` when an existing durable work record or reusable handoff must be
   updated;
-- `cascade-project-management:close-project` for completion and retention
+- `cascade-workflows:close-project` for completion and retention
   assessment; `closeout` alone applies exact authorized host updates;
-- `cascade-project-management:define-work-item` when the requested output is a
+- `cascade-workflows:define-work-item` when the requested output is a
   durable issue, story, task, enabler, or experiment candidate.
 
 A bounded change completed by one owner stays inline. Do not create a spec, lane,
@@ -60,26 +60,29 @@ does not remove a needed product, software/AI architecture, or security method.
 
 ## Specialist routing
 
-Before consuming a validated capability selection, run `cascade workflow
-check-installed --selection PATH --envelope PATH`; stop on installed version,
-enabled-state, lock or package digest drift. Catalog validation alone does not
-prove installed behavior.
+Use `run-workflow` for ambiguous package-level requests and connected method
+handoffs. Its common host cycle applies proportionally; one sufficient method
+stays direct. Quality contains QA and Evals work products: determine the subject,
+desired operation and available evidence before selecting a concrete route.
 
 - Route ambiguous or multi-domain requests through
-  `cascade-coordinator:select-capabilities`. When the validated selection has
+  `cascade-workflows:select-capabilities`. When the validated selection has
   multiple nodes, dependencies, artifact handoffs, parallel branches, or a
-  join, compile it through `cascade-coordinator:plan-workflow`. Coordinator
+  join, compile it through `cascade-workflows:plan-workflow`. Coordinator
   artifacts never grant dispatch or repository authority.
 - Route market research, selection, experiments, positioning and messaging
-  through Cascade Marketing (`cascade-market`); use `cascade-market:plan-growth`
+  through Discovery's Market component; use `cascade-discovery:plan-growth`
   for channels, growth strategy, economics and proposed product feedback.
 - Route value/offer models, feature formation, accepted product behavior,
   prioritization, lifecycle and outcome validation through Cascade Product.
   Carry accepted requirement IDs, outcomes and proof into implementation;
   a growth recommendation does not itself approve a feature.
-- Route mixed-source feature/change specifications and parent-bound task slices
-  through `cascade-specs:synthesise-spec`; `create-spec` owns target rendering
-  and persistence. Product retains requirement approval and structure ownership.
+- Route specification composition through `specification-kit:build-spec`;
+  interview first, then load the selected profile and applicable policies.
+  Use `specification-kit:spec-diagrams` and `specification-kit:spec-test-design`
+  for focused projections; select design/campaign methods only for actual gaps.
+  Domain owners retain their decisions, and `create-spec` handles authorized
+  persistence of validated candidates.
 - Route tracker-ready work-item definition, project sequencing, Agile MVP
   decomposition, coordination, reconciliation, and closeout assessment through
   Cascade Project Management. A candidate never files or dispatches work.
@@ -89,7 +92,7 @@ prove installed behavior.
   projection needed by Product, Market, Cascade AI Architect, Evals, or
   Simulations.
 - Use Software Engineer for assigned implementation slices and Code Reviewer
-  for fixed-diff reviews through `cascade-software-architect:review-change`.
+  for fixed-diff reviews through `cascade-engineering:review-change`.
   Keep one implementation owner per write scope. Independent review needs a
   separate context; local review is self-review. A bounded task can still run
   the implementation contract locally. Role selection never grants dispatch.
@@ -136,14 +139,17 @@ Complete any pending hook intake through the semantic intake contract before
 supplying a Task Envelope. Render only the current request and relevant prior
 claims as clear text for interpretation; keep the full schema/catalog as typed
 host contracts. Missing or uncertain interpretation is unresolved, not a reason
-to guess meaning with a lexical classifier.
+to use the source-only lexical classifier.
 
 1. Supply the serialized current Task Envelope from admission, the current
    digest-bound plugin capability catalog, available input-artifact identities,
    and the user's model/evaluation policy. A prose claim that admission passed
    is insufficient. Compile or refresh these host inputs before invoking the
    selector; never ask the plugin to invent missing identities.
-2. Run `cascade-coordinator:select-capabilities` against catalog descriptors;
+   `workflow intake` prepares the model request from that envelope and the
+   exact versioned artifact bindings. Submit declared model JSON through
+   `workflow accept-selection`; retain unresolved questions and blockers.
+2. Run `cascade-workflows:select-capabilities` against catalog descriptors;
    load domain skill bodies only after selection. Supply the digest of the
    exact selector prompt and compute the candidate's selection digest on the
    host. Validate with `workflow validate-selection --selection PATH --envelope
@@ -152,7 +158,7 @@ to guess meaning with a lexical classifier.
    producer; controller inputs alone do not make a domain route ready.
 3. If the validated selection needs ordering or artifact handoffs, supply that
    exact serialized selection and the exact planner-prompt digest to
-   `cascade-coordinator:plan-workflow`. Validate with `workflow validate-plan
+   `cascade-workflows:plan-workflow`. Validate with `workflow validate-plan
    --plan PATH --selection PATH --envelope PATH` before consuming its nodes.
    Use the source CLI or the installed runtime CLI available in this repository.
 4. Execute only the user's authorized scope after validation, carrying each
@@ -173,7 +179,7 @@ the selector or planner with the same missing input.
   envelope in-process from the current request and repository evidence.
 - Inspect current source and dirty work before asking questions or writing.
 - Prefer current code and immutable evidence over stale planning prose.
-- Treat numbered tasks and accepted coordination artifacts as declarative state, never permission or
+- Treat active lanes and graphs as declarative state, never permission or
   automatic dispatch.
 - Activate durable work only when it must survive tasks, cross owners, or join
   evidence. Keep speculative horizons inactive.

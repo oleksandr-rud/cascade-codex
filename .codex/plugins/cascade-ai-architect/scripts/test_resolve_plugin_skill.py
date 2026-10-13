@@ -110,6 +110,24 @@ class ResolvePluginSkillTests(unittest.TestCase):
         self.assertEqual(exit_code, resolver.EXIT_BLOCKED)
         self.assertEqual(result["code"], "SOURCE_UNAVAILABLE")
 
+    def test_grouped_skill_resolves_within_exact_advertised_root(self) -> None:
+        source = self.root / "skills" / "prompt" / "SKILL.md"
+        nested = self.root / "skills" / "component" / "skills" / "prompt" / "SKILL.md"
+        nested.parent.mkdir(parents=True)
+        source.replace(nested)
+        result, exit_code = self.resolve(self.inventory())
+        self.assertEqual(exit_code, resolver.EXIT_AVAILABLE, result)
+        self.assertEqual(result["skill"]["path"], str(nested.resolve()))
+
+    def test_duplicate_grouped_skill_identity_is_invalid(self) -> None:
+        source = self.root / "skills" / "prompt" / "SKILL.md"
+        nested = self.root / "skills" / "component" / "skills" / "prompt" / "SKILL.md"
+        nested.parent.mkdir(parents=True)
+        nested.write_bytes(source.read_bytes())
+        result, exit_code = self.resolve(self.inventory())
+        self.assertEqual(exit_code, resolver.EXIT_INVALID)
+        self.assertEqual(result["code"], "SKILL_IDENTITY_AMBIGUOUS")
+
     def test_missing_plugin_is_blocked(self) -> None:
         result, exit_code = self.resolve({"installed": []})
         self.assertEqual(exit_code, resolver.EXIT_BLOCKED)

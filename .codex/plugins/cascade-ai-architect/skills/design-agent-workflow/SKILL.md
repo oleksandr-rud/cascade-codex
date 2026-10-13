@@ -1,6 +1,6 @@
 ---
 name: design-agent-workflow
-description: Design or audit the executable behavior flow for an AI agent or agentic system, including act-observe-update loops, explicit state, deterministic routing, typed handoffs, recovery, budgets, and stop rules. Use when an agent blueprint needs a workflow contract, when a selected stateful agent needs a LangGraph binding, when multi-agent orchestration or delegation must be made reviewable, or when an existing agent loop is incomplete, unsafe, or prone to cycling.
+description: Design or audit a framework-neutral executable behavior flow for an AI agent or agentic system, including act-observe-update loops, explicit state, deterministic routing, typed handoffs, recovery, budgets, and stop rules. Use when an agent blueprint needs a workflow contract, when multi-agent orchestration or delegation must be made reviewable, or when an existing agent loop is incomplete, unsafe, or prone to cycling. Hand an accepted workflow needing a concrete host binding to bind-agent-runtime.
 ---
 
 # Design Agent Workflow
@@ -33,6 +33,16 @@ When dependencies, branches or joins make execution structure material, use
 Recommend it only for a concrete boundary benefit; bind each step's context and
 prompt handoff along with its routes. Static/dynamic choice, branch membership,
 join failure behavior and admission remain explicit target decisions.
+Hand the accepted framework-neutral workflow to
+`cascade-ai-architect:bind-agent-runtime` when a concrete host binding is needed.
+The binding selects direct calls or a justified graph without changing behavior.
+
+When the target is an observation-controlled Cascade plugin workflow, read
+[the Cascade control binding](references/cascade-control.md). Keep capability
+selection and DAG planning with Cascade Workflows; bind typed observations,
+LLM decisions, artifact versions, bounded retries and terminal feedback to the
+host control contract. A dynamic agent topology is an explicit design choice,
+not a consequence of needing triggers or an RSI feedback route.
 
 Only when the user explicitly requests the Analyzer–Policy Engine–Composer
 family (including `schema-values-text@1`) or an accepted target architecture

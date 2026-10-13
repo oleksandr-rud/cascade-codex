@@ -1,0 +1,227 @@
+{
+  "dependencies": [
+    {
+      "alias": "cascade-prompt:prompt",
+      "path": "skills/prompt/SKILL.md",
+      "plugin_version": "0.7.17+codex.20261006.1",
+      "sha256": "2531ff3950a0a8ac91db532af6518e1b2f8eec03ef8461e1c089c80761eedac1"
+    },
+    {
+      "alias": "cascade-prompt:prompt",
+      "path": "skills/prompt/runtime/grounded.md",
+      "plugin_version": "0.7.17+codex.20261006.1",
+      "sha256": "d20e9fb787d73823b49537e1c924f0c940d2d9c15a8fd37ac825edeb5cd61730"
+    },
+    {
+      "alias": "cascade-prompt:prompt",
+      "path": "skills/prompt/runtime/task-overlays.md",
+      "plugin_version": "0.7.17+codex.20261006.1",
+      "sha256": "48891411293a7e004472cd5e288f2a61fcba20dc3e05ac1ed4cfaa6cd64f260d"
+    },
+    {
+      "alias": "cascade-prompt:prompt",
+      "path": "skills/prompt/runtime/tier-frontier-autonomous.md",
+      "plugin_version": "0.7.17+codex.20261006.1",
+      "sha256": "a6d4c474e39699591d3bf7be8754cdd998e56f0f42f3f5947b53b0924629d245"
+    },
+    {
+      "alias": "cascade-prompt:prompt",
+      "path": "skills/prompt/runtime/evaluation.md",
+      "plugin_version": "0.7.17+codex.20261006.1",
+      "sha256": "c6fbdede0540c1214a7b5c98e4a47e239908878d4c31c056d145b1591a525bba"
+    },
+    {
+      "alias": "cascade-prompt:prompt",
+      "path": "skills/prompt/runtime/model-index.yaml",
+      "plugin_version": "0.7.17+codex.20261006.1",
+      "sha256": "1f9eaeeb4b62c64414adae7f38ca2c61f07d49781d804243767dbb25bd4bddf1"
+    },
+    {
+      "alias": "cascade-quality:agent-evaluation",
+      "path": "skills/evals/skills/agent-evaluation/SKILL.md",
+      "plugin_version": "1.0.0+codex.20261006.1",
+      "sha256": "10465ed0a9d348badbb5f7ba9138c9d792db6c2993c7cc856f6a3bf5d130d51c"
+    },
+    {
+      "alias": "cascade-quality:evaluate",
+      "path": "skills/evals/skills/evaluate/SKILL.md",
+      "plugin_version": "1.0.0+codex.20261006.1",
+      "sha256": "2862260ec5daf750da995dc1c2c29323eb1fac26b1c0b814dcb41c3f6729d50e"
+    },
+    {
+      "alias": "cascade-quality:evaluate",
+      "path": "skills/evals/scripts/run_agent_evaluation.py",
+      "plugin_version": "1.0.0+codex.20261006.1",
+      "sha256": "8de80d38c3e3b3e9308d775933368ced1227856734e762242f5a678673357f53"
+    },
+    {
+      "alias": "cascade-quality:evaluate",
+      "path": "skills/evals/scripts/build_blind_packets.py",
+      "plugin_version": "1.0.0+codex.20261006.1",
+      "sha256": "38523dc801bc04029e2a56ba08ca2835544448bde352b6f836c08f340789c816"
+    },
+    {
+      "alias": "cascade-quality:evaluate",
+      "path": "skills/evals/scripts/reduce_evaluation.py",
+      "plugin_version": "1.0.0+codex.20261006.1",
+      "sha256": "7cc5208753eddd406eade30c4a73a1dead5adf06bf5f00d875bd3a9030094cf6"
+    },
+    {
+      "alias": "cascade-quality:evaluate",
+      "path": "skills/evals/scripts/validate_judge.py",
+      "plugin_version": "1.0.0+codex.20261006.1",
+      "sha256": "f40a5d65e03ae622840449c7c64886f862b77c50fa00daf5fe82e2630d80ec93"
+    },
+    {
+      "alias": "cascade-quality:evaluate",
+      "path": "skills/evals/skills/evaluate/references/agent-builder-response.schema.json",
+      "plugin_version": "1.0.0+codex.20261006.1",
+      "sha256": "619e690f2543628ce1af9e647e9be54fb1604df5d048989cbce3ab99a5cbfcf7"
+    },
+    {
+      "alias": "cascade-quality:evaluate",
+      "path": "skills/evals/skills/evaluate/references/agent-target-response.schema.json",
+      "plugin_version": "1.0.0+codex.20261006.1",
+      "sha256": "b6bfb5a08d2a797711af8a48854f5851ede7b82410945784e2a7bca314b96c27"
+    },
+    {
+      "alias": "cascade-quality:evaluate",
+      "path": "skills/evals/skills/evaluate/references/judge-packet.schema.json",
+      "plugin_version": "1.0.0+codex.20261006.1",
+      "sha256": "1fb8e2e9df56eb6f34578bf0812837932fed981a6cc8ed1f2bdf29d9e0c24424"
+    },
+    {
+      "alias": "cascade-quality:evaluate",
+      "path": "skills/evals/skills/evaluate/references/model-policy.json",
+      "plugin_version": "1.0.0+codex.20261006.1",
+      "sha256": "c6b6ddcd0ffa31cb9bfb82316fb7ea28ae8c30cb0b6d45db1b418ea3fd680de4"
+    },
+    {
+      "alias": "cascade-quality:build-judge",
+      "path": "skills/evals/skills/build-judge/SKILL.md",
+      "plugin_version": "1.0.0+codex.20261006.1",
+      "sha256": "31a074689c6b539181d620401b41a678b05eaaae8407a8ae859b3545dfc82f2c"
+    },
+    {
+      "alias": "cascade-quality:build-judge",
+      "path": "skills/evals/skills/build-judge/references/judge-response.schema.json",
+      "plugin_version": "1.0.0+codex.20261006.1",
+      "sha256": "a21cd5c40f51cc0e5b455c85dd36fd969e844a0c9d062207106ea442f5064ccd"
+    }
+  ],
+  "digest_algorithm": "sha256",
+  "evaluation_assets": [
+    {
+      "path": "evals/evaluation-contract.json",
+      "sha256": "269736eca1c9d1e9f169f1103a6cca44daa717c5845f45da666cd3b33504d0f3"
+    },
+    {
+      "path": "evals/cases.json",
+      "sha256": "97de1cd0b67a6414d463ba84a023f277695780fe00717a60293ca02b1ddf1982"
+    },
+    {
+      "path": "evals/judge-outcome.json",
+      "sha256": "7efda46fa394a4f95e24d77fcf4cbf26e836ae8a438e00a5ef71e6d6e4379830"
+    },
+    {
+      "path": "evals/judge-trajectory.json",
+      "sha256": "a1051bc1a7594684611212f54db5f1748e6cde9c1365d00026ad884d973528cf"
+    },
+    {
+      "path": "scripts/evaluate_case_assertions.py",
+      "sha256": "20dc37d6f4179f8a11f10a4db05659e74361cef2ea92905f7d9396cfa40278e3"
+    }
+  ],
+  "manifest_id": "cascade-qa-evaluation-assets-v2",
+  "plugin_id": "cascade-qa",
+  "plugin_version": "0.1.9+codex.20260910172549",
+  "schema_version": 2,
+  "subject_assets": [
+    {
+      "path": ".codex-plugin/plugin.json",
+      "sha256": "505717a36e7616994f8d212998ca31b7828f45548aea4df6237040bc789326df"
+    },
+    {
+      "path": "skills/plan-quality/SKILL.md",
+      "sha256": "0e6e0b1d0c55015ed933a525811fbf165e267ef1a566ff38521de1e554546d35"
+    },
+    {
+      "path": "skills/plan-quality/agents/openai.yaml",
+      "sha256": "9ef88323a65e22db6f3a1cdcf892dc366e54b536f595abe3d4e0440b33105b63"
+    },
+    {
+      "path": "skills/plan-quality/references/quality-planning-rules.md",
+      "sha256": "a08e57d3e2db56973134bd3531c2f93fb46dea34fe887251351c76707554d948"
+    },
+    {
+      "path": "skills/plan-quality/assets/quality-plan.template.yaml",
+      "sha256": "fe545b49003b00febd5f5581c99b9bd1ce4bca04bed9587fc55d53881655ea0d"
+    },
+    {
+      "path": "skills/design-tests/SKILL.md",
+      "sha256": "e65b5e5adec7b8b2904bfc1fb4925d96b8b790f3b6441fd2241ba8d9b63cd2b5"
+    },
+    {
+      "path": "skills/design-tests/agents/openai.yaml",
+      "sha256": "ec79bae5793efd07888442aa8d2d42b089fb663164ff77de97ee55bda89020bc"
+    },
+    {
+      "path": "skills/design-tests/references/test-design-rules.md",
+      "sha256": "7467bfa1e17f32fd4dd52d0e9e9a8c68fd3052146c96e01489d1d3889b94d2d9"
+    },
+    {
+      "path": "skills/design-tests/assets/test-case.template.yaml",
+      "sha256": "70efe6bfb1d27fd526faa1630ccdab0d42b449cc5a6568a7cee6960a0de7ab0e"
+    },
+    {
+      "path": "skills/assess-quality/SKILL.md",
+      "sha256": "40bdf2f0907a3bf4cda82244b0d21d8cfe9bd1639c730c3fb06aa1f238547d16"
+    },
+    {
+      "path": "skills/assess-quality/agents/openai.yaml",
+      "sha256": "c98eb3fbead090bbfadb0558fbc1da2c49bcad768b2972b4df68466b752480a2"
+    },
+    {
+      "path": "skills/assess-quality/references/assessment-rules.md",
+      "sha256": "0dfdadc88f26e1d583d2cd50714170fd5a94d2182251315e875305c3f11ac3b3"
+    },
+    {
+      "path": "skills/triage-defects/SKILL.md",
+      "sha256": "90544ed8b2dbed8dfaff707d7db9a5586a698f582077d2e5b3894062e5e47c9a"
+    },
+    {
+      "path": "skills/triage-defects/agents/openai.yaml",
+      "sha256": "6fa4e6d3fe3557729da7feb3ab3cbfeea90af819bdd49288f7bf521918ab4c48"
+    },
+    {
+      "path": "skills/triage-defects/references/defect-classification.md",
+      "sha256": "1b00c6c2e9b3196ca7cb6734ffc7a6403bf0857c84ece39ccf35a6b99e154d9b"
+    },
+    {
+      "path": "skills/triage-defects/assets/defect-triage.template.yaml",
+      "sha256": "31d4d828ca0e835b943a29237d1ec8d6fdac58174a75c68c5de98839ace42a3b"
+    },
+    {
+      "path": "schemas/qa-artifact.schema.json",
+      "sha256": "a7648076d02d9ad687962ae92b502a5bc2eff40746a329664cb0909b0fa62e20"
+    },
+    {
+      "path": "scripts/validate_artifact.py",
+      "sha256": "92a1334ec8db1584fddfbc17436cfd039d29e9962400fd8bc73fb65390ed6aea"
+    },
+    {
+      "path": "specs/architecture.md",
+      "sha256": "a49fe1f9391932001b090e13af9cc3caa252df59b1a22e392ea70a43d4b0345d"
+    },
+    {
+      "path": "specs/capability-map.md",
+      "sha256": "7b1d336fcc40c4e49f201e314ccf723582b38440facaf95e4b6c6a0517342680"
+    },
+    {
+      "path": "specs/extraction-manifest.json",
+      "sha256": "233598955a334bef65ddd358b9f7d6d1a45428fe33b30ef2bf466b1a82d7a9d3"
+    }
+  ],
+  "subject_digest": "7bd98823f7f99826543dfc1ef04f195767c01711de4cedecf2da8966b0d459f4",
+  "subject_digest_algorithm": "sha256-path-digest-list-v1"
+}

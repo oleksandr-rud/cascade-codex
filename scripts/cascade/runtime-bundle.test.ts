@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, test } from "bun:test";
-import { randomUUID } from "node:crypto";
+import { createHash, randomUUID } from "node:crypto";
 import {
   cp,
   mkdir,
@@ -15,6 +15,7 @@ import { tmpdir } from "node:os";
 import { buildRuntimeBundle } from "../build-runtime-bundle";
 import { compileTaskEnvelope, interpretationFixture } from "./fixtures/admission";
 import {
+  buildPluginCapabilityCatalog,
   capabilitySelectionDigest,
   readPluginCapabilityCatalog,
   type CapabilitySelection,
@@ -46,7 +47,7 @@ describe("Cascade lean target runtime bundle", () => {
     outputs.push(output);
     const report = await buildRuntimeBundle(output);
     expect(report.file_count).toBeLessThanOrEqual(120);
-    expect(report.plugin_count).toBe(15);
+    expect(report.plugin_count).toBe(10);
 
     for (const excluded of [
       ".codex/plugins",
@@ -56,8 +57,6 @@ describe("Cascade lean target runtime bundle", () => {
       "harness-evals",
       "product-evals",
       "docs/archive",
-      "docs/backlog",
-      "docs/work/active.md",
       "docs/work/lanes",
       "docs/work/reports",
       "docs/product/catalog.yaml",
@@ -71,9 +70,11 @@ describe("Cascade lean target runtime bundle", () => {
     ]) {
       await expect(stat(resolve(output, excluded))).rejects.toThrow();
     }
+    expect(await readFile(resolve(output, "docs/work/active.md"), "utf8")).not.toContain("W-004");
+    expect(await readFile(resolve(output, "docs/backlog/_index.md"), "utf8")).not.toContain("Earlier cleanup");
     await stat(resolve(output, "docs/product/unit-template.md"));
     const specsIndex = await readFile(resolve(output, "docs/specs/_index.md"), "utf8");
-    expect(specsIndex).toContain("cascade-specs:synthesise-spec");
+    expect(specsIndex).toContain("specification-kit:build-spec");
 
     const help = runBundle(output, ["--help"]);
     expect(help.exitCode).toBe(0);
@@ -82,12 +83,11 @@ describe("Cascade lean target runtime bundle", () => {
     const work = runBundle(output, ["work", "audit", "--json", "--check"]);
     expect(work.exitCode).toBe(0);
     const audit = JSON.parse(work.stdout.toString());
-    expect(audit.schema_version).toBe(2);
-    expect(audit.summary.active_tasks).toBe(0);
-    expect(audit.next_task_id).toBe("T-001");
-    await stat(resolve(output, "docs/work/task.schema.json"));
-    await stat(resolve(output, "docs/work/task-template.md"));
-    await expect(stat(resolve(output, "docs/work/tasks/T-001.md"))).rejects.toThrow();
+    expect(audit.schema_version).toBe(1);
+    expect(audit.summary.active_lanes).toBe(0);
+    expect(audit.summary.active_graphs).toBe(0);
+    expect(audit.source.admission.case_count).toBeNull();
+    expect(audit.authority.may_dispatch).toBe(false);
     const workPrompt = runBundle(output, ["work", "automation-prompt"]);
     expect(workPrompt.exitCode).toBe(0);
     expect(workPrompt.stdout.toString()).toContain(".codex/runtime/cascade.js work audit");
@@ -114,6 +114,13 @@ describe("Cascade lean target runtime bundle", () => {
     const patternSkill = await readFile(resolve(output, ".codex/skills/pattern-context/SKILL.md"), "utf8");
     expect(patternSkill).toContain(".codex/runtime/cascade.js patterns");
     expect(patternSkill).not.toContain("scripts/cascade");
+    const grouped = runBundle(output, ["workflow", "groups"]);
+    expect(grouped.exitCode).toBe(0);
+    const projection = JSON.parse(grouped.stdout.toString());
+    expect(projection.groups.length).toBe(10);
+    expect(projection.groups.flatMap((group: any) => group.methods).map((method: any) => method.route).sort())
+      .toEqual((await buildPluginCapabilityCatalog()).plugins.flatMap(plugin => plugin.skills.map((skill: any) => skill.route)).sort());
+    expect(projection.dispatch_authorized).toBe(false);
     const sourceOnly = runBundle(output, ["admission", "corpus"]);
     expect(sourceOnly.exitCode).toBe(1);
     expect(sourceOnly.stderr.toString()).toContain("source-checkout-only");
@@ -143,20 +150,27 @@ describe("Cascade lean target runtime bundle", () => {
       task_id: "lean-runtime-routing",
       produced_at: "2026-09-02T00:00:00+00:00",
     });
-    const plugin = catalog.plugins.find((item) => item.name === "cascade-market")!;
+    const plugin = catalog.plugins.find((item) => item.name === "cascade-discovery")!;
     const skill = plugin.skills.find(
-      (item: Record<string, any>) => item.route === "cascade-market:research-market",
+      (item: Record<string, any>) => item.route === "cascade-discovery:research-market",
     )!;
     const selection = {
       schema_version: 1,
       artifact_type: "cascade-capability-selection",
+      plugin_activation: catalog.plugins.filter(plugin => plugin.activation).map(plugin => ({
+        plugin_name: plugin.name, plugin_version: plugin.version, claim_ids: [envelope.claims[0]!.claim_id],
+        disposition: "NOT_APPLICABLE", depth: "NONE", topics: [],
+        trigger_evidence: ["This authored runtime fixture requests only market research without a UI work product."],
+        anti_trigger_disposition: "Pure market research is outside Design activation.",
+        reason: "Keep this non-UI fixture outside the Design method set.",
+      })),
       status: "CANDIDATE",
       task_envelope_id: envelope.envelope_id,
       request_digest: envelope.request_digest,
       capability_catalog_digest: catalog.catalog_digest,
       selection_digest: "0".repeat(64),
       selector: {
-        route: "cascade-coordinator:select-capabilities",
+        route: "cascade-workflows:select-capabilities",
         model: "gpt-6.1-sol",
         reasoning_effort: "xhigh",
         prompt_sha256: "a".repeat(64),
@@ -197,6 +211,38 @@ describe("Cascade lean target runtime bundle", () => {
       `${JSON.stringify(selection, null, 2)}\n`,
       "utf8",
     );
+    const inputBindings = [];
+    for (const artifactType of skill.consumes) {
+      const path = `.artifacts/runtime-bundle-test/${artifactType}.txt`;
+      const bytes = `Frozen source fixture for ${artifactType}`;
+      await writeFile(resolve(output, path), bytes);
+      inputBindings.push({ artifact_type: artifactType, artifact_id: artifactType, version: "1", path, sha256: createHash("sha256").update(bytes).digest("hex") });
+    }
+    await writeFile(resolve(artifacts, "bindings.json"), JSON.stringify(inputBindings));
+    const intakeRun = runBundle(output, ["workflow", "intake", "--envelope", ".artifacts/runtime-bundle-test/envelope.json", "--bindings", ".artifacts/runtime-bundle-test/bindings.json", "--output", ".artifacts/runtime-bundle-test/intake.json"]);
+    expect(intakeRun.exitCode).toBe(0);
+    const intake = JSON.parse(await readFile(resolve(artifacts, "intake.json"), "utf8"));
+    expect(intake.task_envelope_id).toBe(envelope.envelope_id);
+    expect(intake.dispatch_authorized).toBe(false);
+    expect(intake.prompt).toContain("Plugin activation contract");
+    expect(intake.prompt).toContain("form-parameters");
+    expect(intake.prompt).toContain("navigation-layout");
+    expect(intake.prompt).toContain("STRUCTURAL");
+    const rawSelection = structuredClone(selection);
+    rawSelection.selector.prompt_sha256 = "0".repeat(64); rawSelection.selection_digest = "0".repeat(64);
+    await writeFile(resolve(artifacts, "response.json"), JSON.stringify(rawSelection));
+    const acceptedRun = runBundle(output, ["workflow", "accept-selection", "--intake", ".artifacts/runtime-bundle-test/intake.json", "--response", ".artifacts/runtime-bundle-test/response.json", "--output", ".artifacts/runtime-bundle-test/accepted.json"]);
+    expect(acceptedRun.exitCode).toBe(0);
+    const accepted = JSON.parse(await readFile(resolve(artifacts, "accepted.json"), "utf8"));
+    expect(accepted.selected_candidates).toEqual(selection.selected_candidates);
+    expect(accepted.selector.prompt_sha256).toBe(intake.prompt_sha256);
+    expect(accepted.plugin_activation).toEqual(selection.plugin_activation);
+    const missingActivation = structuredClone(rawSelection);
+    delete missingActivation.plugin_activation;
+    await writeFile(resolve(artifacts, "missing-activation.json"), JSON.stringify(missingActivation));
+    const missingActivationRun = runBundle(output, ["workflow", "accept-selection", "--intake", ".artifacts/runtime-bundle-test/intake.json", "--response", ".artifacts/runtime-bundle-test/missing-activation.json", "--output", ".artifacts/runtime-bundle-test/rejected.json"]);
+    expect(missingActivationRun.exitCode).toBe(1);
+    expect(missingActivationRun.stderr.toString()).toContain("plugin activation disposition is missing");
     const validation = runBundle(output, [
       "workflow",
       "validate-selection",
@@ -224,9 +270,9 @@ describe("Cascade lean target runtime bundle", () => {
         task_id: "lean-runtime-prompt-models", produced_at: "2026-09-10T00:00:00+00:00",
       }) : growthEnvelope;
       await writeFile(resolve(artifacts, "envelope.json"), JSON.stringify(featureEnvelope));
-      const routes = promptPair ? ["cascade-prompt:prompt", "cascade-evals:prompt-evaluation"] : [
-        ...(includeGrowth ? ["cascade-market:plan-growth"] : []),
-        "cascade-product:define-product",
+      const routes = promptPair ? ["cascade-prompt:prompt", "cascade-quality:prompt-evaluation"] : [
+        ...(includeGrowth ? ["cascade-discovery:plan-growth"] : []),
+        "cascade-discovery:define-product",
       ];
       const descriptors = routes.map((route) => {
         const owner = catalog.plugins.find((item) =>
@@ -252,17 +298,17 @@ describe("Cascade lean target runtime bundle", () => {
       } as CapabilitySelection;
       featureSelection.selection_digest = capabilitySelectionDigest(featureSelection);
       const nodes = descriptors.map((item) => ({
-        node_id: promptPair ? (item.route === "cascade-prompt:prompt" ? "prompt" : "eval") : (item.route === "cascade-market:plan-growth" ? "growth" : "product"),
+        node_id: promptPair ? (item.route === "cascade-prompt:prompt" ? "prompt" : "eval") : (item.route === "cascade-discovery:plan-growth" ? "growth" : "product"),
         route: item.route,
         plugin_version: item.plugin_version,
         claim_ids: [featureEnvelope.claims[0]!.claim_id],
         policy_tags: item.policy_tags,
         consumes: item.consumes,
         produces: item.produces,
-        ...(includeGrowth && item.route === "cascade-product:define-product" ? { optional_consumes: ["growth-strategy"] } : {}),
+        ...(includeGrowth && item.route === "cascade-discovery:define-product" ? { optional_consumes: ["growth-strategy"] } : {}),
         effect: item.effect,
         authority: item.authority,
-        model: { id: item.model_policy.model, reasoning_effort: item.route.startsWith("cascade-evals:") ? item.model_policy.evaluation_reasoning_effort : item.model_policy.planning_reasoning_effort },
+        model: { id: item.model_policy.model, reasoning_effort: item.route.startsWith("cascade-quality:") ? item.model_policy.evaluation_reasoning_effort : item.model_policy.planning_reasoning_effort },
         reason: "Use available evidence to form an accountable feature proposal.",
       }));
       const plan = {
@@ -273,7 +319,7 @@ describe("Cascade lean target runtime bundle", () => {
         request_digest: featureEnvelope.request_digest,
         capability_catalog_digest: catalog.catalog_digest,
         capability_selection_digest: featureSelection.selection_digest,
-        planner: { route: "cascade-coordinator:plan-workflow", model: "gpt-6.1-sol", reasoning_effort: "xhigh", prompt_sha256: "b".repeat(64) },
+        planner: { route: "cascade-workflows:plan-workflow", model: "gpt-6.1-sol", reasoning_effort: "xhigh", prompt_sha256: "b".repeat(64) },
         input_artifacts: featureSelection.input_artifacts,
         selected_nodes: nodes,
         edges: promptPair ? [{ from: "prompt", to: "eval", artifact: "prompt-candidate" }] : includeGrowth ? [{ from: "growth", to: "product", artifact: "growth-strategy" }] : [],
@@ -339,8 +385,8 @@ describe("Cascade lean target runtime bundle", () => {
 
     // The distributed planner accepts either supported quality-planning subject,
     // while still rejecting a plan that omits both or selects unavailable input.
-    const qaPlugin = catalog.plugins.find((item) => item.name === "cascade-qa")!;
-    const qa = qaPlugin.skills.find((item: Record<string, any>) => item.route === "cascade-qa:plan-quality")!;
+    const qaPlugin = catalog.plugins.find((item) => item.name === "cascade-quality")!;
+    const qa = qaPlugin.skills.find((item: Record<string, any>) => item.route === "cascade-quality:plan-quality")!;
     const qaSelection = {
       ...selection,
       input_artifacts: ["task-envelope", "plugin-capability-catalog", "change-contract"],
@@ -354,7 +400,7 @@ describe("Cascade lean target runtime bundle", () => {
         schema_version: 1, artifact_type: "cascade-plugin-plan", status: "CANDIDATE",
         task_envelope_id: envelope.envelope_id, request_digest: envelope.request_digest,
         capability_catalog_digest: catalog.catalog_digest, capability_selection_digest: qaSelection.selection_digest,
-        planner: { route: "cascade-coordinator:plan-workflow", model: "gpt-6.1-sol", reasoning_effort: "xhigh", prompt_sha256: "b".repeat(64) },
+        planner: { route: "cascade-workflows:plan-workflow", model: "gpt-6.1-sol", reasoning_effort: "xhigh", prompt_sha256: "b".repeat(64) },
         input_artifacts: qaSelection.input_artifacts,
         selected_nodes: [{ node_id: "quality", route: qa.route, plugin_version: qaPlugin.version, claim_ids: [envelope.claims[0]!.claim_id], policy_tags: qa.policy_tags, consumes: qa.consumes, optional_consumes: selectedInput ? [selectedInput] : [], produces: qa.produces, effect: qa.effect, authority: qa.authority, model: { id: qaPlugin.model_policy.model, reasoning_effort: qaPlugin.model_policy.planning_reasoning_effort }, reason: "Plan evidence gates from accepted behavior in the change contract." }],
         edges: [], parallel_groups: [], rejected_candidates: [], blockers: [], dispatch_authorized: false,
@@ -374,6 +420,10 @@ describe("Cascade lean target runtime bundle", () => {
     const closeoutHelp = runBundle(output, ["closeout", "--help"]);
     expect(closeoutHelp.exitCode).toBe(0);
     expect(closeoutHelp.stdout.toString()).toContain("closeout check --file");
+    // Model a registered target repository in this case's new output. The hook
+    // calls Git; a source copy need not have an ancestor repository.
+    const targetGit = Bun.spawnSync({ cmd: ["git", "init", "--quiet", "--initial-branch=fixture", output], cwd: output, stdout: "pipe", stderr: "pipe" });
+    expect(targetGit.exitCode).toBe(0);
     const closeoutBinding = Bun.spawnSync({
       cmd: [process.execPath, resolve(output, ".codex/runtime/closeout-hook.js")],
       cwd: output,
@@ -400,7 +450,7 @@ describe("Cascade lean target runtime bundle", () => {
     for (const [key, role, route] of [
       ["design_creation", "product-designer", "cascade-design:create-design"],
       ["software_implementation", "software-engineer", "implement-change"],
-      ["code_review", "code-reviewer", "cascade-software-architect:review-change"],
+      ["code_review", "code-reviewer", "cascade-engineering:review-change"],
     ]) {
       expect(config).toContain(`${key} = "${role}"`);
       const manifest = Bun.TOML.parse(await readFile(resolve(output, `.codex/agents/${role}.toml`), "utf8"));
@@ -411,10 +461,10 @@ describe("Cascade lean target runtime bundle", () => {
       if (role === "code-reviewer") expect(manifest.sandbox_mode).toBe("read-only");
     }
     const designerMap = parseStrictYaml(await readFile(resolve(output, ".codex/agents/product-designer/skills.yaml"), "utf8")) as Record<string, any>;
-    for (const route of ["cascade-product:define-product", "cascade-market:brand-positioning", "cascade-personas:compile-persona", "cascade-project-management:plan-project", "cascade-prompt:prompt", "cascade-simulations:simulation-brief"]) {
+    for (const route of ["cascade-discovery:define-product", "cascade-discovery:brand-positioning", "cascade-discovery:compile-persona", "cascade-workflows:plan-project", "cascade-prompt:prompt", "cascade-simulations:simulation-brief"]) {
       expect(designerMap.plugin_skills).toContain(route);
     }
-    for (const route of ["cascade-product:manage-product-lifecycle", "cascade-market:plan-growth", "cascade-simulations:execute-simulation-campaign", "cascade-evals:simulation-evaluation"]) {
+    for (const route of ["cascade-discovery:manage-product-lifecycle", "cascade-discovery:plan-growth", "cascade-simulations:run-simulation-campaign", "cascade-quality:simulation-evaluation"]) {
       expect(designerMap.plugin_skills).not.toContain(route);
     }
     const design = catalog.plugins.find((item) => item.name === "cascade-design")!;
@@ -458,7 +508,7 @@ describe("Cascade lean target runtime bundle", () => {
     const adaptedPath = resolve(target, "harness.config.yaml");
     await writeFile(adaptedPath, stringifyYaml(adapted));
     const targetValidation = runBundle(target, ["target", "validate", "--root", "."]);
-    expect(targetValidation.exitCode).toBe(0);
+    expect(targetValidation.exitCode, targetValidation.stderr.toString()).toBe(0);
     expect(targetValidation.stdout.toString()).toContain("target_project_status=PASS");
     const inventory = runBundle(target, ["target", "inventory", "--config", "harness.config.yaml"]);
     expect(inventory.exitCode).toBe(0);

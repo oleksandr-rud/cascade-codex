@@ -5,6 +5,10 @@ default for new or unconstrained product and marketing interfaces. Preserve
 explicit target design authority. An explicit decision to establish a reusable
 default supplies accepted reuse scope; a one-off preference does not.
 
+Use the local [Design process](../../../references/README.md) for one brief,
+conditional phases and a bound handoff. Reusable-rule adoption remains an owner
+decision; an ordinary prototype has no mandatory system-building phase.
+
 A reusable design rule needs all of the following:
 
 - a stable identity and rule type;

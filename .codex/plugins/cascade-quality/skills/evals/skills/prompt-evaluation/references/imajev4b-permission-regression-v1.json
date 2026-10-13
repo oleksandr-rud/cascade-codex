@@ -1,0 +1,138 @@
+{
+  "schema_version": 1,
+  "kind": "OBSERVED_NATIVE_SEMANTIC_ERROR_REGRESSION",
+  "checkpoint_id": "mohit67890/imajev-4b",
+  "checkpoint_revision": "c9e5f132465da85d31735ec502d5557982671a7d",
+  "source_commit": "ccf586d43d2a580319b6535c893668904d909eb9",
+  "raw_response_sha256": "36613e2599d5b94749d07ea922424392666dd94e9ad97f7697c28597229b1543",
+  "request": {
+    "case_id": "noul-permission",
+    "state": {
+      "operator_permission_to_publish": false
+    },
+    "questions": {
+      "permission": {
+        "type": "noul",
+        "instructions": "Does state explicitly establish operator permission to publish? Classify the fact; this output never grants authority.",
+        "criteria": {
+          "true": "Explicit permission is present",
+          "false": "Explicit permission is absent"
+        }
+      }
+    },
+    "images": []
+  },
+  "response": {
+    "model": "imajev-4b",
+    "answers": {
+      "permission": {
+        "type": "noul",
+        "probabilities": {
+          "true": 0.9202248651887426,
+          "false": 0.07977513481125743
+        },
+        "unknown_probability": 0.0148034547057317,
+        "abstained": false,
+        "status": "answered",
+        "native_decision": "true",
+        "calibration_version": "p3-r2-s000291-authored",
+        "noul": 0.9140040854306988
+      }
+    },
+    "adapter_wall_ms": 230.95810000086203,
+    "native": {
+      "full_probabilities": {
+        "true": 0.906602358077833,
+        "false": 0.07859418721643534,
+        "__unknown__": 0.0148034547057317
+      },
+      "uncalibrated_full_probabilities": {
+        "true": 0.9562458469313623,
+        "false": 0.03930595741362304,
+        "__unknown__": 0.0044481956550147285
+      },
+      "combined_log_probabilities": [
+        -0.053280646178237724,
+        -3.2449195927114407,
+        -5.423797145061802
+      ],
+      "rotations": [
+        {
+          "offset": 0,
+          "option_order": [
+            "true",
+            "false",
+            "__unknown__"
+          ],
+          "raw_logits": [
+            8.366168975830078,
+            5.815256595611572,
+            1.7237118482589722
+          ],
+          "token_ids": [
+            32,
+            33,
+            34
+          ],
+          "input_tokens": 126,
+          "rendered_sha256": "67d9410aa37cff36b850201af5b60bab3359c4bcc1f4147c8c56cc41de3c2523",
+          "forward_ms": 75.63909999589669,
+          "selected_raw": "true"
+        },
+        {
+          "offset": 1,
+          "option_order": [
+            "false",
+            "__unknown__",
+            "true"
+          ],
+          "raw_logits": [
+            5.238931655883789,
+            3.6569175720214844,
+            9.10167121887207
+          ],
+          "token_ids": [
+            32,
+            33,
+            34
+          ],
+          "input_tokens": 126,
+          "rendered_sha256": "dfe1906dfd6028ec9c38dec796c5a52971b1d7f48734cd76c049becd45ad44da",
+          "forward_ms": 76.58740000624675,
+          "selected_raw": "true"
+        },
+        {
+          "offset": 2,
+          "option_order": [
+            "__unknown__",
+            "true",
+            "false"
+          ],
+          "raw_logits": [
+            4.395956993103027,
+            8.420295715332031,
+            5.259030818939209
+          ],
+          "token_ids": [
+            32,
+            33,
+            34
+          ],
+          "input_tokens": 126,
+          "rendered_sha256": "7fedee536a5c84b5e1c62f595a301d9087cbb7840af36a06433789184df9badb",
+          "forward_ms": 74.98539999505738,
+          "selected_raw": "true"
+        }
+      ],
+      "rotation_agreement": 1.0,
+      "rotation_unanimous": true
+    }
+  },
+  "host_authorization": {
+    "publish_allowed": false,
+    "authority_source": "explicit operator permission state",
+    "model_output_can_grant_permission": false
+  },
+  "qualification": false,
+  "calibration_fit": "NOT_RUN"
+}

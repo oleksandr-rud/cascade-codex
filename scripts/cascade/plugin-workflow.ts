@@ -1,4 +1,4 @@
-import { basename, dirname, resolve } from "node:path";
+import { basename, dirname, relative, resolve } from "node:path";
 import { homedir } from "node:os";
 
 import {
@@ -28,8 +28,8 @@ import {
 } from "./admission";
 
 const MARKETPLACE_RELATIVE = ".agents/plugins/marketplace.json";
-const SELECT_CAPABILITIES_ROUTE = "cascade-coordinator:select-capabilities";
-const PLAN_WORKFLOW_ROUTE = "cascade-coordinator:plan-workflow";
+const SELECT_CAPABILITIES_ROUTE = "cascade-workflows:select-capabilities";
+const PLAN_WORKFLOW_ROUTE = "cascade-workflows:plan-workflow";
 const COORDINATOR_ROUTES = new Set([
   SELECT_CAPABILITIES_ROUTE,
   PLAN_WORKFLOW_ROUTE,
@@ -37,7 +37,7 @@ const COORDINATOR_ROUTES = new Set([
 export const PLUGIN_CAPABILITY_CATALOG_RELATIVE =
   ".codex/plugin-capabilities.generated.json";
 const COORDINATOR_SOURCE_ROOT = rootPath(
-  ".codex/plugins/cascade-coordinator/skills",
+  ".codex/plugins/cascade-workflows/skills/coordinator/skills",
 );
 const COORDINATOR_RUNTIME_CONTRACT_ROOT = rootPath(
   ".codex/runtime/contracts/coordinator",
@@ -100,11 +100,60 @@ function catalogPayload(catalog: Omit<PluginCapabilityCatalog, "catalog_digest">
   return payload;
 }
 
-function validateCatalogDigest(catalog: PluginCapabilityCatalog): void {
+export function validateCatalogDigest(catalog: PluginCapabilityCatalog): void {
   assertJsonSchema(catalog, CATALOG_SCHEMA, "plugin capability catalog");
   const expected = sha256Text(stableJson(catalogPayload(catalog)));
   if (catalog.catalog_digest !== expected) {
     throw new CascadeError("plugin capability catalog digest is invalid");
+  }
+  for (const plugin of catalog.plugins) {
+    if (!plugin.activation) continue;
+    const depths = plugin.activation.depths.map((depth: JsonRecord) => depth.id);
+    if (!exactStringSet(depths, ["LIGHTWEIGHT", "FOCUSED", "STRUCTURAL"]) || new Set(depths).size !== depths.length) {
+      throw new CascadeError(`${plugin.name} plugin activation must declare each proportional depth exactly once`);
+    }
+    const topics = new Set<string>();
+    const routes = new Set(plugin.skills.map((skill: JsonRecord) => skill.route));
+    for (const topic of plugin.activation.topics as JsonRecord[]) {
+      if (topics.has(topic.id)) throw new CascadeError(`${plugin.name} plugin activation has a duplicate topic: ${topic.id}`);
+      topics.add(topic.id);
+      for (const route of topic.routes) {
+        if (!routes.has(route)) throw new CascadeError(`${plugin.name} plugin activation names a foreign or absent method: ${route}`);
+      }
+    }
+  }
+}
+
+function validatePluginActivationDecisions(selection: CapabilitySelection, catalog: PluginCapabilityCatalog, claims: Set<string>): void {
+  const configured = new Map(catalog.plugins.filter(plugin => plugin.activation).map(plugin => [plugin.name, plugin]));
+  const dispositions = new Map<string, JsonRecord>();
+  for (const decision of selection.plugin_activation ?? []) {
+    const plugin = configured.get(decision.plugin_name);
+    if (!plugin) throw new CascadeError(`plugin activation is not declared by the current catalog: ${decision.plugin_name}`);
+    if (dispositions.has(plugin.name)) throw new CascadeError(`duplicate plugin activation disposition: ${plugin.name}`);
+    if (decision.plugin_version !== plugin.version) throw new CascadeError(`${plugin.name} plugin activation version is stale`);
+    for (const claimId of decision.claim_ids) {
+      if (!claims.has(claimId)) throw new CascadeError(`${plugin.name} plugin activation references unknown claim ${claimId}`);
+    }
+    const topics = new Set(plugin.activation.topics.map((topic: JsonRecord) => topic.id));
+    if (decision.topics.some((topic: string) => !topics.has(topic))) throw new CascadeError(`${plugin.name} plugin activation references an unknown topic`);
+    const ownRoutes = new Set(plugin.skills.map((skill: JsonRecord) => skill.route));
+    const selected = selection.selected_candidates.filter(candidate => ownRoutes.has(candidate.route));
+    if (decision.disposition === "ACTIVE") {
+      if (decision.depth === "NONE" || !decision.topics.length) throw new CascadeError(`${plugin.name} active plugin activation needs a depth and topic`);
+      if (selection.status === "CANDIDATE" && !selected.length) throw new CascadeError(`${plugin.name} active plugin activation has no selected method`);
+      if (selection.status === "CANDIDATE" && decision.claim_ids.some((claimId: string) => !selected.some(candidate => candidate.claim_ids.includes(claimId)))) {
+        throw new CascadeError(`${plugin.name} active plugin activation has an uncovered claim`);
+      }
+    } else if (decision.disposition === "NOT_APPLICABLE") {
+      if (decision.depth !== "NONE" || decision.topics.length || selected.length) throw new CascadeError(`${plugin.name} excluded plugin activation cannot contain depth, topics or selected methods`);
+    } else if (selection.status !== "BLOCKED") {
+      throw new CascadeError(`${plugin.name} blocked plugin activation requires a blocked selection`);
+    }
+    dispositions.set(plugin.name, decision);
+  }
+  for (const name of configured.keys()) {
+    if (!dispositions.has(name)) throw new CascadeError(`plugin activation disposition is missing: ${name}`);
   }
 }
 
@@ -115,6 +164,10 @@ function selectionPayload(selection: CapabilitySelection): JsonRecord {
 
 export function capabilitySelectionDigest(selection: CapabilitySelection): string {
   return sha256Text(stableJson(selectionPayload(selection)));
+}
+
+export function capabilitySelectionResponseSchema(): JsonRecord {
+  return structuredClone(SELECTION_SCHEMA);
 }
 
 function validateSelectionDigest(selection: CapabilitySelection): void {
@@ -181,6 +234,16 @@ function assertUniqueArtifactOwnership(skills: Map<string, JsonRecord>): void {
   }
 }
 
+// The portable kit is its own source owner; other repository packages keep
+// their established roots. This allowlist does not accept arbitrary local paths.
+export function repoPluginRoot(name: string): string {
+  if (name === "specification-kit") return "specification-kit";
+  if (!/^cascade-[a-z0-9-]+$/.test(name)) {
+    throw new CascadeError(`invalid repository marketplace plugin name: ${name}`);
+  }
+  return `.codex/plugins/${name}`;
+}
+
 export async function buildPluginCapabilityCatalog(): Promise<PluginCapabilityCatalog> {
   const marketplace = await readJson<JsonRecord>(rootPath(MARKETPLACE_RELATIVE));
   if (!Array.isArray(marketplace.plugins) || marketplace.plugins.length === 0) {
@@ -194,14 +257,14 @@ export async function buildPluginCapabilityCatalog(): Promise<PluginCapabilityCa
   for (const entry of marketplace.plugins) {
     const name = entry?.name;
     const source = entry?.source?.path;
-    if (typeof name !== "string" || !/^cascade-[a-z0-9-]+$/.test(name)) {
+    if (typeof name !== "string") {
       throw new CascadeError(`invalid Cascade marketplace plugin name: ${String(name)}`);
     }
     if (seenPlugins.has(name)) {
       throw new CascadeError(`duplicate Cascade marketplace plugin: ${name}`);
     }
     seenPlugins.add(name);
-    const expectedSource = `./.codex/plugins/${name}`;
+    const expectedSource = `./${repoPluginRoot(name)}`;
     if (entry?.source?.source !== "local" || source !== expectedSource) {
       throw new CascadeError(`${name} marketplace source must be ${expectedSource}`);
     }
@@ -241,6 +304,7 @@ export async function buildPluginCapabilityCatalog(): Promise<PluginCapabilityCa
 
     const sourceRoutes = new Set<string>();
     const sourceBodies = new Map<string, string>();
+    const sourcePaths = new Map<string, string>();
     for (const path of await walkFiles(resolve(pluginRoot, "skills"), {
       include: (candidate) => basename(candidate) === "SKILL.md",
     })) {
@@ -251,13 +315,18 @@ export async function buildPluginCapabilityCatalog(): Promise<PluginCapabilityCa
         throw new CascadeError(`${rel(path)} skill name does not match its folder`);
       }
       const route = `${name}:${frontmatterName}`;
+      if (sourceRoutes.has(route)) throw new CascadeError(`duplicate source skill: ${route}`);
       sourceRoutes.add(route);
       sourceBodies.set(route, body);
+      sourcePaths.set(route, relative(pluginRoot, path).replaceAll("\\", "/"));
     }
     if (!exactStringSet([...sourceRoutes], [...declared.keys()])) {
       throw new CascadeError(`${name} capability routes do not exactly match source skills`);
     }
     for (const [route, skill] of declared) {
+      if (skill.entrypoint && skill.entrypoint !== sourcePaths.get(route)) {
+        throw new CascadeError(`${route} declared entrypoint differs from its actual source`);
+      }
       const body = sourceBodies.get(route)!;
       for (const dependency of [
         ...sortedStrings(skill.required_dependencies),
@@ -284,7 +353,13 @@ export async function buildPluginCapabilityCatalog(): Promise<PluginCapabilityCa
       manifest_sha256: await sha256File(manifestPath),
       descriptor_sha256: await sha256File(descriptorPath),
       model_policy: descriptor.model_policy,
-      skills: descriptor.skills,
+      ...(descriptor.plugin.activation ? { activation: descriptor.plugin.activation } : {}),
+      skills: await Promise.all(descriptor.skills.map(async (skill: JsonRecord) => ({
+        ...skill,
+        component: skill.component ?? (name.startsWith("cascade-") ? name.slice("cascade-".length) : name),
+        entrypoint: sourcePaths.get(skill.route),
+        skill_sha256: await sha256File(resolve(pluginRoot, sourcePaths.get(skill.route)!)),
+      }))),
     });
   }
 
@@ -486,6 +561,8 @@ export function validateCapabilitySelection(
     }
   }
 
+  validatePluginActivationDecisions(selection, catalog, claims);
+
   const rejectedRoutes = new Set<string>();
   for (const rejection of selection.rejected_candidates) {
     if (rejectedRoutes.has(rejection.route)) {
@@ -609,10 +686,10 @@ export function validatePluginPlan(
     if (node.model.id !== descriptor.model_policy.model) {
       throw new CascadeError(`${node.route} model differs from its capability policy`);
     }
-    if (node.route.startsWith("cascade-evals:") && node.model.reasoning_effort !== descriptor.model_policy.evaluation_reasoning_effort) {
+    if (descriptor.component === "evals" && node.model.reasoning_effort !== descriptor.model_policy.evaluation_reasoning_effort) {
       throw new CascadeError(`${node.route} evaluation reasoning effort differs from its capability policy`);
     }
-    if (!node.route.startsWith("cascade-evals:") && node.model.reasoning_effort !== descriptor.model_policy.planning_reasoning_effort) {
+    if (descriptor.component !== "evals" && node.model.reasoning_effort !== descriptor.model_policy.planning_reasoning_effort) {
       throw new CascadeError(`${node.route} planning reasoning effort differs from its capability policy`);
     }
     for (const claimId of node.claim_ids as string[]) {
@@ -756,10 +833,16 @@ async function validateSelectionCommand(args: ReturnType<typeof parseArgs>): Pro
 
 export async function main(argv: string[]): Promise<number> {
   const [command, ...rest] = argv;
+  if (["intake", "accept-selection"].includes(command ?? "")) {
+    return (await import("./workflow-composition")).workflowCompositionCommand(command!, rest);
+  }
+  if (["groups", "control-init", "control-intake", "control-step"].includes(command ?? "")) {
+    return (await import("./workflow-control")).workflowControlCommand(command!, rest);
+  }
   const args = parseArgs(rest);
   if (command === "catalog") return checkOrWriteCatalog(args);
   if (command === "check-installed") return checkInstalledCommand(args);
   if (command === "validate-selection") return validateSelectionCommand(args);
   if (command === "validate" || command === "validate-plan") return validatePlanCommand(args);
-  throw new CascadeError("workflow command must be catalog, check-installed, validate-selection, or validate-plan");
+  throw new CascadeError("workflow command must be catalog, check-installed, groups, intake, accept-selection, validate-selection, validate-plan, control-init, control-intake, or control-step");
 }

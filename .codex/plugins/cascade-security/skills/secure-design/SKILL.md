@@ -61,9 +61,9 @@ Do not use this skill when:
 6. Produce the review using `templates/secure-design-review.md`.
 7. Route outcomes:
    - missing source or product evidence -> `target-host` evidence collection;
-   - architecture boundary risk -> `cascade-software-architect:review-architecture`;
+   - architecture boundary risk -> `cascade-engineering:review-architecture`;
    - auth implementation risk -> `cascade-security:auth-analysis`;
-   - user-visible behavior checks -> `cascade-qa:design-tests`;
+   - user-visible behavior checks -> `cascade-quality:design-tests`;
    - implementation -> `target-host`.
 
 ## Status Semantics
@@ -129,4 +129,4 @@ to `secure-design` and `coverage.kind` set to `design`.
   instructions.
 - Route prompt-specific hardening to `cascade-prompt:prompt`, bounded abuse
   rehearsal to `cascade-simulations:simulate`, and semantic qualification to
-  `cascade-evals:evaluate`; do not copy those peer workflows.
+  `cascade-quality:evaluate`; do not copy those peer workflows.

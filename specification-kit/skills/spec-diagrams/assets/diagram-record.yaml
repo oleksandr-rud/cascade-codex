@@ -1,0 +1,41 @@
+diagram_id: DG-EXAMPLE
+question: Which component enforces this operation and persists its result?
+view: TARGET
+notation: MERMAID_SEQUENCE
+notation_claim: ADAPTATION
+owner: SPEC.md#operation-contract
+editable_source: SPEC.md#DG-EXAMPLE
+source_refs: [OP-EXAMPLE, H-EXAMPLE, D-EXAMPLE, AC-EXAMPLE]
+bindings:
+  - element: API
+    contract: H-EXAMPLE
+  - element: API to database commit
+    contract: D-EXAMPLE transaction contract
+text_equivalent: Describe the meaningful order, conditions, failure and recovery in prose.
+evidence:
+  - kind: SYNTAX
+    status: NOT_RUN
+    source_sha256: null
+    reviewer_or_tool: null
+    version: null
+    reference: null
+  - kind: RENDER
+    status: NOT_RUN
+    source_sha256: null
+    reviewer_or_tool: null
+    version: null
+    reference: null
+  - kind: CONTRACT_REVIEW
+    status: NOT_RUN
+    source_sha256: null
+    owner_sha256: null
+    related_owner_bindings: []
+    reviewer_or_tool: null
+    version: null
+    reference: null
+  - kind: FORMAL_NOTATION_REVIEW
+    status: NOT_APPLICABLE
+    source_sha256: null
+    reviewer_or_tool: null
+    version: null
+    reference: null

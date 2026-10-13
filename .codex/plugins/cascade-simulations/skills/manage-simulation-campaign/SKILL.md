@@ -15,11 +15,11 @@ Cascade Evals owns generic judges and semantic reduction.
   `cascade-simulations:simulate`.
 - For campaign authoring, versioning, registration requests, multi-case or
   multi-contour governance, and aggregation, use this skill.
-- For approved execution, use `$execute-simulation-campaign`.
+- For approved execution, use `$run-simulation-campaign`.
 - For a frozen run's independent semantic judgment, use
-  `cascade-evals:simulation-evaluation`.
-- For a canonical persona projection, use `cascade-personas:compile-persona`;
-  for traceable quality-owned test design, use `cascade-qa:design-tests`.
+  `cascade-quality:simulation-evaluation`.
+- For a canonical persona projection, use `cascade-discovery:compile-persona`;
+  for traceable quality-owned test design, use `cascade-quality:design-tests`.
   Neither dependency is required for campaigns that do not need that artifact.
 
 ## Campaign lifecycle
@@ -32,12 +32,12 @@ Cascade Evals owns generic judges and semantic reduction.
    reset and isolation strategy, observability, failure policy, and artifact
    paths.
 4. **Register**: validate the package and catalog before execution.
-5. **Execute**: delegate approved runs to `$execute-simulation-campaign`; separate
+5. **Execute**: delegate approved runs to `$run-simulation-campaign`; separate
    controller verification from outcome judgment.
 6. **Freeze**: store immutable, identity-bound artifacts and distinguish
    authored cases from executed evidence.
 7. **Evaluate**: delegate frozen semantic outcomes to
-   `cascade-evals:simulation-evaluation`; preserve judge profile, rubric, labeled support,
+   `cascade-quality:simulation-evaluation`; preserve judge profile, rubric, labeled support,
    and receipt.
 8. **Aggregate**: apply the predeclared reduction and report eligible,
    ineligible, failed, blocked, and unrun cases separately.

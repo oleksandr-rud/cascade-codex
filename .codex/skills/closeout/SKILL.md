@@ -5,7 +5,7 @@ description: Finalize durable work state, a reusable handoff, or a task-local ev
 
 # Closeout
 
-Use this skill when completion must update an numbered task record or accepted coordination artifact, preserve a
+Use this skill when completion must update an existing lane or graph, preserve a
 cross-task handoff, propose cleanup of task-local evaluations, record a durable lesson, or synchronize governed
 documentation. It is not a mandatory final phase for every bounded change.
 
@@ -30,16 +30,16 @@ No separate check-closeout skill, task journal or mandatory report is needed.
    an independent-judge gate for an ordinary task that does not require one.
 4. If durable documentation changed, verify that the authoritative owner and
    every true consumer were updated or explicitly left unchanged; preserve
-   references unless the user explicitly authorized their cleanup, and use `create-spec` for unresolved
+   references and historical records, and use `create-spec` for unresolved
    specification persistence.
-5. Update the same numbered Work task with affected state, required check
-   results, blockers and next handoff. Preserve optional `NOT_RUN` evidence.
-6. Keep the handoff in that task record; do not create separate lane, report,
-   archive or backlog files as a completion side effect.
+5. If an active lane or Coordination Graph exists, update only its affected
+   state, acceptance evidence, blockers, and next handoff.
+6. Create a report only when another task or maintainer needs information that
+   cannot be recovered cheaply from current source and tests.
 7. Route reusable operating lessons to the appropriate documentation or pattern
    owner; do not duplicate them across reports.
 8. When durable project state may leave the active projection, first consume a
-   current `cascade-project-management:close-project` artifact. Apply only its
+   current `cascade-workflows:close-project` artifact. Apply only its
    exact `RETIRE_PROPOSED` records when the user or active-state contract grants
    current host mutation authority; revalidate indexes and preserve the source
    artifact, failed history, and rehydration path. Retention is never automatic.

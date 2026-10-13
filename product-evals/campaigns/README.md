@@ -80,7 +80,7 @@ principal and locks its declared claims out of general evaluation.
 
 A required specialized handoff freezes execution and writes
 `specialized-evaluations/<run-id>-specialized-evaluation/input/input-manifest.json`.
-The independent `cascade-evals:harness-evaluation` producer consumes that exact
+The independent `cascade-quality:harness-evaluation` producer consumes that exact
 manifest and returns a sibling evidence package containing the canonical
 `receipt.json`, `provider/trace.json`, and `provider/output.json`. Each path in
 its evidence manifest is relative to the supplied package root, under the same

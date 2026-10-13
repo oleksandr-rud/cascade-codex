@@ -9,7 +9,7 @@ Turn a request and current repository evidence into an executable, proportional
 plan. Planning is a decision aid, not a prerequisite-document factory.
 
 For mixed accepted product/design/implementation sources that need a durable
-behavior contract, use `cascade-specs:synthesise-spec` before implementation.
+behavior contract, use `specification-kit:build-spec` before implementation.
 The host `create-spec` persists its accepted result; ordinary bounded work
 with an existing contract remains inline.
 
@@ -22,16 +22,16 @@ with an existing contract remains inline.
 - **Connected**: several components or a real handoff share one outcome. Add a
   compact dependency and evidence map.
 - **Program**: multiple horizons, owners, or independently resumable worklines.
-  Use `cascade-project-management:plan-project` and, only for feasible
-  committed scope, `cascade-project-management:manage-project`.
+  Use `cascade-workflows:plan-project` and, only for feasible
+  committed scope, `cascade-workflows:manage-project`.
 
 ## Plan the slice
 
 When a Product definition or growth-derived feature is supplied, carry its
 current decision, requirement IDs, outcome, acceptance behavior, non-goals and
 measurement limits into the slice. Resolve an undecided value/offer/feature
-through `cascade-product:define-product`; use
-`cascade-product:manage-product-lifecycle` for investment or gate decisions.
+through `cascade-discovery:define-product`; use
+`cascade-discovery:manage-product-lifecycle` for investment or gate decisions.
 A growth recommendation supplies a hypothesis, not accepted product scope.
 Use accepted current requirements directly for ordinary fixes; do not rerun
 market or growth strategy unless the change challenges those decisions.
@@ -40,7 +40,7 @@ Before choosing the implementation slice, resolve the decisions it depends on:
 
 - For a new application without an accepted architecture, or a change whose
   business, state, or dependency boundaries are unresolved, use
-  `cascade-software-architect:architect-software-system` before code. Derive
+  `cascade-engineering:architect-software-system` before code. Derive
   module ownership from accepted business scenarios and invariants, not entity
   names or a preferred directory tree. Reuse a current accepted architecture.
 - For unresolved AI-agent behavior, topology, or tool/state ownership, use
@@ -57,6 +57,15 @@ ordinary internal edit with settled boundaries does not trigger these methods.
 Bind only applicable target-adopted or explicitly selected references, including
 their concrete rules and source versions. Missing decision-critical sources are
 gaps; do not substitute source-checkout defaults or load every reference pack.
+
+For every UI change or UI refactor with possible visual, interaction, navigation,
+accessibility or UI-contract impact, include Cascade Design at the appropriate
+depth under its catalog activation contract. Reuse accepted behavior/design
+and choose the smallest current Design method: a bounded evidence check can
+suffice, while unresolved component, flow or structural decisions need their
+owning method. Bind the affected surface, topic, reference, states and evidence;
+do not automatically create mockups, Product research or a design role dispatch.
+Proven no-UI-impact work can be excluded; uncertain impact needs a scoped check.
 
 For UI, map the intended outcome to necessary information, the primary action,
 and observable completion/recovery. Bind the accepted target design or Cascade
@@ -80,7 +89,7 @@ Plan the accepted UI mapping; adopting the practice adds no backend work by itse
    rendered comparison against those references; do not silently redesign them.
 6. Define validation before editing: focused checks first, broader checks only
    when the touched boundary warrants them.
-7. Use `cascade-software-architect:review-architecture` only for a genuine cross-boundary or public
+7. Use `cascade-engineering:review-architecture` only for a genuine cross-boundary or public
    contract change. When a durable fact changes, identify its authoritative
    owner and classify sibling documents as consumers, references, historical,
    or unrelated; route durable spec persistence to `create-spec`.
@@ -101,8 +110,8 @@ Implementation can begin when the chosen slice has:
 
 For Connected work, add dependencies, handoffs, and evidence joins. For
 Program work, hand the grounded slices to
-`cascade-project-management:plan-project`, then only committed current scope
-to `cascade-project-management:manage-project`; do not invent owners,
+`cascade-workflows:plan-project`, then only committed current scope
+to `cascade-workflows:manage-project`; do not invent owners,
 capacity, dates, work IDs, or active state.
 
 ## Output

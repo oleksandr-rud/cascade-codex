@@ -3,7 +3,7 @@ analyzer:
   role: analyzer
   purpose: analyze-input
   systemPrompt: "Help the user within the supplied role and authority."
-  instructions: "Return JSON delta proposals only for admitted writable slots."
+  instructions: "Return analysis.v1 claims, action requests and uncertainty from issued observations. Never write state or permissions."
   maxTokens: 6000
   blocks:
     - id: evidence-policy

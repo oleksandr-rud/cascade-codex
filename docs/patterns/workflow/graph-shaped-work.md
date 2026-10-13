@@ -26,7 +26,7 @@ and versions.
 
 ## Portable Project Artifact And Host Projection
 
-`cascade-project-management:plan-project` emits either lean horizons or one
+`cascade-workflows:plan-project` emits either lean horizons or one
 canonical Agile hierarchy of MVP versions, iterations, stories, and tasks,
 plus dependencies and uncertainty. It progressively elaborates only the first
 MVP iteration. `manage-project` establishes current items, owners, joins,
@@ -121,7 +121,7 @@ Readiness is not dispatch. A host execution binding must name:
 Project Management plans and coordinates. Domain plugins produce artifacts.
 The harness executes them through narrow adapters such as `implement-change`,
 `run-qa-plan`, and `closeout`, or through the host-authorized Simulation
-Operator applying `cascade-simulations:execute-simulation-campaign`. Results
+Operator applying `cascade-simulations:run-simulation-campaign`. Results
 return to the owning plugin for semantic assessment when needed.
 
 ## QA Is A Conditional Branch
@@ -138,7 +138,7 @@ The flow is:
 3. `run-qa-plan` maps registered adapter IDs to current repository actions;
 4. the harness freezes receipts without deciding their semantic meaning;
 5. Cascade QA assesses evidence or triages a failure; and
-6. `repair-tests` may edit tests only after triage proves `TEST_DRIFT` while
+6. `resolve-validation-failure` may edit tests only after triage proves `TEST_DRIFT` while
    the public behavior boundary still passes.
 
 No QA branch is created for work with no relevant quality claim.
@@ -160,7 +160,7 @@ Completion requires current accepted outcomes, satisfied dependencies, known
 consumers, and appropriately scoped evidence. It does not require QA when QA
 was not applicable.
 
-`cascade-project-management:close-project` returns a typed completion and
+`cascade-workflows:close-project` returns a typed completion and
 retention proposal. `closeout` may then update exact active projections or
 move exact frozen records only when current host authority allows it. Otherwise
 it records `ARCHIVE_DEFERRED` with the blocker. Retention is never automatic,

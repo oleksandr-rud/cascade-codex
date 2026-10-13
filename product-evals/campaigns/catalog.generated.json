@@ -1,5 +1,5 @@
 {
-  "digest": "f2f76c0263158c86038b1db9500b2816d03b87e797b8fe31883dc174ddffc9be",
+  "digest": "c6798b69c96754c2798ce9cf2cf6d6b555141878d795938cb3c3e8ba857017c6",
   "entries": [
     {
       "adapters": [
@@ -25,7 +25,7 @@
       "intake_status": null,
       "intake_task_envelope_id": null,
       "manifest": "product-evals/campaigns/agent-cascade-harness-canary.yaml",
-      "manifest_digest": "355111ec318ae8d6c72c616acb3ae1474feca1e61775f86a2613f1f09924d36b",
+      "manifest_digest": "23efd2f739c918a781fdf3ad03b72234a8fe7b0ba6e5ebecc8d639bc6ac77330",
       "metric_ids": [
         "agent-response-contract-rate-v1"
       ],
@@ -39,7 +39,7 @@
       "rubric_id": "simulation-evaluator-v1",
       "simulation_id": "agent-cascade-harness",
       "simulation_scope": "harness",
-      "source_digest": "68cc00dec57c26633cde0ab0315cdfef64306587e0ca94070a07c89e4ea36e63",
+      "source_digest": "b45f5d6c193ad0f0c78e55cdde12c43331c44b0c9eca4eefd339c155f5d6fdca",
       "task_ids": [
         "AGENT-CASCADE-HARNESS-CANARY"
       ],
@@ -87,7 +87,7 @@
       "rubric_id": null,
       "simulation_id": "agent-response-fixture",
       "simulation_scope": "harness",
-      "source_digest": "f5195575a6a4eec6ebb093a689a4ca0cce771707f66f18bc90f22d89534c8358",
+      "source_digest": "e1059ea7fb55bf70222a0f24e8bec323a87f0c906b9cfaf317282a7937b15bde",
       "task_ids": [
         "AGENT-RESPONSE-FIXTURE-SMOKE"
       ],
@@ -135,7 +135,7 @@
       "rubric_id": "simulation-evaluator-v1",
       "simulation_id": "agent-standalone-codex",
       "simulation_scope": "harness",
-      "source_digest": "ad3c5d82dc227d629fff28c163cd26b27879cf898dc170e0a5196c5750d9cc8b",
+      "source_digest": "6bd4d13d45806d7f58ab812db748d5df19c100514a0c0fcd2cda25f176bd109d",
       "task_ids": [
         "AGENT-STANDALONE-CODEX-CANARY"
       ],
@@ -188,7 +188,7 @@
       "rubric_id": null,
       "simulation_id": "browser-local-fixture",
       "simulation_scope": "harness",
-      "source_digest": "95579f23451ccbb0d436a1f6cc14e58bcff0185b0ebb0a485722f3a68e546b5b",
+      "source_digest": "189043154d7bc68507db157c16e381df8912f3d51f23a7bb576f835c809f1e1d",
       "task_ids": [
         "BROWSER-SIMULATION-SMOKE",
         "BROWSER-EXTERNAL-NAVIGATION-DENIED",
@@ -241,7 +241,7 @@
       "rubric_id": null,
       "simulation_id": "command-failure-fixture",
       "simulation_scope": "harness",
-      "source_digest": "0e3cc75424a88f0af1ad0b0b17d36b900372820b305574f3d3f0c1ed0a6e1f77",
+      "source_digest": "a2968da9a5ad58a6258cf99e7549a8f796d654bd5b84683be8e9eb40c89ae577",
       "task_ids": [
         "COMMAND-EXPECTED-FAILURE",
         "COMMAND-MISSING-OUTPUT"
@@ -299,7 +299,7 @@
       "rubric_id": null,
       "simulation_id": "simulation-correctness-fixture",
       "simulation_scope": "harness",
-      "source_digest": "40397097247f9f402c78c88ede211ccb6bf2a38e8fd5849e8b6aff366f7be08b",
+      "source_digest": "2ea8db9462506d93373c920cc414daf2ecea11e79b6f38cc9f74ba375ed03235",
       "task_ids": [
         "FAKE-COMMAND-HANDOFF",
         "FAKE-HTTP-HANDOFF",
@@ -355,7 +355,7 @@
       "rubric_id": null,
       "simulation_id": "desktop-linux-fixture",
       "simulation_scope": "harness",
-      "source_digest": "63e539453a9b1fe7ce17f25d8fb98a6138f0d599453f3fb202ab15bca089c41f",
+      "source_digest": "a0a6ccca1a617b90c712c6544f0b6fffa1d8c2b9a6cdc1844edf56d704a2ce03",
       "task_ids": [
         "DESKTOP-LINUX-SMOKE"
       ],
@@ -403,7 +403,7 @@
       "rubric_id": null,
       "simulation_id": "command-static-fixture",
       "simulation_scope": "harness",
-      "source_digest": "07fa46417cce9360554b4ed1ade2413b827276366297890157b732c8def0e5ef",
+      "source_digest": "8340d4b6e791d4d473bb9a5282a751365644d5b66228f711d3e7811d16ae224d",
       "task_ids": [
         "HARNESS-STATIC-SMOKE"
       ],
@@ -451,7 +451,7 @@
       "rubric_id": null,
       "simulation_id": "mobile-provider-fixture",
       "simulation_scope": "harness",
-      "source_digest": "b38b7e724299cf062428d5e78efea192d88869b4cc294fa7af55c8881f640a02",
+      "source_digest": "420097d10a626f0132349cc2f5c7cd08c56a693d8881a3a413c2da503e4ded52",
       "task_ids": [
         "MOBILE-ANDROID-PREFLIGHT"
       ],
@@ -502,7 +502,7 @@
       "rubric_id": null,
       "simulation_id": "simulation-correctness-fixture",
       "simulation_scope": "harness",
-      "source_digest": "8a585a10d4cc9e8244e395e764e754cc76c1949635a7c2cbf28371b6590e5288",
+      "source_digest": "50e66bd54865892397231fcda594cc11ead32a16f277e8b534cf27b7ac5f51ec",
       "task_ids": [
         "SIMULATION-STATE-SMOKE"
       ],
@@ -555,7 +555,7 @@
       "rubric_id": "simulation-evaluator-v1",
       "simulation_id": "simulation-correctness-fixture",
       "simulation_scope": "harness",
-      "source_digest": "a5c437d3d8fee7852e889ea8590628fa94aaaca81725fdeaeb4544c28d0ee3c5",
+      "source_digest": "167853f94adec11777ad09388931afa8006c3ce2d6d4c258a035b91ab89cd597",
       "task_ids": [
         "SIMULATION-STATE-SMOKE"
       ],
@@ -608,7 +608,7 @@
       "rubric_id": null,
       "simulation_id": "simulation-correctness-fixture",
       "simulation_scope": "harness",
-      "source_digest": "fb7034e59e8e8f9f4d414b67f1cb6d16da951f2ef0d9173a31364345d609eb9d",
+      "source_digest": "8a576b8f810bf86197f6fe070128ee77771721234093ef8b0a3fe6b32e612fbb",
       "task_ids": [
         "SIMULATION-STATE-SMOKE"
       ],
@@ -661,7 +661,7 @@
       "rubric_id": null,
       "simulation_id": "simulation-correctness-fixture",
       "simulation_scope": "harness",
-      "source_digest": "15ed97116f6bb22cd0fb08a8da4f28b7b50982ad0cbc2b119ae17ede2734a3e9",
+      "source_digest": "3b313143cd24768b5fbb8440ca29d75430b65e1f24760ba16a205004c7f5b705",
       "task_ids": [
         "SIMULATION-STATE-SMOKE"
       ],
@@ -714,7 +714,7 @@
       "rubric_id": null,
       "simulation_id": "simulation-correctness-fixture",
       "simulation_scope": "harness",
-      "source_digest": "38080ba4d30f241e4f16a284dc166c85d7d3f012aa33170f9608fb48c351cb1b",
+      "source_digest": "71d72ab814b8395b9f2f2c24d0ee953bf3eadf8039f28f566790561a0abaaa62",
       "task_ids": [
         "SIMULATION-STATE-SMOKE"
       ],
@@ -767,7 +767,7 @@
       "rubric_id": null,
       "simulation_id": "simulation-correctness-fixture",
       "simulation_scope": "harness",
-      "source_digest": "e32be8cf2721d712c9d4469c352e0b61bc7209eeff19a72effbdff2875e84010",
+      "source_digest": "a3abdaab266590fa026df0fb32a54843ae9337ec2841e666a5622c18ad269be0",
       "task_ids": [
         "SIMULATION-STATE-SMOKE"
       ],
@@ -820,7 +820,7 @@
       "rubric_id": null,
       "simulation_id": "simulation-correctness-fixture",
       "simulation_scope": "harness",
-      "source_digest": "4ed55e5691340243d4dc81f5d080003c6c6fbb6488fc742092b4ca37d80160d3",
+      "source_digest": "1c2b6604709099318132b7c9e5f4b2d6590ecff4b5be156a90805040e356277c",
       "task_ids": [
         "SIMULATION-STATE-SMOKE"
       ],
@@ -875,7 +875,7 @@
       "rubric_id": null,
       "simulation_id": "terminal-pty-fixture",
       "simulation_scope": "harness",
-      "source_digest": "2b375d24fecc0097082743851c8723da9837c35450b9dd78d2ea770fcdf4f272",
+      "source_digest": "1991d89f31fcc0dd5f10e3b068af59e99e1897ad3621f8cdf79c81b25b12b046",
       "task_ids": [
         "TERMINAL-PTY-SMOKE",
         "TERMINAL-SIGNAL-SMOKE",

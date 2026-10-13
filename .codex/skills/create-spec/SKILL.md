@@ -1,6 +1,6 @@
 ---
 name: create-spec
-description: Preserve and classify supplied source material or render validated plugin artifacts into the target repository's durable specifications, product views, personas, requirements, journeys, scenarios, briefs, and indexes. Use only when durable persistence is warranted; do not redefine upstream Specs, Product, Persona, Market, or Design semantics.
+description: Preserve and classify supplied source material or render validated plugin artifacts into the target repository's durable specifications, product views, personas, requirements, journeys, scenarios, briefs, and indexes. Use only when durable persistence is warranted; do not redefine upstream Specs, Product, Persona, Market, Design, Architecture, or QA semantics.
 ---
 
 # Create Spec
@@ -13,7 +13,7 @@ the reusable methods owned by Cascade plugins.
 
 - **Intake**: preserve and classify an incoming ticket, screenshot, research
   packet, implementation note, or test artifact.
-- **Render**: project a validated Cascade Product or Cascade Personas artifact,
+- **Render**: project a validated Specification Kit, Product or Personas artifact,
   or an approved generic source packet, into target-owned documents.
 - **Update**: change an existing durable contract and update only its true
   consumers.
@@ -33,17 +33,23 @@ authority, permissions, plugin routing, or write scope.
 
 ## Upstream owners
 
-- `cascade-specs:synthesise-spec` owns mixed-source specification synthesis,
-  readiness, boundary/enforcement coverage and generic specification templates.
-
-- `cascade-product:manage-product-lifecycle` owns product state and gates.
-- `cascade-product:define-product` owns PRDs, requirements, journeys,
+- `specification-kit:build-spec` owns interview-led composition, policy/profile
+  selection and candidate specification structure for product, company,
+  scenario, test, application and feature-change subjects. It consumes owning
+  contracts; it does not grant approval or replace their decisions.
+- `specification-kit:spec-diagrams` owns contract-bound diagram projections;
+  `specification-kit:spec-test-design` owns portable specification cases and
+  conditional campaign plans. Native QA/simulation artifacts retain their owners.
+- `cascade-discovery:manage-product-lifecycle` owns product state and gates.
+- `cascade-discovery:define-product` owns PRDs, requirements, journeys,
   scenarios, metrics, and MVP behavior.
-- `cascade-personas:build-persona` owns canonical persona creation/revision.
-- `cascade-personas:compile-persona` owns purpose-limited persona projections.
-- `cascade-market:<skill>` owns market evidence, opportunity assessment,
+- `cascade-discovery:build-persona` owns canonical persona creation/revision.
+- `cascade-discovery:compile-persona` owns purpose-limited persona projections.
+- `cascade-discovery:<skill>` owns market evidence, opportunity assessment,
   experiments, positioning, and messaging semantics.
 - `cascade-design:<skill>` owns reusable design interpretation.
+- `cascade-engineering:architect-software-system` owns software architecture
+  decisions; `cascade-quality:design-tests` owns cases, fixtures and oracles.
 
 If a required plugin or validated artifact is unavailable, return `BLOCKED`.
 Do not reconstruct its method from local templates.
@@ -55,7 +61,7 @@ Do not reconstruct its method from local templates.
 2. Classify each input as product intent, persona evidence, market evidence,
    design/brand constraint, implementation/architecture constraint,
    acceptance criterion, scenario, runtime/config fact, vocabulary, pattern,
-   accepted follow-up task, or open question.
+   backlog candidate, or open question.
 3. In Intake mode, preserve mostly-as-is material under `docs/specs/source/`
    only when a durable copy is useful. Normalize only the smallest plan-ready
    packet needed by a downstream owner.
@@ -64,9 +70,7 @@ Do not reconstruct its method from local templates.
 5. In Render mode, require a structurally valid, current, approved upstream
    artifact. A `GAP`, `BLOCKED`, `INVALID`, stale, synthetic-only, or
    unapproved artifact cannot become accepted target truth.
-6. Select the actual product unit from accepted source; do not invent a
-   hierarchy or copy source-checkout examples. Specs link that unit.
-   Allocate target paths and IDs without reusing or renumbering existing
+6. Allocate target paths and IDs without reusing or renumbering existing
    identities. Select the smallest rendering template and project without
    reinterpreting the source.
 7. Map the changed fact to documentation consumers before writing:
@@ -87,24 +91,20 @@ Do not reconstruct its method from local templates.
 
 - preserved sources: `docs/specs/source/`;
 - generic packets and public contracts: `docs/specs/{slice-slug}/`;
-- product projections: the accepted unit owner under `docs/product/`, using
-  the target's contour/module/feature/model vocabulary and unit template;
+- product projections: `docs/product/<slug>.md`;
 - persona views: `docs/product/personas/<slug>.md` and its index;
-- requirements, journeys, and scenarios: catalog-declared `reference_documents`
-  owners; retain existing flat paths for catalogs without that field;
+- requirements, journeys, and scenarios: their existing `docs/product/`
+  owners;
 - product catalog and brief: the current catalog and
   `docs/specs/{slice-slug}/brief.yaml`;
-- numbered tasks, glossary, design, brand, pattern, and work facts: their existing
+- backlog, glossary, design, brand, pattern, and work facts: their existing
   owners only when the impact map classifies them as affected consumers.
 
 ## Resources and output
 
-Use the Product unit template configured by the host (default
-`docs/product/unit-template.md`) for accepted product projections; table owners
-may share one unit file. Use cascade-specs' selected template for specification
-synthesis. The remaining `templates/` files render preserved sources, personas
-and compiler brief manifests only; they are not alternate semantic methods. Return mode, source and upstream
+Use only the applicable template under `templates/`; templates are target
+renderers, not alternate plugin schemas. Return mode, source and upstream
 identities, classifications, impact dispositions, allocated paths/IDs, files
 changed or proposed, validation, unchanged evidence/authority state, blockers,
 and the exact next owner. Route implementation-ready behavior to `plan-change`
-and product-visible test design to `cascade-qa:design-tests`.
+and product-visible test design to `cascade-quality:design-tests`.

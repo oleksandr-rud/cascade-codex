@@ -35,9 +35,6 @@ const COPY_FILES = [
   "docs/product/catalog.schema.json",
   "docs/product/unit-template.md",
   "docs/specs/brief-manifest.schema.json",
-  "docs/work/_index.md",
-  "docs/work/task-template.md",
-  "docs/work/task.schema.json",
   "docs/patterns/context-pack-schema.yaml",
 ] as const;
 
@@ -56,38 +53,56 @@ const COPY_TREES = [
 
 const COORDINATOR_CONTRACTS = [
   [
-    ".codex/plugins/cascade-coordinator/skills/plan-workflow/references/capability-descriptor.schema.json",
+    ".codex/plugins/cascade-ai-architect/skills/design-agent-blueprint/references/semantic-decision-boundary.md",
+    ".codex/runtime/contracts/semantic-decision-boundary.md",
+  ],
+  [
+    ".codex/plugins/cascade-workflows/skills/coordinator/skills/select-capabilities/references/selection-intake.schema.json",
+    ".codex/runtime/contracts/coordinator/select-capabilities/references/selection-intake.schema.json",
+  ],
+  [
+    ".codex/plugins/cascade-workflows/skills/coordinator/skills/select-capabilities/references/selection-request.md",
+    ".codex/runtime/contracts/coordinator/select-capabilities/references/selection-request.md",
+  ],
+  [
+    ".codex/plugins/cascade-ai-architect/skills/design-agent-workflow/references/cascade-control.schema.json",
+    ".codex/runtime/contracts/ai-workflow/control.schema.json",
+  ],
+  [
+    ".codex/plugins/cascade-workflows/skills/coordinator/skills/plan-workflow/references/capability-descriptor.schema.json",
     ".codex/runtime/contracts/coordinator/plan-workflow/references/capability-descriptor.schema.json",
   ],
   [
-    ".codex/plugins/cascade-coordinator/skills/plan-workflow/references/capability-catalog.schema.json",
+    ".codex/plugins/cascade-workflows/skills/coordinator/skills/plan-workflow/references/capability-catalog.schema.json",
     ".codex/runtime/contracts/coordinator/plan-workflow/references/capability-catalog.schema.json",
   ],
   [
-    ".codex/plugins/cascade-coordinator/skills/plan-workflow/references/plugin-plan.schema.json",
+    ".codex/plugins/cascade-workflows/skills/coordinator/skills/plan-workflow/references/plugin-plan.schema.json",
     ".codex/runtime/contracts/coordinator/plan-workflow/references/plugin-plan.schema.json",
   ],
   [
-    ".codex/plugins/cascade-coordinator/skills/select-capabilities/references/capability-selection.schema.json",
+    ".codex/plugins/cascade-workflows/skills/coordinator/skills/select-capabilities/references/capability-selection.schema.json",
     ".codex/runtime/contracts/coordinator/select-capabilities/references/capability-selection.schema.json",
   ],
 ] as const;
 
 const GENERATED_TEXT_FILES: Record<string, string> = {
-  ".codex/README.md": `# Cascade core runtime\n\nThis target profile contains Orchestrator, Agent Engineer, Security, Product Designer,\nSoftware Engineer, Frontend Engineer, Code Reviewer, the nine\nrepository-bound effect skills, admission, Coordinator validation, and\nWorkspace MCP. Portable methods resolve from the enabled installed Cascade\nplugins. Plugin source, evaluator/operator lab roles, harness-eval corpora,\nsimulation campaigns and browser tooling remain in\nthe Cascade source checkout and are not target-runtime dependencies.\n`,
+  ".codex/README.md": `# Cascade core runtime\n\nThis target profile contains Orchestrator, Agent Engineer, Security, Product Designer,\nSoftware Engineer, Frontend Engineer, Code Reviewer, the ten\nrepository-bound skills including run-workflow, admission, Coordinator validation, and\nWorkspace MCP. Portable methods resolve from the enabled installed Cascade\nplugins. Plugin source, evaluator/operator lab roles, harness-eval corpora,\nsimulation campaigns, browser tooling, and historical work reports remain in\nthe Cascade source checkout and are not target-runtime dependencies.\n`,
   "CASCADE_RUNTIME.md": `# Cascade core target runtime\n\nThis is a generated target bundle, not the Cascade plugin-development tree.\nIt intentionally excludes \`.codex/plugins/\`, \`harness-evals/\`,\n\`product-evals/\`, source tests, browser tooling, and historical reports.\nInstall the exact plugin versions recorded in \`.codex/plugins.lock.json\` from\nthe Cascade marketplace, merge this bundle into the target repository with\ncollision review; preserve existing instructions, configuration and documents.\nAdapt \`AGENTS.md\`, \`CODEX.md\`, and\n\`harness.config.example.yaml\`, create \`harness.config.yaml\` from the template only when absent,\nfill it from the real target source, set \`project.harness_profile: target-project\`,\nand then run:\n\n\`\`\`bash\nnpx --offline --yes bun@1.3.3 .codex/runtime/cascade.js target validate --root .\n\`\`\`\n\nHarness evals and simulation campaigns are opt-in development or lab packs;\nthey are not required for normal planning, implementation, target validation,\nor plugin routing.\n`,
   "docs/_index.md": `# Project context\n\nKeep only current product, design, specification, pattern, and work context\nneeded by this target repository. Portable methods belong to installed Cascade\nplugins.\n`,
   "docs/structure.md": `# Repository structure\n\nAdapt this file to the target repository. Record current source roots, public\ncontracts, test roots, generated artifacts, and narrow documentation owners.\nDo not copy Cascade source-checkout eval labs or historical work reports here.\n`,
   "docs/glossary.md": `# Glossary\n\nAdd only target-repository terms whose meaning affects implementation, routing,\nor validation.\n`,
-  "docs/product/_index.md": `# Product\n\nOrganize accepted facts by actual contours, modules, features, models or another\nsource-backed unit. Start with unit-template.md; create only needed owners.\nCatalog reference_documents declares requirement/journey/scenario owner paths;\nlegacy catalogs keep their flat files. Use installed Cascade Product, Market\nand Personas for semantics. Source product facts and fixtures are excluded.\n`,
-  "docs/product/personas/_index.md": `# Personas\n\nStore approved target-product persona artifacts or projections here. Canonical\npersona construction and evaluation belong to Cascade Personas.\n`,
+  "docs/backlog/_index.md": `# Backlog\n\nStore only accepted follow-up candidates with an owner and acceptance boundary.\n`,
+  "docs/product/_index.md": `# Product\n\nStore accepted target-product facts and links to their evidence. Use Product, Market and Personas\nmethods in installed Cascade Discovery.\n`,
+  "docs/product/personas/_index.md": `# Personas\n\nStore approved target-product persona artifacts or projections here. Canonical\npersona construction and evaluation belong to Discovery’s Personas component.\n`,
   "docs/design/_index.md": `# Design\n\nStore target-specific design decisions. Reusable review methods belong to\nCascade Design.\n`,
   "docs/brand/_index.md": `# Brand\n\nStore approved target-specific positioning and brand decisions.\n`,
-  "docs/specs/_index.md": `# Specifications\n\nUse cascade-specs:synthesise-spec and its selected generic template for mixed\nsource synthesis; create-spec owns authorized target persistence. Store one\nprimary spec per accepted change/unit and link its Product owner. Add a\ntechnical companion only when needed. Preserve original sources only when\ndurable copying is useful; exclude example solutions and research dumps.\nOrdinary bounded changes do not require a new specification.\n`,
-  "docs/work/tasks/.gitkeep": "",
+  "docs/specs/_index.md": `# Specifications\n\nStore only durable, accepted target behavior or source-preservation packets.\nOrdinary bounded changes do not require a new specification. Use\n\`specification-kit:build-spec\` for candidate synthesis; the host persists accepted artifacts.\n`,
+  "docs/work/_index.md": `# Work\n\nUse this area only for genuinely durable, resumable coordination state. Keep\nordinary bounded plans inline.\n`,
+  "docs/work/active.md": `# Active work\n\n| Lane | Status | Request | Owner | Next Gate | Files/Areas | Dependencies | Evidence |\n|---|---|---|---|---|---|---|---|\n`,
   "docs/patterns/_index.md": `# Patterns\n\nStore target-owned reusable rules and context packs only when repeated evidence\njustifies them. Architecture catalogs and portable methods stay in plugins or\noptional packs.\n`,
   "docs/patterns/boundaries/index.md": `# Boundaries\n\nRecord only current target trust, ownership, data, process, and public-contract\nboundaries. Portable architecture and security review methods stay in plugins.\n`,
-  "docs/patterns/testing/index.md": `# Testing\n\nRecord stable target-specific test commands, public oracles, fixtures, and\nenvironment limits. Generic QA methods stay in Cascade QA.\n`,
+  "docs/patterns/testing/index.md": `# Testing\n\nRecord stable target-specific test commands, public oracles, fixtures, and\nenvironment limits. Generic QA methods stay in Cascade Quality’s QA component.\n`,
   "docs/patterns/context-memory/index.md": `# Context memory\n\nKeep only small reusable target lessons backed by current source. Do not retain\ndisposable eval traces or broad work-history dumps.\n`,
 };
 
@@ -188,8 +203,8 @@ function runtimeCodex(source: string): string {
       /## Harness Evaluation[\s\S]*?(?=## Write Rules)/,
       `## Optional Evaluation And Simulation Labs\n\nHarness evaluation corpora, live trace runners, campaign registries, browser\ntooling, and their specialist roles are opt-in lab assets in the Cascade source\ncheckout. They are not loaded during normal target routing or validation. Add\none only for an explicit evaluation or campaign contract, and keep its evidence\nclaims narrower than target, provider, deployment, or release proof.\n\n`,
     )
-    .replaceAll("scripts/cascade.ts", ".codex/runtime/cascade.js")
-    .replaceAll(".codex/plugins/cascade-ai-architect/skills/design-agent-blueprint/references/semantic-decision-boundary.md", ".codex/runtime/contracts/semantic-decision-boundary.md");
+    .replaceAll(".codex/plugins/cascade-ai-architect/skills/design-agent-blueprint/references/semantic-decision-boundary.md", ".codex/runtime/contracts/semantic-decision-boundary.md")
+    .replaceAll("scripts/cascade.ts", ".codex/runtime/cascade.js");
 }
 
 async function transformCopiedConfiguration(): Promise<void> {
@@ -224,19 +239,17 @@ async function transformCopiedConfiguration(): Promise<void> {
     await readFile(resolve(SOURCE_ROOT, "scripts/runtime-templates/AGENTS.md"), "utf8"),
     "utf8",
   );
+  const patternPath = resolve(activeOutput, ".codex/skills/pattern-context/SKILL.md");
+  const patternText = (await readFile(patternPath, "utf8"))
+    .replaceAll("scripts/cascade.ts patterns", ".codex/runtime/cascade.js patterns")
+    .replaceAll("scripts/cascade/patterns.ts", ".codex/runtime/cascade.js patterns");
+  await writeFile(patternPath, patternText, "utf8");
   const codexPath = resolve(activeOutput, "CODEX.md");
   await writeFile(
     codexPath,
     runtimeCodex(await readFile(codexPath, "utf8")),
     "utf8",
   );
-  for (const path of await walkFiles(resolve(activeOutput, ".codex/skills"))) {
-    if (!path.endsWith(".md")) continue;
-    const text = await readFile(path, "utf8");
-    await writeFile(path, text
-      .replaceAll("scripts/cascade/patterns.ts", ".codex/runtime/cascade.js patterns")
-      .replaceAll("scripts/cascade.ts", ".codex/runtime/cascade.js"), "utf8");
-  }
 }
 
 async function walkFiles(root: string): Promise<string[]> {
@@ -269,10 +282,6 @@ export async function buildRuntimeBundle(
   for (const [source, target] of COORDINATOR_CONTRACTS) {
     await copyPath(source, target);
   }
-  await copyPath(
-    ".codex/plugins/cascade-ai-architect/skills/design-agent-blueprint/references/semantic-decision-boundary.md",
-    ".codex/runtime/contracts/semantic-decision-boundary.md",
-  );
   for (const [path, content] of Object.entries(GENERATED_TEXT_FILES)) {
     const target = resolve(activeOutput, path);
     await mkdir(dirname(target), { recursive: true });
@@ -321,9 +330,6 @@ export async function buildRuntimeBundle(
     "harness-evals",
     "product-evals",
     "docs/archive",
-    "docs/backlog",
-    "docs/work/lanes",
-    "docs/work/reports",
     "scripts",
   ]) {
     try {

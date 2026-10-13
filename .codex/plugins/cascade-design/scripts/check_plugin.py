@@ -138,7 +138,7 @@ def validate(root: Path) -> list[str]:
     adapter = suite.get("execution_adapter", {})
     if (
         adapter.get("id") != "cascade-evals-agent-runner-v1"
-        or adapter.get("runner") != "cascade-evals/scripts/run_agent_evaluation.py"
+        or adapter.get("runner") != "cascade-quality/skills/evals/scripts/run_agent_evaluation.py"
         or adapter.get("model") != "gpt-6-astra"
         or adapter.get("reasoning_effort") != "high"
         or adapter.get("target_batching") != "contiguous-balanced-parallel-v1"

@@ -21,7 +21,7 @@
     },
     "repositoryPrefix": {
       "type": "string",
-      "pattern": "^(?:docs/(?:specs|product|design|brand|patterns|work))(?:/[a-zA-Z0-9._-]+)*/?$"
+      "pattern": "^(?:docs/(?:specs|product|design|brand|patterns|work|backlog))(?:/[a-zA-Z0-9._-]+)*/?$"
     },
     "policy": {
       "type": "object",

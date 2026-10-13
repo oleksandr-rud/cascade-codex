@@ -1,0 +1,41 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:specification-kit:diagram-evidence:1",
+  "title": "Evidence for one specification diagram check",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["kind", "status", "source_sha256", "reviewer_or_tool", "version", "reference"],
+  "properties": {
+    "kind": {"enum": ["SYNTAX", "RENDER", "CONTRACT_REVIEW", "FORMAL_NOTATION_REVIEW"]},
+    "status": {"enum": ["PASS", "FAIL", "NOT_RUN", "NOT_APPLICABLE", "STALE", "INCONCLUSIVE"]},
+    "source_sha256": {"anyOf": [{"$ref": "#/$defs/digest"}, {"type": "null"}]},
+    "owner_sha256": {"anyOf": [{"$ref": "#/$defs/digest"}, {"type": "null"}]},
+    "related_owner_bindings": {
+      "type": "array",
+      "items": {
+        "type": "object", "additionalProperties": false,
+        "required": ["ref", "sha256"],
+        "properties": {"ref": {"type": "string", "minLength": 1}, "sha256": {"$ref": "#/$defs/digest"}}
+      }
+    },
+    "reviewer_or_tool": {"type": ["string", "null"]},
+    "version": {"type": ["string", "null"]},
+    "reference": {"type": ["string", "null"]}
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"status": {"enum": ["PASS", "FAIL"]}}, "required": ["status"]},
+      "then": {"properties": {
+        "source_sha256": {"$ref": "#/$defs/digest"},
+        "reviewer_or_tool": {"type": "string", "minLength": 1},
+        "version": {"type": "string", "minLength": 1},
+        "reference": {"type": "string", "minLength": 1}
+      }}
+    },
+    {
+      "if": {"properties": {"kind": {"enum": ["CONTRACT_REVIEW", "FORMAL_NOTATION_REVIEW"]}, "status": {"enum": ["PASS", "FAIL"]}}, "required": ["kind", "status"]},
+      "then": {"required": ["owner_sha256", "related_owner_bindings"], "properties": {"owner_sha256": {"$ref": "#/$defs/digest"}}}
+    }
+  ],
+  "$defs": {"digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"}}
+}

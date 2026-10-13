@@ -1,10 +1,10 @@
 {
   "schema_version": 2,
   "suite_id": "cascade-security-qualification-v2",
-  "subject_adapter": "cascade-evals:agent-evaluation",
+  "subject_adapter": "cascade-quality:agent-evaluation",
   "execution_adapter": {
     "id": "cascade-evals-agent-runner-v1",
-    "runner": "cascade-evals/scripts/run_agent_evaluation.py",
+    "runner": "cascade-quality/skills/evals/scripts/run_agent_evaluation.py",
     "model": "gpt-6-astra",
     "reasoning_effort": "high",
     "target_batching": "contiguous-balanced-parallel-v1",
@@ -23,8 +23,8 @@
       "oracle",
       "mechanical_assertions"
     ],
-    "judge_builder": "cascade-evals/scripts/build_blind_packets.py",
-    "judge_schema": "cascade-evals/skills/evaluate/references/judge-packet.schema.json"
+    "judge_builder": "cascade-quality/skills/evals/scripts/build_blind_packets.py",
+    "judge_schema": "cascade-quality/skills/evals/skills/evaluate/references/judge-packet.schema.json"
   },
   "assertion_catalog": {
     "status_matches_expected": {

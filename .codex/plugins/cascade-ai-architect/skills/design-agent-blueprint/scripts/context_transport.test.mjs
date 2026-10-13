@@ -7,47 +7,27 @@ import { parse } from 'yaml';
 import { parseAnalyzer, parseAnalyzerYaml, canonical, compileBlocks, parseBlocks, renderPromptView, assembleContext } from './context_transport.mjs';
 
 const assets = new URL('../assets/', import.meta.url);
-const fixture = JSON.parse(readFileSync(new URL('state-delta-policy-projection.example.json', assets), 'utf8'));
+const analysis = JSON.parse(readFileSync(new URL('claims-actions.example.json', assets), 'utf8'));
+const fixture = JSON.parse(readFileSync(new URL('claims-actions-snapshot.example.json', assets), 'utf8'));
 const views = JSON.parse(readFileSync(new URL('model-prompt-views.example.json', assets), 'utf8'));
 const interimViews = JSON.parse(readFileSync(new URL('interim-prompt-views.example.json', assets), 'utf8'));
-const yaml = readFileSync(new URL('analyzer-delta.example.yaml', assets), 'utf8');
+const yaml = readFileSync(new URL('claims-actions.example.yaml', assets), 'utf8');
 
 describe('Analyzer JSON/optional YAML and block context reference', () => {
-  test('JSON is the default and matches the optional YAML logical delta', () => {
-    const json = readFileSync(new URL('analyzer-delta.example.json', assets), 'utf8');
-    expect(parseAnalyzer(json)).toEqual(fixture.analyzer_delta);
+  test('JSON and optional YAML retain the same claims/actions object', () => {
+    const json = readFileSync(new URL('claims-actions.example.json', assets), 'utf8');
+    expect(parseAnalyzer(json)).toEqual(analysis);
     expect(canonical(parseAnalyzer(json))).toBe(canonical(parseAnalyzer(yaml, 'yaml')));
+    expect(parseAnalyzerYaml(yaml)).toEqual(analysis);
   });
-  test('JSON rejects duplicates, non-JSON syntax and unconfigured formats', () => {
-    expect(() => parseAnalyzer('{"schema_version":"state-delta.v3","a":1,"a":2}')).toThrow();
-    expect(() => parseAnalyzer(yaml)).toThrow();
+  test('old mutation wire, duplicate keys, non-JSON syntax and unconfigured formats are rejected', () => {
+    expect(() => parseAnalyzer('{"schema_version":"state-delta.v3","groups":[]}')).toThrow();
+    expect(() => parseAnalyzer('{"schema_version":"analysis.v1","claims":[],"claims":[]}')).toThrow();
+    expect(() => parseAnalyzer(yaml+'# YAML only')).toThrow();
     expect(() => parseAnalyzer('{}', 'xml')).toThrow('unsupported');
   });
-  test('YAML preserves all two-policy operations and passes bound semantic gates', () => {
-    const delta = parseAnalyzerYaml(yaml);
-    expect(delta).toEqual(fixture.analyzer_delta);
-    expect(new Set(delta.groups.flatMap(g => g.operations.map(o => o.policy_id))).size).toBe(2);
-    const checked = spawnSync('python3', ['-c',
-      'import json,sys; from validate_agent_contracts import validate_fixture; errors=validate_fixture(json.load(sys.stdin)); print(errors); sys.exit(bool(errors))'],
-      { cwd: fileURLToPath(new URL('.', import.meta.url)), input: JSON.stringify({ ...fixture, analyzer_delta: delta }), encoding: 'utf8' });
-    expect(checked.error).toBeUndefined();
-    expect(checked.status, checked.stdout+checked.stderr).toBe(0);
-  });
-  test('formatting does not change semantic idempotency digest input', () => {
+  test('comments and whitespace do not change a validated object digest', () => {
     expect(canonical(parseAnalyzerYaml(yaml))).toBe(canonical(parseAnalyzerYaml('# comment\n'+yaml)));
-  });
-  test('checkpoint grouping binds the delta, state and role contexts without a turn store', () => {
-    const group = parse(readFileSync(new URL('checkpoint-grouping.example.yaml', assets), 'utf8'));
-    expect(group.checkpoint_id).toBe(fixture.analyzer_delta.checkpoint_id);
-    expect(group.input_event_ref).toBe(fixture.analyzer_delta.event_id);
-    expect(group.conversation_alias).toBe(fixture.analyzer_delta.turn_id);
-    expect(group.state_binding.accepted_revision).toBe(fixture.applied_change_set.after_revision);
-    for (const [index, role] of ['analyzer', 'composer'].entries()) {
-      const context = fixture[role+'_context'];
-      expect(context.checkpoint_id).toBe(group.checkpoint_id);
-      expect(group.role_context_refs[index].context_ref).toBe(context.context_id);
-    }
-    expect(group).not.toHaveProperty('turn_state');
   });
   for (const [name, tail] of [
     ['duplicate', 'a: 1\na: 2'], ['alias', 'a: &x 1\nb: *x'],
@@ -56,21 +36,21 @@ describe('Analyzer JSON/optional YAML and block context reference', () => {
     ['nonfinite', 'a: .inf'], ['precision', 'a: 9007199254740993'],
     ['second document', '---\na: 1'],
   ]) test('reject '+name, () => {
-    expect(() => parseAnalyzerYaml('schema_version: state-delta.v3\n'+tail+'\n')).toThrow();
+    expect(() => parseAnalyzerYaml('schema_version: analysis.v1\n'+tail+'\n')).toThrow();
   });
   test('quoted ambiguity retains string type; core booleans stay booleans', () => {
-    const parsed = parseAnalyzerYaml('schema_version: state-delta.v3\na: "false"\nb: false\nc: "001"\nd: null\ne: ""\n');
+    const parsed = parseAnalyzerYaml('schema_version: analysis.v1\na: "false"\nb: false\nc: "001"\nd: null\ne: ""\n');
     expect([parsed.a, parsed.b, parsed.c, parsed.d, parsed.e]).toEqual(['false', false, '001', null, '']);
   });
   test('depth and size bounded before downstream use', () => {
-    expect(() => parseAnalyzerYaml('schema_version: state-delta.v3\na: '+'['.repeat(40)+'0'+']'.repeat(40))).toThrow();
+    expect(() => parseAnalyzerYaml('schema_version: analysis.v1\na: '+'['.repeat(40)+'0'+']'.repeat(40))).toThrow();
     expect(() => parseAnalyzerYaml('x'.repeat(1024*1024+1))).toThrow('byte limit');
   });
   test('YAML version cannot override the output profile', () => {
-    expect(() => parseAnalyzerYaml('%YAML 1.1\n---\nschema_version: state-delta.v3\n')).toThrow('1.2 required');
+    expect(() => parseAnalyzerYaml('%YAML 1.1\n---\nschema_version: analysis.v1\n')).toThrow('1.2 required');
   });
   test('optional YAML parser also accepts its JSON subset', () => {
-    expect(parseAnalyzerYaml(JSON.stringify(fixture.analyzer_delta))).toEqual(fixture.analyzer_delta);
+    expect(parseAnalyzerYaml(JSON.stringify(analysis))).toEqual(analysis);
   });
   for (const role of ['analyzer', 'composer', 'researcher', 'voice']) test(role+' prompt contains semantic blocks without runtime envelope', () => {
     const text = renderPromptView(views[role].modelView);
@@ -79,7 +59,7 @@ describe('Analyzer JSON/optional YAML and block context reference', () => {
     expect(text).not.toContain('context{');
   });
   test('raw runtime envelope is rejected instead of silently rendered', () => {
-    expect(() => renderPromptView(fixture.analyzer_context)).toThrow('explicit prompt view');
+    expect(() => renderPromptView(fixture)).toThrow('explicit prompt view');
     expect(() => renderPromptView({ sections: [{title:'State',content:{checkpoint_id:'x'}}] })).toThrow('runtime metadata');
   });
   test('model text retains literals and cannot create headings from embedded newlines', () => {
@@ -115,7 +95,7 @@ describe('Analyzer JSON/optional YAML and block context reference', () => {
     expect(first.cache_boundary).toBe('after-prefix');
     expect(first.messages.map(m=>m.role)).toEqual(['system','developer','user']);
     expect(first.messages[0].content).toBe(setup.systemPrompt);
-    expect(first.messages[1].content.indexOf('[Role instructions]')).toBeLessThan(first.messages[1].content.indexOf('[Policy catalog]'));
+    expect(first.messages[1].content.indexOf('[Role instructions]')).toBeLessThan(first.messages[1].content.indexOf('['+views.analyzer.catalogView.sections[0].title+']'));
   });
   for (const role of ['analyzer', 'composer', 'researcher', 'voice']) test(role+' assembles system, instructions, policies and semantic context in order', () => {
     const request = assembleContext({systemPrompt:'Shared system.',instructions:role+' instructions.',...views[role]});
@@ -171,8 +151,8 @@ describe('Analyzer JSON/optional YAML and block context reference', () => {
     const rebound = assembleContext({...setup,historyViews:[history('Done.')],runtimeManifest:{checkpoint_id:'other'}});
     expect(first.messages).toEqual(rebound.messages);
     expect(first.manifest.cache_candidates).toEqual(rebound.manifest.cache_candidates);
-    expect(() => assembleContext({...setup,historyViews:fixture.composer_context})).toThrow('ordered array');
-    expect(() => assembleContext({...setup,historyViews:[fixture.composer_context]})).toThrow('explicit prompt view');
+    expect(() => assembleContext({...setup,historyViews:fixture})).toThrow('ordered array');
+    expect(() => assembleContext({...setup,historyViews:[fixture]})).toThrow('explicit prompt view');
     expect(() => assembleContext({...setup,historyViews:[history({checkpoint_id:'x'})]})).toThrow('runtime metadata');
     expect(() => assembleContext({...setup,historyViews:[history(first.manifest)]})).toThrow('runtime metadata');
   });

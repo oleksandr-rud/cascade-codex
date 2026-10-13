@@ -12,88 +12,100 @@ compatible_with:
   - tenancy-strategy
   - frontend-realtime
 preserves:
-  - "architecture-selection:simplest-sufficient-topology"
-  - "architecture-selection:ownership-before-technology"
+  - architecture-selection:simplest-sufficient-topology
+  - architecture-selection:ownership-before-technology
 default_when:
-  - "A stateful conversational agent needs separate analysis, policy/state authority, and response composition."
-  - "An agent needs voice composition or optional web/KB research under the same state and policy authority."
+  - A stateful conversational agent needs separate analysis, policy/state authority, and response
+    composition.
+  - An agent needs voice composition or optional web/KB research under the same state and policy
+    authority.
 do_not_use_when:
-  - "A deterministic task or stateless single-call transform has no relevant state or policy boundary."
-  - "An existing coherent architecture is unchanged and no adaptation was requested."
+  - A deterministic task or stateless single-call transform has no relevant state or policy boundary.
+  - An existing coherent architecture is unchanged and no adaptation was requested.
 nodes:
+  - id: analyzer-context
+    kind: application-policy
+    owns: Build the authorized current Analyzer task/observation/catalog view.
   - id: analyzer
     kind: model-boundary
-    owns: "Semantic findings or selected operation proposals from scoped compact text; host binds the internal StateDelta."
+    owns: Interpret observations into typed claims, action requests and uncertainty.
+  - id: admission
+    kind: application-policy
+    owns: Validate the complete declared output, references, scope and current invocation before policy.
   - id: policy-runtime
     kind: application-policy
-    owns: "Deterministic admission/selection, current-state transactions, lifecycle guards, role/task policy-state slice issuance, eligible direct work calls and hard effect gates; not ordinary answer strategy."
+    owns: Authorize and orchestrate eligible role calls, record admitted analysis, enforce budgets and
+      stopping.
   - id: state-memory
     kind: data-boundary
-    owns: "Claims/state/memory and checkpoint-owned delta, state/context bindings and receipts; derived turn views."
-  - id: context-compiler
+    owns: Host-owned state, observations, analysis records, receipts, CAS and idempotency.
+  - id: researcher-context
     kind: application-policy
-    owns: "Format only Policy Engine/admission-issued role/task slices and approved prompt assets as compact text; no independent state selection or access."
-  - id: main-composer
-    kind: model-boundary
-    owns: "Canonical response candidates and ordinary answer strategy from compiled ComposerContext within admitted facts and hard constraints."
-  - id: response-gate
-    kind: application-policy
-    owns: "Candidate validation and one canonical response commit before publication."
-  - id: voice-composer
-    kind: optional-adapter
-    owns: "Canonical-text speech and ordered interruptible delivery without semantic authority."
+    owns: Build only the permitted query and source locator view.
   - id: researcher
     kind: optional-model-boundary
-    owns: "Bounded web/KB evidence retrieval for one authorized request; no state writes."
+    owns: Return scoped source evidence as observations for new analysis.
+  - id: composer-context
+    kind: application-policy
+    owns: Build the current task, admitted claims, uncertainty and referenced evidence view.
+  - id: main-composer
+    kind: model-boundary
+    owns: Author the canonical response from the admitted view without tools or persistence.
+  - id: response-gate
+    kind: application-policy
+    owns: Validate current response identity and required independent semantic/policy gates before atomic
+      publication.
 edges:
-  - from: context-compiler
+  - from: state-memory
+    to: analyzer-context
+    relation: supplies_current_scoped_observations
+  - from: analyzer-context
     to: analyzer
-    relation: supplies_scoped_context
+    relation: supplies_role_context
   - from: analyzer
+    to: admission
+    relation: returns_claims_and_action_requests
+  - from: admission
     to: policy-runtime
-    relation: proposes_delta
+    relation: supplies_eligible_typed_analysis
   - from: policy-runtime
     to: state-memory
-    relation: atomically_commits_current_state_receipts_pending_work
-  - from: state-memory
-    to: policy-runtime
-    relation: supplies_committed_current_state
+    relation: records_analysis_under_host_cas
   - from: policy-runtime
-    to: context-compiler
-    relation: issues_admitted_role_task_policy_state_slice
-  - from: context-compiler
+    to: researcher-context
+    relation: authorizes_scoped_research
+  - from: researcher-context
+    to: researcher
+    relation: supplies_role_context
+  - from: researcher
+    to: state-memory
+    relation: records_source_observations_for_reanalysis
+  - from: policy-runtime
+    to: composer-context
+    relation: authorizes_current_response_task
+  - from: composer-context
     to: main-composer
-    relation: supplies_compiled_context
+    relation: supplies_role_context
   - from: main-composer
     to: response-gate
-    relation: proposes_response
-  - from: response-gate
-    to: policy-runtime
-    relation: binds_canonical_text_for_voice_if_enabled
-  - from: context-compiler
-    to: voice-composer
-    relation: supplies_canonical_delivery_context
-  - from: context-compiler
-    to: researcher
-    relation: supplies_bounded_research_context
-  - from: policy-runtime
-    to: researcher
-    relation: dispatches_only_accepted_request
-  - from: researcher
-    to: policy-runtime
-    relation: returns_evidence_for_scoped_reanalysis
+    relation: returns_response_candidate
 decisions:
   - id: behavior-owner
-    default: "Consume the versioned Cascade AI Architect analyzer-policy-composer contract and template."
-    exception_when: "The selected plugin contract is unavailable; record GAP instead of inventing a local replacement."
+    default: Consume the versioned Cascade AI Architect analyzer-policy-composer contract and template.
+    exception_when: The selected plugin contract is unavailable; record GAP instead of inventing a local replacement.
   - id: logical-boundaries
-    default: "One modular monolith with vertical use-case slices, current state and direct context functions; no required CQRS/event journal/read-model store."
-    exception_when: "Measured isolation, scaling, or recovery requirements justify separate processes or services."
+    default: One modular monolith with vertical use-case slices, current state and direct context functions;
+      no required CQRS/event journal/read-model store.
+    exception_when: Measured isolation, scaling, or recovery requirements justify separate processes or services.
   - id: optional-variants
-    default: "Enable Voice Composer only for voice; create research work only for an accepted Analyzer delta request."
-    exception_when: "The target has no voice or research requirement; omit that component entirely."
+    default: Enable Voice Composer only for voice; create research work only for an accepted Analyzer delta
+      request.
+    exception_when: The target has no voice or research requirement; omit that component entirely.
 validation:
-  - "Bind the owning plugin version/digest and preserve proposal-only Analyzer and deterministic state authority."
-  - "Preserve broad Composer choice for ordinary replies; require a source-bound rule for each fixed answer mode or structure."
-  - "Compile and review the target blueprint against the plugin acceptance table."
-  - "Prove no-request/no-research, state/context isolation, stale-result handling, and voice interruption when enabled."
+  - Bind the owning plugin version/digest and preserve proposal-only Analyzer and deterministic state
+    authority.
+  - Preserve broad Composer choice for ordinary replies; require a source-bound rule for each fixed
+    answer mode or structure.
+  - Compile and review the target blueprint against the plugin acceptance table.
+  - Prove no-request/no-research, state/context isolation, stale-result handling, and voice interruption
+    when enabled.

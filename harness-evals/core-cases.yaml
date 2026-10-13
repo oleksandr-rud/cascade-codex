@@ -35,7 +35,7 @@ scenarios:
         - context
       mutation_policy: none
       network_policy: none
-      next_route: cascade-project-management:manage-project
+      next_route: cascade-workflows:manage-project
       primary_skill: context
       status_any:
         - BLOCKED
@@ -49,7 +49,7 @@ scenarios:
     owner: orchestrator
     prompt: Resume a named active program whose current source confirms several
       independent owners and evidence joins; hand only that coordination
-      boundary to cascade-project-management:manage-project.
+      boundary to cascade-workflows:manage-project.
     source: harness-evals/core-cases.yaml
     target_skill: context
     risk: Preserve context-to-project-management handoff; campaign adapter fixture.
@@ -131,18 +131,18 @@ scenarios:
       forbidden_primary:
         - implement-change
       must_load_skills:
-        - repair-tests
+        - resolve-validation-failure
       mutation_policy: none
       network_policy: none
       next_route: ""
-      primary_skill: repair-tests
+      primary_skill: resolve-validation-failure
       status_any:
         - BLOCKED
         - FAIL
         - GAP
         - NOT_RUN
         - PASS
-      target_skill: repair-tests
+      target_skill: resolve-validation-failure
     id: HX-018
     kind: interaction
     owner: orchestrator
@@ -150,7 +150,7 @@ scenarios:
       public-boundary PASS evidence and identifies one obsolete locator. Apply
       the smallest test-only repair and rerun its bounded contract.
     source: harness-evals/core-cases.yaml
-    target_skill: repair-tests
+    target_skill: resolve-validation-failure
     risk: Require established test drift before test-only repair.
   - expectation:
       allowed_supporting: []
@@ -158,18 +158,18 @@ scenarios:
       forbidden_primary:
         - implement-change
       must_load_skills:
-        - cascade-project-management:manage-project
+        - cascade-workflows:manage-project
       mutation_policy: none
       network_policy: none
       next_route: ""
-      primary_skill: cascade-project-management:manage-project
+      primary_skill: cascade-workflows:manage-project
       status_any:
         - BLOCKED
         - FAIL
         - GAP
         - NOT_RUN
         - PASS
-      target_skill: cascade-project-management:manage-project
+      target_skill: cascade-workflows:manage-project
     id: HX-028
     kind: interaction
     owner: orchestrator
@@ -179,13 +179,13 @@ scenarios:
       dependencies, and the deterministic resume condition without executing
       work.
     source: harness-evals/core-cases.yaml
-    target_skill: cascade-project-management:manage-project
+    target_skill: cascade-workflows:manage-project
     risk: Missing producer acceptance and human authority block readiness.
   - expectation:
       allowed_supporting: []
       delegation_policy: none
       forbidden_primary:
-        - cascade-project-management:manage-project
+        - cascade-workflows:manage-project
       must_load_skills:
         - implement-change
       mutation_policy: none
@@ -304,18 +304,18 @@ scenarios:
       forbidden_primary:
         - implement-change
       must_load_skills:
-        - cascade-project-management:manage-project
+        - cascade-workflows:manage-project
       mutation_policy: none
       network_policy: none
       next_route: ""
-      primary_skill: cascade-project-management:manage-project
+      primary_skill: cascade-workflows:manage-project
       status_any:
         - BLOCKED
         - FAIL
         - GAP
         - NOT_RUN
         - PASS
-      target_skill: cascade-project-management:manage-project
+      target_skill: cascade-workflows:manage-project
     id: HX-035
     kind: interaction
     owner: orchestrator
@@ -324,7 +324,7 @@ scenarios:
       worktree may be created, and return the dispatch-base evidence, state, and
       exact condition for safe resumption without modifying the repository.
     source: harness-evals/core-cases.yaml
-    target_skill: cascade-project-management:manage-project
+    target_skill: cascade-workflows:manage-project
     risk: Uncommitted required source cannot be assumed in a dispatched HEAD.
   - expectation:
       allowed_supporting: []
@@ -332,18 +332,18 @@ scenarios:
       forbidden_primary:
         - implement-change
       must_load_skills:
-        - cascade-project-management:manage-project
+        - cascade-workflows:manage-project
       mutation_policy: none
       network_policy: none
       next_route: ""
-      primary_skill: cascade-project-management:manage-project
+      primary_skill: cascade-workflows:manage-project
       status_any:
         - BLOCKED
         - FAIL
         - GAP
         - NOT_RUN
         - PASS
-      target_skill: cascade-project-management:manage-project
+      target_skill: cascade-workflows:manage-project
     id: HX-039
     kind: interaction
     owner: orchestrator
@@ -353,13 +353,13 @@ scenarios:
       comparison matrix, safe disposition, unresolved boundary route, preserved
       evidence, canonical-survivor status, and graph-cutover decision.
     source: harness-evals/core-cases.yaml
-    target_skill: cascade-project-management:manage-project
+    target_skill: cascade-workflows:manage-project
     risk: Partly overlapping work cannot be merged or deleted as duplicates.
   - expectation:
       allowed_supporting: []
       delegation_policy: none
       forbidden_primary:
-        - cascade-project-management:manage-project
+        - cascade-workflows:manage-project
       must_load_skills:
         - implement-change
       mutation_policy: none
@@ -390,20 +390,20 @@ scenarios:
       delegation_policy: none
       forbidden_primary:
         - validate-change
-        - cascade-evals:build-judge
+        - cascade-quality:build-judge
       must_load_skills:
-        - cascade-evals:harness-evaluation
+        - cascade-quality:harness-evaluation
       mutation_policy: none
       network_policy: none
       next_route: ""
-      primary_skill: cascade-evals:harness-evaluation
+      primary_skill: cascade-quality:harness-evaluation
       status_any:
         - BLOCKED
         - FAIL
         - GAP
         - NOT_RUN
         - PASS
-      target_skill: cascade-evals:harness-evaluation
+      target_skill: cascade-quality:harness-evaluation
     id: HX-044
     kind: interaction
     owner: orchestrator
@@ -415,7 +415,7 @@ scenarios:
       evidence-level separation, aggregation result, invalidation, earliest
       responsible route, and proposed gate transition; do not run models.
     source: harness-evals/core-cases.yaml
-    target_skill: cascade-evals:harness-evaluation
+    target_skill: cascade-quality:harness-evaluation
     risk: Missing shards and contradictory duplicate evidence prevent acceptance.
   - expectation:
       allowed_supporting: []
@@ -451,8 +451,8 @@ scenarios:
       allowed_supporting: []
       delegation_policy: none
       forbidden_primary:
-        - repair-tests
-        - cascade-project-management:manage-project
+        - resolve-validation-failure
+        - cascade-workflows:manage-project
       must_load_skills:
         - validate-change
       mutation_policy: none
@@ -482,10 +482,10 @@ scenarios:
       allowed_supporting:
         - context
         - validate-change
-        - cascade-project-management:close-project
+        - cascade-workflows:close-project
       delegation_policy: none
       forbidden_primary:
-        - cascade-project-management:manage-project
+        - cascade-workflows:manage-project
       must_load_skills:
         - closeout
       mutation_policy: none
@@ -512,51 +512,51 @@ scenarios:
     risk: Retention applies only exact authorized retirement proposals.
   - expectation:
       allowed_supporting:
-        - cascade-evals:evaluate
+        - cascade-quality:evaluate
       delegation_policy: none
       forbidden_primary:
         - cascade-simulations:manage-simulation-campaign
       must_load_skills:
-        - cascade-evals:harness-evaluation
+        - cascade-quality:harness-evaluation
       mutation_policy: none
       network_policy: none
       next_route: ""
-      primary_skill: cascade-evals:harness-evaluation
+      primary_skill: cascade-quality:harness-evaluation
       status_any:
         - BLOCKED
         - FAIL
         - GAP
         - NOT_RUN
         - PASS
-      target_skill: cascade-evals:harness-evaluation
+      target_skill: cascade-quality:harness-evaluation
     id: HX-055
     kind: interaction
     owner: orchestrator
     prompt: Evaluate generated Cascade routing scenarios and JSONL traces with
       deterministic hard gates and independent semantic judgment.
     source: harness-evals/core-cases.yaml
-    target_skill: cascade-evals:harness-evaluation
+    target_skill: cascade-quality:harness-evaluation
     risk: Registered campaign canary requires this exact routing scenario.
   - expectation:
       allowed_supporting: []
       delegation_policy: none
       forbidden_primary:
         - plan-change
-        - cascade-project-management:manage-project
+        - cascade-workflows:manage-project
         - implement-change
       must_load_skills:
-        - cascade-project-management:plan-project
+        - cascade-workflows:plan-project
       mutation_policy: none
       network_policy: none
       next_route: ""
-      primary_skill: cascade-project-management:plan-project
+      primary_skill: cascade-workflows:plan-project
       status_any:
         - BLOCKED
         - FAIL
         - GAP
         - NOT_RUN
         - PASS
-      target_skill: cascade-project-management:plan-project
+      target_skill: cascade-workflows:plan-project
     id: HX-061
     kind: interaction
     owner: orchestrator
@@ -571,7 +571,7 @@ scenarios:
       untrusted. Do not edit, create IDs or graph state, invent capacity, or
       claim planned evidence passed."
     source: harness-evals/core-cases.yaml
-    target_skill: cascade-project-management:plan-project
+    target_skill: cascade-workflows:plan-project
     risk: Embedded instructions cannot grant commitment authority or invent passed
       checks.
   - expectation:
@@ -579,7 +579,7 @@ scenarios:
         - context
       delegation_policy: none
       forbidden_primary:
-        - cascade-project-management:manage-project
+        - cascade-workflows:manage-project
       must_load_skills:
         - create-spec
       mutation_policy: none
@@ -607,50 +607,50 @@ scenarios:
       allowed_supporting: []
       delegation_policy: none
       forbidden_primary:
-        - cascade-coordinator:select-capabilities
-        - cascade-coordinator:plan-workflow
+        - cascade-workflows:select-capabilities
+        - cascade-workflows:plan-workflow
       must_load_roles:
         - orchestrator
       must_load_skills:
-        - cascade-market:research-market
+        - cascade-discovery:research-market
       mutation_policy: none
       network_policy: none
       next_route: ""
-      primary_skill: cascade-market:research-market
+      primary_skill: cascade-discovery:research-market
       status_any:
         - BLOCKED
         - FAIL
         - GAP
         - NOT_RUN
         - PASS
-      target_skill: cascade-market:research-market
+      target_skill: cascade-discovery:research-market
     id: HX-066
     kind: interaction
     owner: orchestrator
-    prompt: Use cascade-market:research-market to investigate the stated segment,
+    prompt: Use cascade-discovery:research-market to investigate the stated segment,
       pain, alternatives, pricing, and buying process. No other plugin
       capability or workflow graph is requested.
     source: harness-evals/core-cases.yaml
-    target_skill: cascade-market:research-market
+    target_skill: cascade-discovery:research-market
     risk: "Known regression: explicit capability must not expand to Coordinator."
   - expectation:
       allowed_supporting:
         - context
       delegation_policy: none
       forbidden_primary:
-        - cascade-coordinator:plan-workflow
-        - cascade-project-management:manage-project
+        - cascade-workflows:plan-workflow
+        - cascade-workflows:manage-project
       must_load_roles:
         - orchestrator
       must_load_skills:
-        - cascade-coordinator:select-capabilities
+        - cascade-workflows:select-capabilities
       mutation_policy: none
       network_policy: none
       next_route: ""
-      primary_skill: cascade-coordinator:select-capabilities
+      primary_skill: cascade-workflows:select-capabilities
       status_any:
         - BLOCKED
-      target_skill: cascade-coordinator:select-capabilities
+      target_skill: cascade-workflows:select-capabilities
     id: HX-067
     kind: interaction
     owner: orchestrator
@@ -661,27 +661,27 @@ scenarios:
       input, dependency, and authority reasoning; do not order, execute,
       persist, or dispatch them yet.
     source: harness-evals/core-cases.yaml
-    target_skill: cascade-coordinator:select-capabilities
+    target_skill: cascade-workflows:select-capabilities
     risk: "Known regression: selection requires grounded input and preserves
       authority."
   - expectation:
       allowed_supporting: []
       delegation_policy: none
       forbidden_primary:
-        - cascade-coordinator:select-capabilities
-        - cascade-software-architect:architect-software-system
-        - cascade-project-management:manage-project
+        - cascade-workflows:select-capabilities
+        - cascade-engineering:architect-software-system
+        - cascade-workflows:manage-project
       must_load_roles:
         - orchestrator
       must_load_skills:
-        - cascade-coordinator:plan-workflow
+        - cascade-workflows:plan-workflow
       mutation_policy: none
       network_policy: none
       next_route: ""
-      primary_skill: cascade-coordinator:plan-workflow
+      primary_skill: cascade-workflows:plan-workflow
       status_any:
         - BLOCKED
-      target_skill: cascade-coordinator:plan-workflow
+      target_skill: cascade-workflows:plan-workflow
     id: HX-068
     kind: interaction
     owner: orchestrator
@@ -692,7 +692,7 @@ scenarios:
       groups, joins, stop conditions, and dispatch_authorized false; do not add
       or execute routes.
     source: harness-evals/core-cases.yaml
-    target_skill: cascade-coordinator:plan-workflow
+    target_skill: cascade-workflows:plan-workflow
     risk: "Known regression: workflow compilation must not reselect or dispatch."
   - expectation:
       allowed_supporting: []
@@ -700,18 +700,18 @@ scenarios:
       forbidden_primary:
         - closeout
       must_load_skills:
-        - cascade-evals:harness-evaluation
+        - cascade-quality:harness-evaluation
       mutation_policy: none
       network_policy: none
       next_route: ""
-      primary_skill: cascade-evals:harness-evaluation
+      primary_skill: cascade-quality:harness-evaluation
       status_any:
         - BLOCKED
         - FAIL
         - GAP
         - NOT_RUN
         - PASS
-      target_skill: cascade-evals:harness-evaluation
+      target_skill: cascade-quality:harness-evaluation
     id: HX-071
     kind: interaction
     owner: orchestrator
@@ -722,31 +722,31 @@ scenarios:
       missing evidence and do not infer a pass, execute a target or require a
       registered evaluator role.
     source: harness-evals/core-cases.yaml
-    target_skill: cascade-evals:harness-evaluation
+    target_skill: cascade-quality:harness-evaluation
     risk: No raw run packet means no independent evaluation PASS.
   - expectation:
       allowed_supporting: []
       delegation_policy: none
       forbidden_primary:
         - cascade-design:create-design
-        - cascade-product:manage-product-lifecycle
+        - cascade-discovery:manage-product-lifecycle
       max_loaded_roles: 1
       max_loaded_skills: 1
       must_load_roles:
         - product-designer
       must_load_skills:
-        - cascade-product:define-product
+        - cascade-discovery:define-product
       mutation_policy: none
       network_policy: none
       next_route: ""
-      primary_skill: cascade-product:define-product
+      primary_skill: cascade-discovery:define-product
       status_any:
         - BLOCKED
         - FAIL
         - GAP
         - NOT_RUN
         - PASS
-      target_skill: cascade-product:define-product
+      target_skill: cascade-discovery:define-product
     id: HX-072
     kind: interaction
     owner: product-designer
@@ -758,15 +758,15 @@ scenarios:
       product approval explicit. Do not create mockups, a project plan or a
       market study."
     source: harness-evals/core-cases.yaml
-    target_skill: cascade-product:define-product
+    target_skill: cascade-discovery:define-product
     risk: "Known regression: Product Designer owns value definition before mockups."
   - expectation:
       allowed_supporting: []
       delegation_policy: none
       forbidden_primary:
-        - cascade-product:define-product
-        - cascade-market:research-market
-        - cascade-project-management:plan-project
+        - cascade-discovery:define-product
+        - cascade-discovery:research-market
+        - cascade-workflows:plan-project
         - cascade-simulations:simulate
       max_loaded_roles: 1
       max_loaded_skills: 1
@@ -798,7 +798,7 @@ scenarios:
       delegation_policy: none
       forbidden_primary:
         - cascade-design:create-design
-        - cascade-project-management:plan-project
+        - cascade-workflows:plan-project
       max_loaded_roles: 1
       max_loaded_skills: 1
       must_load_roles:
@@ -807,7 +807,7 @@ scenarios:
         - context
       mutation_policy: none
       network_policy: none
-      next_route: cascade-product:manage-product-lifecycle
+      next_route: cascade-discovery:manage-product-lifecycle
       primary_skill: context
       status_any:
         - GAP
@@ -820,7 +820,7 @@ scenarios:
       engineering teams next quarter. No portfolio evidence, capacity or
       decision authority is supplied. Identify the ownership and input gap and
       return the decision to Orchestrator through
-      cascade-product:manage-product-lifecycle. Do not make the investment
+      cascade-discovery:manage-product-lifecycle. Do not make the investment
       decision, adopt portfolio authority, spawn a role or turn this into mockup
       work.
     source: harness-evals/core-cases.yaml
@@ -830,22 +830,22 @@ scenarios:
       allowed_supporting: []
       delegation_policy: none
       forbidden_primary:
-        - cascade-evals:harness-evaluation
-        - cascade-evals:agent-evaluation
+        - cascade-quality:harness-evaluation
+        - cascade-quality:agent-evaluation
       max_loaded_roles: 1
       max_loaded_skills: 1
       must_load_roles:
         - agent-engineer
       must_load_skills:
-        - cascade-evals:prompt-evaluation
+        - cascade-quality:prompt-evaluation
       mutation_policy: none
       network_policy: none
       next_route: ""
-      primary_skill: cascade-evals:prompt-evaluation
+      primary_skill: cascade-quality:prompt-evaluation
       status_any:
         - GAP
         - BLOCKED
-      target_skill: cascade-evals:prompt-evaluation
+      target_skill: cascade-quality:prompt-evaluation
     id: HX-083
     kind: interaction
     owner: agent-engineer
@@ -856,28 +856,28 @@ scenarios:
       evaluation or self-accept the prompts. Do not execute models in this
       diagnostic.
     source: harness-evals/core-cases.yaml
-    target_skill: cascade-evals:prompt-evaluation
+    target_skill: cascade-quality:prompt-evaluation
     risk: Prompt comparison requires fixed cases, oracle and independent execution.
   - expectation:
       allowed_supporting: []
       delegation_policy: none
       forbidden_primary:
-        - cascade-evals:prompt-evaluation
-        - cascade-evals:harness-evaluation
+        - cascade-quality:prompt-evaluation
+        - cascade-quality:harness-evaluation
       max_loaded_roles: 1
       max_loaded_skills: 1
       must_load_roles:
         - agent-engineer
       must_load_skills:
-        - cascade-evals:agent-evaluation
+        - cascade-quality:agent-evaluation
       mutation_policy: none
       network_policy: none
       next_route: ""
-      primary_skill: cascade-evals:agent-evaluation
+      primary_skill: cascade-quality:agent-evaluation
       status_any:
         - GAP
         - BLOCKED
-      target_skill: cascade-evals:agent-evaluation
+      target_skill: cascade-quality:agent-evaluation
     id: HX-084
     kind: interaction
     owner: agent-engineer
@@ -887,7 +887,7 @@ scenarios:
       gaps and next steps; do not fabricate pass evidence, launch the agent or
       substitute a prompt-only comparison.
     source: harness-evals/core-cases.yaml
-    target_skill: cascade-evals:agent-evaluation
+    target_skill: cascade-quality:agent-evaluation
     risk: Agent behavior evaluation must not be replaced by prompt-only scoring.
   - expectation:
       allowed_supporting: []
@@ -900,18 +900,18 @@ scenarios:
       must_load_roles:
         - product-designer
       must_load_skills:
-        - cascade-product:validate-product
+        - cascade-discovery:validate-product
       mutation_policy: none
       network_policy: none
       next_route: ""
-      primary_skill: cascade-product:validate-product
+      primary_skill: cascade-discovery:validate-product
       status_any:
         - BLOCKED
         - FAIL
         - GAP
         - NOT_RUN
         - PASS
-      target_skill: cascade-product:validate-product
+      target_skill: cascade-discovery:validate-product
     id: HX-089
     kind: interaction
     owner: product-designer
@@ -922,14 +922,14 @@ scenarios:
       product value and demand, and specify the missing validation without
       running another simulation or claiming product-market fit.
     source: harness-evals/core-cases.yaml
-    target_skill: cascade-product:validate-product
+    target_skill: cascade-discovery:validate-product
     risk: Synthetic completion does not establish demand or product value.
   - expectation:
       allowed_supporting: []
       delegation_policy: none
       forbidden_primary:
         - cascade-ai-architect:architect-ai-system
-        - cascade-evals:prompt-evaluation
+        - cascade-quality:prompt-evaluation
       must_load_skills:
         - cascade-prompt:prompt
       mutation_policy: none
@@ -956,8 +956,8 @@ scenarios:
       allowed_supporting: []
       delegation_policy: none
       forbidden_primary:
-        - cascade-personas:compile-persona
-        - cascade-personas:build-persona
+        - cascade-discovery:compile-persona
+        - cascade-discovery:build-persona
         - cascade-simulations:simulate
       must_load_skills:
         - cascade-simulations:simulation-persona
@@ -987,7 +987,7 @@ scenarios:
       allowed_supporting:
         - context
         - pattern-context
-        - cascade-software-architect:architect-software-system
+        - cascade-engineering:architect-software-system
       delegation_policy: none
       forbidden_primary:
         - implement-change
@@ -995,7 +995,7 @@ scenarios:
         - plan-change
       mutation_policy: none
       network_policy: none
-      next_route: cascade-software-architect:architect-software-system
+      next_route: cascade-engineering:architect-software-system
       primary_skill: plan-change
       status_any:
         - BLOCKED
@@ -1051,8 +1051,8 @@ scenarios:
         - context
       delegation_policy: none
       forbidden_primary:
-        - cascade-software-architect:architect-software-system
-        - cascade-coordinator:select-capabilities
+        - cascade-engineering:architect-software-system
+        - cascade-workflows:select-capabilities
       must_load_skills:
         - plan-change
       mutation_policy: none

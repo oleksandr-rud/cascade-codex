@@ -12,7 +12,7 @@ under `docs/specs/source/`.
 | Category | `<product-design-brand-architecture-research-issue-task-policy-prompt-other>` |
 | Task or issue type | `<bug-feature-research-migration-refactor-validation-documentation-harness-blocked-handoff>` |
 | Preservation mode | `<exact-copy-lightly-annotated-copy-excerpt-link-only-blocked>` |
-| Routing target | `<docs/specs/{slice-slug}/ docs/product/ docs/design/ docs/brand/ docs/work/tasks/{task_id}.md no-doc-needed>` |
+| Routing target | `<docs/specs/{slice-slug}/ docs/product/ docs/design/ docs/brand/ docs/work/ no-doc-needed>` |
 | Planning status | `<new-triaged-normalized-superseded-deferred-blocked>` |
 
 ## Notes

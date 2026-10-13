@@ -14,8 +14,7 @@ the user's authority and the plan's mutation boundary.
 - Inspect current source and nearby dirty work; never assume the worktree is
   clean.
 - Resolve blocker questions that would materially change the implementation.
-- For an existing numbered task record or accepted coordination artifact, confirm
-  its source is current. Ordinary bounded
+- For an existing lane or graph, confirm its source is current. Ordinary bounded
   work needs no lane, graph, spec, or receipt.
 
 ## Implement
@@ -69,7 +68,7 @@ using existing target components and interfaces. Its example assets are optional
    generated projections over duplicated claims. Use `create-spec` when the
    changed contract requires durable specification persistence.
 7. If product behavior is wrong, fix the implementation. Route uncertain
-   failures to `cascade-qa:triage-defects`; use `repair-tests` only when that
+   failures to `cascade-quality:triage-defects`; use `resolve-validation-failure` only when that
    artifact proves `TEST_DRIFT` from current public-boundary evidence.
 8. Stop and report if permission, external coordination, or a materially larger
    scope is required.
@@ -79,9 +78,9 @@ using existing target components and interfaces. Its example assets are optional
 Summarize changed behavior, files, assumptions, and focused evidence. Route to:
 
 - `validate-change` for every completed non-atomic change,
-- `cascade-software-architect:review-change` when the diff is public, cross-boundary, security-sensitive,
+- `cascade-engineering:review-change` when the diff is public, cross-boundary, security-sensitive,
   harness-semantic, or otherwise benefits from an independent fixed-point pass,
-- `cascade-project-management:manage-project` only when newly discovered work
+- `cascade-workflows:manage-project` only when newly discovered work
   truly needs separate ownership, a dependency join, or a durable handoff.
 
 Do not declare broad success from a narrow check, silently overwrite unrelated

@@ -66,7 +66,7 @@ class PromptContractTest(unittest.TestCase):
             {
                 "simulate",
                 "manage-simulation-campaign",
-                "execute-simulation-campaign",
+                "run-simulation-campaign",
                 "simulation-persona",
                 "simulation-actor",
                 "simulation-adapter",

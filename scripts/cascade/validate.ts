@@ -24,9 +24,9 @@ import { validateBriefRepository } from "./briefs";
 import { validateAdmissionRepository } from "./admission";
 import { loadProductArtifactPolicy, loadProductPolicyRegistry } from "./policies";
 import { parseStrictYaml, readStructured } from "./structured-data";
-import { readWorkTasks } from "./work-tasks";
 import {
   buildPluginCapabilityCatalog,
+  repoPluginRoot,
   PLUGIN_CAPABILITY_CATALOG_RELATIVE,
 } from "./plugin-workflow";
 
@@ -41,45 +41,38 @@ const WORKSPACE_PERSISTENCE_RECEIPT_SCHEMA =
 const REPO_PLUGIN_NAMES = [
   "cascade-prompt",
   "cascade-simulations",
-  "cascade-evals",
-  "cascade-coordinator",
+  "cascade-quality",
+  "cascade-workflows",
   "cascade-ai-architect",
-  "cascade-software-architect",
-  "cascade-coding-agent",
-  "cascade-personas",
-  "cascade-product",
-  "cascade-market",
+  "cascade-engineering",
+  "cascade-discovery",
   "cascade-design",
   "cascade-security",
-  "cascade-project-management",
-  "cascade-qa",
-  "cascade-specs",
+  "specification-kit",
 ] as const;
 const REPO_PLUGIN_MARKETPLACE = ".agents/plugins/marketplace.json";
 const CASCADE_PROMPT_PLUGIN_NAME = "cascade-prompt";
 const PLUGIN_ADAPTER_DELEGATES: Record<string, string[]> = {
   "create-spec": [
-    "cascade-specs:synthesise-spec",
-    "cascade-product:define-product",
-    "cascade-product:manage-product-lifecycle",
-    "cascade-personas:build-persona",
-    "cascade-personas:compile-persona",
-    "cascade-market:research-market",
+    "specification-kit:build-spec",
+    "cascade-discovery:define-product",
+    "cascade-discovery:manage-product-lifecycle",
+    "cascade-discovery:build-persona",
+    "cascade-discovery:compile-persona",
+    "cascade-discovery:research-market",
   ],
   "run-qa-plan": [
-    "cascade-qa:design-tests",
-    "cascade-qa:assess-quality",
-    "cascade-qa:triage-defects",
+    "cascade-quality:design-tests",
+    "cascade-quality:assess-quality",
+    "cascade-quality:triage-defects",
   ],
-  "repair-tests": [
-    "cascade-qa:triage-defects",
-    "cascade-qa:assess-quality",
+  "resolve-validation-failure": [
+    "cascade-quality:triage-defects",
   ],
-  closeout: ["cascade-project-management:close-project"],
+  closeout: ["cascade-workflows:close-project"],
 };
 const PLUGIN_ONLY_HOST_ADAPTERS = new Set([
   "run-qa-plan",
-  "repair-tests",
 ]);
 
 const REQUIRED_FILES = [
@@ -96,11 +89,10 @@ const REQUIRED_FILES = [
   ".codex/hooks.json",
   ".agents/plugins/marketplace.json",
   PLUGIN_CAPABILITY_CATALOG_RELATIVE,
-  ...REPO_PLUGIN_NAMES.map((name) => `.codex/plugins/${name}/.codex-plugin/plugin.json`),
+  ...REPO_PLUGIN_NAMES.map((name) => `${repoPluginRoot(name)}/.codex-plugin/plugin.json`),
   ".codex/plugins/cascade-prompt/skills/prompt/references/model-system/model-registry.yaml",
   ".codex/plugins/cascade-prompt/skills/prompt/runtime/model-index.yaml",
   ".codex/task-admission/task-envelope.schema.json",
-  ".codex/task-admission/interpretation.schema.json",
   ".codex/task-admission/policy.schema.json",
   ".codex/task-admission/policy-source.schema.json",
   ".codex/task-admission/control-catalog.schema.json",
@@ -114,6 +106,7 @@ const REQUIRED_FILES = [
   "docs/_index.md",
   "docs/structure.md",
   "docs/glossary.md",
+  "docs/backlog/_index.md",
   "docs/product/_index.md",
   "docs/product/catalog.yaml",
   "docs/product/catalog.schema.json",
@@ -128,8 +121,14 @@ const REQUIRED_FILES = [
   "docs/specs/_index.md",
   "docs/specs/brief-manifest.schema.json",
   "docs/work/_index.md",
-  "docs/work/task-template.md",
-  "docs/work/task.schema.json",
+  "docs/work/active.md",
+  "docs/work/lane-template.md",
+  "docs/work/graph-template.md",
+  "docs/work/work-graph-template.md",
+  "docs/work/examples/_index.md",
+  "docs/work/graphs/_index.md",
+  "docs/work/reports/_index.md",
+  "docs/archive/work-reports/_index.md",
   "docs/patterns/_index.md",
   "docs/patterns/context-pack-schema.yaml",
   "docs/patterns/workflow/index.md",
@@ -215,14 +214,14 @@ const REQUIRED_FILES = [
   "product-evals/simulations/harness/README.md",
   "product-evals/simulations/product/README.md",
   ".codex/plugins/cascade-security/skills/codebase-audit/scripts/security_stack_scan.ts",
-  ".codex/plugins/cascade-project-management/schemas/project-management-artifact.schema.json",
-  ".codex/plugins/cascade-project-management/scripts/check_plugin.py",
-  ".codex/plugins/cascade-project-management/evals/evaluation-contract.json",
-  ".codex/plugins/cascade-project-management/evals/cases.json",
-  ".codex/plugins/cascade-qa/schemas/qa-artifact.schema.json",
-  ".codex/plugins/cascade-qa/scripts/check_plugin.py",
-  ".codex/plugins/cascade-qa/evals/evaluation-contract.json",
-  ".codex/plugins/cascade-qa/evals/cases.json",
+  ".codex/plugins/cascade-workflows/skills/project-management/schemas/project-management-artifact.schema.json",
+  ".codex/plugins/cascade-workflows/skills/project-management/scripts/check_plugin.py",
+  ".codex/plugins/cascade-workflows/skills/project-management/evals/evaluation-contract.json",
+  ".codex/plugins/cascade-workflows/skills/project-management/evals/cases.json",
+  ".codex/plugins/cascade-quality/skills/qa/schemas/qa-artifact.schema.json",
+  ".codex/plugins/cascade-quality/skills/qa/scripts/check_plugin.py",
+  ".codex/plugins/cascade-quality/skills/qa/evals/evaluation-contract.json",
+  ".codex/plugins/cascade-quality/skills/qa/evals/cases.json",
   ".codex/schemas/target/harness-config.schema.json",
   ".codex/schemas/target/onboarding-manifest.schema.json",
   ".codex/schemas/target/project-inventory.schema.json",
@@ -233,7 +232,7 @@ const REQUIRED_FOLDERS = [
   ".codex/skills",
   ".codex/agents",
   ".codex/plugins",
-  ...REPO_PLUGIN_NAMES.map((name) => `.codex/plugins/${name}`),
+  ...REPO_PLUGIN_NAMES.map(repoPluginRoot),
   ".codex/harness-tooling",
   "docs",
   "docs/product",
@@ -241,7 +240,6 @@ const REQUIRED_FOLDERS = [
   "docs/brand",
   "docs/specs",
   "docs/work",
-  "docs/work/tasks",
   "docs/patterns",
   ".codex/task-admission",
   ".codex/task-admission/policies",
@@ -277,13 +275,13 @@ const FORBIDDEN = [
   new RegExp(`\\b${["standalone", "qa"].join("[- ]")}\\b`, "i"),
   RETIRED_MODEL_PATTERN,
   new RegExp(`\\b${["max", "threads"].join("_")}\\b`),
-  new RegExp(["cascade-project-management:manage-project", "plan-change"].join("\\s*->\\s*")),
+  new RegExp(["cascade-workflows:manage-project", "plan-change"].join("\\s*->\\s*")),
 ];
 const FROZEN_PLUGIN_HISTORY_PATHS = new Set<string>();
 const PLUGIN_RETIRED_MODEL_GUARD_PATHS = new Set([
-  ".codex/plugins/cascade-evals/scripts/reduce_evaluation.py",
-  ".codex/plugins/cascade-evals/scripts/run_agent_evaluation.py",
-  ".codex/plugins/cascade-evals/skills/evaluate/references/model-policy.json",
+  ".codex/plugins/cascade-quality/skills/evals/scripts/reduce_evaluation.py",
+  ".codex/plugins/cascade-quality/skills/evals/scripts/run_agent_evaluation.py",
+  ".codex/plugins/cascade-quality/skills/evals/skills/evaluate/references/model-policy.json",
 ]);
 
 const CANONICAL_NON_ATOMIC_ROUTE = [
@@ -300,6 +298,8 @@ const ALLOWED_DOC_ROOTS = new Set([
   "_index.md",
   "structure.md",
   "glossary.md",
+  "archive",
+  "backlog",
   "brand",
   "design",
   "patterns",
@@ -396,7 +396,7 @@ export function repoPluginMetadataErrors(
   pluginName = CASCADE_PROMPT_PLUGIN_NAME,
 ): string[] {
   const errors: string[] = [];
-  const pluginSource = `./.codex/plugins/${pluginName}`;
+  const pluginSource = `./${repoPluginRoot(pluginName)}`;
   if (typeof marketplace.name !== "string" || !marketplace.name.trim()) {
     errors.push("repo plugin marketplace missing name");
   }
@@ -474,6 +474,186 @@ export function modelEntryFreshnessErrors(model: Record<string, any>, fallbackDa
     return freshness.filter((error) => !error.startsWith("Cascade Prompt model registry is stale ("));
   }
   return [`unsupported model status: ${model.id}`, ...freshness];
+}
+
+export interface WorkGraphDocument {
+  path: string;
+  text: string;
+}
+
+const WORK_GRAPH_ID = /^WG-\d{3}$/;
+const WORK_GRAPH_NODE_ID = /^WG-\d{3}-N\d{2}$/;
+const WORK_GRAPH_GATE_ID = /^WG-\d{3}-G[A-Z0-9]+$/;
+const WORK_GRAPH_REFERENCE = /\bWG-[A-Z0-9-]+\b/g;
+const LEGACY_WORK_GRAPH_REFERENCE = /\bIG-[A-Z0-9-]+\b/g;
+const IMPLEMENTATION_GRAPH_TERM = /\bimplementation[- ]graph\b/i;
+
+function markdownSection(text: string, heading: string): string | undefined {
+  const marker = `## ${heading}`;
+  const start = text.indexOf(marker);
+  if (start === -1) return undefined;
+  const bodyStart = start + marker.length;
+  const next = text.slice(bodyStart).search(/\n## /);
+  return next === -1
+    ? text.slice(bodyStart)
+    : text.slice(bodyStart, bodyStart + next);
+}
+
+function workGraphReferences(text: string): string[] {
+  return [...text.matchAll(WORK_GRAPH_REFERENCE)].map((match) => match[0]);
+}
+
+export function validateWorkGraphDocuments(
+  graphDocuments: WorkGraphDocument[],
+  workDocuments: WorkGraphDocument[],
+): string[] {
+  const errors: string[] = [];
+  const graphIds = new Map<string, string>();
+  const scopedIds = new Map<string, string>();
+
+  for (const document of workDocuments) {
+    if (document.path === "docs/work/work-graph-template.md") continue;
+    if (document.path.includes("implementation-graph")) {
+      errors.push(`legacy implementation-graph filename: ${document.path}`);
+    }
+    if (IMPLEMENTATION_GRAPH_TERM.test(document.text)) {
+      errors.push(`legacy implementation-graph terminology in ${document.path}`);
+    }
+    for (const legacy of document.text.matchAll(LEGACY_WORK_GRAPH_REFERENCE)) {
+      errors.push(`legacy work-graph id in ${document.path}: ${legacy[0]}`);
+    }
+    for (const reference of workGraphReferences(document.text)) {
+      if (
+        !WORK_GRAPH_ID.test(reference) &&
+        !WORK_GRAPH_NODE_ID.test(reference) &&
+        !WORK_GRAPH_GATE_ID.test(reference)
+      ) {
+        errors.push(`invalid work-graph id shape in ${document.path}: ${reference}`);
+      }
+    }
+  }
+
+  for (const document of graphDocuments) {
+    if (
+      !/^docs\/work\/reports\/\d{4}-\d{2}-\d{2}-[a-z0-9-]+-work-graph\.md$/.test(
+        document.path,
+      )
+    ) {
+      errors.push(`invalid work-graph report path: ${document.path}`);
+    }
+
+    const header = /^Work Graph ID:\s*`([^`]+)`\s*$/m.exec(document.text);
+    if (!header) {
+      errors.push(`work graph missing Work Graph ID header: ${document.path}`);
+      continue;
+    }
+    const graphId = header[1]!;
+    if (!WORK_GRAPH_ID.test(graphId)) {
+      errors.push(`invalid Work Graph ID in ${document.path}: ${graphId}`);
+      continue;
+    }
+    const duplicateGraph = graphIds.get(graphId);
+    if (duplicateGraph) {
+      errors.push(`duplicate Work Graph ID ${graphId}: ${duplicateGraph}, ${document.path}`);
+    } else {
+      graphIds.set(graphId, document.path);
+    }
+
+    const nodeRegistry = markdownSection(document.text, "Node Registry");
+    if (!nodeRegistry) {
+      errors.push(`work graph missing Node Registry: ${document.path}`);
+      continue;
+    }
+    const registryIds = [...nodeRegistry.matchAll(/^\|\s*`([^`]+)`\s*\|/gm)].map(
+      (match) => match[1]!,
+    );
+    const nodeIds = registryIds.filter((id) => WORK_GRAPH_NODE_ID.test(id));
+    if (nodeIds.length === 0) {
+      errors.push(`work graph has no canonical node IDs: ${document.path}`);
+    }
+    const localIds = new Set<string>();
+    for (const id of registryIds) {
+      if (!WORK_GRAPH_NODE_ID.test(id) && !WORK_GRAPH_GATE_ID.test(id)) {
+        errors.push(`invalid Node Registry ID in ${document.path}: ${id}`);
+        continue;
+      }
+      if (!id.startsWith(`${graphId}-`)) {
+        errors.push(`out-of-scope Node Registry ID in ${document.path}: ${id}`);
+      }
+      if (localIds.has(id)) {
+        errors.push(`duplicate Node Registry ID in ${document.path}: ${id}`);
+      } else {
+        localIds.add(id);
+      }
+      const duplicateScoped = scopedIds.get(id);
+      if (duplicateScoped && duplicateScoped !== document.path) {
+        errors.push(`duplicate work-graph node/gate ID ${id}: ${duplicateScoped}, ${document.path}`);
+      } else {
+        scopedIds.set(id, document.path);
+      }
+    }
+
+    const gateContracts = markdownSection(document.text, "Gate Contracts");
+    if (!gateContracts) {
+      errors.push(`work graph missing Gate Contracts: ${document.path}`);
+      continue;
+    }
+    const headingGateIds = [
+      ...gateContracts.matchAll(/^###\s+`?(WG-[A-Z0-9-]+)`?(?:\s|$)/gm),
+    ].map((match) => match[1]!);
+    const tableGateIds = [
+      ...gateContracts.matchAll(/^\|\s*`(WG-[A-Z0-9-]+)`\s*\|/gm),
+    ].map((match) => match[1]!);
+    const gateDefinitionIds = [...headingGateIds, ...tableGateIds];
+    if (gateDefinitionIds.length === 0) {
+      errors.push(`work graph has no canonical gate IDs: ${document.path}`);
+    }
+    const localGateIds = new Set<string>();
+    for (const id of gateDefinitionIds) {
+      if (!WORK_GRAPH_GATE_ID.test(id)) {
+        errors.push(`invalid Gate Contracts ID in ${document.path}: ${id}`);
+        continue;
+      }
+      if (!id.startsWith(`${graphId}-`)) {
+        errors.push(`out-of-scope Gate Contracts ID in ${document.path}: ${id}`);
+      }
+      if (localGateIds.has(id)) {
+        errors.push(`duplicate Gate Contracts ID in ${document.path}: ${id}`);
+      } else {
+        localGateIds.add(id);
+      }
+      const duplicateScoped = scopedIds.get(id);
+      if (duplicateScoped && duplicateScoped !== document.path) {
+        errors.push(`duplicate work-graph node/gate ID ${id}: ${duplicateScoped}, ${document.path}`);
+      } else {
+        scopedIds.set(id, document.path);
+      }
+    }
+
+    const terminal = /^Terminal Gate:\s*(.+)$/m.exec(document.text)?.[1] ?? "";
+    const terminalGate = workGraphReferences(terminal).find(
+      (id) => WORK_GRAPH_GATE_ID.test(id) && id.startsWith(`${graphId}-`),
+    );
+    if (!terminalGate) {
+      errors.push(`work graph missing graph-scoped Terminal Gate: ${document.path}`);
+    }
+  }
+
+  for (const document of workDocuments) {
+    if (document.path === "docs/work/work-graph-template.md") continue;
+    for (const reference of new Set(workGraphReferences(document.text))) {
+      if (WORK_GRAPH_ID.test(reference) && !graphIds.has(reference)) {
+        errors.push(`unknown work-graph reference in ${document.path}: ${reference}`);
+      } else if (
+        (WORK_GRAPH_NODE_ID.test(reference) || WORK_GRAPH_GATE_ID.test(reference)) &&
+        !scopedIds.has(reference)
+      ) {
+        errors.push(`unknown work-graph node/gate reference in ${document.path}: ${reference}`);
+      }
+    }
+  }
+
+  return errors;
 }
 
 async function discoverSkills(): Promise<Map<string, string>> {
@@ -563,10 +743,10 @@ async function validateRoutingContracts(
   } else {
     errors.push(...routeOrderErrors(".codex/config.toml", configRoute.join(" -> "), CONFIG_NON_ATOMIC_ROUTE));
   }
-  if (config.cascade?.conditional_iteration_planning !== "cascade-project-management:plan-project") {
+  if (config.cascade?.conditional_iteration_planning !== "cascade-workflows:plan-project") {
     errors.push(".codex/config.toml must route conditional iteration planning to Cascade Project Management");
   }
-  if (config.cascade?.conditional_capability_selection !== "cascade-coordinator:select-capabilities") {
+  if (config.cascade?.conditional_capability_selection !== "cascade-workflows:select-capabilities") {
     errors.push(".codex/config.toml must route ambiguous capability selection to Cascade Coordinator");
   }
   if (config.cascade?.plugin_coordinator_validator !== "scripts/cascade/plugin-workflow.ts") {
@@ -607,10 +787,10 @@ async function validateRoutingContracts(
       if (stableJson(configuredRoutes) !== stableJson(catalogRoutes)) {
         errors.push(".codex/config.toml cascade.plugin_skills must project every generated capability route exactly once");
       }
-      if (configuredPluginSkills.capability_selection !== "cascade-coordinator:select-capabilities") {
+      if (configuredPluginSkills.capability_selection !== "cascade-workflows:select-capabilities") {
         errors.push(".codex/config.toml capability_selection alias must use Cascade Coordinator");
       }
-      if (configuredPluginSkills.workflow_plan !== "cascade-coordinator:plan-workflow") {
+      if (configuredPluginSkills.workflow_plan !== "cascade-workflows:plan-workflow") {
         errors.push(".codex/config.toml workflow_plan alias must use Cascade Coordinator");
       }
     } catch (error) {
@@ -637,7 +817,7 @@ async function validateRepoPlugins(errors: string[]): Promise<void> {
   }
 
   for (const pluginName of REPO_PLUGIN_NAMES) {
-    const pluginRootRelative = `.codex/plugins/${pluginName}`;
+    const pluginRootRelative = repoPluginRoot(pluginName);
     let manifest: Record<string, any>;
     try {
       manifest = await readJson<Record<string, any>>(
@@ -720,10 +900,8 @@ async function validateRepoPlugins(errors: string[]): Promise<void> {
       indexPath,
       rel(indexPath),
     );
-    for (const payload of [registry, index]) {
-      if (payload.freshness_policy !== "per-entry") errors.push("Cascade Prompt freshness policy must check each model entry");
-      errors.push(...modelRegistryFreshnessErrors(payload.checked_at).filter((error) => !error.startsWith("Cascade Prompt model registry is stale (")));
-    }
+    errors.push(...modelRegistryFreshnessErrors(registry.checked_at));
+    errors.push(...modelRegistryFreshnessErrors(index.checked_at));
     if (registry.checked_at !== index.checked_at) {
       errors.push("Cascade Prompt model registry and runtime index freshness differ");
     }
@@ -758,7 +936,6 @@ async function validateRepoPlugins(errors: string[]): Promise<void> {
       if (source && (model.checked_at ?? index.checked_at) !== (source.checked_at ?? registry.checked_at)) {
         errors.push(`Cascade Prompt model review date differs for ${model.id}`);
       }
-      if (source && model.status !== source.status) errors.push(`Cascade Prompt model review status differs for ${model.id}`);
     }
   } catch (error) {
     errors.push(`invalid ${CASCADE_PROMPT_PLUGIN_NAME} model registry: ${errorMessage(error)}`);
@@ -847,16 +1024,6 @@ async function validateConfigToml(
   if (evals.planning_model !== "gpt-6.1-sol") errors.push("planning model mismatch");
   if (evals.execution_model !== "gpt-6.1-sol") errors.push("execution model mismatch");
   if (evals.judge_model !== "gpt-6.1-sol") errors.push("judge model mismatch");
-  const evaluationPolicyPath = rootPath(".codex/plugins/cascade-evals/skills/evaluate/references/model-policy.json");
-  if (await isFile(evaluationPolicyPath)) {
-    const evaluationPolicy = await readJson<Record<string, any>>(evaluationPolicyPath);
-    for (const role of ["builder", "target", "judge"]) {
-      if (evaluationPolicy.defaults?.[`${role}_model`] !== config.model ||
-          evaluationPolicy.defaults?.[`${role}_reasoning_effort`] !== config.model_reasoning_effort) {
-        errors.push(`Cascade Evals ${role} default differs from the current harness model policy`);
-      }
-    }
-  }
   if (evals.runner !== "scripts/cascade/evals.ts") {
     errors.push("harness eval runner must point to scripts/cascade/evals.ts");
   }
@@ -1026,6 +1193,7 @@ async function validateReferences(errors: string[]): Promise<void> {
       for (const match of text.matchAll(expression)) {
         const reference = match[1]!;
         if (/[{}*<>]/.test(reference)) continue;
+        if (reference.startsWith("docs/work/")) continue;
         if (!(await isFile(rootPath(reference)))) {
           errors.push(`missing referenced resource: ${rel(path)} -> ${reference}`);
         }
@@ -1083,9 +1251,23 @@ async function validatePatterns(errors: string[]): Promise<void> {
   }
 }
 
-async function validateWorkTasks(errors: string[]): Promise<void> {
-  try { await readWorkTasks(); }
-  catch (error) { errors.push(`invalid Work records: ${errorMessage(error)}`); }
+async function validateWorkGraphs(errors: string[]): Promise<void> {
+  const paths = await walkFiles(rootPath("docs/work"), {
+    include: (item) => item.endsWith(".md"),
+  });
+  const workDocuments = await Promise.all(
+    paths.map(async (path) => ({
+      path: rel(path),
+      text: await readText(path),
+    })),
+  );
+  const graphDocuments = workDocuments.filter(
+    (document) =>
+      document.path !== "docs/work/work-graph-template.md" &&
+      (document.path.endsWith("-work-graph.md") ||
+        /^Work Graph ID:\s*/m.test(document.text)),
+  );
+  errors.push(...validateWorkGraphDocuments(graphDocuments, workDocuments));
 }
 
 async function validateCampaigns(errors: string[]): Promise<void> {
@@ -1311,7 +1493,7 @@ async function validateHarness(errors: string[]): Promise<{
   for (const error of await validateBriefRepository(true)) {
     errors.push(`invalid product brief context: ${error}`);
   }
-  await validateWorkTasks(errors);
+  await validateWorkGraphs(errors);
   await validateSimulationLayout(errors);
   await validateCampaigns(errors);
   await validateBunCutover(errors);

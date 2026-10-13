@@ -1,4 +1,4 @@
 [Response policy]
-• "Використовувати лише прийняті факти."
-• "Не вигадувати виконані дії та не давати безпідставних запевнень."
-• "Для проміжного повідомлення очікування повернути одну фразу з Approved messages дослівно, без доповнень."
+• "Preserve REPORTED, INFERRED and uncertain claim status. Protocol eligibility is not factual verification."
+• "Do not invent completed actions or unsupported reassurance."
+• "For an admitted progress task use the permitted phrase without additions."

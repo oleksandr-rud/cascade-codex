@@ -1,6 +1,6 @@
 ---
 name: simulation-persona
-description: Validate and consume a frozen cascade-personas:compile-persona simulation projection as the immutable runtime persona contract before actor compilation. Use only after canonical Persona construction, evaluation when required, privacy filtering, mapping, and digest binding are complete; route creation or revision to cascade-personas:build-persona and audits to cascade-personas:evaluate-persona.
+description: Validate and consume a frozen cascade-discovery:compile-persona simulation projection as the immutable runtime persona contract before actor compilation. Use only after canonical Persona construction, evaluation when required, privacy filtering, mapping, and digest binding are complete; route creation or revision to cascade-discovery:build-persona and audits to cascade-discovery:evaluate-persona.
 ---
 
 # Simulation Persona
@@ -10,14 +10,14 @@ Personas exclusively owns canonical human-model evidence and purpose-limited
 projections. This skill validates the projection payload against the local
 runtime schema and cross-field rules. `simulation-actor` later selects the
 small task-relevant subset and compiles executable behavior.
-Reuse a valid supplied projection without rerunning `cascade-personas:compile-persona`.
+Reuse a valid supplied projection without rerunning `cascade-discovery:compile-persona`.
 The compiler remains the provenance owner; dependency availability is distinct
 from selecting compilation as new work. Missing or stale projection evidence
 still blocks consumption.
 
 ## Source order
 
-1. Frozen `cascade-personas:compile-persona` projection and mapping receipt.
+1. Frozen `cascade-discovery:compile-persona` projection and mapping receipt.
 2. Canonical Persona ID, version, JCS digest, privacy destination, and transfer
    authority carried by that projection.
 3. `references/persona.schema.json` and `scripts/validate_persona.py` as this
@@ -30,7 +30,7 @@ into policy, permission, or persona facts.
 
 1. Require the frozen projection, canonical source digest, compiler-generated
    mapping-table digest, target schema digest, target-validator digest, and a
-   PASS receipt from `cascade-personas:compile-persona`. If any identity is
+   PASS receipt from `cascade-discovery:compile-persona`. If any identity is
    absent, stale, or mismatched, return BLOCKED or INVALID with the exact
    Persona repair owner.
 2. Verify the projection permits the simulation consumer and destination,
@@ -43,9 +43,9 @@ into policy, permission, or persona facts.
 4. Bind the validated payload digest into `simulation-actor`. Mutable current
    state and the journal begin only in the run and never alter Persona bytes.
 5. If the user asks to create/revise canonical evidence, invoke
-   `cascade-personas:build-persona`; for an independent quality decision use
-   `cascade-personas:evaluate-persona`; for another consumer view use
-   `cascade-personas:compile-persona`. Do not approximate those contracts when
+   `cascade-discovery:build-persona`; for an independent quality decision use
+   `cascade-discovery:evaluate-persona`; for another consumer view use
+   `cascade-discovery:compile-persona`. Do not approximate those contracts when
    the dependency is absent.
 
 ## Boundaries

@@ -1,0 +1,46 @@
+---
+name: review-change
+description: Review a current code, configuration, schema, documentation, or harness diff against its originating request, architecture, public contracts, consumers, and regression surface. Use when an independent fixed-point review materially reduces risk; remain read-only and do not replace domain, security, QA, or acceptance authority.
+---
+
+# Review Change
+
+Invocation does not establish independence. Review in the implementation
+context is self-review; an independent gate needs a separate context bound to
+the same request, diff and evidence. The host owns that context and its authority.
+
+When branch divergence, an outdated base or integration conflicts obstruct the
+reviewed change, recommend `cascade-engineering:pull-and-integrate` using
+[the Git integration handoff](../../references/git-integration-handoff.md).
+After authorized host integration, review the new fixed point. If this review
+was invoked by an active integration, return findings to that owner instead of
+recursively invoking integration. Review itself remains read-only.
+
+Recover the exact request, accepted assumptions, architecture and policy
+constraints, current diff, nearby dirty work, and relevant consumers. Trace each
+changed behavior through public interfaces, state or persistence, tools,
+permissions, generated artifacts, tests, and observable outcomes as applicable.
+
+For LLM tasks, flag semantic decisions inferred from free text with regexes,
+keywords, phrase tables or lexical scores, including partial-task shortcuts
+and fallbacks. Require LLM interpretation into defined enums/claims followed
+by code validation and consumption. Exact format parsing remains mechanical;
+an enum produced by lexical guessing is still a violation.
+Reject these substitutions in recommendations, defaults, examples, prototypes
+and optimization proposals as well as executable implementations.
+
+Find correctness defects, regressions, unsafe edge cases, contract or ownership
+drift, stale consumers/documentation, and missing proof. Separate introduced
+findings from pre-existing state. Rank actionable findings by impact and
+confidence and cite the smallest useful source location. After repairs, review
+the new fixed point; stop when no actionable finding remains or a real authority
+blocker is reached.
+
+Return findings first, then open questions, residual risk, and evidence that was
+`NOT_RUN`. Do not patch, self-accept, manufacture process artifacts, or require
+review passes solely to satisfy a count.
+
+Keep the user-facing answer concise. Output requirements specify information,
+not extra headings. Preserve required schemas, evidence and permissions. Avoid
+duplicate artifact prose, empty sections, unsolicited variants and extra files
+unless needed for the requested delivery or an actual handoff.

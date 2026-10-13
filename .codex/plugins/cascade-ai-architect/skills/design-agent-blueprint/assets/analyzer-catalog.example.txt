@@ -1,22 +1,22 @@
-[Policy catalog]
+[Predicate catalog]
 •
-  Target — "conversation-identity.preferred_name"
-  Meaning — "Як звертатися до користувача"
-  Type — "Текст до 80 символів"
-  Changes
-    • "set"
-    • "clear"
-  Evidence — "Лише прямо повідомлене користувачем"
+  Predicate — "preferred_name"
+  Value — "Text"
+  Support
+    • "REPORTED"
 •
-  Target — "response-style.emotion_observation"
-  Meaning — "Поточна емоційна ознака"
-  Values
-    • "concern"
-  Evidence — "Повідомлене або явно позначений висновок"
+  Predicate — "emotion_report"
+  Value — "Text"
+  Support
+    • "REPORTED"
+    • "INFERRED"
 •
-  Target — "response-style.requested_format"
-  Meaning — "Бажаний формат пояснення"
-  Values
-    • "one_step_at_a_time"
-    • "short_explanation"
-    • "steps"
+  Predicate — "response_format"
+  Value — "Text"
+  Support
+    • "REPORTED"
+
+[Action requests]
+• "COMPOSE"
+• "CLARIFY"
+• "STOP; research is unavailable in this issued scope"

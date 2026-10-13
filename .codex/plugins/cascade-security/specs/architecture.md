@@ -32,13 +32,13 @@ not vulnerability, secret, dependency, or compliance proof.
 | Alias | Purpose | Boundary |
 | --- | --- | --- |
 | `cascade-prompt:prompt` | Author or repair a prompt after Security specifies controls | Security owns security requirements; Prompt owns prompt construction |
-| `cascade-software-architect:review-architecture` | Review a cross-boundary architecture risk | Security supplies control gaps; Architect owns architecture review |
+| `cascade-engineering:review-architecture` | Review a cross-boundary architecture risk | Security supplies control gaps; Architect owns architecture review |
 | `cascade-ai-architect:architect-ai-system` | Resolve an agent-system architecture gap | Security reviews trust and tool boundaries; Architect owns system topology |
-| `cascade-coding-agent:integrate-agent-assets` | Integrate reviewed security-facing agent assets | Cascade Coding Agent owns repository integration and validation |
+| `cascade-engineering:integrate-agent-assets` | Integrate reviewed security-facing agent assets | Cascade Coding Agent owns repository integration and validation |
 | `cascade-simulations:simulate` | Execute an explicitly requested bounded abuse or actor rehearsal | Security supplies fixed risks/outcomes; Simulations owns execution and receipts |
-| `cascade-evals:evaluate` | Run versioned semantic qualification | Evals owns blind judges, reduction, and immutable receipts |
-| `cascade-evals:agent-evaluation` | Evaluate the three skill contracts | Security owns cases and assertions; Evals owns execution |
-| `cascade-product:validate-product` | Prove user-visible security behavior | Product validation owns functional evidence, not compliance attestation |
+| `cascade-quality:evaluate` | Run versioned semantic qualification | Evals owns blind judges, reduction, and immutable receipts |
+| `cascade-quality:agent-evaluation` | Evaluate the three skill contracts | Security owns cases and assertions; Evals owns execution |
+| `cascade-discovery:validate-product` | Prove user-visible security behavior | Product validation owns functional evidence, not compliance attestation |
 
 Dependencies are soft until a case requires them. An unavailable required
 dependency produces a typed `BLOCKED` handoff; peer instructions are never
