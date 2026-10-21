@@ -46,6 +46,9 @@ set of hypotheses, not delivered value. Preserve missing inputs explicitly.
 
 Use the smallest relevant mode. A channel decision does not require a second
 channel, an invented subscription, or a complete growth campaign.
+For video/SMM-led selection use the distribution brief in the channel reference;
+keep product popularity, demonstrability, channel access and profitable
+acquisition as separate claims.
 
 When activation or a growth concept changes UI, consider structured choices,
 summaries and results through `cascade-design:design-system` and its shared

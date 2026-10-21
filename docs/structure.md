@@ -8,6 +8,7 @@ config; keep reusable workflow rules in skills, agents, and patterns.
 | Folder | Purpose | Written By |
 |---|---|---|
 | `.agents/plugins/` | Repo-local plugin marketplace catalog | `plugin-creator`, `cascade-engineering:maintain-harness` |
+| `.agents/skills/cascade-cloud/` | Thin Cloud source bootstrap adapter; canonical host methods remain under `.codex/` | Agent Engineer |
 | `.github/` | Pull request description contract and GitHub Copilot repository instructions | `cascade-engineering:maintain-harness`, `cascade-engineering:adapt-harness` |
 | `docs/work/` | Active work lanes, first-class Coordination Graphs, copyable examples, lane packets, reports, handoffs | Cascade Project Management proposals plus authorized host `plan-change`, `validate-change`, and `closeout` effects |
 | `docs/archive/work-reports/` | Compact archive capsules and relocated frozen lane, graph, and report history | `closeout` only after `cascade-workflows:close-project` proposes exact retention and current authority permits it |
@@ -45,6 +46,7 @@ config; keep reusable workflow rules in skills, agents, and patterns.
 | `scripts/cascade/campaign/adapters/` | One module per execution contour plus the built-in adapter registry and shared transport resolution | Campaign infrastructure adapters |
 | `scripts/cascade/campaign/artifacts/` | Application-facing artifact repository ports; filesystem persistence remains in `campaign-artifacts.ts` | Campaign application and infrastructure boundary |
 | `scripts/cascade-runtime.ts`, `scripts/build-runtime-bundle.ts` | Six-command core target entrypoint and deterministic lean-bundle builder | Agent Engineer and source validation |
+| `scripts/cloud-smoke.sh` | Source and generated-runtime checks for a prepared Cloud environment; no provider calls or environment publication | Agent Engineer |
 | `scripts/runtime-templates/AGENTS.md` | Target-project boot contract; never copies the Cascade source identity | Bundle builder and target onboarding |
 | `dist/cascade-runtime/` | Ignored generated target profile: host adapters, frozen plugin catalog, Coordinator contracts, admission, closeout, and Workspace MCP | Runtime bundle builder |
 

@@ -22,6 +22,39 @@ behavior, circumstances, costs and workarounds before opinions about the idea.
 Record recruitment, question framing, contrary cases and selection limits.
 There is no universal interview or signup count that establishes validation.
 
+Use both entry paths: an existing business/product -> comparable job/niche ->
+demand and economics cross-check; or an original buyer request/problem -> niche
+hypothesis -> independent needs and existing solutions. Rotate current spend,
+experience with independent corroboration, unmet needs, established categories,
+reachable channels, changed technology economics and aspirations as research
+lenses. Keep prior cases eligible for deeper validation under their original
+identity; another source or lens does not create another opportunity.
+
+For a selected niche compare at least two independently owned live products
+serving the same job; seek a third, a small entrant, a manual substitute and a
+failed or paused alternative when evidence is available. Track ownership, job,
+segment, geography, price/unit, source period and independent source lineage.
+Separate category existence, end-user demand, commercial results, solution
+quality and our access to buyers. A development request can support a services
+business without proving end-user SaaS demand. Unknown private revenue,
+retention, costs and profit stay unknown.
+
+When popularity or video/SMM reach is a user selection constraint, preserve it
+explicitly. Popularity needs a dated metric, population/platform and origin;
+downloads, active users and paying users are different measures. Otherwise
+require a plausible bounded channel test, label reachability as a hypothesis,
+and use the distribution brief in cascade-discovery:plan-growth's
+`references/channels.md`. A visual result or competitor's viral post does not
+establish easy distribution, conversion or profitable acquisition. Do not narrow
+the search to video-making products: useful transformations in other jobs may
+also be demonstrable through short video.
+
+Respect a requested minimum number of distinct items without manufacturing
+freshness. If current news is insufficient, use newly researched product cases
+only when that fallback is allowed, state their actual evidence dates, and
+deduplicate by owner/user, job, context and desired result. Never split one
+event, syndication or reworded product into multiple items to fill a quota.
+
 Competitor revenue, ads, rankings and reviews support limited category claims.
 They do not prove entrant acquisition cost, retention or margin. Include failed
 entrants, inactive products, spend and selection bias where available. Treat

@@ -10,6 +10,9 @@ read [references/market-selection.md](references/market-selection.md). Research
 comparable jobs and entrant reachability before recommending a market. Use
 cascade-discovery:evaluate-market-opportunity for the frozen comparison and
 cascade-discovery:plan-growth for a chosen audience's channel or growth strategy.
+Preserve requested product-count and distribution constraints. Cross-check
+existing products and buyer-led cases; distinguish observed popularity from a
+proposed video/SMM test under the market-selection reference.
 
 Produce a current, contradiction-aware market evidence ledger. This skill gathers and classifies evidence; it does not choose product scope or claim product-market fit.
 

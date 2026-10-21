@@ -23,6 +23,10 @@ independent change review are unresolved.
 If these are absent, inspect first with `$audit-harness`. Ask only a question
 whose answer materially changes the authorized result.
 
+For an authorized recurring check driven by research, releases or observed
+failures, read [references/evidence-maintenance.md](references/evidence-maintenance.md).
+Execute one bounded check; the host owns scheduling, publication and installation.
+
 ## Workflow
 
 Across LLM task boundaries, implement semantic interpretation through LLM output

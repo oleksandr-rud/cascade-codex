@@ -1,6 +1,6 @@
 {
   "artifact_type": "cascade-plugin-capability-catalog",
-  "catalog_digest": "9cc813b6d9ec94c37b0e18b278d8928a7276fd626eae4cf2748db6ab2d21ecf2",
+  "catalog_digest": "342a7751bd178b53d8c428fbfbcb8ac5b1469516f4be11c0d951d453125bcbf6",
   "marketplace": ".agents/plugins/marketplace.json",
   "plugins": [
     {
@@ -1145,9 +1145,9 @@
     },
     {
       "descriptor_path": ".codex/plugins/cascade-engineering/capabilities.yaml",
-      "descriptor_sha256": "7c0888314d937bc889e9398ed1fb160fea52a387281700e8685e67ca30146864",
+      "descriptor_sha256": "db86b9edee9b5e009f9330fd49141d011df6daed167dcc51e40f5defda7bcff9",
       "manifest_path": ".codex/plugins/cascade-engineering/.codex-plugin/plugin.json",
-      "manifest_sha256": "57fe6e469612f6eaa5f7c7da7f6b42be23a0fccd0ec7b6e0822bed15622f8f34",
+      "manifest_sha256": "619ab4f8a64d7a660617f301564ff8a28cb4fd49c1b7b5248bbb24abb5bff31f",
       "model_policy": {
         "evaluation_reasoning_effort": "xhigh",
         "model": "gpt-6.1-sol",
@@ -1472,7 +1472,7 @@
           ],
           "required_dependencies": [],
           "route": "cascade-engineering:maintain-harness",
-          "skill_sha256": "a1cbce57d85e0119b113c7838758b7fef190d56c9a906decff648c9d5b3d3bbb",
+          "skill_sha256": "c11091b51544d27990ba1d74fb93ff5fe718ce39db9bf1a62dec0c6c7d8b0f95",
           "triggers": [
             "an accepted harness finding or explicit harness change must be implemented"
           ]
@@ -1521,13 +1521,13 @@
           ]
         }
       ],
-      "version": "1.0.2+codex.20261013.sync.1"
+      "version": "1.0.3+codex.20261021.maintenance.1"
     },
     {
       "descriptor_path": ".codex/plugins/cascade-discovery/capabilities.yaml",
-      "descriptor_sha256": "5305a51f4df214cfeda7647046eb113bd0ea8efab713dea2f966d07c318a2e1b",
+      "descriptor_sha256": "eddacec2123e08c0e1f0a53feda583d27b6fc83ce7bee79b1ec83d81aea6bca8",
       "manifest_path": ".codex/plugins/cascade-discovery/.codex-plugin/plugin.json",
-      "manifest_sha256": "cfc852262b59e40a89b46710e3e0e85dfb0013dbc28dc1abf00a8b6782a4af84",
+      "manifest_sha256": "7ccdab7c97909661a9075728d7d1aba8fd73a7177149a85553ed75ec9ff3a81f",
       "model_policy": {
         "evaluation_reasoning_effort": "xhigh",
         "model": "gpt-6.1-sol",
@@ -1569,7 +1569,7 @@
           ],
           "required_dependencies": [],
           "route": "cascade-discovery:research-market",
-          "skill_sha256": "58c374dcc834cddd79bbc00e158b4c97a5bc57f4eb8e78a318fc115294d00c72",
+          "skill_sha256": "4b0b677bb145934ab84f42357d55fada3fff94373c07b0a11b094701ea576be5",
           "triggers": [
             "current attributable market evidence is required",
             "open market discovery or comparable niche research is requested",
@@ -1744,7 +1744,7 @@
           ],
           "required_dependencies": [],
           "route": "cascade-discovery:plan-growth",
-          "skill_sha256": "6ca63b2e5aa84ea440760b25e704fcf1ace64eacdd2b9ff68692e972415b4834",
+          "skill_sha256": "65c91665bea0dd71a0217570f0b911911f6674c15b09aaa65f45d3c2170b6ce8",
           "triggers": [
             "growth strategy or channel selection is requested",
             "funnel or lifecycle growth needs diagnosis"
@@ -1984,7 +1984,7 @@
           ]
         }
       ],
-      "version": "1.0.3+codex.20261013.cleanup.1"
+      "version": "1.0.4+codex.20261021.discovery.1"
     },
     {
       "activation": {

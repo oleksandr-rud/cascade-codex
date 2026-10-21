@@ -494,6 +494,49 @@ Manual setup still works when an agent is unavailable:
 
 ## Validation
 
+### Codex Cloud source checkout
+
+Create a Cloud environment for this repository on the intended branch. Use
+this **Install script** from the repository root (Node/npm must be available):
+
+```bash
+npm exec --yes --package=bun@1.3.3 -- bun install --frozen-lockfile --ignore-scripts
+```
+
+This installs the pinned core dependencies without lifecycle scripts. The
+optional `node-pty` terminal-simulation provider is not prepared or verified;
+enable its native build separately only for an authorized terminal campaign.
+The core validator, catalog, safety smoke suite and bundle do not need that
+provider. Keep registry access in the environment's explicit network policy.
+Never put credentials in the script or repository.
+
+Set the environment's **Start skill** to the repository's `cascade-cloud` skill
+and run the first task:
+
+```text
+Use cascade-cloud. Read the repository boot instructions and run
+bash scripts/cloud-smoke.sh. Report the actual revision and checks. Do not
+change source, call a paid provider or publish the environment from this test.
+```
+
+Review and publish the prepared environment in Codex before claiming a Cloud
+task exists. Repository skills are available to Cloud tasks; personal local
+skills are not automatically synchronized. Marketplace source and a passing
+catalog check do not prove plugins are installed and enabled: retain the
+existing `workflow check-installed` gate for a selected plugin route.
+The smoke script reports source/bundled-runtime verification separately from
+plugin installation, terminal simulations and actual Cloud task execution.
+
+For subsequent authorized recurring maintenance, use
+`cascade-engineering:maintain-harness` and its evidence-maintenance reference.
+The host owns the schedule and source publication; no relevant evidence means
+no change. Local installations receive published updates only through their
+normal pull/update mechanism. Re-publish a Cloud environment when its setup or
+repository skill snapshot changes; existing tasks retain their own workspace.
+
+Setup behavior checked against [Codex Cloud environments](https://learn.chatgpt.com/docs/environments/cloud-environments)
+on 2026-10-21.
+
 The validator checks for required harness files, expected skill and role assets,
 canonical route tokens, TOML validity, allowed docs folders, stale active skill
 references, stale naming, project-specific leakage, and product traceability. A
