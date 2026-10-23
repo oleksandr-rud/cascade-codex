@@ -218,27 +218,10 @@ the practice creates no backend integration task or new agent role.
 
 ### Workspace MCP boundary
 
-`cascade_workspace` is the single project-level MCP resource and artifact
-adapter shared by all active plugin skills. It does not belong to a domain
-plugin and does not make plugins call one another. The Codex host invokes its
-tools while following the selected skill contract:
-
-- `get_workspace_context` compiles explicit allowlisted files into one
-  digest-bound, size-bounded untrusted-data bundle;
-- `read_workspace_artifact` reads only a registered durable artifact kind;
-- `prepare_workspace_artifact` validates destination, format, size, current
-  digest, and an optional repository JSON Schema without writing;
-- `persist_workspace_artifact` is a closeout-only atomic commit using the exact
-  short-lived preparation token and optimistic current digest.
-
-The destination authority is `.codex/artifact-destinations.json`. Plugin skills
-produce candidate artifacts; they do not silently persist target state. The
-active host verifies current user authority and validation, then `closeout`
-may commit and require a read-back receipt. The service never grants authority,
-dispatches a role, selects a capability, executes arbitrary commands, or turns
-a Coordinator plan into automatic work. When the project MCP is unavailable,
-the candidate and handoff remain usable through ordinary authorized host file
-tools, preserving standalone plugin behavior.
+Before using `cascade_workspace` for context or artifacts, read the host-owned
+[Workspace MCP reference](.codex/skills/run-workflow/references/workspace-mcp.md).
+It provides data and guarded persistence, never permission or dispatch.
+Durable writes still pass through `closeout` and its read-back contract.
 
 ## Model Routing
 
@@ -361,37 +344,10 @@ request to create or fork one.
 
 ## Work State And Coordination
 
-Start with one inline slice. Create durable state only when work must survive
-tasks, cross owners, carry a real dependency, or join independently accepted
-evidence.
-
-For a request to check current work, run the read-only projection first:
-
-```bash
-npx --offline --yes bun@1.3.3 scripts/cascade.ts work audit --json --check
-```
-
-Read only the named lanes or graph needed to explain a collision, blocker,
-handoff, or acceptance decision. Do not scan every report or revision.
-
-Use `docs/work/active.md` as the current registry. Advanced Task Graph and
-Coordination Graph states, joins, revisions, and partial repair live in
-`docs/patterns/workflow/graph-shaped-work.md`. A graph is declarative and never
-permission or automatic dispatch.
-
-| Execution surface | Authority |
-|---|---|
-| `root` | Current scoped request |
-| `internal-subagent` | Explicit delegation or parallel-agent authorization |
-| `user-visible-task` | Explicit request to create, open, or fork a task |
-
-A request to refresh a named active record permits a read-only audit and
-in-scope local status synchronization. Mark it complete only when current
-source, dependencies, criteria, and required validation pass. Historical,
-partial, candidate-branch, blocked, or `NOT_RUN` evidence stays open.
-
-Closeout may retire an accepted active projection. Archival is explicit and is
-never an automatic closeout chain.
+Keep one inline slice by default. For an actual active-work audit, resume,
+coordination or retirement, read the [work-state reference](.codex/skills/context/references/work-state.md)
+through `context` and the selected owner. Durable records and graphs never
+grant authority; only currently verified work may be marked complete.
 
 ## Documentation And Context
 
@@ -466,35 +422,10 @@ separate, opt-in checks; they do not run for ordinary documentation changes.
 
 ## Harness Evaluation
 
-Harness evaluation is conditional. Run catalog and self-test when harness eval
-implementation, scenarios, expectations, or judge contracts change. Run a
-focused live scenario only when mechanical evidence cannot decide a changed
-semantic assertion.
-
-Live harness traces, judgments, and coverage reports are disposable diagnostics
-under ignored `.artifacts/harness-evals/`. They must not be promoted into
-tracked work state or treated as product, simulation, provider, deployment,
-release, or architecture evidence. Re-run the exact current source-bound case
-when a semantic diagnostic is needed again.
-
-Only an already registered simulation campaign with an explicit specialized
-route/trace claim may retain its minimal digest-bound receipt inside the frozen
-run package. That exception does not make the generic harness run durable or
-prove target-product behavior.
-
-```bash
-bun scripts/cascade.ts eval catalog --check
-bun scripts/cascade.ts eval audit
-bun scripts/cascade.ts eval self-test
-bun scripts/cascade.ts eval run --scenario HX-NNN --model-profile planning
-bun scripts/cascade.ts eval evaluate --run-dir .artifacts/harness-evals/<run-id>
-bun scripts/cascade.ts eval judge --run-dir .artifacts/harness-evals/<run-id>
-```
-
-Live targets run read-only. Accepted diagnostic coverage requires a current source-bound
-scenario, complete trace, mechanical eligibility, and every configured
-independent judgment. A semantic score cannot override a schema, permission,
-mutation, or trace-integrity failure.
+Only when a changed harness claim needs evaluation or the optional lab itself
+changes, read [the evaluation reference](.codex/skills/validate-change/references/harness-evaluation.md)
+through `validate-change`. Source/lab availability is a precondition; ordinary
+source, target, mocked and structural checks do not prove semantic quality.
 
 ## Write Rules
 

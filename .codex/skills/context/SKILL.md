@@ -24,6 +24,10 @@ Do not load every active lane, archived report, or repository document merely
 because it exists. Use archives only when the user asks for history or current
 sources explicitly point there.
 
+For Resume, Graph, or an explicit active-work audit, read
+[references/work-state.md](references/work-state.md) before querying or changing
+work status. Task and Discovery modes do not load that reference by default.
+
 ## Build the snapshot
 
 1. Read the latest user request and applicable repository instructions.

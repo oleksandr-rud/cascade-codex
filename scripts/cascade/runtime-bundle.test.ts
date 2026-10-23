@@ -114,6 +114,17 @@ describe("Cascade lean target runtime bundle", () => {
     const patternSkill = await readFile(resolve(output, ".codex/skills/pattern-context/SKILL.md"), "utf8");
     expect(patternSkill).toContain(".codex/runtime/cascade.js patterns");
     expect(patternSkill).not.toContain("scripts/cascade");
+    // Extracted host references must survive packaging with executable target paths.
+    const contextSkill = await readFile(resolve(output, ".codex/skills/context/SKILL.md"), "utf8");
+    expect(contextSkill).toContain("references/work-state.md");
+    const workState = await readFile(resolve(output, ".codex/skills/context/references/work-state.md"), "utf8");
+    expect(workState).toContain(".codex/runtime/cascade.js work audit --json --check");
+    expect(workState).not.toContain("scripts/cascade.ts");
+    expect((await readFile(resolve(output, ".codex/skills/run-workflow/references/workspace-mcp.md"), "utf8")))
+      .toContain("persist_workspace_artifact");
+    const evaluationReference = await readFile(resolve(output, ".codex/skills/validate-change/references/harness-evaluation.md"), "utf8");
+    expect(evaluationReference).toContain("core target runtime does not ship that lab");
+    expect(evaluationReference).toContain("A semantic score cannot override");
     const grouped = runBundle(output, ["workflow", "groups"]);
     expect(grouped.exitCode).toBe(0);
     const projection = JSON.parse(grouped.stdout.toString());

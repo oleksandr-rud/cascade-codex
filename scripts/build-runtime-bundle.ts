@@ -244,6 +244,12 @@ async function transformCopiedConfiguration(): Promise<void> {
     .replaceAll("scripts/cascade.ts patterns", ".codex/runtime/cascade.js patterns")
     .replaceAll("scripts/cascade/patterns.ts", ".codex/runtime/cascade.js patterns");
   await writeFile(patternPath, patternText, "utf8");
+  const workStatePath = resolve(activeOutput, ".codex/skills/context/references/work-state.md");
+  await writeFile(
+    workStatePath,
+    (await readFile(workStatePath, "utf8")).replaceAll("scripts/cascade.ts", ".codex/runtime/cascade.js"),
+    "utf8",
+  );
   const codexPath = resolve(activeOutput, "CODEX.md");
   await writeFile(
     codexPath,

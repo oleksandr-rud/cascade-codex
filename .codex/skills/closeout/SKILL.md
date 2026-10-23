@@ -62,6 +62,10 @@ the temporary cleanup scope. Apply deletion only with user authorization for
 the reviewed paths, after rechecking their identity and state. No temporary
 suite means no cleanup step or new artifact.
 
+When closing a named active record, read the shared
+[work-state reference](../context/references/work-state.md); do not create or
+retire records for ordinary inline work.
+
 ## Validated artifact persistence
 
 When a plugin skill returns a candidate artifact that must become durable

@@ -10,6 +10,10 @@ The common host cycle is `admit -> select -> prepare -> act -> observe -> verify
 method stays inline; connected plugin work uses the existing selection and plan
 contracts. The cycle is the constant, not a mandatory list of plugins.
 
+Before invoking Workspace MCP tools, read
+[references/workspace-mcp.md](references/workspace-mcp.md). Ordinary file-based
+workflows do not require that pack; persistence retains the `closeout` owner.
+
 ## Select and prepare
 
 1. Complete current task admission. Bind the real target, current evidence,
