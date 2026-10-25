@@ -53,7 +53,7 @@ models:
     checked_at: 2026-09-09
     id: Qwen/Qwen3.8-27B
     prompt_adapter: runtime/model-qwen.md
-    status: current-candidate
+    status: needs-verification
     tiers:
       - balanced-production
       - frontier-generalist
@@ -65,7 +65,7 @@ models:
     checked_at: 2026-09-09
     id: Qwen/Qwen3.6-27B
     prompt_adapter: runtime/model-qwen.md
-    status: current-candidate
+    status: needs-verification
     tiers:
       - balanced-production
       - frontier-generalist
@@ -77,7 +77,7 @@ models:
     checked_at: 2026-09-09
     id: Qwen/Qwen3.5-27B
     prompt_adapter: runtime/model-qwen.md
-    status: current-candidate
+    status: needs-verification
     tiers:
       - efficient-structured
       - balanced-production
@@ -88,7 +88,7 @@ models:
     checked_at: 2026-09-09
     id: google/gemma-3-27b-it
     prompt_adapter: runtime/model-open-weight.md
-    status: current-candidate
+    status: needs-verification
     tiers:
       - efficient-structured
       - balanced-production
@@ -100,7 +100,7 @@ models:
     checked_at: 2026-09-09
     id: google/gemma-4-31B-it
     prompt_adapter: runtime/model-open-weight.md
-    status: current-candidate
+    status: needs-verification
     tiers:
       - balanced-production
       - frontier-generalist
@@ -112,7 +112,7 @@ models:
     checked_at: 2026-09-09
     id: mistralai/Mistral-Small-3.2-24B-Instruct-2506
     prompt_adapter: runtime/model-open-weight.md
-    status: current-candidate
+    status: needs-verification
     tiers:
       - efficient-structured
       - balanced-production
