@@ -7,14 +7,14 @@ if command -v bun >/dev/null 2>&1; then
   cascade_bun=(bun)
 elif command -v npx >/dev/null 2>&1; then
   # The environment's Install script must cache this version first.
-  cascade_bun=(npx --offline --yes bun@1.3.3)
+  cascade_bun=(npx --offline --yes bun@1.4.4)
 else
-  echo 'cascade_cloud_smoke_status=BLOCKED reason=Bun_1.3.3_unavailable' >&2
+  echo 'cascade_cloud_smoke_status=BLOCKED reason=Bun_1.4.4_unavailable' >&2
   exit 1
 fi
 
-if [[ "$("${cascade_bun[@]}" --version)" != '1.3.3' ]]; then
-  echo 'cascade_cloud_smoke_status=BLOCKED reason=expected_Bun_1.3.3' >&2
+if [[ "$("${cascade_bun[@]}" --version)" != '1.4.4' ]]; then
+  echo 'cascade_cloud_smoke_status=BLOCKED reason=expected_Bun_1.4.4' >&2
   exit 1
 fi
 

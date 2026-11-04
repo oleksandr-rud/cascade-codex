@@ -702,8 +702,8 @@ async function validateRuntimePackage(errors: string[]): Promise<void> {
   const packageJson = await readJson<Record<string, any>>(
     rootPath(".codex/harness-tooling/package.json"),
   );
-  if (packageJson.packageManager !== "bun@1.3.3") {
-    errors.push("isolated harness tooling must pin packageManager to bun@1.3.3");
+  if (packageJson.packageManager !== "bun@1.4.4") {
+    errors.push("isolated harness tooling must pin packageManager to bun@1.4.4");
   }
   if (!packageJson.engines?.bun) {
     errors.push("isolated harness tooling package missing engines.bun");
@@ -758,7 +758,7 @@ async function validateRoutingContracts(
     stableJson(workspaceMcp?.args) !== stableJson([
       "--offline",
       "--yes",
-      "bun@1.3.3",
+      "bun@1.4.4",
       "scripts/cascade/workspace-mcp.ts",
     ]) ||
     workspaceMcp?.cwd !== "." ||
@@ -955,8 +955,8 @@ async function validateRepoPlugins(errors: string[]): Promise<void> {
 }
 
 const TASK_ADMISSION_HOOK_PATH = ".codex/hooks.json";
-const TASK_ADMISSION_HOOK_COMMAND = "npx --offline --yes bun@1.3.3 \"$(git rev-parse --show-toplevel)/scripts/cascade/task-admission-hook.ts\"";
-const CLOSEOUT_HOOK_COMMAND = "npx --offline --yes bun@1.3.3 \"$(git rev-parse --show-toplevel)/scripts/cascade/closeout-hook.ts\"";
+const TASK_ADMISSION_HOOK_COMMAND = "npx --offline --yes bun@1.4.4 \"$(git rev-parse --show-toplevel)/scripts/cascade/task-admission-hook.ts\"";
+const CLOSEOUT_HOOK_COMMAND = "npx --offline --yes bun@1.4.4 \"$(git rev-parse --show-toplevel)/scripts/cascade/closeout-hook.ts\"";
 const TASK_ADMISSION_HOOK_MAX_TIMEOUT_SECONDS = 30;
 const INTERRUPT_HOOK_MAX_TIMEOUT_SECONDS = 3;
 const TASK_ADMISSION_HOOK_MIN_CONTEXT_CHARACTERS = 1200;

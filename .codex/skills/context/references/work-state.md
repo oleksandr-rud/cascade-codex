@@ -7,7 +7,7 @@ evidence.
 For a request to check current work, run the read-only projection first:
 
 ```bash
-npx --offline --yes bun@1.3.3 scripts/cascade.ts work audit --json --check
+npx --offline --yes bun@1.4.4 scripts/cascade.ts work audit --json --check
 ```
 
 Read only the named lanes or graph needed to explain a collision, blocker,

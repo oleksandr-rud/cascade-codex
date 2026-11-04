@@ -33,7 +33,7 @@ runs remain the dominant latency in live evaluations.
 - Planning model: `gpt-6.1-sol`
 - Execution, prompt-builder, and judge model: `gpt-6.1-sol`
 - Default reasoning effort: `xhigh`
-- Tooling runtime: Bun `1.3.3`
+- Tooling runtime: Bun `1.4.4`
 - Validator: `bun scripts/cascade.ts validate`
 - Lean target runtime: `bun run build:runtime` (the build enforces a 120-file ceiling)
 
@@ -414,7 +414,7 @@ audit adds missing-resource, semantic leakage, route, runtime, and trace checks.
 Build the core target bundle from a clean Cascade checkout, then copy that
 generated profile into the target repository root. Review collisions first if
 the target already has `AGENTS.md`, `CODEX.md`, `.github/`, `.codex/`, or
-`docs/`. The core profile requires Bun `1.3.3`; browser dependencies belong to
+`docs/`. The core profile requires Bun `1.4.4`; browser dependencies belong to
 an explicitly added simulation lab, not the default installation.
 
 ```bash
@@ -422,7 +422,7 @@ export CASCADE_SRC=/path/to/cascade
 export TARGET_REPO=/path/to/target-repo
 
 cd "$CASCADE_SRC"
-npx --offline --yes bun@1.3.3 run build:runtime
+npx --offline --yes bun@1.4.4 run build:runtime
 
 rsync -a --backup --suffix=.pre-cascade \
   "$CASCADE_SRC"/dist/cascade-runtime/ \
@@ -430,8 +430,8 @@ rsync -a --backup --suffix=.pre-cascade \
 
 cd "$TARGET_REPO"
 cp harness.config.example.yaml harness.config.yaml
-npx --offline --yes bun@1.3.3 .codex/runtime/cascade.js target inventory --root .
-npx --offline --yes bun@1.3.3 .codex/runtime/cascade.js target validate --root .
+npx --offline --yes bun@1.4.4 .codex/runtime/cascade.js target inventory --root .
+npx --offline --yes bun@1.4.4 .codex/runtime/cascade.js target validate --root .
 ```
 
 Install the plugin versions recorded in `.codex/plugins.lock.json` from the
@@ -487,7 +487,7 @@ Manual setup still works when an agent is unavailable:
    product, design, spec, or pattern docs that current target evidence needs.
 3. Install the plugin versions in `.codex/plugins.lock.json`; do not copy their
    source bodies into the target runtime.
-4. Run `npx --offline --yes bun@1.3.3 .codex/runtime/cascade.js target
+4. Run `npx --offline --yes bun@1.4.4 .codex/runtime/cascade.js target
    validate --root .` after configuration is adapted. For deep onboarding,
    initialize and complete `docs/work/onboarding-manifest.yaml`, then add
    `--require-onboarding-complete`.
@@ -500,7 +500,7 @@ Create a Cloud environment for this repository on the intended branch. Use
 this **Install script** from the repository root (Node/npm must be available):
 
 ```bash
-npm exec --yes --package=bun@1.3.3 -- bun install --frozen-lockfile --ignore-scripts
+npm exec --yes --package=bun@1.4.4 -- bun install --frozen-lockfile --ignore-scripts
 ```
 
 This installs the pinned core dependencies without lifecycle scripts. The
@@ -579,13 +579,13 @@ The target-project analysis CLI never executes configured install or test
 commands implicitly:
 
 ```bash
-npx --offline --yes bun@1.3.3 .codex/runtime/cascade.js target inventory --root .
-npx --offline --yes bun@1.3.3 .codex/runtime/cascade.js target init-manifest
-npx --offline --yes bun@1.3.3 .codex/runtime/cascade.js target probe-commands
-npx --offline --yes bun@1.3.3 .codex/runtime/cascade.js target refresh-manifest
-npx --offline --yes bun@1.3.3 .codex/runtime/cascade.js target validate \
+npx --offline --yes bun@1.4.4 .codex/runtime/cascade.js target inventory --root .
+npx --offline --yes bun@1.4.4 .codex/runtime/cascade.js target init-manifest
+npx --offline --yes bun@1.4.4 .codex/runtime/cascade.js target probe-commands
+npx --offline --yes bun@1.4.4 .codex/runtime/cascade.js target refresh-manifest
+npx --offline --yes bun@1.4.4 .codex/runtime/cascade.js target validate \
   --require-complete
-npx --offline --yes bun@1.3.3 .codex/runtime/cascade.js target drift
+npx --offline --yes bun@1.4.4 .codex/runtime/cascade.js target drift
 ```
 
 ## Campaigns And Browser Simulations

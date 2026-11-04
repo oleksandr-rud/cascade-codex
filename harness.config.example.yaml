@@ -86,7 +86,7 @@ validation_commands:
     - "<INSTALL_COMMAND>"
   targeted:
     - "<TARGETED_TEST_COMMAND>"
-    - "npx --offline --yes bun@1.3.3 .codex/runtime/cascade.js target validate --root ."
+    - "npx --offline --yes bun@1.4.4 .codex/runtime/cascade.js target validate --root ."
   unit:
     - "<UNIT_TEST_COMMAND>"
   lint:

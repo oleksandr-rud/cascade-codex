@@ -158,7 +158,7 @@ startup_timeout_sec = 20
 
 [mcp_servers.cascade_workspace]
 command = "npx"
-args = ["--offline", "--yes", "bun@1.3.3", "scripts/cascade/workspace-mcp.ts"]
+args = ["--offline", "--yes", "bun@1.4.4", "scripts/cascade/workspace-mcp.ts"]
 cwd = "."
 startup_timeout_sec = 20
 

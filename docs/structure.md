@@ -419,7 +419,7 @@ Canonical deterministic runtime authority owned by W-004:
   `product-evals/calibrations/`
 - Semantic rubrics, fixture/Codex evaluation profiles, provider output schema,
   and stored receipt schema: `product-evals/rubrics/`
-- Bun 1.3.3 runner and deterministic reducers: `scripts/cascade.ts` and
+- Bun 1.4.4 runner and deterministic reducers: `scripts/cascade.ts` and
   `scripts/cascade/`
 - Isolated Playwright package and configuration: `.codex/harness-tooling/`
 - Machine-readable target starter:

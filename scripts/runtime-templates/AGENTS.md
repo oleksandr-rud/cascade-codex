@@ -46,7 +46,7 @@ Run proportional target checks from `harness.config.yaml`, then validate the
 adapted configuration with:
 
 ```bash
-npx --offline --yes bun@1.3.3 .codex/runtime/cascade.js target validate --root .
+npx --offline --yes bun@1.4.4 .codex/runtime/cascade.js target validate --root .
 ```
 
 Configuration validation is not product correctness or release evidence.
