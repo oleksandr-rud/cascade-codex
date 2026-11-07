@@ -452,6 +452,7 @@ export function repoPluginMetadataErrors(
 export function modelRegistryFreshnessErrors(
   checkedAt: unknown,
   now = new Date(),
+  enforceMaxAge = true,
 ): string[] {
   if (typeof checkedAt !== "string" || !/^\d{4}-\d{2}-\d{2}$/.test(checkedAt)) {
     return ["Cascade Prompt model registry checked_at must use YYYY-MM-DD"];
@@ -461,10 +462,16 @@ export function modelRegistryFreshnessErrors(
   const today = Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate());
   const ageDays = Math.floor((today - checked) / 86_400_000);
   if (ageDays < 0) return ["Cascade Prompt model registry checked_at is in the future"];
-  if (ageDays > MODEL_REGISTRY_MAX_AGE_DAYS) {
+  if (enforceMaxAge && ageDays > MODEL_REGISTRY_MAX_AGE_DAYS) {
     return [`Cascade Prompt model registry is stale (${ageDays} days old)`];
   }
   return [];
+}
+
+export function modelCatalogFreshnessErrors(payload: Record<string, any>, now = new Date()): string[] {
+  // Per-entry catalogs keep the catalog review marker separate from model evidence.
+  // Entry checks below still enforce age, including fallback to this marker.
+  return modelRegistryFreshnessErrors(payload.checked_at, now, payload.freshness_policy !== "per-entry");
 }
 
 export function modelEntryFreshnessErrors(model: Record<string, any>, fallbackDate: unknown, now = new Date()): string[] {
@@ -900,8 +907,8 @@ async function validateRepoPlugins(errors: string[]): Promise<void> {
       indexPath,
       rel(indexPath),
     );
-    errors.push(...modelRegistryFreshnessErrors(registry.checked_at));
-    errors.push(...modelRegistryFreshnessErrors(index.checked_at));
+    errors.push(...modelCatalogFreshnessErrors(registry));
+    errors.push(...modelCatalogFreshnessErrors(index));
     if (registry.checked_at !== index.checked_at) {
       errors.push("Cascade Prompt model registry and runtime index freshness differ");
     }
