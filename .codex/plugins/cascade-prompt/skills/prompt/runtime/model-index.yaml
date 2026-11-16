@@ -9,7 +9,7 @@ models:
       - reasoning-controls
       - structured-output
       - long-context
-    checked_at: 2026-10-01
+    checked_at: 2026-11-16
     id: gpt-6.1-sol
     prompt_adapter: runtime/model-sol.md
     status: current-candidate
@@ -23,7 +23,7 @@ models:
       - reasoning-controls
       - structured-output
       - long-context
-    checked_at: 2026-10-01
+    checked_at: 2026-11-16
     id: gpt-6-luna
     prompt_adapter: runtime/model-luna6.md
     status: current-candidate
@@ -37,7 +37,7 @@ models:
       - reasoning-controls
       - structured-output
       - long-context
-    checked_at: 2026-10-01
+    checked_at: 2026-11-16
     id: gpt-6-sol
     prompt_adapter: runtime/model-sol6.md
     status: current-candidate
@@ -123,7 +123,7 @@ models:
       - reasoning-controls
       - structured-output
       - long-context
-    checked_at: 2026-10-01
+    checked_at: 2026-11-16
     id: gpt-6-astra
     prompt_adapter: runtime/model-astra.md
     status: current-candidate

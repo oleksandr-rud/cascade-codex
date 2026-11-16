@@ -21,7 +21,7 @@ models:
       - long-context
     catalog_labels:
       - tier-candidate
-    checked_at: 2026-10-01
+    checked_at: 2026-11-16
     id: gpt-6.1-sol
     prompt_adapter: runtime/model-sol.md
     prompting_notes:
@@ -52,7 +52,7 @@ models:
       - long-context
     catalog_labels:
       - tier-candidate
-    checked_at: 2026-10-01
+    checked_at: 2026-11-16
     id: gpt-6-luna
     prompt_adapter: runtime/model-luna6.md
     prompting_notes:
@@ -82,7 +82,7 @@ models:
       - long-context
     catalog_labels:
       - tier-candidate
-    checked_at: 2026-10-01
+    checked_at: 2026-11-16
     id: gpt-6-sol
     prompt_adapter: runtime/model-sol6.md
     prompting_notes:
@@ -280,7 +280,7 @@ models:
       - long-context
     catalog_labels:
       - tier-candidate
-    checked_at: 2026-10-01
+    checked_at: 2026-11-16
     id: gpt-6-astra
     prompt_adapter: runtime/model-astra.md
     prompting_notes:

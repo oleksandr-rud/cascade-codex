@@ -1,13 +1,13 @@
 {
   "artifact_type": "cascade-plugin-capability-catalog",
-  "catalog_digest": "0f383d34ef34722b0b580420ca7e3befc58f4614531691a89fcecf3a764e58ce",
+  "catalog_digest": "aec946c66e87146d237f56fdd8ea83a7add0365de422fa8b51c1081b4a6a94e9",
   "marketplace": ".agents/plugins/marketplace.json",
   "plugins": [
     {
       "descriptor_path": ".codex/plugins/cascade-prompt/capabilities.yaml",
-      "descriptor_sha256": "1cd9c6a3d7e94eb11aae8ab0e585f568cc453eceff2fa0bf1297fda23356f588",
+      "descriptor_sha256": "4105c7b6fcf72c7571770933281aec54617d0ac8ed426c34ad28567d0ad2ed25",
       "manifest_path": ".codex/plugins/cascade-prompt/.codex-plugin/plugin.json",
-      "manifest_sha256": "b6d17e095b6b0a85a20942981512dcbcd3504318a8da49e013824d2f8a78f21f",
+      "manifest_sha256": "198e53dc97be71cccba53be81408e0d3b1c62144e96dd16cb2eeca3c2a71e967",
       "model_policy": {
         "evaluation_reasoning_effort": "xhigh",
         "model": "gpt-6.1-sol",
@@ -57,7 +57,7 @@
           ]
         }
       ],
-      "version": "0.7.20+codex.20261025.freshness.1"
+      "version": "0.7.21+codex.20261116.freshness.1"
     },
     {
       "descriptor_path": ".codex/plugins/cascade-simulations/capabilities.yaml",
