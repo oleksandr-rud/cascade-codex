@@ -1,6 +1,6 @@
 {
   "name": "cascade-prompt",
-  "version": "0.7.21+codex.20261116.freshness.1",
+  "version": "0.7.22+codex.20261118.freshness.1",
   "description": "Create source-aware prompts and context templates with focused clarification, model-specific adapters, and bounded validation design.",
   "author": {
     "name": "Cascade"

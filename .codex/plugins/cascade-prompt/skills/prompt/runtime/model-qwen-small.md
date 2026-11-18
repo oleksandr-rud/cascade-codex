@@ -1,6 +1,6 @@
 # Qwen3.5-2B generative surface adapter
 
-Checked 2026-10-03 against the
+Checked 2026-11-18 against the
 [official Qwen3.5-2B card](https://huggingface.co/Qwen/Qwen3.5-2B).
 This is the ordinary generative VLM, distinct from Intern-Decision and Imajev.
 Use those targets' decision references when the user selected decision tuning;

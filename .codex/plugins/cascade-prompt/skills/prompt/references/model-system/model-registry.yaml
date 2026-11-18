@@ -642,7 +642,7 @@ models:
         evidence_status: provider_claim
         tier: frontier-generalist
   - id: Qwen/Qwen3.5-2B
-    checked_at: 2026-10-03
+    checked_at: 2026-11-18
     capabilities: [text, vision, tools, reasoning-controls, long-context]
     status: current-candidate
     prompt_adapter: runtime/model-qwen-small.md
